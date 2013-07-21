@@ -4159,6 +4159,8 @@ void CGameContext::OnInit(/*class IKernel *pKernel*/)
 	//world = new GAMEWORLD;
 	//players = new CPlayer[MAX_CLIENTS];
 
+	Console()->ExecuteFile(g_Config.m_SvResetFile);
+
 	// select gametype
 	m_pController = new CGameControllerMOD(this);
 
