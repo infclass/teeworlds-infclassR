@@ -45,6 +45,10 @@ void CPlayer::Reset()
 	}
 	idMap[0] = m_ClientID;
 
+	// DDRace
+
+	m_LastCommandPos = 0;
+
 	m_LastVoteCall = 0;
 	m_LastVoteTry = 0;
 	m_LastChat = 0;

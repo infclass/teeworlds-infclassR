@@ -1994,6 +1994,13 @@ void CGameContext::OnSayNetMessage(const CNetMsg_Cl_Say *pMsg, int ClientID, con
 		}
 		else
 		{
+			if(g_Config.m_SvSpamprotection && !str_startswith(pMsg->m_pMessage + 1, "timeout ") && pPlayer->m_aLastCommands[0] && pPlayer->m_aLastCommands[0] + Server()->TickSpeed() > Server()->Tick() && pPlayer->m_aLastCommands[1] && pPlayer->m_aLastCommands[1] + Server()->TickSpeed() > Server()->Tick() && pPlayer->m_aLastCommands[2] && pPlayer->m_aLastCommands[2] + Server()->TickSpeed() > Server()->Tick() && pPlayer->m_aLastCommands[3] && pPlayer->m_aLastCommands[3] + Server()->TickSpeed() > Server()->Tick())
+				return;
+
+			int64_t Now = Server()->Tick();
+			pPlayer->m_aLastCommands[pPlayer->m_LastCommandPos] = Now;
+			pPlayer->m_LastCommandPos = (pPlayer->m_LastCommandPos + 1) % 4;
+
 			switch(Server()->GetAuthedState(ClientID))
 			{
 			case IServer::AUTHED_ADMIN:
