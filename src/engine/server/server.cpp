@@ -2267,7 +2267,7 @@ int CServer::Run()
 				ReportTime += time_freq()*ReportInterval;
 			}
 
-			// wait for incomming data
+			// wait for incoming data
 			net_socket_read_wait(m_NetServer.Socket(), 5);
 		}
 	}

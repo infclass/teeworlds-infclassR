@@ -419,8 +419,8 @@ class CNetClient
 	NETADDR m_ServerAddr;
 	CNetConnection m_Connection;
 	CNetRecvUnpacker m_RecvUnpacker;
-	NETSOCKET m_Socket;
 public:
+	NETSOCKET m_Socket;
 	// openness
 	bool Open(NETADDR BindAddr, int Flags);
 	int Close();
