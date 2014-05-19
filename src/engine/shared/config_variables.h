@@ -184,6 +184,7 @@ MACRO_CONFIG_INT(InfStunGrenadeProbability, inf_stun_grenade_probability, 30, 0,
 
 MACRO_CONFIG_INT(SvSuggestMoreRounds, sv_suggest_more_rounds, 0, 0, 100, CFGFLAG_SERVER, "The number of extra rounds to be played on the suggestion (vote) accepted")
 
+MACRO_CONFIG_INT(SvVoteTime, sv_vote_time, 25, 1, 9999, CFGFLAG_SERVER, "The time in seconds a vote lasts")
 MACRO_CONFIG_INT(SvVoteDelay, sv_vote_delay, 3, 0, 9999, CFGFLAG_SERVER, "The time in seconds between any vote")
 
 MACRO_CONFIG_STR(SvResetFile, sv_reset_file, 128, "reset.cfg", CFGFLAG_SERVER, "File to execute on map change or reload to set the default server settings")
