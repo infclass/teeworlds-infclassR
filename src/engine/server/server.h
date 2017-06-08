@@ -234,7 +234,7 @@ public:
 	int Init();
 
 	void SetRconCID(int ClientID);
-	bool IsAuthed(int ClientID) const;
+	int GetAuthedState(int ClientID) const;
 	int GetClientInfo(int ClientID, CClientInfo *pInfo) const;
 	void GetClientAddr(int ClientID, char *pAddrStr, int Size) const;
 	std::string GetClientIP(int ClientID) const;

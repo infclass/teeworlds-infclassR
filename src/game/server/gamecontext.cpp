@@ -1615,7 +1615,7 @@ void CGameContext::OnCallVote(void *pRawMsg, int ClientID)
 			SendChatTarget(ClientID, "You can't kick yourself");
 			return;
 		}
-		if(Server()->IsAuthed(KickID))
+		if(Server()->GetAuthedState(KickID) != IServer::AUTHED_NO)
 		{
 			SendChatTarget(ClientID, "You can't kick admins");
 			char aBufKick[128];
