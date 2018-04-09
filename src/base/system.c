@@ -66,7 +66,6 @@ static DBG_LOGGER loggers[16];
 static int num_loggers = 0;
 
 static NETSTATS network_stats = {0};
-static MEMSTATS memory_stats = {0};
 
 static NETSOCKET invalid_socket = {NETTYPE_INVALID, -1, -1};
 
@@ -148,99 +147,6 @@ void dbg_logger_file(const char *filename)
 }
 /* */
 
-typedef struct MEMHEADER
-{
-	const char *filename;
-	int line;
-	int size;
-	struct MEMHEADER *prev;
-	struct MEMHEADER *next;
-} MEMHEADER;
-
-typedef struct MEMTAIL
-{
-	int guard;
-} MEMTAIL;
-
-static struct MEMHEADER *first = 0;
-static const int MEM_GUARD_VAL = 0xbaadc0de;
-
-void *mem_alloc_debug(const char *filename, int line, unsigned size, unsigned alignment)
-{
-	/* TODO: fix alignment */
-	/* TODO: add debugging */
-	MEMTAIL *tail;
-	MEMHEADER *header = (struct MEMHEADER *)malloc(size+sizeof(MEMHEADER)+sizeof(MEMTAIL));
-	dbg_assert(header != 0, "mem_alloc failure");
-	if(!header)
-		return NULL;
-	tail = (struct MEMTAIL *)(((char*)(header+1))+size);
-	header->size = size;
-	header->filename = filename;
-	header->line = line;
-
-	memory_stats.allocated += header->size;
-	memory_stats.total_allocations++;
-	memory_stats.active_allocations++;
-
-	tail->guard = MEM_GUARD_VAL;
-
-	header->prev = (MEMHEADER *)0;
-	header->next = first;
-	if(first)
-		first->prev = header;
-	first = header;
-
-	/*dbg_msg("mem", "++ %p", header+1); */
-	return header+1;
-}
-
-void mem_free(void *p)
-{
-	if(p)
-	{
-		MEMHEADER *header = (MEMHEADER *)p - 1;
-		MEMTAIL *tail = (MEMTAIL *)(((char*)(header+1))+header->size);
-
-		if(tail->guard != MEM_GUARD_VAL)
-			dbg_msg("mem", "!! %p", p);
-		/* dbg_msg("mem", "-- %p", p); */
-		memory_stats.allocated -= header->size;
-		memory_stats.active_allocations--;
-
-		if(header->prev)
-			header->prev->next = header->next;
-		else
-			first = header->next;
-		if(header->next)
-			header->next->prev = header->prev;
-
-		free(header);
-	}
-}
-
-void mem_debug_dump(IOHANDLE file)
-{
-	char buf[1024];
-	MEMHEADER *header = first;
-	if(!file)
-		file = io_open("memory.txt", IOFLAG_WRITE);
-
-	if(file)
-	{
-		while(header)
-		{
-			str_format(buf, sizeof(buf), "%s(%d): %d", header->filename, header->line, header->size);
-			io_write(file, buf, strlen(buf));
-			io_write_newline(file);
-			header = header->next;
-		}
-
-		io_close(file);
-	}
-}
-
-
 void mem_copy(void *dest, const void *source, unsigned size)
 {
 	memcpy(dest, source, size);
@@ -254,23 +160,6 @@ void mem_move(void *dest, const void *source, unsigned size)
 void mem_zero(void *block,unsigned size)
 {
 	memset(block, 0, size);
-}
-
-int mem_check_imp()
-{
-	MEMHEADER *header = first;
-	while(header)
-	{
-		MEMTAIL *tail = (MEMTAIL *)(((char*)(header+1))+header->size);
-		if(tail->guard != MEM_GUARD_VAL)
-		{
-			dbg_msg("mem", "Memory check failed at %s(%d): %d", header->filename, header->line, header->size);
-			return 0;
-		}
-		header = header->next;
-	}
-
-	return 1;
 }
 
 IOHANDLE io_open(const char *filename, int flags)
@@ -471,7 +360,7 @@ typedef CRITICAL_SECTION LOCKINTERNAL;
 
 LOCK lock_create()
 {
-	LOCKINTERNAL *lock = (LOCKINTERNAL*)mem_alloc(sizeof(LOCKINTERNAL), 4);
+	LOCKINTERNAL *lock = (LOCKINTERNAL *)malloc(sizeof(*lock));
 
 #if defined(CONF_FAMILY_UNIX)
 	pthread_mutex_init(lock, 0x0);
@@ -492,7 +381,7 @@ void lock_destroy(LOCK lock)
 #else
 	#error not implemented on this platform
 #endif
-	mem_free(lock);
+	free(lock);
 }
 
 int lock_try(LOCK lock)
@@ -2007,11 +1896,6 @@ void str_escape(char **dst, const char *src, const char *end)
 int mem_comp(const void *a, const void *b, int size)
 {
 	return memcmp(a,b,size);
-}
-
-const MEMSTATS *mem_stats()
-{
-	return &memory_stats;
 }
 
 void net_stats(NETSTATS *stats_inout)

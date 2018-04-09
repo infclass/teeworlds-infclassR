@@ -1268,9 +1268,8 @@ bool CServer::GenerateClientMap(const char *pMapFilePath, const char *pMapName)
 	//Download the generated map in memory to send it to clients
 	IOHANDLE File = Storage()->OpenFile(aClientMapName, IOFLAG_READ, IStorage::TYPE_ALL);
 	m_CurrentMapSize = (int)io_length(File);
-	if(m_pCurrentMapData)
-		mem_free(m_pCurrentMapData);
-	m_pCurrentMapData = (unsigned char *)mem_alloc(m_CurrentMapSize, 1);
+	free(m_pCurrentMapData);
+	m_pCurrentMapData = (unsigned char *)malloc(m_CurrentMapSize);
 	io_read(File, m_pCurrentMapData, m_CurrentMapSize);
 	io_close(File);
 	Console()->Print(IConsole::OUTPUT_LEVEL_ADDINFO, "server", "maps/infc_x_current.map loaded in memory");
@@ -2078,12 +2077,6 @@ int CServer::Run()
 		m_Lastheartbeat = 0;
 		m_GameStartTime = time_get();
 
-		if(g_Config.m_Debug)
-		{
-			str_format(aBuf, sizeof(aBuf), "baseline memory usage %dk", mem_stats()->allocated/1024);
-			Console()->Print(IConsole::OUTPUT_LEVEL_DEBUG, "server", aBuf);
-		}
-
 		while(m_RunServer)
 		{
 			int64 t = time_get();
@@ -2284,8 +2277,7 @@ int CServer::Run()
 	GameServer()->OnShutdown();
 	m_pMap->Unload();
 
-	if(m_pCurrentMapData)
-		mem_free(m_pCurrentMapData);
+	free(m_pCurrentMapData);
 		
 /* DDNET MODIFICATION START *******************************************/
 #ifdef CONF_SQL

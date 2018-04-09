@@ -9,7 +9,8 @@
 #define BASE_SYSTEM_H
 
 #include "detect.h"
-
+#include <stddef.h>
+#include <stdlib.h>
 #include <time.h>
 
 #ifdef __cplusplus
@@ -74,42 +75,6 @@ void dbg_msg(const char *sys, const char *fmt, ...);
 /* Group: Memory */
 
 /*
-	Function: mem_alloc
-		Allocates memory.
-
-	Parameters:
-		size - Size of the needed block.
-		alignment - Alignment for the block.
-
-	Returns:
-		Returns a pointer to the newly allocated block. Returns a
-		null pointer if the memory couldn't be allocated.
-
-	Remarks:
-		- Passing 0 to size will allocated the smallest amount possible
-		and return a unique pointer.
-
-	See Also:
-		<mem_free>
-*/
-void *mem_alloc_debug(const char *filename, int line, unsigned size, unsigned alignment);
-#define mem_alloc(s,a) mem_alloc_debug(__FILE__, __LINE__, (s), (a))
-
-/*
-	Function: mem_free
-		Frees a block allocated through <mem_alloc>.
-
-	Remarks:
-		- In the debug version of the library the function will assert if
-		a non-valid block is passed, like a null pointer or a block that
-		isn't allocated.
-
-	See Also:
-		<mem_alloc>
-*/
-void mem_free(void *block);
-
-/*
 	Function: mem_copy
 		Copies a a memory block.
 
@@ -170,14 +135,6 @@ void mem_zero(void *block, unsigned size);
 		>0 - Block a is greater then block b
 */
 int mem_comp(const void *a, const void *b, int size);
-
-/*
-	Function: mem_check
-		Validates the heap
-		Will trigger a assert if memory has failed.
-*/
-int mem_check_imp();
-#define mem_check() dbg_assert_imp(__FILE__, __LINE__, mem_check_imp(), "Memory check failed")
 
 /* Group: File IO */
 enum {
@@ -1309,8 +1266,6 @@ int net_would_block();
 
 int net_socket_read_wait(NETSOCKET sock, int time);
 
-void mem_debug_dump(IOHANDLE file);
-
 void swap_endian(void *data, unsigned elem_size, unsigned num);
 
 
@@ -1320,15 +1275,6 @@ void dbg_logger(DBG_LOGGER logger);
 void dbg_logger_stdout();
 void dbg_logger_debugger();
 void dbg_logger_file(const char *filename);
-
-typedef struct
-{
-	int allocated;
-	int active_allocations;
-	int total_allocations;
-} MEMSTATS;
-
-const MEMSTATS *mem_stats();
 
 typedef struct
 {
