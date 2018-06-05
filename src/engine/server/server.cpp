@@ -998,6 +998,7 @@ int CServer::NewClientCallback(int ClientID, void *pUser)
 	}
 
 	pThis->m_aClients[ClientID].m_State = CClient::STATE_AUTH;
+	pThis->m_aClients[ClientID].m_SupportsMapSha256 = false;
 	pThis->m_aClients[ClientID].m_aName[0] = 0;
 	pThis->m_aClients[ClientID].m_aClan[0] = 0;
 	pThis->m_aClients[ClientID].m_Country = -1;
@@ -1057,6 +1058,7 @@ int CServer::DelClientCallback(int ClientID, int Type, const char *pReason, void
 		pThis->GameServer()->OnClientDrop(ClientID, Type, pReason);
 
 	pThis->m_aClients[ClientID].m_State = CClient::STATE_EMPTY;
+	pThis->m_aClients[ClientID].m_SupportsMapSha256 = false;
 	pThis->m_aClients[ClientID].m_aName[0] = 0;
 	pThis->m_aClients[ClientID].m_aClan[0] = 0;
 	pThis->m_aClients[ClientID].m_Country = -1;
@@ -1085,11 +1087,21 @@ int CServer::DelClientCallback(int ClientID, int Type, const char *pReason, void
 
 void CServer::SendMap(int ClientID)
 {
-	CMsgPacker Msg(NETMSG_MAP_CHANGE);
-	Msg.AddString(GetMapName(), 0);
-	Msg.AddInt(m_CurrentMapCrc);
-	Msg.AddInt(m_CurrentMapSize);
-	SendMsgEx(&Msg, MSGFLAG_VITAL|MSGFLAG_FLUSH, ClientID, true);
+	{
+		CMsgPacker Msg(NETMSG_MAP_DETAILS);
+		Msg.AddString(GetMapName(), 0);
+		Msg.AddRaw(&m_CurrentMapSha256.data, sizeof(m_CurrentMapSha256.data));
+		Msg.AddInt(m_CurrentMapCrc);
+		Msg.AddInt(m_CurrentMapSize);
+		SendMsgEx(&Msg, MSGFLAG_VITAL, ClientID, true);
+	}
+	{
+		CMsgPacker Msg(NETMSG_MAP_CHANGE);
+		Msg.AddString(GetMapName(), 0);
+		Msg.AddInt(m_CurrentMapCrc);
+		Msg.AddInt(m_CurrentMapSize);
+		SendMsgEx(&Msg, MSGFLAG_VITAL|MSGFLAG_FLUSH, ClientID, true);
+	}
 
 	m_aClients[ClientID].m_NextMapChunk = 0;
 }
@@ -1256,6 +1268,7 @@ bool CServer::GenerateClientMap(const char *pMapFilePath, const char *pMapName)
 	if(dfClientMap.Open(Storage(), aClientMapName, IStorage::TYPE_ALL))
 	{
 		m_CurrentMapCrc = dfClientMap.Crc();
+		m_CurrentMapSha256 = dfClientMap.Sha256();
 		dfClientMap.Close();
 	}
 	//The map must be converted
@@ -1274,10 +1287,15 @@ bool CServer::GenerateClientMap(const char *pMapFilePath, const char *pMapName)
 		CDataFileReader dfGeneratedMap;
 		dfGeneratedMap.Open(Storage(), aClientMapName, IStorage::TYPE_ALL);
 		m_CurrentMapCrc = dfGeneratedMap.Crc();
+		m_CurrentMapSha256 = dfGeneratedMap.Sha256();
 		dfGeneratedMap.Close();
 	}
 
 	char aBufMsg[128];
+	char aSha256[SHA256_MAXSTRSIZE];
+	sha256_str(m_CurrentMapSha256, aSha256, sizeof(aSha256));
+	str_format(aBufMsg, sizeof(aBufMsg), "%s sha256 is %s", pMapName, aSha256);
+	Console()->Print(IConsole::OUTPUT_LEVEL_ADDINFO, "server", aBufMsg);
 	str_format(aBufMsg, sizeof(aBufMsg), "map crc is %08x, generated map crc is %08x", ServerMapCrc, m_CurrentMapCrc);
 	Console()->Print(IConsole::OUTPUT_LEVEL_ADDINFO, "server", aBufMsg);
 
@@ -2648,7 +2666,7 @@ void CServer::DemoRecorder_HandleAutoStart()
 		char aDate[20];
 		str_timestamp(aDate, sizeof(aDate));
 		str_format(aFilename, sizeof(aFilename), "demos/%s_%s.demo", "auto/autorecord", aDate);
-		m_DemoRecorder.Start(Storage(), m_pConsole, aFilename, GameServer()->NetVersion(), m_aCurrentMap, m_CurrentMapCrc, "server");
+		m_DemoRecorder.Start(Storage(), m_pConsole, aFilename, GameServer()->NetVersion(), m_aCurrentMap, m_CurrentMapSha256, m_CurrentMapCrc, "server");
 		if(g_Config.m_SvAutoDemoMax)
 		{
 			// clean up auto recorded demos
@@ -2676,7 +2694,7 @@ bool CServer::ConRecord(IConsole::IResult *pResult, void *pUser)
 		str_timestamp(aDate, sizeof(aDate));
 		str_format(aFilename, sizeof(aFilename), "demos/demo_%s.demo", aDate);
 	}
-	pServer->m_DemoRecorder.Start(pServer->Storage(), pServer->Console(), aFilename, pServer->GameServer()->NetVersion(), pServer->m_aCurrentMap, pServer->m_CurrentMapCrc, "server");
+	pServer->m_DemoRecorder.Start(pServer->Storage(), pServer->Console(), aFilename, pServer->GameServer()->NetVersion(), pServer->m_aCurrentMap, pServer->m_CurrentMapSha256, pServer->m_CurrentMapCrc, "server");
 	
 	return true;
 }

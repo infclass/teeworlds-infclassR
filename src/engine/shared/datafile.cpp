@@ -4,6 +4,7 @@
 #include "datafile.h"
 
 #include <base/math.h>
+#include <base/hash_ctxt.h>
 #include <base/system.h>
 #include <engine/storage.h>
 
@@ -120,6 +121,7 @@ struct CDatafileInfo
 struct CDatafile
 {
 	IOHANDLE m_File;
+	SHA256_DIGEST m_Sha256;
 	unsigned m_Crc;
 	CDatafileInfo m_Info;
 	CDatafileHeader m_Header;
@@ -141,12 +143,15 @@ bool CDataFileReader::Open(class IStorage *pStorage, const char *pFilename, int 
 
 	// take the CRC of the file and store it
 	unsigned Crc = 0;
+	SHA256_DIGEST Sha256;
 	{
 		enum
 		{
 			BUFFER_SIZE = 64 * 1024
 		};
 
+		SHA256_CTX Sha256Ctxt;
+		sha256_init(&Sha256Ctxt);
 		unsigned char aBuffer[BUFFER_SIZE];
 
 		while(1)
@@ -155,7 +160,9 @@ bool CDataFileReader::Open(class IStorage *pStorage, const char *pFilename, int 
 			if(Bytes <= 0)
 				break;
 			Crc = crc32(Crc, aBuffer, Bytes); // ignore_convention
+			sha256_update(&Sha256Ctxt, aBuffer, Bytes);
 		}
+		Sha256 = sha256_finish(&Sha256Ctxt);
 
 		io_seek(File, 0, IOSEEK_START);
 	}
@@ -203,6 +210,7 @@ bool CDataFileReader::Open(class IStorage *pStorage, const char *pFilename, int 
 	pTmpDataFile->m_ppDataPtrs = (char **)(pTmpDataFile + 1);
 	pTmpDataFile->m_pData = (char *)(pTmpDataFile + 1) + Header.m_NumRawData * sizeof(char *);
 	pTmpDataFile->m_File = File;
+	pTmpDataFile->m_Sha256 = Sha256;
 	pTmpDataFile->m_Crc = Crc;
 
 	// clear the data pointers
@@ -548,6 +556,20 @@ bool CDataFileReader::Close()
 	free(m_pDataFile);
 	m_pDataFile = 0;
 	return true;
+}
+
+SHA256_DIGEST CDataFileReader::Sha256() const
+{
+	if(!m_pDataFile)
+	{
+		SHA256_DIGEST Result;
+		for(unsigned i = 0; i < sizeof(Result.data); i++)
+		{
+			Result.data[i] = 0xff;
+		}
+		return Result;
+	}
+	return m_pDataFile->m_Sha256;
 }
 
 unsigned CDataFileReader::Crc() const

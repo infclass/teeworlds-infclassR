@@ -3,6 +3,9 @@
 #ifndef ENGINE_SERVER_SERVER_H
 #define ENGINE_SERVER_SERVER_H
 
+#include <base/hash.h>
+#include <base/math.h>
+
 #include <engine/masterserver.h>
 #include <engine/server.h>
 #include <engine/server/netsession.h>
@@ -124,6 +127,7 @@ public:
 
 		// connection state info
 		int m_State;
+		bool m_SupportsMapSha256;
 		int m_Latency;
 		int m_SnapRate;
 		bool m_Quitting;
@@ -201,7 +205,7 @@ public:
 	char m_aPreviousMap[64];
 	char m_aCurrentMap[64];
 	char m_aShutdownReason[128];
-	
+	SHA256_DIGEST m_CurrentMapSha256;
 	unsigned m_CurrentMapCrc;
 	unsigned char *m_pCurrentMapData;
 	unsigned int m_CurrentMapSize;

@@ -5,6 +5,7 @@
 
 #include <engine/storage.h>
 
+#include <base/hash.h>
 #include <base/system.h>
 
 #include <zlib.h>
@@ -29,8 +30,6 @@ public:
 	bool Open(class IStorage *pStorage, const char *pFilename, int StorageType);
 	bool Close();
 
-	static bool GetCrcSize(class IStorage *pStorage, const char *pFilename, int StorageType, unsigned *pCrc, unsigned *pSize);
-
 	void *GetData(int Index);
 	void *GetDataSwapped(int Index); // makes sure that the data is 32bit LE ints when saved
 	int GetDataSize(int Index);
@@ -44,6 +43,7 @@ public:
 	int NumData() const;
 	void Unload();
 
+	SHA256_DIGEST Sha256() const;
 	unsigned Crc() const;
 	int MapSize() const;
 	IOHANDLE File();

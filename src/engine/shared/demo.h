@@ -3,6 +3,8 @@
 #ifndef ENGINE_SHARED_DEMO_H
 #define ENGINE_SHARED_DEMO_H
 
+#include <base/hash.h>
+
 #include <engine/demo.h>
 #include <engine/shared/protocol.h>
 
@@ -25,7 +27,7 @@ class CDemoRecorder : public IDemoRecorder
 public:
 	CDemoRecorder(class CSnapshotDelta *pSnapshotDelta);
 
-	int Start(class IStorage *pStorage, class IConsole *pConsole, const char *pFilename, const char *pNetversion, const char *pMap, unsigned MapCrc, const char *pType);
+	int Start(class IStorage *pStorage, class IConsole *pConsole, const char *pFilename, const char *pNetversion, const char *pMap, SHA256_DIGEST Sha256, unsigned MapCrc, const char *pType);
 	int Stop();
 	void AddDemoMarker();
 
