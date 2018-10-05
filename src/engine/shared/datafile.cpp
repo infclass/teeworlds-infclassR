@@ -3,29 +3,12 @@
 
 #include "datafile.h"
 
-#include <base/math.h>
 #include <base/hash_ctxt.h>
+#include <base/math.h>
 #include <base/system.h>
 #include <engine/storage.h>
 
-enum
-{
-	UUID_MAXSTRSIZE = 37, // 12345678-0123-5678-0123-567890123456
-
-	UUID_INVALID = -2,
-	UUID_UNKNOWN = -1,
-
-	OFFSET_UUID = 1 << 16,
-};
-
-struct CUuid
-{
-	unsigned char m_aData[16];
-
-	bool operator==(const CUuid &Other) const;
-	bool operator!=(const CUuid &Other) const;
-	bool operator<(const CUuid &Other) const { return mem_comp(m_aData, Other.m_aData, sizeof(m_aData)) < 0; }
-};
+#include "uuid_manager.h"
 
 static const int DEBUG = 0;
 
@@ -65,6 +48,7 @@ struct CItemEx
 		return Result;
 	}
 };
+
 static int GetTypeFromIndex(int Index)
 {
 	return ITEMTYPE_EX - Index - 1;
@@ -432,7 +416,7 @@ int CDataFileReader::GetExternalItemType(int InternalType)
 	}
 	const CItemEx *pItemEx = (const CItemEx *)GetItem(TypeIndex, 0, 0);
 	// Propagate UUID_UNKNOWN, it doesn't hurt.
-	return 0; // g_UuidManager.LookupUuid(pItemEx->ToUuid());
+	return g_UuidManager.LookupUuid(pItemEx->ToUuid());
 }
 
 int CDataFileReader::GetInternalItemType(int ExternalType)
@@ -441,21 +425,21 @@ int CDataFileReader::GetInternalItemType(int ExternalType)
 	{
 		return ExternalType;
 	}
-//	CUuid Uuid = g_UuidManager.GetUuid(ExternalType);
-//	int Start, Num;
-//	GetType(ITEMTYPE_EX, &Start, &Num);
-//	for(int i = Start; i < Start + Num; i++)
-//	{
-//		if(GetItemSize(i) < (int)sizeof(CItemEx))
-//		{
-//			continue;
-//		}
-//		int ID;
-//		if(Uuid == ((const CItemEx *)GetItem(i, 0, &ID))->ToUuid())
-//		{
-//			return ID;
-//		}
-//	}
+	CUuid Uuid = g_UuidManager.GetUuid(ExternalType);
+	int Start, Num;
+	GetType(ITEMTYPE_EX, &Start, &Num);
+	for(int i = Start; i < Start + Num; i++)
+	{
+		if(GetItemSize(i) < (int)sizeof(CItemEx))
+		{
+			continue;
+		}
+		int ID;
+		if(Uuid == ((const CItemEx *)GetItem(i, 0, &ID))->ToUuid())
+		{
+			return ID;
+		}
+	}
 	return -1;
 }
 
@@ -562,9 +546,9 @@ SHA256_DIGEST CDataFileReader::Sha256() const
 	if(!m_pDataFile)
 	{
 		SHA256_DIGEST Result;
-		for(unsigned i = 0; i < sizeof(Result.data); i++)
+		for(unsigned char &d : Result.data)
 		{
-			Result.data[i] = 0xff;
+			d = 0xff;
 		}
 		return Result;
 	}
@@ -661,7 +645,7 @@ int CDataFileWriter::GetExtendedItemTypeIndex(int Type)
 	int Index = m_NumExtendedItemTypes++;
 	m_aExtendedItemTypes[Index] = Type;
 
-	CItemEx ExtendedType; // = CItemEx::FromUuid(g_UuidManager.GetUuid(Type));
+	CItemEx ExtendedType = CItemEx::FromUuid(g_UuidManager.GetUuid(Type));
 	AddItem(ITEMTYPE_EX, GetTypeFromIndex(Index), sizeof(ExtendedType), &ExtendedType);
 	return Index;
 }

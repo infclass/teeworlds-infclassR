@@ -114,7 +114,7 @@ if gen_network_header:
 	extended = [o for o in network.Messages if o.ex is not None]
 	for l in create_enum_table(["NETMSGTYPE_EX"]+[o.enum_name for o in non_extended], "NUM_NETMSGTYPES"): print(l)
 	print("")
-	for l in create_enum_table(["__NETMSGTYPE_UUID_HELPER=OFFSET_NETMSGTYPE_UUID-1"]+[o.enum_name for o in extended], "END_NETMSGTYPE_UUID"): print(l)
+	for l in create_enum_table(["__NETMSGTYPE_UUID_HELPER=OFFSET_NETMSGTYPE_UUID-1"]+[o.enum_name for o in extended], "OFFSET_MAPITEMTYPE_UUID"): print(l)
 	print("")
 
 	for item in network.Objects + network.Messages:
@@ -165,6 +165,7 @@ if gen_network_source:
 	lines += ['#include <engine/shared/protocol.h>']
 	lines += ['#include <engine/message.h>']
 	lines += ['#include "protocol.h"']
+	lines += ['#include <game/mapitems_ex.h>']
 
 	lines += ['CNetObjHandler::CNetObjHandler()']
 	lines += ['{']
@@ -328,6 +329,7 @@ if gen_network_source:
 	for item in network.Objects + network.Messages:
 		if item.ex is not None:
 			lines += ['\tpManager->RegisterName(%s, "%s");' % (item.enum_name, item.ex)]
+	lines += ['\tRegisterMapItemTypeUuids(pManager);']
 	lines += ['}']
 
 	for l in lines:

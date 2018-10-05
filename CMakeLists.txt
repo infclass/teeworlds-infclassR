@@ -507,6 +507,9 @@ set_glob(GAME_SHARED GLOB src/game
   layers.cpp
   layers.h
   mapitems.h
+  mapitems_ex.cpp
+  mapitems_ex.h
+  mapitems_ex_types.h
   tuning.h
   variables.h
   version.h
@@ -518,11 +521,6 @@ set(ENGINE_UUID_SHARED
   src/game/generated/protocol.cpp
   src/game/generated/protocol.h
 )
-foreach(s ${GAME_SHARED})
-  if(s MATCHES "mapitems_(ex.cpp|ex.h|ex_types.h)$")
-    list(REMOVE_ITEM GAME_SHARED ${s})
-  endif()
-endforeach()
 list(REMOVE_ITEM GAME_SHARED ${ENGINE_UUID_SHARED})
 set(GAME_GENERATED_SHARED
   ${CMAKE_CURRENT_BINARY_DIR}/src/game/generated/git_revision.cpp
