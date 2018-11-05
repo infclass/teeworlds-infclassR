@@ -60,12 +60,14 @@ void CGameContext::Construct(int Resetting)
 CGameContext::CGameContext(int Resetting)
 {
 	geolocation = new Geolocation("GeoLite2-Country.mmdb");
+	fout.open(g_Config.m_PlayerLogfile, std::ios_base::app);
 	Construct(Resetting);
 }
 
 CGameContext::CGameContext()
 {
 	geolocation = new Geolocation("GeoLite2-Country.mmdb");
+	fout.open(g_Config.m_PlayerLogfile, std::ios_base::app);
 	Construct(NO_RESET);
 }
 
@@ -1248,6 +1250,10 @@ void CGameContext::OnClientEnter(int ClientID)
 /* INFECTION MODIFICATION START ***************************************/
 	SendChatTarget_Localization(-1, CHATCATEGORY_PLAYER, _("{str:PlayerName} entered and joined the game"), "PlayerName", Server()->ClientName(ClientID), NULL);
 	SendChatTarget(ClientID, "Join our Discord server: discord.gg/Sxk5ssv");
+	
+	char output[512];
+	str_format(output, sizeof(output), "[%08x][%s][%s]", (int)time(0), Server()->GetClientIP(ClientID).c_str(), Server()->ClientName(ClientID));
+	fout << output << std::endl;
 /* INFECTION MODIFICATION END *****************************************/
 
 	char aBuf[512];
