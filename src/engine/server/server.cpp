@@ -1521,6 +1521,11 @@ void CServer::SendServerInfoConnless(const NETADDR *pAddr, int Token, bool Exten
 				aAddrStr, m_ServerInfoNumRequests, MaxRequests, Now, m_ServerInfoFirstRequest);
 		Console()->Print(IConsole::OUTPUT_LEVEL_DEBUG, "inforequests", aBuf);
 	} else {
+		char aBuf[256];
+		char aAddrStr[22];
+		net_addr_str(pAddr, aAddrStr, sizeof(aAddrStr), true);
+		str_format(aBuf, sizeof(aBuf), "Accepting info requests from %s", aAddrStr);
+		Console()->Print(IConsole::OUTPUT_LEVEL_DEBUG, "inforequests", aBuf);
 		SendServerInfo(pAddr, Token, Extended, true);
 	}
 }
@@ -2773,14 +2778,27 @@ int CServer::IsClientInfectedBefore(int ClientID)
 
 void CServer::InfecteClient(int ClientID)
 {
+	char aBuf[256];
+	str_format(aBuf, sizeof(aBuf), "infecting %d", ClientID);
+	Console()->Print(IConsole::OUTPUT_LEVEL_ADDINFO, "server", aBuf);
+
 	m_aClients[ClientID].m_WasInfected = 1;
 	bool NonInfectedFound = false;
 	for(int i=0; i<MAX_CLIENTS; i++)
 	{
 		if(m_aClients[i].m_State == CServer::CClient::STATE_INGAME && m_aClients[i].m_WasInfected == 0)
 		{
+			char bBuf[256];
+			str_format(bBuf, sizeof(bBuf), "Found non-infected %d", i);
+			Console()->Print(IConsole::OUTPUT_LEVEL_ADDINFO, "server", bBuf);
 			NonInfectedFound = true;
 			break;
+		} else {
+			if (m_aClients[i].m_State == CServer::CClient::STATE_INGAME && m_aClients[i].m_WasInfected == 1) {
+				char bBuf[256];
+				str_format(bBuf, sizeof(bBuf), "%d was infected", i);
+				Console()->Print(IConsole::OUTPUT_LEVEL_ADDINFO, "server", bBuf);
+			}
 		}
 	}
 	
