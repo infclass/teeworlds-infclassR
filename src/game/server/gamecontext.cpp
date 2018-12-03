@@ -637,6 +637,9 @@ void CGameContext::SendBroadcast_ClassIntro(int ClientID, int Class)
 		case PLAYERCLASS_HUNTER:
 			pClassName = Server()->Localization()->Localize(m_apPlayers[ClientID]->GetLanguage(), _("Hunter"));
 			break;
+		case PLAYERCLASS_BAT:
+			pClassName = Server()->Localization()->Localize(m_apPlayers[ClientID]->GetLanguage(), _("Bat"));
+			break;
 		case PLAYERCLASS_BOOMER:
 			pClassName = Server()->Localization()->Localize(m_apPlayers[ClientID]->GetLanguage(), _("Boomer"));
 			break;
@@ -2532,6 +2535,7 @@ bool CGameContext::ConSetClass(IConsole::IResult *pResult, void *pUserData)
 	else if(str_comp(pClassName, "sniper") == 0) pPlayer->SetClass(PLAYERCLASS_SNIPER);
 	else if(str_comp(pClassName, "smoker") == 0) pPlayer->SetClass(PLAYERCLASS_SMOKER);
 	else if(str_comp(pClassName, "hunter") == 0) pPlayer->SetClass(PLAYERCLASS_HUNTER);
+	else if(str_comp(pClassName, "bat") == 0) pPlayer->SetClass(PLAYERCLASS_BAT);
 	else if(str_comp(pClassName, "boomer") == 0) pPlayer->SetClass(PLAYERCLASS_BOOMER);
 	else if(str_comp(pClassName, "ghost") == 0) pPlayer->SetClass(PLAYERCLASS_GHOST);
 	else if(str_comp(pClassName, "spider") == 0) pPlayer->SetClass(PLAYERCLASS_SPIDER);
@@ -2726,6 +2730,11 @@ bool CGameContext::PrivateMessage(const char* pStr, int ClientID, bool TeamChat)
 			{
 				CheckClass = PLAYERCLASS_HUNTER;
 				str_copy(aChatTitle, "hunter", sizeof(aChatTitle));
+			}
+			else if(str_comp(aNameFound, "!bat") == 0 && m_apPlayers[ClientID] && m_apPlayers[ClientID]->GetCharacter())
+			{
+				CheckClass = PLAYERCLASS_BAT;
+				str_copy(aChatTitle, "bat", sizeof(aChatTitle));
 			}
 			else if(str_comp(aNameFound, "!boomer") == 0 && m_apPlayers[ClientID] && m_apPlayers[ClientID]->GetCharacter())
 			{
@@ -3328,6 +3337,19 @@ bool CGameContext::ConHelp(IConsole::IResult *pResult, void *pUserData)
 			
 			pSelf->SendMOTD(ClientID, Buffer.buffer());
 		}
+		else if(str_comp_nocase(pHelpPage, "bat") == 0)
+		{
+			Buffer.append("~~ ");
+			pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("Bat"), NULL); 
+			Buffer.append(" ~~\n\n");
+			pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("The Bat can infect humans and heal infected with his hammer."), NULL);
+			Buffer.append("\n\n");
+			pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("He can jump multiple times in air."), NULL);
+			Buffer.append("\n\n");
+			pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("He can also inflict 1 damage point per second by hooking humans."), NULL);
+			
+			pSelf->SendMOTD(ClientID, Buffer.buffer());
+		}
 		else if(str_comp_nocase(pHelpPage, "ghost") == 0)
 		{
 			Buffer.append("~~ ");
@@ -3456,7 +3478,7 @@ bool CGameContext::ConHelp(IConsole::IResult *pResult, void *pUserData)
 		pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "help", Buffer.buffer());
 		
 		pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "help", "engineer, soldier, scientist, medic, hero, ninja, mercenary, sniper,");		
-		pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "help", "smoker, hunter, boomer, ghost, spider, ghoul, undead, witch.");		
+		pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "help", "smoker, hunter, bat, boomer, ghost, spider, ghoul, undead, witch.");		
 	}
 	
 	return true;
@@ -3984,27 +4006,18 @@ void CGameContext::List(int ClientID, const char* filter)
 }
 
 void CGameContext::AddSpectatorCID(int ClientID) {
-	auto& specs = Server()->spectators_id;
-	if(!(std::find(specs.begin(), specs.end(), ClientID) != specs.end())) {
-		specs.push_back(ClientID);
+	auto& vec = Server()->spectators_id;
+	if(!(std::find(vec.begin(), vec.end(), ClientID) != vec.end())) {
+		vec.push_back(ClientID);
 	}
 }
 
 void CGameContext::RemoveSpectatorCID(int ClientID) {
-	auto& specs = Server()->spectators_id;
-	for (auto it = specs.begin(); it != specs.end(); ) {
-		if (*it == ClientID)
-			it = specs.erase(it);
-		else
-			++it;
-	}
+	auto& vec = Server()->spectators_id;
+	vec.erase(std::remove(vec.begin(), vec.end(), ClientID), vec.end());
 }
 
 bool CGameContext::IsSpectatorCID(int ClientID) {
-	bool is_spectator = false;
-	for (auto& spec : Server()->spectators_id) {
-		if (ClientID == spec)
-			is_spectator = true;
-	}
-	return is_spectator;
+	auto& vec = Server()->spectators_id;
+	return std::find(vec.begin(), vec.end(), ClientID) != vec.end();
 }

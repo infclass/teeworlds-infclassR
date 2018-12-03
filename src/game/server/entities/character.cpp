@@ -488,7 +488,7 @@ void CCharacter::UpdateTuningParam()
 		pTuningParams->m_AirControlAccel = 0.0f;
 		pTuningParams->m_HookLength = 0.0f;
 	}
-	if(FixedPosition)
+	if(FixedPosition || m_Core.m_IsPassenger)
 	{
 		pTuningParams->m_Gravity = 0.0f;
 	}
@@ -826,6 +826,10 @@ void CCharacter::FireWeapon()
 										pTarget->m_Core.m_Vel += vec2(0.f, -1.f) + normalize(Dir + vec2(0.f, -1.1f)) * 10.0f;
 								}
 							}
+							else if(GetClass() == PLAYERCLASS_BAT) {
+								pTarget->TakeDamage(vec2(0.f, -1.f) + normalize(Dir + vec2(0.f, -1.1f)) * 10.0f, g_Config.m_InfBatDamage,
+									m_pPlayer->GetCID(), m_ActiveWeapon, TAKEDAMAGEMODE_NOINFECTION);
+							}
 							else
 							{
 								pTarget->TakeDamage(vec2(0.f, -1.f) + normalize(Dir + vec2(0.f, -1.1f)) * 10.0f, g_pData->m_Weapons.m_Hammer.m_pBase->m_Damage,
@@ -1115,15 +1119,15 @@ void CCharacter::FireWeapon()
 				
 				if(FindPortalPosition(m_Pos + PortalShift, PortalPos))
 				{
-					const int DAMAGE_ON_TP = 1;
 					vec2 OldPos = m_Core.m_Pos;
 					m_Core.m_Pos = PortalPos;
 					m_Core.m_HookedPlayer = -1;
 					m_Core.m_HookState = HOOK_RETRACTED;
 					m_Core.m_HookPos = m_Core.m_Pos;
-					auto pScientist = GetPlayer()->GetCharacter();
-					pScientist->TakeDamage(vec2(0.0f, 0.0f), DAMAGE_ON_TP * 2, GetPlayer()->GetCID(), WEAPON_HAMMER, TAKEDAMAGEMODE_NOINFECTION);
-					
+					if(g_Config.m_InfScientistTpSelfharm > 0) {
+						auto pScientist = GetPlayer()->GetCharacter();
+						pScientist->TakeDamage(vec2(0.0f, 0.0f), g_Config.m_InfScientistTpSelfharm * 2, GetPlayer()->GetCID(), WEAPON_HAMMER, TAKEDAMAGEMODE_NOINFECTION);
+					}
 					GameServer()->CreateDeath(OldPos, GetPlayer()->GetCID());
 					GameServer()->CreateDeath(PortalPos, GetPlayer()->GetCID());
 					GameServer()->CreateSound(PortalPos, SOUND_CTF_RETURN);
@@ -1785,6 +1789,14 @@ void CCharacter::Tick()
 			m_AirJumpCounter++;
 		}
 	}
+
+	if(GetClass() == PLAYERCLASS_BAT) {
+		if(IsGrounded() || g_Config.m_InfBatAirjumpLimit == 0) m_AirJumpCounter = 0;
+		else if(m_Core.m_TriggeredEvents&COREEVENT_AIR_JUMP && m_AirJumpCounter < g_Config.m_InfBatAirjumpLimit) {
+			m_Core.m_Jumped &= ~2;
+			m_AirJumpCounter++;
+		}
+	}
 	
 	if(m_pPlayer->MapMenu() == 1)
 	{
@@ -2410,6 +2422,9 @@ void CCharacter::Die(int Killer, int Weapon)
 	{
 		m_pPlayer->StartInfection(false);
 	}	
+	if (m_Core.m_Passenger) {
+		m_Core.m_Passenger->m_IsPassenger = false; // InfClassR taxi mode
+	}
 /* INFECTION MODIFICATION END *****************************************/
 }
 
@@ -3060,6 +3075,21 @@ void CCharacter::ClassSpawnAttributes()
 			{
 				GameServer()->SendChatTarget_Localization(m_pPlayer->GetCID(), CHATCATEGORY_DEFAULT, _("Type “/help {str:ClassName}” for more information about your class"), "ClassName", "hunter", NULL);
 				m_pPlayer->m_knownClass[PLAYERCLASS_HUNTER] = true;
+			}
+			break;
+		case PLAYERCLASS_BAT:
+			m_Health = 10;
+			m_Armor = 0;
+			RemoveAllGun();
+			m_aWeapons[WEAPON_HAMMER].m_Got = true;
+			GiveWeapon(WEAPON_HAMMER, -1);
+			m_ActiveWeapon = WEAPON_HAMMER;
+			
+			GameServer()->SendBroadcast_ClassIntro(m_pPlayer->GetCID(), PLAYERCLASS_BAT);
+			if(!m_pPlayer->IsKownClass(PLAYERCLASS_BAT))
+			{
+				GameServer()->SendChatTarget_Localization(m_pPlayer->GetCID(), CHATCATEGORY_DEFAULT, _("Type “/help {str:ClassName}” for more information about your class"), "ClassName", "bat", NULL);
+				m_pPlayer->m_knownClass[PLAYERCLASS_BAT] = true;
 			}
 			break;
 		case PLAYERCLASS_GHOST:
