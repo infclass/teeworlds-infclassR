@@ -1321,7 +1321,7 @@ void CCharacter::HandleWeapons()
 				if(GetClass() == PLAYERCLASS_SMOKER)
 				{
 					Rate = 0.5f;
-					Damage = 2;
+					Damage = g_Config.m_InfSmokerHookDamage;
 				}
 				else if(GetClass() == PLAYERCLASS_GHOUL)
 				{
@@ -1332,6 +1332,7 @@ void CCharacter::HandleWeapons()
 				{
 					m_HookDmgTick = Server()->Tick();
 					VictimChar->TakeDamage(vec2(0.0f,0.0f), Damage, m_pPlayer->GetCID(), WEAPON_NINJA, TAKEDAMAGEMODE_NOINFECTION);
+					IncreaseOverallHp(2);
 				}
 			}
 		}
@@ -1751,6 +1752,10 @@ void CCharacter::Tick()
 	if(GetClass() == PLAYERCLASS_SPIDER)
 	{
 		CoreTickParams.m_HookGrabTime = 2*SERVER_TICK_SPEED;
+	}
+	if(GetClass() == PLAYERCLASS_BAT)
+	{
+		CoreTickParams.m_HookGrabTime = g_Config.m_InfBatHookTime*SERVER_TICK_SPEED;
 	}
 	CoreTickParams.m_HookMode = m_HookMode;
 	
@@ -2786,6 +2791,12 @@ void CCharacter::Snap(int SnappingClient)
 	if(GetClass() == PLAYERCLASS_SPIDER)
 	{
 		pCharacter->m_HookTick -= SERVER_TICK_SPEED-SERVER_TICK_SPEED/5;
+		if(pCharacter->m_HookTick < 0)
+			pCharacter->m_HookTick = 0;
+	}
+	if(GetClass() == PLAYERCLASS_BAT)
+	{
+		pCharacter->m_HookTick -= (g_Config.m_InfBatHookTime - 1) * SERVER_TICK_SPEED - SERVER_TICK_SPEED/5;
 		if(pCharacter->m_HookTick < 0)
 			pCharacter->m_HookTick = 0;
 	}
