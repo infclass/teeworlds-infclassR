@@ -655,7 +655,7 @@ void CCharacter::FireWeapon()
 					}
 				}
 			}
-			else if(GetClass() == PLAYERCLASS_MERCENARY && g_Config.m_InfMercLove)
+			else if(GetClass() == PLAYERCLASS_MERCENARY && g_Config.m_InfMercLove && !GameServer()->m_FunRound)
 			{
 				CMercenaryBomb* pCurrentBomb = NULL;
 				for(CMercenaryBomb *pBomb = (CMercenaryBomb*) GameWorld()->FindFirst(CGameWorld::ENTTYPE_MERCENARY_BOMB); pBomb; pBomb = (CMercenaryBomb*) pBomb->TypeNext())
@@ -1693,7 +1693,7 @@ void CCharacter::Tick()
 	if(GetClass() == PLAYERCLASS_SPIDER)
 	{
 		if(
-			m_HookMode == 1 &&
+			(m_HookMode == 1 || g_Config.m_InfSpiderCatchHumans) &&
 			m_Core.m_HookState == HOOK_GRABBED &&
 			distance(m_Core.m_Pos, m_Core.m_HookPos) > 48.0f &&
 			m_Core.m_HookedPlayer < 0
