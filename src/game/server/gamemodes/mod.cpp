@@ -307,6 +307,10 @@ void CGameControllerMOD::Tick()
 			
 			GameServer()->SendChatTarget_Localization(-1, CHATCATEGORY_INFECTED, _("Infected won the round in {sec:RoundDuration}"), "RoundDuration", &Seconds, NULL);
 			
+			char aBuf[512];
+			str_format(aBuf, sizeof(aBuf), "round_end winner='zombies' survivors='0' duration='%d' round='%d of %d'", Seconds, m_RoundCount+1, g_Config.m_SvRoundsPerMap);
+			GameServer()->Console()->Print(IConsole::OUTPUT_LEVEL_DEBUG, "game", aBuf);
+
 			EndRound();
 		}
 		
@@ -394,6 +398,11 @@ void CGameControllerMOD::Tick()
 				{
 					GameServer()->SendChatTarget_Localization_P(-1, CHATCATEGORY_HUMANS, NumHumans, _P("One human won the round", "{int:NumHumans} humans won the round"), "NumHumans", &NumHumans, NULL);
 					
+					char aBuf[512];
+					int Seconds = (Server()->Tick()-m_RoundStartTick)/((float)Server()->TickSpeed());
+					str_format(aBuf, sizeof(aBuf), "round_end winner='humans' survivors='%d' duration='%d' round='%d of %d'", NumHumans, Seconds, m_RoundCount+1, g_Config.m_SvRoundsPerMap);
+					GameServer()->Console()->Print(IConsole::OUTPUT_LEVEL_DEBUG, "game", aBuf);
+
 					CPlayerIterator<PLAYERITER_INGAME> Iter(GameServer()->m_apPlayers);
 					while(Iter.Next())
 					{
@@ -840,7 +849,7 @@ int CGameControllerMOD::ChooseInfectedClass(CPlayer* pPlayer)
 	int nbInfected = 0;
 	bool thereIsAWitch = false;
 	bool thereIsAnUndead = false;
-	
+
 	CPlayerIterator<PLAYERITER_INGAME> Iter(GameServer()->m_apPlayers);
 	while(Iter.Next())
 	{
@@ -884,6 +893,12 @@ int CGameControllerMOD::ChooseInfectedClass(CPlayer* pPlayer)
         (Server()->GetClassAvailability(PLAYERCLASS_UNDEAD) && nbInfected > 2 && !thereIsAnUndead) ?
         (double) g_Config.m_InfProbaUndead : 0.0f;
 	
+	int Seconds = (Server()->Tick()-m_RoundStartTick)/((float)Server()->TickSpeed());
+	char aBuf[256];
+	str_format(aBuf, sizeof(aBuf), "infected victim='%s' duration='%d'", 
+		Server()->ClientName(pPlayer->GetCID()), Seconds);
+	GameServer()->Console()->Print(IConsole::OUTPUT_LEVEL_DEBUG, "game", aBuf);
+
 	return START_INFECTEDCLASS + 1 + random_distribution(Probability, Probability + NB_INFECTEDCLASS);
 }
 
