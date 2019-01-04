@@ -108,7 +108,7 @@ void CGameContext::Clear()
 	CTuningParams Tuning = m_Tuning;
 
 	m_KingCallers.clear();
-	
+
 	m_Resetting = true;
 	this->~CGameContext();
 	mem_zero(this, sizeof(*this));
@@ -259,7 +259,7 @@ void CGameContext::OnKingDeath()
 		if (!m_apPlayers[i])
 			continue;
 		if (m_apPlayers[i]->IsInfected() or m_apPlayers[i]->GetClass() == PLAYERCLASS_KING)continue;
-		m_apPlayers[i]->GetCharacter()->TakeDamage(vec2(0.0f, 0.0f), 3, i, WEAPON_HAMMER, TAKEDAMAGEMODE_NOINFECTION);
+		m_apPlayers[i]->GetCharacter()->TakeDamage(vec2(0.0f, 0.0f), 2*random_int(1,5), i, WEAPON_HAMMER, TAKEDAMAGEMODE_NOINFECTION);
 	}
 
 	for(CEngineerWall *pWall = (CEngineerWall*) m_World.FindFirst(CGameWorld::ENTTYPE_ENGINEER_WALL); pWall; pWall = (CEngineerWall*) pWall->TypeNext())
@@ -3988,7 +3988,7 @@ bool CGameContext::ConKing(IConsole::IResult *pResult, void *pUserData)
 	CGameContext *pSelf = (CGameContext *)pUserData;
 	int ClientID = pResult->GetClientID();
 	int callers_count = pSelf->m_KingCallers.size();
-	const int REQUIRED_CALLERS_COUNT = g_Config.m_InfKingRequiredCallersCount;
+	const unsigned int REQUIRED_CALLERS_COUNT = g_Config.m_InfKingRequiredCallersCount;
 	const int MIN_HUMANS = g_Config.m_InfKingRequiredHumansCount;
 
 	char aBuf[256];
