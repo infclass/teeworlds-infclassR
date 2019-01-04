@@ -3986,8 +3986,8 @@ bool CGameContext::ConKing(IConsole::IResult *pResult, void *pUserData)
 	CGameContext *pSelf = (CGameContext *)pUserData;
 	int ClientID = pResult->GetClientID();
 	int callers_count = pSelf->m_KingCallers.size();
-	const int REQUIRED_CALLERS_COUNT = 1;
-	const int MIN_HUMANS = 2;
+	const int REQUIRED_CALLERS_COUNT = g_Config.m_InfKingRequiredCallersCount;
+	const int MIN_HUMANS = g_Config.m_InfKingRequiredHumansCount;
 
 	char aBuf[256];
 	str_format(aBuf, sizeof(aBuf), "ConWitch() called");
@@ -4009,7 +4009,7 @@ bool CGameContext::ConKing(IConsole::IResult *pResult, void *pUserData)
 
 	auto& kc = pSelf->m_KingCallers;
 	if(!(std::find(kc.begin(), kc.end(), ClientID) != kc.end())) {
-		kc.push_back(ClientID); // add to witch callers vector
+		kc.push_back(ClientID); // add to king callers vector
 		callers_count += 1;
 		if (callers_count == 1)
 			str_format(aBuf, sizeof(aBuf), "%s is calling for King! (%d/%d) To call king write: /king",
@@ -4085,7 +4085,7 @@ void CGameContext::OnConsoleInit()
 	Console()->Register("language", "s<en|fr|nl|de|bg|sr-Latn|hr|cs|pl|uk|ru|el|la|it|es|pt|hu|ar|tr|sah|fa|tl|zh-Hans|ja>", CFGFLAG_CHAT|CFGFLAG_USER, ConLanguage, this, "Display information about the mod");
 	Console()->Register("cmdlist", "", CFGFLAG_CHAT|CFGFLAG_USER, ConCmdList, this, "List of commands");
 	Console()->Register("witch", "", CFGFLAG_CHAT|CFGFLAG_USER, ConWitch, this, "Call Witch");
-	Console()->Register("king", "", CFGFLAG_CHAT|CFGFLAG_USER, ConKing, this, "Call Witch");
+	Console()->Register("king", "", CFGFLAG_CHAT|CFGFLAG_USER, ConKing, this, "Call king");
 /* INFECTION MODIFICATION END *****************************************/
 
 	Console()->Chain("sv_motd", ConchainSpecialMotdupdate, this);
