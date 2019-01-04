@@ -110,6 +110,9 @@ void CRoundStatistics::CPlayer::OnScoreEvent(int EventType, int Class)
 		case PLAYERCLASS_WITCH:
 			m_WitchScore += Points;
 			break;
+		case PLAYERCLASS_KING:
+			m_KingScore += Points;
+			break;
 	}
 }
 

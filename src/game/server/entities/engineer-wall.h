@@ -16,6 +16,7 @@ public:
 	virtual void TickPaused();
 	virtual void Snap(int SnappingClient);
 	int GetTick() { return m_LifeSpan; }
+	void LoseSeconds(int time);
 
 public:
 	int m_Owner;
@@ -24,6 +25,7 @@ private:
 	vec2 m_Pos2;
 	int m_LifeSpan;
 	int m_EndPointID;
+    bool kingNearby;
 };
 
 #endif

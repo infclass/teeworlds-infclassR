@@ -38,6 +38,7 @@ public:
 		int m_NinjaScore;
 		int m_MercenaryScore;
 		int m_SniperScore;
+		int m_KingScore;
 		
 		int m_SmokerScore;
 		int m_HunterScore;

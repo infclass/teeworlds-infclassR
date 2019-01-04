@@ -16,6 +16,18 @@
 #include "gamemodes/mod.h"
 #include <algorithm>
 
+#include <game/server/entities/engineer-wall.h>
+#include <game/server/entities/soldier-bomb.h>
+#include <game/server/entities/scientist-laser.h>
+#include <game/server/entities/scientist-mine.h>
+#include <game/server/entities/biologist-mine.h>
+#include <game/server/entities/bouncing-bullet.h>
+#include <game/server/entities/merc-grenade.h>
+#include <game/server/entities/merc-bomb.h>
+#include <game/server/entities/medic-grenade.h>
+#include <game/server/entities/hero-flag.h>
+#include <game/server/entities/slug-slime.h>
+
 enum
 {
 	RESET,
@@ -148,6 +160,30 @@ int CGameContext::GetZombieCount(int zombie_class) {
 	return count;
 }
 
+int CGameContext::GetHumanCount() {
+	int count = 0;
+	for(int i = 0; i < MAX_CLIENTS; i++)
+	{
+		if (!m_apPlayers[i])
+			continue;
+		if (not m_apPlayers[i]->IsInfected())
+			count++;
+	}
+	return count;
+}
+
+int CGameContext::GetHumanCount(int human_class) {
+	int count = 0;
+	for(int i = 0; i < MAX_CLIENTS; i++)
+	{
+		if (!m_apPlayers[i])
+			continue;
+		if (not m_apPlayers[i]->IsInfected() && m_apPlayers[i]->GetClass() == human_class)
+			count++;
+	}
+	return count;
+}
+
 int CGameContext::RandomZombieToWitch() {
 	std::vector<int> zombies_id;
 
@@ -165,6 +201,90 @@ int CGameContext::RandomZombieToWitch() {
 	int id = random_int(0, zombies_id.size() - 1);
 	m_apPlayers[zombies_id[id]]->SetClass(PLAYERCLASS_WITCH);
 	return zombies_id[id];
+}
+
+int CGameContext::RandomHumanToKing() {
+	std::vector<int> humans_id;
+
+	m_KingCallers.clear();
+
+	for(int i = 0; i < MAX_CLIENTS; i++)
+	{
+		if (!m_apPlayers[i])
+			continue;
+		if (not m_apPlayers[i]->IsInfected()) {
+			humans_id.push_back(i);
+		}
+	}
+	
+	int id = random_int(0, humans_id.size() - 1);
+	m_apPlayers[humans_id[id]]->SetClass(PLAYERCLASS_KING);
+	return humans_id[id];
+}
+
+bool CGameContext::HasKingSpawned()
+{
+	for(int i = 0; i < MAX_CLIENTS; i++)
+	{
+		if (!m_apPlayers[i])
+			continue;
+		if (m_apPlayers[i]->IsInfected() and m_apPlayers[i]->GetOldClass() == PLAYERCLASS_KING)return true;
+		if (not m_apPlayers[i]->IsInfected() and m_apPlayers[i]->GetClass() == PLAYERCLASS_KING)return true;
+	}
+	return false;
+}
+
+float CGameContext::DistanceWithKing(vec2 pos)
+{
+	for(int i = 0; i < MAX_CLIENTS; i++)
+	{
+		if (!m_apPlayers[i])
+			continue;
+		if (m_apPlayers[i]->GetClass() == PLAYERCLASS_KING)return length(m_apPlayers[i]->GetCharacter()->m_Pos-pos);
+	}
+	return 99999999.0; // there must be a king
+}
+
+bool CGameContext::KingIsDead()
+{
+	return (GetHumanCount(PLAYERCLASS_KING) < 1); //this function is relevant only if king has previously spawned
+}
+
+void CGameContext::OnKingDeath()
+{
+	for(int i = 0; i < MAX_CLIENTS; i++)
+	{
+		if (!m_apPlayers[i])
+			continue;
+		if (m_apPlayers[i]->IsInfected() or m_apPlayers[i]->GetClass() == PLAYERCLASS_KING)continue;
+		m_apPlayers[i]->GetCharacter()->TakeDamage(vec2(0.0f, 0.0f), 3, i, WEAPON_HAMMER, TAKEDAMAGEMODE_NOINFECTION);
+	}
+
+	for(CEngineerWall *pWall = (CEngineerWall*) m_World.FindFirst(CGameWorld::ENTTYPE_ENGINEER_WALL); pWall; pWall = (CEngineerWall*) pWall->TypeNext())
+	{
+		pWall->LoseSeconds(10);
+	}
+	for(CSoldierBomb *pBomb = (CSoldierBomb*) m_World.FindFirst(CGameWorld::ENTTYPE_SOLDIER_BOMB); pBomb; pBomb = (CSoldierBomb*) pBomb->TypeNext())
+	{
+		if(random_int(0,9) == 0)pBomb->Explode();
+	}
+	for(CMercenaryBomb *pBomb = (CMercenaryBomb*) m_World.FindFirst(CGameWorld::ENTTYPE_MERCENARY_BOMB); pBomb; pBomb = (CMercenaryBomb*) pBomb->TypeNext())
+	{
+		if(random_int(0,9) == 0)pBomb->Explode();
+	}
+	for(CScientistMine* pMine = (CScientistMine*) m_World.FindFirst(CGameWorld::ENTTYPE_SCIENTIST_MINE); pMine; pMine = (CScientistMine*) pMine->TypeNext())
+	{
+		if(random_int(0,9) == 0)pMine->Explode(pMine->GetOwner());
+	}
+	for(CBiologistMine* pMine = (CBiologistMine*) m_World.FindFirst(CGameWorld::ENTTYPE_BIOLOGIST_MINE); pMine; pMine = (CBiologistMine*) pMine->TypeNext())
+	{
+		if(random_int(0,9) == 0)pMine->Explode();
+	}
+	
+	// Everyone lose up to 5 HP (lazy version : -3 HP for all, even if death is causer)
+	// Walls lose 10s
+	// With a certain probability some mines go off
+	// Strange effects all around
 }
 
 void CGameContext::SetAvailabilities(std::vector<int> value) {
@@ -666,6 +786,9 @@ void CGameContext::SendBroadcast_ClassIntro(int ClientID, int Class)
 			break;
 		case PLAYERCLASS_LOOPER:
 			pClassName = Server()->Localization()->Localize(m_apPlayers[ClientID]->GetLanguage(), _("Looper"));
+			break;
+		case PLAYERCLASS_KING:
+			pClassName = Server()->Localization()->Localize(m_apPlayers[ClientID]->GetLanguage(), _("King"));
 			break;
 		case PLAYERCLASS_SMOKER:
 			pClassName = Server()->Localization()->Localize(m_apPlayers[ClientID]->GetLanguage(), _("Smoker"));
@@ -2702,6 +2825,7 @@ bool CGameContext::ConSetClass(IConsole::IResult *pResult, void *pUserData)
 	else if(str_comp(pClassName, "looper") == 0) pPlayer->SetClass(PLAYERCLASS_LOOPER);
 	else if(str_comp(pClassName, "medic") == 0) pPlayer->SetClass(PLAYERCLASS_MEDIC);
 	else if(str_comp(pClassName, "hero") == 0) pPlayer->SetClass(PLAYERCLASS_HERO);
+	else if(str_comp(pClassName, "king") == 0) pPlayer->SetClass(PLAYERCLASS_KING);
 	else if(str_comp(pClassName, "ninja") == 0) pPlayer->SetClass(PLAYERCLASS_NINJA);
 	else if(str_comp(pClassName, "mercenary") == 0) pPlayer->SetClass(PLAYERCLASS_MERCENARY);
 	else if(str_comp(pClassName, "sniper") == 0) pPlayer->SetClass(PLAYERCLASS_SNIPER);
@@ -2897,6 +3021,11 @@ bool CGameContext::PrivateMessage(const char* pStr, int ClientID, bool TeamChat)
 			{
 				CheckClass = PLAYERCLASS_SNIPER;
 				str_copy(aChatTitle, "sniper", sizeof(aChatTitle));
+			}
+			else if(str_comp(aNameFound, "!king") == 0 && m_apPlayers[ClientID] && m_apPlayers[ClientID]->GetCharacter())
+			{
+				CheckClass = PLAYERCLASS_KING;
+				str_copy(aChatTitle, "king", sizeof(aChatTitle));
 			}
 			else if(str_comp(aNameFound, "!smoker") == 0 && m_apPlayers[ClientID] && m_apPlayers[ClientID]->GetCharacter())
 			{
@@ -3493,6 +3622,19 @@ bool CGameContext::ConHelp(IConsole::IResult *pResult, void *pUserData)
 			
 			pSelf->SendMOTD(ClientID, Buffer.buffer());
 		}
+		else if(str_comp_nocase(pHelpPage, "king") == 0)
+		{
+			Buffer.append("~~ ");
+			pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("King"), NULL); 
+			Buffer.append(" ~~\n\n");
+			pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("King rules over humans. Humans near him get healed every second"), NULL);
+			Buffer.append("\n\n");
+			pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("Wall near him last twice longer. He only have a hammer."), NULL);
+			Buffer.append("\n\n");
+			pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("When he dies, humans lose health points and constructions may break."), NULL);
+			
+			pSelf->SendMOTD(ClientID, Buffer.buffer());
+		}
 		else if(str_comp_nocase(pHelpPage, "smoker") == 0)
 		{
 			Buffer.append("~~ ");
@@ -3868,6 +4010,56 @@ bool CGameContext::ConWitch(IConsole::IResult *pResult, void *pUserData)
 	return true;
 }
 
+bool CGameContext::ConKing(IConsole::IResult *pResult, void *pUserData)
+{
+	CGameContext *pSelf = (CGameContext *)pUserData;
+	int ClientID = pResult->GetClientID();
+	int callers_count = pSelf->m_KingCallers.size();
+	const int REQUIRED_CALLERS_COUNT = g_Config.m_InfKingRequiredCallersCount;
+	const int MIN_HUMANS = g_Config.m_InfKingRequiredHumansCount;
+
+	char aBuf[256];
+	str_format(aBuf, sizeof(aBuf), "ConWitch() called");
+	pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_DEBUG, "conwitch", aBuf);
+
+	if (pSelf->HasKingSpawned()) {
+		if(pSelf->KingIsDead())
+			str_format(aBuf, sizeof(aBuf), "There was king, who died");
+		else
+			str_format(aBuf, sizeof(aBuf), "There shall be only one king");
+		pSelf->SendChatTarget(ClientID, aBuf);
+		return true;
+	}
+	if (pSelf->GetHumanCount() < MIN_HUMANS) {
+		str_format(aBuf, sizeof(aBuf), "A king shall not reign on so few humans");
+		pSelf->SendChatTarget(ClientID, aBuf);
+		return true;
+	}
+
+	auto& kc = pSelf->m_KingCallers;
+	if(!(std::find(kc.begin(), kc.end(), ClientID) != kc.end())) {
+		kc.push_back(ClientID); // add to king callers vector
+		callers_count += 1;
+		if (callers_count == 1)
+			str_format(aBuf, sizeof(aBuf), "%s is calling for King! (%d/%d) To call king write: /king",
+					pSelf->Server()->ClientName(ClientID), callers_count, REQUIRED_CALLERS_COUNT);
+		else
+			str_format(aBuf, sizeof(aBuf), "King (%d/%d)", callers_count, REQUIRED_CALLERS_COUNT);
+	}
+	else {
+		str_format(aBuf, sizeof(aBuf), "You can't call king twice");
+		pSelf->SendChatTarget(ClientID, aBuf);
+		return true;
+	}
+	if(pSelf->m_KingCallers.size() >= REQUIRED_CALLERS_COUNT) {
+		int king_id = pSelf->RandomHumanToKing();
+		str_format(aBuf, sizeof(aBuf), "King %s has arrived! Long live the King", pSelf->Server()->ClientName(king_id));
+	}
+	
+	pSelf->SendChatTarget(-1, aBuf);
+	return true;
+}
+
 /* INFECTION MODIFICATION END *****************************************/
 
 void CGameContext::OnConsoleInit()
@@ -3922,6 +4114,7 @@ void CGameContext::OnConsoleInit()
 	Console()->Register("language", "s<en|fr|nl|de|bg|sr-Latn|hr|cs|pl|uk|ru|el|la|it|es|pt|hu|ar|tr|sah|fa|tl|zh-Hans|ja>", CFGFLAG_CHAT|CFGFLAG_USER, ConLanguage, this, "Display information about the mod");
 	Console()->Register("cmdlist", "", CFGFLAG_CHAT|CFGFLAG_USER, ConCmdList, this, "List of commands");
 	Console()->Register("witch", "", CFGFLAG_CHAT|CFGFLAG_USER, ConWitch, this, "Call Witch");
+	Console()->Register("king", "", CFGFLAG_CHAT|CFGFLAG_USER, ConKing, this, "Call king");
 /* INFECTION MODIFICATION END *****************************************/
 
 	Console()->Chain("sv_motd", ConchainSpecialMotdupdate, this);
