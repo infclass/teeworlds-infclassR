@@ -1135,28 +1135,6 @@ void CCharacter::FireWeapon()
 					GameServer()->CreateSound(PortalPos, SOUND_CTF_RETURN);
 				}
 			}
-			/*else if(GetClass() == PLAYERCLASS_ENGINEER)
-			{
-				//Find bomb
-				CEngineerBlast *pBlast = nullptr;
-				for(pBlast = (CEngineerBlast*) GameWorld()->FindFirst(CGameWorld::ENTTYPE_ENGINEER_BLAST); pBlast; pBlast = (CEngineerBlast*) pBlast->TypeNext())
-				{
-					if(pBlast->m_Owner != m_pPlayer->GetCID()) continue;
-					else break;
-				}
-				
-				vec2 shotVector = vec2(m_LatestInput.m_TargetX, m_LatestInput.m_TargetY);
-
-				if(pBlast == nullptr)
-				{
-					pBlast = new CEngineerBlast(GameWorld(), m_pPlayer->GetCID(), m_Pos, shotVector);
-				}
-				else
-				{
-					pBlast->updatePositions(m_Pos, shotVector);
-				}
-
-			}*/
 			else
 			{
 				CProjectile *pProj = new CProjectile(GameWorld(), WEAPON_GRENADE,
