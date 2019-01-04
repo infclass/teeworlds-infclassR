@@ -637,6 +637,7 @@ int CServer::Init()
 	SetClassAvailability(PLAYERCLASS_HERO, 2);
 	SetClassAvailability(PLAYERCLASS_SCIENTIST, 2);
 	SetClassAvailability(PLAYERCLASS_BIOLOGIST, 2);
+	SetClassAvailability(PLAYERCLASS_KING, 1);
 	
 	SetClassAvailability(PLAYERCLASS_SMOKER, 1);
 	SetClassAvailability(PLAYERCLASS_HUNTER, 1);

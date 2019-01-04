@@ -1135,6 +1135,28 @@ void CCharacter::FireWeapon()
 					GameServer()->CreateSound(PortalPos, SOUND_CTF_RETURN);
 				}
 			}
+			/*else if(GetClass() == PLAYERCLASS_ENGINEER)
+			{
+				//Find bomb
+				CEngineerBlast *pBlast = nullptr;
+				for(pBlast = (CEngineerBlast*) GameWorld()->FindFirst(CGameWorld::ENTTYPE_ENGINEER_BLAST); pBlast; pBlast = (CEngineerBlast*) pBlast->TypeNext())
+				{
+					if(pBlast->m_Owner != m_pPlayer->GetCID()) continue;
+					else break;
+				}
+				
+				vec2 shotVector = vec2(m_LatestInput.m_TargetX, m_LatestInput.m_TargetY);
+
+				if(pBlast == nullptr)
+				{
+					pBlast = new CEngineerBlast(GameWorld(), m_pPlayer->GetCID(), m_Pos, shotVector);
+				}
+				else
+				{
+					pBlast->updatePositions(m_Pos, shotVector);
+				}
+
+			}*/
 			else
 			{
 				CProjectile *pProj = new CProjectile(GameWorld(), WEAPON_GRENADE,
@@ -3144,6 +3166,23 @@ void CCharacter::ClassSpawnAttributes()
 			{
 				GameServer()->SendChatTarget_Localization(m_pPlayer->GetCID(), CHATCATEGORY_DEFAULT, _("Type “/help {str:ClassName}” for more information about your class"), "ClassName", "ghost", NULL);
 				m_pPlayer->m_knownClass[PLAYERCLASS_GHOST] = true;
+			}
+			break;
+		case PLAYERCLASS_KING:
+			m_Health = 10;
+			m_Armor = 10;
+			m_pPlayer->m_InfectionTick = -1;
+			RemoveAllGun();
+			m_aWeapons[WEAPON_HAMMER].m_Got = true;
+			GiveWeapon(WEAPON_HAMMER, -1);
+			GiveWeapon(WEAPON_GUN, -1);
+			m_ActiveWeapon = WEAPON_HAMMER;
+			
+			GameServer()->SendBroadcast_ClassIntro(m_pPlayer->GetCID(), PLAYERCLASS_KING);
+			if(!m_pPlayer->IsKownClass(PLAYERCLASS_KING))
+			{
+				GameServer()->SendChatTarget_Localization(m_pPlayer->GetCID(), CHATCATEGORY_DEFAULT, _("Type “/help {str:ClassName}” for more information about your class"), "ClassName", "king", NULL);
+				m_pPlayer->m_knownClass[PLAYERCLASS_KING] = true;
 			}
 			break;
 		case PLAYERCLASS_SPIDER:
