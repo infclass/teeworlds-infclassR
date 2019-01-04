@@ -24,6 +24,7 @@ CEngineerWall::CEngineerWall(CGameWorld *pGameWorld, vec2 Pos1, vec2 Pos2, int O
 	m_LifeSpan = Server()->TickSpeed()*g_Config.m_InfBarrierLifeSpan;
 	GameWorld()->InsertEntity(this);
 	m_EndPointID = Server()->SnapNewID();
+    m_kingNearby = false;
 }
 
 CEngineerWall::~CEngineerWall()
