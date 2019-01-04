@@ -154,7 +154,7 @@ void CPlayer::Tick()
 		SetClassSkin(PLAYERCLASS_GHOUL, m_GhoulLevel);
 	}
 
-	if(not IsInfected() and GetClass() != PLAYERCLASS_KING and GameServer()->HasKingSpawned() and not GameServer()->KingIsDead())
+	if(not IsInfected() and GetClass() != PLAYERCLASS_KING and GameServer()->HasKingSpawned() and not GameServer()->KingIsDead() and m_pCharacter)
 	{
 		if(GameServer()->DistanceWithKing(m_pCharacter->m_Pos) <= g_Config.m_InfKingRadius)
 		{
