@@ -259,11 +259,7 @@ void CGameContext::OnKingDeath()
 		if (!m_apPlayers[i])
 			continue;
 		if (m_apPlayers[i]->IsInfected() or m_apPlayers[i]->GetClass() == PLAYERCLASS_KING)continue;
-<<<<<<< HEAD
-		m_apPlayers[i]->GetCharacter()->TakeDamage(vec2(0.0f, 0.0f), 3, i, WEAPON_HAMMER, TAKEDAMAGEMODE_NOINFECTION);
-=======
 		m_apPlayers[i]->GetCharacter()->TakeDamage(vec2(0.0f, 0.0f), 2*random_int(1,5), i, WEAPON_HAMMER, TAKEDAMAGEMODE_NOINFECTION);
->>>>>>> origin/icake/king
 	}
 
 	for(CEngineerWall *pWall = (CEngineerWall*) m_World.FindFirst(CGameWorld::ENTTYPE_ENGINEER_WALL); pWall; pWall = (CEngineerWall*) pWall->TypeNext())
@@ -286,12 +282,9 @@ void CGameContext::OnKingDeath()
 	{
 		if(random_int(0,9) == 0)pMine->Explode();
 	}
-<<<<<<< HEAD
-=======
 
 	SendBroadcast_Localization(-1, BROADCAST_PRIORITY_GAMEANNOUNCE, BROADCAST_DURATION_GAMEANNOUNCE, _("The King is dead."), NULL);
 
->>>>>>> origin/icake/king
 	
 	// Everyone lose up to 5 HP (lazy version : -3 HP for all, even if death is causer)
 	// Walls lose 10s
