@@ -282,6 +282,9 @@ void CGameContext::OnKingDeath()
 	{
 		if(random_int(0,9) == 0)pMine->Explode();
 	}
+
+	SendBroadcast_Localization(-1, BROADCAST_PRIORITY_GAMEANNOUNCE, BROADCAST_DURATION_GAMEANNOUNCE, _("The King is dead."), NULL);
+
 	
 	// Everyone lose up to 5 HP (lazy version : -3 HP for all, even if death is causer)
 	// Walls lose 10s
