@@ -107,6 +107,8 @@ void CGameContext::Clear()
 	int NumVoteOptions = m_NumVoteOptions;
 	CTuningParams Tuning = m_Tuning;
 
+	m_KingCallers.clear();
+	
 	m_Resetting = true;
 	this->~CGameContext();
 	mem_zero(this, sizeof(*this));
