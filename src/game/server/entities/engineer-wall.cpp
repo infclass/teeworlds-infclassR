@@ -24,6 +24,7 @@ CEngineerWall::CEngineerWall(CGameWorld *pGameWorld, vec2 Pos1, vec2 Pos2, int O
 	m_LifeSpan = Server()->TickSpeed()*g_Config.m_InfBarrierLifeSpan;
 	GameWorld()->InsertEntity(this);
 	m_EndPointID = Server()->SnapNewID();
+    m_kingNearby = false;
 }
 
 CEngineerWall::~CEngineerWall()
@@ -162,4 +163,13 @@ void CEngineerWall::Snap(int SnappingClient)
 		pObj->m_FromY = (int)Pos.y;
 		pObj->m_StartTick = Server()->Tick();
 	}
+}
+
+void CEngineerWall::UpdateKingPowerupStatus(vec2 kingPosition)
+{
+	bool kingNow  = (length(kingPosition - m_Pos2) <= g_Config.m_InfKingRadius) or (length(kingPosition - m_Pos) <= g_Config.m_InfKingRadius);
+	if(kingNow == m_kingNearby)return; //all alright
+	if(kingNow)m_LifeSpan *= 2;
+	else m_LifeSpan /= 2;
+	m_kingNearby = kingNow;
 }

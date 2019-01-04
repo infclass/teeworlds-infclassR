@@ -927,6 +927,14 @@ void CCharacter::FireWeapon()
 								}
 							}
 						}
+						else if(GetClass() == PLAYERCLASS_KING)
+						{
+							if (pTarget->IsInfected())
+							{
+								pTarget->TakeDamage(vec2(0.f, -1.f) + normalize(Dir + vec2(0.f, -1.1f)) * 10.0f, 20, 
+										m_pPlayer->GetCID(), m_ActiveWeapon, TAKEDAMAGEMODE_NOINFECTION);
+							}
+						}
 						else
 						{
 							pTarget->TakeDamage(vec2(0.f, -1.f) + normalize(Dir + vec2(0.f, -1.1f)) * 10.0f, g_pData->m_Weapons.m_Hammer.m_pBase->m_Damage,
@@ -1578,6 +1586,14 @@ void CCharacter::Tick()
 		}
 	}
 	
+	if(GetClass() == PLAYERCLASS_KING)
+	{
+		for(CEngineerWall *pWall = (CEngineerWall*) GameServer()->m_World.FindFirst(CGameWorld::ENTTYPE_ENGINEER_WALL); pWall; pWall = (CEngineerWall*) pWall->TypeNext())
+		{
+			pWall->UpdateKingPowerupStatus(m_Pos);
+		}
+	}
+
 	if(m_PositionLockTick > 0)
 	{
 		--m_PositionLockTick;
