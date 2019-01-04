@@ -1513,6 +1513,14 @@ void CCharacter::Tick()
 		}
 	}
 	
+	if(GetClass() == PLAYERCLASS_KING)
+	{
+		for(CEngineerWall *pWall = (CEngineerWall*) GameServer()->m_World.FindFirst(CGameWorld::ENTTYPE_ENGINEER_WALL); pWall; pWall = (CEngineerWall*) pWall->TypeNext())
+		{
+			pWall->UpdateKingPowerupStatus(m_Pos);
+		}
+	}
+
 	if(m_PositionLockTick > 0)
 	{
 		--m_PositionLockTick;
