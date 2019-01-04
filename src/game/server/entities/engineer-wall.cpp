@@ -165,7 +165,7 @@ void CEngineerWall::Snap(int SnappingClient)
 	}
 }
 
-void CEngineerWall::updateKingPowerupStatus(vec2 kingPosition)
+void CEngineerWall::UpdateKingPowerupStatus(vec2 kingPosition)
 {
 	bool kingNow  = (length(kingPosition - m_Pos2) <= g_Config.m_InfKingRadius) or (length(kingPosition - m_Pos) <= g_Config.m_InfKingRadius);
 	if(kingNow == m_kingNearby)return; //all alright
