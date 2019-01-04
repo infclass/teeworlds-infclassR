@@ -58,6 +58,8 @@ CPlayer::CPlayer(CGameContext *pGameServer, int ClientID, int Team)
 	
 	for(unsigned int i=0; i<sizeof(m_LastHumanClasses)/sizeof(int); i++)
 		m_LastHumanClasses[i] = -1;
+	m_inKingRange = false;
+	m_tickBeforeKingHelp = 0;
 /* INFECTION MODIFICATION END *****************************************/
 }
 
@@ -150,6 +152,27 @@ void CPlayer::Tick()
 		}
 		
 		SetClassSkin(PLAYERCLASS_GHOUL, m_GhoulLevel);
+	}
+
+	if(not IsInfected() and GetClass() != PLAYERCLASS_KING and GameServer()->HasKingSpawned() and not GameServer()->KingIsDead())
+	{
+		if(GameServer()->DistanceWithKing(m_pCharacter->m_Pos) <= g_Config.m_InfKingRadius)
+		{
+			if(m_inKingRange == false)
+			{
+				m_tickBeforeKingHelp = Server()->TickSpeed()*g_Config.m_InfKingHealthCooldown;
+				m_inKingRange = true;
+			}
+			else
+			{
+				m_tickBeforeKingHelp--;
+				if(m_tickBeforeKingHelp <= 0)
+				{
+					m_tickBeforeKingHelp = Server()->TickSpeed()*g_Config.m_InfKingHealthCooldown;
+					m_pCharacter->IncreaseOverallHp(1);
+				}
+			}
+		} else m_inKingRange = false;
 	}
 	
  	HandleTuningParams();
@@ -270,6 +293,9 @@ void CPlayer::Snap(int SnappingClient)
 					break;
 				case PLAYERCLASS_SNIPER:
 					str_format(aClanName, sizeof(aClanName), "%sSniper", Server()->IsClientLogged(GetCID()) ? "@" : " ");
+					break;
+				case PLAYERCLASS_KING:
+					str_format(aClanName, sizeof(aClanName), "%sKing", Server()->IsClientLogged(GetCID()) ? "@" : " ");
 					break;
 				case PLAYERCLASS_SCIENTIST:
 					str_format(aClanName, sizeof(aClanName), "%sScientist", Server()->IsClientLogged(GetCID()) ? "@" : " ");
@@ -599,6 +625,12 @@ void CPlayer::SetClassSkin(int newClass, int State)
 			m_TeeInfos.m_UseCustomColor = 0;
 			str_copy(m_TeeInfos.m_SkinName, "redstripe", sizeof(m_TeeInfos.m_SkinName));
 			break;
+		case PLAYERCLASS_KING:
+			m_TeeInfos.m_UseCustomColor = 1;
+			str_copy(m_TeeInfos.m_SkinName, "redbopp", sizeof(m_TeeInfos.m_SkinName));
+			m_TeeInfos.m_ColorBody = 11122480;
+			m_TeeInfos.m_ColorFeet = 11468577;
+			break;
 		case PLAYERCLASS_NINJA:
 			m_TeeInfos.m_UseCustomColor = 1;
 			str_copy(m_TeeInfos.m_SkinName, "default", sizeof(m_TeeInfos.m_SkinName));
@@ -741,10 +773,10 @@ void CPlayer::StartInfection(bool force)
 	if(!force && IsInfected())
 		return;
 	
-	
 	if(!IsInfected())
 	{
 		m_InfectionTick = Server()->Tick();
+		if(GetClass() == PLAYERCLASS_KING)m_pGameServer->OnKingDeath();
 	}
 	
 	int c = GameServer()->m_pController->ChooseInfectedClass(this);

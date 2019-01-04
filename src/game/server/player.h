@@ -133,6 +133,9 @@ private:
 	int m_GhoulLevel;
 	int m_GhoulLevelTick;
 	
+	bool m_inKingRange;
+	int m_tickBeforeKingHelp;
+
 public:
 	int m_Authed;
 	int m_ScoreRound;
