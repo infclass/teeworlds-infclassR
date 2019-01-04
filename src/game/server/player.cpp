@@ -775,6 +775,7 @@ void CPlayer::StartInfection(bool force)
 	
 	if(!IsInfected())
 	{
+		SetOldClass(GetClass());
 		m_InfectionTick = Server()->Tick();
 		if(GetClass() == PLAYERCLASS_KING)m_pGameServer->OnKingDeath();
 	}
