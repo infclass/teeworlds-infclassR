@@ -259,7 +259,9 @@ void CGameContext::OnKingDeath()
 		if (!m_apPlayers[i])
 			continue;
 		if (m_apPlayers[i]->IsInfected() or m_apPlayers[i]->GetClass() == PLAYERCLASS_KING)continue;
-		m_apPlayers[i]->GetCharacter()->TakeDamage(vec2(0.0f, 0.0f), 2*random_int(1,5), i, WEAPON_HAMMER, TAKEDAMAGEMODE_NOINFECTION);
+		if (m_apPlayers[i]->GetCharacter()) {
+			m_apPlayers[i]->GetCharacter()->TakeDamage(vec2(0.0f, 0.0f), 2*random_int(1,5), i, WEAPON_HAMMER, TAKEDAMAGEMODE_NOINFECTION);
+		}
 	}
 
 	for(CEngineerWall *pWall = (CEngineerWall*) m_World.FindFirst(CGameWorld::ENTTYPE_ENGINEER_WALL); pWall; pWall = (CEngineerWall*) pWall->TypeNext())
