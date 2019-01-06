@@ -242,7 +242,9 @@ float CGameContext::DistanceWithKing(vec2 pos)
 	{
 		if (!m_apPlayers[i])
 			continue;
-		if (m_apPlayers[i]->GetClass() == PLAYERCLASS_KING)return length(m_apPlayers[i]->GetCharacter()->m_Pos-pos);
+		if (m_apPlayers[i]->GetClass() == PLAYERCLASS_KING && m_apPlayers[i]->GetCharacter()) {
+			return length(m_apPlayers[i]->GetCharacter()->m_Pos-pos);
+		}
 	}
 	return 99999999.0; // there must be a king
 }
