@@ -1423,6 +1423,7 @@ void CGameContext::OnClientEnter(int ClientID)
 /* INFECTION MODIFICATION START ***************************************/
 	SendChatTarget_Localization(-1, CHATCATEGORY_PLAYER, _("{str:PlayerName} entered and joined the game"), "PlayerName", Server()->ClientName(ClientID), NULL);
 	SendChatTarget(ClientID, "Join our matrix.org room: https://matrix.to/#/#teeworlds-infclass:matrix.org");
+	SendChatTarget(ClientID, "Sources: https://github.com/bretonium/my-infclass-server");
 	
 	char output[512];
 	str_format(output, sizeof(output), "[%08x][%s][%s]", (int)time(0), Server()->GetClientIP(ClientID).c_str(), Server()->ClientName(ClientID));
