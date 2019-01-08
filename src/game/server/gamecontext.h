@@ -20,6 +20,7 @@
 #include "player.h"
 
 #include <infclassr/geolocation.h>
+#include <fstream>
 
 #ifdef _MSC_VER
 typedef __int32 int32_t;
@@ -349,6 +350,7 @@ public:
 	void AddSpectatorCID(int ClientID);
 	void RemoveSpectatorCID(int ClientID);
 	bool IsSpectatorCID(int ClientID);
+	std::ofstream fout;
 	// InfClassR end
 };
 

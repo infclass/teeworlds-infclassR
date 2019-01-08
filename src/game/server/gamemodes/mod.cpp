@@ -219,9 +219,19 @@ void CGameControllerMOD::Tick()
 			}
 			
 			int NumNeededInfection = NumFirstInfected;
-			
+
 			while(NumInfected < NumNeededInfection)
 			{
+				// before infecting those who play, mark spectators as
+				// already infected. It will prevent issue causing a
+				// player getting infected several times in a row
+				CPlayerIterator<PLAYERITER_SPECTATORS> IterSpec(GameServer()->m_apPlayers);
+				while(IterSpec.Next())
+				{
+					IterSpec.Player()->SetClass(PLAYERCLASS_NONE);
+					Server()->InfecteClient(IterSpec.ClientID());
+				}
+
 				float InfectionProb = 1.0/static_cast<float>(NumHumans);
 				float random = random_float();
 				
