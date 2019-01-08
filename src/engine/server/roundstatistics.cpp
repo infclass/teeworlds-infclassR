@@ -62,6 +62,9 @@ void CRoundStatistics::CPlayer::OnScoreEvent(int EventType, int Class)
 		case PLAYERCLASS_BIOLOGIST:
 			m_BiologistScore += Points;
 			break;
+		case PLAYERCLASS_LOOPER:
+			m_LooperScore += Points;
+			break;
 		case PLAYERCLASS_MEDIC:
 			m_MedicScore += Points;
 			break;
@@ -106,6 +109,9 @@ void CRoundStatistics::CPlayer::OnScoreEvent(int EventType, int Class)
 			break;
 		case PLAYERCLASS_WITCH:
 			m_WitchScore += Points;
+			break;
+		case PLAYERCLASS_KING:
+			m_KingScore += Points;
 			break;
 	}
 }

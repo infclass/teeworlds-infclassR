@@ -1,5 +1,5 @@
 /* (c) Magnus Auvinen. See licence.txt in the root of the distribution for more information. */
-/* If you are missing that file, acquire a complete release at teeworlds.com.                */
+/* If you are missing that file, acquire a complete release at teeworlds.com.				*/
 #include <new>
 #include <iostream>
 #include <engine/shared/config.h>
@@ -36,11 +36,11 @@ CPlayer::CPlayer(CGameContext *pGameServer, int ClientID, int Team)
 	for(int i=0; i<NB_PLAYERCLASS; i++)
 	{
 		m_knownClass[i] = false;
-
+	
 	int* idMap = Server()->GetIdMap(ClientID);
 	for (int i = 1;i < VANILLA_MAX_CLIENTS;i++)
 	{
-	    idMap[i] = -1;
+		idMap[i] = -1;
 	}
 	idMap[0] = ClientID;
 
@@ -58,6 +58,8 @@ CPlayer::CPlayer(CGameContext *pGameServer, int ClientID, int Team)
 	
 	for(unsigned int i=0; i<sizeof(m_LastHumanClasses)/sizeof(int); i++)
 		m_LastHumanClasses[i] = -1;
+	m_inKingRange = false;
+	m_tickBeforeKingHelp = 0;
 /* INFECTION MODIFICATION END *****************************************/
 }
 
@@ -150,6 +152,27 @@ void CPlayer::Tick()
 		}
 		
 		SetClassSkin(PLAYERCLASS_GHOUL, m_GhoulLevel);
+	}
+
+	if(not IsInfected() and GetClass() != PLAYERCLASS_KING and GameServer()->HasKingSpawned() and not GameServer()->KingIsDead() and m_pCharacter)
+	{
+		if(GameServer()->DistanceWithKing(m_pCharacter->m_Pos) <= g_Config.m_InfKingRadius)
+		{
+			if(m_inKingRange == false)
+			{
+				m_tickBeforeKingHelp = Server()->TickSpeed()*g_Config.m_InfKingHealthCooldown;
+				m_inKingRange = true;
+			}
+			else
+			{
+				m_tickBeforeKingHelp--;
+				if(m_tickBeforeKingHelp <= 0)
+				{
+					m_tickBeforeKingHelp = Server()->TickSpeed()*g_Config.m_InfKingHealthCooldown;
+					m_pCharacter->IncreaseOverallHp(1);
+				}
+			}
+		} else m_inKingRange = false;
 	}
 	
  	HandleTuningParams();
@@ -271,11 +294,17 @@ void CPlayer::Snap(int SnappingClient)
 				case PLAYERCLASS_SNIPER:
 					str_format(aClanName, sizeof(aClanName), "%sSniper", Server()->IsClientLogged(GetCID()) ? "@" : " ");
 					break;
+				case PLAYERCLASS_KING:
+					str_format(aClanName, sizeof(aClanName), "%sKing", Server()->IsClientLogged(GetCID()) ? "@" : " ");
+					break;
 				case PLAYERCLASS_SCIENTIST:
 					str_format(aClanName, sizeof(aClanName), "%sScientist", Server()->IsClientLogged(GetCID()) ? "@" : " ");
 					break;
 				case PLAYERCLASS_BIOLOGIST:
 					str_format(aClanName, sizeof(aClanName), "%sBiologist", Server()->IsClientLogged(GetCID()) ? "@" : " ");
+					break;
+				case PLAYERCLASS_LOOPER:
+					str_format(aClanName, sizeof(aClanName), "%sLooper", Server()->IsClientLogged(GetCID()) ? "@" : " ");
 					break;
 				case PLAYERCLASS_MEDIC:
 					str_format(aClanName, sizeof(aClanName), "%sMedic", Server()->IsClientLogged(GetCID()) ? "@" : " ");
@@ -590,6 +619,12 @@ void CPlayer::SetClassSkin(int newClass, int State)
 			m_TeeInfos.m_UseCustomColor = 0;
 			str_copy(m_TeeInfos.m_SkinName, "twintri", sizeof(m_TeeInfos.m_SkinName));
 			break;
+		case PLAYERCLASS_LOOPER:
+			m_TeeInfos.m_UseCustomColor = 1;
+			str_copy(m_TeeInfos.m_SkinName, "bluekitty", sizeof(m_TeeInfos.m_SkinName));
+			m_TeeInfos.m_ColorBody = 255;
+			m_TeeInfos.m_ColorFeet = 0;
+			break;
 		case PLAYERCLASS_MEDIC:
 			m_TeeInfos.m_UseCustomColor = 0;
 			str_copy(m_TeeInfos.m_SkinName, "twinbop", sizeof(m_TeeInfos.m_SkinName));
@@ -597,6 +632,12 @@ void CPlayer::SetClassSkin(int newClass, int State)
 		case PLAYERCLASS_HERO:
 			m_TeeInfos.m_UseCustomColor = 0;
 			str_copy(m_TeeInfos.m_SkinName, "redstripe", sizeof(m_TeeInfos.m_SkinName));
+			break;
+		case PLAYERCLASS_KING:
+			m_TeeInfos.m_UseCustomColor = 1;
+			str_copy(m_TeeInfos.m_SkinName, "redbopp", sizeof(m_TeeInfos.m_SkinName));
+			m_TeeInfos.m_ColorBody = 11122480;
+			m_TeeInfos.m_ColorFeet = 11468577;
 			break;
 		case PLAYERCLASS_NINJA:
 			m_TeeInfos.m_UseCustomColor = 1;
@@ -740,10 +781,11 @@ void CPlayer::StartInfection(bool force)
 	if(!force && IsInfected())
 		return;
 	
-	
 	if(!IsInfected())
 	{
+		SetOldClass(GetClass());
 		m_InfectionTick = Server()->Tick();
+		if(GetClass() == PLAYERCLASS_KING)m_pGameServer->OnKingDeath();
 	}
 	
 	int c = GameServer()->m_pController->ChooseInfectedClass(this);
