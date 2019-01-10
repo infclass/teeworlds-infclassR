@@ -15,7 +15,7 @@ enum
 	PLAYERCLASS_SNIPER,
 	PLAYERCLASS_SCIENTIST,
 	PLAYERCLASS_BIOLOGIST,
-	PLAYERCLASS_KING,
+	PLAYERCLASS_KING, // must always be last, see comment below
 	END_HUMANCLASS,
 	
 	START_INFECTEDCLASS,
@@ -32,7 +32,12 @@ enum
 	END_INFECTEDCLASS,
 	
 	NB_PLAYERCLASS,
-	NB_HUMANCLASS = END_HUMANCLASS - START_HUMANCLASS - 1,
+	/* count the number of human classes excluding N last classes
+	 * which are considered special and should not be part
+	 * of calculations, relying on NB_HUMANCLASS. Example of such
+	 * calculations is class of the day.
+	 * The value to subtract is N = (number of special classes + 1) */
+	NB_HUMANCLASS = END_HUMANCLASS - START_HUMANCLASS - 2,
 	NB_INFECTEDCLASS = END_INFECTEDCLASS - START_INFECTEDCLASS - 1,
 };
 
