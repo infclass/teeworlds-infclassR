@@ -175,6 +175,7 @@ void CPlayer::Tick()
 				}
 			}
 		} else m_inKingRange = false;
+	}
 	else if (GetClass() == PLAYERCLASS_VOODOO)
 	{
 		if(m_VoodooIsSpirit)
