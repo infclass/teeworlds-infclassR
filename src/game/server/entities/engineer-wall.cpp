@@ -24,7 +24,8 @@ CEngineerWall::CEngineerWall(CGameWorld *pGameWorld, vec2 Pos1, vec2 Pos2, int O
 	m_LifeSpan = Server()->TickSpeed()*g_Config.m_InfBarrierLifeSpan;
 	GameWorld()->InsertEntity(this);
 	m_EndPointID = Server()->SnapNewID();
-    m_kingNearby = false;
+	m_kingNearby = false;
+	m_WallFlashTicks = 0;
 }
 
 CEngineerWall::~CEngineerWall()
@@ -45,6 +46,9 @@ void CEngineerWall::LoseSeconds(int seconds)
 void CEngineerWall::Tick()
 {
 	if(m_MarkedForDestroy) return;
+
+	if (m_WallFlashTicks > 0) 
+		m_WallFlashTicks--;
 
 	m_LifeSpan--;
 	
@@ -84,6 +88,7 @@ void CEngineerWall::Tick()
 					if(p->GetClass() != PLAYERCLASS_UNDEAD)
 					{
 						int LifeSpanReducer = ((Server()->TickSpeed()*g_Config.m_InfBarrierTimeReduce)/100);
+						m_WallFlashTicks = 10;
 						
 						if(p->GetClass() == PLAYERCLASS_GHOUL)
 						{
@@ -113,7 +118,9 @@ void CEngineerWall::Snap(int SnappingClient)
 
 	// Laser dieing animation
 	int LifeDiff = 0;
-	if (m_LifeSpan < 1*Server()->TickSpeed())
+	if (m_WallFlashTicks > 0) // flash laser for a few ticks when zombie jumps
+		LifeDiff = 5;
+	else if (m_LifeSpan < 1*Server()->TickSpeed())
 		LifeDiff = random_int(4, 5);
 	else if (m_LifeSpan < 2*Server()->TickSpeed())
 		LifeDiff = random_int(3, 5);

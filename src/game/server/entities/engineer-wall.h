@@ -28,6 +28,7 @@ private:
 	int m_EndPointID;
 	bool kingNearby;
 	bool m_kingNearby;
+	int m_WallFlashTicks;
 };
 
 #endif

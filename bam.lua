@@ -49,7 +49,6 @@ function DuplicateDirectoryStructure(orgpath, srcpath, dstpath)
 		DuplicateDirectoryStructure(orgpath, v, dstpath)
 	end
 end
-
 DuplicateDirectoryStructure("src", "src", "objs")
 ]]
 
@@ -162,6 +161,10 @@ function build(settings)
 		if family == "windows" then
 			-- disable visibility attribute support for gcc on windows
 			settings.cc.defines:Add("NO_VIZ")
+			if config.stackprotector.value then
+				settings.cc.flags:Add("-fstack-protector", "-fstack-protector-all")
+				settings.link.flags:Add("-fstack-protector", "-fstack-protector-all")
+			end
 		elseif platform == "macosx" then
 			settings.cc.flags:Add("-mmacosx-version-min=10.5")
 			settings.link.flags:Add("-mmacosx-version-min=10.5")
@@ -184,7 +187,6 @@ function build(settings)
 			settings.link.frameworks:Add("AppKit")
 		else
 			settings.link.libs:Add("pthread")
-			settings.link.libs:Add("geolite2++") -- for ip geolocation
 			settings.link.libs:Add("maxminddb")  -- for ip geolocation
 			-- add ICU for linux
 			if ExecuteSilent("pkg-config icu-uc icu-i18n") == 0 then
@@ -279,7 +281,7 @@ function build(settings)
 	masterserver = Compile(settings, Collect("src/mastersrv/*.cpp"))
 	game_shared = Compile(settings, Collect("src/game/*.cpp"), nethash, network_source)
 	game_server = Compile(settings, CollectRecursive("src/game/server/*.cpp"), server_content_source)
-	infclassr = Compile(settings, Collect("src/infclassr/*.cpp"))
+	infclassr = Compile(settings, Collect("src/infclassr/*.cpp", "src/infclassr/GeoLite2PP/*.cpp"))
 
 
 	-- build tools (TODO: fix this so we don't get double _d_d stuff)
