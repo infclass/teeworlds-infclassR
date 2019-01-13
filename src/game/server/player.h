@@ -135,6 +135,8 @@ private:
 	
 	bool m_inKingRange;
 	int m_tickBeforeKingHelp;
+  
+	int m_NumberKills;
 
 	bool m_VoodooIsSpirit;
 
@@ -148,6 +150,9 @@ public:
 	
 	int GetScoreMode();
 	void SetScoreMode(int Mode);
+	int GetNumberKills();
+	void IncreaseNumberKills();
+	void ResetNumberKills();
 	
 	int GetClass();
 	void SetClassSkin(int newClass, int State = 0);
