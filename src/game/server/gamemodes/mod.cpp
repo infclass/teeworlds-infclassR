@@ -563,7 +563,7 @@ int CGameControllerMOD::OnCharacterDeath(class CCharacter *pVictim, class CPlaye
 	if(!pKiller || Weapon == WEAPON_GAME)
 		return 0;
 		
-	if(pKiller->IsInfected())
+	if(pKiller->IsInfected() && IsInfectionStarted())
 	{
 		CPlayer* pVictimPlayer = pVictim->GetPlayer();
 		if(pVictimPlayer)
