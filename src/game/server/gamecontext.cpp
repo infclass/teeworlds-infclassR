@@ -1408,10 +1408,32 @@ int CGameContext::IsMapVote(const char *pVoteCommand)
 		command[i] = pVoteCommand[i];
 	}
 	command[++i] = 0;
-	if(str_comp_nocase(command, "sv_map") == 0) return 1;
-	if(str_comp_nocase(command, "change_map") == 0) return 2;
-	if(str_comp_nocase(command, "skip_map") == 0) return 3;
+	if(str_comp_nocase(command, "sv_map") == 0) return SV_MAP;
+	if(str_comp_nocase(command, "change_map") == 0) return CHANGE_MAP;
+	if(str_comp_nocase(command, "skip_map") == 0) return SKIP_MAP;
 	return 0;
+}
+
+// copies the map name inside pCommand into pMapName
+// make sure pMapName is big enough to hold the name and pCommand is null terminated 
+// example: input pCommand = "change_map infc_newdust", output pMapName = "infc_newdust"
+void CGameContext::GetMapNameFromCommand(char* pMapName, const char *pCommand)
+{
+	bool readingMapName = false;
+	int k = 0;
+	for (int i=0 ; i<510; i++)
+	{
+		if (pCommand[i] == 0) break;
+		if (pCommand[i] == ' ') 
+		{
+			readingMapName = true;
+			continue;
+		}
+		if (!readingMapName) continue;
+		pMapName[k] = pCommand[i];
+		k++;
+	}
+	pMapName[k] = 0;
 }
 
 // will be called when a player wants to start a vote
@@ -1490,6 +1512,21 @@ void CGameContext::OnCallVote(void *pRawMsg, int ClientID)
 					int MapVoteType = IsMapVote(pOption->m_aCommand);
 					if (MapVoteType > 0) // this is a map vote
 					{
+						if (MapVoteType == SV_MAP || MapVoteType == CHANGE_MAP)
+						{
+							char MapName[VOTE_CMD_LENGTH] = {0};
+							char CurrentMapName[VOTE_CMD_LENGTH] = {0};
+							Server()->GetCurrentMapName(CurrentMapName, VOTE_CMD_LENGTH);
+							GetMapNameFromCommand(MapName, pOption->m_aCommand);
+							if (str_comp_nocase(MapName, CurrentMapName) == 0)
+							{
+								char aBufVoteMap[128];
+								str_format(aBufVoteMap, sizeof(aBufVoteMap), "Server is already on map %s", MapName);
+								SendChatTarget(ClientID, aBufVoteMap);
+								return;
+							}
+						}
+
 						int RoundCount = m_pController->GetRoundCount();
 						if (m_pController->IsRoundEndTime())
 							RoundCount++;

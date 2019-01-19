@@ -56,8 +56,8 @@ MACRO_CONFIG_INT(InfLeaverBanTime, inf_leaver_ban_time, 5, 0, 180, CFGFLAG_SERVE
 MACRO_CONFIG_INT(InfFastDownload, inf_fast_download, 1, 0, 1, CFGFLAG_SERVER, "Enables fast download of maps")
 MACRO_CONFIG_INT(InfMapWindow, inf_map_window, 15, 0, 100, CFGFLAG_SERVER, "Map downloading send-ahead window")
 MACRO_CONFIG_INT(InfMinRoundsForMapVote, inf_min_rounds_for_map_vote, 0, 0, 100, CFGFLAG_SERVER, "Minimum number of rounds before a new map can be voted")
-MACRO_CONFIG_INT(InfMinPlayerPercentForMapVote, inf_min_player_percent_for_map_vote, 30, 0, 100, CFGFLAG_SERVER, "Minimum percentage of players that are needed to start a map vote")
-MACRO_CONFIG_INT(InfMinPlayerNumberForMapVote, inf_min_player_number_for_map_vote, 1, 1, 16, CFGFLAG_SERVER, "Minimum number of players that are needed to start a map vote")
+MACRO_CONFIG_INT(InfMinPlayerPercentForMapVote, inf_min_player_percent_for_map_vote, 30, 0, 200, CFGFLAG_SERVER, "Minimum percentage of players that are needed to start a map vote")
+MACRO_CONFIG_INT(InfMinPlayerNumberForMapVote, inf_min_player_number_for_map_vote, 1, 1, 32, CFGFLAG_SERVER, "Minimum number of players that are needed to start a map vote")
 MACRO_CONFIG_INT(InfConWaitingTime, inf_con_waiting_time, 1, 0, 60, CFGFLAG_SERVER, "Number of seconds to wait before enter the game")
 MACRO_CONFIG_INT(InfCaptcha, inf_captcha, 0, 0, 1, CFGFLAG_SERVER, "Enable captcha")
 

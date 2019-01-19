@@ -253,8 +253,17 @@ private:
 	static bool ConCmdList(IConsole::IResult *pResult, void *pUserData);
 	static bool ConWitch(IConsole::IResult *pResult, void *pUserData);
 	bool PrivateMessage(const char* pStr, int ClientID, bool TeamChat);
+
 	void OnCallVote(void *pRawMsg, int ClientID);
 	int IsMapVote(const char *pVoteCommand);
+	void GetMapNameFromCommand(char* pMapName, const char *pCommand);
+
+	enum
+	{
+		SV_MAP = 1,
+		CHANGE_MAP = 2,
+		SKIP_MAP = 3
+	};
 	
 public:
 	virtual void OnSetAuthed(int ClientID,int Level);
