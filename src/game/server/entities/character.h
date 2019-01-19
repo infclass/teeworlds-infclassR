@@ -205,8 +205,9 @@ public:
 	int m_PositionLockTick;
 	bool m_PositionLocked;
 	bool m_PositionLockAvailable;
-	bool m_HasWhiteHole; //White hole changes here
-	bool m_HasIndicator; //White hole changes here
+	bool m_HasWhiteHole;
+	bool m_HasIndicator;
+	bool m_HasStunGrenade;
 	int m_BroadcastWhiteHoleReady; // used to broadcast "WhiteHole ready" for a short period of time
 	int m_LoveTick;
 	int m_HallucinationTick;
