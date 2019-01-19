@@ -980,6 +980,19 @@ void CGameContext::OnTick()
 			}
 		}
 	}
+
+	//Check for mapVote
+	if(!m_VoteCloseTime && m_pController->CanVote()) // there is currently no vote && its the start of a round
+	{
+		IServer::CMapVote* mapVote = Server()->GetMapVote();
+		if (mapVote)
+		{
+			char aChatmsg[512] = {0};
+			str_format(aChatmsg, sizeof(aChatmsg), "Starting vote '%s'", mapVote->m_pDesc);
+			SendChat(-1, CGameContext::CHAT_ALL, aChatmsg);
+			StartVote(mapVote->m_pDesc, mapVote->m_pCommand, mapVote->m_pReason);
+		}
+	}
 	
 	// check tuning
 	CheckPureTuning();
@@ -1231,6 +1244,8 @@ void CGameContext::OnTick()
 				Server()->SetRconCID(IServer::RCON_CID_SERV);
 				EndVote();
 				SendChat(-1, CGameContext::CHAT_ALL, "Vote passed");
+				if (IsMapVote(m_aVoteCommand) > 0) 
+					Server()->ResetMapVotes();
 
 				if(m_apPlayers[m_VoteCreator])
 					m_apPlayers[m_VoteCreator]->m_LastVoteCall = 0;
@@ -1239,6 +1254,8 @@ void CGameContext::OnTick()
 			{
 				EndVote();
 				SendChat(-1, CGameContext::CHAT_ALL, "Vote failed");
+				if (IsMapVote(m_aVoteCommand) > 0) 
+					Server()->ResetMapVotes();
 				
 				//Remove accusation if needed
 				if(m_VoteBanClientID >= 0)
@@ -1380,6 +1397,176 @@ void CGameContext::OnClientDrop(int ClientID, int Type, const char *pReason)
 	// InfClassR end
 }
 
+int CGameContext::IsMapVote(const char *pVoteCommand)
+{
+	char command[512] = {0};
+	int i = 0;
+	for ( ; i < 510; i++)
+	{
+		if (pVoteCommand[i] == 0) break;
+		if (pVoteCommand[i] == ' ') break;
+		command[i] = pVoteCommand[i];
+	}
+	command[++i] = 0;
+	if(str_comp_nocase(command, "sv_map") == 0) return 1;
+	if(str_comp_nocase(command, "change_map") == 0) return 2;
+	if(str_comp_nocase(command, "skip_map") == 0) return 3;
+	return 0;
+}
+
+// will be called when a player wants to start a vote
+void CGameContext::OnCallVote(void *pRawMsg, int ClientID)
+{
+	CPlayer *pPlayer = m_apPlayers[ClientID];
+
+	if(g_Config.m_SvSpamprotection && pPlayer->m_LastVoteTry && pPlayer->m_LastVoteTry+Server()->TickSpeed()*3 > Server()->Tick())
+		return;
+				
+	int64 Now = Server()->Tick();
+	pPlayer->m_LastVoteTry = Now;
+			
+	CNetMsg_Cl_CallVote *pMsg = (CNetMsg_Cl_CallVote *)pRawMsg;
+	const char *pReason = pMsg->m_Reason[0] ? pMsg->m_Reason : "No reason given";
+
+	if(str_comp_nocase(pMsg->m_Type, "kick") == 0)
+	{
+		int KickID = str_toint(pMsg->m_Value);
+		if(KickID < 0 || KickID >= MAX_CLIENTS || !m_apPlayers[KickID])
+		{
+			SendChatTarget(ClientID, "Invalid client id to kick");
+			return;
+		}
+		if(KickID == ClientID)
+		{
+			SendChatTarget(ClientID, "You can't kick yourself");
+			return;
+		}
+		if(Server()->IsAuthed(KickID))
+		{
+			SendChatTarget(ClientID, "You can't kick admins");
+			char aBufKick[128];
+			str_format(aBufKick, sizeof(aBufKick), "'%s' called for vote to kick you", Server()->ClientName(ClientID));
+			SendChatTarget(KickID, aBufKick);
+			return;
+		}
+
+		Server()->AddAccusation(ClientID, KickID, pReason);
+	}
+	else
+	{
+		if(pPlayer->GetTeam() == TEAM_SPECTATORS)
+		{
+			SendChatTarget(ClientID, "Spectators aren't allowed to start a vote.");
+			return;
+		}
+
+		if(m_VoteCloseTime)
+		{
+			SendChatTarget(ClientID, "Wait for current vote to end before calling a new one.");
+			return;
+		}
+
+		int Timeleft = pPlayer->m_LastVoteCall + Server()->TickSpeed()*60 - Now;
+		if(pPlayer->m_LastVoteCall && Timeleft > 0)
+		{
+			char aChatmsg[512] = {0};
+			str_format(aChatmsg, sizeof(aChatmsg), "You must wait %d seconds before making another vote", (Timeleft/Server()->TickSpeed())+1);
+			SendChatTarget(ClientID, aChatmsg);
+			return;
+		}
+
+		char aChatmsg[512] = {0};
+		char aDesc[VOTE_DESC_LENGTH] = {0};
+		char aCmd[VOTE_CMD_LENGTH] = {0};
+
+		if(str_comp_nocase(pMsg->m_Type, "option") == 0)
+		{
+
+			CVoteOptionServer *pOption = m_pVoteOptionFirst;
+			while(pOption)
+			{
+				if(str_comp_nocase(pMsg->m_Value, pOption->m_aDescription) == 0)
+				{
+					int MapVoteType = IsMapVote(pOption->m_aCommand);
+					if (MapVoteType > 0) // this is a map vote
+					{
+						int RoundCount = m_pController->GetRoundCount();
+						if (m_pController->IsRoundEndTime())
+							RoundCount++;
+						if (g_Config.m_InfMinRoundsForMapVote > RoundCount && Server()->GetActivePlayerCount() > 1)
+						{
+							char aBufVoteMap[128];
+							str_format(aBufVoteMap, sizeof(aBufVoteMap), "Each map must be played at least %i rounds before calling a map vote", g_Config.m_InfMinRoundsForMapVote);
+							SendChatTarget(ClientID, aBufVoteMap);
+							return;
+						}
+					}
+					if (g_Config.m_InfMinPlayerNumberForMapVote <= 1 || MapVoteType == 0) 
+					{
+						if(!m_pController->CanVote())
+						{
+							SendChatTarget(ClientID, "Votes are only allowed when the round start.");
+							return;
+						}
+
+						str_format(aChatmsg, sizeof(aChatmsg), "'%s' called vote to change server option '%s' (%s)", Server()->ClientName(ClientID),
+								pOption->m_aDescription, pReason);
+						str_format(aDesc, sizeof(aDesc), "%s", pOption->m_aDescription);
+						str_format(aCmd, sizeof(aCmd), "%s", pOption->m_aCommand);
+						break;
+					}
+					// the vote is a map vote
+					Server()->AddMapVote(ClientID, pOption->m_aCommand, pReason, pOption->m_aDescription);
+					return;
+				}
+
+				pOption = pOption->m_pNext;
+			}
+
+			if(!pOption)
+			{
+				str_format(aChatmsg, sizeof(aChatmsg), "'%s' isn't an option on this server", pMsg->m_Value);
+				SendChatTarget(ClientID, aChatmsg);
+				return;
+			}
+		}
+		else if(str_comp_nocase(pMsg->m_Type, "spectate") == 0)
+		{
+			if(!g_Config.m_SvVoteSpectate)
+			{
+				SendChatTarget(ClientID, "Server does not allow voting to move players to spectators");
+				return;
+			}
+
+			int SpectateID = str_toint(pMsg->m_Value);
+			if(SpectateID < 0 || SpectateID >= MAX_CLIENTS || !m_apPlayers[SpectateID] || m_apPlayers[SpectateID]->GetTeam() == TEAM_SPECTATORS)
+			{
+				SendChatTarget(ClientID, "Invalid client id to move");
+				return;
+			}
+			if(SpectateID == ClientID)
+			{
+				SendChatTarget(ClientID, "You can't move yourself");
+				return;
+			}
+
+			str_format(aChatmsg, sizeof(aChatmsg), "'%s' called for vote to move '%s' to spectators (%s)", Server()->ClientName(ClientID), Server()->ClientName(SpectateID), pReason);
+			str_format(aDesc, sizeof(aDesc), "move '%s' to spectators", Server()->ClientName(SpectateID));
+			str_format(aCmd, sizeof(aCmd), "set_team %d -1 %d", SpectateID, g_Config.m_SvVoteSpectateRejoindelay);
+		}
+
+		if(aCmd[0])
+		{
+			SendChat(-1, CGameContext::CHAT_ALL, aChatmsg);
+			StartVote(aDesc, aCmd, pReason);
+			pPlayer->m_Vote = 1;
+			pPlayer->m_VotePos = m_VotePos = 1;
+			m_VoteCreator = ClientID;
+			pPlayer->m_LastVoteCall = Now;
+		}
+	}
+}
+
 void CGameContext::OnMessage(int MsgID, CUnpacker *pUnpacker, int ClientID)
 {
 	void *pRawMsg = m_NetObjHandler.SecureUnpackMsg(MsgID, pUnpacker);
@@ -1505,139 +1692,7 @@ void CGameContext::OnMessage(int MsgID, CUnpacker *pUnpacker, int ClientID)
 		}
 		else if(MsgID == NETMSGTYPE_CL_CALLVOTE)
 		{
-			if(g_Config.m_SvSpamprotection && pPlayer->m_LastVoteTry && pPlayer->m_LastVoteTry+Server()->TickSpeed()*3 > Server()->Tick())
-				return;
-				
-			int64 Now = Server()->Tick();
-			pPlayer->m_LastVoteTry = Now;
-			
-			CNetMsg_Cl_CallVote *pMsg = (CNetMsg_Cl_CallVote *)pRawMsg;
-			const char *pReason = pMsg->m_Reason[0] ? pMsg->m_Reason : "No reason given";
-			
-			if(str_comp_nocase(pMsg->m_Type, "kick") == 0)
-			{
-				int KickID = str_toint(pMsg->m_Value);
-				if(KickID < 0 || KickID >= MAX_CLIENTS || !m_apPlayers[KickID])
-				{
-					SendChatTarget(ClientID, "Invalid client id to kick");
-					return;
-				}
-				if(KickID == ClientID)
-				{
-					SendChatTarget(ClientID, "You can't kick yourself");
-					return;
-				}
-				if(Server()->IsAuthed(KickID))
-				{
-					SendChatTarget(ClientID, "You can't kick admins");
-					char aBufKick[128];
-					str_format(aBufKick, sizeof(aBufKick), "'%s' called for vote to kick you", Server()->ClientName(ClientID));
-					SendChatTarget(KickID, aBufKick);
-					return;
-				}
-
-				Server()->AddAccusation(ClientID, KickID, pReason);
-			}
-			else
-			{
-				if(pPlayer->GetTeam() == TEAM_SPECTATORS)
-				{
-					SendChatTarget(ClientID, "Spectators aren't allowed to start a vote.");
-					return;
-				}
-
-				if(m_VoteCloseTime)
-				{
-					SendChatTarget(ClientID, "Wait for current vote to end before calling a new one.");
-					return;
-				}
-
-				if (g_Config.m_InfMinRoundsForMapVote > m_pController->GetRoundCount())
-				{
-					char aBufVoteMap[128];
-					str_format(aBufVoteMap, sizeof(aBufVoteMap), "Each map must be played at least %i rounds before calling a map vote", g_Config.m_InfMinRoundsForMapVote);
-					SendChatTarget(ClientID, aBufVoteMap);
-					return;
-				}
-
-				if(!m_pController->CanVote())
-				{
-					SendChatTarget(ClientID, "Votes are only allowed when the round start.");
-					return;
-				}
-
-				int Timeleft = pPlayer->m_LastVoteCall + Server()->TickSpeed()*60 - Now;
-				if(pPlayer->m_LastVoteCall && Timeleft > 0)
-				{
-					char aChatmsg[512] = {0};
-					str_format(aChatmsg, sizeof(aChatmsg), "You must wait %d seconds before making another vote", (Timeleft/Server()->TickSpeed())+1);
-					SendChatTarget(ClientID, aChatmsg);
-					return;
-				}
-
-				char aChatmsg[512] = {0};
-				char aDesc[VOTE_DESC_LENGTH] = {0};
-				char aCmd[VOTE_CMD_LENGTH] = {0};
-
-				if(str_comp_nocase(pMsg->m_Type, "option") == 0)
-				{
-					CVoteOptionServer *pOption = m_pVoteOptionFirst;
-					while(pOption)
-					{
-						if(str_comp_nocase(pMsg->m_Value, pOption->m_aDescription) == 0)
-						{
-							str_format(aChatmsg, sizeof(aChatmsg), "'%s' called vote to change server option '%s' (%s)", Server()->ClientName(ClientID),
-										pOption->m_aDescription, pReason);
-							str_format(aDesc, sizeof(aDesc), "%s", pOption->m_aDescription);
-							str_format(aCmd, sizeof(aCmd), "%s", pOption->m_aCommand);
-							break;
-						}
-
-						pOption = pOption->m_pNext;
-					}
-
-					if(!pOption)
-					{
-						str_format(aChatmsg, sizeof(aChatmsg), "'%s' isn't an option on this server", pMsg->m_Value);
-						SendChatTarget(ClientID, aChatmsg);
-						return;
-					}
-				}
-				else if(str_comp_nocase(pMsg->m_Type, "spectate") == 0)
-				{
-					if(!g_Config.m_SvVoteSpectate)
-					{
-						SendChatTarget(ClientID, "Server does not allow voting to move players to spectators");
-						return;
-					}
-
-					int SpectateID = str_toint(pMsg->m_Value);
-					if(SpectateID < 0 || SpectateID >= MAX_CLIENTS || !m_apPlayers[SpectateID] || m_apPlayers[SpectateID]->GetTeam() == TEAM_SPECTATORS)
-					{
-						SendChatTarget(ClientID, "Invalid client id to move");
-						return;
-					}
-					if(SpectateID == ClientID)
-					{
-						SendChatTarget(ClientID, "You can't move yourself");
-						return;
-					}
-
-					str_format(aChatmsg, sizeof(aChatmsg), "'%s' called for vote to move '%s' to spectators (%s)", Server()->ClientName(ClientID), Server()->ClientName(SpectateID), pReason);
-					str_format(aDesc, sizeof(aDesc), "move '%s' to spectators", Server()->ClientName(SpectateID));
-					str_format(aCmd, sizeof(aCmd), "set_team %d -1 %d", SpectateID, g_Config.m_SvVoteSpectateRejoindelay);
-				}
-
-				if(aCmd[0])
-				{
-					SendChat(-1, CGameContext::CHAT_ALL, aChatmsg);
-					StartVote(aDesc, aCmd, pReason);
-					pPlayer->m_Vote = 1;
-					pPlayer->m_VotePos = m_VotePos = 1;
-					m_VoteCreator = ClientID;
-					pPlayer->m_LastVoteCall = Now;
-				}
-			}
+			OnCallVote(pRawMsg, ClientID);
 		}
 		else if(MsgID == NETMSGTYPE_CL_VOTE)
 		{
@@ -4238,11 +4293,12 @@ void CGameContext::List(int ClientID, const char* filter)
 	SendChatTarget(ClientID, buf);
 }
 
-void CGameContext::AddSpectatorCID(int ClientID) {
+void CGameContext::AddSpectatorCID(int ClientID)
+{
+	Server()->RemoveMapVotesForID(ClientID);
 	auto& vec = Server()->spectators_id;
-	if(!(std::find(vec.begin(), vec.end(), ClientID) != vec.end())) {
+	if(!(std::find(vec.begin(), vec.end(), ClientID) != vec.end()))
 		vec.push_back(ClientID);
-	}
 }
 
 void CGameContext::RemoveSpectatorCID(int ClientID) {

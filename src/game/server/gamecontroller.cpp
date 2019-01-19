@@ -127,6 +127,11 @@ int IGameController::GetRoundCount() {
 	return m_RoundCount;
 }
 
+bool IGameController::IsRoundEndTime() 
+{
+	return m_GameOverTick > 0;
+}
+
 void IGameController::StartRound()
 {
 	ResetGame();

@@ -253,6 +253,8 @@ private:
 	static bool ConCmdList(IConsole::IResult *pResult, void *pUserData);
 	static bool ConWitch(IConsole::IResult *pResult, void *pUserData);
 	bool PrivateMessage(const char* pStr, int ClientID, bool TeamChat);
+	void OnCallVote(void *pRawMsg, int ClientID);
+	int IsMapVote(const char *pVoteCommand);
 	
 public:
 	virtual void OnSetAuthed(int ClientID,int Level);

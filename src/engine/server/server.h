@@ -7,6 +7,7 @@
 #include <engine/server/netsession.h>
 #include <engine/server/roundstatistics.h>
 #include <game/server/classes.h>
+#include <game/voting.h>
 
 /* DDNET MODIFICATION START *******************************************/
 #include "sql_connector.h"
@@ -372,6 +373,9 @@ private:
 	CRoundStatistics m_RoundStatistics;
 	CNetSession<IServer::CClientSession> m_NetSession;
 	CNetSession<IServer::CClientAccusation> m_NetAccusation;
+
+	IServer::CMapVote m_MapVotes[MAX_VOTE_OPTIONS];
+	int m_MapVotesCounter;
 	
 #ifdef CONF_SQL
 public:
@@ -401,6 +405,13 @@ public:
 	virtual void AddAccusation(int From, int To, const char* pReason);
 	virtual bool ClientShouldBeBanned(int ClientID);
 	virtual void RemoveAccusations(int ClientID);
+
+	virtual void AddMapVote(int From, const char* pCommand, const char* pReason, const char* pDesc);
+	virtual void RemoveMapVotesForID(int ClientID);
+	virtual void ResetMapVotes();
+	virtual IServer::CMapVote* GetMapVote();
+
+	virtual int GetActivePlayerCount();
 	
 	virtual int GetTimeShiftUnit() const { return m_TimeShiftUnit; } //In ms
 /* INFECTION MODIFICATION END *****************************************/
