@@ -107,7 +107,7 @@ m_pConsole(pConsole)
 	m_NinjaAmmoBuff = 0;
 	m_HasWhiteHole = false;
 	m_HasIndicator = false;
-	m_HasStunGrenade = true;
+	m_HasStunGrenade = false;
 	m_VoodooTimeAlive = Server()->TickSpeed()*g_Config.m_InfVoodooAliveTime;
 	m_VoodooAboutToDie = false;
 	m_BroadcastWhiteHoleReady = -100;
