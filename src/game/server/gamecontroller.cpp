@@ -364,7 +364,7 @@ void IGameController::Tick()
 	if(m_GameOverTick != -1)
 	{
 		// game over.. wait for restart
-		if(Server()->Tick() > m_GameOverTick+Server()->TickSpeed()*12)
+		if(Server()->Tick() > m_GameOverTick+Server()->TickSpeed()*g_Config.m_InfShowScoreTime)
 		{
 			for(int i = 0; i < MAX_CLIENTS; i++)
 			{
@@ -381,13 +381,9 @@ void IGameController::Tick()
 		else
 		{
 			int ScoreMode = PLAYERSCOREMODE_SCORE;
-			if((Server()->Tick() - m_GameOverTick) > Server()->TickSpeed() * 8)
+			if((Server()->Tick() - m_GameOverTick) > Server()->TickSpeed() * (g_Config.m_InfShowScoreTime/2.0f))
 			{
 				ScoreMode = PLAYERSCOREMODE_TIME;
-			}
-			else if((Server()->Tick() - m_GameOverTick) > Server()->TickSpeed() * 4)
-			{
-				ScoreMode = PLAYERSCOREMODE_SCORE;
 			}
 			
 			for(int i = 0; i < MAX_CLIENTS; i++)
