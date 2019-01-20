@@ -28,7 +28,8 @@ If there are not enough players the server will skip this map. (But you can stil
 
 With ```sv_maprotation``` you can define what maps will be played in which order, for example:<br/>
 ```sv_maprotation "infc_skull infc_warehouse infc_damascus"```<br/>
-With ```sv_rounds_per_map``` you can define how many rounds each map should be played before changing to the next map.
+With ```sv_rounds_per_map``` you can define how many rounds each map should be played before changing to the next map.<br/>
+If ```inf_maprotation_random``` is set to 1 than a random map will be chosen after a map finished.
 
 You can change maps by using these commands: ```skip_map```, ```sv_map mapname```, ```change_map mapname```<br/>
 ```skip_map``` will change the map to the next in the rotation.<br/>
