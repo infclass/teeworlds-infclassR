@@ -5,12 +5,26 @@ Slightly modified version of original [InfClass by necropotame](https://github.c
 ```bash
 sudo apt install libmaxminddb-dev
 ```
+## Config variables
+The variables are defined here:<br/>
+[config_variables.h](src/engine/shared/config_variables.h)<br/>
+[variable.h](src/game/variables.h)<br/>
+You can type these commands inside the rcon console (F2) or <br/>
+you can also put them into a file called autoexec.cfg which should be next to your server binary.
+
 ## Maps
 You can create new maps with [TeeUniverse](https://github.com/teeuniverse/teeuniverse)
 
+### .mapinfo
+You can create a map info file with the same name as the map and put it next to it. (e.g. "infc_skull.mapinfo")<br/>
+Inside this file you can define 2 variables:<br/>
+```timelimit x```<br/>
+x is the number of minutes a round should take on this map.<br/>
+```minplayers x```<br/>
+x is the minimum number of players this map should be played on, this has an impact on the map rotation.<br/>
+If there are not enough players the server will skip this map. (But you can still vote and play on it)
+
 ### Map commands
-You can type these commands inside the rcon console (F2) or <br/>
-you can also put them into a file called autoexec.cfg which should be next to your server binary.
 
 With ```sv_maprotation``` you can define what maps will be played in which order, for example:<br/>
 ```sv_maprotation "infc_skull infc_warehouse infc_damascus"```<br/>
