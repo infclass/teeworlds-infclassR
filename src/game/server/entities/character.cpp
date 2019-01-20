@@ -1060,7 +1060,7 @@ void CCharacter::FireWeapon()
 
 		case WEAPON_SHOTGUN:
 		{
-			int ShotSpread = 5;
+			int ShotSpread = 3;
 			if(GetClass() == PLAYERCLASS_BIOLOGIST)
 				ShotSpread = 1;
 			
