@@ -73,6 +73,7 @@ enum
 enum
 {
 	MAX_ACCUSATIONS = 8,
+	MAX_MAPVOTEADDRESSES = 16,
 };
 
 enum
@@ -128,6 +129,15 @@ public:
 	{
 		int m_Num;
 		NETADDR m_Addresses[MAX_ACCUSATIONS];
+	};
+
+	struct CMapVote
+	{
+		const char *m_pCommand; // for example "change_map infc_warehouse" or "skip_map"
+		int m_Num; // how many people want to start this vote
+		NETADDR *m_pAddresses; // addresses of the people who want to start this vote
+		const char *m_pDesc; // name of the vote
+		const char *m_pReason;
 	};
 	
 	virtual ~IServer() {};
@@ -325,6 +335,11 @@ public:
 	virtual void AddAccusation(int From, int To, const char* pReason) = 0;
 	virtual bool ClientShouldBeBanned(int ClientID) = 0;
 	virtual void RemoveAccusations(int ClientID) = 0;
+	virtual void AddMapVote(int From, const char* pCommand, const char* pReason, const char* pDesc) = 0;
+	virtual void RemoveMapVotesForID(int ClientID) = 0;
+	virtual void ResetMapVotes() = 0;
+	virtual CMapVote* GetMapVote() = 0;
+	virtual int GetMinPlayersForMap(const char* pMapName) = 0;
 	
 	virtual int GetTimeShiftUnit() const = 0; //In ms
 /* INFECTION MODIFICATION END *****************************************/
@@ -333,6 +348,8 @@ public:
 	virtual void SetCustClt(int ClientID) = 0;
 	// InfClassR spectators vector
 	std::vector<int> spectators_id;
+
+	virtual int GetActivePlayerCount() = 0;
 };
 
 class IGameServer : public IInterface

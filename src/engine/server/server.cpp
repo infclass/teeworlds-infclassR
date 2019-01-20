@@ -38,6 +38,7 @@
 #include <fstream>
 #include <sstream>
 #include <iostream>
+#include <algorithm>
 #include <engine/server/mapconverter.h>
 #include <engine/server/sql_job.h>
 #include <engine/server/crypt.h>
@@ -546,6 +547,7 @@ int CServer::Init()
 	}
 
 	m_CurrentGameTick = 0;
+	m_MapVotesCounter = 0;
 	
 #ifdef CONF_SQL
 	m_ChallengeType = 0;
@@ -1016,10 +1018,15 @@ int CServer::DelClientCallback(int ClientID, int Type, const char *pReason, void
 	pThis->m_aClients[ClientID].m_Quitting = true;
 
 	char aAddrStr[NETADDR_MAXSTRSIZE];
+
+	// remove map votes for the dropped client
+	pThis->RemoveMapVotesForID(ClientID);
+
 	net_addr_str(pThis->m_NetServer.ClientAddr(ClientID), aAddrStr, sizeof(aAddrStr), true);
 	char aBuf[256];
 	str_format(aBuf, sizeof(aBuf), "client dropped. cid=%d addr=%s reason='%s'", ClientID, aAddrStr,	pReason);
 	pThis->Console()->Print(IConsole::OUTPUT_LEVEL_ADDINFO, "server", aBuf);
+
 
 	// notify the mod about the drop
 	if(pThis->m_aClients[ClientID].m_State >= CClient::STATE_READY && pThis->m_aClients[ClientID].m_WaitingTime <= 0)
@@ -1043,11 +1050,11 @@ int CServer::DelClientCallback(int ClientID, int Type, const char *pReason, void
 	
 	//Keep information about client for 10 minutes
 	pThis->m_NetSession.AddSession(pThis->m_NetServer.ClientAddr(ClientID), 10*60, &pThis->m_aClients[ClientID].m_Session);
-	dbg_msg("infclass", "session created for the client %d", ClientID);
+	//dbg_msg("infclass", "session created for the client %d", ClientID);
 	
 	//Keep accusation for 30 minutes
 	pThis->m_NetAccusation.AddSession(pThis->m_NetServer.ClientAddr(ClientID), 30*60, &pThis->m_aClients[ClientID].m_Accusation);
-	dbg_msg("infclass", "accusation created for the client %d", ClientID);
+	//dbg_msg("infclass", "accusation created for the client %d", ClientID);
 	
 	return 0;
 }
@@ -1855,6 +1862,8 @@ int CServer::LoadMap(const char *pMapName)
 	m_IDPool.TimeoutIDs();
 
 	str_copy(m_aCurrentMap, pMapName, sizeof(m_aCurrentMap));
+	ResetMapVotes();
+
 	//map_set(df);
 	
 	
@@ -1874,7 +1883,7 @@ int CServer::LoadMap(const char *pMapName)
 				isEndOfFile = true;
 				
 				//Load one line
-				int MapInfoLineLenth = 0;
+				int MapInfoLineLength = 0;
 				char c;
 				while(io_read(File, &c, 1))
 				{
@@ -1883,12 +1892,12 @@ int CServer::LoadMap(const char *pMapName)
 					if(c == '\n') break;
 					else
 					{
-						MapInfoLine[MapInfoLineLenth] = c;
-						MapInfoLineLenth++;
+						MapInfoLine[MapInfoLineLength] = c;
+						MapInfoLineLength++;
 					}
 				}
 				
-				MapInfoLine[MapInfoLineLenth] = 0;
+				MapInfoLine[MapInfoLineLength] = 0;
 				
 				//Get the key
 				if(str_comp_nocase_num(MapInfoLine, "timelimit ", 10) == 0)
@@ -1905,6 +1914,50 @@ int CServer::LoadMap(const char *pMapName)
 /* INFECTION MODIFICATION END *****************************************/
 	
 	return 1;
+}
+
+int CServer::GetMinPlayersForMap(const char* pMapName)
+{
+	int MinPlayers = 0;
+	char MapInfoFilename[256];
+	str_format(MapInfoFilename, sizeof(MapInfoFilename), "maps/%s.mapinfo", pMapName);
+	IOHANDLE File = Storage()->OpenFile(MapInfoFilename, IOFLAG_READ, IStorage::TYPE_ALL);
+
+	if(!File)
+		return 0;
+
+	char MapInfoLine[512];
+	bool isEndOfFile = false;
+	while(!isEndOfFile)
+	{
+		isEndOfFile = true;
+		
+		//Load one line
+		int MapInfoLineLength = 0;
+		char c;
+		while(io_read(File, &c, 1))
+		{
+			isEndOfFile = false;
+			
+			if(c == '\n') break;
+			else
+			{
+				MapInfoLine[MapInfoLineLength] = c;
+				MapInfoLineLength++;
+			}
+		}
+		
+		MapInfoLine[MapInfoLineLength] = 0;
+		
+		//Get the key
+		if(str_comp_nocase_num(MapInfoLine, "minplayers ", 11) == 0)
+		{
+			MinPlayers = str_toint(MapInfoLine+11);
+		}
+	}
+	io_close(File);
+
+	return MinPlayers;
 }
 
 void CServer::InitRegister(CNetServer *pNetServer, IEngineMasterServer *pMasterServer, IConsole *pConsole)
@@ -4324,6 +4377,22 @@ IServer::CClientSession* CServer::GetClientSession(int ClientID)
 	return &m_aClients[ClientID].m_Session;
 }
 
+// returns how many players are currently playing and not spectating
+int CServer::GetActivePlayerCount()
+{
+	int PlayerCount = 0;
+	auto& vec = spectators_id;
+	for(int i=0; i<MAX_CLIENTS; i++)
+	{
+		if(m_aClients[i].m_State == CClient::STATE_INGAME)
+		{
+			if (std::find(vec.begin(), vec.end(), i) == vec.end())
+				PlayerCount++;
+		}
+	}
+	return PlayerCount;
+}
+
 void CServer::AddAccusation(int From, int To, const char* pReason)
 {
 	if(From < 0 || From >= MAX_CLIENTS || To < 0 || To >= MAX_CLIENTS)
@@ -4375,6 +4444,130 @@ void CServer::RemoveAccusations(int ClientID)
 		return;
 	
 	m_aClients[ClientID].m_Accusation.m_Num = 0;
+}
+
+void CServer::AddMapVote(int From, const char* pCommand, const char* pReason, const char* pDesc)
+{
+	NETADDR FromAddr = *m_NetServer.ClientAddr(From);
+	int Index = -1;
+	for (int i=0; i<m_MapVotesCounter; i++)
+	{
+		if(str_comp_nocase(m_MapVotes[i].m_pCommand, pCommand) == 0)
+		{
+			Index = i;
+			break;
+
+		}
+	}
+	if (Index < 0)
+	{		
+		Index = m_MapVotesCounter;
+		m_MapVotes[Index].m_pCommand = new char[VOTE_CMD_LENGTH];
+		str_copy(const_cast<char*>(m_MapVotes[Index].m_pCommand), pCommand, VOTE_CMD_LENGTH);
+		m_MapVotes[Index].m_pAddresses = new NETADDR[MAX_MAPVOTEADDRESSES];
+		m_MapVotes[Index].m_pAddresses[0] = FromAddr;
+		m_MapVotes[Index].m_Num = 1;
+		m_MapVotes[Index].m_pReason = new char[VOTE_REASON_LENGTH];
+		str_copy(const_cast<char*>(m_MapVotes[Index].m_pReason), pReason, VOTE_REASON_LENGTH);
+		m_MapVotes[Index].m_pDesc = new char[VOTE_DESC_LENGTH];
+		str_copy(const_cast<char*>(m_MapVotes[Index].m_pDesc), pDesc, VOTE_DESC_LENGTH);
+		m_MapVotesCounter++;
+	}
+	else 
+	{
+		if (str_comp_nocase(m_MapVotes[Index].m_pReason, "No reason given") == 0)
+			str_copy(const_cast<char*>(m_MapVotes[Index].m_pReason), pReason, VOTE_REASON_LENGTH);
+
+		for(int i=0; i<m_MapVotes[Index].m_Num; i++)
+		{
+			if(net_addr_comp(&m_MapVotes[Index].m_pAddresses[i], &FromAddr) == 0)
+			{
+				if(m_pGameServer)
+					m_pGameServer->SendChatTarget_Localization(From, CHATCATEGORY_DEFAULT, _("You have already voted to change this map"), NULL);
+				return;
+			}
+		}
+
+		m_MapVotes[Index].m_pAddresses[m_MapVotes[Index].m_Num] = FromAddr;
+		m_MapVotes[Index].m_Num++;
+	}
+
+	if(m_pGameServer)
+	{
+		m_pGameServer->SendChatTarget_Localization(-1, CHATCATEGORY_DEFAULT, _("{str:PlayerName} wants to start the vote '{str:VoteName}'"),
+			"PlayerName", ClientName(From),
+			"VoteName", pDesc,
+			NULL
+		);
+	}
+}
+
+void CServer::RemoveMapVotesForID(int ClientID)
+{
+	NETADDR Addr = *m_NetServer.ClientAddr(ClientID);
+	for (int i=0; i<m_MapVotesCounter; i++)
+	{
+		for(int k=0; k<m_MapVotes[i].m_Num; k++)
+		{
+			if(net_addr_comp(&m_MapVotes[i].m_pAddresses[k], &Addr) == 0)
+			{
+				if (k+1 == m_MapVotes[i].m_Num)
+				{
+					m_MapVotes[i].m_Num--;
+					continue;
+				}
+				m_MapVotes[i].m_pAddresses[k] = m_MapVotes[i].m_pAddresses[m_MapVotes[i].m_Num-1];
+				m_MapVotes[i].m_Num--;
+			}
+		}
+	}
+}
+
+IServer::CMapVote* CServer::GetMapVote()
+{
+	if (m_MapVotesCounter <= 0)
+		return 0;
+
+	float PlayerCount = GetActivePlayerCount();
+
+	int HighestNum = -1;
+	int HighestNumIndex = -1;
+	for (int i = 0; i < m_MapVotesCounter; i++)
+	{
+		if (m_MapVotes[i].m_Num <= 0)
+			continue;
+		if (m_MapVotes[i].m_Num >= g_Config.m_InfMinPlayerNumberForMapVote)
+		{
+			if (m_MapVotes[i].m_Num > HighestNum)
+			{
+				HighestNum = m_MapVotes[i].m_Num;
+				HighestNumIndex = i;
+			}
+		}
+		if (m_MapVotes[i].m_Num/PlayerCount >= g_Config.m_InfMinPlayerPercentForMapVote/(float)100)
+		{
+			if (m_MapVotes[i].m_Num > HighestNum)
+			{
+				HighestNum = m_MapVotes[i].m_Num;
+				HighestNumIndex = i;
+			}
+		}
+	}
+	if (HighestNumIndex >= 0)
+		return &m_MapVotes[HighestNumIndex];
+
+	return 0;
+}
+
+void CServer::ResetMapVotes()
+{
+	for (int i = 0; i < m_MapVotesCounter; i++)
+	{
+		delete[] m_MapVotes[i].m_pCommand;
+		delete[] m_MapVotes[i].m_pAddresses;
+		delete[] m_MapVotes[i].m_pReason;
+	}
+	m_MapVotesCounter = 0;
 }
 
 #ifdef CONF_SQL
