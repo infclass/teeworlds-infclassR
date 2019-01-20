@@ -171,6 +171,56 @@ void IGameController::ChangeMap(const char *pToMap)
 	EndRound();
 }
 
+void IGameController::GetWordFromList(char *pNextWord, const char *pList, int ListIndex)
+{
+	pList += ListIndex;
+	int i = 0;
+	while(*pList)
+	{
+		if (IsSeparator(*pList)) break;
+		pNextWord[i] = *pList;
+		pList++;
+		i++;
+	}
+	pNextWord[i] = 0;
+}
+
+void IGameController::GetMapRotationInfo(CMapRotationInfo *pMapRotationInfo)
+{
+	pMapRotationInfo->m_MapCount = 0;
+
+	if(!str_length(g_Config.m_SvMaprotation))
+		return;
+
+	const char *pNextMap = g_Config.m_SvMaprotation;
+	const char *pCurrentMap = g_Config.m_SvMap;
+	bool insideWord = false;
+	char aBuf[128];
+	int i = 0;
+	while(*pNextMap)
+	{
+		if (IsSeparator(*pNextMap))
+		{
+			if (insideWord)
+				insideWord = false;
+		}
+		else // current char is not a sperator
+		{
+			if (!insideWord)
+			{
+				insideWord = true;
+				pMapRotationInfo->m_MapNameIndices[pMapRotationInfo->m_MapCount] = i;
+				GetWordFromList(aBuf, g_Config.m_SvMaprotation, i);
+				if (str_comp(aBuf, pCurrentMap) == 0)
+					pMapRotationInfo->m_CurrentMapNumber = pMapRotationInfo->m_MapCount;
+				pMapRotationInfo->m_MapCount++;
+			}
+		}
+		pNextMap++;
+		i++;
+	}
+}
+
 void IGameController::CycleMap(bool Forced)
 {
 	if(m_aMapWish[0] != 0)
@@ -189,10 +239,42 @@ void IGameController::CycleMap(bool Forced)
 	if(!Forced && m_RoundCount < g_Config.m_SvRoundsPerMap-1)
 		return;
 
-	// handle maprotation
+	if (g_Config.m_InfMaprotationRandom)
+	{
+		// handle random maprotation
+		CMapRotationInfo pMapRotationInfo;
+		GetMapRotationInfo(&pMapRotationInfo);
+	
+		if (pMapRotationInfo.m_MapCount <= 1)
+			return;
+
+		char aBuf[256] = {0};
+		int RandInt;
+		int i=0;
+		for ( ; i<32; i++)
+		{
+			RandInt = random_int(0, pMapRotationInfo.m_MapCount-1);
+			if (RandInt != pMapRotationInfo.m_CurrentMapNumber)
+				break;
+		}
+		if (i >= 31)
+		{
+			dbg_msg("CycleMap", "Error: Couldnt find random map to rotate to");
+			return;
+		}
+		GetWordFromList(aBuf, g_Config.m_SvMaprotation, pMapRotationInfo.m_MapNameIndices[RandInt]);
+
+		m_RoundCount = 0;
+		char aBufMsg[256];
+		str_format(aBufMsg, sizeof(aBufMsg), "randomly rotating map to %s", aBuf);
+		GameServer()->Console()->Print(IConsole::OUTPUT_LEVEL_DEBUG, "game", aBuf);
+		str_copy(g_Config.m_SvMap, aBuf, sizeof(g_Config.m_SvMap));
+		return;
+	}
+
+	// handle normal maprotation
 	const char *pMapRotation = g_Config.m_SvMaprotation;
 	const char *pCurrentMap = g_Config.m_SvMap;
-
 	int CurrentMapLen = str_length(pCurrentMap);
 	const char *pNextMap = pMapRotation;
 	while(*pNextMap)

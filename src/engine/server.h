@@ -339,7 +339,6 @@ public:
 	virtual void RemoveMapVotesForID(int ClientID) = 0;
 	virtual void ResetMapVotes() = 0;
 	virtual CMapVote* GetMapVote() = 0;
-	virtual void GetCurrentMapName(char* pMapName, int MapNameSize) = 0;
 	
 	virtual int GetTimeShiftUnit() const = 0; //In ms
 /* INFECTION MODIFICATION END *****************************************/

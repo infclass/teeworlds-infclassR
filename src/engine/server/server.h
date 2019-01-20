@@ -410,7 +410,6 @@ public:
 	virtual void RemoveMapVotesForID(int ClientID);
 	virtual void ResetMapVotes();
 	virtual IServer::CMapVote* GetMapVote();
-	virtual void GetCurrentMapName(char* pMapName, int MapNameSize);
 
 	virtual int GetActivePlayerCount();
 	

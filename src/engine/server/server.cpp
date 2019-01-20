@@ -1754,12 +1754,6 @@ void CServer::PumpNetwork()
 	m_Econ.Update();
 }
 
-// copies current map name into pMapName
-void CServer::GetCurrentMapName(char* pMapName, int MapNameSize)
-{
-	str_copy(pMapName, m_aCurrentMap, MapNameSize);
-}
-
 char *CServer::GetMapName()
 {
 	// get the name of the map without his path

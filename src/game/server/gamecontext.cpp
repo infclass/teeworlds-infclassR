@@ -1515,10 +1515,8 @@ void CGameContext::OnCallVote(void *pRawMsg, int ClientID)
 						if (MapVoteType == SV_MAP || MapVoteType == CHANGE_MAP)
 						{
 							char MapName[VOTE_CMD_LENGTH] = {0};
-							char CurrentMapName[VOTE_CMD_LENGTH] = {0};
-							Server()->GetCurrentMapName(CurrentMapName, VOTE_CMD_LENGTH);
 							GetMapNameFromCommand(MapName, pOption->m_aCommand);
-							if (str_comp_nocase(MapName, CurrentMapName) == 0)
+							if (str_comp_nocase(MapName, g_Config.m_SvMap) == 0)
 							{
 								char aBufVoteMap[128];
 								str_format(aBufVoteMap, sizeof(aBufVoteMap), "Server is already on map %s", MapName);
