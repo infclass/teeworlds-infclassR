@@ -24,6 +24,9 @@ public:
 	virtual void FindPosition();
 	virtual void Snap(int SnappingClient);
 	void GiveGift(CCharacter* pHero);
+
+private:
+	void SetCoolDown();
 };
 
 #endif

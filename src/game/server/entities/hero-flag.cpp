@@ -35,13 +35,30 @@ void CHeroFlag::FindPosition()
 	m_Pos = GameServer()->m_pController->HeroFlagPositions()[Index];
 }
 
+void CHeroFlag::SetCoolDown()
+{
+	// Set cooldown for next flag depending on how many players are online
+	int PlayerCount = Server()->GetActivePlayerCount();
+	if (PlayerCount <= 1)
+	{
+		// only 1 player on, let him find as many flags as he wants
+		m_CoolDownTick = 2;
+		return;
+	}
+	float t = (8-PlayerCount) / 8.0f;
+	if (t < 0.0f) 
+		t = 0.0f;
+	m_CoolDownTick = Server()->TickSpeed() * (15+(120*t));
+}
+
 void CHeroFlag::GiveGift(CCharacter* pHero)
 {
 	// Find other players	
 	GameServer()->SendBroadcast_Localization(-1, BROADCAST_PRIORITY_GAMEANNOUNCE, BROADCAST_DURATION_GAMEANNOUNCE, _("The Hero found the flag!"), NULL);
 	GameServer()->CreateSoundGlobal(SOUND_CTF_CAPTURE);
-	m_CoolDownTick = Server()->TickSpeed()*15;
-	
+
+	SetCoolDown();
+
 	for(CCharacter *p = (CCharacter*) GameWorld()->FindFirst(CGameWorld::ENTTYPE_CHARACTER); p; p = (CCharacter *)p->TypeNext())
 	{
 		if(p->IsInfected())

@@ -1050,11 +1050,11 @@ int CServer::DelClientCallback(int ClientID, int Type, const char *pReason, void
 	
 	//Keep information about client for 10 minutes
 	pThis->m_NetSession.AddSession(pThis->m_NetServer.ClientAddr(ClientID), 10*60, &pThis->m_aClients[ClientID].m_Session);
-	//dbg_msg("infclass", "session created for the client %d", ClientID);
+	dbg_msg("infclass", "session created for the client %d", ClientID);
 	
 	//Keep accusation for 30 minutes
 	pThis->m_NetAccusation.AddSession(pThis->m_NetServer.ClientAddr(ClientID), 30*60, &pThis->m_aClients[ClientID].m_Accusation);
-	//dbg_msg("infclass", "accusation created for the client %d", ClientID);
+	dbg_msg("infclass", "accusation created for the client %d", ClientID);
 	
 	return 0;
 }
@@ -4461,6 +4461,8 @@ void CServer::AddMapVote(int From, const char* pCommand, const char* pReason, co
 	}
 	if (Index < 0)
 	{		
+		// create a new variable of type CMapVote for a specific map
+		// in order to count how many players want to start this map vote
 		Index = m_MapVotesCounter;
 		m_MapVotes[Index].m_pCommand = new char[VOTE_CMD_LENGTH];
 		str_copy(const_cast<char*>(m_MapVotes[Index].m_pCommand), pCommand, VOTE_CMD_LENGTH);
@@ -4475,9 +4477,13 @@ void CServer::AddMapVote(int From, const char* pCommand, const char* pReason, co
 	}
 	else 
 	{
+		// CMapVote variable for this map already exists -> add player to it
+
 		if (str_comp_nocase(m_MapVotes[Index].m_pReason, "No reason given") == 0)
+			// if there is a reason, use it instead of "No reason given"
 			str_copy(const_cast<char*>(m_MapVotes[Index].m_pReason), pReason, VOTE_REASON_LENGTH);
 
+		// check if the player has already voted
 		for(int i=0; i<m_MapVotes[Index].m_Num; i++)
 		{
 			if(net_addr_comp(&m_MapVotes[Index].m_pAddresses[i], &FromAddr) == 0)
@@ -4487,8 +4493,9 @@ void CServer::AddMapVote(int From, const char* pCommand, const char* pReason, co
 				return;
 			}
 		}
-
+		// save address from the player, so he cannot vote twice for the same map
 		m_MapVotes[Index].m_pAddresses[m_MapVotes[Index].m_Num] = FromAddr;
+		// increase number that counts how many people have already voted
 		m_MapVotes[Index].m_Num++;
 	}
 
@@ -4513,9 +4520,12 @@ void CServer::RemoveMapVotesForID(int ClientID)
 			{
 				if (k+1 == m_MapVotes[i].m_Num)
 				{
+					// leaving player has the last position inside the array - just decrease the size and continue
 					m_MapVotes[i].m_Num--;
 					continue;
 				}
+				// save the last address to the position which the player used that left (overwrite it)
+				// in order to not lose the last address when we decrease the size of the array in the next line
 				m_MapVotes[i].m_pAddresses[k] = m_MapVotes[i].m_pAddresses[m_MapVotes[i].m_Num-1];
 				m_MapVotes[i].m_Num--;
 			}
