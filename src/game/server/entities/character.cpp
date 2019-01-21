@@ -24,7 +24,7 @@
 #include "scientist-mine.h"
 #include "biologist-mine.h"
 #include "bouncing-bullet.h"
-#include "merc-grenade.h"
+#include "scatter-grenade.h"
 #include "merc-bomb.h"
 #include "medic-grenade.h"
 #include "hero-flag.h"
@@ -107,6 +107,7 @@ m_pConsole(pConsole)
 	m_NinjaAmmoBuff = 0;
 	m_HasWhiteHole = false;
 	m_HasIndicator = false;
+	m_HasStunGrenade = false;
 	m_VoodooTimeAlive = Server()->TickSpeed()*g_Config.m_InfVoodooAliveTime;
 	m_VoodooAboutToDie = false;
 	m_BroadcastWhiteHoleReady = -100;
@@ -1119,7 +1120,7 @@ void CCharacter::FireWeapon()
 			{				
 				//Find bomb
 				bool BombFound = false;
-				for(CMercenaryGrenade *pGrenade = (CMercenaryGrenade*) GameWorld()->FindFirst(CGameWorld::ENTTYPE_MERCENARY_GRENADE); pGrenade; pGrenade = (CMercenaryGrenade*) pGrenade->TypeNext())
+				for(CScatterGrenade *pGrenade = (CScatterGrenade*) GameWorld()->FindFirst(CGameWorld::ENTTYPE_SCATTER_GRENADE); pGrenade; pGrenade = (CScatterGrenade*) pGrenade->TypeNext())
 				{
 					if(pGrenade->m_Owner != m_pPlayer->GetCID()) continue;
 					pGrenade->Explode();
@@ -1135,26 +1136,22 @@ void CCharacter::FireWeapon()
 					
 					for(int i = -ShotSpread; i <= ShotSpread; ++i)
 					{
-						float a = GetAngle(Direction) + random_float()/5.0f;
+						float a = GetAngle(Direction) + random_float()/3.0f;
 						
-						CMercenaryGrenade *pProj = new CMercenaryGrenade(GameWorld(), m_pPlayer->GetCID(), m_Pos, vec2(cosf(a), sinf(a)));
-
+						CScatterGrenade *pProj = new CScatterGrenade(GameWorld(), m_pPlayer->GetCID(), m_Pos, vec2(cosf(a), sinf(a)));
+						
 						// pack the Projectile and send it to the client Directly
 						CNetObj_Projectile p;
 						pProj->FillInfo(&p);
-
+						
 						for(unsigned i = 0; i < sizeof(CNetObj_Projectile)/sizeof(int); i++)
 							Msg.AddInt(((int *)&p)[i]);
 						Server()->SendMsg(&Msg, MSGFLAG_VITAL, m_pPlayer->GetCID());
 					}
-
+					
 					GameServer()->CreateSound(m_Pos, SOUND_GRENADE_FIRE);
 					
 					m_ReloadTimer = Server()->TickSpeed()/4;
-				}
-				else
-				{
-					m_aWeapons[m_ActiveWeapon].m_Ammo++;
 				}
 			}
 			else if(GetClass() == PLAYERCLASS_MEDIC)
@@ -1170,7 +1167,7 @@ void CCharacter::FireWeapon()
 				
 				if(!BombFound && m_aWeapons[m_ActiveWeapon].m_Ammo)
 				{
-					int ShotSpread = 0;
+					int ShotSpread = 2;
 					
 					CMsgPacker Msg(NETMSGTYPE_SV_EXTRAPROJECTILE);
 					Msg.AddInt(ShotSpread*2+1);
@@ -1226,31 +1223,68 @@ void CCharacter::FireWeapon()
 			}
 			else
 			{
-				CProjectile *pProj = new CProjectile(GameWorld(), WEAPON_GRENADE,
-					m_pPlayer->GetCID(),
-					ProjStartPos,
-					Direction,
-					(int)(Server()->TickSpeed()*GameServer()->Tuning()->m_GrenadeLifetime),
-					1, true, 0, SOUND_GRENADE_EXPLODE, WEAPON_GRENADE);
-
-	/* INFECTION MODIFICATION START ***************************************/
-				if(GetClass() == PLAYERCLASS_NINJA)
+				if(m_HasStunGrenade) 
 				{
-					pProj->FlashGrenade();
+					int ShotSpread = 2;
+					
+					CMsgPacker Msg(NETMSGTYPE_SV_EXTRAPROJECTILE);
+					Msg.AddInt(ShotSpread*2+1);
+					
+					for(int i = -ShotSpread; i <= ShotSpread; ++i)
+					{
+						float a = GetAngle(Direction) + random_float()/3.0f;
+						
+						CScatterGrenade *pProj = new CScatterGrenade(GameWorld(), m_pPlayer->GetCID(), m_Pos, vec2(cosf(a), sinf(a)));
+						
+						if (m_HasStunGrenade)
+						{
+							//Make them flash grenades
+							pProj->FlashGrenade();
+						}
+						
+						
+						// pack the Projectile and send it to the client Directly
+						CNetObj_Projectile p;
+						pProj->FillInfo(&p);
+						
+						for(unsigned i = 0; i < sizeof(CNetObj_Projectile)/sizeof(int); i++)
+							Msg.AddInt(((int *)&p)[i]);
+						Server()->SendMsg(&Msg, MSGFLAG_VITAL, m_pPlayer->GetCID());
+					}
+					
+					GameServer()->CreateSound(m_Pos, SOUND_GRENADE_FIRE);
+					
+					m_HasStunGrenade=false;
+					GetPlayer()->ResetNumberKills();
+					return;
 				}
-	/* INFECTION MODIFICATION END *****************************************/
-
-				// pack the Projectile and send it to the client Directly
-				CNetObj_Projectile p;
-				pProj->FillInfo(&p);
-
-				CMsgPacker Msg(NETMSGTYPE_SV_EXTRAPROJECTILE);
-				Msg.AddInt(1);
-				for(unsigned i = 0; i < sizeof(CNetObj_Projectile)/sizeof(int); i++)
-					Msg.AddInt(((int *)&p)[i]);
-				Server()->SendMsg(&Msg, MSGFLAG_VITAL, m_pPlayer->GetCID());
-
-				GameServer()->CreateSound(m_Pos, SOUND_GRENADE_FIRE);
+				else 
+				{
+					CProjectile *pProj = new CProjectile(GameWorld(), WEAPON_GRENADE,
+														 m_pPlayer->GetCID(),
+														 ProjStartPos,
+										  Direction,
+										  (int)(Server()->TickSpeed()*GameServer()->Tuning()->m_GrenadeLifetime),
+														 1, true, 0, SOUND_GRENADE_EXPLODE, WEAPON_GRENADE);
+					
+					if(GetClass() == PLAYERCLASS_NINJA)
+					{
+						pProj->FlashGrenade();
+					}
+					
+					// pack the Projectile and send it to the client Directly
+					CNetObj_Projectile p;
+					pProj->FillInfo(&p);
+					
+					CMsgPacker Msg(NETMSGTYPE_SV_EXTRAPROJECTILE);
+					Msg.AddInt(1);
+					for(unsigned i = 0; i < sizeof(CNetObj_Projectile)/sizeof(int); i++)
+						Msg.AddInt(((int *)&p)[i]);
+					Server()->SendMsg(&Msg, MSGFLAG_VITAL, m_pPlayer->GetCID());
+					
+					GameServer()->CreateSound(m_Pos, SOUND_GRENADE_FIRE);
+					
+				}
 			}
 		} break;
 
@@ -1323,20 +1357,21 @@ void CCharacter::FireWeapon()
 
 void CCharacter::CheckSuperWeaponAccess()
 {
+	// check kills of player
+	int kills = m_pPlayer->GetNumberKills();
+	
 	//Only scientists can receive white holes
 	if(GetClass() == PLAYERCLASS_SCIENTIST)
 	{
-		// check kills of player
-		int kills = m_pPlayer->GetNumberKills();
 		
-		if (m_HasWhiteHole == false) // Can't receive a white hole while having one available
+		if (!m_HasWhiteHole) // Can't receive a white hole while having one available
 		{
 			// enable white hole probabilities
 			if (kills > g_Config.m_InfWhiteHoleMinimalKills) 
 			{
 				if (random_int(0,100) < g_Config.m_InfWhiteHoleProbability) 
 				{
-					//Scientist-laser.cpp will make it unavailable after usage
+					//Scientist-laser.cpp will make it unavailable after usage and reset player kills
 					
 					//create an indicator object
 					if (m_HasIndicator == false) {
@@ -1344,6 +1379,25 @@ void CCharacter::CheckSuperWeaponAccess()
 						GameServer()->SendChatTarget_Localization(m_pPlayer->GetCID(), CHATCATEGORY_SCORE, _("white hole found, adjusting scientific parameters..."), NULL);
 						new CSuperWeaponIndicator(GameWorld(), m_Pos, m_pPlayer->GetCID());
 					}
+				} 
+			} 
+		}
+	}
+	
+	//Only looper and soldier can receive stun grenades
+	if(GetClass() == PLAYERCLASS_LOOPER || GetClass() == PLAYERCLASS_SOLDIER)
+	{
+		if (!m_HasStunGrenade)
+		{
+			// enable white hole probabilities
+			if (kills > g_Config.m_InfStunGrenadeMinimalKills) 
+			{
+				if (random_int(0,100) < g_Config.m_InfStunGrenadeProbability) 
+				{
+						//grenade launcher usage will make it unavailable and reset player kills
+					
+						m_HasStunGrenade = true;
+						GameServer()->SendChatTarget_Localization(m_pPlayer->GetCID(), CHATCATEGORY_SCORE, _("stun grenades found..."), NULL);
 				} 
 			} 
 		}
@@ -3605,7 +3659,7 @@ void CCharacter::DestroyChildEntities()
 		if(pBomb->m_Owner != m_pPlayer->GetCID()) continue;
 			GameServer()->m_World.DestroyEntity(pBomb);
 	}
-	for(CMercenaryGrenade* pGrenade = (CMercenaryGrenade*) GameWorld()->FindFirst(CGameWorld::ENTTYPE_MERCENARY_GRENADE); pGrenade; pGrenade = (CMercenaryGrenade*) pGrenade->TypeNext())
+	for(CScatterGrenade* pGrenade = (CScatterGrenade*) GameWorld()->FindFirst(CGameWorld::ENTTYPE_SCATTER_GRENADE); pGrenade; pGrenade = (CScatterGrenade*) pGrenade->TypeNext())
 	{
 		if(pGrenade->m_Owner != m_pPlayer->GetCID()) continue;
 			GameServer()->m_World.DestroyEntity(pGrenade);
