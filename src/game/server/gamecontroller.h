@@ -79,10 +79,21 @@ public:
 	virtual void EndRound();
 	void ChangeMap(const char *pToMap);
 	int GetRoundCount();
+	bool IsRoundEndTime();
 
 	bool IsFriendlyFire(int ClientID1, int ClientID2);
 
 	bool IsForceBalanced();
+
+	struct CMapRotationInfo
+	{
+		static const int MAX_MAPS = 256;
+		int m_MapNameIndices[MAX_MAPS]; // saves Indices where mapNames start inside of g_Config.m_SvMaprotation
+		int m_MapCount; // how many maps are in rotation
+		int m_CurrentMapNumber; // at what place the current map is, from 0 to (m_MapCount-1)
+	};
+	void GetMapRotationInfo(CMapRotationInfo *pMapRotationInfo);
+	void GetWordFromList(char *pNextWord, const char *pList, int ListIndex);
 
 	/*
 

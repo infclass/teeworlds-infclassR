@@ -127,6 +127,11 @@ int IGameController::GetRoundCount() {
 	return m_RoundCount;
 }
 
+bool IGameController::IsRoundEndTime() 
+{
+	return m_GameOverTick > 0;
+}
+
 void IGameController::StartRound()
 {
 	ResetGame();
@@ -166,6 +171,56 @@ void IGameController::ChangeMap(const char *pToMap)
 	EndRound();
 }
 
+void IGameController::GetWordFromList(char *pNextWord, const char *pList, int ListIndex)
+{
+	pList += ListIndex;
+	int i = 0;
+	while(*pList)
+	{
+		if (IsSeparator(*pList)) break;
+		pNextWord[i] = *pList;
+		pList++;
+		i++;
+	}
+	pNextWord[i] = 0;
+}
+
+void IGameController::GetMapRotationInfo(CMapRotationInfo *pMapRotationInfo)
+{
+	pMapRotationInfo->m_MapCount = 0;
+
+	if(!str_length(g_Config.m_SvMaprotation))
+		return;
+
+	const char *pNextMap = g_Config.m_SvMaprotation;
+	const char *pCurrentMap = g_Config.m_SvMap;
+	bool insideWord = false;
+	char aBuf[128];
+	int i = 0;
+	while(*pNextMap)
+	{
+		if (IsSeparator(*pNextMap))
+		{
+			if (insideWord)
+				insideWord = false;
+		}
+		else // current char is not a seperator
+		{
+			if (!insideWord)
+			{
+				insideWord = true;
+				pMapRotationInfo->m_MapNameIndices[pMapRotationInfo->m_MapCount] = i;
+				GetWordFromList(aBuf, g_Config.m_SvMaprotation, i);
+				if (str_comp(aBuf, pCurrentMap) == 0)
+					pMapRotationInfo->m_CurrentMapNumber = pMapRotationInfo->m_MapCount;
+				pMapRotationInfo->m_MapCount++;
+			}
+		}
+		pNextMap++;
+		i++;
+	}
+}
+
 void IGameController::CycleMap(bool Forced)
 {
 	if(m_aMapWish[0] != 0)
@@ -184,58 +239,64 @@ void IGameController::CycleMap(bool Forced)
 	if(!Forced && m_RoundCount < g_Config.m_SvRoundsPerMap-1)
 		return;
 
-	// handle maprotation
-	const char *pMapRotation = g_Config.m_SvMaprotation;
-	const char *pCurrentMap = g_Config.m_SvMap;
+	int PlayerCount = Server()->GetActivePlayerCount();
 
-	int CurrentMapLen = str_length(pCurrentMap);
-	const char *pNextMap = pMapRotation;
-	while(*pNextMap)
+	CMapRotationInfo pMapRotationInfo;
+	GetMapRotationInfo(&pMapRotationInfo);
+	
+	if (pMapRotationInfo.m_MapCount <= 1)
+		return;
+
+	char aBuf[256] = {0};
+	int i=0;
+	if (g_Config.m_InfMaprotationRandom)
 	{
-		int WordLen = 0;
-		while(pNextMap[WordLen] && !IsSeparator(pNextMap[WordLen]))
-			WordLen++;
-
-		if(WordLen == CurrentMapLen && str_comp_num(pNextMap, pCurrentMap, CurrentMapLen) == 0)
+		// handle random maprotation
+		int RandInt;
+		for ( ; i<32; i++)
 		{
-			// map found
-			pNextMap += CurrentMapLen;
-			while(*pNextMap && IsSeparator(*pNextMap))
-				pNextMap++;
-
-			break;
+			RandInt = random_int(0, pMapRotationInfo.m_MapCount-1);
+			GetWordFromList(aBuf, g_Config.m_SvMaprotation, pMapRotationInfo.m_MapNameIndices[RandInt]);
+			int MinPlayers = Server()->GetMinPlayersForMap(aBuf);
+			if (RandInt != pMapRotationInfo.m_CurrentMapNumber && PlayerCount >= MinPlayers)
+				break;
 		}
-
-		pNextMap++;
+		i = RandInt;
+	}
+	else
+	{
+		// handle normal maprotation
+		i = pMapRotationInfo.m_CurrentMapNumber+1;
+		for ( ; i != pMapRotationInfo.m_CurrentMapNumber; i++)
+		{
+			if (i >= pMapRotationInfo.m_MapCount)
+			{
+				i = 0;
+				if (i == pMapRotationInfo.m_CurrentMapNumber)
+					break;
+			}
+			GetWordFromList(aBuf, g_Config.m_SvMaprotation, pMapRotationInfo.m_MapNameIndices[i]);
+			int MinPlayers = Server()->GetMinPlayersForMap(aBuf);
+			if (PlayerCount >= MinPlayers)
+				break;
+		}
 	}
 
-	// restart rotation
-	if(pNextMap[0] == 0)
-		pNextMap = pMapRotation;
-
-	// cut out the next map
-	char aBuf[512] = {0};
-	for(int i = 0; i < 511; i++)
+	if (i == pMapRotationInfo.m_CurrentMapNumber)
 	{
-		aBuf[i] = pNextMap[i];
-		if(IsSeparator(pNextMap[i]) || pNextMap[i] == 0)
-		{
-			aBuf[i] = 0;
-			break;
-		}
-	}
-
-	// skip spaces
-	int i = 0;
-	while(IsSeparator(aBuf[i]))
+		// couldnt find map with small enough minplayers number
 		i++;
+		if (i >= pMapRotationInfo.m_MapCount)
+			i = 0;
+		GetWordFromList(aBuf, g_Config.m_SvMaprotation, pMapRotationInfo.m_MapNameIndices[i]);
+	}
 
 	m_RoundCount = 0;
 
 	char aBufMsg[256];
-	str_format(aBufMsg, sizeof(aBufMsg), "rotating map to %s", &aBuf[i]);
+	str_format(aBufMsg, sizeof(aBufMsg), "rotating map to %s", aBuf);
 	GameServer()->Console()->Print(IConsole::OUTPUT_LEVEL_DEBUG, "game", aBuf);
-	str_copy(g_Config.m_SvMap, &aBuf[i], sizeof(g_Config.m_SvMap));
+	str_copy(g_Config.m_SvMap, aBuf, sizeof(g_Config.m_SvMap));
 }
 
 void IGameController::SkipMap()
@@ -359,7 +420,7 @@ void IGameController::Tick()
 	if(m_GameOverTick != -1)
 	{
 		// game over.. wait for restart
-		if(Server()->Tick() > m_GameOverTick+Server()->TickSpeed()*12)
+		if(Server()->Tick() > m_GameOverTick+Server()->TickSpeed()*g_Config.m_InfShowScoreTime)
 		{
 			for(int i = 0; i < MAX_CLIENTS; i++)
 			{
@@ -376,13 +437,9 @@ void IGameController::Tick()
 		else
 		{
 			int ScoreMode = PLAYERSCOREMODE_SCORE;
-			if((Server()->Tick() - m_GameOverTick) > Server()->TickSpeed() * 8)
+			if((Server()->Tick() - m_GameOverTick) > Server()->TickSpeed() * (g_Config.m_InfShowScoreTime/2.0f))
 			{
 				ScoreMode = PLAYERSCOREMODE_TIME;
-			}
-			else if((Server()->Tick() - m_GameOverTick) > Server()->TickSpeed() * 4)
-			{
-				ScoreMode = PLAYERSCOREMODE_SCORE;
 			}
 			
 			for(int i = 0; i < MAX_CLIENTS; i++)
