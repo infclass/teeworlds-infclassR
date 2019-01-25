@@ -17,7 +17,6 @@ public:
 	virtual void Snap(int SnappingClient);
 	int GetTick() { return m_LifeSpan; }
 	void LoseSeconds(int time);
-	void UpdateKingPowerupStatus(vec2 kingPosition);
 
 public:
 	int m_Owner;
@@ -26,8 +25,6 @@ private:
 	vec2 m_Pos2;
 	int m_LifeSpan;
 	int m_EndPointID;
-	bool kingNearby;
-	bool m_kingNearby;
 	int m_WallFlashTicks;
 };
 
