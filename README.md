@@ -26,7 +26,7 @@ If there are not enough players the server will skip this map. (But you can stil
 
 ### Map commands
 
-With ```sv_maprotation``` you can define what maps will be played in which order, for example:<br/>
+With ```sv_maprotation``` you  can define what maps will be played in which order, for example:<br/>
 ```sv_maprotation "infc_skull infc_warehouse infc_damascus"```<br/>
 With ```sv_rounds_per_map``` you can define how many rounds each map should be played before changing to the next map.<br/>
 If ```inf_maprotation_random``` is set to 1 than a random map will be chosen after a map finished.
