@@ -2348,6 +2348,43 @@ bool CServer::ConMute(IConsole::IResult *pResult, void *pUser)
 	return true;
 }
 
+bool CServer::ConWhisper(IConsole::IResult *pResult, void *pUser)
+{
+	CServer* pThis = (CServer *)pUser;
+	
+	const char *pStrClientID = pResult->GetString(0);
+	const char *pText = pResult->GetString(1);
+
+	if(CNetDatabase::StrAllnum(pStrClientID))
+	{
+		int ClientID = str_toint(pStrClientID);
+		if(ClientID < 0 || ClientID >= MAX_CLIENTS || pThis->m_aClients[ClientID].m_State == CServer::CClient::STATE_EMPTY)
+			pThis->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "Server", "Invalid client id");
+		else
+		{
+			// Send to target
+			CNetMsg_Sv_Chat Msg;
+			Msg.m_Team = 0;
+			Msg.m_ClientID = -1;
+			Msg.m_pMessage = pText;
+			pThis->SendPackMsg(&Msg, MSGFLAG_VITAL, ClientID);
+
+			// Confirm message sent
+			char aBuf[1024];
+			str_format(aBuf, sizeof(aBuf), "Whisper '%s' sent to %s",
+				pText,
+				pThis->ClientName(ClientID)
+			);
+			pThis->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "Server", aBuf);
+		}
+	}
+	else
+		pThis->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "Server", "Invalid client id");
+	
+
+	return true;
+}
+
 bool CServer::ConKick(IConsole::IResult *pResult, void *pUser)
 {
 	CServer* pThis = (CServer *)pUser;
@@ -2700,6 +2737,7 @@ void CServer::RegisterCommands()
 
 	Console()->Register("mute", "s<clientid> ?i<minutes> ?r<reason>", CFGFLAG_SERVER, ConMute, this, "Mute player with specified id for x minutes for any reason");
 	Console()->Register("unmute", "s<clientid>", CFGFLAG_SERVER, ConUnmute, this, "Unmute player with specified id");
+	Console()->Register("whisper", "s<id> r<txt>", CFGFLAG_SERVER, ConWhisper, this, "Analogous to 'Say' but sent to a single client only");
 	
 /* INFECTION MODIFICATION START ***************************************/
 #ifdef CONF_SQL

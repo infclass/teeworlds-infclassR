@@ -6,10 +6,10 @@
 #include <game/server/gamecontext.h>
 #include <game/server/entities/growingexplosion.h>
 
-#include "merc-grenade.h"
+#include "scatter-grenade.h"
 
-CMercenaryGrenade::CMercenaryGrenade(CGameWorld *pGameWorld, int Owner, vec2 Pos, vec2 Dir)
-: CEntity(pGameWorld, CGameWorld::ENTTYPE_MERCENARY_GRENADE)
+CScatterGrenade::CScatterGrenade(CGameWorld *pGameWorld, int Owner, vec2 Pos, vec2 Dir)
+: CEntity(pGameWorld, CGameWorld::ENTTYPE_SCATTER_GRENADE)
 {
 	m_Pos = Pos;
 	m_ActualPos = Pos;
@@ -17,16 +17,17 @@ CMercenaryGrenade::CMercenaryGrenade(CGameWorld *pGameWorld, int Owner, vec2 Pos
 	m_Direction = Dir;
 	m_Owner = Owner;
 	m_StartTick = Server()->Tick();
+	m_IsFlashGrenade = false;
 
 	GameWorld()->InsertEntity(this);
 }
 
-void CMercenaryGrenade::Reset()
+void CScatterGrenade::Reset()
 {
 	GameServer()->m_World.DestroyEntity(this);
 }
 
-vec2 CMercenaryGrenade::GetPos(float Time)
+vec2 CScatterGrenade::GetPos(float Time)
 {
 	float Curvature = GameServer()->Tuning()->m_GrenadeCurvature;
 	float Speed = GameServer()->Tuning()->m_GrenadeSpeed;
@@ -34,12 +35,12 @@ vec2 CMercenaryGrenade::GetPos(float Time)
 	return CalcPos(m_Pos, m_Direction, Curvature, Speed, Time);
 }
 
-void CMercenaryGrenade::TickPaused()
+void CScatterGrenade::TickPaused()
 {
 	m_StartTick++;
 }
 
-void CMercenaryGrenade::Tick()
+void CScatterGrenade::Tick()
 {
 	float Pt = (Server()->Tick()-m_StartTick-1)/(float)Server()->TickSpeed();
 	float Ct = (Server()->Tick()-m_StartTick)/(float)Server()->TickSpeed();
@@ -67,7 +68,7 @@ void CMercenaryGrenade::Tick()
 		CollisionPos.x = CurPos.x;
 		CollisionPos.y = LastPos.y;
 		int CollideX = GameServer()->Collision()->IntersectLine(PrevPos, CollisionPos, NULL, NULL);
-
+		
 		m_Pos = LastPos;
 		m_ActualPos = m_Pos;
 		vec2 vel;
@@ -95,11 +96,14 @@ void CMercenaryGrenade::Tick()
 		m_StartTick = Server()->Tick();
 		
 		m_ActualDir = normalize(m_Direction);
+		
+		if(m_IsFlashGrenade) {
+			this->Explode();
+		}
 	}
-	
 }
 
-void CMercenaryGrenade::FillInfo(CNetObj_Projectile *pProj)
+void CScatterGrenade::FillInfo(CNetObj_Projectile *pProj)
 {
 	pProj->m_X = (int)m_Pos.x;
 	pProj->m_Y = (int)m_Pos.y;
@@ -109,20 +113,34 @@ void CMercenaryGrenade::FillInfo(CNetObj_Projectile *pProj)
 	pProj->m_Type = WEAPON_GRENADE;
 }
 
-void CMercenaryGrenade::Snap(int SnappingClient)
+void CScatterGrenade::Snap(int SnappingClient)
 {
 	float Ct = (Server()->Tick()-m_StartTick)/(float)Server()->TickSpeed();
-
+	
 	if(NetworkClipped(SnappingClient, GetPos(Ct)))
 		return;
-
+	
 	CNetObj_Projectile *pProj = static_cast<CNetObj_Projectile *>(Server()->SnapNewItem(NETOBJTYPE_PROJECTILE, m_ID, sizeof(CNetObj_Projectile)));
 	if(pProj)
 		FillInfo(pProj);
 }
 	
-void CMercenaryGrenade::Explode()
+void CScatterGrenade::Explode()
 {
-	new CGrowingExplosion(GameWorld(), m_ActualPos, m_ActualDir, m_Owner, 4, GROWINGEXPLOSIONEFFECT_POISON_INFECTED);
+	if(m_IsFlashGrenade)
+	{
+		new CGrowingExplosion(GameWorld(), m_ActualPos, m_ActualDir, m_Owner, 4, GROWINGEXPLOSIONEFFECT_FREEZE_INFECTED);
+	}
+	else
+	{
+		new CGrowingExplosion(GameWorld(), m_ActualPos, m_ActualDir, m_Owner, 4, GROWINGEXPLOSIONEFFECT_POISON_INFECTED);
+	}
+	
 	GameServer()->m_World.DestroyEntity(this);
+	
+}
+
+void CScatterGrenade::FlashGrenade()
+{
+	m_IsFlashGrenade = true;
 }

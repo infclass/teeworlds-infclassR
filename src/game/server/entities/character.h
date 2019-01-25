@@ -198,15 +198,15 @@ private:
 	vec2 m_SpawnPosition;
 
 	int m_VoodooTimeAlive;
-	bool m_VoodooAboutToDie;
 	int m_VoodooKiller; // Save killer + weapon for delayed kill message
 	int m_VoodooWeapon;
 public:
 	int m_PositionLockTick;
 	bool m_PositionLocked;
 	bool m_PositionLockAvailable;
-	bool m_HasWhiteHole; //White hole changes here
-	bool m_HasIndicator; //White hole changes here
+	bool m_HasWhiteHole;
+	bool m_HasIndicator;
+	bool m_HasStunGrenade;
 	int m_BroadcastWhiteHoleReady; // used to broadcast "WhiteHole ready" for a short period of time
 	int m_LoveTick;
 	int m_HallucinationTick;
@@ -222,6 +222,7 @@ public:
 	int m_NinjaStrengthBuff;
 	int m_NinjaAmmoBuff;
 	int m_RefreshTime;
+	bool m_VoodooAboutToDie;
 	
 
 public:

@@ -285,6 +285,7 @@ public:
 
 	static bool ConMute(class IConsole::IResult *pResult, void *pUser);
 	static bool ConUnmute(class IConsole::IResult *pResult, void *pUser);
+	static bool ConWhisper(class IConsole::IResult *pResult, void *pUser);
 	
 /* DDNET MODIFICATION START *******************************************/
 	static bool ConAddSqlServer(IConsole::IResult *pResult, void *pUserData);
