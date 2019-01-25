@@ -237,7 +237,7 @@ void CCharacterCore::Tick(bool UseInput, CParams* pParams)
 		}
 
 		// Check against other players first
-		if(m_pWorld && pTuningParams->m_PlayerHooking)
+		if(m_pWorld)
 		{
 			float Distance = 0.0f;
 			for(int i = 0; i < MAX_CLIENTS; i++)
@@ -358,7 +358,7 @@ void CCharacterCore::Tick(bool UseInput, CParams* pParams)
 			vec2 Dir = normalize(m_Pos - pCharCore->m_Pos);
 
 			// handle hook influence
-			if(m_HookedPlayer == i && pTuningParams->m_PlayerHooking)
+			if(m_HookedPlayer == i)
 			{
 				if(Distance > PhysSize*1.50f) // TODO: fix tweakable variable
 				{
