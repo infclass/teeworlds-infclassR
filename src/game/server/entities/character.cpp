@@ -3509,23 +3509,6 @@ void CCharacter::ClassSpawnAttributes()
 				m_pPlayer->m_knownClass[PLAYERCLASS_GHOST] = true;
 			}
 			break;
-		case PLAYERCLASS_KING:
-			m_Health = 10;
-			m_Armor = 10;
-			m_pPlayer->m_InfectionTick = -1;
-			RemoveAllGun();
-			m_aWeapons[WEAPON_HAMMER].m_Got = true;
-			GiveWeapon(WEAPON_HAMMER, -1);
-			GiveWeapon(WEAPON_GUN, -1);
-			m_ActiveWeapon = WEAPON_HAMMER;
-			
-			GameServer()->SendBroadcast_ClassIntro(m_pPlayer->GetCID(), PLAYERCLASS_KING);
-			if(!m_pPlayer->IsKownClass(PLAYERCLASS_KING))
-			{
-				GameServer()->SendChatTarget_Localization(m_pPlayer->GetCID(), CHATCATEGORY_DEFAULT, _("Type “/help {str:ClassName}” for more information about your class"), "ClassName", "king", NULL);
-				m_pPlayer->m_knownClass[PLAYERCLASS_KING] = true;
-			}
-			break;
 		case PLAYERCLASS_SPIDER:
 			m_Health = 10;
 			m_Armor = 0;

@@ -37,11 +37,6 @@ void CEngineerWall::Reset()
 	GameServer()->m_World.DestroyEntity(this);
 }
 
-void CEngineerWall::LoseSeconds(int seconds)
-{
-	m_LifeSpan -= Server()->TickSpeed()*seconds;
-}
-
 void CEngineerWall::Tick()
 {
 	if(m_MarkedForDestroy) return;

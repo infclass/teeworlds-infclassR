@@ -133,9 +133,6 @@ private:
 	int m_GhoulLevel;
 	int m_GhoulLevelTick;
 	
-	bool m_inKingRange;
-	int m_tickBeforeKingHelp;
-  
 	int m_NumberKills;
 
 	bool m_VoodooIsSpirit;

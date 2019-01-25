@@ -131,18 +131,8 @@ public:
 	// InfClassR
 	int GetZombieCount();
 	int GetZombieCount(int zombie_class);
-	int GetHumanCount();
-	int GetHumanCount(int human_class);
 	int RandomZombieToWitch();
-	int RandomHumanToKing();
-	bool HasKingSpawned();
-	bool KingIsDead();
-	float DistanceWithKing(vec2 pos);
-
-	void OnKingDeath();
-
 	std::vector<int> m_WitchCallers;
-	std::vector<int> m_KingCallers;
 
 	// InfClassR fun round
 	void EndFunRound();
@@ -263,7 +253,6 @@ private:
 	static bool ConLanguage(IConsole::IResult *pResult, void *pUserData);
 	static bool ConCmdList(IConsole::IResult *pResult, void *pUserData);
 	static bool ConWitch(IConsole::IResult *pResult, void *pUserData);
-	static bool ConKing(IConsole::IResult *pResult, void *pUserData);
 	bool PrivateMessage(const char* pStr, int ClientID, bool TeamChat);
 
 	void OnCallVote(void *pRawMsg, int ClientID);
