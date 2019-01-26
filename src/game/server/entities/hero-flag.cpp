@@ -72,10 +72,8 @@ void CHeroFlag::GiveGift(CCharacter* pHero)
 			p->IncreaseHealth(10);
 			p->IncreaseArmor(10);
 		}
-		else
-		{
-			p->GiveGift(GIFT_HEROFLAG);
-		}
+		
+		p->GiveGift(GIFT_HEROFLAG);
 	}
 }
 
