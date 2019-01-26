@@ -1170,7 +1170,7 @@ void CCharacter::FireWeapon()
 				
 				if(!BombFound && m_aWeapons[m_ActiveWeapon].m_Ammo)
 				{
-					int ShotSpread = 2;
+					int ShotSpread = 0;
 					
 					CMsgPacker Msg(NETMSGTYPE_SV_EXTRAPROJECTILE);
 					Msg.AddInt(ShotSpread*2+1);
