@@ -74,7 +74,8 @@ void CEngineerWall::Tick()
 							p->GetClass() != PLAYERCLASS_UNDEAD //Or exploit with score
 						)
 						{
-							Server()->RoundStatistics()->OnScoreEvent(pHook->GetPlayer()->GetCID(), SCOREEVENT_HELP_HOOK_BARRIER, pHook->GetClass());
+							int ClientID = pHook->GetPlayer()->GetCID();
+							Server()->RoundStatistics()->OnScoreEvent(ClientID, SCOREEVENT_HELP_HOOK_BARRIER, pHook->GetClass(), Server()->ClientName(ClientID), GameServer()->Console());
 							GameServer()->SendScoreSound(pHook->GetPlayer()->GetCID());
 						}
 					}
