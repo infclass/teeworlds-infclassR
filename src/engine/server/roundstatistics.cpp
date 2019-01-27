@@ -1,6 +1,6 @@
 #include "roundstatistics.h"
 
-void CRoundStatistics::CPlayer::OnScoreEvent(int EventType, int Class)
+int CRoundStatistics::CPlayer::OnScoreEvent(int EventType, int Class)
 {
 	int Points = 0;
 	switch(EventType)
@@ -45,7 +45,7 @@ void CRoundStatistics::CPlayer::OnScoreEvent(int EventType, int Class)
 			Points = 50;
 			break;
 	}
-	
+
 	m_Score += Points;
 	
 	switch(Class)
@@ -114,6 +114,8 @@ void CRoundStatistics::CPlayer::OnScoreEvent(int EventType, int Class)
 			m_WitchScore += Points;
 			break;
 	}
+
+	return Points;
 }
 
 void CRoundStatistics::ResetPlayer(int ClientID)
@@ -122,10 +124,18 @@ void CRoundStatistics::ResetPlayer(int ClientID)
 		m_aPlayers[ClientID].Reset();
 }
 
-void CRoundStatistics::OnScoreEvent(int ClientID, int EventType, int Class)
+void CRoundStatistics::OnScoreEvent(int ClientID, int EventType, int Class, const char* Name, IConsole* console)
 {
-	if(ClientID >= 0 && ClientID < MAX_CLIENTS)
-		m_aPlayers[ClientID].OnScoreEvent(EventType, Class);
+	if(ClientID >= 0 && ClientID < MAX_CLIENTS) {
+		int Score = m_aPlayers[ClientID].OnScoreEvent(EventType, Class);
+
+		char aBuf[256];
+		str_format(aBuf, sizeof(aBuf), "score player='%s' amount='%d'",
+			Name,
+			Score);
+		console->Print(IConsole::OUTPUT_LEVEL_DEBUG, "game", aBuf);
+	}
+	
 }
 
 void CRoundStatistics::SetPlayerAsWinner(int ClientID)

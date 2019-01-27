@@ -72,10 +72,8 @@ void CHeroFlag::GiveGift(CCharacter* pHero)
 			p->IncreaseHealth(10);
 			p->IncreaseArmor(10);
 		}
-		else
-		{
-			p->GiveGift(GIFT_HEROFLAG);
-		}
+		
+		p->GiveGift(GIFT_HEROFLAG);
 	}
 }
 
@@ -103,7 +101,8 @@ void CHeroFlag::Tick()
 				
 				if(NbPlayer > 3)
 				{
-					Server()->RoundStatistics()->OnScoreEvent(p->GetPlayer()->GetCID(), SCOREEVENT_HERO_FLAG, p->GetClass());
+					int ClientID = p->GetPlayer()->GetCID();
+					Server()->RoundStatistics()->OnScoreEvent(ClientID, SCOREEVENT_HERO_FLAG, p->GetClass(), Server()->ClientName(ClientID), GameServer()->Console());
 					GameServer()->SendScoreSound(p->GetPlayer()->GetCID());
 				}
 				break;

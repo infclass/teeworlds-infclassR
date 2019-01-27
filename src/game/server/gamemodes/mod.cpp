@@ -409,7 +409,7 @@ void CGameControllerMOD::Tick()
 						if(!Iter.Player()->IsInfected())
 						{
 							//TAG_SCORE
-							Server()->RoundStatistics()->OnScoreEvent(Iter.ClientID(), SCOREEVENT_HUMAN_SURVIVE, Iter.Player()->GetClass());
+							Server()->RoundStatistics()->OnScoreEvent(Iter.ClientID(), SCOREEVENT_HUMAN_SURVIVE, Iter.Player()->GetClass(), Server()->ClientName(Iter.ClientID()), GameServer()->Console());
 							Server()->RoundStatistics()->SetPlayerAsWinner(Iter.ClientID());
 							GameServer()->SendScoreSound(Iter.ClientID());
 							Iter.Player()->m_WinAsHuman++;
@@ -571,7 +571,7 @@ int CGameControllerMOD::OnCharacterDeath(class CCharacter *pVictim, class CPlaye
 			if(!pVictim->IsInfected())
 			{
 				GameServer()->SendChatTarget_Localization(pKiller->GetCID(), CHATCATEGORY_SCORE, _("You have infected {str:VictimName}, +3 points"), "VictimName", Server()->ClientName(pVictimPlayer->GetCID()), NULL);
-				Server()->RoundStatistics()->OnScoreEvent(pKiller->GetCID(), SCOREEVENT_INFECTION, pKiller->GetClass());
+				Server()->RoundStatistics()->OnScoreEvent(pKiller->GetCID(), SCOREEVENT_INFECTION, pKiller->GetClass(), Server()->ClientName(pKiller->GetCID()), GameServer()->Console());
 				GameServer()->SendScoreSound(pKiller->GetCID());
 				
 				//Search for hook
@@ -583,7 +583,7 @@ int CGameControllerMOD::OnCharacterDeath(class CCharacter *pVictim, class CPlaye
 						pHook->GetPlayer()->GetCID() != pKiller->GetCID()
 					)
 					{
-						Server()->RoundStatistics()->OnScoreEvent(pHook->GetPlayer()->GetCID(), SCOREEVENT_HELP_HOOK_INFECTION, pHook->GetClass());
+						Server()->RoundStatistics()->OnScoreEvent(pHook->GetPlayer()->GetCID(), SCOREEVENT_HELP_HOOK_INFECTION, pHook->GetClass(), Server()->ClientName(pHook->GetPlayer()->GetCID()), GameServer()->Console());
 						GameServer()->SendScoreSound(pHook->GetPlayer()->GetCID());
 					}
 				}
@@ -594,26 +594,26 @@ int CGameControllerMOD::OnCharacterDeath(class CCharacter *pVictim, class CPlaye
 	{
 		if(pKiller == pVictim->GetPlayer())
 		{
-			Server()->RoundStatistics()->OnScoreEvent(pKiller->GetCID(), SCOREEVENT_HUMAN_SUICIDE, pKiller->GetClass());
+			Server()->RoundStatistics()->OnScoreEvent(pKiller->GetCID(), SCOREEVENT_HUMAN_SUICIDE, pKiller->GetClass(), Server()->ClientName(pKiller->GetCID()), GameServer()->Console());
 		}
 		else
 		{
 			if(pVictim->GetClass() == PLAYERCLASS_WITCH)
 			{
 				GameServer()->SendChatTarget_Localization(pKiller->GetCID(), CHATCATEGORY_SCORE, _("You have killed a witch, +5 points"), NULL);
-				Server()->RoundStatistics()->OnScoreEvent(pKiller->GetCID(), SCOREEVENT_KILL_WITCH, pKiller->GetClass());
+				Server()->RoundStatistics()->OnScoreEvent(pKiller->GetCID(), SCOREEVENT_KILL_WITCH, pKiller->GetClass(), Server()->ClientName(pKiller->GetCID()), GameServer()->Console());
 				GameServer()->SendScoreSound(pKiller->GetCID());
 			}
 			else if(pVictim->IsInfected())
 			{
-				Server()->RoundStatistics()->OnScoreEvent(pKiller->GetCID(), SCOREEVENT_KILL_INFECTED, pKiller->GetClass());
+				Server()->RoundStatistics()->OnScoreEvent(pKiller->GetCID(), SCOREEVENT_KILL_INFECTED, pKiller->GetClass(), Server()->ClientName(pKiller->GetCID()), GameServer()->Console());
 				GameServer()->SendScoreSound(pKiller->GetCID());
 			}
 		
 			if(pKiller->GetClass() == PLAYERCLASS_NINJA && pVictim->GetPlayer()->GetCID() == GameServer()->GetTargetToKill())
 			{
 				GameServer()->SendChatTarget_Localization(pKiller->GetCID(), CHATCATEGORY_SCORE, _("You have eliminated your target, +2 points"), NULL);
-				Server()->RoundStatistics()->OnScoreEvent(pKiller->GetCID(), SCOREEVENT_KILL_TARGET, pKiller->GetClass());
+				Server()->RoundStatistics()->OnScoreEvent(pKiller->GetCID(), SCOREEVENT_KILL_TARGET, pKiller->GetClass(), Server()->ClientName(pKiller->GetCID()), GameServer()->Console());
 				GameServer()->TargetKilled();
 				
 				if(pKiller->GetCharacter())
@@ -633,13 +633,13 @@ int CGameControllerMOD::OnCharacterDeath(class CCharacter *pVictim, class CPlaye
 		CPlayer* pFreezer = GameServer()->m_apPlayers[pVictim->m_LastFreezer];
 		if(pFreezer)
 		{
-			Server()->RoundStatistics()->OnScoreEvent(pFreezer->GetCID(), SCOREEVENT_HELP_FREEZE, pFreezer->GetClass());
+			Server()->RoundStatistics()->OnScoreEvent(pFreezer->GetCID(), SCOREEVENT_HELP_FREEZE, pFreezer->GetClass(), Server()->ClientName(pFreezer->GetCID()), GameServer()->Console());
 			GameServer()->SendScoreSound(pFreezer->GetCID());
 			
 			if(pVictim->GetPlayer()->GetCID() == GameServer()->GetTargetToKill())
 			{
 				GameServer()->SendChatTarget_Localization(pFreezer->GetCID(), CHATCATEGORY_SCORE, _("You have eliminated your target, +2 points"), NULL);
-				Server()->RoundStatistics()->OnScoreEvent(pFreezer->GetCID(), SCOREEVENT_KILL_TARGET, pKiller->GetClass());
+				Server()->RoundStatistics()->OnScoreEvent(pFreezer->GetCID(), SCOREEVENT_KILL_TARGET, pKiller->GetClass(), Server()->ClientName(pFreezer->GetCID()), GameServer()->Console());
 				GameServer()->TargetKilled();
 				
 				if(pFreezer->GetCharacter())

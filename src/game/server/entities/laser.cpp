@@ -58,7 +58,8 @@ bool CLaser::HitCharacter(vec2 From, vec2 To)
 						Server()->ClientName(medic->GetPlayer()->GetCID()),
 						Server()->ClientName(zombie->GetPlayer()->GetCID()));
 				GameServer()->SendChatTarget(-1, aBuf);
-				Server()->RoundStatistics()->OnScoreEvent(medic->GetPlayer()->GetCID(), SCOREEVENT_MEDIC_REVIVE, medic->GetClass());
+				int ClientID = medic->GetPlayer()->GetCID();
+				Server()->RoundStatistics()->OnScoreEvent(ClientID, SCOREEVENT_MEDIC_REVIVE, medic->GetClass(), Server()->ClientName(ClientID), GameServer()->Console());
 			}
 		}
 	}

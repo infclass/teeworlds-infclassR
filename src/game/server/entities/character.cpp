@@ -953,7 +953,7 @@ void CCharacter::FireWeapon()
 									pTarget->IncreaseArmor(4);
 									if(pTarget->m_Armor == 10 && pTarget->m_NeedFullHeal)
 									{
-										Server()->RoundStatistics()->OnScoreEvent(GetPlayer()->GetCID(), SCOREEVENT_HUMAN_HEALING, GetClass());
+										Server()->RoundStatistics()->OnScoreEvent(GetPlayer()->GetCID(), SCOREEVENT_HUMAN_HEALING, GetClass(), Server()->ClientName(GetPlayer()->GetCID()), Console());
 										GameServer()->SendScoreSound(GetPlayer()->GetCID());
 										pTarget->m_NeedFullHeal = false;
 										m_aWeapons[WEAPON_GRENADE].m_Ammo++;
@@ -1674,7 +1674,8 @@ void CCharacter::Tick()
 				GameServer()->SendEmoticon(m_pPlayer->GetCID(), EMOTICON_MUSIC);
 				SetEmote(EMOTE_HAPPY, Server()->Tick() + Server()->TickSpeed());
 				GiveGift(GIFT_HEROFLAG);
-				Server()->RoundStatistics()->OnScoreEvent(m_pPlayer->GetCID(), SCOREEVENT_BONUS, GetClass());
+				
+				Server()->RoundStatistics()->OnScoreEvent(m_pPlayer->GetCID(), SCOREEVENT_BONUS, GetClass(), Server()->ClientName(m_pPlayer->GetCID()), Console());
 				GameServer()->SendScoreSound(m_pPlayer->GetCID());
 			}
 		}
@@ -2187,9 +2188,8 @@ void CCharacter::Tick()
 					m_pPlayer->SetClass(NewClass);
 					m_pPlayer->SetOldClass(NewClass);
 					
-					// class '99' counts as picking "Random"
 					char aBuf[256];
-					str_format(aBuf, sizeof(aBuf), "choose_class player='%s' class='%d'", Server()->ClientName(m_pPlayer->GetCID()), Bonus ? 99 : NewClass);
+					str_format(aBuf, sizeof(aBuf), "choose_class player='%s' class='%d'", Server()->ClientName(m_pPlayer->GetCID()), NewClass);
 					Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "game", aBuf);
 					
 					if(Bonus)
@@ -2474,6 +2474,8 @@ void CCharacter::GiveGift(int GiftType)
 			break;
 		case PLAYERCLASS_HERO:
 			GiveWeapon(WEAPON_SHOTGUN, -1);
+			GiveWeapon(WEAPON_GRENADE, -1);
+			GiveWeapon(WEAPON_RIFLE, -1);
 			break;
 		case PLAYERCLASS_NINJA:
 			GiveWeapon(WEAPON_GRENADE, -1);
@@ -2891,7 +2893,7 @@ bool CCharacter::TakeDamage(vec2 Force, int Dmg, int From, int Weapon, int Mode)
 		m_pPlayer->StartInfection();
 		
 		GameServer()->SendChatTarget_Localization(From, CHATCATEGORY_SCORE, _("You have infected {str:VictimName}, +3 points"), "VictimName", Server()->ClientName(m_pPlayer->GetCID()), NULL);
-		Server()->RoundStatistics()->OnScoreEvent(From, SCOREEVENT_INFECTION, pKillerPlayer->GetClass());
+		Server()->RoundStatistics()->OnScoreEvent(From, SCOREEVENT_INFECTION, pKillerPlayer->GetClass(), Server()->ClientName(From), Console());
 		GameServer()->SendScoreSound(From);
 	
 		//Search for hook
@@ -2903,7 +2905,7 @@ bool CCharacter::TakeDamage(vec2 Force, int Dmg, int From, int Weapon, int Mode)
 				pHook->GetPlayer()->GetCID() != From
 			)
 			{
-				Server()->RoundStatistics()->OnScoreEvent(pHook->GetPlayer()->GetCID(), SCOREEVENT_HELP_HOOK_INFECTION, pHook->GetClass());
+				Server()->RoundStatistics()->OnScoreEvent(pHook->GetPlayer()->GetCID(), SCOREEVENT_HELP_HOOK_INFECTION, pHook->GetClass(), Server()->ClientName(pHook->GetPlayer()->GetCID()), Console());
 				GameServer()->SendScoreSound(pHook->GetPlayer()->GetCID());
 			}
 		}

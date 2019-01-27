@@ -3,6 +3,7 @@
 
 #include <engine/shared/protocol.h>
 #include <game/server/classes.h>
+#include <engine/console.h>
 
 enum
 {
@@ -57,7 +58,7 @@ public:
 	public:
 		CPlayer() { Reset(); }
 		void Reset() { mem_zero(this, sizeof(CPlayer)); }
-		void OnScoreEvent(int EventType, int Class);
+		int OnScoreEvent(int EventType, int Class);
 	};
 
 public:
@@ -70,7 +71,7 @@ public:
 	CRoundStatistics() { Reset(); }
 	void Reset() { mem_zero(this, sizeof(CRoundStatistics)); }
 	void ResetPlayer(int ClientID);
-	void OnScoreEvent(int ClientID, int EventType, int Class);
+	void OnScoreEvent(int ClientID, int EventType, int Class, const char* Name, IConsole* console);
 	void SetPlayerAsWinner(int ClientID);
 	
 	CRoundStatistics::CPlayer* PlayerStatistics(int ClientID);
