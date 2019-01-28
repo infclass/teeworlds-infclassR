@@ -1216,7 +1216,7 @@ void CCharacter::FireWeapon()
 					m_Core.m_HookPos = m_Core.m_Pos;
 					if(g_Config.m_InfScientistTpSelfharm > 0) {
 						auto pScientist = GetPlayer()->GetCharacter();
-						pScientist->TakeDamage(vec2(0.0f, 0.0f), g_Config.m_InfScientistTpSelfharm * 2, GetPlayer()->GetCID(), WEAPON_HAMMER, TAKEDAMAGEMODE_NOINFECTION);
+						pScientist->TakeDamage(vec2(0.0f, 0.0f), g_Config.m_InfScientistTpSelfharm * 2, GetPlayer()->GetCID(), WEAPON_HAMMER, TAKEDAMAGEMODE_SELFHARM);
 					}
 					GameServer()->CreateDeath(OldPos, GetPlayer()->GetCID());
 					GameServer()->CreateDeath(PortalPos, GetPlayer()->GetCID());
