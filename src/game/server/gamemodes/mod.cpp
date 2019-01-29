@@ -40,8 +40,6 @@ CGameControllerMOD::CGameControllerMOD(class CGameContext *pGameServer)
 			}
 		}
 	}
-	
-	m_pHeroFlag = 0;
 }
 
 CGameControllerMOD::~CGameControllerMOD()
@@ -87,10 +85,7 @@ bool CGameControllerMOD::OnEntity(const char* pName, vec2 Pivot, vec2 P0, vec2 P
 	}
 	else if(str_comp(pName, "icHeroFlag") == 0)
 	{
-		//Add hero flag
-		if(!m_pHeroFlag)
-			m_pHeroFlag = new CHeroFlag(&GameServer()->m_World);
-		
+		//Add hero flag spawns
 		vec2 Pos = (P0 + P1 + P2 + P3)/4.0f;
 		m_HeroFlagPositions.add(Pos);
 	}
@@ -197,9 +192,6 @@ void CGameControllerMOD::Tick()
 			
 			GameServer()->EnableTargetToKill();
 			
-			if(m_pHeroFlag)
-				m_pHeroFlag->Show();
-			
 			m_InfectedStarted = true;
 	
 			CPlayerIterator<PLAYERITER_INGAME> Iter(GameServer()->m_apPlayers);
@@ -277,10 +269,7 @@ void CGameControllerMOD::Tick()
 			}
 		}
 		else
-		{
-			if(m_pHeroFlag)
-				m_pHeroFlag->Show();
-			
+		{			
 			GameServer()->DisableTargetToKill();
 			
 			CPlayerIterator<PLAYERITER_SPECTATORS> IterSpec(GameServer()->m_apPlayers);
@@ -426,9 +415,6 @@ void CGameControllerMOD::Tick()
 	else
 	{
 		GameServer()->DisableTargetToKill();
-		
-		if(m_pHeroFlag)
-			m_pHeroFlag->Show();
 		
 		m_RoundStartTick = Server()->Tick();
 	}

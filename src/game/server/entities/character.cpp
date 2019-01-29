@@ -2395,17 +2395,7 @@ void CCharacter::Tick()
 	else if(GetClass() == PLAYERCLASS_HERO)
 	{
 		//Search for flag
-		int CoolDown = 999999999;
-		for(CHeroFlag *pFlag = (CHeroFlag*) GameWorld()->FindFirst(CGameWorld::ENTTYPE_HERO_FLAG); pFlag; pFlag = (CHeroFlag*) pFlag->TypeNext())
-		{
-			if(pFlag->GetCoolDown() <= 0)
-			{
-				CoolDown = 0;
-				break;
-			}
-			else if(pFlag->GetCoolDown() < CoolDown)
-				CoolDown = pFlag->GetCoolDown();
-		}
+		int CoolDown = m_pHeroFlag->GetCoolDown();
 		
 		if(CoolDown > 0)
 		{
@@ -3426,6 +3416,7 @@ void CCharacter::ClassSpawnAttributes()
 			GiveWeapon(WEAPON_RIFLE, -1);
 			GiveWeapon(WEAPON_GRENADE, -1);
 			m_ActiveWeapon = WEAPON_GRENADE;
+			m_pHeroFlag = new CHeroFlag(&GameServer()->m_World, m_pPlayer->GetCID());
 			
 			GameServer()->SendBroadcast_ClassIntro(m_pPlayer->GetCID(), PLAYERCLASS_HERO);
 			if(!m_pPlayer->IsKownClass(PLAYERCLASS_HERO))
