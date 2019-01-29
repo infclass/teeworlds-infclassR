@@ -4,11 +4,14 @@
 #include <engine/server/roundstatistics.h>
 #include "hero-flag.h"
 
-CHeroFlag::CHeroFlag(CGameWorld *pGameWorld)
+CHeroFlag::CHeroFlag(CGameWorld *pGameWorld, int ClientID)
 : CEntity(pGameWorld, CGameWorld::ENTTYPE_HERO_FLAG)
 {
 	m_ProximityRadius = ms_PhysSize;
-	m_Hidden = true;
+	m_OwnerID = ClientID;
+	m_HeroFlagID = Server()->SnapNewID();
+	m_CoolDownTick = 0;
+	FindPosition();
 	GameWorld()->InsertEntity(this);
 }
 
@@ -38,6 +41,17 @@ void CHeroFlag::SetCoolDown()
 
 void CHeroFlag::GiveGift(CCharacter* pHero)
 {
+	// Only increase your *own* character health when on cooldown
+	if (GameServer()->GetHeroGiftCoolDown() > 0) {
+		pHero->IncreaseHealth(10);
+		pHero->IncreaseArmor(10);
+		pHero->GiveWeapon(WEAPON_SHOTGUN, -1);
+		pHero->GiveWeapon(WEAPON_GRENADE, -1);
+		pHero->GiveWeapon(WEAPON_RIFLE, -1);
+		SetCoolDown();
+		return;
+	}
+
 	// Find other players	
 	GameServer()->SendBroadcast_Localization(-1, BROADCAST_PRIORITY_GAMEANNOUNCE, BROADCAST_DURATION_GAMEANNOUNCE, _("The Hero found the flag!"), NULL);
 	GameServer()->CreateSoundGlobal(SOUND_CTF_CAPTURE);
@@ -51,7 +65,8 @@ void CHeroFlag::GiveGift(CCharacter* pHero)
 		
 		p->SetEmote(EMOTE_HAPPY, Server()->Tick() + Server()->TickSpeed());
 		GameServer()->SendEmoticon(p->GetPlayer()->GetCID(), EMOTICON_MUSIC);
-		
+		GameServer()->FlagCollected();
+
 		if(p == pHero)
 		{
 			p->IncreaseHealth(10);
@@ -78,6 +93,9 @@ void CHeroFlag::Tick()
 			if(p->GetClass() != PLAYERCLASS_HERO)
 				continue;
 
+			if(p->GetPlayer()->GetCID() != m_OwnerID)
+				continue;
+
 			float Len = distance(p->m_Pos, m_Pos);
 			if(Len < m_ProximityRadius + p->m_ProximityRadius)
 			{
@@ -96,7 +114,7 @@ void CHeroFlag::Tick()
 	}
 	else
 		m_CoolDownTick--;
-	
+
 }
 
 void CHeroFlag::Snap(int SnappingClient)
@@ -107,15 +125,21 @@ void CHeroFlag::Snap(int SnappingClient)
 	if(NetworkClipped(SnappingClient))
 		return;
 	
+	if(SnappingClient != m_OwnerID)
+		return;
+	
 	CPlayer* pClient = GameServer()->m_apPlayers[SnappingClient];
 	if(pClient->GetClass() != PLAYERCLASS_HERO)
 		return;
 
-	CNetObj_Flag *pFlag = (CNetObj_Flag *)Server()->SnapNewItem(NETOBJTYPE_FLAG, TEAM_BLUE, sizeof(CNetObj_Flag));
+	
+	CNetObj_Flag *pFlag = (CNetObj_Flag *)Server()->SnapNewItem(NETOBJTYPE_FLAG, m_HeroFlagID, sizeof(CNetObj_Flag));
 	if(!pFlag)
 		return;
 
+	int Color = GameServer()->GetHeroGiftCoolDown() <= 0 ? TEAM_BLUE : TEAM_RED;
+
 	pFlag->m_X = (int)m_Pos.x;
 	pFlag->m_Y = (int)m_Pos.y+16.0f;
-	pFlag->m_Team = TEAM_BLUE;
+	pFlag->m_Team = Color;
 }

@@ -9,11 +9,13 @@ class CHeroFlag : public CEntity
 {
 private:
 	int m_CoolDownTick;
-	
+	int m_OwnerID;
+	int m_HeroFlagID;
+
 public:
 	static const int ms_PhysSize = 14;
 
-	CHeroFlag(CGameWorld *pGameWorld);
+	CHeroFlag(CGameWorld *pGameWorld, int ClientID);
 
 	inline int GetCoolDown() { return m_CoolDownTick; }
 
