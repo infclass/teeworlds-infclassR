@@ -501,15 +501,15 @@ void CCharacter::UpdateTuningParam()
 	if(m_SlowMotionTick > 0)
 	{
 		float Factor = 1.0f - ((float)g_Config.m_InfSlowMotionPercent / 100);
+		float FactorSpeed = 1.0f - ((float)g_Config.m_InfSlowMotionHookSpeed / 100);
+		float FactorAccel = 1.0f - ((float)g_Config.m_InfSlowMotionHookAccel / 100);
 		pTuningParams->m_GroundControlSpeed = pTuningParams->m_GroundControlSpeed * Factor;
-		pTuningParams->m_GroundControlAccel = pTuningParams->m_GroundControlAccel * Factor;
-		pTuningParams->m_HookFireSpeed = pTuningParams->m_HookFireSpeed * Factor;
+		pTuningParams->m_HookFireSpeed = pTuningParams->m_HookFireSpeed * FactorSpeed;
 		//pTuningParams->m_GroundJumpImpulse = pTuningParams->m_GroundJumpImpulse * Factor;
 		//pTuningParams->m_AirJumpImpulse = pTuningParams->m_AirJumpImpulse * Factor;
 		pTuningParams->m_AirControlSpeed = pTuningParams->m_AirControlSpeed * Factor;
-		pTuningParams->m_AirControlAccel = pTuningParams->m_AirControlAccel * Factor;
-		pTuningParams->m_HookDragAccel = pTuningParams->m_HookDragAccel * Factor;
-		pTuningParams->m_HookDragSpeed = pTuningParams->m_HookDragSpeed * Factor;
+		pTuningParams->m_HookDragAccel = pTuningParams->m_HookDragAccel * FactorAccel;
+		pTuningParams->m_HookDragSpeed = pTuningParams->m_HookDragSpeed * FactorSpeed;
 	}
 	
 	if(m_HookMode == 1)
