@@ -50,6 +50,7 @@ void CGameContext::Construct(int Resetting)
 	m_NumVoteOptions = 0;
 	m_TargetToKill = -1;
 	m_TargetToKillCoolDown = 0;
+	m_HeroGiftCooldown = 0;
 	
 	m_ChatResponseTargetID = -1;
 
@@ -927,6 +928,9 @@ void CGameContext::OnTick()
 		m_TargetToKill = -1;
 	}
 	
+	if(m_HeroGiftCooldown > 0)
+		m_HeroGiftCooldown--;
+
 	if(m_TargetToKillCoolDown > 0)
 		m_TargetToKillCoolDown--;
 	
@@ -4270,6 +4274,20 @@ void CGameContext::TargetKilled()
 		PlayerCounter++;
 	
 	m_TargetToKillCoolDown = Server()->TickSpeed()*(10 + 3*max(0, 16 - PlayerCounter));
+}
+
+void CGameContext::FlagCollected()
+{
+	int PlayerCount = 0;
+	CPlayerIterator<PLAYERITER_INGAME> Iter(m_apPlayers);
+	while(Iter.Next())
+		PlayerCount++;
+
+	float t = (8-PlayerCount) / 8.0f;
+	if (t < 0.0f) 
+		t = 0.0f;
+
+	m_HeroGiftCooldown = Server()->TickSpeed() * (15+(120*t));
 }
 
 void CGameContext::OnPreSnap() {}
