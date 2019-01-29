@@ -12,21 +12,6 @@ CHeroFlag::CHeroFlag(CGameWorld *pGameWorld)
 	GameWorld()->InsertEntity(this);
 }
 
-void CHeroFlag::Hide()
-{
-	m_Hidden = true;
-}
-
-void CHeroFlag::Show()
-{
-	if(m_Hidden)
-	{
-		m_Hidden = false;
-		FindPosition();
-		m_CoolDownTick = 0;
-	}
-}
-
 void CHeroFlag::FindPosition()
 {
 	int NbPos = GameServer()->m_pController->HeroFlagPositions().size();

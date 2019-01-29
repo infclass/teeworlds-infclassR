@@ -8,7 +8,6 @@
 class CHeroFlag : public CEntity
 {
 private:
-	bool m_Hidden;
 	int m_CoolDownTick;
 	
 public:
@@ -18,8 +17,6 @@ public:
 
 	inline int GetCoolDown() { return m_CoolDownTick; }
 
-	virtual void Hide();
-	virtual void Show();
 	virtual void Tick();
 	virtual void FindPosition();
 	virtual void Snap(int SnappingClient);
