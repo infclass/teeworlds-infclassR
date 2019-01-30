@@ -127,17 +127,9 @@ MACRO_CONFIG_INT(FunRoundGhoulStomachSize, funround_ghoul_stomach_size, 40, 0, 1
 MACRO_CONFIG_INT(InfSlowMotionWallDuration, inf_slow_motion_wall_duration, 50, 0, 1024, CFGFLAG_SERVER, "How long looper wall slow motion effect will slow down zombies (in centiSec)")
 MACRO_CONFIG_INT(InfSlowMotionGunDuration, inf_slow_motion_gun_duration, 8, 0, 1024, CFGFLAG_SERVER, "How long looper gun slow motion effect will slow down zombies (in centiSec)")
 MACRO_CONFIG_INT(InfLooperBarrierLifeSpan, inf_looper_barrier_life_span, 59, 0, 1024, CFGFLAG_SERVER, "How long looper barrier will last (in seconds)")
-MACRO_CONFIG_INT(InfSlowMotionPercent, inf_slow_motion_percent, 55, 0, 90, CFGFLAG_SERVER, "Factor that manipulates the slowmotion intensity")
-
-
-
-//Not working
-//MACRO_CONFIG_INT(InfLooperLaserDmg, inf_looper_laser_dmg, 4, 0, 1024, CFGFLAG_SERVER, "Damage of Looper laser")
-//MACRO_CONFIG_INT(InfLooperLaserDelay, inf_looper_laser_delay, 400, 0, 1024, CFGFLAG_SERVER, "Fire delay of Looper laser")
-//MACRO_CONFIG_INT(InfLooperLaserRegen, inf_looper_laser_regen, 1000, 0, 1024, CFGFLAG_SERVER, "Regen time of Looper laser")
-//MACRO_CONFIG_INT(InfLooperLaserAmmo, inf_looper_laser_ammo, 12, 0, 16, CFGFLAG_SERVER, "Maximum ammo of Looper laser")
-//MACRO_CONFIG_INT(InfLooperLaserRange, inf_looper_laser_range, 0.4f, 0, 1, CFGFLAG_SERVER, "Percentage factor of laser rifle Range for Looper laser")
-
+MACRO_CONFIG_INT(InfSlowMotionPercent, inf_slow_motion_percent, 65, 0, 90, CFGFLAG_SERVER, "Factor that manipulates the slowmotion intensity")
+MACRO_CONFIG_INT(InfSlowMotionHookSpeed, inf_slow_motion_hook_speed, 30, 0, 100, CFGFLAG_SERVER, "Factor that manipulates the slowmotion hook speed")
+MACRO_CONFIG_INT(InfSlowMotionHookAccel, inf_slow_motion_hook_accel, 15, 0, 100, CFGFLAG_SERVER, "Factor that manipulates the slowmotion hook acceleration")
 
 //SuperWeapons
 MACRO_CONFIG_INT(InfWhiteHoleMinimalKills, inf_white_hole_minimal_kills, 6, 0, 30, CFGFLAG_SERVER, "Minimal number of kills before white hole become available")
