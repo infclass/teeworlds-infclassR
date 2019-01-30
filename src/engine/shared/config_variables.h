@@ -129,6 +129,8 @@ MACRO_CONFIG_INT(InfLooperBarrierLifeSpan, inf_looper_barrier_life_span, 59, 0, 
 MACRO_CONFIG_INT(InfSlowMotionPercent, inf_slow_motion_percent, 65, 0, 90, CFGFLAG_SERVER, "Factor that manipulates the slowmotion intensity")
 MACRO_CONFIG_INT(InfSlowMotionHookSpeed, inf_slow_motion_hook_speed, 30, 0, 100, CFGFLAG_SERVER, "Factor that manipulates the slowmotion hook speed")
 MACRO_CONFIG_INT(InfSlowMotionHookAccel, inf_slow_motion_hook_accel, 15, 0, 100, CFGFLAG_SERVER, "Factor that manipulates the slowmotion hook acceleration")
+MACRO_CONFIG_INT(InfSlowMotionMaxSpeed, inf_slow_motion_max_speed, 35, 0, 500, CFGFLAG_SERVER, "Create a speed limit while in slowmotion, make it 0 to disable it")
+MACRO_CONFIG_INT(InfSlowMotionGravity, inf_slow_motion_gravity, 5, -100, 100, CFGFLAG_SERVER, "Modify gravity while in slowmotion")
 
 //SuperWeapons
 MACRO_CONFIG_INT(InfWhiteHoleMinimalKills, inf_white_hole_minimal_kills, 6, 0, 30, CFGFLAG_SERVER, "Minimal number of kills before white hole become available")
