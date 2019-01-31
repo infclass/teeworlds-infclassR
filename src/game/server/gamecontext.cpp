@@ -2853,18 +2853,22 @@ bool CGameContext::ConChatInfo(IConsole::IResult *pResult, void *pUserData)
 	
 	dynamic_string Buffer;
 	
-	const char aThanks[] = "guenstig werben, Defeater, Orangus, BlinderHeld, Warpaint, Serena, Socialdarwinist, FakeDeath, tee_to_F_U_UP!, Stitch626, Denis, NanoSlime_, tria, pinkieval…";
-	const char aContributors[] = "necropotame, Stitch626";
+	//const char aThanks[] = "guenstig werben, Defeater, Orangus, BlinderHeld, Warpaint, Serena, FakeDeath, tee_to_F_U_UP!, Stitch626, Denis, NanoSlime_, tria, pinkieval…";
+	const char aContributors[] = "Necropotame, Stitch626, Yavl, Socialdarwinist,\nBreton,Duralakun,FluffyTee,ResamVi";
 	
-	pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("InfectionClass, by necropotame (version {str:VersionCode})"), "{str:VersionCode}", "2.0", NULL); 
+	
+	pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("InfectionClass, by necropotame (version {str:VersionCode})"), "VersionCode", "OI2", NULL); 
 	Buffer.append("\n\n");
 	pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("Based on the concept of Infection mod by Gravity"), NULL); 
 	Buffer.append("\n\n");
+	pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("Open source on \ngithub.com/yavl/teeworlds-infclassR"), NULL); 
+	Buffer.append("\n\n");
 	pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("Main contributors: {str:ListOfContributors}"), "ListOfContributors", aContributors, NULL); 
+	//Buffer.append("\n\n");
+	//pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("Thanks to {str:ListOfContributors}"), "ListOfContributors", aThanks, NULL); 
 	Buffer.append("\n\n");
-	pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("Thanks to {str:ListOfContributors}"), "ListOfContributors", aThanks, NULL); 
-	Buffer.append("\n\n");
-	
+	pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("Server version from {str:ServerCompileDate} "), "ServerCompileDate", LAST_COMPILE_DATE, NULL); 
+	Buffer.append("\n\n");	
 	pSelf->SendMOTD(ClientID, Buffer.buffer());
 	
 	return true;
@@ -4291,6 +4295,8 @@ bool CGameContext::IsClientPlayer(int ClientID)
 const char *CGameContext::GameType() { return m_pController && m_pController->m_pGameType ? m_pController->m_pGameType : ""; }
 const char *CGameContext::Version() { return GAME_VERSION; }
 const char *CGameContext::NetVersion() { return GAME_NETVERSION; }
+
+
 
 IGameServer *CreateGameServer() { return new CGameContext; }
 
