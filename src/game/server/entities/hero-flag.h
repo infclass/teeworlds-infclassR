@@ -7,15 +7,24 @@
 
 class CHeroFlag : public CEntity
 {
+public:
+	enum
+	{
+		RADIUS = 50,
+		SHIELD_COUNT = 4,
+		SPEED = 15, // higher = slower
+	};
+
 private:
 	int m_CoolDownTick;
 	int m_OwnerID;
-	int m_HeroFlagID;
+	int m_IDs[SHIELD_COUNT];
 
 public:
 	static const int ms_PhysSize = 14;
 
 	CHeroFlag(CGameWorld *pGameWorld, int ClientID);
+	~CHeroFlag();
 
 	inline int GetCoolDown() { return m_CoolDownTick; }
 

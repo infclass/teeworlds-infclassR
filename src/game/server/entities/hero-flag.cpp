@@ -9,10 +9,21 @@ CHeroFlag::CHeroFlag(CGameWorld *pGameWorld, int ClientID)
 {
 	m_ProximityRadius = ms_PhysSize;
 	m_OwnerID = ClientID;
-	m_HeroFlagID = Server()->SnapNewID();
 	m_CoolDownTick = 0;
+	for(int i=0; i<CHeroFlag::SHIELD_COUNT; i++)
+	{
+		m_IDs[i] = Server()->SnapNewID();
+	}
 	FindPosition();
 	GameWorld()->InsertEntity(this);
+}
+
+CHeroFlag::~CHeroFlag()
+{
+	for(int i=0; i<CHeroFlag::SHIELD_COUNT; i++)
+	{
+		Server()->SnapFreeID(m_IDs[i]);
+	}
 }
 
 void CHeroFlag::FindPosition()
@@ -132,14 +143,31 @@ void CHeroFlag::Snap(int SnappingClient)
 	if(pClient->GetClass() != PLAYERCLASS_HERO)
 		return;
 
+	if (GameServer()->GetHeroGiftCoolDown() <= 0)
+	{
+		float AngleStart = (2.0f * pi * Server()->Tick()/static_cast<float>(Server()->TickSpeed()))/CHeroFlag::SPEED;
+		float AngleStep = 2.0f * pi / CHeroFlag::SHIELD_COUNT;
+		
+		for(int i=0; i<CHeroFlag::SHIELD_COUNT; i++)
+		{
+			CNetObj_Pickup *pObj = static_cast<CNetObj_Pickup *>(Server()->SnapNewItem(NETOBJTYPE_PICKUP, m_IDs[i], sizeof(CNetObj_Pickup)));
+			if(!pObj)
+				return;
 	
-	CNetObj_Flag *pFlag = (CNetObj_Flag *)Server()->SnapNewItem(NETOBJTYPE_FLAG, m_HeroFlagID, sizeof(CNetObj_Flag));
+			vec2 PosStart = m_Pos + vec2(CHeroFlag::RADIUS * cos(AngleStart + AngleStep*i), CHeroFlag::RADIUS * sin(AngleStart + AngleStep*i));
+
+			pObj->m_X = (int)PosStart.x;
+			pObj->m_Y = (int)PosStart.y;
+			pObj->m_Type = i % 2 == 0 ? POWERUP_ARMOR : POWERUP_HEALTH;
+			pObj->m_Subtype = 0;
+		}
+	}
+
+	CNetObj_Flag *pFlag = (CNetObj_Flag *)Server()->SnapNewItem(NETOBJTYPE_FLAG, TEAM_BLUE, sizeof(CNetObj_Flag));
 	if(!pFlag)
 		return;
 
-	int Color = GameServer()->GetHeroGiftCoolDown() <= 0 ? TEAM_BLUE : TEAM_RED;
-
 	pFlag->m_X = (int)m_Pos.x;
 	pFlag->m_Y = (int)m_Pos.y+16.0f;
-	pFlag->m_Team = Color;
+	pFlag->m_Team = TEAM_BLUE;
 }
