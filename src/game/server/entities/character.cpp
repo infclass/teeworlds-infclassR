@@ -3101,7 +3101,7 @@ void CCharacter::Snap(int SnappingClient)
 		}
 		else if(GetClass() == PLAYERCLASS_HERO) 
 		{
-			CHeroFlag *pFlag = (CHeroFlag*) GameWorld()->FindFirst(CGameWorld::ENTTYPE_HERO_FLAG);
+			CHeroFlag *pFlag = m_pHeroFlag;
 			
 			// Guide hero to flag
 			if(pFlag->GetCoolDown() <= 0)
