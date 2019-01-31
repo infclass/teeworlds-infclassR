@@ -53,7 +53,8 @@ void CHeroFlag::SetCoolDown()
 void CHeroFlag::GiveGift(CCharacter* pHero)
 {
 	// Only increase your *own* character health when on cooldown
-	if (GameServer()->GetHeroGiftCoolDown() > 0) {
+	if (GameServer()->GetHeroGiftCoolDown() > 0)
+	{
 		pHero->IncreaseHealth(10);
 		pHero->IncreaseArmor(10);
 		pHero->GiveWeapon(WEAPON_SHOTGUN, -1);
@@ -66,7 +67,7 @@ void CHeroFlag::GiveGift(CCharacter* pHero)
 	// Find other players	
 	GameServer()->SendBroadcast_Localization(-1, BROADCAST_PRIORITY_GAMEANNOUNCE, BROADCAST_DURATION_GAMEANNOUNCE, _("The Hero found the flag!"), NULL);
 	GameServer()->CreateSoundGlobal(SOUND_CTF_CAPTURE);
-
+	GameServer()->FlagCollected();
 	SetCoolDown();
 
 	for(CCharacter *p = (CCharacter*) GameWorld()->FindFirst(CGameWorld::ENTTYPE_CHARACTER); p; p = (CCharacter *)p->TypeNext())
@@ -76,7 +77,6 @@ void CHeroFlag::GiveGift(CCharacter* pHero)
 		
 		p->SetEmote(EMOTE_HAPPY, Server()->Tick() + Server()->TickSpeed());
 		GameServer()->SendEmoticon(p->GetPlayer()->GetCID(), EMOTICON_MUSIC);
-		GameServer()->FlagCollected();
 
 		if(p == pHero)
 		{
@@ -153,7 +153,7 @@ void CHeroFlag::Snap(int SnappingClient)
 			CNetObj_Pickup *pObj = static_cast<CNetObj_Pickup *>(Server()->SnapNewItem(NETOBJTYPE_PICKUP, m_IDs[i], sizeof(CNetObj_Pickup)));
 			if(!pObj)
 				return;
-	
+
 			vec2 PosStart = m_Pos + vec2(CHeroFlag::RADIUS * cos(AngleStart + AngleStep*i), CHeroFlag::RADIUS * sin(AngleStart + AngleStep*i));
 
 			pObj->m_X = (int)PosStart.x;

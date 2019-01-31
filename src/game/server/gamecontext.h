@@ -346,7 +346,7 @@ public:
 	virtual void DisableTargetToKill() { m_TargetToKill = -2; }
 	virtual int GetTargetToKillCoolDown() { return m_TargetToKillCoolDown; }
 	virtual int GetHeroGiftCoolDown() { return m_HeroGiftCooldown; }
-	virtual void FlagCollected();
+	virtual void FlagCollected(); // Triggers global gift cooldown
 /* INFECTION MODIFICATION END *****************************************/
 	// InfClassR begin
 	void AddSpectatorCID(int ClientID);
