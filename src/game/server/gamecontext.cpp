@@ -2874,8 +2874,8 @@ bool CGameContext::ConChatInfo(IConsole::IResult *pResult, void *pUserData)
 	pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("Open source on \ngithub.com/yavl/teeworlds-infclassR"), NULL); 
 	Buffer.append("\n\n");
 	pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("Main contributors: {str:ListOfContributors}"), "ListOfContributors", aContributors, NULL); 
-	//Buffer.append("\n\n");
-	//pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("Thanks to {str:ListOfContributors}"), "ListOfContributors", aThanks, NULL); 
+	Buffer.append("\n\n");
+	pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("Thanks to {str:ListOfContributors}"), "ListOfContributors", aThanks, NULL); 
 	Buffer.append("\n\n");
 	pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("Server version from {str:ServerCompileDate} "), "ServerCompileDate", LAST_COMPILE_DATE, NULL); 
 	Buffer.append("\n\n");	
