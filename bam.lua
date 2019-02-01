@@ -7,7 +7,7 @@ Import("other/mysql/mysql.lua")
 config = NewConfig()
 config:Add(OptCCompiler("compiler"))
 config:Add(OptTestCompileC("stackprotector", "int main(){return 0;}", "-fstack-protector -fstack-protector-all"))
-config:Add(OptTestCompileC("minmacosxsdk", "int main(){return 0;}", "-mmacosx-version-min=10.5 -isysroot /Developer/SDKs/MacOSX10.5.sdk"))
+config:Add(OptTestCompileC("minmacosxsdk", "int main(){return 0;}", "-mmacosx-version-min=10.7 -isysroot /Developer/SDKs/MacOSX10.7.sdk"))
 config:Add(OptTestCompileC("macosxppc", "int main(){return 0;}", "-arch ppc"))
 config:Add(OptLibrary("zlib", "zlib.h", false))
 config:Add(Mysql.OptFind("mysql", false))
@@ -156,7 +156,8 @@ function build(settings)
 	if config.compiler.driver == "cl" then
 		settings.cc.flags:Add("/wd4244")
 	else
-		settings.cc.flags:Add("-Wall -std=c++11")
+		settings.cc.flags:Add("-Wall")
+		settings.cc.flags_cxx:Add("-std=c++11")
 		settings.cc.flags:Add("-Werror=format -fstack-protector-all -D_FORTIFY_SOURCE=1 -fPIE -pie")
 		if family == "windows" then
 			-- disable visibility attribute support for gcc on windows
@@ -166,11 +167,11 @@ function build(settings)
 				settings.link.flags:Add("-fstack-protector", "-fstack-protector-all")
 			end
 		elseif platform == "macosx" then
-			settings.cc.flags:Add("-mmacosx-version-min=10.5")
-			settings.link.flags:Add("-mmacosx-version-min=10.5")
+			settings.cc.flags:Add("-mmacosx-version-min=10.7")
+			settings.link.flags:Add("-mmacosx-version-min=10.7")
 			if config.minmacosxsdk.value == 1 then
-				settings.cc.flags:Add("-isysroot /Developer/SDKs/MacOSX10.5.sdk")
-				settings.link.flags:Add("-isysroot /Developer/SDKs/MacOSX10.5.sdk")
+				settings.cc.flags:Add("-isysroot /Developer/SDKs/MacOSX10.7.sdk")
+				settings.link.flags:Add("-isysroot /Developer/SDKs/MacOSX10.7.sdk")
 			end
 		elseif config.stackprotector.value == 1 then
 			settings.cc.flags:Add("-fstack-protector", "-fstack-protector-all")
@@ -183,6 +184,7 @@ function build(settings)
 
 	if family == "unix" then
 		if platform == "macosx" then
+			settings.cc.flags_cxx:Add("-stdlib=libc++")
 			settings.link.frameworks:Add("Carbon")
 			settings.link.frameworks:Add("AppKit")
 		else
@@ -463,8 +465,6 @@ if platform == "macosx" then
 		sql_x86_64_d = build(debug_sql_settings_x86_64)
 		sql_x86_64_r = build(release_sql_settings_x86_64)
 	end
-
-	DefaultTarget("game_debug_x86")
 	
 	if config.macosxppc.value == 1 then
 		if arch == "ia32" then
