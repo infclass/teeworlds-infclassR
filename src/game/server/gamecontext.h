@@ -19,7 +19,9 @@
 #include "gameworld.h"
 #include "player.h"
 
+#ifndef CONF_NOGEOLOCATION
 #include <infclassr/geolocation.h>
+#endif
 
 #ifdef _MSC_VER
 typedef __int32 int32_t;
@@ -75,7 +77,9 @@ class CGameContext : public IGameServer
 	CTuningParams m_Tuning;
 	int m_TargetToKill;
 	int m_TargetToKillCoolDown;
+	#ifndef CONF_NOGEOLOCATION
 	Geolocation* geolocation;
+	#endif
 
 	static bool ConTuneParam(IConsole::IResult *pResult, void *pUserData);
 	static bool ConTuneReset(IConsole::IResult *pResult, void *pUserData);

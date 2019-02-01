@@ -11,6 +11,7 @@ config:Add(OptTestCompileC("minmacosxsdk", "int main(){return 0;}", "-mmacosx-ve
 config:Add(OptTestCompileC("macosxppc", "int main(){return 0;}", "-arch ppc"))
 config:Add(OptLibrary("zlib", "zlib.h", false))
 config:Add(Mysql.OptFind("mysql", false))
+config:Add(OptToggle("nogeolocation", false))
 config:Finalize("config.lua")
 
 -- data compiler
@@ -283,7 +284,9 @@ function build(settings)
 	masterserver = Compile(settings, Collect("src/mastersrv/*.cpp"))
 	game_shared = Compile(settings, Collect("src/game/*.cpp"), nethash, network_source)
 	game_server = Compile(settings, CollectRecursive("src/game/server/*.cpp"), server_content_source)
-	infclassr = Compile(settings, Collect("src/infclassr/*.cpp", "src/infclassr/GeoLite2PP/*.cpp"))
+	if not config.nogeolocation.value then
+		infclassr = Compile(settings, Collect("src/infclassr/*.cpp", "src/infclassr/GeoLite2PP/*.cpp"))
+	end
 
 
 	-- build tools (TODO: fix this so we don't get double _d_d stuff)
@@ -361,6 +364,13 @@ release_sql_settings.cc.defines:Add("CONF_RELEASE", "CONF_SQL")
 
 config.mysql:Apply(debug_sql_settings)
 config.mysql:Apply(release_sql_settings)
+
+if config.nogeolocation.value then
+	debug_settings.cc.defines:Add("CONF_NOGEOLOCATION")
+	debug_sql_settings.cc.defines:Add("CONF_NOGEOLOCATION")
+	release_settings.cc.defines:Add("CONF_NOGEOLOCATION")
+	release_sql_settings.cc.defines:Add("CONF_NOGEOLOCATION")
+end
 
 if platform == "macosx" then
 	debug_settings_ppc = debug_settings:Copy()

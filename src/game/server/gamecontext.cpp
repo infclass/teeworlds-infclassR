@@ -58,17 +58,19 @@ void CGameContext::Construct(int Resetting)
 	
 	m_FunRound = false;
 	m_FunRoundsPassed = 0;
+	
+	#ifndef CONF_NOGEOLOCATION
+	geolocation = new Geolocation("GeoLite2-Country.mmdb");
+	#endif
 }
 
 CGameContext::CGameContext(int Resetting)
 {
-	geolocation = new Geolocation("GeoLite2-Country.mmdb");
 	Construct(Resetting);
 }
 
 CGameContext::CGameContext()
 {
-	geolocation = new Geolocation("GeoLite2-Country.mmdb");
 	Construct(NO_RESET);
 }
 
@@ -83,8 +85,11 @@ CGameContext::~CGameContext()
 		delete m_apPlayers[i];
 	if(!m_Resetting)
 		delete m_pVoteOptionHeap;
+	
+	#ifndef CONF_NOGEOLOCATION
 	delete geolocation;
 	geolocation = nullptr;
+	#endif
 }
 
 void CGameContext::Clear()
@@ -1892,7 +1897,9 @@ void CGameContext::OnMessage(int MsgID, CUnpacker *pUnpacker, int ClientID)
 				Console()->Print(IConsole::OUTPUT_LEVEL_DEBUG, "game", aBuf);
 			}
 			Server()->SetClientClan(ClientID, pMsg->m_pClan);
-			// Server()->SetClientCountry(ClientID, pMsg->m_Country); // cuz geolocation
+			#ifdef CONF_NOGEOLOCATION
+			Server()->SetClientCountry(ClientID, pMsg->m_Country);
+			#endif
 			
 /* INFECTION MODIFICATION START ***************************************/
 			str_copy(pPlayer->m_TeeInfos.m_CustomSkinName, pMsg->m_pSkin, sizeof(pPlayer->m_TeeInfos.m_CustomSkinName));
@@ -1937,10 +1944,13 @@ void CGameContext::OnMessage(int MsgID, CUnpacker *pUnpacker, int ClientID)
 /* INFECTION MODIFICATION START ***************************************/
 			Server()->SetClientName(ClientID, pMsg->m_pName);
 			Server()->SetClientClan(ClientID, pMsg->m_pClan);
+			Server()->SetClientCountry(ClientID, pMsg->m_Country);
 
 			// IP geolocation start
+			#ifndef CONF_NOGEOLOCATION
 			std::string ip = Server()->GetClientIP(ClientID);
 			Server()->SetClientCountry(ClientID, geolocation->get_country_iso_numeric_code(ip));
+			#endif
 			// IP geolocation end
 
 			str_copy(pPlayer->m_TeeInfos.m_CustomSkinName, pMsg->m_pSkin, sizeof(pPlayer->m_TeeInfos.m_CustomSkinName));
