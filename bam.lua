@@ -186,6 +186,11 @@ function build(settings)
 	if family == "unix" then
 		if platform == "macosx" then
 			settings.cc.flags_cxx:Add("-stdlib=libc++")
+			settings.cc.includes:Add("/usr/local/opt/icu4c/include")
+			settings.link.libs:Add("icui18n")
+			settings.link.libs:Add("icuuc")
+			settings.link.libs:Add("c++")
+			settings.link.libpath:Add("/usr/local/opt/icu4c/lib")
 			settings.link.frameworks:Add("Carbon")
 			settings.link.frameworks:Add("AppKit")
 		else
