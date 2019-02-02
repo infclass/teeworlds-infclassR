@@ -18,6 +18,7 @@
 #include "flyingpoint.h"
 
 #include "engineer-wall.h"
+#include "turret.h"
 #include "looper-wall.h"
 #include "soldier-bomb.h"
 #include "scientist-laser.h"
@@ -29,6 +30,7 @@
 #include "medic-grenade.h"
 #include "hero-flag.h"
 #include "slug-slime.h"
+#include "plasma.h"
 #include "growingexplosion.h"
 #include "white-hole.h"
 #include "superweapon-indicator.h"
@@ -107,6 +109,7 @@ m_pConsole(pConsole)
 	m_NinjaAmmoBuff = 0;
 	m_HasWhiteHole = false;
 	m_HasIndicator = false;
+	m_TurretCount = 0;
 	m_HasStunGrenade = false;
 	m_VoodooTimeAlive = Server()->TickSpeed()*g_Config.m_InfVoodooAliveTime;
 	m_VoodooAboutToDie = false;
@@ -881,7 +884,28 @@ void CCharacter::FireWeapon()
 						m_IsInvisible = false;
 						m_InvisibleTick = Server()->Tick();
 					}
-
+					
+					if(GetClass() == PLAYERCLASS_HERO)
+					{
+						if(m_TurretCount)
+						{
+							
+							if (g_Config.m_InfTurretEnableLaser) 
+							{
+								new CTurret(GameWorld(), m_Pos, m_pPlayer->GetCID(), Direction, GameServer()->Tuning()->m_LaserReach,INFAMMO_LASER);
+							}
+							else if (g_Config.m_InfTurretEnablePlasma) 
+							{
+								new CTurret(GameWorld(), m_Pos, m_pPlayer->GetCID(), Direction, GameServer()->Tuning()->m_LaserReach,INFAMMO_PLASMA);
+							}
+							
+							GameServer()->CreateSound(m_Pos, SOUND_GRENADE_FIRE);
+							m_TurretCount--;
+							if (m_TurretCount == 0)
+								m_aWeapons[WEAPON_HAMMER].m_Got = false;
+						}
+					}
+					
 					CCharacter *apEnts[MAX_CLIENTS];
 					int Num = GameServer()->m_World.FindEntities(ProjStartPos, m_ProximityRadius*0.5f, (CEntity**)apEnts,
 																MAX_CLIENTS, CGameWorld::ENTTYPE_CHARACTER);
@@ -947,6 +971,7 @@ void CCharacter::FireWeapon()
 								pTarget->TakeDamage(vec2(0.f, -1.f) + normalize(Dir + vec2(0.f, -1.1f)) * 10.0f, 20, 
 										m_pPlayer->GetCID(), m_ActiveWeapon, TAKEDAMAGEMODE_NOINFECTION);
 							}
+							
 						}
 						else if(GetClass() == PLAYERCLASS_MEDIC)
 						{
@@ -2841,12 +2866,10 @@ bool CCharacter::TakeDamage(vec2 Force, int Dmg, int From, int Weapon, int Mode)
 	// m_pPlayer only inflicts half damage on self
 	if(From == m_pPlayer->GetCID())
 	{
-		if(GetClass() == PLAYERCLASS_HERO || (GetClass() == PLAYERCLASS_SOLDIER && m_ActiveWeapon == WEAPON_GRENADE)
-										  || (GetClass() == PLAYERCLASS_SCIENTIST && Mode == TAKEDAMAGEMODE_NOINFECTION)
-										  || (GetClass() == PLAYERCLASS_LOOPER && m_ActiveWeapon == WEAPON_GRENADE))
-			return false; // no self harm
-		else
+		if (Mode == TAKEDAMAGEMODE_SELFHARM)
 			Dmg = max(1, Dmg/2);
+		else 
+			return false;
 	}
 
 	m_DamageTaken++;
@@ -3717,6 +3740,16 @@ void CCharacter::DestroyChildEntities()
 	{
 		if(pIndicator->GetOwner() != m_pPlayer->GetCID()) continue;
 			GameServer()->m_World.DestroyEntity(pIndicator);
+	}
+	for(CTurret* pTurret = (CTurret*) GameWorld()->FindFirst(CGameWorld::ENTTYPE_TURRET); pTurret; pTurret = (CTurret*) pTurret->TypeNext())
+	{
+		if(pTurret->GetOwner() != m_pPlayer->GetCID()) continue;
+		GameServer()->m_World.DestroyEntity(pTurret);
+	}
+	for(CPlasma* pPlasma = (CPlasma*) GameWorld()->FindFirst(CGameWorld::ENTTYPE_TURRET); pPlasma; pPlasma = (CPlasma*) pPlasma->TypeNext())
+	{
+		if(pPlasma->GetOwner() != m_pPlayer->GetCID()) continue;
+		GameServer()->m_World.DestroyEntity(pPlasma);
 	}
 			
 	m_FirstShot = true;

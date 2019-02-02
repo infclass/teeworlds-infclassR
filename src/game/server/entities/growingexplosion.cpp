@@ -177,6 +177,12 @@ void CGrowingExplosion::Tick()
 								GameServer()->CreateExplosion(TileCenter, m_Owner, WEAPON_HAMMER, false, TAKEDAMAGEMODE_NOINFECTION);
 							}
 							break;
+						case GROWINGEXPLOSIONEFFECT_MERC_INFECTED:
+							if (random_prob(0.2f))
+							{
+								GameServer()->CreateExplosion(TileCenter, m_Owner, WEAPON_HAMMER, false, TAKEDAMAGEMODE_SELFHARM);
+							}
+							break;
 						case GROWINGEXPLOSIONEFFECT_ELECTRIC_INFECTED:
 							{
 								vec2 EndPoint = m_SeedPos + vec2(32.0f*(i-m_MaxGrowing) - 16.0f + random_float()*32.0f, 32.0f*(j-m_MaxGrowing) - 16.0f + random_float()*32.0f);

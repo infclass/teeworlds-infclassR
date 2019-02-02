@@ -71,6 +71,12 @@ void CHeroFlag::GiveGift(CCharacter* pHero)
 		{
 			p->IncreaseHealth(10);
 			p->IncreaseArmor(10);
+			
+			if (p->m_TurretCount == 0)
+				p->GiveWeapon(WEAPON_HAMMER, -1);
+			p->m_TurretCount++;
+			GameServer()->SendChatTarget_Localization(p->GetPlayer()->GetCID(), CHATCATEGORY_SCORE, _("you found a turret, place it with hammer"), NULL);	
+			
 		}
 		
 		p->GiveGift(GIFT_HEROFLAG);

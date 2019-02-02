@@ -30,7 +30,7 @@ enum
 {
 	TAKEDAMAGEMODE_NOINFECTION=0,
 	TAKEDAMAGEMODE_INFECTION,
-	TAKEDAMAGEMODE_SELFHARM,
+	TAKEDAMAGEMODE_SELFHARM, // works like NOINFECTION but also harms the owner of the damage with 50%
 };
 
 enum
@@ -224,6 +224,7 @@ public:
 	int m_NinjaAmmoBuff;
 	int m_RefreshTime;
 	bool m_VoodooAboutToDie;
+	int m_TurretCount;
 	
 
 public:
