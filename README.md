@@ -14,20 +14,20 @@ cd teeworlds-infclassr
 ```
 Copy bam executable into teeworlds-infclassr directory.
 
-### Ubuntu
+### on Ubuntu
 ```bash
 sudo apt install libicu-dev libmaxminddb-dev
 ./bam server_debug
 ```
 
-### macOS
+### on macOS
 via [Homebrew](https://brew.sh):
 ```bash
 brew install icu4c libmaxminddb
 ./bam server_debug_x86_64
 ```
 
-### Windows
+### on Windows
 GCC should be installed, e.g. [Mingw-w64](https://mingw-w64.org).
 ```
 bam config stackprotector=true nogeolocation=true
