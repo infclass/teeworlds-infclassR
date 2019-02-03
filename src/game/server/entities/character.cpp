@@ -510,6 +510,14 @@ void CCharacter::UpdateTuningParam()
 		pTuningParams->m_AirControlSpeed = pTuningParams->m_AirControlSpeed * Factor;
 		pTuningParams->m_HookDragAccel = pTuningParams->m_HookDragAccel * FactorAccel;
 		pTuningParams->m_HookDragSpeed = pTuningParams->m_HookDragSpeed * FactorSpeed;
+		pTuningParams->m_Gravity = g_Config.m_InfSlowMotionGravity * 0.01f;
+
+		if (g_Config.m_InfSlowMotionMaxSpeed > 0) 
+		{
+			float MaxSpeed = g_Config.m_InfSlowMotionMaxSpeed * 0.1f;
+			float diff = MaxSpeed / length(m_Core.m_Vel);
+			if (diff < 1.0f) m_Core.m_Vel *= diff;
+		}
 	}
 	
 	if(m_HookMode == 1)
