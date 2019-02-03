@@ -201,6 +201,7 @@ public:
 
 	// engine events
 	virtual void OnInit();
+	virtual void OnStartRound();
 	virtual void OnConsoleInit();
 	virtual void OnShutdown();
 

@@ -2394,6 +2394,9 @@ void CCharacter::Tick()
 	}
 	else if(GetClass() == PLAYERCLASS_HERO)
 	{
+		if (!m_pHeroFlag)
+			m_pHeroFlag = new CHeroFlag(&GameServer()->m_World, m_pPlayer->GetCID());
+
 		//Search for flag
 		int CoolDown = m_pHeroFlag->GetCoolDown();
 		
@@ -3099,7 +3102,7 @@ void CCharacter::Snap(int SnappingClient)
 				pObj->m_Type = WEAPON_HAMMER;
 			}
 		}
-		else if(GetClass() == PLAYERCLASS_HERO) 
+		else if(GetClass() == PLAYERCLASS_HERO && g_Config.m_InfHeroFlagIndicator) 
 		{
 			CHeroFlag *pFlag = m_pHeroFlag;
 			
@@ -3416,7 +3419,6 @@ void CCharacter::ClassSpawnAttributes()
 			GiveWeapon(WEAPON_RIFLE, -1);
 			GiveWeapon(WEAPON_GRENADE, -1);
 			m_ActiveWeapon = WEAPON_GRENADE;
-			m_pHeroFlag = new CHeroFlag(&GameServer()->m_World, m_pPlayer->GetCID());
 			
 			GameServer()->SendBroadcast_ClassIntro(m_pPlayer->GetCID(), PLAYERCLASS_HERO);
 			if(!m_pPlayer->IsKownClass(PLAYERCLASS_HERO))
@@ -3700,6 +3702,11 @@ void CCharacter::DestroyChildEntities()
 	{
 		if(pIndicator->GetOwner() != m_pPlayer->GetCID()) continue;
 			GameServer()->m_World.DestroyEntity(pIndicator);
+	}
+	for(CHeroFlag* pFlag = (CHeroFlag*) GameWorld()->FindFirst(CGameWorld::ENTTYPE_HERO_FLAG); pFlag; pFlag = (CHeroFlag*) pFlag->TypeNext())
+	{
+		if(pFlag->GetOwner() != m_pPlayer->GetCID()) continue;
+		GameServer()->m_World.DestroyEntity(pFlag);
 	}
 			
 	m_FirstShot = true;

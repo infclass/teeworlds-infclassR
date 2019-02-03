@@ -26,6 +26,7 @@ public:
 	CHeroFlag(CGameWorld *pGameWorld, int ClientID);
 	~CHeroFlag();
 
+	int GetOwner() const;
 	inline int GetCoolDown() { return m_CoolDownTick; }
 
 	virtual void Tick();

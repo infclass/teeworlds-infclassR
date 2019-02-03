@@ -26,6 +26,11 @@ CHeroFlag::~CHeroFlag()
 	}
 }
 
+int CHeroFlag::GetOwner() const
+{
+	return m_OwnerID;
+}
+
 void CHeroFlag::FindPosition()
 {
 	int NbPos = GameServer()->m_pController->HeroFlagPositions().size();
@@ -52,37 +57,32 @@ void CHeroFlag::SetCoolDown()
 
 void CHeroFlag::GiveGift(CCharacter* pHero)
 {
+	pHero->IncreaseHealth(10);
+	pHero->IncreaseArmor(10);
+	pHero->GiveWeapon(WEAPON_SHOTGUN, -1);
+	pHero->GiveWeapon(WEAPON_GRENADE, -1);
+	pHero->GiveWeapon(WEAPON_RIFLE, -1);
+	SetCoolDown();
+
+	pHero->SetEmote(EMOTE_HAPPY, Server()->Tick() + Server()->TickSpeed());
+	GameServer()->SendEmoticon(pHero->GetPlayer()->GetCID(), EMOTICON_MUSIC);
+		
 	// Only increase your *own* character health when on cooldown
 	if (GameServer()->GetHeroGiftCoolDown() > 0)
-	{
-		pHero->IncreaseHealth(10);
-		pHero->IncreaseArmor(10);
-		pHero->GiveWeapon(WEAPON_SHOTGUN, -1);
-		pHero->GiveWeapon(WEAPON_GRENADE, -1);
-		pHero->GiveWeapon(WEAPON_RIFLE, -1);
-		SetCoolDown();
 		return;
-	}
 
 	// Find other players	
 	GameServer()->SendBroadcast_Localization(-1, BROADCAST_PRIORITY_GAMEANNOUNCE, BROADCAST_DURATION_GAMEANNOUNCE, _("The Hero found the flag!"), NULL);
 	GameServer()->CreateSoundGlobal(SOUND_CTF_CAPTURE);
 	GameServer()->FlagCollected();
-	SetCoolDown();
 
 	for(CCharacter *p = (CCharacter*) GameWorld()->FindFirst(CGameWorld::ENTTYPE_CHARACTER); p; p = (CCharacter *)p->TypeNext())
 	{
-		if(p->IsInfected())
+		if(p->IsInfected() || p == pHero)
 			continue;
-		
+
 		p->SetEmote(EMOTE_HAPPY, Server()->Tick() + Server()->TickSpeed());
 		GameServer()->SendEmoticon(p->GetPlayer()->GetCID(), EMOTICON_MUSIC);
-
-		if(p == pHero)
-		{
-			p->IncreaseHealth(10);
-			p->IncreaseArmor(10);
-		}
 		
 		p->GiveGift(GIFT_HEROFLAG);
 	}
