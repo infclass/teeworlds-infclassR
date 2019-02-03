@@ -58,6 +58,10 @@ void CGameContext::Construct(int Resetting)
 	
 	m_FunRound = false;
 	m_FunRoundsPassed = 0;
+	
+	#ifndef CONF_NOGEOLOCATION
+	geolocation = new Geolocation("GeoLite2-Country.mmdb");
+	#endif
 }
 
 CGameContext::CGameContext(int Resetting)
@@ -85,8 +89,11 @@ CGameContext::~CGameContext()
 		delete m_apPlayers[i];
 	if(!m_Resetting)
 		delete m_pVoteOptionHeap;
+	
+	#ifndef CONF_NOGEOLOCATION
 	delete geolocation;
 	geolocation = nullptr;
+	#endif
 }
 
 void CGameContext::Clear()
@@ -1899,7 +1906,9 @@ void CGameContext::OnMessage(int MsgID, CUnpacker *pUnpacker, int ClientID)
 				Console()->Print(IConsole::OUTPUT_LEVEL_DEBUG, "game", aBuf);
 			}
 			Server()->SetClientClan(ClientID, pMsg->m_pClan);
-			// Server()->SetClientCountry(ClientID, pMsg->m_Country); // cuz geolocation
+			#ifdef CONF_NOGEOLOCATION
+			Server()->SetClientCountry(ClientID, pMsg->m_Country);
+			#endif
 			
 /* INFECTION MODIFICATION START ***************************************/
 			str_copy(pPlayer->m_TeeInfos.m_CustomSkinName, pMsg->m_pSkin, sizeof(pPlayer->m_TeeInfos.m_CustomSkinName));
@@ -1944,10 +1953,13 @@ void CGameContext::OnMessage(int MsgID, CUnpacker *pUnpacker, int ClientID)
 /* INFECTION MODIFICATION START ***************************************/
 			Server()->SetClientName(ClientID, pMsg->m_pName);
 			Server()->SetClientClan(ClientID, pMsg->m_pClan);
+			Server()->SetClientCountry(ClientID, pMsg->m_Country);
 
 			// IP geolocation start
+			#ifndef CONF_NOGEOLOCATION
 			std::string ip = Server()->GetClientIP(ClientID);
 			Server()->SetClientCountry(ClientID, geolocation->get_country_iso_numeric_code(ip));
+			#endif
 			// IP geolocation end
 
 			str_copy(pPlayer->m_TeeInfos.m_CustomSkinName, pMsg->m_pSkin, sizeof(pPlayer->m_TeeInfos.m_CustomSkinName));
@@ -2860,18 +2872,22 @@ bool CGameContext::ConChatInfo(IConsole::IResult *pResult, void *pUserData)
 	
 	dynamic_string Buffer;
 	
-	const char aThanks[] = "guenstig werben, Defeater, Orangus, BlinderHeld, Warpaint, Serena, Socialdarwinist, FakeDeath, tee_to_F_U_UP!, Stitch626, Denis, NanoSlime_, tria, pinkieval…";
-	const char aContributors[] = "necropotame, Stitch626";
+	const char aThanks[] = "guenstig werben, Defeater, Orangus, BlinderHeld, Warpaint, Serena, FakeDeath, tee_to_F_U_UP!, Denis, NanoSlime_, tria, pinkieval…";
+	const char aContributors[] = "necropotame, Stitch626, yavl, Socialdarwinist,\nbretonium,duralakun,FluffyTee,ResamVi";
 	
-	pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("InfectionClass, by necropotame (version {str:VersionCode})"), "{str:VersionCode}", "2.0", NULL); 
+	
+	pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("InfectionClass, by necropotame (version {str:VersionCode})"), "VersionCode", "OI2", NULL); 
 	Buffer.append("\n\n");
 	pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("Based on the concept of Infection mod by Gravity"), NULL); 
+	Buffer.append("\n\n");
+	pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("Open source on \ngithub.com/yavl/teeworlds-infclassR"), NULL); 
 	Buffer.append("\n\n");
 	pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("Main contributors: {str:ListOfContributors}"), "ListOfContributors", aContributors, NULL); 
 	Buffer.append("\n\n");
 	pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("Thanks to {str:ListOfContributors}"), "ListOfContributors", aThanks, NULL); 
 	Buffer.append("\n\n");
-	
+	pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("Server version from {str:ServerCompileDate} "), "ServerCompileDate", LAST_COMPILE_DATE, NULL); 
+	Buffer.append("\n\n");	
 	pSelf->SendMOTD(ClientID, Buffer.buffer());
 	
 	return true;
@@ -4298,6 +4314,8 @@ bool CGameContext::IsClientPlayer(int ClientID)
 const char *CGameContext::GameType() { return m_pController && m_pController->m_pGameType ? m_pController->m_pGameType : ""; }
 const char *CGameContext::Version() { return GAME_VERSION; }
 const char *CGameContext::NetVersion() { return GAME_NETVERSION; }
+
+
 
 IGameServer *CreateGameServer() { return new CGameContext; }
 
