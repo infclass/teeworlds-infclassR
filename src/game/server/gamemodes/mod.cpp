@@ -609,20 +609,23 @@ int CGameControllerMOD::OnCharacterDeath(class CCharacter *pVictim, class CPlaye
 		CPlayer* pFreezer = GameServer()->m_apPlayers[pVictim->m_LastFreezer];
 		if(pFreezer)
 		{
-			Server()->RoundStatistics()->OnScoreEvent(pFreezer->GetCID(), SCOREEVENT_HELP_FREEZE, pFreezer->GetClass(), Server()->ClientName(pFreezer->GetCID()), GameServer()->Console());
-			GameServer()->SendScoreSound(pFreezer->GetCID());
-			
-			if(pVictim->GetPlayer()->GetCID() == GameServer()->GetTargetToKill())
+			if (pFreezer->GetClass() == PLAYERCLASS_NINJA)
 			{
-				GameServer()->SendChatTarget_Localization(pFreezer->GetCID(), CHATCATEGORY_SCORE, _("You have eliminated your target, +2 points"), NULL);
-				Server()->RoundStatistics()->OnScoreEvent(pFreezer->GetCID(), SCOREEVENT_KILL_TARGET, pKiller->GetClass(), Server()->ClientName(pFreezer->GetCID()), GameServer()->Console());
-				GameServer()->TargetKilled();
+				Server()->RoundStatistics()->OnScoreEvent(pFreezer->GetCID(), SCOREEVENT_HELP_FREEZE, pFreezer->GetClass(), Server()->ClientName(pFreezer->GetCID()), GameServer()->Console());
+				GameServer()->SendScoreSound(pFreezer->GetCID());
 				
-				if(pFreezer->GetCharacter())
+				if(pVictim->GetPlayer()->GetCID() == GameServer()->GetTargetToKill())
 				{
-					pFreezer->GetCharacter()->GiveNinjaBuf();
-					pFreezer->GetCharacter()->SetEmote(EMOTE_HAPPY, Server()->Tick() + Server()->TickSpeed());
-					GameServer()->SendEmoticon(pFreezer->GetCID(), EMOTICON_MUSIC);
+					GameServer()->SendChatTarget_Localization(pFreezer->GetCID(), CHATCATEGORY_SCORE, _("You have eliminated your target, +2 points"), NULL);
+					Server()->RoundStatistics()->OnScoreEvent(pFreezer->GetCID(), SCOREEVENT_KILL_TARGET, pKiller->GetClass(), Server()->ClientName(pFreezer->GetCID()), GameServer()->Console());
+					GameServer()->TargetKilled();
+					
+					if(pFreezer->GetCharacter())
+					{
+						pFreezer->GetCharacter()->GiveNinjaBuf();
+						pFreezer->GetCharacter()->SetEmote(EMOTE_HAPPY, Server()->Tick() + Server()->TickSpeed());
+						GameServer()->SendEmoticon(pFreezer->GetCID(), EMOTICON_MUSIC);
+					}
 				}
 			}
 		}
