@@ -887,22 +887,31 @@ void CCharacter::FireWeapon()
 					
 					if(GetClass() == PLAYERCLASS_HERO)
 					{
-						if(m_TurretCount)
-						{
+						if (g_Config.m_InfTurretEnable) {
 							
-							if (g_Config.m_InfTurretEnableLaser) 
+							if(m_TurretCount)
 							{
-								new CTurret(GameWorld(), m_Pos, m_pPlayer->GetCID(), Direction, GameServer()->Tuning()->m_LaserReach,INFAMMO_LASER);
+								
+								if (g_Config.m_InfTurretEnableLaser) 
+								{
+									new CTurret(GameWorld(), m_Pos, m_pPlayer->GetCID(), Direction, GameServer()->Tuning()->m_LaserReach,INFAMMO_LASER);
+								}
+								else if (g_Config.m_InfTurretEnablePlasma) 
+								{
+									new CTurret(GameWorld(), m_Pos, m_pPlayer->GetCID(), Direction, GameServer()->Tuning()->m_LaserReach,INFAMMO_PLASMA);
+								}
+								
+								GameServer()->CreateSound(m_Pos, SOUND_GRENADE_FIRE);
+								m_TurretCount--;
+								char aBuf[256];
+								str_format(aBuf, sizeof(aBuf), "placed turret, %i left", m_TurretCount);
+								GameServer()->SendChatTarget_Localization(m_pPlayer->GetCID(), CHATCATEGORY_SCORE, aBuf, NULL);
+								if (m_TurretCount == 0)
+								{
+									m_aWeapons[WEAPON_HAMMER].m_Got = false;
+								}
+									
 							}
-							else if (g_Config.m_InfTurretEnablePlasma) 
-							{
-								new CTurret(GameWorld(), m_Pos, m_pPlayer->GetCID(), Direction, GameServer()->Tuning()->m_LaserReach,INFAMMO_PLASMA);
-							}
-							
-							GameServer()->CreateSound(m_Pos, SOUND_GRENADE_FIRE);
-							m_TurretCount--;
-							if (m_TurretCount == 0)
-								m_aWeapons[WEAPON_HAMMER].m_Got = false;
 						}
 					}
 					

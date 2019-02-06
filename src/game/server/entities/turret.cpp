@@ -22,13 +22,27 @@ CTurret::CTurret(CGameWorld *pGameWorld, vec2 Pos, int Owner, vec2 Direction, fl
 	m_OwnerChar = GameServer()->GetPlayerChar(m_Owner);
 	m_LifeSpan = Server()->TickSpeed()*g_Config.m_InfTurretDuration;
 	m_WarmUpCounter = Server()->TickSpeed()*g_Config.m_InfTurretWarmUpDuration;
-	m_ReloadCounter = Server()->TickSpeed()*g_Config.m_InfTurretReloadDuration;
 	m_Type = Type;
-
 	m_IDs.set_size(9);
 	for(int i = 0; i < m_IDs.size(); i++)
 	{
 		m_IDs[i] = Server()->SnapNewID();
+	}
+	
+	if ( (g_Config.m_InfTurretEnableLaser && g_Config.m_InfTurretEnablePlasma) || (!g_Config.m_InfTurretEnableLaser && !g_Config.m_InfTurretEnablePlasma) )
+	{
+		GameServer()->SendBroadcast_Localization(-1, BROADCAST_PRIORITY_GAMEANNOUNCE, BROADCAST_DURATION_GAMEANNOUNCE, _("error: turrets have no correct ammo type, admin has to choose ammo type with \"InfTurretEnablePlasma\" "), NULL);
+		Reset();
+	}
+	
+	if (g_Config.m_InfTurretEnablePlasma) 
+	{
+		m_ReloadCounter = Server()->TickSpeed()*g_Config.m_InfTurretPlasmaReloadDuration;
+	}
+	
+	if (g_Config.m_InfTurretEnableLaser) 
+	{
+		m_ReloadCounter = Server()->TickSpeed()*g_Config.m_InfTurretLaserReloadDuration;
 	}
 	
 	GameWorld()->InsertEntity(this);
@@ -137,6 +151,7 @@ void CTurret::Tick()
 		// attack zombie
 		if (Len < (float)g_Config.m_InfTurretRadarRange) //800
 		{
+			
 			vec2 Direction = normalize(pChr->m_Pos - m_Pos);
 			
 			switch(m_Type)
@@ -150,11 +165,19 @@ void CTurret::Tick()
 					break;
 			}
 			
-			
 			GameServer()->CreateSound(m_Pos, SOUND_RIFLE_FIRE);
 			
 			//Reload ammo
-			m_ReloadCounter = Server()->TickSpeed()*g_Config.m_InfTurretReloadDuration;
+			if (g_Config.m_InfTurretEnablePlasma) 
+			{
+				m_ReloadCounter = Server()->TickSpeed()*g_Config.m_InfTurretPlasmaReloadDuration;
+			}
+			
+			if (g_Config.m_InfTurretEnableLaser) 
+			{
+				m_ReloadCounter = Server()->TickSpeed()*g_Config.m_InfTurretLaserReloadDuration;
+			}
+			
 			m_WarmUpCounter = Server()->TickSpeed()*g_Config.m_InfTurretWarmUpDuration;
 		}
 	}

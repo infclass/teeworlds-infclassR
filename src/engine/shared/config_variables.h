@@ -133,15 +133,19 @@ MACRO_CONFIG_INT(InfSlowMotionMaxSpeed, inf_slow_motion_max_speed, 50, 0, 500, C
 MACRO_CONFIG_INT(InfSlowMotionGravity, inf_slow_motion_gravity, 5, -100, 100, CFGFLAG_SERVER, "Modify gravity while in slowmotion")
 
 //Turret
+MACRO_CONFIG_INT(InfTurretEnable, inf_turret_enable, 1, 0, 1, CFGFLAG_SERVER, "If turrets are available")
+MACRO_CONFIG_INT(InfTurretGive, inf_turret_give, 1, 0, 1000, CFGFLAG_SERVER, "Gives hero extra turrets")
+
 MACRO_CONFIG_INT(InfTurretDuration, inf_turret_duration, 30, 0, 100, CFGFLAG_SERVER, "turret life span")
 MACRO_CONFIG_INT(InfTurretSelfDestructDmg, inf_turret_self_destruct_dmg, 15, 0, 20, CFGFLAG_SERVER, "damage taken by zombie if turret is destroyed")
 MACRO_CONFIG_INT(InfTurretRadarRange, inf_turret_radar_range, 800, 0, 1000, CFGFLAG_SERVER, "turret radar range")
 MACRO_CONFIG_INT(InfTurretEnableLaser, inf_turret_enable_laser, 0, 0, 1, CFGFLAG_SERVER, "enable turret laser ammunition")
 MACRO_CONFIG_INT(InfTurretEnablePlasma, inf_turret_enable_plasma, 1, 0, 1, CFGFLAG_SERVER, "enable turret plasma ammunition")
-MACRO_CONFIG_INT(InfTurretReloadDuration, inf_turret_reload_duration, 1, 0, 10, CFGFLAG_SERVER, "ammo reload duration")
+MACRO_CONFIG_INT(InfTurretPlasmaReloadDuration, inf_turret_plasma_reload_duration, 3, 0, 10, CFGFLAG_SERVER, "plasma ammo reload duration")
+MACRO_CONFIG_INT(InfTurretLaserReloadDuration, inf_turret_laser_reload_duration, 1, 0, 10, CFGFLAG_SERVER, "laser ammo reload duration")
 MACRO_CONFIG_INT(InfTurretPlasmaLifeSpan, inf_turret_plasma_life_span, 3, 0, 10, CFGFLAG_SERVER, "plasma life span")
 MACRO_CONFIG_INT(InfTurretWarmUpDuration, inf_turret_warm_up_duration, 1, 0, 10, CFGFLAG_SERVER, "turret warm up duration")
-MACRO_CONFIG_INT(InfTurretDmgFactor, inf_turret_dmg_factor, 5, 0, 10, CFGFLAG_SERVER, "how much damage a plasma turret does, 10 == grenade explosion")
+MACRO_CONFIG_INT(InfTurretDmgFactor, inf_turret_dmg_factor, 9, 0, 10, CFGFLAG_SERVER, "how much damage a plasma turret does, 10 == grenade explosion")
 MACRO_CONFIG_INT(InfTurretDmgHealthLaser, inf_turret_dmg_health_laser, 3, 0, 10, CFGFLAG_SERVER, "how much damage in life points a laser turret does")
 
 //SuperWeapons

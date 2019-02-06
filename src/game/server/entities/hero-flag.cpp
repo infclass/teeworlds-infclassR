@@ -2,6 +2,7 @@
 /* If you are missing that file, acquire a complete release at teeworlds.com.                */
 #include <game/server/gamecontext.h>
 #include <engine/server/roundstatistics.h>
+#include <engine/shared/config.h>
 #include "hero-flag.h"
 
 CHeroFlag::CHeroFlag(CGameWorld *pGameWorld)
@@ -72,10 +73,26 @@ void CHeroFlag::GiveGift(CCharacter* pHero)
 			p->IncreaseHealth(10);
 			p->IncreaseArmor(10);
 			
-			if (p->m_TurretCount == 0)
-				p->GiveWeapon(WEAPON_HAMMER, -1);
-			p->m_TurretCount++;
-			GameServer()->SendChatTarget_Localization(p->GetPlayer()->GetCID(), CHATCATEGORY_SCORE, _("you found a turret, place it with hammer"), NULL);	
+			
+			if (g_Config.m_InfTurretEnable) 
+			{
+				if (Server()->GetActivePlayerCount() > 2)
+				{
+					if (p->m_TurretCount == 0)
+						p->GiveWeapon(WEAPON_HAMMER, -1);
+					
+					p->m_TurretCount++;
+					
+					char aBuf[256];
+					str_format(aBuf, sizeof(aBuf), "you gained a turret (%i), place it with the hammer", p->m_TurretCount);
+					GameServer()->SendChatTarget_Localization(p->GetPlayer()->GetCID(), CHATCATEGORY_SCORE, aBuf, NULL);
+					
+					if (g_Config.m_InfTurretGive) 
+					{
+						p->m_TurretCount = p->m_TurretCount + g_Config.m_InfTurretGive;
+					}
+				}
+			}
 			
 		}
 		
