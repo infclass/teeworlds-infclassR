@@ -239,6 +239,8 @@ public:
 
 	void SetClass(int ClassChoosed);
 	bool IsInfected() const;
+	bool IsZombie() const;
+	bool IsHuman() const;
 	void Infection(bool v);
 	void RemoveAllGun();
 	void Freeze(float Time, int Player, int Reason);

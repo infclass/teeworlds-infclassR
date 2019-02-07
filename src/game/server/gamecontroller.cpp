@@ -48,7 +48,7 @@ bool IGameController::PreSpawn(CPlayer* pPlayer, vec2 *pOutPos)
 	if(Team == TEAM_SPECTATORS)
 		return false;
 
-	int Type = (pPlayer->IsInfected() ? TEAM_RED : TEAM_BLUE);
+	int Type = (pPlayer->IsZombie() ? TEAM_RED : TEAM_BLUE);
 
 	// get spawn point
 	for(int i = 0; i < m_SpawnPoints[Type].size(); i++)

@@ -78,7 +78,7 @@ void CHeroFlag::GiveGift(CCharacter* pHero)
 
 	for(CCharacter *p = (CCharacter*) GameWorld()->FindFirst(CGameWorld::ENTTYPE_CHARACTER); p; p = (CCharacter *)p->TypeNext())
 	{
-		if(p->IsInfected() || p == pHero)
+		if(p->IsZombie() || p == pHero)
 			continue;
 
 		p->SetEmote(EMOTE_HAPPY, Server()->Tick() + Server()->TickSpeed());

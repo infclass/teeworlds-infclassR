@@ -54,7 +54,7 @@ void CGameControllerMOD::OnClientDrop(int ClientID, int Type)
 	if(Type == CLIENTDROPTYPE_SHUTDOWN) return;	
 	
 	CPlayer* pPlayer = GameServer()->m_apPlayers[ClientID];
-	if(pPlayer && pPlayer->IsInfected() && m_InfectedStarted)
+	if(pPlayer && pPlayer->IsZombie() && m_InfectedStarted)
 	{
 		int NumHumans;
 		int NumInfected;
@@ -127,7 +127,7 @@ void CGameControllerMOD::GetPlayerCounter(int ClientException, int& NumHumans, i
 	{
 		if(Iter.ClientID() == ClientException) continue;
 		
-		if(Iter.Player()->IsInfected()) NumInfected++;
+		if(Iter.Player()->IsZombie()) NumInfected++;
 		else NumHumans++;
 	}
 	
@@ -223,7 +223,7 @@ void CGameControllerMOD::Tick()
 				Iter.Reset();
 				while(Iter.Next())
 				{
-					if(Iter.Player()->IsInfected()) continue;
+					if(Iter.Player()->IsZombie()) continue;
 					
 					if(!Server()->IsClientInfectedBefore(Iter.ClientID()))
 					{
@@ -247,7 +247,7 @@ void CGameControllerMOD::Tick()
 					Iter.Reset();
 					while(Iter.Next())
 					{
-						if(Iter.Player()->IsInfected()) continue;
+						if(Iter.Player()->IsZombie()) continue;
 						
 						if(random < InfectionProb)
 						{
@@ -298,7 +298,7 @@ void CGameControllerMOD::Tick()
 		{
 			for(CCharacter *p = (CCharacter*) GameServer()->m_World.FindFirst(CGameWorld::ENTTYPE_CHARACTER); p; p = (CCharacter *)p->TypeNext())
 			{
-				if(p->IsInfected())
+				if(p->IsZombie())
 				{
 					GameServer()->SendEmoticon(p->GetPlayer()->GetCID(), EMOTICON_GHOST);
 				}
@@ -353,7 +353,7 @@ void CGameControllerMOD::Tick()
 			
 			for(CCharacter *p = (CCharacter*) GameServer()->m_World.FindFirst(CGameWorld::ENTTYPE_CHARACTER); p; p = (CCharacter *)p->TypeNext())
 			{
-				if(!p->IsInfected())
+				if(p->IsHuman())
 					continue;
 				
 				int tileX = static_cast<int>(round(p->m_Pos.x))/32;
@@ -385,7 +385,7 @@ void CGameControllerMOD::Tick()
 					CPlayerIterator<PLAYERITER_INGAME> Iter(GameServer()->m_apPlayers);
 					while(Iter.Next())
 					{
-						if(!Iter.Player()->IsInfected())
+						if(Iter.Player()->IsHuman())
 						{
 							//TAG_SCORE
 							Server()->RoundStatistics()->OnScoreEvent(Iter.ClientID(), SCOREEVENT_HUMAN_SURVIVE, Iter.Player()->GetClass(), Server()->ClientName(Iter.ClientID()), GameServer()->Console());
@@ -539,12 +539,12 @@ int CGameControllerMOD::OnCharacterDeath(class CCharacter *pVictim, class CPlaye
 	if(!pKiller || Weapon == WEAPON_GAME)
 		return 0;
 		
-	if(pKiller->IsInfected())
+	if(pKiller->IsZombie())
 	{
 		CPlayer* pVictimPlayer = pVictim->GetPlayer();
 		if(pVictimPlayer)
 		{
-			if(!pVictim->IsInfected())
+			if(pVictim->IsHuman())
 			{
 				GameServer()->SendChatTarget_Localization(pKiller->GetCID(), CHATCATEGORY_SCORE, _("You have infected {str:VictimName}, +3 points"), "VictimName", Server()->ClientName(pVictimPlayer->GetCID()), NULL);
 				Server()->RoundStatistics()->OnScoreEvent(pKiller->GetCID(), SCOREEVENT_INFECTION, pKiller->GetClass(), Server()->ClientName(pKiller->GetCID()), GameServer()->Console());
@@ -580,7 +580,7 @@ int CGameControllerMOD::OnCharacterDeath(class CCharacter *pVictim, class CPlaye
 				Server()->RoundStatistics()->OnScoreEvent(pKiller->GetCID(), SCOREEVENT_KILL_WITCH, pKiller->GetClass(), Server()->ClientName(pKiller->GetCID()), GameServer()->Console());
 				GameServer()->SendScoreSound(pKiller->GetCID());
 			}
-			else if(pVictim->IsInfected())
+			else if(pVictim->IsZombie())
 			{
 				Server()->RoundStatistics()->OnScoreEvent(pKiller->GetCID(), SCOREEVENT_KILL_INFECTED, pKiller->GetClass(), Server()->ClientName(pKiller->GetCID()), GameServer()->Console());
 				GameServer()->SendScoreSound(pKiller->GetCID());
@@ -604,7 +604,7 @@ int CGameControllerMOD::OnCharacterDeath(class CCharacter *pVictim, class CPlaye
 	}
 		
 	//Add bonus point for ninja
-	if(pVictim->IsInfected() && pVictim->IsFrozen() && pVictim->m_LastFreezer >= 0 && pVictim->m_LastFreezer != pKiller->GetCID())
+	if(pVictim->IsZombie() && pVictim->IsFrozen() && pVictim->m_LastFreezer >= 0 && pVictim->m_LastFreezer != pKiller->GetCID())
 	{
 		CPlayer* pFreezer = GameServer()->m_apPlayers[pVictim->m_LastFreezer];
 		if(pFreezer)
@@ -704,10 +704,10 @@ bool CGameControllerMOD::PreSpawn(CPlayer* pPlayer, vec2 *pOutPos)
 	else
 		pPlayer->m_WasHumanThisRound = true;
 		
-	if(pPlayer->IsInfected() && m_ExplosionStarted)
+	if(pPlayer->IsZombie() && m_ExplosionStarted)
 		return false;
 		
-	if(m_InfectedStarted && pPlayer->IsInfected() && random_prob(0.66f))
+	if(m_InfectedStarted && pPlayer->IsZombie() && random_prob(0.66f))
 	{
 		CPlayerIterator<PLAYERITER_INGAME> Iter(GameServer()->m_apPlayers);
 		while(Iter.Next())
@@ -725,7 +725,7 @@ bool CGameControllerMOD::PreSpawn(CPlayer* pPlayer, vec2 *pOutPos)
 		}
 	}
 			
-	int Type = (pPlayer->IsInfected() ? 0 : 1);
+	int Type = (pPlayer->IsZombie() ? 0 : 1);
 
 	// get spawn point
 	int RandomShift = random_int(0, m_SpawnPoints[Type].size()-1);
@@ -846,7 +846,7 @@ int CGameControllerMOD::ChooseInfectedClass(CPlayer* pPlayer)
 	CPlayerIterator<PLAYERITER_INGAME> Iter(GameServer()->m_apPlayers);
 	while(Iter.Next())
 	{
-		if(Iter.Player()->IsInfected()) nbInfected++;
+		if(Iter.Player()->IsZombie()) nbInfected++;
 		if(Iter.Player()->GetClass() == PLAYERCLASS_WITCH) thereIsAWitch = true;
 		if(Iter.Player()->GetClass() == PLAYERCLASS_UNDEAD) thereIsAnUndead = true;
 	}

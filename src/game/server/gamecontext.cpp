@@ -136,7 +136,7 @@ int CGameContext::GetZombieCount() {
 	{
 		if (!m_apPlayers[i])
 			continue;
-		if (m_apPlayers[i]->IsInfected())
+		if (m_apPlayers[i]->IsZombie())
 			count++;
 	}
 	return count;
@@ -148,7 +148,7 @@ int CGameContext::GetZombieCount(int zombie_class) {
 	{
 		if (!m_apPlayers[i])
 			continue;
-		if (m_apPlayers[i]->IsInfected() && m_apPlayers[i]->GetClass() == zombie_class)
+		if (m_apPlayers[i]->IsZombie() && m_apPlayers[i]->GetClass() == zombie_class)
 			count++;
 	}
 	return count;
@@ -163,7 +163,7 @@ int CGameContext::RandomZombieToWitch() {
 	{
 		if (!m_apPlayers[i])
 			continue;
-		if (m_apPlayers[i]->IsInfected()) {
+		if (m_apPlayers[i]->IsZombie()) {
 			zombies_id.push_back(i);
 		}
 	}
@@ -750,7 +750,7 @@ void CGameContext::SendChat(int ChatterClientID, int Team, const char *pText)
 /* INFECTION MODIFICATION START ***************************************/
 			if(m_apPlayers[i])
 			{
-				int PlayerTeam = (m_apPlayers[i]->IsInfected() ? CGameContext::CHAT_RED : CGameContext::CHAT_BLUE );
+				int PlayerTeam = (m_apPlayers[i]->IsZombie() ? CGameContext::CHAT_RED : CGameContext::CHAT_BLUE );
 				if(m_apPlayers[i]->GetTeam() == TEAM_SPECTATORS) PlayerTeam = CGameContext::CHAT_SPEC;
 				
 				if(PlayerTeam == Team)
@@ -946,7 +946,7 @@ void CGameContext::OnTick()
 		int infectedCount = 0;
 		for(int i=0; i<MAX_CLIENTS; i++)
 		{		
-			if(m_apPlayers[i] && m_apPlayers[i]->IsInfected() && m_apPlayers[i]->GetClass() != PLAYERCLASS_UNDEAD)
+			if(m_apPlayers[i] && m_apPlayers[i]->IsZombie() && m_apPlayers[i]->GetClass() != PLAYERCLASS_UNDEAD)
 			{
 				if (m_apPlayers[i]->GetCharacter() && (m_apPlayers[i]->GetCharacter()->GetInfZoneTick()*Server()->TickSpeed()) < 1000*g_Config.m_InfNinjaTargetAfkTime) // Make sure zombie is not camping in InfZone
 				{
@@ -1013,7 +1013,7 @@ void CGameContext::OnTick()
 	{
 		if(m_apPlayers[i] && m_apPlayers[i]->GetCharacter())
 		{
-			m_apPlayers[i]->GetCharacter()->m_Core.m_Infected = m_apPlayers[i]->IsInfected();
+			m_apPlayers[i]->GetCharacter()->m_Core.m_Infected = m_apPlayers[i]->IsZombie();
 			m_apPlayers[i]->GetCharacter()->m_Core.m_HookProtected = m_apPlayers[i]->HookProtectionEnabled();
 		}
 	}
@@ -1655,7 +1655,7 @@ void CGameContext::OnMessage(int MsgID, CUnpacker *pUnpacker, int ClientID)
 			if(pMsg->m_Team)
 			{
 				if(pPlayer->GetTeam() == TEAM_SPECTATORS) Team = CGameContext::CHAT_SPEC;
-				else Team = (pPlayer->IsInfected() ? CGameContext::CHAT_RED : CGameContext::CHAT_BLUE);
+				else Team = (pPlayer->IsZombie() ? CGameContext::CHAT_RED : CGameContext::CHAT_BLUE);
 			}
 /* INFECTION MODIFICATION END *****************************************/
 			
@@ -1822,13 +1822,13 @@ void CGameContext::OnMessage(int MsgID, CUnpacker *pUnpacker, int ClientID)
 			}
 			
 /* INFECTION MODIFICATION START ***************************************/
-			if(m_apPlayers[ClientID]->IsInfected() && pMsg->m_Team == TEAM_SPECTATORS) 
+			if(m_apPlayers[ClientID]->IsZombie() && pMsg->m_Team == TEAM_SPECTATORS) 
 			{
 				int InfectedCount = 0;
 				CPlayerIterator<PLAYERITER_INGAME> Iter(m_apPlayers);
 				while(Iter.Next())
 				{
-					 if(Iter.Player()->IsInfected())
+					 if(Iter.Player()->IsZombie())
 						 InfectedCount++;
 				}
 
@@ -2937,7 +2937,7 @@ bool CGameContext::PrivateMessage(const char* pStr, int ClientID, bool TeamChat)
 		CheckTeam = true;
 		if(m_apPlayers[ClientID]->GetTeam() == TEAM_SPECTATORS)
 			CheckTeam = TEAM_SPECTATORS;
-		if(m_apPlayers[ClientID]->IsInfected())
+		if(m_apPlayers[ClientID]->IsZombie())
 			CheckTeam = TEAM_RED;
 		else
 			CheckTeam = TEAM_BLUE;
@@ -3129,9 +3129,9 @@ bool CGameContext::PrivateMessage(const char* pStr, int ClientID, bool TeamChat)
 				{
 					if(CheckTeam == TEAM_SPECTATORS && m_apPlayers[i]->GetTeam() != TEAM_SPECTATORS)
 						continue;
-					else if(CheckTeam == TEAM_RED && !m_apPlayers[i]->IsInfected())
+					else if(CheckTeam == TEAM_RED && m_apPlayers[i]->IsHuman())
 						continue;
-					else if(CheckTeam == TEAM_BLUE && m_apPlayers[i]->IsInfected())
+					else if(CheckTeam == TEAM_BLUE && m_apPlayers[i]->IsZombie())
 						continue;
 				}
 				
