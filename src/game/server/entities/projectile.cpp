@@ -135,7 +135,7 @@ void CProjectile::Tick()
 		{
 			if(OwnerChar)
 			{
-				if(!OwnerChar->IsInfected() && !TargetChr->IsInfected())
+				if(OwnerChar->IsHuman() && TargetChr->IsHuman())
 				{
 					TargetChr->TakeDamage(m_Direction * 0.001f, m_Damage, m_Owner, m_Weapon, m_TakeDamageMode);
 				}

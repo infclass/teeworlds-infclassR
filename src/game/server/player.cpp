@@ -125,7 +125,7 @@ void CPlayer::Tick()
 		else if(m_Spawning && m_RespawnTick <= Server()->Tick())
 			TryRespawn();
 		
-		if(!IsInfected()) m_HumanTime++;
+		if(IsHuman()) m_HumanTime++;
 	}
 	else
 	{
@@ -349,7 +349,7 @@ void CPlayer::Snap(int SnappingClient)
 	pClientInfo->m_Country = Server()->ClientCountry(m_ClientID);
 
 	if(
-		GameServer()->m_apPlayers[SnappingClient] && !IsInfected() &&
+		GameServer()->m_apPlayers[SnappingClient] && IsHuman() &&
 		(
 			(Server()->GetClientCustomSkin(SnappingClient) == 1 && SnappingClient == GetCID()) ||
 			(Server()->GetClientCustomSkin(SnappingClient) == 2)
@@ -776,11 +776,11 @@ void CPlayer::SetOldClass(int oldClass)
 
 void CPlayer::StartInfection(bool force)
 {
-	if(!force && IsInfected())
+	if(!force && IsZombie())
 		return;
 	
 	
-	if(!IsInfected())
+	if(IsHuman())
 	{
 		m_InfectionTick = Server()->Tick();
 	}
@@ -793,6 +793,16 @@ void CPlayer::StartInfection(bool force)
 bool CPlayer::IsInfected() const
 {
 	return (m_class > END_HUMANCLASS);
+}
+
+bool CPlayer::IsZombie() const
+{
+	return (m_class > END_HUMANCLASS);
+}
+
+bool CPlayer::IsHuman() const
+{
+	return !(m_class > END_HUMANCLASS);
 }
 
 bool CPlayer::IsKownClass(int c)
