@@ -1991,7 +1991,7 @@ void CCharacter::Tick()
 	
 	if(GetClass() == PLAYERCLASS_SPIDER)
 	{
-		CoreTickParams.m_HookGrabTime = 2*SERVER_TICK_SPEED;
+		CoreTickParams.m_HookGrabTime = g_Config.m_InfSpiderHookTime*SERVER_TICK_SPEED;
 	}
 	if(GetClass() == PLAYERCLASS_BAT)
 	{
@@ -3194,7 +3194,7 @@ void CCharacter::Snap(int SnappingClient)
 	
 	if(GetClass() == PLAYERCLASS_SPIDER)
 	{
-		pCharacter->m_HookTick -= SERVER_TICK_SPEED-SERVER_TICK_SPEED/5;
+		pCharacter->m_HookTick -= (g_Config.m_InfSpiderHookTime - 1) * SERVER_TICK_SPEED-SERVER_TICK_SPEED/5;
 		if(pCharacter->m_HookTick < 0)
 			pCharacter->m_HookTick = 0;
 	}
