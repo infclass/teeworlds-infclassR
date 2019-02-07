@@ -63,7 +63,7 @@ void CLooperWall::Tick()
 		// Find other players
 		for(CCharacter *p = (CCharacter*) GameWorld()->FindFirst(CGameWorld::ENTTYPE_CHARACTER); p; p = (CCharacter *)p->TypeNext())
 		{
-			if(!p->IsInfected()) continue;
+			if(p->IsHuman()) continue;
 
 			vec2 IntersectPos = closest_point_on_line(m_Pos, m_Pos2, p->m_Pos);
 			float Len = distance(p->m_Pos, IntersectPos);

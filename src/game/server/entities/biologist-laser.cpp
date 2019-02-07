@@ -23,7 +23,7 @@ void CBiologistLaser::HitCharacter(vec2 From, vec2 To)
 {
 	for(CCharacter *p = (CCharacter*) GameWorld()->FindFirst(CGameWorld::ENTTYPE_CHARACTER); p; p = (CCharacter *)p->TypeNext())
 	{
-		if(!p->IsInfected()) continue;
+		if(p->IsHuman()) continue;
 
 		vec2 IntersectPos = closest_point_on_line(From, To, p->m_Pos);
 		float Len = distance(p->m_Pos, IntersectPos);
