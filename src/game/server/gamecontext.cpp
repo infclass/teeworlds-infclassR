@@ -282,8 +282,10 @@ void CGameContext::CreateExplosion(vec2 Pos, int Owner, int Weapon, bool NoDamag
 		int Num = m_World.FindEntities(Pos, Radius, (CEntity**)apEnts, MAX_CLIENTS, CGameWorld::ENTTYPE_CHARACTER);
 		for(int i = 0; i < Num; i++)
 		{
-			if(apEnts[i]->GetPlayer()->GetCID() == Owner) {} //owner selfharm
-			else if(apEnts[i]->IsHuman()) continue;// humans are not affected by force
+			if(!g_Config.m_InfShockwaveAffectHumans){
+				if(apEnts[i]->GetPlayer()->GetCID() == Owner) {} //owner selfharm
+				else if(apEnts[i]->IsHuman()) continue;// humans are not affected by force
+			}
 			vec2 Diff = apEnts[i]->m_Pos - Pos;
 			vec2 ForceDir(0,1);
 			float l = length(Diff);
