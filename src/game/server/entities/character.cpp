@@ -3762,6 +3762,7 @@ void CCharacter::DestroyChildEntities()
 	{
 		if(pPlasma->GetOwner() != m_pPlayer->GetCID()) continue;
 		GameServer()->m_World.DestroyEntity(pPlasma);
+	}
 	for(CHeroFlag* pFlag = (CHeroFlag*) GameWorld()->FindFirst(CGameWorld::ENTTYPE_HERO_FLAG); pFlag; pFlag = (CHeroFlag*) pFlag->TypeNext())
 	{
 		if(pFlag->GetOwner() != m_pPlayer->GetCID()) continue;

@@ -70,19 +70,16 @@ void CHeroFlag::GiveGift(CCharacter* pHero)
   
 	if (g_Config.m_InfTurretEnable) 
 	{
-	  if (Server()->GetActivePlayerCount() > 2)
-    {
-		  if (pHero->m_TurretCount == 0)
-			  pHero->GiveWeapon(WEAPON_HAMMER, -1);
+		if (Server()->GetActivePlayerCount() > 2)
+		{
+			if (pHero->m_TurretCount == 0)
+				pHero->GiveWeapon(WEAPON_HAMMER, -1);
 					
-			pHero->m_TurretCount++;
+			pHero->m_TurretCount += g_Config.m_InfTurretGive;
 					
 			char aBuf[256];
 			str_format(aBuf, sizeof(aBuf), "you gained a turret (%i), place it with the hammer", pHero->m_TurretCount);
 			GameServer()->SendChatTarget_Localization(pHero->GetPlayer()->GetCID(), CHATCATEGORY_SCORE, aBuf, NULL);
-					
-			if (g_Config.m_InfTurretGive) 
-				pHero->m_TurretCount = pHero->m_TurretCount + g_Config.m_InfTurretGive;
 		}
 	}
 		
@@ -102,7 +99,6 @@ void CHeroFlag::GiveGift(CCharacter* pHero)
 
 		p->SetEmote(EMOTE_HAPPY, Server()->Tick() + Server()->TickSpeed());
 		GameServer()->SendEmoticon(p->GetPlayer()->GetCID(), EMOTICON_MUSIC);
-    
 		p->GiveGift(GIFT_HEROFLAG);
 	}
 }
