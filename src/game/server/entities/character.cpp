@@ -554,10 +554,8 @@ void CCharacter::UpdateTuningParam()
 	{
 		pTuningParams->m_Gravity = 0.0f;
 	}
-	if(GetPlayer()->HookProtectionEnabled())
-	{
-		pTuningParams->m_PlayerHooking = 0;
-	}
+	
+	pTuningParams->m_PlayerHooking = 0;
 	
 	if(GetClass() == PLAYERCLASS_GHOUL)
 	{
@@ -1997,6 +1995,11 @@ void CCharacter::Tick()
 	{
 		CoreTickParams.m_HookGrabTime = g_Config.m_InfBatHookTime*SERVER_TICK_SPEED;
 	}
+	if(m_Core.m_HookedPlayer > -1 && GameServer()->m_apPlayers[m_Core.m_HookedPlayer] &&
+			!GameServer()->m_apPlayers[m_Core.m_HookedPlayer]->HookProtectionEnabled())
+	{
+		CoreTickParams.m_HookGrabTime = 999*SERVER_TICK_SPEED;
+	}
 	CoreTickParams.m_HookMode = m_HookMode;
 	
 	vec2 PrevPos = m_Core.m_Pos;
@@ -3201,6 +3204,13 @@ void CCharacter::Snap(int SnappingClient)
 	if(GetClass() == PLAYERCLASS_BAT)
 	{
 		pCharacter->m_HookTick -= (g_Config.m_InfBatHookTime - 1) * SERVER_TICK_SPEED - SERVER_TICK_SPEED/5;
+		if(pCharacter->m_HookTick < 0)
+			pCharacter->m_HookTick = 0;
+	}
+	if(m_Core.m_HookedPlayer > -1 && GameServer()->m_apPlayers[m_Core.m_HookedPlayer] &&
+			!GameServer()->m_apPlayers[m_Core.m_HookedPlayer]->HookProtectionEnabled())
+	{
+		pCharacter->m_HookTick -= (999 - 1) * SERVER_TICK_SPEED - SERVER_TICK_SPEED/5;
 		if(pCharacter->m_HookTick < 0)
 			pCharacter->m_HookTick = 0;
 	}
