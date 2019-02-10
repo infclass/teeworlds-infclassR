@@ -41,7 +41,7 @@ void CSlugSlime::Tick()
 		if(!GameServer()->Collision()->AreConnected(p->m_Pos, m_Pos, 84.0f))
 			continue; // not in reach
 		
-		if(p->IsInfected()) 
+		if(p->IsZombie()) 
 		{
 			if(p->GetClass() != PLAYERCLASS_SLUG)
 			{

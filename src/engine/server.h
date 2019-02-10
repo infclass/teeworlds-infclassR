@@ -400,6 +400,8 @@ public:
 	virtual void EnableTargetToKill() = 0;
 	virtual void DisableTargetToKill() = 0;
 	virtual int GetTargetToKillCoolDown() = 0;
+	virtual int GetHeroGiftCoolDown() = 0;
+	virtual void FlagCollected() = 0;
 /* INFECTION MODIFICATION END *****************************************/
 };
 

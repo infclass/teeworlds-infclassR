@@ -51,7 +51,7 @@ void CMercenaryBomb::Tick()
 	bool MustExplode = false;
 	for(CCharacter *p = (CCharacter*) GameWorld()->FindFirst(CGameWorld::ENTTYPE_CHARACTER); p; p = (CCharacter *)p->TypeNext())
 	{
-		if(!p->IsInfected()) continue;
+		if(p->IsHuman()) continue;
 		if(p->GetClass() == PLAYERCLASS_UNDEAD && p->IsFrozen()) continue;
 		if(p->GetClass() == PLAYERCLASS_VOODOO && p->m_VoodooAboutToDie) continue;
 
