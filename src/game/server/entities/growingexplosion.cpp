@@ -258,7 +258,7 @@ void CGrowingExplosion::Tick()
 		
 		int k = tileY*m_GrowingMap_Length+tileX;
 
-		if((m_pGrowingMap[k] >= 0) && !p->IsInfected())
+		if((m_pGrowingMap[k] >= 0) && p->IsHuman())
 		{
 			if(tick - m_pGrowingMap[k] < Server()->TickSpeed()/4)
 			{
@@ -273,7 +273,7 @@ void CGrowingExplosion::Tick()
 			}
 		}
 
-		if(!p->IsInfected())
+		if(p->IsHuman())
 			continue;
 
 		if(m_pGrowingMap[k] >= 0)

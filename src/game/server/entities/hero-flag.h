@@ -7,19 +7,28 @@
 
 class CHeroFlag : public CEntity
 {
+public:
+	enum
+	{
+		RADIUS = 50,
+		SHIELD_COUNT = 4,
+		SPEED = 15, // higher = slower
+	};
+
 private:
-	bool m_Hidden;
 	int m_CoolDownTick;
-	
+	int m_OwnerID;
+	int m_IDs[SHIELD_COUNT];
+
 public:
 	static const int ms_PhysSize = 14;
 
-	CHeroFlag(CGameWorld *pGameWorld);
+	CHeroFlag(CGameWorld *pGameWorld, int ClientID);
+	~CHeroFlag();
 
+	int GetOwner() const;
 	inline int GetCoolDown() { return m_CoolDownTick; }
 
-	virtual void Hide();
-	virtual void Show();
 	virtual void Tick();
 	virtual void FindPosition();
 	virtual void Snap(int SnappingClient);

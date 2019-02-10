@@ -50,6 +50,7 @@ void CGameContext::Construct(int Resetting)
 	m_NumVoteOptions = 0;
 	m_TargetToKill = -1;
 	m_TargetToKillCoolDown = 0;
+	m_HeroGiftCooldown = 0;
 	
 	m_ChatResponseTargetID = -1;
 
@@ -135,7 +136,7 @@ int CGameContext::GetZombieCount() {
 	{
 		if (!m_apPlayers[i])
 			continue;
-		if (m_apPlayers[i]->IsInfected())
+		if (m_apPlayers[i]->IsZombie())
 			count++;
 	}
 	return count;
@@ -147,7 +148,7 @@ int CGameContext::GetZombieCount(int zombie_class) {
 	{
 		if (!m_apPlayers[i])
 			continue;
-		if (m_apPlayers[i]->IsInfected() && m_apPlayers[i]->GetClass() == zombie_class)
+		if (m_apPlayers[i]->IsZombie() && m_apPlayers[i]->GetClass() == zombie_class)
 			count++;
 	}
 	return count;
@@ -162,7 +163,7 @@ int CGameContext::RandomZombieToWitch() {
 	{
 		if (!m_apPlayers[i])
 			continue;
-		if (m_apPlayers[i]->IsInfected()) {
+		if (m_apPlayers[i]->IsZombie()) {
 			zombies_id.push_back(i);
 		}
 	}
@@ -282,6 +283,10 @@ void CGameContext::CreateExplosion(vec2 Pos, int Owner, int Weapon, bool NoDamag
 		int Num = m_World.FindEntities(Pos, Radius, (CEntity**)apEnts, MAX_CLIENTS, CGameWorld::ENTTYPE_CHARACTER);
 		for(int i = 0; i < Num; i++)
 		{
+			if(!g_Config.m_InfShockwaveAffectHumans){
+				if(apEnts[i]->GetPlayer() && apEnts[i]->GetPlayer()->GetCID() == Owner) {} //owner selfharm
+				else if(apEnts[i]->IsHuman()) continue;// humans are not affected by force
+			}
 			vec2 Diff = apEnts[i]->m_Pos - Pos;
 			vec2 ForceDir(0,1);
 			float l = length(Diff);
@@ -750,7 +755,7 @@ void CGameContext::SendChat(int ChatterClientID, int Team, const char *pText)
 /* INFECTION MODIFICATION START ***************************************/
 			if(m_apPlayers[i])
 			{
-				int PlayerTeam = (m_apPlayers[i]->IsInfected() ? CGameContext::CHAT_RED : CGameContext::CHAT_BLUE );
+				int PlayerTeam = (m_apPlayers[i]->IsZombie() ? CGameContext::CHAT_RED : CGameContext::CHAT_BLUE );
 				if(m_apPlayers[i]->GetTeam() == TEAM_SPECTATORS) PlayerTeam = CGameContext::CHAT_SPEC;
 				
 				if(PlayerTeam == Team)
@@ -933,6 +938,9 @@ void CGameContext::OnTick()
 		m_TargetToKill = -1;
 	}
 	
+	if(m_HeroGiftCooldown > 0)
+		m_HeroGiftCooldown--;
+
 	if(m_TargetToKillCoolDown > 0)
 		m_TargetToKillCoolDown--;
 	
@@ -943,7 +951,7 @@ void CGameContext::OnTick()
 		int infectedCount = 0;
 		for(int i=0; i<MAX_CLIENTS; i++)
 		{		
-			if(m_apPlayers[i] && m_apPlayers[i]->IsInfected() && m_apPlayers[i]->GetClass() != PLAYERCLASS_UNDEAD)
+			if(m_apPlayers[i] && m_apPlayers[i]->IsZombie() && m_apPlayers[i]->GetClass() != PLAYERCLASS_UNDEAD)
 			{
 				if (m_apPlayers[i]->GetCharacter() && (m_apPlayers[i]->GetCharacter()->GetInfZoneTick()*Server()->TickSpeed()) < 1000*g_Config.m_InfNinjaTargetAfkTime) // Make sure zombie is not camping in InfZone
 				{
@@ -1010,7 +1018,7 @@ void CGameContext::OnTick()
 	{
 		if(m_apPlayers[i] && m_apPlayers[i]->GetCharacter())
 		{
-			m_apPlayers[i]->GetCharacter()->m_Core.m_Infected = m_apPlayers[i]->IsInfected();
+			m_apPlayers[i]->GetCharacter()->m_Core.m_Infected = m_apPlayers[i]->IsZombie();
 			m_apPlayers[i]->GetCharacter()->m_Core.m_HookProtected = m_apPlayers[i]->HookProtectionEnabled();
 		}
 	}
@@ -1652,7 +1660,7 @@ void CGameContext::OnMessage(int MsgID, CUnpacker *pUnpacker, int ClientID)
 			if(pMsg->m_Team)
 			{
 				if(pPlayer->GetTeam() == TEAM_SPECTATORS) Team = CGameContext::CHAT_SPEC;
-				else Team = (pPlayer->IsInfected() ? CGameContext::CHAT_RED : CGameContext::CHAT_BLUE);
+				else Team = (pPlayer->IsZombie() ? CGameContext::CHAT_RED : CGameContext::CHAT_BLUE);
 			}
 /* INFECTION MODIFICATION END *****************************************/
 			
@@ -1819,13 +1827,13 @@ void CGameContext::OnMessage(int MsgID, CUnpacker *pUnpacker, int ClientID)
 			}
 			
 /* INFECTION MODIFICATION START ***************************************/
-			if(m_apPlayers[ClientID]->IsInfected() && pMsg->m_Team == TEAM_SPECTATORS) 
+			if(m_apPlayers[ClientID]->IsZombie() && pMsg->m_Team == TEAM_SPECTATORS) 
 			{
 				int InfectedCount = 0;
 				CPlayerIterator<PLAYERITER_INGAME> Iter(m_apPlayers);
 				while(Iter.Next())
 				{
-					 if(Iter.Player()->IsInfected())
+					 if(Iter.Player()->IsZombie())
 						 InfectedCount++;
 				}
 
@@ -2934,7 +2942,7 @@ bool CGameContext::PrivateMessage(const char* pStr, int ClientID, bool TeamChat)
 		CheckTeam = true;
 		if(m_apPlayers[ClientID]->GetTeam() == TEAM_SPECTATORS)
 			CheckTeam = TEAM_SPECTATORS;
-		if(m_apPlayers[ClientID]->IsInfected())
+		if(m_apPlayers[ClientID]->IsZombie())
 			CheckTeam = TEAM_RED;
 		else
 			CheckTeam = TEAM_BLUE;
@@ -3126,9 +3134,9 @@ bool CGameContext::PrivateMessage(const char* pStr, int ClientID, bool TeamChat)
 				{
 					if(CheckTeam == TEAM_SPECTATORS && m_apPlayers[i]->GetTeam() != TEAM_SPECTATORS)
 						continue;
-					else if(CheckTeam == TEAM_RED && !m_apPlayers[i]->IsInfected())
+					else if(CheckTeam == TEAM_RED && m_apPlayers[i]->IsHuman())
 						continue;
-					else if(CheckTeam == TEAM_BLUE && m_apPlayers[i]->IsInfected())
+					else if(CheckTeam == TEAM_BLUE && m_apPlayers[i]->IsZombie())
 						continue;
 				}
 				
@@ -3562,9 +3570,11 @@ bool CGameContext::ConHelp(IConsole::IResult *pResult, void *pUserData)
 			Buffer.append(" ~~\n\n");
 			pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("The Hero has a shotgun, a laser rifle and grenades."), NULL); 
 			Buffer.append("\n\n");
-			pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("The Hero must find a flag hidden in the map."), NULL);
+			pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("The Hero must find a flag only visible to them hidden in the map."), NULL);
 			Buffer.append("\n\n");
-			pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("Once taken, the flag gives 1 health point, 4 armor points, and full ammo to all humans, furthermore full health and armor to the hero."), NULL);
+			pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("Once taken, the flag gifts 1 health point, 4 armor points, and full ammo to all humans, furthermore full health and armor to the hero."), NULL);
+			Buffer.append("\n\n");
+			pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("The gift to all humans is only applied when the flag is surrounded by hearts and armor. This gift cooldown is shared between all heros."), NULL);
 			Buffer.append("\n\n");
 			pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("The hero cannot be healed by a medic, but he can withstand a thrust by an infected, an his health suffice."), NULL);
 			
@@ -4164,6 +4174,11 @@ void CGameContext::OnInit(/*class IKernel *pKernel*/)
 #endif
 }
 
+void CGameContext::OnStartRound()
+{
+	m_HeroGiftCooldown = 0;
+}
+
 void CGameContext::OnShutdown()
 {
 	//reset votes.
@@ -4285,6 +4300,15 @@ void CGameContext::TargetKilled()
 		PlayerCounter++;
 	
 	m_TargetToKillCoolDown = Server()->TickSpeed()*(10 + 3*max(0, 16 - PlayerCounter));
+}
+
+void CGameContext::FlagCollected()
+{
+	float t = (8-Server()->GetActivePlayerCount()) / 8.0f;
+	if (t < 0.0f) 
+		t = 0.0f;
+
+	m_HeroGiftCooldown = Server()->TickSpeed() * (15+(120*t));
 }
 
 void CGameContext::OnPreSnap() {}

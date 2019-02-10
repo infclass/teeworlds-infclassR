@@ -67,7 +67,7 @@ void CBouncingBullet::Tick()
 	{
 		if(OwnerChar)
 		{
-			if(!OwnerChar->IsInfected() && !TargetChr->IsInfected())
+			if(OwnerChar->IsHuman() && TargetChr->IsHuman())
 				TargetChr->TakeDamage(m_Direction * 0.001f, (random_prob(0.33f) ? 2 : 1), m_Owner, WEAPON_SHOTGUN, TAKEDAMAGEMODE_NOINFECTION);
 			else
 				TargetChr->TakeDamage(m_Direction * max(0.001f, 2.0f), (random_prob(0.33f) ? 2 : 1), m_Owner, WEAPON_SHOTGUN, TAKEDAMAGEMODE_NOINFECTION);
