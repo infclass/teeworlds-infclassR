@@ -137,6 +137,7 @@ void IGameController::StartRound()
 	ResetGame();
 	
 	Server()->OnRoundStart();
+	GameServer()->OnStartRound();
 	
 /* INFECTION MODIFICATION START ***************************************/
 	for(int i = 0; i < MAX_CLIENTS; i++)

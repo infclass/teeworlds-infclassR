@@ -47,7 +47,5 @@ private:
 	bool m_ExplosionStarted;
 	
 	bool m_InfectedStarted;
-	
-	CHeroFlag* m_pHeroFlag;
 };
 #endif

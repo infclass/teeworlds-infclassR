@@ -4,27 +4,31 @@
 #include <engine/server/roundstatistics.h>
 #include "hero-flag.h"
 
-CHeroFlag::CHeroFlag(CGameWorld *pGameWorld)
+CHeroFlag::CHeroFlag(CGameWorld *pGameWorld, int ClientID)
 : CEntity(pGameWorld, CGameWorld::ENTTYPE_HERO_FLAG)
 {
 	m_ProximityRadius = ms_PhysSize;
-	m_Hidden = true;
+	m_OwnerID = ClientID;
+	m_CoolDownTick = 0;
+	for(int i=0; i<CHeroFlag::SHIELD_COUNT; i++)
+	{
+		m_IDs[i] = Server()->SnapNewID();
+	}
+	FindPosition();
 	GameWorld()->InsertEntity(this);
 }
 
-void CHeroFlag::Hide()
+CHeroFlag::~CHeroFlag()
 {
-	m_Hidden = true;
+	for(int i=0; i<CHeroFlag::SHIELD_COUNT; i++)
+	{
+		Server()->SnapFreeID(m_IDs[i]);
+	}
 }
 
-void CHeroFlag::Show()
+int CHeroFlag::GetOwner() const
 {
-	if(m_Hidden)
-	{
-		m_Hidden = false;
-		FindPosition();
-		m_CoolDownTick = 0;
-	}
+	return m_OwnerID;
 }
 
 void CHeroFlag::FindPosition()
@@ -53,25 +57,32 @@ void CHeroFlag::SetCoolDown()
 
 void CHeroFlag::GiveGift(CCharacter* pHero)
 {
+	pHero->IncreaseHealth(10);
+	pHero->IncreaseArmor(10);
+	pHero->GiveWeapon(WEAPON_SHOTGUN, -1);
+	pHero->GiveWeapon(WEAPON_GRENADE, -1);
+	pHero->GiveWeapon(WEAPON_RIFLE, -1);
+	SetCoolDown();
+
+	pHero->SetEmote(EMOTE_HAPPY, Server()->Tick() + Server()->TickSpeed());
+	GameServer()->SendEmoticon(pHero->GetPlayer()->GetCID(), EMOTICON_MUSIC);
+		
+	// Only increase your *own* character health when on cooldown
+	if (GameServer()->GetHeroGiftCoolDown() > 0)
+		return;
+
 	// Find other players	
 	GameServer()->SendBroadcast_Localization(-1, BROADCAST_PRIORITY_GAMEANNOUNCE, BROADCAST_DURATION_GAMEANNOUNCE, _("The Hero found the flag!"), NULL);
 	GameServer()->CreateSoundGlobal(SOUND_CTF_CAPTURE);
-
-	SetCoolDown();
+	GameServer()->FlagCollected();
 
 	for(CCharacter *p = (CCharacter*) GameWorld()->FindFirst(CGameWorld::ENTTYPE_CHARACTER); p; p = (CCharacter *)p->TypeNext())
 	{
-		if(p->IsZombie())
+		if(p->IsZombie() || p == pHero)
 			continue;
-		
+
 		p->SetEmote(EMOTE_HAPPY, Server()->Tick() + Server()->TickSpeed());
 		GameServer()->SendEmoticon(p->GetPlayer()->GetCID(), EMOTICON_MUSIC);
-		
-		if(p == pHero)
-		{
-			p->IncreaseHealth(10);
-			p->IncreaseArmor(10);
-		}
 		
 		p->GiveGift(GIFT_HEROFLAG);
 	}
@@ -93,6 +104,9 @@ void CHeroFlag::Tick()
 			if(p->GetClass() != PLAYERCLASS_HERO)
 				continue;
 
+			if(p->GetPlayer()->GetCID() != m_OwnerID)
+				continue;
+
 			float Len = distance(p->m_Pos, m_Pos);
 			if(Len < m_ProximityRadius + p->m_ProximityRadius)
 			{
@@ -111,7 +125,7 @@ void CHeroFlag::Tick()
 	}
 	else
 		m_CoolDownTick--;
-	
+
 }
 
 void CHeroFlag::Snap(int SnappingClient)
@@ -122,9 +136,32 @@ void CHeroFlag::Snap(int SnappingClient)
 	if(NetworkClipped(SnappingClient))
 		return;
 	
+	if(SnappingClient != m_OwnerID)
+		return;
+	
 	CPlayer* pClient = GameServer()->m_apPlayers[SnappingClient];
 	if(pClient->GetClass() != PLAYERCLASS_HERO)
 		return;
+
+	if (GameServer()->GetHeroGiftCoolDown() <= 0)
+	{
+		float AngleStart = (2.0f * pi * Server()->Tick()/static_cast<float>(Server()->TickSpeed()))/CHeroFlag::SPEED;
+		float AngleStep = 2.0f * pi / CHeroFlag::SHIELD_COUNT;
+		
+		for(int i=0; i<CHeroFlag::SHIELD_COUNT; i++)
+		{
+			CNetObj_Pickup *pObj = static_cast<CNetObj_Pickup *>(Server()->SnapNewItem(NETOBJTYPE_PICKUP, m_IDs[i], sizeof(CNetObj_Pickup)));
+			if(!pObj)
+				return;
+
+			vec2 PosStart = m_Pos + vec2(CHeroFlag::RADIUS * cos(AngleStart + AngleStep*i), CHeroFlag::RADIUS * sin(AngleStart + AngleStep*i));
+
+			pObj->m_X = (int)PosStart.x;
+			pObj->m_Y = (int)PosStart.y;
+			pObj->m_Type = i % 2 == 0 ? POWERUP_ARMOR : POWERUP_HEALTH;
+			pObj->m_Subtype = 0;
+		}
+	}
 
 	CNetObj_Flag *pFlag = (CNetObj_Flag *)Server()->SnapNewItem(NETOBJTYPE_FLAG, TEAM_BLUE, sizeof(CNetObj_Flag));
 	if(!pFlag)

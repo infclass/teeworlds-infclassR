@@ -4,6 +4,7 @@
 #define GAME_SERVER_ENTITIES_CHARACTER_H
 
 #include <game/server/entity.h>
+#include <game/server/entities/hero-flag.h>
 #include <game/generated/server_data.h>
 #include <game/generated/protocol.h>
 
@@ -201,6 +202,9 @@ private:
 	int m_VoodooTimeAlive;
 	int m_VoodooKiller; // Save killer + weapon for delayed kill message
 	int m_VoodooWeapon;
+
+	CHeroFlag* m_pHeroFlag;
+
 public:
 	int m_PositionLockTick;
 	bool m_PositionLocked;

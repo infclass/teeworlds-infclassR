@@ -77,6 +77,8 @@ class CGameContext : public IGameServer
 	CTuningParams m_Tuning;
 	int m_TargetToKill;
 	int m_TargetToKillCoolDown;
+	int m_HeroGiftCooldown;
+
 	#ifndef CONF_NOGEOLOCATION
 	Geolocation* geolocation;
 	#endif
@@ -204,6 +206,7 @@ public:
 
 	// engine events
 	virtual void OnInit();
+	virtual void OnStartRound();
 	virtual void OnConsoleInit();
 	virtual void OnShutdown();
 
@@ -348,6 +351,8 @@ public:
 	virtual void EnableTargetToKill() { m_TargetToKill = (m_TargetToKill < 0 ? -1 : m_TargetToKill); }
 	virtual void DisableTargetToKill() { m_TargetToKill = -2; }
 	virtual int GetTargetToKillCoolDown() { return m_TargetToKillCoolDown; }
+	virtual int GetHeroGiftCoolDown() { return m_HeroGiftCooldown; }
+	virtual void FlagCollected(); // Triggers global gift cooldown
 /* INFECTION MODIFICATION END *****************************************/
 	// InfClassR begin
 	void AddSpectatorCID(int ClientID);
