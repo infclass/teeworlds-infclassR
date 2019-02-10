@@ -1,5 +1,6 @@
 /* (c) Magnus Auvinen. See licence.txt in the root of the distribution for more information. */
 /* If you are missing that file, acquire a complete release at teeworlds.com.                */
+/* (c) Boris Bobrov, 2019 */
 #include <stdlib.h>
 #include <stdio.h>
 #include <stdarg.h>
@@ -911,7 +912,9 @@ static int priv_net_create_socket(int domain, int type, struct sockaddr *addr, i
 		setsockopt(sock, IPPROTO_IPV6, IPV6_V6ONLY, (const char*)&ipv6only, sizeof(ipv6only));
 	}
 #endif
-
+	if (setsockopt(sock, SOL_SOCKET, SO_REUSEPORT, &(int){ 1 }, sizeof(int)) < 0) {
+		dbg_msg("net", "failed to setsockopt SO_REUSEPORT");
+	}
 	/* bind the socket */
 	e = bind(sock, addr, sockaddrlen);
 	if(e != 0)
