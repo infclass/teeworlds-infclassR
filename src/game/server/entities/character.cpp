@@ -554,7 +554,8 @@ void CCharacter::UpdateTuningParam()
 	{
 		pTuningParams->m_Gravity = 0.0f;
 	}
-		pTuningParams->m_PlayerHooking = 0;
+	
+	pTuningParams->m_PlayerHooking = 0;
 	
 	if(GetClass() == PLAYERCLASS_GHOUL)
 	{
