@@ -1,3 +1,4 @@
+// Strongly modified version of ddnet Plasma. Source: Shereef Marzouk
 #ifndef GAME_SERVER_ENTITIES_PLASMA_H
 #define GAME_SERVER_ENTITIES_PLASMA_H
 
