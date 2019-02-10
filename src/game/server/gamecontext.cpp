@@ -284,7 +284,7 @@ void CGameContext::CreateExplosion(vec2 Pos, int Owner, int Weapon, bool NoDamag
 		for(int i = 0; i < Num; i++)
 		{
 			if(!g_Config.m_InfShockwaveAffectHumans){
-				if(apEnts[i]->GetPlayer()->GetCID() == Owner) {} //owner selfharm
+				if(apEnts[i]->GetPlayer() && apEnts[i]->GetPlayer()->GetCID() == Owner) {} //owner selfharm
 				else if(apEnts[i]->IsHuman()) continue;// humans are not affected by force
 			}
 			vec2 Diff = apEnts[i]->m_Pos - Pos;
