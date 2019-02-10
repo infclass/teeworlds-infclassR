@@ -752,6 +752,10 @@ void CPlayer::SetClass(int newClass)
 	{
 		m_pCharacter->SetClass(newClass);
 	}
+
+	char aBuf[256];
+	str_format(aBuf, sizeof(aBuf), "choose_class player='%s' class='%d'", Server()->ClientName(m_ClientID), newClass);
+	GameServer()->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "game", aBuf);
 }
 
 int CPlayer::GetOldClass()
