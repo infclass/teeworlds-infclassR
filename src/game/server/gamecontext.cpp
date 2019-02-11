@@ -264,7 +264,7 @@ void CGameContext::CreateLoveEvent(vec2 Pos)
 	m_LoveDots.add(State);
 }
 
-void CGameContext::CreateExplosion(vec2 Pos, int Owner, int Weapon, bool NoDamage, int TakeDamageMode)
+void CGameContext::CreateExplosion(vec2 Pos, int Owner, int Weapon, bool NoDamage, int TakeDamageMode, float DamageFactor)
 {
 	// create the event
 	CNetEvent_Explosion *pEvent = (CNetEvent_Explosion *)m_Events.Create(NETEVENTTYPE_EXPLOSION, sizeof(CNetEvent_Explosion));
@@ -294,6 +294,7 @@ void CGameContext::CreateExplosion(vec2 Pos, int Owner, int Weapon, bool NoDamag
 				ForceDir = normalize(Diff);
 			l = 1-clamp((l-InnerRadius)/(Radius-InnerRadius), 0.0f, 1.0f);
 			float Dmg = 6 * l;
+			Dmg *= DamageFactor;
 			if((int)Dmg)
 				apEnts[i]->TakeDamage(ForceDir*Dmg*2, (int)Dmg, Owner, Weapon, TakeDamageMode);
 		}
@@ -3557,7 +3558,11 @@ bool CGameContext::ConHelp(IConsole::IResult *pResult, void *pUserData)
 			pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("Medic"), NULL); 
 			Buffer.append(" ~~\n\n");
 			pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("The Medic can protect humans with his hammer by giving them armor."), NULL); 
-			Buffer.append("\n\n");
+			Buffer.append("\n");
+			pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("Grenades with medicine give armor to everybody in their range, including heroes and medic themself"), NULL);
+			Buffer.append("\n");
+			pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("Laser revives infected zombies, but at great cost - 17 hp and armor."), NULL);
+			Buffer.append("\n");
 			pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("He has also a powerful shotgun that can pullback infected."), NULL);
 			
 			pSelf->SendMOTD(ClientID, Buffer.buffer());
