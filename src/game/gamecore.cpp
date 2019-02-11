@@ -366,8 +366,9 @@ void CCharacterCore::Tick(bool UseInput, CParams* pParams)
 					float DragSpeed = pTuningParams->m_HookDragSpeed;
 
 					// add force to the hooked player
-					if(!((m_Infected && pCharCore->m_Infected && !pCharCore->m_HookProtected) ||
-						(!m_Infected && !pCharCore->m_Infected && !pCharCore->m_HookProtected))) { // ignore for zombies{ // ignore for humans
+					bool BothInfected = m_Infected && pCharCore->m_Infected;
+					bool BothHumans = !m_Infected && !pCharCore->m_Infected;
+					if(!(m_HookProtected && !pCharCore->m_HookProtected && (BothInfected || BothHumans))) { // if condition for tarzan-mode
 						pCharCore->m_Vel.x = SaturatedAdd(-DragSpeed, DragSpeed, pCharCore->m_Vel.x, Accel*Dir.x*1.5f);
 						pCharCore->m_Vel.y = SaturatedAdd(-DragSpeed, DragSpeed, pCharCore->m_Vel.y, Accel*Dir.y*1.5f);
 					}
