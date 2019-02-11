@@ -2,6 +2,7 @@
 /* If you are missing that file, acquire a complete release at teeworlds.com.                */
 #include <game/server/gamecontext.h>
 #include <engine/server/roundstatistics.h>
+#include <engine/shared/config.h>
 #include "hero-flag.h"
 
 CHeroFlag::CHeroFlag(CGameWorld *pGameWorld, int ClientID)
@@ -66,6 +67,21 @@ void CHeroFlag::GiveGift(CCharacter* pHero)
 
 	pHero->SetEmote(EMOTE_HAPPY, Server()->Tick() + Server()->TickSpeed());
 	GameServer()->SendEmoticon(pHero->GetPlayer()->GetCID(), EMOTICON_MUSIC);
+  
+	if (g_Config.m_InfTurretEnable) 
+	{
+		if (Server()->GetActivePlayerCount() > 2)
+		{
+			if (pHero->m_TurretCount == 0)
+				pHero->GiveWeapon(WEAPON_HAMMER, -1);
+					
+			pHero->m_TurretCount += g_Config.m_InfTurretGive;
+					
+			char aBuf[256];
+			str_format(aBuf, sizeof(aBuf), "you gained a turret (%i), place it with the hammer", pHero->m_TurretCount);
+			GameServer()->SendChatTarget_Localization(pHero->GetPlayer()->GetCID(), CHATCATEGORY_SCORE, aBuf, NULL);
+		}
+	}
 		
 	// Only increase your *own* character health when on cooldown
 	if (GameServer()->GetHeroGiftCoolDown() > 0)
@@ -83,7 +99,6 @@ void CHeroFlag::GiveGift(CCharacter* pHero)
 
 		p->SetEmote(EMOTE_HAPPY, Server()->Tick() + Server()->TickSpeed());
 		GameServer()->SendEmoticon(p->GetPlayer()->GetCID(), EMOTICON_MUSIC);
-		
 		p->GiveGift(GIFT_HEROFLAG);
 	}
 }
