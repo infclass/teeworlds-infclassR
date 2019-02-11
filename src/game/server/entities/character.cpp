@@ -1995,11 +1995,19 @@ void CCharacter::Tick()
 	{
 		CoreTickParams.m_HookGrabTime = g_Config.m_InfBatHookTime*SERVER_TICK_SPEED;
 	}
-	if(m_Core.m_HookedPlayer > -1 && GameServer()->m_apPlayers[m_Core.m_HookedPlayer] &&
-			!GameServer()->m_apPlayers[m_Core.m_HookedPlayer]->HookProtectionEnabled())
-	{
-		CoreTickParams.m_HookGrabTime = 999*SERVER_TICK_SPEED;
+
+	// tarzan-mode
+	CPlayer* pHookedPlayer = GameServer()->m_apPlayers[m_Core.m_HookedPlayer];
+	if(m_Core.m_HookedPlayer > -1 && pHookedPlayer) {
+		bool BothZombies = IsZombie() && pHookedPlayer->IsZombie();
+		bool BothHumans = IsHuman() && pHookedPlayer->IsHuman();
+		if(!pHookedPlayer->HookProtectionEnabled() && (BothZombies || BothHumans))
+		{
+			CoreTickParams.m_HookGrabTime = 999*SERVER_TICK_SPEED;
+		}
 	}
+	//tarzan-mode end
+
 	CoreTickParams.m_HookMode = m_HookMode;
 	
 	vec2 PrevPos = m_Core.m_Pos;
@@ -3200,13 +3208,21 @@ void CCharacter::Snap(int SnappingClient)
 		if(pCharacter->m_HookTick < 0)
 			pCharacter->m_HookTick = 0;
 	}
-	if(m_Core.m_HookedPlayer > -1 && GameServer()->m_apPlayers[m_Core.m_HookedPlayer] &&
-			!GameServer()->m_apPlayers[m_Core.m_HookedPlayer]->HookProtectionEnabled())
-	{
-		pCharacter->m_HookTick -= (999 - 1) * SERVER_TICK_SPEED - SERVER_TICK_SPEED/5;
-		if(pCharacter->m_HookTick < 0)
-			pCharacter->m_HookTick = 0;
+	
+	// tarzan-mode
+	CPlayer* pHookedPlayer = GameServer()->m_apPlayers[m_Core.m_HookedPlayer];
+	if(m_Core.m_HookedPlayer > -1 && pHookedPlayer) {
+		bool BothZombies = IsZombie() && pHookedPlayer->IsZombie();
+		bool BothHumans = IsHuman() && pHookedPlayer->IsHuman();
+		if(!pHookedPlayer->HookProtectionEnabled() && (BothZombies || BothHumans))
+		{
+			pCharacter->m_HookTick -= (999 - 1) * SERVER_TICK_SPEED - SERVER_TICK_SPEED/5;
+			if(pCharacter->m_HookTick < 0)
+				pCharacter->m_HookTick = 0;
+		}
 	}
+	// tarzan-mode end
+
 /* INFECTION MODIFICATION END *****************************************/
 	pCharacter->m_AttackTick = m_AttackTick;
 
