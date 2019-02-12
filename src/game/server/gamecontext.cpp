@@ -3558,12 +3558,12 @@ bool CGameContext::ConHelp(IConsole::IResult *pResult, void *pUserData)
 			pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("Medic"), NULL); 
 			Buffer.append(" ~~\n\n");
 			pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("The Medic can protect humans with his hammer by giving them armor."), NULL); 
-			Buffer.append("\n");
+			Buffer.append("\n\n");
 			pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("Grenades with medicine give armor to everybody in their range, including heroes and medic themself"), NULL);
-			Buffer.append("\n");
+			Buffer.append("\n\n");
 			pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("Laser revives infected zombies, but at great cost - 17 hp and armor."), NULL);
-			Buffer.append("\n");
-			pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("He has also a powerful shotgun that can pullback infected."), NULL);
+			Buffer.append("\n\n");
+			pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("Medic has also a powerful shotgun that can pullback infected."), NULL);
 			
 			pSelf->SendMOTD(ClientID, Buffer.buffer());
 		}
