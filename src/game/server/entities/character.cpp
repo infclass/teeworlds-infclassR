@@ -3161,38 +3161,46 @@ void CCharacter::Snap(int SnappingClient)
 		{
 			CHeroFlag *pFlag = m_pHeroFlag;
 
-			long inactiveTicks = m_pPlayer->m_LastActionTick+g_Config.m_InfHeroFlagIndicatorTime*Server()->TickSpeed();
+			long tickLimit = m_pPlayer->m_LastActionTick+g_Config.m_InfHeroFlagIndicatorTime*Server()->TickSpeed();
 			
 			// Guide hero to flag
-			if(pFlag->GetCoolDown() <= 0 && Server()->Tick() > inactiveTicks)
+			if(pFlag->GetCoolDown() <= 0 && Server()->Tick() > tickLimit)
 			{
 				CNetObj_Laser *pObj = static_cast<CNetObj_Laser *>(Server()->SnapNewItem(NETOBJTYPE_LASER, m_CursorID, sizeof(CNetObj_Laser)));
 				if(!pObj)
 					return;
 
 				float Angle = atan2f(pFlag->m_Pos.y-m_Pos.y, pFlag->m_Pos.x-m_Pos.x);
-				vec2 Indicator = m_Pos + vec2(cos(Angle), sin(Angle)) * 84.0f; 
-				vec2 IndicatorM = m_Pos - vec2(cos(Angle), sin(Angle)) * 84.0f; 
+				vec2 vecDir = vec2(cos(Angle), sin(Angle));
+				vec2 Indicator = m_Pos + vecDir * 84.0f; 
+				vec2 IndicatorM = m_Pos - vecDir * 84.0f; 
+
+				// display laser beam for 0.5 seconds
+				int tickShowBeamTime = Server()->TickSpeed()*0.5;
+				long ticksInactive = tickShowBeamTime - (Server()->Tick()-tickLimit);
+				if (g_Config.m_InfHeroFlagIndicatorTime > 0 && ticksInactive > 0) 
+				{
+					CNetObj_Laser *pObj = static_cast<CNetObj_Laser *>(Server()->SnapNewItem(NETOBJTYPE_LASER, m_ID, sizeof(CNetObj_Laser)));
+					if(!pObj)
+						return;
+
+					Indicator = IndicatorM + vecDir * 168.0f * (1.0f-(ticksInactive/(float)tickShowBeamTime)); 
+
+					pObj->m_X = (int)Indicator.x;
+					pObj->m_Y = (int)Indicator.y;
+					pObj->m_FromX = (int)IndicatorM.x;
+					pObj->m_FromY = (int)IndicatorM.y;
+					if (ticksInactive < 4)
+						pObj->m_StartTick = Server()->Tick()-(6-ticksInactive);
+					else 
+						pObj->m_StartTick = Server()->Tick()-3;
+				}
 
 				pObj->m_X = (int)Indicator.x;
 				pObj->m_Y = (int)Indicator.y;
 				pObj->m_FromX = pObj->m_X;
 				pObj->m_FromY = pObj->m_Y;
 				pObj->m_StartTick = Server()->Tick();
-
-				// display laser beam for 0.5 seconds
-				if (g_Config.m_InfHeroFlagIndicatorTime > 0 && Server()->Tick()-inactiveTicks < Server()->TickSpeed()*0.5) 
-				{
-					CNetObj_Laser *pObj = static_cast<CNetObj_Laser *>(Server()->SnapNewItem(NETOBJTYPE_LASER, m_ID, sizeof(CNetObj_Laser)));
-					if(!pObj)
-						return;
-
-					pObj->m_X = (int)Indicator.x;
-					pObj->m_Y = (int)Indicator.y;
-					pObj->m_FromX = (int)IndicatorM.x;
-					pObj->m_FromY = (int)IndicatorM.y;
-					pObj->m_StartTick = Server()->Tick()-3;
-				}
 			}
 		}
 	}
