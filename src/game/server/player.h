@@ -88,6 +88,7 @@ public:
 	int m_ScoreStartTick;
 	bool m_ForceBalanced;
 	int m_LastActionTick;
+	int m_LastActionMoveTick;
 	bool m_StolenSkin;
 	int m_TeamChangeTick;
 	struct
