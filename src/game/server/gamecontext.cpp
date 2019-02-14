@@ -837,7 +837,6 @@ void CGameContext::SendVoteSet(int ClientID)
 
 void CGameContext::SendVoteStatus(int ClientID, int Total, int Yes, int No)
 {
-	std::cout << "SendVoteStatus" << std::endl;
 	CNetMsg_Sv_VoteStatus Msg = {0};
 	Msg.m_Total = Total;
 	Msg.m_Yes = Yes;
