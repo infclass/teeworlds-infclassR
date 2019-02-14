@@ -23,6 +23,7 @@ CPlayer::CPlayer(CGameContext *pGameServer, int ClientID, int Team)
 	m_Team = GameServer()->m_pController->ClampTeam(Team);
 	m_SpectatorID = SPEC_FREEVIEW;
 	m_LastActionTick = Server()->Tick();
+	m_LastActionMoveTick = Server()->Tick();
 	m_TeamChangeTick = Server()->Tick();
 	
 /* INFECTION MODIFICATION START ***************************************/
@@ -133,6 +134,7 @@ void CPlayer::Tick()
 		++m_DieTick;
 		++m_ScoreStartTick;
 		++m_LastActionTick;
+		++m_LastActionMoveTick;
 		++m_TeamChangeTick;
  	}
 
@@ -489,6 +491,8 @@ void CPlayer::OnDirectInput(CNetObj_PlayerInput *NewInput)
 		m_LatestActivity.m_TargetX = NewInput->m_TargetX;
 		m_LatestActivity.m_TargetY = NewInput->m_TargetY;
 		m_LastActionTick = Server()->Tick();
+		if (NewInput->m_Direction || NewInput->m_Jump || NewInput->m_Hook)
+			m_LastActionMoveTick = Server()->Tick();
 	}
 }
 
@@ -541,6 +545,7 @@ void CPlayer::SetTeam(int Team, bool DoChatMsg)
 
 	m_Team = Team;
 	m_LastActionTick = Server()->Tick();
+	m_LastActionMoveTick = Server()->Tick();
 	m_SpectatorID = SPEC_FREEVIEW;
 	// we got to wait 0.5 secs before respawning
 	m_RespawnTick = Server()->Tick()+Server()->TickSpeed()/2;

@@ -3161,7 +3161,7 @@ void CCharacter::Snap(int SnappingClient)
 		{
 			CHeroFlag *pFlag = m_pHeroFlag;
 
-			long tickLimit = m_pPlayer->m_LastActionTick+g_Config.m_InfHeroFlagIndicatorTime*Server()->TickSpeed();
+			long tickLimit = m_pPlayer->m_LastActionMoveTick+g_Config.m_InfHeroFlagIndicatorTime*Server()->TickSpeed();
 			
 			// Guide hero to flag
 			if(pFlag->GetCoolDown() <= 0 && Server()->Tick() > tickLimit)
