@@ -49,7 +49,18 @@ void CScatterGrenade::Tick()
 	
 	m_ActualPos = CurPos;
 	m_ActualDir = normalize(CurPos - PrevPos);
-
+	
+	if(m_IsFlashGrenade) {
+		
+		CCharacter *OwnerChar = GameServer()->GetPlayerChar(m_Owner);
+		CCharacter *TargetChr = GameServer()->m_World.IntersectCharacter(PrevPos, CurPos, 6.0f, CurPos, OwnerChar);
+		
+		if(TargetChr)
+		{
+			Explode();
+		}
+	}
+	
 	if(GameLayerClipped(CurPos))
 	{
 		GameServer()->m_World.DestroyEntity(this);
@@ -60,6 +71,11 @@ void CScatterGrenade::Tick()
 	int Collide = GameServer()->Collision()->IntersectLine(PrevPos, CurPos, NULL, &LastPos);
 	if(Collide)
 	{
+		
+		if(m_IsFlashGrenade) {
+			Explode();
+		}
+		
 		//Thanks to TeeBall 0.6
 		vec2 CollisionPos;
 		CollisionPos.x = LastPos.x;
@@ -96,10 +112,6 @@ void CScatterGrenade::Tick()
 		m_StartTick = Server()->Tick();
 		
 		m_ActualDir = normalize(m_Direction);
-		
-		if(m_IsFlashGrenade) {
-			this->Explode();
-		}
 	}
 }
 
