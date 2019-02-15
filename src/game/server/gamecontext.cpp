@@ -12,7 +12,6 @@
 #include <game/version.h>
 #include <game/collision.h>
 #include <game/gamecore.h>
-#include <iostream>
 #include "gamemodes/mod.h"
 #include <algorithm>
 
