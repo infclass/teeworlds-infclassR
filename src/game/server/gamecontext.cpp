@@ -3578,6 +3578,8 @@ bool CGameContext::ConHelp(IConsole::IResult *pResult, void *pUserData)
 			Buffer.append("\n\n");
 			pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("The gift to all humans is only applied when the flag is surrounded by hearts and armor. This gift cooldown is shared between all heros."), NULL);
 			Buffer.append("\n\n");
+			pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("Cannot find a flag? Stand still for some seconds, maybe you will get enlightened."), NULL);
+			Buffer.append("\n\n");
 			pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("The hero cannot be healed by a medic, but he can withstand a thrust by an infected, an his health suffice."), NULL);
 			
 			pSelf->SendMOTD(ClientID, Buffer.buffer());
