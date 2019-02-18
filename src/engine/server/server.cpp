@@ -1,5 +1,6 @@
 /* (c) Magnus Auvinen. See licence.txt in the root of the distribution for more information. */
 /* If you are missing that file, acquire a complete release at teeworlds.com.				*/
+/* Modifications Copyright 2019 The InfclassR (https://github.com/yavl/teeworlds-infclassR/) Authors */
 
 #include <base/math.h>
 #include <base/system.h>
@@ -50,6 +51,12 @@
 	#define _WIN32_WINNT 0x0501
 	#define WIN32_LEAN_AND_MEAN
 	#include <windows.h>
+#endif
+
+// uncomment the following line to measure server performance
+//#define MEASURE_TICKS
+#if defined(MEASURE_TICKS)
+	#include "measure_ticks.h"
 #endif
 
 static const char *StrLtrim(const char *pStr)
@@ -2078,9 +2085,6 @@ int CServer::Run()
 
 	// start game
 	{
-		int64 ReportTime = time_get();
-		int ReportInterval = 3;
-
 		m_Lastheartbeat = 0;
 		m_GameStartTime = time_get();
 
@@ -2090,8 +2094,15 @@ int CServer::Run()
 			Console()->Print(IConsole::OUTPUT_LEVEL_DEBUG, "server", aBuf);
 		}
 
+#if defined(MEASURE_TICKS)
+		CMeasureTicks MeasureTicks(10, "FPS");
+#endif
+
 		while(m_RunServer)
 		{
+#if defined(MEASURE_TICKS)
+			MeasureTicks.Begin();
+#endif
 			int64 t = time_get();
 			int NewTicks = 0;
 			
@@ -2236,30 +2247,9 @@ int CServer::Run()
 
 			PumpNetwork();
 
-			if(ReportTime < time_get())
-			{
-				if(g_Config.m_Debug)
-				{
-					/*
-					static NETSTATS prev_stats;
-					NETSTATS stats;
-					netserver_stats(net, &stats);
-
-					perf_next();
-
-					if(config.dbg_pref)
-						perf_dump(&rootscope);
-
-					dbg_msg("server", "send=%8d recv=%8d",
-						(stats.send_bytes - prev_stats.send_bytes)/reportinterval,
-						(stats.recv_bytes - prev_stats.recv_bytes)/reportinterval);
-
-					prev_stats = stats;
-					*/
-				}
-
-				ReportTime += time_freq()*ReportInterval;
-			}
+#if defined(MEASURE_TICKS)
+			MeasureTicks.End();
+#endif
 
 			// wait for incomming data
 			net_socket_read_wait(m_NetServer.Socket(), 5);
