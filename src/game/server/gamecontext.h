@@ -19,6 +19,12 @@
 #include "gameworld.h"
 #include "player.h"
 
+//#define MEASURE_TICKS // uncomment, to measure server performance
+#if defined(MEASURE_TICKS)
+	#include <engine/server/measure_ticks.h>
+#endif
+
+
 #ifndef CONF_NOGEOLOCATION
 #include <infclassr/geolocation.h>
 #endif
@@ -147,6 +153,10 @@ public:
 	std::vector<int> m_DefaultAvailabilities, m_DefaultProbabilities;
 	void SetAvailabilities(std::vector<int> value);
 	void SetProbabilities(std::vector<int> value);
+	
+	#if defined(MEASURE_TICKS)
+		CMeasureTicks *m_pMeasure;
+	#endif
 
 	// voting
 	void StartVote(const char *pDesc, const char *pCommand, const char *pReason);
