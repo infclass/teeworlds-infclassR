@@ -2095,7 +2095,7 @@ int CServer::Run()
 		}
 
 #if defined(MEASURE_TICKS)
-		CMeasureTicks MeasureTicks(10, "FPS");
+		CMeasureTicks MeasureTicks(10, "ServerTick");
 #endif
 
 		while(m_RunServer)
@@ -2247,12 +2247,12 @@ int CServer::Run()
 
 			PumpNetwork();
 
+			// wait for incomming data
+			net_socket_read_wait(m_NetServer.Socket(), 5);
+
 #if defined(MEASURE_TICKS)
 			MeasureTicks.End();
 #endif
-
-			// wait for incomming data
-			net_socket_read_wait(m_NetServer.Socket(), 5);
 		}
 	}
 	// disconnect all clients on shutdown

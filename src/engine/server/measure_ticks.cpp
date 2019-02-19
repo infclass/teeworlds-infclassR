@@ -33,7 +33,7 @@ void CMeasureTicks::End()
 		m_LongestTickMillis = DiffMillis;
 	if (std::chrono::duration_cast<std::chrono::seconds>(EndTime-m_LastReportTime).count() >= m_LogIntervalInSeconds)
 	{
-		dbg_msg(m_pLogTag, "%ifps AverageTickTime: %fms LongestTick: %fms", m_Ticks/m_LogIntervalInSeconds, m_MillisBuff/m_Ticks, m_LongestTickMillis);
+		dbg_msg(m_pLogTag, "%ifps, AverageTickTime: %fms, LongestTick: %fms", m_Ticks/m_LogIntervalInSeconds, m_MillisBuff/m_Ticks, m_LongestTickMillis);
 		m_Ticks = 0;
 		m_MillisBuff = 0;
 		m_LongestTickMillis = 0;
