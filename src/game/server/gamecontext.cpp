@@ -59,6 +59,10 @@ void CGameContext::Construct(int Resetting)
 	m_FunRound = false;
 	m_FunRoundsPassed = 0;
 	
+	#if defined(MEASURE_TICKS)
+		m_pMeasure = new CMeasureTicks(10,"GameServerTick");
+	#endif
+	
 	#ifndef CONF_NOGEOLOCATION
 	geolocation = new Geolocation("GeoLite2-Country.mmdb");
 	#endif
@@ -904,6 +908,10 @@ void CGameContext::SendScoreSound(int ClientID)
 
 void CGameContext::OnTick()
 {
+	#if defined(MEASURE_TICKS)
+		m_pMeasure->Begin(); // when the tick starts	
+	#endif
+	
 	for(int i=0; i<MAX_CLIENTS; i++)
 	{		
 		if(m_apPlayers[i])
@@ -1283,7 +1291,6 @@ void CGameContext::OnTick()
 			}
 		}
 	}
-
 #ifdef CONF_DEBUG
 	if(g_Config.m_DbgDummies)
 	{
@@ -1295,6 +1302,11 @@ void CGameContext::OnTick()
 		}
 	}
 #endif
+
+	#if defined(MEASURE_TICKS)
+		m_pMeasure->End(); // when the tick ends	
+	#endif
+	
 }
 
 // Server hooks
