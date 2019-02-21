@@ -145,6 +145,7 @@ public:
 	
 	bool m_knownClass[NB_PLAYERCLASS];
 	int m_InfectionTick;
+	bool m_IsSpectator;
 	
 	int GetScoreMode();
 	void SetScoreMode(int Mode);
@@ -160,6 +161,7 @@ public:
 	bool IsInfected() const;
 	bool IsZombie() const;
 	bool IsHuman() const;
+	bool IsSpectator() const;
 	void StartInfection(bool force = false);
 	bool IsKownClass(int c);
 	

@@ -240,7 +240,7 @@ void IGameController::CycleMap(bool Forced)
 	if(!Forced && m_RoundCount < g_Config.m_SvRoundsPerMap-1)
 		return;
 
-	int PlayerCount = Server()->GetActivePlayerCount();
+	int PlayerCount = GameServer()->GetActivePlayerCount();
 
 	CMapRotationInfo pMapRotationInfo;
 	GetMapRotationInfo(&pMapRotationInfo);
@@ -348,7 +348,7 @@ void IGameController::OnPlayerInfoChange(class CPlayer *pP)
 
 
 int IGameController::OnCharacterDeath(class CCharacter *pVictim, class CPlayer *pKiller, int Weapon)
-{
+{	
 	// do scoreing
 	if(!pKiller || Weapon == WEAPON_GAME)
 		return 0;
@@ -511,15 +511,9 @@ void IGameController::Tick()
 		m_UnbalancedTick = -1;
 	}
 
-	unsigned int nbPlayers=0;
-	CPlayerIterator<PLAYERITER_INGAME> Iter(GameServer()->m_apPlayers);
-	while(Iter.Next())
-	{
-		nbPlayers++;
-	}
 
 	// check for inactive players
-	if(g_Config.m_SvInactiveKickTime > 0 && nbPlayers > 1)
+	if(g_Config.m_SvInactiveKickTime > 0 && GameServer()->GetActivePlayerCount() > 1)
 	{
 		for(int i = 0; i < MAX_CLIENTS; ++i)
 		{

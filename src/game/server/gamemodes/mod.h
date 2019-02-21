@@ -35,10 +35,11 @@ public:
 	virtual bool IsInfectionStarted();
 	
 	void ResetFinalExplosion();
+	int GetFirstInfNb();
 	
 private:
 	bool IsSpawnable(vec2 Pos, int TeleZoneIndex);
-	void GetPlayerCounter(int ClientException, int& NumHumans, int& NumInfected, int& NumFirstInfected);
+	void SetFirstInfectedNumber();
 	
 private:	
 	int m_MapWidth;
@@ -47,5 +48,6 @@ private:
 	bool m_ExplosionStarted;
 	
 	bool m_InfectedStarted;
+	int m_NumFirstInfected;
 };
 #endif

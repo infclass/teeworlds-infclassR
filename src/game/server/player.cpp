@@ -57,6 +57,7 @@ CPlayer::CPlayer(CGameContext *pGameServer, int ClientID, int Team)
 	m_PrevTuningParams = *pGameServer->Tuning();
 	m_NextTuningParams = m_PrevTuningParams;
 	m_IsInGame = false;
+	m_IsSpectator = false;
 	
 	for(unsigned int i=0; i<sizeof(m_LastHumanClasses)/sizeof(int); i++)
 		m_LastHumanClasses[i] = -1;
@@ -526,15 +527,14 @@ void CPlayer::SetTeam(int Team, bool DoChatMsg)
 	Team = GameServer()->m_pController->ClampTeam(Team);
 	if(m_Team == Team)
 		return;
-
+	
 	char aBuf[512];
-	if(DoChatMsg)
+	
+	if(DoChatMsg) //default is true
 	{
 		if(Team == TEAM_SPECTATORS)
 		{
 			GameServer()->SendChatTarget_Localization(-1, CHATCATEGORY_PLAYER, _("{str:PlayerName} joined the spectators"), "PlayerName", Server()->ClientName(m_ClientID), NULL);
-			GameServer()->AddSpectatorCID(m_ClientID);
-			Server()->InfecteClient(m_ClientID);
 		}
 		else
 		{
@@ -563,7 +563,26 @@ void CPlayer::SetTeam(int Team, bool DoChatMsg)
 			if(GameServer()->m_apPlayers[i] && GameServer()->m_apPlayers[i]->m_SpectatorID == m_ClientID)
 				GameServer()->m_apPlayers[i]->m_SpectatorID = SPEC_FREEVIEW;
 		}
+		
+		//add spectator
+		GameServer()->AddSpectatorCID(m_ClientID);
+		m_IsSpectator = true;
+		
+	} 
+	else
+	{
+		//remove spectator
+		GameServer()->RemoveSpectatorCID(m_ClientID);
+		m_IsSpectator = false;
+		
 	}
+	
+	GameServer()->CountActivePlayers();
+	GameServer()->CountSpectators();
+	GameServer()->CountHumans(); // updates also zombies
+	
+	GameServer()->m_pController->CheckTeamBalance();
+	m_TeamChangeTick = Server()->Tick();
 }
 
 void CPlayer::TryRespawn()
@@ -762,6 +781,9 @@ void CPlayer::SetClass(int newClass)
 	char aBuf[256];
 	str_format(aBuf, sizeof(aBuf), "choose_class player='%s' class='%d'", Server()->ClientName(m_ClientID), newClass);
 	GameServer()->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "game", aBuf);
+	
+	//update number of humans and zombies
+	GameServer()->CountHumans(); //updates also zombies
 }
 
 int CPlayer::GetOldClass()
@@ -813,6 +835,11 @@ bool CPlayer::IsZombie() const
 bool CPlayer::IsHuman() const
 {
 	return !(m_class > END_HUMANCLASS);
+}
+
+bool CPlayer::IsSpectator() const
+{
+	return m_IsSpectator;
 }
 
 bool CPlayer::IsKownClass(int c)

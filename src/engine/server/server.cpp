@@ -13,7 +13,6 @@
 #include <engine/masterserver.h>
 #include <engine/server.h>
 #include <engine/storage.h>
-
 #include <engine/shared/compression.h>
 #include <engine/shared/config.h>
 #include <engine/shared/datafile.h>
@@ -4386,22 +4385,6 @@ IServer::CClientSession* CServer::GetClientSession(int ClientID)
 	return &m_aClients[ClientID].m_Session;
 }
 
-// returns how many players are currently playing and not spectating
-int CServer::GetActivePlayerCount()
-{
-	int PlayerCount = 0;
-	auto& vec = spectators_id;
-	for(int i=0; i<MAX_CLIENTS; i++)
-	{
-		if(m_aClients[i].m_State == CClient::STATE_INGAME)
-		{
-			if (std::find(vec.begin(), vec.end(), i) == vec.end())
-				PlayerCount++;
-		}
-	}
-	return PlayerCount;
-}
-
 void CServer::AddAccusation(int From, int To, const char* pReason)
 {
 	if(From < 0 || From >= MAX_CLIENTS || To < 0 || To >= MAX_CLIENTS)
@@ -4547,7 +4530,7 @@ IServer::CMapVote* CServer::GetMapVote()
 	if (m_MapVotesCounter <= 0)
 		return 0;
 
-	float PlayerCount = GetActivePlayerCount();
+	float PlayerCount = GameServer()->GetActivePlayerCount();
 
 	int HighestNum = -1;
 	int HighestNumIndex = -1;

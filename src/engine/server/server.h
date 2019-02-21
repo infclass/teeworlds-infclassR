@@ -412,9 +412,6 @@ public:
 	virtual void ResetMapVotes();
 	virtual IServer::CMapVote* GetMapVote();
 	virtual int GetMinPlayersForMap(const char* pMapName);
-
-	virtual int GetActivePlayerCount();
-	
 	virtual int GetTimeShiftUnit() const { return m_TimeShiftUnit; } //In ms
 /* INFECTION MODIFICATION END *****************************************/
 
