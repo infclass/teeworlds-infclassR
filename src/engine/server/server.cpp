@@ -197,6 +197,28 @@ void CSnapIDPool::FreeID(int ID)
 	}
 }
 
+int CSnapIDPool::GetIDCount()
+{
+	int Count = 0;
+	for(int i = 0; i < MAX_IDS; i++)
+	{
+		if (m_aIDs[i].m_State == 1)
+			Count++;
+	}
+	return Count;
+}
+
+bool CServer::ConGetIDCount(IConsole::IResult *pResult, void *pUser)
+{
+	CServer* pThis = (CServer*)pUser;
+	int IDCount = pThis->m_IDPool.GetIDCount();
+	int IDPercent = (int)(((float)IDCount/pThis->m_IDPool.GetMaxIDs())*100);
+	char aBuff[128];
+	str_format(aBuff, sizeof(aBuff), "IDCount: %i - InPercent: %i%%", IDCount, IDPercent);
+	pThis->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "Server", aBuff);
+	return true;
+}
+
 void CServerBan::InitServerBan(IConsole *pConsole, IStorage *pStorage, CServer* pServer)
 {
 	CNetBan::Init(pConsole, pStorage);
@@ -2728,6 +2750,7 @@ void CServer::RegisterCommands()
 	Console()->Register("inf_add_sqlserver", "ssssssi?i", CFGFLAG_SERVER, ConAddSqlServer, this, "add a sqlserver");
 	Console()->Register("inf_list_sqlservers", "s", CFGFLAG_SERVER, ConDumpSqlServers, this, "list all sqlservers readservers = r, writeservers = w");
 #endif
+	Console()->Register("print_idcount", "", CFGFLAG_SERVER, ConGetIDCount, this, "prints how many entity ids are currently used - useful for debugging");
 /* INFECTION MODIFICATION END *****************************************/
 
 	// register console commands in sub parts
