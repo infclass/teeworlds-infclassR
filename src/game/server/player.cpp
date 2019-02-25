@@ -508,6 +508,7 @@ void CPlayer::KillCharacter(int Weapon)
 	if(m_pCharacter)
 	{
 		m_pCharacter->Die(m_ClientID, Weapon);
+		m_pCharacter->Reset();
 		delete m_pCharacter;
 		m_pCharacter = 0;
 	}
