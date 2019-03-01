@@ -24,6 +24,7 @@ CGameControllerMOD::CGameControllerMOD(class CGameContext *pGameServer)
 	m_GrowingMap = new int[m_MapWidth*m_MapHeight];
 	
 	m_InfectedStarted = false;
+	m_ReportTick = Server()->TickSpeed() * 60;
 	
 	for(int j=0; j<m_MapHeight; j++)
 	{
@@ -181,7 +182,7 @@ void CGameControllerMOD::Tick()
 	GetPlayerCounter(-1, NumHumans, NumInfected, NumFirstInfected);
 	
 	m_InfectedStarted = false;
-	
+
 	//If the game can start ...
 	if(m_GameOverTick == -1 && NumHumans + NumInfected >= g_Config.m_InfMinPlayers)
 	{
@@ -427,6 +428,30 @@ void CGameControllerMOD::Tick()
 		GameServer()->DisableTargetToKill();
 		
 		m_RoundStartTick = Server()->Tick();
+	}
+
+	if (m_ReportTick <= 0)
+	{
+		CPlayerIterator<PLAYERITER_ALL> Iter(GameServer()->m_apPlayers);
+		
+		dynamic_string Buffer;
+
+		Buffer.append("online list=[");
+		if (Iter.Next())
+		{
+			Buffer.append(Server()->ClientName(Iter.Player()->GetCID()));
+		}
+
+		while(Iter.Next())
+		{
+			Buffer.append(", ");
+			Buffer.append(Server()->ClientName(Iter.Player()->GetCID()));
+		}
+		Buffer.append("]");
+		GameServer()->Console()->Print(IConsole::OUTPUT_LEVEL_DEBUG, "game", Buffer.buffer());
+		m_ReportTick = Server()->TickSpeed() * 60;
+	} else {
+		m_ReportTick--;
 	}
 }
 
