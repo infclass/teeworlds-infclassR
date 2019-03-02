@@ -43,7 +43,6 @@ private:
 private:	
 	int m_MapWidth;
 	int m_MapHeight;
-	int m_ReportTick; // print players online to console
 	int* m_GrowingMap;
 	bool m_ExplosionStarted;
 	
