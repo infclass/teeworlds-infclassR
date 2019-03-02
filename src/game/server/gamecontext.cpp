@@ -3586,13 +3586,13 @@ bool CGameContext::ConHelp(IConsole::IResult *pResult, void *pUserData)
 			Buffer.append("\n\n");
 			pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("The Hero must find a flag only visible to them hidden in the map."), NULL);
 			Buffer.append("\n\n");
-			pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("Once taken, the flag gifts 1 health point, 4 armor points, and full ammo to all humans, furthermore full health and armor to the hero."), NULL);
+			pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("Once taken, the flag gives 1 health point, 4 armor points, and full ammo to all humans, furthermore full health and armor to the hero."), NULL);
 			Buffer.append("\n\n");
 			pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("The gift to all humans is only applied when the flag is surrounded by hearts and armor. This gift cooldown is shared between all heros."), NULL);
 			Buffer.append("\n\n");
 			pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("Cannot find a flag? Stand still for some seconds, maybe you will get enlightened."), NULL);
 			Buffer.append("\n\n");
-			pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("The hero cannot be healed by a medic, but he can withstand a thrust by an infected, an his health suffice."), NULL);
+			//pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("The hero cannot be healed by a medic, but he can withstand a thrust by an infected, an his health suffice."), NULL);
 			
 			pSelf->SendMOTD(ClientID, Buffer.buffer());
 		}
@@ -4011,13 +4011,11 @@ bool CGameContext::ConWitch(IConsole::IResult *pResult, void *pUserData)
 	pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_DEBUG, "conwitch", aBuf);
 
 	if (pSelf->GetZombieCount(PLAYERCLASS_WITCH) >= MAX_WITCHES) {
-		str_format(aBuf, sizeof(aBuf), "All witches are already here", MAX_WITCHES);
-		pSelf->SendChatTarget(ClientID, aBuf);
+		pSelf->SendChatTarget_Localization(ClientID, CHATCATEGORY_DEFAULT, _("All witches are already here"));
 		return true;
 	}
 	if (pSelf->GetZombieCount() <= MIN_ZOMBIES) {
-		str_format(aBuf, sizeof(aBuf), "Too few zombies");
-		pSelf->SendChatTarget(ClientID, aBuf);
+		pSelf->SendChatTarget_Localization(ClientID, CHATCATEGORY_DEFAULT, _("Too few zombies"));
 		return true;
 	}
 
@@ -4026,24 +4024,27 @@ bool CGameContext::ConWitch(IConsole::IResult *pResult, void *pUserData)
 		if(!(std::find(wc.begin(), wc.end(), ClientID) != wc.end())) {
 			wc.push_back(ClientID); // add to witch callers vector
 			callers_count += 1;
-			if (callers_count == 1)
-				str_format(aBuf, sizeof(aBuf), "%s is calling for Witch! (%d/%d) To call witch write: /witch",
-						pSelf->Server()->ClientName(ClientID), callers_count, REQUIRED_CALLERS_COUNT);
-			else
-				str_format(aBuf, sizeof(aBuf), "Witch (%d/%d)", callers_count, REQUIRED_CALLERS_COUNT);
+			if (callers_count == 1) {
+				pSelf->SendChatTarget_Localization(-1, CHATCATEGORY_DEFAULT, _("{str:PlayerName} is calling for Witch! ({int:NumCallers}/{int:NumCallersLimit}) To call witch write: /witch"),
+						"PlayerName", pSelf->Server()->ClientName(ClientID),
+						"NumCallers", &callers_count,
+						"NumCallersLimit", &REQUIRED_CALLERS_COUNT);
+			}
+			else {
+				pSelf->SendChatTarget_Localization(-1, CHATCATEGORY_DEFAULT, _("Witch ({int:NumCallers}/{int:NumCallersLimit})"),
+						"NumCallers", &callers_count,
+						"NumCallersLimit", &REQUIRED_CALLERS_COUNT);
+			}
 		}
 		else {
-			str_format(aBuf, sizeof(aBuf), "You can't call witch twice");
-			pSelf->SendChatTarget(ClientID, aBuf);
+			pSelf->SendChatTarget_Localization(ClientID, CHATCATEGORY_DEFAULT, _("You can't call witch twice"));
 			return true;
 		}
 	}
 	else {
 		int witch_id = pSelf->RandomZombieToWitch();
-		str_format(aBuf, sizeof(aBuf), "Witch %s has arrived!", pSelf->Server()->ClientName(witch_id));
+		pSelf->SendChatTarget_Localization(ClientID, CHATCATEGORY_DEFAULT, _("Witch {str:PlayerName} has arrived!"), "PlayerName", pSelf->Server()->ClientName(witch_id));
 	}
-	
-	pSelf->SendChatTarget(-1, aBuf);
 	return true;
 }
 
