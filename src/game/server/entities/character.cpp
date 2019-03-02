@@ -2692,6 +2692,12 @@ void CCharacter::Die(int Killer, int Weapon)
 	m_pPlayer->m_RespawnTick = Server()->Tick()+Server()->TickSpeed()/2;
 	int ModeSpecial = GameServer()->m_pController->OnCharacterDeath(this, GameServer()->m_apPlayers[Killer], Weapon);
 
+	char aBuf[256];
+	str_format(aBuf, sizeof(aBuf), "kill killer='%s' victim='%s' weapon=%d",
+		Server()->ClientName(Killer),
+		Server()->ClientName(m_pPlayer->GetCID()), Weapon);
+	GameServer()->Console()->Print(IConsole::OUTPUT_LEVEL_DEBUG, "game", aBuf);
+
 	// send the kill message
 	CNetMsg_Sv_KillMsg Msg;
 	Msg.m_Killer = Killer;
