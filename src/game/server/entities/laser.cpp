@@ -39,14 +39,15 @@ bool CLaser::HitCharacter(vec2 From, vec2 To)
 		auto& medic = pOwnerChar;
 		auto& zombie = pHit;
 
-		char aBuf[256];
 		if (medic->GetPlayer()->GetCharacter() && medic->GetPlayer()->GetCharacter()->GetHealthArmorSum() <= DAMAGE_ON_REVIVE) {
-			str_format(aBuf, sizeof(aBuf), "You need at least %d hp", DAMAGE_ON_REVIVE + 1);
-			GameServer()->SendBroadcast(m_Owner, aBuf, BROADCAST_PRIORITY_GAMEANNOUNCE, BROADCAST_DURATION_GAMEANNOUNCE);
+			int HealthArmor = DAMAGE_ON_REVIVE + 1;
+			GameServer()->SendBroadcast_Localization(m_Owner, BROADCAST_PRIORITY_GAMEANNOUNCE, BROADCAST_DURATION_GAMEANNOUNCE, _("You need at least {int:HealthArmor} hp"),
+					"HealthArmor", &HealthArmor);
 		}
 		else if (GameServer()->GetZombieCount() <= MIN_ZOMBIES) {
-			str_format(aBuf, sizeof(aBuf), "Too few zombies (less than %d)", MIN_ZOMBIES+1);
-			GameServer()->SendBroadcast(m_Owner, aBuf, BROADCAST_PRIORITY_GAMEANNOUNCE, BROADCAST_DURATION_GAMEANNOUNCE);
+			int MinZombies = MIN_ZOMBIES + 1;
+			GameServer()->SendBroadcast_Localization(m_Owner, BROADCAST_PRIORITY_GAMEANNOUNCE, BROADCAST_DURATION_GAMEANNOUNCE, _("Too few zombies (less than {int:MinZombies})"),
+					"MinZombies", &MinZombies);
 		}
 		else {
 			zombie->GetPlayer()->SetClass(old_class);
@@ -54,10 +55,9 @@ bool CLaser::HitCharacter(vec2 From, vec2 To)
 				zombie->GetPlayer()->GetCharacter()->SetHealthArmor(1, 0);
 				zombie->Unfreeze();
 				medic->TakeDamage(vec2(0.f, 0.f), DAMAGE_ON_REVIVE * 2, m_Owner, WEAPON_RIFLE, TAKEDAMAGEMODE_SELFHARM);
-				str_format(aBuf, sizeof(aBuf), "Medic %s revived %s",
-						Server()->ClientName(medic->GetPlayer()->GetCID()),
-						Server()->ClientName(zombie->GetPlayer()->GetCID()));
-				GameServer()->SendChatTarget(-1, aBuf);
+				GameServer()->SendChatTarget_Localization(-1, CHATCATEGORY_DEFAULT, _("Medic {str:MedicName} revived {str:PlayerName}"),
+						"MedicName", Server()->ClientName(medic->GetPlayer()->GetCID()),
+						"PlayerName", Server()->ClientName(zombie->GetPlayer()->GetCID()));
 				int ClientID = medic->GetPlayer()->GetCID();
 				Server()->RoundStatistics()->OnScoreEvent(ClientID, SCOREEVENT_MEDIC_REVIVE, medic->GetClass(), Server()->ClientName(ClientID), GameServer()->Console());
 			}
