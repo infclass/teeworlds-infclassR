@@ -3617,7 +3617,7 @@ bool CGameContext::ConHelp(IConsole::IResult *pResult, void *pUserData)
 			Buffer.append("~~ ");
 			pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("Mercenary"), NULL); 
 			Buffer.append(" ~~\n\n");
-			pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("The Mercenary can fly using his his machine gun."), NULL);
+			pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("The Mercenary can fly using his machine gun."), NULL);
 			Buffer.append("\n\n");
 			pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("He can coil explosives with his hammer that hinder infected from harming."), NULL);
 			Buffer.append("\n\n");
