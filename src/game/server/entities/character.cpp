@@ -2004,7 +2004,7 @@ void CCharacter::Tick()
 	if(m_Core.m_HookedPlayer > -1 && pHookedPlayer) {
 		bool BothZombies = IsZombie() && pHookedPlayer->IsZombie();
 		bool BothHumans = IsHuman() && pHookedPlayer->IsHuman();
-		if(m_Core.m_HookProtected && !pHookedPlayer->HookProtectionEnabled() && (BothZombies || BothHumans))
+		if(!pHookedPlayer->HookProtectionEnabled() && (BothZombies || BothHumans))
 		{
 			CoreTickParams.m_HookGrabTime = 999*SERVER_TICK_SPEED;
 		}
@@ -3239,7 +3239,7 @@ void CCharacter::Snap(int SnappingClient)
 	if(m_Core.m_HookedPlayer > -1 && pHookedPlayer) {
 		bool BothZombies = IsZombie() && pHookedPlayer->IsZombie();
 		bool BothHumans = IsHuman() && pHookedPlayer->IsHuman();
-		if(m_Core.m_HookProtected && !pHookedPlayer->HookProtectionEnabled() && (BothZombies || BothHumans))
+		if(!pHookedPlayer->HookProtectionEnabled() && (BothZombies || BothHumans))
 		{
 			pCharacter->m_HookTick -= (999 - 1) * SERVER_TICK_SPEED - SERVER_TICK_SPEED/5;
 			if(pCharacter->m_HookTick < 0)
