@@ -555,10 +555,6 @@ void CCharacter::UpdateTuningParam()
 	}
 	
 	pTuningParams->m_PlayerHooking = 0;
-	if(m_Core.m_HookedPlayer > -1)
-	{
-		pTuningParams->m_PlayerHooking = 1;
-	}
 	
 	if(GetClass() == PLAYERCLASS_GHOUL)
 	{
