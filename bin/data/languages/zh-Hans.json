@@ -260,7 +260,7 @@
 		"value": "10 \u79d2\u540e\uff0c\u6709\u4e24\u540d\u73a9\u5bb6\u4f1a\u88ab\u611f\u67d3\u3002"
 	},
 	{
-		"key": "The goal for humans is to survive until the army clean the map.",
+		"key": "The goal for humans is to survive until the army cleans the map.",
 		"value": "\u4eba\u7c7b\u76ee\u6807\u662f\u575a\u6301\u5230\u63f4\u519b\u5230\u6765\u3002"
 	},
 	{
@@ -284,11 +284,11 @@
 		"value": "\u5de5\u7a0b\u5e08\u53ef\u4ee5\u7528\u9524\u5b50\u521b\u5efa\u6fc0\u5149\u5899\uff0c\u963b\u6321\u88ab\u611f\u67d3\u8005\u3002"
 	},
 	{
-		"key": "When an infected touch the wall, he dies.",
+		"key": "When an infected touches the wall, he dies.",
 		"value": "\u5f53\u53d7\u611f\u67d3\u8005\u78b0\u5230\u6fc0\u5149\u5899\u65f6\uff0cBoom\uff01"
 	},
 	{
-		"key": "The lifespan of a wall is {sec:LifeSpan}, and walls are limited to one per player at the same time.",
+		"key": "The lifespan of a wall is {sec:LifeSpan} and walls are limited to one per player at the same time.",
 		"value": "\u4e00\u5835\u5899\u53ef\u4ee5\u4fdd\u7559 {sec:LifeSpan}\uff0c\u6bcf\u4e2a\u73a9\u5bb6\u540c\u65f6\u53ea\u80fd\u62e5\u6709\u4e00\u5835\u6fc0\u5149\u5899\u3002"
 	},
 	{
@@ -300,7 +300,7 @@
 		"other": "\u6bcf\u4e2a\u60ac\u6d6e\u96f7\u53ef\u4ee5\u7206\u70b8 {int:NumBombs} \u6b21\u3002",
 	},
 	{
-		"key": "Use the hammer to place the bomb and explode it multiple times.",
+		"key": "Use the hammer to place the bombs and explode each with one click.",
 		"value": "\u7528\u9524\u5b50\u653e\u7f6e\u60ac\u6d6e\u96f7\u5e76\u5f15\u7206\u5b83\u6570\u6b21\u3002"
 	},
 	{
@@ -320,7 +320,7 @@
 		"value": "\u4e5f\u53ef\u4ee5\u7528\u69b4\u5f39\u67aa\u77ac\u79fb\u3002"
 	},
 	{
-		"key": "The biologist has a shotgun with bouncing bullets and can create a spring laser trap by shooting with his rifle.",
+		"key": "The Biologist has a shotgun with bouncing bullets and can create a flower-like-laser-trap by shooting with his rifle.",
 		"value": "\u751f\u7269\u5b66\u5bb6\u53ef\u4ee5\u7528\u9730\u5f39\u67aa\u5c04\u51fa\u8df3\u5f39\uff0c\u4e5f\u53ef\u4ee5\u7528\u6fc0\u5149\u67aa\u8bbe\u7f6e\u5f39\u7c27\u6fc0\u5149\u9677\u9631\u3002"
 	},
 	{
@@ -348,7 +348,7 @@
 		"value": "\u5c3d\u7ba1\u82f1\u96c4\u4e0d\u80fd\u88ab\u533b\u7597\u5175\u6cbb\u6108\uff0c\u4f46\u662f\u88ab\u611f\u67d3\u8005\u53ea\u80fd\u901a\u8fc7\u6740\u6b7b\u4ed6\u7684\u65b9\u5f0f\u6765\u611f\u67d3\u4ed6\uff0c\u4ed6\u7684\u751f\u547d\u529b\u975e\u5e38\u987d\u5f3a\u3002"
 	},
 	{
-		"key": "The Ninja can throw flash grenades that can freeze infected during three seconds.",
+		"key": "The Ninja can throw flash grenades that can freeze infected for three seconds.",
 		"value": "\u5fcd\u8005\u53ef\u4ee5\u6254\u95ea\u5149\u5f39\uff0c\u53ef\u4ee5\u51bb\u7ed3\u51fb\u4e2d\u7684\u88ab\u611f\u67d3\u8005\u4e09\u79d2\u3002"
 	},
 	{
@@ -356,7 +356,7 @@
 		"other": "\u4ed6\u7684\u9524\u5b50\u88ab\u6b66\u58eb\u5200\u53d6\u4ee3\uff0c\u5141\u8bb8\u4ed6\u89e6\u5730\u540e\u51b2\u523a {int:NinjaJump} \u6b21\u3002",
 	},
 	{
-		"key": "The Mercenary fly in air using his machine gun.",
+		"key": "The Mercenary can fly using his machine gun.",
 		"value": "\u96c7\u4f63\u5175\u53ef\u4ee5\u7528\u673a\u67aa\u98de\u884c\u3002"
 	},
 	{
@@ -364,7 +364,7 @@
 		"value": "\u4ed6\u53ef\u4ee5\u7528\u9524\u5b50\u8bbe\u7f6e\u9677\u9631\uff0c\u89e6\u53d1\u65f6\u9644\u8fd1\u7684\u88ab\u611f\u67d3\u8005\u65e0\u6cd5\u9020\u6210\u4f24\u5bb3\u3002"
 	},
 	{
-		"key": "He can also throw poison grenades that each deal {int:NumDamagePoints} damage points.",
+		"key": "He can also throw poison grenades that each deal {int:NumDamagePoints} damage points during two seconds.",
 		"other": "\u4ed6\u4e5f\u80fd\u6254\u6bd2\u70b8\u5f39\uff0c\u6bcf\u6b21\u9020\u6210 {int:NumDamagePoints} \u70b9\u4f24\u5bb3\u3002",
 	},
 	{
@@ -372,7 +372,7 @@
 		"value": "\u72d9\u51fb\u624b\u53ef\u4ee5\u7528\u9524\u5b50\u5728\u7a7a\u4e2d\u9501\u5b9a\u81ea\u5df1\u4f4d\u7f6e 15 \u79d2\u3002"
 	},
 	{
-		"key": "He can jump two times in air.",
+		"key": "He has tripple jump.",
 		"value": "\u4ed6\u62e5\u6709\u989d\u5916\u4e00\u6bb5\u8df3\u8dc3\u3002"
 	},
 	{
@@ -384,11 +384,11 @@
 		"value": "\u5438\u70df\u8005\u53ef\u4ee5\u7528\u9524\u5b50\u611f\u67d3\u4eba\u7c7b\uff0c\u6216\u6cbb\u7597\u88ab\u611f\u67d3\u8005\u3002"
 	},
 	{
-		"key": "He can also inflict 4 damage points per second by hooking humans.",
+		"key": "He can also inflict {int:DamagePoints} damage points per second by hooking humans.",
 		"value": "\u52fe\u4f4f\u6b63\u5e38\u4eba\u65f6\u80fd\u9020\u6210\u6bcf\u79d2 4 \u70b9\u4f24\u5bb3\u3002"
 	},
 	{
-		"key": "The Boomer explodes when he attack.",
+		"key": "The Boomer explodes when he attacks.",
 		"value": "\u7206\u70b8\u8005\u5728\u653b\u51fb\u7684\u65f6\u5019\u4f1a\u81ea\u7206\u3002"
 	},
 	{
@@ -408,7 +408,7 @@
 		"value": "\u5e7d\u7075\u53ef\u4ee5\u7528\u9524\u5b50\u611f\u67d3\u4eba\u7c7b\uff0c\u6216\u6cbb\u7597\u88ab\u611f\u67d3\u8005\u3002"
 	},
 	{
-		"key": "He is invisible, except if a human is near him, if he takes a damage or if he use his hammer.",
+		"key": "He is invisible, except if a human is near him, if he takes damage or if he uses his hammer.",
 		"value": "\u4ed6\u662f\u9690\u8eab\u7684\uff0c\u5f53\u4eba\u7c7b\u63a5\u8fd1\u4ed6\u3001\u53d7\u5230\u4f24\u5bb3\u3001\u4f7f\u7528\u9524\u5b50\u65f6\u4f1a\u73b0\u8eab\u3002"
 	},
 	{
@@ -416,15 +416,15 @@
 		"value": "\u8718\u86db\u4eba\u53ef\u4ee5\u7528\u9524\u5b50\u611f\u67d3\u4eba\u7c7b\uff0c\u6216\u6cbb\u7597\u88ab\u611f\u67d3\u8005\u3002"
 	},
 	{
-		"key": "When selecting any gun, his hook enter in web mode.",
+		"key": "When selecting any gun, his hook enters web mode.",
 		"value": "\u5207\u6362\u6b66\u5668\u65f6\uff0c\u94a9\u722a\u4f1a\u8fdb\u5165\u7ec7\u7f51\u6a21\u5f0f\u3002"
 	},
 	{
-		"key": "Any human that touch a hook in web mode is automatically grabbed.",
+		"key": "Any human that touches a hook in web mode is automatically grabbed.",
 		"value": "\u7ec7\u7f51\u6a21\u5f0f\u65f6\uff0c\u88ab\u52fe\u4f4f\u7684\u4eba\u7c7b\u90fd\u4f1a\u88ab\u56f0\u4f4f\u3002"
 	},
 	{
-		"key": "The hook of the spider (in both mode) deal 1 damage point per second and can grab a human during 2 seconds.",
+		"key": "The Spider's hook deals one damage point per second (in both modes) and can grab a human for two seconds.",
 		"value": "\u5728\u4e24\u79cd\u6a21\u5f0f\u4e0b\uff0c\u8718\u86db\u7684\u94a9\u5b50\u6bcf\u79d2\u90fd\u80fd\u9020\u6210 1 \u70b9\u4f24\u5bb3\uff0c\u5e76\u80fd\u56f0\u4f4f\u6b63\u5e38\u4eba\u4e24\u79d2\u3002"
 	},
 	{
@@ -456,11 +456,11 @@
 		"value": "\u4e0d\u6b7b\u65cf\u53ef\u4ee5\u7528\u9524\u5b50\u611f\u67d3\u4eba\u7c7b\uff0c\u6216\u6cbb\u7597\u88ab\u611f\u67d3\u8005\u3002"
 	},
 	{
-		"key": "Instead of dying, he freezes during 10 seconds.",
+		"key": "Instead of dying, he freezes for 10 seconds.",
 		"value": "\u4ed6\u4e0d\u4f1a\u6b7b\u4ea1\uff0c\u4f46\u5f53\u4ed6 HP \u4e3a 0 \u65f6\u4f1a\u88ab\u51bb\u7ed3 10 \u79d2\u3002"
 	},
 	{
-		"key": "If an infected heals him, the freeze effect disappear.",
+		"key": "If an infected heals him, the freeze effect disappears.",
 		"value": "\u5982\u679c\u88ab\u611f\u67d3\u8005\u6cbb\u7597\u4ed6\uff0c\u51bb\u7ed3\u6548\u679c\u6d88\u5931\u3002"
 	},
 	{
@@ -468,7 +468,7 @@
 		"value": "\u5973\u5deb\u53ef\u4ee5\u7528\u9524\u5b50\u611f\u67d3\u4eba\u7c7b\uff0c\u6216\u6cbb\u7597\u88ab\u611f\u67d3\u8005\u3002"
 	},
 	{
-		"key": "When an infected dies, he may re-spawn near her.",
+		"key": "When an infected dies, it may respawn near the Witch.",
 		"value": "\u5f53\u88ab\u611f\u67d3\u8005\u6b7b\u4ea1\u65f6\uff0c\u53ef\u80fd\u4f1a\u91cd\u751f\u5728\u5973\u5deb\u65c1\u8fb9\u3002"
 	},
 	{

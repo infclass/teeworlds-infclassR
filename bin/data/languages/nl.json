@@ -261,7 +261,7 @@
 		"value": "10 seconden later worden twee spelers ge\u00efnfecteerd."
 	},
 	{
-		"key": "The goal for humans is to survive until the army clean the map.",
+		"key": "The goal for humans is to survive until the army cleans the map.",
 		"value": "Het doel voor de mens is om te overleven tot het leger de kaart opruimt."
 	},
 	{
@@ -285,11 +285,11 @@
 		"value": "De ingenieur kan muren maken met zijn hamer om ge\u00efnfecteren te blokkeren."
 	},
 	{
-		"key": "When an infected touch the wall, he dies.",
+		"key": "When an infected touches the wall, he dies.",
 		"value": "Wanneer een ge\u00efnfecteerde de muur raakt, sterft hij."
 	},
 	{
-		"key": "The lifespan of a wall is {sec:LifeSpan}, and walls are limited to one per player at the same time.",
+		"key": "The lifespan of a wall is {sec:LifeSpan} and walls are limited to one per player at the same time.",
 		"value": "De levensduur van een muur is {sec:LifeSpan} en muren zijn beperkt tot \u00e9\u00e9n per speler tegelijk."
 	},
 	{
@@ -302,7 +302,7 @@
 		"other": "Elke bom kan {int:NumBombs} keer ontploffen.",
 	},
 	{
-		"key": "Use the hammer to place the bomb and explode it multiple times.",
+		"key": "Use the hammer to place the bombs and explode each with one click.",
 		"value": "Gebruik de hamer om een bom te plaatsen en om ze meerdere keren te laten ontploffen."
 	},
 	{
@@ -323,7 +323,7 @@
 		"value": "Hij kan ook granaten gooien die hem teleporteren."
 	},
 	{
-		"key": "The biologist has a shotgun with bouncing bullets and can create a spring laser trap by shooting with his rifle.",
+		"key": "The Biologist has a shotgun with bouncing bullets and can create a flower-like-laser-trap by shooting with his rifle.",
 		"value": "De bioloog heeft een shotgun met weerkaatsende kogels en kan een lente laser val maken door te schieten met zijn lasergeweer."
 	},
 	{
@@ -351,7 +351,7 @@
 		"value": "De held kan niet genezen worden door een dokter maar hij kan wel een stoot weerstaan van een ge\u00efnfecteerde en zijn gezondheid volstaat."
 	},
 	{
-		"key": "The Ninja can throw flash grenades that can freeze infected during three seconds.",
+		"key": "The Ninja can throw flash grenades that can freeze infected for three seconds.",
 		"value": "De ninja kan flits granaten gooien die ge\u00efnfecteerden bevriezen voor drie seconden."
 	},
 	{
@@ -360,7 +360,7 @@
 		"other": "Zijn hamer is vervangen door een katana waardoor hij {int:NinjaJump} keer kan springen voordat hij de grond raakt.",
 	},
 	{
-		"key": "The Mercenary fly in air using his machine gun.",
+		"key": "The Mercenary can fly using his machine gun.",
 		"value": "De huurling kan in de lucht vliegen met zijn machinegeweer."
 	},
 	{
@@ -368,7 +368,7 @@
 		"value": "Hij kan explosieven opwinden met zijn hamer die belemmeren de ge\u00efnfecteerden."
 	},
 	{
-		"key": "He can also throw poison grenades that each deal {int:NumDamagePoints} damage points.",
+		"key": "He can also throw poison grenades that each deal {int:NumDamagePoints} damage points during two seconds.",
 		"one": "Hij kan ook gif granaten gooien die een schade punt oplevert.",
 		"other": "Hij kan ook gif granaten gooien die {int:NumDamagePoints} schade punten oplevert.",
 	},
@@ -377,7 +377,7 @@
 		"value": "De scherpschutter kan zijn positie vergrendelen in de lucht voor 15 seconden met zijn hamer."
 	},
 	{
-		"key": "He can jump two times in air.",
+		"key": "He has tripple jump.",
 		"value": "Hij kan twee keer springen in de lucht."
 	},
 	{
@@ -389,11 +389,11 @@
 		"value": "De smoker kan mensen infecteren en mensen genezen met zijn hamer."
 	},
 	{
-		"key": "He can also inflict 4 damage points per second by hooking humans.",
+		"key": "He can also inflict {int:DamagePoints} damage points per second by hooking humans.",
 		"value": "Hij kan ook 4 schade punten opleveren per seconde door mensen te haken."
 	},
 	{
-		"key": "The Boomer explodes when he attack.",
+		"key": "The Boomer explodes when he attacks.",
 		"value": "De boomer ontploft wanneer hij aanvalt."
 	},
 	{
@@ -413,7 +413,7 @@
 		"value": "De geest kan mensen infecteren en mensen genezen met zijn hamer."
 	},
 	{
-		"key": "He is invisible, except if a human is near him, if he takes a damage or if he use his hammer.",
+		"key": "He is invisible, except if a human is near him, if he takes damage or if he uses his hammer.",
 		"value": "Hij is onzichtbaar, behalve als er een mens in de buurt is, als hij schade krijgt of hij zijn hamer gebruikt."
 	},
 	{
@@ -421,15 +421,15 @@
 		"value": "De spin kan mensen infecteren en mensen genezen met zijn hamer."
 	},
 	{
-		"key": "When selecting any gun, his hook enter in web mode.",
+		"key": "When selecting any gun, his hook enters web mode.",
 		"value": "Bij het verwisselen van pistool gaat zijn haak in web-modus."
 	},
 	{
-		"key": "Any human that touch a hook in web mode is automatically grabbed.",
+		"key": "Any human that touches a hook in web mode is automatically grabbed.",
 		"value": "Ieder mens dat de haak aanraakt in web-modus is automatisch gevangen."
 	},
 	{
-		"key": "The hook of the spider (in both mode) deal 1 damage point per second and can grab a human during 2 seconds.",
+		"key": "The Spider's hook deals one damage point per second (in both modes) and can grab a human for two seconds.",
 		"value": "De haak van een spin (in beide modus) levert 1 schade punt op per seconde en kan een mens grijpen gedurende 2 seconden."
 	},
 	{
@@ -461,11 +461,11 @@
 		"value": "De ondode kan mensen infecteren en mensen genezen met zijn hamer."
 	},
 	{
-		"key": "Instead of dying, he freezes during 10 seconds.",
+		"key": "Instead of dying, he freezes for 10 seconds.",
 		"value": "In plaats van te sterven, bevriest hij voor 10 seconden."
 	},
 	{
-		"key": "If an infected heals him, the freeze effect disappear.",
+		"key": "If an infected heals him, the freeze effect disappears.",
 		"value": "Als een ge\u00efnfecteerde hem geneest, dan is hij niet meer bevroren."
 	},
 	{
@@ -473,7 +473,7 @@
 		"value": "De Heks kan mensen infecteren en ge\u00efnfecteerden genezen met haar hamer."
 	},
 	{
-		"key": "When an infected dies, he may re-spawn near her.",
+		"key": "When an infected dies, it may respawn near the Witch.",
 		"value": "Wanneer een ge\u00efnfecteerde sterft is er een kans dat hij herleeft in de buurt van haar."
 	},
 	{

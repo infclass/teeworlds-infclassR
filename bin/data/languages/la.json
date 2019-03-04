@@ -261,7 +261,7 @@
 		"value": "Post secundas 10, arenarii duo inficiuntur."
 	},
 	{
-		"key": "The goal for humans is to survive until the army clean the map.",
+		"key": "The goal for humans is to survive until the army cleans the map.",
 		"value": "Finis hominum est supervivere, donec militia arenam repurgat."
 	},
 	{
@@ -285,11 +285,11 @@
 		"value": "Clavicarius malleo valla infectos inhibendes exstruere potest."
 	},
 	{
-		"key": "When an infected touch the wall, he dies.",
+		"key": "When an infected touches the wall, he dies.",
 		"value": "Quum infectus vallum tangit, tum moritur."
 	},
 	{
-		"key": "The lifespan of a wall is {sec:LifeSpan}, and walls are limited to one per player at the same time.",
+		"key": "The lifespan of a wall is {sec:LifeSpan} and walls are limited to one per player at the same time.",
 		"value": "Vallum {sec:LifeSpan} constat durare, tummodo arenarius unum solum vallum exstruere potest."
 	},
 	{
@@ -302,7 +302,7 @@
 		"other": "Bomba posita explosioni numeri {int:NumBombs} ideona est.",
 	},
 	{
-		"key": "Use the hammer to place the bomb and explode it multiple times.",
+		"key": "Use the hammer to place the bombs and explode each with one click.",
 		"value": "Malleo utere, ut bombam interponas inardescasque pluriens."
 	},
 	{
@@ -323,7 +323,7 @@
 		"value": "Etiam granatas quae eum teleportant habet."
 	},
 	{
-		"key": "The biologist has a shotgun with bouncing bullets and can create a spring laser trap by shooting with his rifle.",
+		"key": "The Biologist has a shotgun with bouncing bullets and can create a flower-like-laser-trap by shooting with his rifle.",
 		"value": "Biologus sclopetum dispergens cum missilibus reflectentibus habet laqueumque sclopeto laserico struere potest."
 	},
 	{
@@ -351,7 +351,7 @@
 		"value": "Heros a medico sanari non ideoneus est, sed plagae infecti resistere, quin pereat, si integritas sua huic sufficit."
 	},
 	{
-		"key": "The Ninja can throw flash grenades that can freeze infected during three seconds.",
+		"key": "The Ninja can throw flash grenades that can freeze infected for three seconds.",
 		"value": "Ninja granatas iacere potest quae infectos tres secundas congelare pollent."
 	},
 	{
@@ -360,7 +360,7 @@
 		"other": "Malleus eius katana permutatus. Quo in manus pervenit, ut insultet {int:NinjaJump} temporibus, antequam solum contingit.",
 	},
 	{
-		"key": "The Mercenary fly in air using his machine gun.",
+		"key": "The Mercenary can fly using his machine gun.",
 		"value": "Mercennarius sclopeto polybolico in aere volare potest."
 	},
 	{
@@ -368,7 +368,7 @@
 		"value": "Vasa displosiva quae infectos nocendi valentia distineunt convolvere capax est."
 	},
 	{
-		"key": "He can also throw poison grenades that each deal {int:NumDamagePoints} damage points.",
+		"key": "He can also throw poison grenades that each deal {int:NumDamagePoints} damage points during two seconds.",
 		"one": "Ad hoc granatas veneficas iacere potest quae singulae plagam unam inponunt.",
 		"other": "Ad hoc granatas veneficas iacere potest quae plagas {int:NumDamagePoints} inponunt.",
 	},
@@ -377,7 +377,7 @@
 		"value": "Sniper malleo positionem 15 secundas claudere in aere potest."
 	},
 	{
-		"key": "He can jump two times in air.",
+		"key": "He has tripple jump.",
 		"value": "Bis in aere exsilere potest."
 	},
 	{
@@ -389,11 +389,11 @@
 		"value": "Fumigator malleo homines inficere infectosque sanare potest."
 	},
 	{
-		"key": "He can also inflict 4 damage points per second by hooking humans.",
+		"key": "He can also inflict {int:DamagePoints} damage points per second by hooking humans.",
 		"value": "Plagas quoque 4 per secundam unco infligere potest."
 	},
 	{
-		"key": "The Boomer explodes when he attack.",
+		"key": "The Boomer explodes when he attacks.",
 		"value": "Boomer explodit, quum oppugnat."
 	},
 	{
@@ -413,7 +413,7 @@
 		"value": "Larua malleo homines inficere infectosque sanare potest."
 	},
 	{
-		"key": "He is invisible, except if a human is near him, if he takes a damage or if he use his hammer.",
+		"key": "He is invisible, except if a human is near him, if he takes damage or if he uses his hammer.",
 		"value": "Latens est, donec homo proxumus sit, pugnam experiatur aut malleo utatur."
 	},
 	{
@@ -421,15 +421,15 @@
 		"value": "Aranea malleo homines inficere infectosque sanare potest."
 	},
 	{
-		"key": "When selecting any gun, his hook enter in web mode.",
+		"key": "When selecting any gun, his hook enters web mode.",
 		"value": "Quum telum quodlubet seligis, captio eius unco in modum retialem transit."
 	},
 	{
-		"key": "Any human that touch a hook in web mode is automatically grabbed.",
+		"key": "Any human that touches a hook in web mode is automatically grabbed.",
 		"value": "Homo quicumque uncum in modo retiali tangens apprehenditur."
 	},
 	{
-		"key": "The hook of the spider (in both mode) deal 1 damage point per second and can grab a human during 2 seconds.",
+		"key": "The Spider's hook deals one damage point per second (in both modes) and can grab a human for two seconds.",
 		"value": "Uncus araneus (in modos ambobus) plagam 1 infligit et hominem secundas 2 tenet."
 	},
 	{
@@ -461,11 +461,11 @@
 		"value": "Immortalis malleo homines inficere infectosque sanare potest."
 	},
 	{
-		"key": "Instead of dying, he freezes during 10 seconds.",
+		"key": "Instead of dying, he freezes for 10 seconds.",
 		"value": "Pro morte secundas 10 gelatur."
 	},
 	{
-		"key": "If an infected heals him, the freeze effect disappear.",
+		"key": "If an infected heals him, the freeze effect disappears.",
 		"value": "Quando infectus eum sanat, effectus gelationis decedit."
 	},
 	{
@@ -473,7 +473,7 @@
 		"value": "Malefica malleo homines inficere infectosque sanare potest."
 	},
 	{
-		"key": "When an infected dies, he may re-spawn near her.",
+		"key": "When an infected dies, it may respawn near the Witch.",
 		"value": "Infectus mortuus iuxta eam ab inferis exsistere potest."
 	},
 	{

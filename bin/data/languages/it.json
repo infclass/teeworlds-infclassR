@@ -261,7 +261,7 @@
 		"value": "10 secondi dopo, due giocatori diventano infetti."
 	},
 	{
-		"key": "The goal for humans is to survive until the army clean the map.",
+		"key": "The goal for humans is to survive until the army cleans the map.",
 		"value": "Lo scopo degli umani \u00e8 di sopravvivere fino a quando l'esercito ripulir\u00e0 la mappa."
 	},
 	{
@@ -285,11 +285,11 @@
 		"value": "L'Ingegnere pu\u00f2 creare una barriera col suo martello per bloccare gli infetti."
 	},
 	{
-		"key": "When an infected touch the wall, he dies.",
+		"key": "When an infected touches the wall, he dies.",
 		"value": "Se un infetto tocca la barriera, muore istantanamente."
 	},
 	{
-		"key": "The lifespan of a wall is {sec:LifeSpan}, and walls are limited to one per player at the same time.",
+		"key": "The lifespan of a wall is {sec:LifeSpan} and walls are limited to one per player at the same time.",
 		"value": "La durata di una barriera \u00e8 di {sec:LifeSpan} e sono limitate ad una per giocatore nello stesso momento."
 	},
 	{
@@ -302,7 +302,7 @@
 		"other": "Ogni insieme di bombe pu\u00f2 esplodere {int:NumBombs} volte.",
 	},
 	{
-		"key": "Use the hammer to place the bomb and explode it multiple times.",
+		"key": "Use the hammer to place the bombs and explode each with one click.",
 		"value": "Utilizza il martello per piazzare un insieme di bombe e per farle esplodere."
 	},
 	{
@@ -323,7 +323,7 @@
 		"value": "Ha anche un lancia granate che lo pu\u00f2 teletrasportare."
 	},
 	{
-		"key": "The biologist has a shotgun with bouncing bullets and can create a spring laser trap by shooting with his rifle.",
+		"key": "The Biologist has a shotgun with bouncing bullets and can create a flower-like-laser-trap by shooting with his rifle.",
 		"value": "Il biologo ha un fucile con proiettili rimbalzanti e pu\u00f2 creare un trappola sparando con il suo laser."
 	},
 	{
@@ -351,7 +351,7 @@
 		"value": "L'eroe non pu\u00f2 essere curato da un medico, ma pu\u00f2 resistere una martellata da un infetto, se ha vita sufficente."
 	},
 	{
-		"key": "The Ninja can throw flash grenades that can freeze infected during three seconds.",
+		"key": "The Ninja can throw flash grenades that can freeze infected for three seconds.",
 		"value": "Il Ninja pu\u00f2 lanciare granate stordenti che possono immobilizzare gli infetti per 3 secondi."
 	},
 	{
@@ -360,7 +360,7 @@
 		"other": "Il suo martello \u00e8 rimpiazzato da una katana che gli permette di saltare {int:NinjaJump} volte prima di toccare terra.",
 	},
 	{
-		"key": "The Mercenary fly in air using his machine gun.",
+		"key": "The Mercenary can fly using his machine gun.",
 		"value": "Il Mercenario vola nell'aria usando la sua pistola."
 	},
 	{
@@ -368,7 +368,7 @@
 		"value": "Lui pu\u00f2 piazzare esplosivi con il suo martello, i quali impediscono agli infetti di danneggiare."
 	},
 	{
-		"key": "He can also throw poison grenades that each deal {int:NumDamagePoints} damage points.",
+		"key": "He can also throw poison grenades that each deal {int:NumDamagePoints} damage points during two seconds.",
 		"one": "Lui pu\u00f2 anche lanciare granate velenose che infliggono un punto danno.",
 		"other": "Lui pu\u00f2 anche lanciare granate velenose che infliggono {int:NumDamagePoints} punti danno.",
 	},
@@ -377,7 +377,7 @@
 		"value": "Il Cecchino pu\u00f2 bloccare la sua posizione in aria per 15 secondi con il suo martello. "
 	},
 	{
-		"key": "He can jump two times in air.",
+		"key": "He has tripple jump.",
 		"value": "Lui pu\u00f2 saltare due volte in aria."
 	},
 	{
@@ -389,11 +389,11 @@
 		"value": "Lo Smoker pu\u00f2 infettare gli umani e guarire gli infetti con il suo martello."
 	},
 	{
-		"key": "He can also inflict 4 damage points per second by hooking humans.",
+		"key": "He can also inflict {int:DamagePoints} damage points per second by hooking humans.",
 		"value": "Lui pu\u00f2 anche infliggere 4 punti di danno per secondo quando afferra un umano col suo gancio."
 	},
 	{
-		"key": "The Boomer explodes when he attack.",
+		"key": "The Boomer explodes when he attacks.",
 		"value": "Il Boomer esplode quando attacca."
 	},
 	{
@@ -413,7 +413,7 @@
 		"value": "Il Fantasma pu\u00f2 infettare umani e curare infetti con il suo martello. "
 	},
 	{
-		"key": "He is invisible, except if a human is near him, if he takes a damage or if he use his hammer.",
+		"key": "He is invisible, except if a human is near him, if he takes damage or if he uses his hammer.",
 		"value": "Lui \u00e8 invisibile, eccetto se un umano \u00e8 vicino a lui, se prende danno o se usa il suo martello. "
 	},
 	{
@@ -421,15 +421,15 @@
 		"value": "Il Ragno pu\u00f2 infettare umani e curare infetti con il suo martello."
 	},
 	{
-		"key": "When selecting any gun, his hook enter in web mode.",
+		"key": "When selecting any gun, his hook enters web mode.",
 		"value": "Quando si seleziona qualunque pistola, la sua corda entrer\u00e0 in modalit\u00e0 ragnatela."
 	},
 	{
-		"key": "Any human that touch a hook in web mode is automatically grabbed.",
+		"key": "Any human that touches a hook in web mode is automatically grabbed.",
 		"value": "Qualsiasi umano che tocca la corda in modalit\u00e0 ragnatela sar\u00e0 automaticamente afferrato."
 	},
 	{
-		"key": "The hook of the spider (in both mode) deal 1 damage point per second and can grab a human during 2 seconds.",
+		"key": "The Spider's hook deals one damage point per second (in both modes) and can grab a human for two seconds.",
 		"value": "La corda del ragno (in entrambi i modi) infligge 1 punto danno per secondo e pu\u00f2 afferrare un umano per 2 secondi."
 	},
 	{
@@ -461,11 +461,11 @@
 		"value": "Il Morto Vivente pu\u00f2 infettare gli umani e guarire gli infetti con il suo martello."
 	},
 	{
-		"key": "Instead of dying, he freezes during 10 seconds.",
+		"key": "Instead of dying, he freezes for 10 seconds.",
 		"value": "Invece di morire, si congela per 10 secondi."
 	},
 	{
-		"key": "If an infected heals him, the freeze effect disappear.",
+		"key": "If an infected heals him, the freeze effect disappears.",
 		"value": "Se un infetto lo guarisce, l'effetto del congelamento svanisce."
 	},
 	{
@@ -473,7 +473,7 @@
 		"value": "La Strega pu\u00f2 infettare gli umani e guarire gli infetti con il suo martello."
 	},
 	{
-		"key": "When an infected dies, he may re-spawn near her.",
+		"key": "When an infected dies, it may respawn near the Witch.",
 		"value": "Quando un infetto muore, ha una probabilit\u00e0 di riapparire vicino a lei."
 	},
 	{

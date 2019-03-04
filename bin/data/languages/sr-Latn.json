@@ -262,7 +262,7 @@
 		"value": "10 sekundi posle, dva igra\u010da postanu zara\u017eena."
 	},
 	{
-		"key": "The goal for humans is to survive until the army clean the map.",
+		"key": "The goal for humans is to survive until the army cleans the map.",
 		"value": "Cilj za ljude je pre\u017eiveti sve dok vojska ne o\u010disti mapu."
 	},
 	{
@@ -286,11 +286,11 @@
 		"value": "In\u017eenjer mo\u017ee raditi zidove sa \u010deki\u0107em."
 	},
 	{
-		"key": "When an infected touch the wall, he dies.",
+		"key": "When an infected touches the wall, he dies.",
 		"value": "Kada zara\u017eeni dotakne zid, on umre."
 	},
 	{
-		"key": "The lifespan of a wall is {sec:LifeSpan}, and walls are limited to one per player at the same time.",
+		"key": "The lifespan of a wall is {sec:LifeSpan} and walls are limited to one per player at the same time.",
 		"value": "Zid radi {sec:LifeSpan}, a jedan igra\u010d mo\u017ee napraviti samo jedan zid u isto vreme."
 	},
 	{
@@ -304,7 +304,7 @@
 		"other": "Svaka bomba mo\u017ee eksplodirati {int:NumBombs} puta.",
 	},
 	{
-		"key": "Use the hammer to place the bomb and explode it multiple times.",
+		"key": "Use the hammer to place the bombs and explode each with one click.",
 		"value": "Uzmi \u010deki\u0107 za postavljanje bombi i aktiviranje vi\u0161e puta."
 	},
 	{
@@ -326,7 +326,7 @@
 		"value": "Ima i granate koje ga teleportiraju."
 	},
 	{
-		"key": "The biologist has a shotgun with bouncing bullets and can create a spring laser trap by shooting with his rifle.",
+		"key": "The Biologist has a shotgun with bouncing bullets and can create a flower-like-laser-trap by shooting with his rifle.",
 		"value": "Biolog ima sa\u010dmaru sa mecima koji odska\u010du od zidova i mo\u017ee da stvori lasersku zamku uz pomo\u0107 svoje laserske pu\u0161ke."
 	},
 	{
@@ -354,7 +354,7 @@
 		"value": "Heroja ne mo\u017ee da izle\u010di le\u010dnik, ali on mo\u017ee da izdr\u017ei napad zara\u017eenog ako ima dovoljno zdravlja."
 	},
 	{
-		"key": "The Ninja can throw flash grenades that can freeze infected during three seconds.",
+		"key": "The Ninja can throw flash grenades that can freeze infected for three seconds.",
 		"value": "Nind\u017ea mo\u017ee bacati flash granate koje zalede zara\u017eene na tri sekunde."
 	},
 	{
@@ -364,7 +364,7 @@
 		"other": "Njegov \u010deki\u0107 je zamenjen katanom, mo\u017ee sko\u010diti {int:NinjaJump} puta pre nego padne.",
 	},
 	{
-		"key": "The Mercenary fly in air using his machine gun.",
+		"key": "The Mercenary can fly using his machine gun.",
 		"value": "Pla\u0107enik leti vazduhom koriste\u0107i se machine gunom."
 	},
 	{
@@ -372,7 +372,7 @@
 		"value": "On mo\u017ee da navije eksplozive pomo\u0107u svog \u010deki\u0107a koji onemogu\u0107e zara\u017eenima da \u0161kode."
 	},
 	{
-		"key": "He can also throw poison grenades that each deal {int:NumDamagePoints} damage points.",
+		"key": "He can also throw poison grenades that each deal {int:NumDamagePoints} damage points during two seconds.",
 		"one": "Mo\u017ee da baca otrovne granate od kojih svaka deli {int:NumDamagePoints} bod \u0161tete.",
 		"few": "Mo\u017ee da baca otrovne granate od kojih svaka deli {int:NumDamagePoints} boda \u0161tete.",
 		"other": "Mo\u017ee da baca otrovne granate od kojih svaka deli {int:NumDamagePoints} bodova \u0161tete.",
@@ -382,7 +382,7 @@
 		"value": "Snajper mo\u017ee da zaklju\u010da svoju poziciju u vazduhu na 15 sekundi koriste\u0107i se \u010deki\u0107em."
 	},
 	{
-		"key": "He can jump two times in air.",
+		"key": "He has tripple jump.",
 		"value": "Mo\u017ee da sko\u010di dva puta u vazduh."
 	},
 	{
@@ -394,11 +394,11 @@
 		"value": "Pu\u0161a\u010d mo\u017ee zaraziti ljude i le\u010diti zara\u017eene svojim \u010deki\u0107em."
 	},
 	{
-		"key": "He can also inflict 4 damage points per second by hooking humans.",
+		"key": "He can also inflict {int:DamagePoints} damage points per second by hooking humans.",
 		"value": "Nanosi 4 \u0161kodnih boda po sekundi kad huka ljude."
 	},
 	{
-		"key": "The Boomer explodes when he attack.",
+		"key": "The Boomer explodes when he attacks.",
 		"value": "Bumer eksplodira kada napadne."
 	},
 	{
@@ -418,7 +418,7 @@
 		"value": "Duh mo\u017ee da zarazi ljude i da le\u010di zara\u017eene svojim \u010deki\u0107em."
 	},
 	{
-		"key": "He is invisible, except if a human is near him, if he takes a damage or if he use his hammer.",
+		"key": "He is invisible, except if a human is near him, if he takes damage or if he uses his hammer.",
 		"value": "Nevidljiv je, osim ako je \u010dovek blizu, ako primi udarac ili ako koristi \u010deki\u0107."
 	},
 	{
@@ -426,15 +426,15 @@
 		"value": "Pauk mo\u017ee da zarazi ljude i da le\u010di zara\u017eene svojim \u010deki\u0107em."
 	},
 	{
-		"key": "When selecting any gun, his hook enter in web mode.",
+		"key": "When selecting any gun, his hook enters web mode.",
 		"value": "Kada selektira neko oru\u017eje, njegov huk prelazi u mre\u017eu."
 	},
 	{
-		"key": "Any human that touch a hook in web mode is automatically grabbed.",
+		"key": "Any human that touches a hook in web mode is automatically grabbed.",
 		"value": "Kada \u010dovek dotakne mre\u017eu, ona ga automatski dohvati."
 	},
 	{
-		"key": "The hook of the spider (in both mode) deal 1 damage point per second and can grab a human during 2 seconds.",
+		"key": "The Spider's hook deals one damage point per second (in both modes) and can grab a human for two seconds.",
 		"value": "Paukov huk (u oba moda) nanosi 1 \u0161kodan bod po sekundi i mo\u017ee da dr\u017ei \u010doveka 2 sekunde."
 	},
 	{
@@ -466,11 +466,11 @@
 		"value": "Undead mo\u017ee da zarazi ljude i da le\u010di zara\u017eene svojim \u010deki\u0107em."
 	},
 	{
-		"key": "Instead of dying, he freezes during 10 seconds.",
+		"key": "Instead of dying, he freezes for 10 seconds.",
 		"value": "Umesto da umre, on se zaledi na 10 sekundi."
 	},
 	{
-		"key": "If an infected heals him, the freeze effect disappear.",
+		"key": "If an infected heals him, the freeze effect disappears.",
 		"value": "Ako ga zara\u017eeni izle\u010di, odledit \u0107e se."
 	},
 	{
@@ -478,7 +478,7 @@
 		"value": "Ve\u0161tica mo\u017ee da zarazi ljude i da le\u010di zara\u017eene svojim \u010deki\u0107em."
 	},
 	{
-		"key": "When an infected dies, he may re-spawn near her.",
+		"key": "When an infected dies, it may respawn near the Witch.",
 		"value": "Kada zara\u017eeni umre, ponovo \u0107e se stvoriti kod nje."
 	},
 	{

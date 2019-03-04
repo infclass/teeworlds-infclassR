@@ -261,7 +261,7 @@
 		"value": "10 saniye sonra 2 oyuncu zombiye d\u00f6n\u00fc\u015f\u00fcr."
 	},
 	{
-		"key": "The goal for humans is to survive until the army clean the map.",
+		"key": "The goal for humans is to survive until the army cleans the map.",
 		"value": "\u0130nsanlar\u0131n g\u00f6revi, ordu haritay\u0131 temizleyene kadar hayatta kalmakt\u0131r."
 	},
 	{
@@ -285,11 +285,11 @@
 		"value": "M\u00fchendis, zombileri uzak tutmak i\u00e7in \u00e7ekiciyle duvar \u00f6rebilir."
 	},
 	{
-		"key": "When an infected touch the wall, he dies.",
+		"key": "When an infected touches the wall, he dies.",
 		"value": "Duvara dokunan zombiler \u00f6l\u00fcr."
 	},
 	{
-		"key": "The lifespan of a wall is {sec:LifeSpan}, and walls are limited to one per player at the same time.",
+		"key": "The lifespan of a wall is {sec:LifeSpan} and walls are limited to one per player at the same time.",
 		"value": "Duvar\u0131n s\u00fcresi {sec:LifeSpan} kadard\u0131r ve her oyuncu ayn\u0131 anda birer duvar yapabilir."
 	},
 	{
@@ -302,7 +302,7 @@
 		"other": "Her bomba {int:NumBombs} kez patlayabilir.",
 	},
 	{
-		"key": "Use the hammer to place the bomb and explode it multiple times.",
+		"key": "Use the hammer to place the bombs and explode each with one click.",
 		"value": "Bomba yerle\u015ftirmek ve onu patlatmak i\u00e7in \u00e7ekicinizi kullan\u0131n."
 	},
 	{
@@ -323,7 +323,7 @@
 		"value": "Ayr\u0131ca onu \u0131\u015f\u0131nlayan bombalar\u0131 vard\u0131r."
 	},
 	{
-		"key": "The biologist has a shotgun with bouncing bullets and can create a spring laser trap by shooting with his rifle.",
+		"key": "The Biologist has a shotgun with bouncing bullets and can create a flower-like-laser-trap by shooting with his rifle.",
 		"value": "Biyologlar\u0131n seken mermilere sahip pompal\u0131lar\u0131 vard\u0131r ve t\u00fcfekleriyle ate\u015f ederek lazer tuza\u011f\u0131 kurabilirler."
 	},
 	{
@@ -351,7 +351,7 @@
 		"value": "Kahraman, doktor taraf\u0131ndan iyile\u015ftirilemez. Ama sa\u011fl\u0131\u011f\u0131 zombilerle m\u00fccadele etmek i\u00e7in yeterlidir."
 	},
 	{
-		"key": "The Ninja can throw flash grenades that can freeze infected during three seconds.",
+		"key": "The Ninja can throw flash grenades that can freeze infected for three seconds.",
 		"value": "Ninja, zombileri 3 saniyeli\u011fine donduran fla\u015f bombalar\u0131 atabilir."
 	},
 	{
@@ -360,7 +360,7 @@
 		"other": "\u00c7ekicinin yerine bir katana vard\u0131r, yere dokunmadan \u00f6nce {int:NinjaJump} kez z\u0131plamas\u0131n\u0131 sa\u011flar.",
 	},
 	{
-		"key": "The Mercenary fly in air using his machine gun.",
+		"key": "The Mercenary can fly using his machine gun.",
 		"value": "Paral\u0131 asker, makineli t\u00fcfe\u011fini kullanarak havada u\u00e7abilir."
 	},
 	{
@@ -368,7 +368,7 @@
 		"value": "\u00c7ekiciyle \u00e7e\u015fitli patlay\u0131c\u0131lar kurabilir ve uzaktan patlatabilir."
 	},
 	{
-		"key": "He can also throw poison grenades that each deal {int:NumDamagePoints} damage points.",
+		"key": "He can also throw poison grenades that each deal {int:NumDamagePoints} damage points during two seconds.",
 		"one": "Ayr\u0131ca her biri birer puan hasar veren zehir bombalar\u0131 atabilir.",
 		"other": "Ayr\u0131ca her biri {int:NumDamagePoints} puan hasar veren zehir bombalar\u0131 atabilir.",
 	},
@@ -377,7 +377,7 @@
 		"value": "Keskin ni\u015fanc\u0131, \u00e7ekiciyle havada 15 saniyeli\u011fine pozisyonunu kilitleyebilir."
 	},
 	{
-		"key": "He can jump two times in air.",
+		"key": "He has tripple jump.",
 		"value": "Havada iki kez z\u0131playabilir."
 	},
 	{
@@ -389,11 +389,11 @@
 		"value": "Dumanc\u0131, insanlar\u0131 d\u00f6n\u00fc\u015ft\u00fcrebilir ve \u00e7ekiciyle vurarak zombileri iyile\u015ftirebilir."
 	},
 	{
-		"key": "He can also inflict 4 damage points per second by hooking humans.",
+		"key": "He can also inflict {int:DamagePoints} damage points per second by hooking humans.",
 		"value": "Ayr\u0131ca kancayla insanlar\u0131 tuttu\u011fu her saniye 1 puan zarar verir."
 	},
 	{
-		"key": "The Boomer explodes when he attack.",
+		"key": "The Boomer explodes when he attacks.",
 		"value": "Patlay\u0131c\u0131, sald\u0131rd\u0131\u011f\u0131nda patlar."
 	},
 	{
@@ -413,7 +413,7 @@
 		"value": "Hayalet, insanlar\u0131 d\u00f6n\u00fc\u015ft\u00fcrebilir ve \u00e7ekiciyle vurarak zombileri iyile\u015ftirebilir."
 	},
 	{
-		"key": "He is invisible, except if a human is near him, if he takes a damage or if he use his hammer.",
+		"key": "He is invisible, except if a human is near him, if he takes damage or if he uses his hammer.",
 		"value": "Yak\u0131n\u0131nda bir insan bulunmad\u0131\u011f\u0131, hasar almad\u0131\u011f\u0131 veya \u00e7ekicini kullanmad\u0131\u011f\u0131 s\u00fcrece g\u00f6r\u00fcnmezdir."
 	},
 	{
@@ -421,15 +421,15 @@
 		"value": "\u00d6r\u00fcmcek, insanlar\u0131 d\u00f6n\u00fc\u015ft\u00fcrebilir ve \u00e7ekiciyle vurarak zombileri iyile\u015ftirebilir."
 	},
 	{
-		"key": "When selecting any gun, his hook enter in web mode.",
+		"key": "When selecting any gun, his hook enters web mode.",
 		"value": "Herhangi bir silah se\u00e7erken kancas\u0131 a\u011f moduna ge\u00e7er."
 	},
 	{
-		"key": "Any human that touch a hook in web mode is automatically grabbed.",
+		"key": "Any human that touches a hook in web mode is automatically grabbed.",
 		"value": "A\u011f modundaki kancaya dokunan herhangi bir insan otomatik olarak kancaya yakalan\u0131r."
 	},
 	{
-		"key": "The hook of the spider (in both mode) deal 1 damage point per second and can grab a human during 2 seconds.",
+		"key": "The Spider's hook deals one damage point per second (in both modes) and can grab a human for two seconds.",
 		"value": "\u00d6r\u00fcmce\u011fin kancas\u0131 (iki modda da) saniyede 1 puan hasar verir ve bir insan\u0131 2 saniye boyunca tutabilir."
 	},
 	{
@@ -461,11 +461,11 @@
 		"value": "\u00d6l\u00fcms\u00fcz, insanlara bula\u015fabilir ve \u00e7ekici ile bula\u015f\u0131c\u0131y\u0131 iyile\u015ftirebilir."
 	},
 	{
-		"key": "Instead of dying, he freezes during 10 seconds.",
+		"key": "Instead of dying, he freezes for 10 seconds.",
 		"value": "\u00d6lmek yerine 10 saniyeli\u011fine donar."
 	},
 	{
-		"key": "If an infected heals him, the freeze effect disappear.",
+		"key": "If an infected heals him, the freeze effect disappears.",
 		"value": "E\u011fer bir zombi onu iyile\u015ftirirse, donma etkisi ortadan kalkar."
 	},
 	{
@@ -473,7 +473,7 @@
 		"value": "Cad\u0131, insanlar\u0131 d\u00f6n\u00fc\u015ft\u00fcrebilir ve \u00e7ekiciyle vurarak zombileri iyile\u015ftirebilir."
 	},
 	{
-		"key": "When an infected dies, he may re-spawn near her.",
+		"key": "When an infected dies, it may respawn near the Witch.",
 		"value": "\u00d6len baz\u0131 zombiler yan\u0131nda do\u011far."
 	},
 	{

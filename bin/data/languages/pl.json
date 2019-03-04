@@ -262,7 +262,7 @@
 		"value": "10 sekund p\u00f3\u017aniej, dwoje graczy zostaje zara\u017conych."
 	},
 	{
-		"key": "The goal for humans is to survive until the army clean the map.",
+		"key": "The goal for humans is to survive until the army cleans the map.",
 		"value": "Celem ludzi jest przetrwanie, dop\u00f3ki armia nie oczy\u015bci mapy."
 	},
 	{
@@ -286,11 +286,11 @@
 		"value": "In\u017cynier mo\u017ce budowa\u0107 \u015bciany, kt\u00f3re blokuj\u0105 zara\u017conych."
 	},
 	{
-		"key": "When an infected touch the wall, he dies.",
+		"key": "When an infected touches the wall, he dies.",
 		"value": "Kiedy zara\u017cony dotnie \u015bciany, umiera."
 	},
 	{
-		"key": "The lifespan of a wall is {sec:LifeSpan}, and walls are limited to one per player at the same time.",
+		"key": "The lifespan of a wall is {sec:LifeSpan} and walls are limited to one per player at the same time.",
 		"value": "Czas istnienia \u015bciany to {sec:LifeSpan}, i \u015bciany s\u0105 limitowane. po jednaj na gracza, w jednym momencie."
 	},
 	{
@@ -304,7 +304,7 @@
 		"many": "Ka\u017cda bomba mo\u017ce wybuchn\u0105\u0107 {int:NumBombs} razy",
 	},
 	{
-		"key": "Use the hammer to place the bomb and explode it multiple times.",
+		"key": "Use the hammer to place the bombs and explode each with one click.",
 		"value": "U\u017cyj m\u0142ota do postawienia bomb i wieloktotnej aktywacji."
 	},
 	{
@@ -326,7 +326,7 @@
 		"value": "Ma r\u00f3wnie\u017c granaty do teleportacji."
 	},
 	{
-		"key": "The biologist has a shotgun with bouncing bullets and can create a spring laser trap by shooting with his rifle.",
+		"key": "The Biologist has a shotgun with bouncing bullets and can create a flower-like-laser-trap by shooting with his rifle.",
 		"value": "Biolog posiada strzelb\u0119 strzelaj\u0105c\u0105 skacz\u0105cymi pociskami i mo\u017ce ustawi\u0107 laserow\u0105 min\u0119 strzelaj\u0105c z lasera."
 	},
 	{
@@ -354,7 +354,7 @@
 		"value": "Bohater nie mo\u017ce by\u0107 uleczony przez lekarza, ale mo\u017ce wytrzyma\u0107 nap\u00f3r zara\u017conych, przyp\u0142acaj\u0105c to punktami \u017cycia."
 	},
 	{
-		"key": "The Ninja can throw flash grenades that can freeze infected during three seconds.",
+		"key": "The Ninja can throw flash grenades that can freeze infected for three seconds.",
 		"value": "Ninja mo\u017ce rzuca\u0107 granaty o\u015blepiaj\u0105ce, kt\u00f3re zamra\u017caj\u0105 zainfekowanych na trzy sekundy."
 	},
 	{
@@ -364,7 +364,7 @@
 		"many": "Jego m\u0142otek jest zamieniony w katan\u0119, pozwalaj\u0105c mu skaka\u0107 {int:NinjaJump}  razy przed dotkni\u0119ciem ziemi.",
 	},
 	{
-		"key": "The Mercenary fly in air using his machine gun.",
+		"key": "The Mercenary can fly using his machine gun.",
 		"value": "Najemnik mo\u017ce lata\u0107 u\u017cywaj\u0105c swojego pistelotu maszynowego."
 	},
 	{
@@ -372,7 +372,7 @@
 		"value": "Mo\u017ce na\u0142adowa\u0107 pole ekslozji swoim m\u0142otem kt\u00f3re uniemo\u017cliwia zainfekowanym szkodzi\u0107."
 	},
 	{
-		"key": "He can also throw poison grenades that each deal {int:NumDamagePoints} damage points.",
+		"key": "He can also throw poison grenades that each deal {int:NumDamagePoints} damage points during two seconds.",
 		"one": "Mo\u017ce r\u00f3wnie\u017c rzuca\u0107 granaty zatruwaj\u0105ce, kt\u00f3re zabieraj\u0105 jeden punkt \u017cycia.",
 		"few": "Mo\u017ce r\u00f3wnie\u017c rzuca\u0107 granaty zatruwaj\u0105ce, kt\u00f3re zabieraj\u0105 {int:NumDamagePoints} punkty \u017cycia.",
 		"many": "Mo\u017ce r\u00f3wnie\u017c rzuca\u0107 granaty zatruwaj\u0105ce, kt\u00f3re zabieraj\u0105 {int:NumDamagePoints} punkt\u00f3w \u017cycia.",
@@ -382,7 +382,7 @@
 		"value": "Snajper mo\u017ce zablokowa\u0107 swoj\u0105 pozycj\u0119 na 15 sekund u\u017cywaj\u0105c m\u0142ota."
 	},
 	{
-		"key": "He can jump two times in air.",
+		"key": "He has tripple jump.",
 		"value": "\u0141owca mo\u017ce zara\u017ca\u0107 ludzi i leczy\u0107 zara\u017conych swoim m\u0142otem."
 	},
 	{
@@ -394,11 +394,11 @@
 		"value": "Chwytacz mo\u017ce infekowa\u0107 ludzi i leczy\u0107 zara\u017conych m\u0142otem."
 	},
 	{
-		"key": "He can also inflict 4 damage points per second by hooking humans.",
+		"key": "He can also inflict {int:DamagePoints} damage points per second by hooking humans.",
 		"value": "Mo\u017ce r\u00f3wnie\u017c zabiera\u0107 4 punkty \u017cycia na sekund\u0119 \u0142api\u0105c na hak ludzi."
 	},
 	{
-		"key": "The Boomer explodes when he attack.",
+		"key": "The Boomer explodes when he attacks.",
 		"value": "Wybuchacz eksploduje kiedy atakuje."
 	},
 	{
@@ -418,7 +418,7 @@
 		"value": "Duch mo\u017ce zara\u017ca\u0107 ludzi i leczy\u0107 zara\u017conych swoim m\u0142otem."
 	},
 	{
-		"key": "He is invisible, except if a human is near him, if he takes a damage or if he use his hammer.",
+		"key": "He is invisible, except if a human is near him, if he takes damage or if he uses his hammer.",
 		"value": "Jest niewidzialny, dop\u00f3ki nie ma cz\u0142owieka w jego okolicy, otrzyma obra\u017cenia lub u\u017cyje m\u0142ota."
 	},
 	{
@@ -426,15 +426,15 @@
 		"value": "Paj\u0105k mo\u017ce zara\u017ca\u0107 ludzi i leczy\u0107 zainfekowanych swoim m\u0142otem."
 	},
 	{
-		"key": "When selecting any gun, his hook enter in web mode.",
+		"key": "When selecting any gun, his hook enters web mode.",
 		"value": "Podczas wyboru jakiejkolwiek broni, jego hak przechodzi w tryb sieci."
 	},
 	{
-		"key": "Any human that touch a hook in web mode is automatically grabbed.",
+		"key": "Any human that touches a hook in web mode is automatically grabbed.",
 		"value": "Jakikolwiek cz\u0142owiek dotknie haka w trybie sieci, automatycznie jest \u0142apany."
 	},
 	{
-		"key": "The hook of the spider (in both mode) deal 1 damage point per second and can grab a human during 2 seconds.",
+		"key": "The Spider's hook deals one damage point per second (in both modes) and can grab a human for two seconds.",
 		"value": "Hak paj\u0105ka (w obu trybach) zabiera 1 punkt \u017cycia na sekund\u0119 i mo\u017ce \u0142apa\u0107 cz\u0142owieka na 2 sekundy."
 	},
 	{
@@ -466,11 +466,11 @@
 		"value": "Nieumar\u0142y mo\u017ce zara\u017ca\u0107 ludzi i leczy\u0107 zara\u017conych swoim m\u0142otem."
 	},
 	{
-		"key": "Instead of dying, he freezes during 10 seconds.",
+		"key": "Instead of dying, he freezes for 10 seconds.",
 		"value": "Zamiast umiera\u0107, zostaje zamro\u017cony na 10 sekund."
 	},
 	{
-		"key": "If an infected heals him, the freeze effect disappear.",
+		"key": "If an infected heals him, the freeze effect disappears.",
 		"value": "Je\u017celi zara\u017ceni ulecz\u0105 go, efekt zamro\u017cenia zniknie."
 	},
 	{
@@ -478,7 +478,7 @@
 		"value": "Wied\u017ama mo\u017ce zara\u017ca\u0107 lud\u017ai i leczy\u0107 zainfekowanych swoim m\u0142otem."
 	},
 	{
-		"key": "When an infected dies, he may re-spawn near her.",
+		"key": "When an infected dies, it may respawn near the Witch.",
 		"value": "Kiedy zara\u017cony umiera, mo\u017ce od\u017cy\u0107 przy niej."
 	},
 	{

@@ -261,7 +261,7 @@
 		"value": "Pakatapos ng 10 segundo, dalawang players ay magiging infected."
 	},
 	{
-		"key": "The goal for humans is to survive until the army clean the map.",
+		"key": "The goal for humans is to survive until the army cleans the map.",
 		"value": "Ang layunin ng mga tao ay maka survive hangang sa matapos ang oras at linisin ng army ang map."
 	},
 	{
@@ -285,11 +285,11 @@
 		"value": "Ang Engineer ay kayang gumawa ng mga pader ng laser gamit ang kanyang hammer para maghadlang ang infected."
 	},
 	{
-		"key": "When an infected touch the wall, he dies.",
+		"key": "When an infected touches the wall, he dies.",
 		"value": "Pagnadikitan ng infected ang wall, mamatay siya."
 	},
 	{
-		"key": "The lifespan of a wall is {sec:LifeSpan}, and walls are limited to one per player at the same time.",
+		"key": "The lifespan of a wall is {sec:LifeSpan} and walls are limited to one per player at the same time.",
 		"value": "Ang haba ng buhay ng mga pader ay {sec:LifeSpan}, at isa lamang ang pader nakayang magawa ng player sa parehas na panahon."
 	},
 	{
@@ -302,7 +302,7 @@
 		"other": "Kada bomba ay kayang sumabog ng {int:NumBombs} beses.",
 	},
 	{
-		"key": "Use the hammer to place the bomb and explode it multiple times.",
+		"key": "Use the hammer to place the bombs and explode each with one click.",
 		"value": "Gamitin ang hammer para mailagay ang bomba at pasabugin ito ng talong beses."
 	},
 	{
@@ -323,7 +323,7 @@
 		"value": "Mayroon din siyang grenade na kaya sa kanyang magteleport."
 	},
 	{
-		"key": "The biologist has a shotgun with bouncing bullets and can create a spring laser trap by shooting with his rifle.",
+		"key": "The Biologist has a shotgun with bouncing bullets and can create a flower-like-laser-trap by shooting with his rifle.",
 		"value": "Ang biologist ay may shotgun na ang bala ay umountol at kaya niyang gumawa ng spring laser trap gamit ang kanyang laser rifle."
 	},
 	{
@@ -351,7 +351,7 @@
 		"value": "Ang hero ay hindi pwedeng magamot ng medic pero, kaya niyang maka survive ang isang hammer ng infected at mabuhay."
 	},
 	{
-		"key": "The Ninja can throw flash grenades that can freeze infected during three seconds.",
+		"key": "The Ninja can throw flash grenades that can freeze infected for three seconds.",
 		"value": "Ang ninja ay kayang mag tapon ng flash grenades na kayang magstun ng infected sa loob ng 3 segundo."
 	},
 	{
@@ -360,7 +360,7 @@
 		"other": "Ang kanyang hammer ay napapalitan ng katana, na binibigyan siya ng {int:NinjaJump} talon bago siya tumama sa lupa.",
 	},
 	{
-		"key": "The Mercenary fly in air using his machine gun.",
+		"key": "The Mercenary can fly using his machine gun.",
 		"value": "Ang Mercenary ay kayang lumipad sa hangin gamit ang kanyang pistol/machinegun."
 	},
 	{
@@ -368,7 +368,7 @@
 		"value": "Kaya nyang mag lagay ng mga pasabog gamit ang kanyang hammer na pinipigil ang mga infected na makasakit."
 	},
 	{
-		"key": "He can also throw poison grenades that each deal {int:NumDamagePoints} damage points.",
+		"key": "He can also throw poison grenades that each deal {int:NumDamagePoints} damage points during two seconds.",
 		"one": "Kaya rin nyang magtapon ng poison grenades na nakakadamge sa infected ng isang damage point.",
 		"other": "Kaya rin nyang magtapon ng poison grenades na nakakadamge sa infected ng {int:NumDamagePoints} damage point.",
 	},
@@ -377,7 +377,7 @@
 		"value": "Ang sniper ay kayang ikandado ang kanyang position gamit ang kanyang hammer sa loob ng 15 segundo."
 	},
 	{
-		"key": "He can jump two times in air.",
+		"key": "He has tripple jump.",
 		"value": "Kaya nyang tumalon ng dalawang beses sa hangin."
 	},
 	{
@@ -389,11 +389,11 @@
 		"value": "Ang Smoker ay kayang makainfect ng mga tao at manggamot ng infected gamit ang kanyang hammer."
 	},
 	{
-		"key": "He can also inflict 4 damage points per second by hooking humans.",
+		"key": "He can also inflict {int:DamagePoints} damage points per second by hooking humans.",
 		"value": "Kaya nya rin na magdeal ng 4 damage points kada segundo sa paghohohook ng mga tao."
 	},
 	{
-		"key": "The Boomer explodes when he attack.",
+		"key": "The Boomer explodes when he attacks.",
 		"value": "Ang Boomer ay kayang sumabog pag siya ay umatak."
 	},
 	{
@@ -413,7 +413,7 @@
 		"value": "Ang Ghost ay kayang maka infect ng humans at makagamot ng mga infected gamit ang kanyang hammer."
 	},
 	{
-		"key": "He is invisible, except if a human is near him, if he takes a damage or if he use his hammer.",
+		"key": "He is invisible, except if a human is near him, if he takes damage or if he uses his hammer.",
 		"value": "Siya ay hindi nakikita, except kung may malapit na tao sa kanya, o kung masaktan sya o kung ginamit niya ang kanyang hammer."
 	},
 	{
@@ -421,15 +421,15 @@
 		"value": "Ang Spider ay kayang maka infect ng humans at makagamot ng mga infected gamit ang kanyang hammer."
 	},
 	{
-		"key": "When selecting any gun, his hook enter in web mode.",
+		"key": "When selecting any gun, his hook enters web mode.",
 		"value": "Kung piliin niya ang kahit anong baril ang kanyang hook ay papasok sa web mode."
 	},
 	{
-		"key": "Any human that touch a hook in web mode is automatically grabbed.",
+		"key": "Any human that touches a hook in web mode is automatically grabbed.",
 		"value": "Kahit sino na tao na hawakan ito ay mahohook."
 	},
 	{
-		"key": "The hook of the spider (in both mode) deal 1 damage point per second and can grab a human during 2 seconds.",
+		"key": "The Spider's hook deals one damage point per second (in both modes) and can grab a human for two seconds.",
 		"value": "Ang hook ng spider (sa parehas nitong modes) ay nakakadamage ng 1 damage point kada segundo at kayang ma hook ang isang tao ng 2 segundo."
 	},
 	{
@@ -461,11 +461,11 @@
 		"value": "Ang undead ay kayang maka infect ng mga tao at maggamot ng infected gamit ang kanyang hammer."
 	},
 	{
-		"key": "Instead of dying, he freezes during 10 seconds.",
+		"key": "Instead of dying, he freezes for 10 seconds.",
 		"value": "Imbes na mamatay, siya ay hindi pwedeng makagalaw sa loob ng 10 segundo."
 	},
 	{
-		"key": "If an infected heals him, the freeze effect disappear.",
+		"key": "If an infected heals him, the freeze effect disappears.",
 		"value": "Kung may infected na gumamot sa kanya, mawawala ng pagka freeze niya."
 	},
 	{
@@ -473,7 +473,7 @@
 		"value": "Ang witch ay kayang makainfect ng mga tao at gumamot ng infected gamit ang kanyang hammer."
 	},
 	{
-		"key": "When an infected dies, he may re-spawn near her.",
+		"key": "When an infected dies, it may respawn near the Witch.",
 		"value": "Pagang infected ay namatay pwede silang magrespawn malapit sa kanya."
 	},
 	{

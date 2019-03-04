@@ -261,7 +261,7 @@
 		"value": "10 secondes plus tard, deux joueuses ou joueurs deviennent infect\u00e9\u00b7e\u00b7s."
 	},
 	{
-		"key": "The goal for humans is to survive until the army clean the map.",
+		"key": "The goal for humans is to survive until the army cleans the map.",
 		"value": "Le but des humain\u00b7e\u00b7s est de survivre jusqu'\u00e0 ce que l'arm\u00e9e nettoie la zone."
 	},
 	{
@@ -285,11 +285,11 @@
 		"value": "Les Ing\u00e9nieur\u00b7e peuvent cr\u00e9er avec leur marteau des barri\u00e8res pour bloquer les infect\u00e9s."
 	},
 	{
-		"key": "When an infected touch the wall, he dies.",
+		"key": "When an infected touches the wall, he dies.",
 		"value": "Un\u00b7e infect\u00e9\u00b7e qui touche la barri\u00e8re meurt imm\u00e9diatement."
 	},
 	{
-		"key": "The lifespan of a wall is {sec:LifeSpan}, and walls are limited to one per player at the same time.",
+		"key": "The lifespan of a wall is {sec:LifeSpan} and walls are limited to one per player at the same time.",
 		"value": "La dur\u00e9e de vie d'une barri\u00e8re est de {sec:LifeSpan}, et les barri\u00e8res sont limit\u00e9es \u00e0 une par personne."
 	},
 	{
@@ -302,7 +302,7 @@
 		"other": "Chaque bombe peut exploser {int:NumBombs} fois",
 	},
 	{
-		"key": "Use the hammer to place the bomb and explode it multiple times.",
+		"key": "Use the hammer to place the bombs and explode each with one click.",
 		"value": "Utiliser le marteau pour placer une bombe et la faire exploser plusieurs fois."
 	},
 	{
@@ -323,7 +323,7 @@
 		"value": "Il ne peut y avoir que deux mines par Scientifique au m\u00eame moment."
 	},
 	{
-		"key": "The biologist has a shotgun with bouncing bullets and can create a spring laser trap by shooting with his rifle.",
+		"key": "The Biologist has a shotgun with bouncing bullets and can create a flower-like-laser-trap by shooting with his rifle.",
 		"value": "Les biologistes ont un fusil \u00e0 pompe tirant des balles rebondissantes et peuvent cr\u00e9er des mines printani\u00e8res en utilisant le fusil laser."
 	},
 	{
@@ -351,7 +351,7 @@
 		"value": "Les H\u00e9ro\u00b7\u00efne\u00b7s ne peuvent pas \u00eatre soign\u00e9\u00b7e\u00b7s par les m\u00e9decins, et illes peuvent survivre \u00e0 une attaque des infect\u00e9\u00b7e\u00b7s."
 	},
 	{
-		"key": "The Ninja can throw flash grenades that can freeze infected during three seconds.",
+		"key": "The Ninja can throw flash grenades that can freeze infected for three seconds.",
 		"value": "Les Ninja peuvent lancer des grenades flash qui immobilisent les infect\u00e9\u00b7e\u00b7s pendant trois secondes."
 	},
 	{
@@ -360,7 +360,7 @@
 		"other": "Son marteau est remplac\u00e9 par un katana lui permetant de sauter {int:NinjaJump} fois avant de toucher le sol.",
 	},
 	{
-		"key": "The Mercenary fly in air using his machine gun.",
+		"key": "The Mercenary can fly using his machine gun.",
 		"value": "Les Mercenaires peuvent voler dans l'air \u00e0 l'aide de leur mitrailleuse."
 	},
 	{
@@ -368,7 +368,7 @@
 		"value": "Illes peuvent poser des bombes lesquelles emp\u00eachent des infect\u00e9\u00b7e\u00b7s de endommager."
 	},
 	{
-		"key": "He can also throw poison grenades that each deal {int:NumDamagePoints} damage points.",
+		"key": "He can also throw poison grenades that each deal {int:NumDamagePoints} damage points during two seconds.",
 		"one": "Il peut aussi lancer des grenades empoisonn\u00e9es qui infligent un point de d\u00e9g\u00e2t.",
 		"other": "Il peut aussi lancer des grenades empoisonn\u00e9es qui infligent {int:NumDamagePoints} points de d\u00e9g\u00e2t.",
 	},
@@ -377,7 +377,7 @@
 		"value": "Les Snipers peuvent verrouiller leur position dans l'air pendant 15 secondes avec leur marteau."
 	},
 	{
-		"key": "He can jump two times in air.",
+		"key": "He has tripple jump.",
 		"value": "Illes peuvent sauter deux fois en l'air."
 	},
 	{
@@ -389,11 +389,11 @@
 		"value": "Les Smokers peuvent infecter les humain\u00b7e\u00b7s et soigner les infect\u00e9\u00b7e\u00b7s \u00e0 l'aide de leur marteau."
 	},
 	{
-		"key": "He can also inflict 4 damage points per second by hooking humans.",
+		"key": "He can also inflict {int:DamagePoints} damage points per second by hooking humans.",
 		"value": "Illes peut aussi infliger 4 points de d\u00e9g\u00e2t par seconde quand illes agrippent une humaine ou un humain."
 	},
 	{
-		"key": "The Boomer explodes when he attack.",
+		"key": "The Boomer explodes when he attacks.",
 		"value": "Les Boomers explosent quand illes attaquent."
 	},
 	{
@@ -413,7 +413,7 @@
 		"value": "Les Fant\u00f4me peuvent infecter les humain\u00b7e\u00b7s et soigner les infect\u00e9\u00b7e\u00b7s \u00e0 l'aide de leur marteau."
 	},
 	{
-		"key": "He is invisible, except if a human is near him, if he takes a damage or if he use his hammer.",
+		"key": "He is invisible, except if a human is near him, if he takes damage or if he uses his hammer.",
 		"value": "Illes sont invisibles, sauf si une humaine ou un humain est proche d'eux, si illes prennent un d\u00e9g\u00e2t, ou si illes utilisent leur marteau."
 	},
 	{
@@ -421,15 +421,15 @@
 		"value": "Les Araign\u00e9es peuvent infecter les humain\u00b7e\u00b7s et soigner les infect\u00e9\u00b7e\u00b7s \u00e0 l'aide de leur marteau."
 	},
 	{
-		"key": "When selecting any gun, his hook enter in web mode.",
+		"key": "When selecting any gun, his hook enters web mode.",
 		"value": "Quand illes s\u00e9lectionnent une arme, leur grappin entre en mode \"toile\"."
 	},
 	{
-		"key": "Any human that touch a hook in web mode is automatically grabbed.",
+		"key": "Any human that touches a hook in web mode is automatically grabbed.",
 		"value": "Lorsqu'un humain ou une humaine touche un grappin en mode toile, ille est automatiquement attrap\u00e9 par l'Araign\u00e9e."
 	},
 	{
-		"key": "The hook of the spider (in both mode) deal 1 damage point per second and can grab a human during 2 seconds.",
+		"key": "The Spider's hook deals one damage point per second (in both modes) and can grab a human for two seconds.",
 		"value": "Le grappin de l'Araign\u00e9e (dans les deux modes) inflige 1 point de d\u00e9g\u00e2t par seconde et peut tirer un humain ou une humaine pendant 2 secondes."
 	},
 	{
@@ -461,11 +461,11 @@
 		"value": "Les Invincibles peuvent infecter les humain\u00b7e\u00b7s et soigner les infect\u00e9\u00b7e\u00b7s \u00e0 l'aide de leur marteau."
 	},
 	{
-		"key": "Instead of dying, he freezes during 10 seconds.",
+		"key": "Instead of dying, he freezes for 10 seconds.",
 		"value": "\u00c0 la place de mourir, illes sont gel\u00e9\u00b7e\u00b7s pendant 10 secondes."
 	},
 	{
-		"key": "If an infected heals him, the freeze effect disappear.",
+		"key": "If an infected heals him, the freeze effect disappears.",
 		"value": "Si un infect\u00e9\u00b7e les soignent, l'effet de g\u00e8le est supprim\u00e9."
 	},
 	{
@@ -473,7 +473,7 @@
 		"value": "Les Sorci\u00e8res et les Sorciers peuvent infecter les humain\u00b7e\u00b7s et soigner les infect\u00e9\u00b7e\u00b7s \u00e0 l'aide de leur marteau."
 	},
 	{
-		"key": "When an infected dies, he may re-spawn near her.",
+		"key": "When an infected dies, it may respawn near the Witch.",
 		"value": "Quand un\u00b7e infect\u00e9\u00b7e meurt, ce dernier a une chance de r\u00e9-appara\u00eetre \u00e0 cot\u00e9 d'un Sorcier ou d'une Sorci\u00e8re."
 	},
 	{

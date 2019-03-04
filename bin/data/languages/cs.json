@@ -238,7 +238,7 @@
 		"value": "Za 10 sekund se 2 hr\u00e1\u010di stanou naka\u017een\u00fdmi."
 	},
 	{
-		"key": "The goal for humans is to survive until the army clean the map.",
+		"key": "The goal for humans is to survive until the army cleans the map.",
 		"value": "C\u00edl lid\u00ed je p\u0159e\u017e\u00edt, dokud arm\u00e1da konflikt nevy\u0159e\u0161\u00ed."
 	},
 	{
@@ -262,11 +262,11 @@
 		"value": "In\u017een\u00fdr m\u016f\u017ee kladivem budovat laserov\u00e9 zdi."
 	},
 	{
-		"key": "When an infected touch the wall, he dies.",
+		"key": "When an infected touches the wall, he dies.",
 		"value": "Kdy\u017e se naka\u017een\u00fd dotkne zdi, zem\u0159e."
 	},
 	{
-		"key": "The lifespan of a wall is {sec:LifeSpan}, and walls are limited to one per player at the same time.",
+		"key": "The lifespan of a wall is {sec:LifeSpan} and walls are limited to one per player at the same time.",
 		"value": "\u017divotnost zdi je {sec:LifeSpan}, a ze\u010f m\u016f\u017ee\u0161 m\u00edt v\u017edy jen jednu."
 	},
 	{
@@ -280,7 +280,7 @@
 		"other": "Ka\u017ed\u00e1 bomba m\u016f\u017ee vybouchnout t\u0159ikr\u00e1t",
 	},
 	{
-		"key": "Use the hammer to place the bomb and explode it multiple times.",
+		"key": "Use the hammer to place the bombs and explode each with one click.",
 		"value": "Pou\u017eij kladivo poprv\u00e9 k um\u00edst\u011bn\u00ed bomby, podruh\u00e9 k nech\u00e1n\u00ed bomby vybouchnout."
 	},
 	{
@@ -326,7 +326,7 @@
 		"value": "Hrdina nem\u016f\u017ee b\u00fdt vyl\u00e9\u010den l\u00e9a\u0159em, ale dok\u00e1\u017ee vydr\u017eet bouchnut\u00ed od naka\u017een\u00e9ho, kdy\u017e m\u00e1 dost \u017eivot\u016f."
 	},
 	{
-		"key": "The Ninja can throw flash grenades that can freeze infected during three seconds.",
+		"key": "The Ninja can throw flash grenades that can freeze infected for three seconds.",
 		"value": "Ninja m\u00e1 gran\u00e1tomet, kter\u00fd zmraz\u00ed naka\u017een\u00e9 na 3 vte\u0159iny."
 	},
 	{
@@ -336,7 +336,7 @@
 		"other": "Jeho kladivo je nahrazeno katanou, se kterou m\u016f\u017ee sko\u010dit {int:NinjaJump} kr\u00e1t p\u0159ed dotkut\u00edm se zem\u011b",
 	},
 	{
-		"key": "The Mercenary fly in air using his machine gun.",
+		"key": "The Mercenary can fly using his machine gun.",
 		"value": "\u017doldn\u00e9\u0159 l\u00e9t\u00e1 ve vzduchu pomoc\u00ed jeho pistole."
 	},
 	{
@@ -344,7 +344,7 @@
 		"value": "M\u016f\u017ee sv\u00fdm kladivem tvo\u0159it exploze."
 	},
 	{
-		"key": "He can also throw poison grenades that each deal {int:NumDamagePoints} damage points.",
+		"key": "He can also throw poison grenades that each deal {int:NumDamagePoints} damage points during two seconds.",
 		"one": "M\u016f\u017ee h\u00e1zet jedovat\u00e9 gran\u00e1ty, kter\u00e9 ub\u00edraj\u00ed postupn\u011b 1 \u017eivot.",
 		"few": "M\u016f\u017ee h\u00e1zet jedovat\u00e9 gran\u00e1ty, kter\u00e9 ub\u00edraj\u00ed postupn\u011b {int:NumDamagePoints} \u017eivoty.",
 		"other": "M\u016f\u017ee h\u00e1zet jedovat\u00e9 gran\u00e1ty, kter\u00e9 ub\u00edraj\u00ed postupn\u011b {int:NumDamagePoints} \u017eivot\u016f.",
@@ -354,7 +354,7 @@
 		"value": "Sniper se m\u016f\u017ee znehybnit ve vzduchu po dobu 15 sekund pou\u017eit\u00edm kladiva."
 	},
 	{
-		"key": "He can jump two times in air.",
+		"key": "He has tripple jump.",
 		"value": "M\u016f\u017ee sko\u010dit 3 kr\u00e1t"
 	},
 	{
@@ -366,11 +366,11 @@
 		"value": "Ku\u0159\u00e1k m\u016f\u017ee infikovat lidi and l\u00e9\u010dit infikovan\u00e9 sv\u00fdm kladivem"
 	},
 	{
-		"key": "He can also inflict 4 damage points per second by hooking humans.",
+		"key": "He can also inflict {int:DamagePoints} damage points per second by hooking humans.",
 		"value": "Taky m\u016f\u017ee zp\u016fsobit 4 \u00fato\u010dn\u00e9 body za sekundu dotknut\u00ed se h\u00e1kem \u010dlov\u011bka."
 	},
 	{
-		"key": "The Boomer explodes when he attack.",
+		"key": "The Boomer explodes when he attacks.",
 		"value": "Sebevrah exploduje kdy\u017e za\u00fato\u010d\u00ed sv\u00fdm kladivem."
 	},
 	{
@@ -390,7 +390,7 @@
 		"value": "Duch m\u016f\u017ee infikovat lidi a l\u00e9\u010dit naka\u017een\u00e9 sv\u00fdm kladivem."
 	},
 	{
-		"key": "He is invisible, except if a human is near him, if he takes a damage or if he use his hammer.",
+		"key": "He is invisible, except if a human is near him, if he takes damage or if he uses his hammer.",
 		"value": "Je neviditeln\u00fd dokud neza\u00fato\u010d\u00ed, nebo dokud se neocitne p\u0159\u00edli\u0161 bl\u00edzko \u010dlov\u011bka."
 	},
 	{
@@ -398,15 +398,15 @@
 		"value": "Pavou m\u016f\u017ee infikovat lidi a l\u00e9\u010dit infikovan\u00e9 sv\u00fdm kladivem"
 	},
 	{
-		"key": "When selecting any gun, his hook enter in web mode.",
+		"key": "When selecting any gun, his hook enters web mode.",
 		"value": "P\u0159i pokou\u0161en\u00ed se p\u0159epnout na jinou zbra\u0148 se jeho h\u00e1k dostane do pavu\u010dinov\u00e9ho m\u00f3du"
 	},
 	{
-		"key": "Any human that touch a hook in web mode is automatically grabbed.",
+		"key": "Any human that touches a hook in web mode is automatically grabbed.",
 		"value": "Jak\u00fdkoliv \u010dlov\u011bk, kter\u00fd se dotkne h\u00e1ku v pavu\u010dinov\u00e9m m\u00f3du tak je automaticky p\u0159it\u00e1hnut k pavoukovi."
 	},
 	{
-		"key": "The hook of the spider (in both mode) deal 1 damage point per second and can grab a human during 2 seconds.",
+		"key": "The Spider's hook deals one damage point per second (in both modes) and can grab a human for two seconds.",
 		"value": "H\u00e1k pavouka ud\u011bluje 1 \u00fato\u010dn\u00fd bod(v jak\u00e9moliv m\u00f3du) za sekundu a \u010dlov\u011bka m\u016f\u017ee dr\u017eet 2 sekundy."
 	},
 	{
@@ -426,11 +426,11 @@
 		"value": "Nemrtv\u00fd m\u016f\u017ee infikovat lidi a l\u00e9\u010dit naka\u017een\u00e9."
 	},
 	{
-		"key": "Instead of dying, he freezes during 10 seconds.",
+		"key": "Instead of dying, he freezes for 10 seconds.",
 		"value": "M\u00edsto smrti se zmraz\u00ed na 10 sekund"
 	},
 	{
-		"key": "If an infected heals him, the freeze effect disappear.",
+		"key": "If an infected heals him, the freeze effect disappears.",
 		"value": "Pokud ho naka\u017een\u00fd vyl\u00e9\u010d\u00ed zmrazen\u00ed zmiz\u00ed"
 	},
 	{
@@ -438,7 +438,7 @@
 		"value": "\u010carod\u011bjnice m\u016f\u017eou infikovat lidi a l\u00e9\u010dit naka\u017een\u00e9 sv\u00fdm kladivem."
 	},
 	{
-		"key": "When an infected dies, he may re-spawn near her.",
+		"key": "When an infected dies, it may respawn near the Witch.",
 		"value": "Kdy\u017e naka\u017een\u00fd zem\u0159e, m\u016f\u017ee se spawnout u \u010darod\u011bjnice."
 	},
 	{
