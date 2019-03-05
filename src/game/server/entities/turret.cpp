@@ -19,7 +19,6 @@ CTurret::CTurret(CGameWorld *pGameWorld, vec2 Pos, int Owner, vec2 Direction, fl
 	m_Bounces = 0;
 	m_Radius = 15.0f;
 	m_EvalTick = Server()->Tick();
-	m_OwnerChar = GameServer()->GetPlayerChar(m_Owner);
 	m_LifeSpan = Server()->TickSpeed()*g_Config.m_InfTurretDuration;
 	m_WarmUpCounter = Server()->TickSpeed()*g_Config.m_InfTurretWarmUpDuration;
 	m_Type = Type;
@@ -31,8 +30,9 @@ CTurret::CTurret(CGameWorld *pGameWorld, vec2 Pos, int Owner, vec2 Direction, fl
 	
 	if ( (g_Config.m_InfTurretEnableLaser && g_Config.m_InfTurretEnablePlasma) || (!g_Config.m_InfTurretEnableLaser && !g_Config.m_InfTurretEnablePlasma) )
 	{
-		GameServer()->SendBroadcast_Localization(-1, BROADCAST_PRIORITY_GAMEANNOUNCE, BROADCAST_DURATION_GAMEANNOUNCE, _("error: turrets have no correct ammo type, admin has to choose ammo type with \"InfTurretEnablePlasma\" "), NULL);
+		dbg_msg("game", "error: turrets have no correct ammo type, admin has to choose ammo type with \"InfTurretEnablePlasma\" ");
 		Reset();
+		
 	}
 	
 	if (g_Config.m_InfTurretEnablePlasma) 
@@ -73,10 +73,7 @@ void CTurret::Tick()
 	//marked for destroy
 	if(m_MarkedForDestroy) 
 		return;
-	if(!m_OwnerChar) {
-		Reset();
-		return;
-	}
+
 	if(m_LifeSpan < 0) 
 		Reset();
 	

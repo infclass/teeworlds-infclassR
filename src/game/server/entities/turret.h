@@ -30,7 +30,6 @@ private:
 	int m_EvalTick;
 	int m_Owner;
 	int m_Type;
-	CCharacter *m_OwnerChar;
 	const float m_RadiusGrowthRate = 4.0f;
 	int m_WarmUpCounter;
 	int m_ReloadCounter;

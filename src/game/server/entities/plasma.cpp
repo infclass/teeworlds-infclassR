@@ -7,7 +7,7 @@
 #include "plasma.h"
 
 CPlasma::CPlasma(CGameWorld *pGameWorld, vec2 Pos, int Owner, int TrackedPlayer,vec2 Direction, bool Freeze, bool Explosive)
-: CEntity(pGameWorld, CGameWorld::ENTTYPE_LASER)
+: CEntity(pGameWorld, CGameWorld::ENTTYPE_PLASMA)
 {
 	m_Owner = Owner;
 	m_Pos = Pos;

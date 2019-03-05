@@ -3799,7 +3799,7 @@ void CCharacter::DestroyChildEntities()
 		if(pTurret->GetOwner() != m_pPlayer->GetCID()) continue;
 		GameServer()->m_World.DestroyEntity(pTurret);
 	}
-	for(CPlasma* pPlasma = (CPlasma*) GameWorld()->FindFirst(CGameWorld::ENTTYPE_TURRET); pPlasma; pPlasma = (CPlasma*) pPlasma->TypeNext())
+	for(CPlasma* pPlasma = (CPlasma*) GameWorld()->FindFirst(CGameWorld::ENTTYPE_PLASMA); pPlasma; pPlasma = (CPlasma*) pPlasma->TypeNext())
 	{
 		if(pPlasma->GetOwner() != m_pPlayer->GetCID()) continue;
 		GameServer()->m_World.DestroyEntity(pPlasma);
