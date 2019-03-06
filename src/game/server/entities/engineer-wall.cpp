@@ -65,13 +65,17 @@ void CEngineerWall::Tick()
 				{
 					for(CCharacter *pHook = (CCharacter*) GameWorld()->FindFirst(CGameWorld::ENTTYPE_CHARACTER); pHook; pHook = (CCharacter *)pHook->TypeNext())
 					{
+						
+						//skip classes that can't die.
+						if(p->GetClass() == PLAYERCLASS_UNDEAD && p->IsFrozen()) continue;
+						if(p->GetClass() == PLAYERCLASS_VOODOO && p->m_VoodooAboutToDie) continue;
+						
 						if(
 							pHook->GetPlayer() &&
 							pHook->IsHuman() &&
 							pHook->m_Core.m_HookedPlayer == p->GetPlayer()->GetCID() &&
 							pHook->GetPlayer()->GetCID() != m_Owner && //The engineer will get the point when the infected dies
 							p->m_LastFreezer != pHook->GetPlayer()->GetCID() && //The ninja will get the point when the infected dies
-							p->GetClass() != PLAYERCLASS_UNDEAD //Or exploit with score
 						)
 						{
 							int ClientID = pHook->GetPlayer()->GetCID();
