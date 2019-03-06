@@ -14,11 +14,12 @@ cd teeworlds-infclassr
 ```
 Copy bam executable into teeworlds-infclassr directory.
 
-### on Ubuntu
+### on Ubuntu / Mint / Debian
 ```bash
 sudo apt install libicu-dev libmaxminddb-dev
 ./bam server_debug
 ```
+Read the [wiki](https://github.com/yavl/teeworlds-infclassR/wiki) for more details.
 
 ### on macOS
 via [Homebrew](https://brew.sh):
