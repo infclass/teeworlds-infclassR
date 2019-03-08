@@ -626,4 +626,70 @@
 		"key": "The Hero found the flag!",
 		"value": "Der Recke hat die Flagge gefunden!"
 	},
+	{
+		"key": "Bat",
+		"value": "Fledermaus"
+	},
+	{
+		"key": "He can jump infinitely.",
+		"value": "Er kann in der Luft mehrfach springen."
+	},
+	{
+		"key": "White hole",
+		"value": "Wei\u00dfes Loch"
+	},
+	{
+		"key": "Receive it by killing at least one zombie.",
+		"value": "Erhalte es, indem du mindestens einen Zombie t\u00f6test."
+	},
+	{
+		"key": "Receive it by killing at least {int:NumKills} zombies as scientist.",
+		"one": "Erhalte es, indem du mindestens einen Zombie t\u00f6test.",
+		"few": "Erhalte es, indem du mindestens {int:NumKills} Zombie t\u00f6test.",
+		"many": "Erhalte es, indem du mindestens {int:NumKills} Zombie t\u00f6test.",
+	},
+	{
+		"key": "All witches are already here",
+		"value": "Alle Hexen sind bereits hier"
+	},
+	{
+		"key": "Too few zombies",
+		"value": "Zu wenig Zombies"
+	},
+	{
+		"key": "Witch ({int:NumCallers}/{int:NumCallersLimit})",
+		"value": "Hexe ({int:NumCallers}/{int:NumCallersLimit})"
+	},
+	{
+		"key": "You can't call witch twice",
+		"value": "Du kannst die Hexe nicht zweimal rufen"
+	},
+	{
+		"key": "Witch {str:PlayerName} has arrived!",
+		"value": "Hexe {str:PlayerName} ist angekommen!"
+	},
+	{
+		"key": "Cannot find a flag? Stand still for some seconds, maybe you will get enlightened.",
+		"value": "Du kannst keine Flagge finden? Stehe f\u00fcr ein paar Sekunden still, vielleicht wirst du erleuchtet."
+	},
+	{
+		"key": "Two or more humans can form a taxi.",
+		"value": "Zwei oder mehr Menschen k\u00f6nnen ein Taxi bilden."
+	},
+	{
+		"key": "In order to use it, both humans have to disable hook protection (usually, with F3). The human being hooked becomes the driver.",
+		"value": "Um es zu benutzen, m\u00fcssen beide Menschen den Hook Schutz (normalerweise F3) deaktiviern. Der Mensch, der gehookt wird ist der Fahrer."
+	},
+	{
+		"key": "You need at least {int:HealthArmor} hp",
+		"value": "Du brauchst mindestens {int:HealthArmor} Leben"
+	},
+	{
+		"key": "Too few zombies (less than {int:MinZombies})",
+		"value": "Zu wenig Zombies (weniger als {int:MinZombies})"
+	},
+	{
+		"key": "Medic {str:MedicName} revived {str:PlayerName}",
+		"value": "Medic {str:MedicName} hat {str:PlayerName} wiederbelebt"
+	},
 ]}
