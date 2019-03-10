@@ -149,6 +149,10 @@
 		"value": "Lebenskundler"
 	},
 	{
+		"key": "Looper",
+		"value": "Looper"
+	},
+	{
 		"key": "Smoker",
 		"value": "Raucher"
 	},
@@ -183,6 +187,10 @@
 	{
 		"key": "Undead",
 		"value": "Untoter"
+	},
+	{
+		"key": "Voodoo",
+		"value": "Voodoo"
 	},
 	{
 		"key": "Unknown class",
@@ -331,7 +339,15 @@
 		"value": "Der Arzt beschirmt \u00dcberlebende, indem er sie mit dem Hammer schl\u00e4gt, wodurch ihnen Schilde zuwachsen."
 	},
 	{
-		"key": "He has also a powerful shotgun that can pullback infected.",
+		"key": "Grenades with medicine give armor to everybody in their range, including heroes and medic themself",
+		"value": "Alle Menschen in Reichweite, inklusive Helden und du selbst, werden durch die Heil-Granate mit R\u00fcstung versorgt."
+	},
+	{
+		"key": "Laser revives infected zombies, but at great cost - 17 hp and armor.",
+		"value": "Der Laser belebt Zombies wieder, allerdings zum Hohen Preis von 17 Lebenspunkten."
+	},
+	{
+		"key": "Medic has also a powerful shotgun that can pullback infected.",
 		"value": "Er hat als Waffe eine starke Schrotflinte, mit der er Erkrankte zur\u00fcckschie\u00dfen kann."
 	},
 	{
@@ -339,12 +355,20 @@
 		"value": "Der Recke ist mit Flinte, Lasergewehr und Granatwerfer bewaffnet."
 	},
 	{
-		"key": "The Hero must find a flag hidden in the map.",
-		"value": "Dem Recken ist aufgetragen, eine auf der Karte verborgene Flagge zu bergen."
+		"key": "The Hero must find a flag only visible to them hidden in the map.",
+		"value": "Der Held sucht auf der Karte nach einer f\u00fcr andere Spieler unsichtbaren Flagge."
 	},
 	{
 		"key": "Once taken, the flag gives 1 health point, 4 armor points, and full ammo to all humans, furthermore full health and armor to the hero.",
 		"value": "Erringt er die Flagge, so geb\u00fchren Jeglichem, der sich noch unter den Menschen befindet, ein Gesundheitspunkt, vier Schilde, und volles Feuerwerk, ihm selbst wird v\u00f6llige Heilung zuteil."
+	},
+	{
+		"key": "The gift to all humans is only applied when the flag is surrounded by hearts and armor. This gift cooldown is shared between all heros.",
+		"value": "Der Bonus f\u00fcr alle Menschen wird nur vergeben, sollte die eingesammelte Flagge mit Herzen und R\u00fcstung umgeben sein. Der Zeit-Z\u00e4hler wird mit allen Helden gleicherma\u00dfen geteilt."
+	},
+	{
+		"key": "Cannot find a flag? Stand still for some seconds, maybe you will get enlightened.",
+		"value": "Du kannst keine Flagge finden? Stehe f\u00fcr ein paar Sekunden still, vielleicht wirst du erleuchtet."
 	},
 	{
 		"key": "The hero cannot be healed by a medic, but he can withstand a thrust by an infected, an his health suffice.",
@@ -557,6 +581,10 @@
 		"value": "Laser-Wand: {sec:RemainingTime}"
 	},
 	{
+		"key": "Looper laser wall: {sec:RemainingTime}",
+		"value": "Looper Laser Mauer: {sec:RemainingTime}"
+	},
+	{
 		"key": "{int:NumBombs} bombs left",
 		"one": "Eine verbleibende Bombe",
 		"other": "{int:NumBombs} verbleibende Bomben",
@@ -631,6 +659,14 @@
 		"value": "Fledermaus"
 	},
 	{
+		"key": "The Bat can infect humans and heal infected with his hammer.",
+		"value": "Die Fledermaus kann Menschen infizieren und Zombies mit dem Hammer heilen."
+	},
+	{
+		"key": "He can also inflict 1 damage point per second by hooking humans.",
+		"value": "Er kann au\u00dferdem 1 Schaden pro Sekunde ausrichten, indem er Menschen hookt."
+	},
+	{
 		"key": "He can jump infinitely.",
 		"value": "Er kann in der Luft mehrfach springen."
 	},
@@ -645,8 +681,20 @@
 	{
 		"key": "Receive it by killing at least {int:NumKills} zombies as scientist.",
 		"one": "Erhalte es, indem du mindestens einen Zombie t\u00f6test.",
-		"few": "Erhalte es, indem du mindestens {int:NumKills} Zombie t\u00f6test.",
-		"many": "Erhalte es, indem du mindestens {int:NumKills} Zombie t\u00f6test.",
+		"few": "Erhalte es, indem mindestens {int:NumKills} Zombies als Wissenschaftler get\u00f6tet wurden.",
+		"many": "Erhalte es, indem mindestens {int:NumKills} Zombies als Wissenschaftler get\u00f6tet wurden.",
+	},
+	{
+		"key": "Use it with your laser rifle, the indicator around your Tee will show you if it is available",
+		"value": "Verwende es durch Abfeuern des Laser-Gewehrs. Ein Indikator um deinen K\u00f6rper, zeigt dir die Einsatzbereitschaft an."
+	},
+	{
+		"key": "Puts humans (if enabled) and zombies into a vulnerable state by pulling them into its center",
+		"value": "Zieht sowohl Menschen als auch Zombies in sein inneres und macht sie damit leicht Verwundbar."
+	},
+	{
+		"key": "Additionally he can place white holes with the laser rifle. Further information on /help whitehole",
+		"value": "Au\u00dferdem kann er mit seinem Laser-Gewehr 'wei\u00dfe L\u00f6cher' plazieren. Weitere Informationen gibt es unter /help whitehole"
 	},
 	{
 		"key": "All witches are already here",
@@ -655,6 +703,10 @@
 	{
 		"key": "Too few zombies",
 		"value": "Zu wenig Zombies"
+	},
+	{
+		"key": "{str:PlayerName} is calling for Witch! ({int:NumCallers}/{int:NumCallersLimit}) To call witch write: /witch",
+		"value": "{str:PlayerName} ruft nach der Hexe! ({int:NumCallers}/{int:NumCallersLimit}) Um auch nach der Hexe zu rufen, schreibe: /witch"
 	},
 	{
 		"key": "Witch ({int:NumCallers}/{int:NumCallersLimit})",
@@ -669,8 +721,8 @@
 		"value": "Hexe {str:PlayerName} ist angekommen!"
 	},
 	{
-		"key": "Cannot find a flag? Stand still for some seconds, maybe you will get enlightened.",
-		"value": "Du kannst keine Flagge finden? Stehe f\u00fcr ein paar Sekunden still, vielleicht wirst du erleuchtet."
+		"key": "How to use taxi mode",
+		"value": "Wie der Taxi-Modus verwendet wird."
 	},
 	{
 		"key": "Two or more humans can form a taxi.",
@@ -679,6 +731,10 @@
 	{
 		"key": "In order to use it, both humans have to disable hook protection (usually, with F3). The human being hooked becomes the driver.",
 		"value": "Um es zu benutzen, m\u00fcssen beide Menschen den Hook Schutz (normalerweise F3) deaktiviern. Der Mensch, der gehookt wird ist der Fahrer."
+	},
+	{
+		"key": "To get off the taxi, jump. To drop off your passengers, enable hook protection (usually, with F3).",
+		"value": "Um den Taxi-Modus zu verlassen, springe! Um den Passagier abzuwerfen, muss 'hook protection' (meist F3) aktiviert werden."
 	},
 	{
 		"key": "You need at least {int:HealthArmor} hp",
@@ -691,5 +747,37 @@
 	{
 		"key": "Medic {str:MedicName} revived {str:PlayerName}",
 		"value": "Medic {str:MedicName} hat {str:PlayerName} wiederbelebt"
+	},
+	{
+		"key": "The Voodoo can infect humans and heal infected with his hammer.",
+		"value": "Das Voodoo kann Menschen infizieren und mit seinem Hammer Zombies heilen."
+	},
+	{
+		"key": "He does not die immediately when killed but instead enters Spirit mode and defies death for a brief span of time.",
+		"value": "Statt sofort zu sterben, wird f\u00fcr eine kurze Zeit der Tod \u00fcber den Geist-Modus hinausgez\u00f6gert."
+	},
+	{
+		"key": "While in Spirit mode he cannot be killed. When his time is up he finally dies.",
+		"value": "Solange der Geist-Modus andauert kann es nicht get\u00f6tet werden. Zum Ende hin, tritt der Tod ein."
+	},
+	{
+		"key": "The Looper has a laser wall that slows down zombies and a fast shooting low-range-laser-rifle.",
+		"value": "Der Looper hat eine Laser Mauer, welche Zombies ausbremst und ein Laser-Gewehr mit kurzer Reichweite."
+	},
+	{
+		"key": "How to use endless hook",
+		"value": "Wie Endlos-Hook benutzt wird"
+	},
+	{
+		"key": "one person has to press F3 to deactivate hook protection, he can be hooked endlessly",
+		"value": "Die erste Person muss F3 dr\u00fccken, um 'hook protection' zu deaktivieren. Diese kann nun unendlich lang als Ankerpunkt verwendet werden."
+	},
+	{
+		"key": "the other person has to be hook protected, he hooks the first person to enable this mode",
+		"value": "Die andere Person muss 'hook protected' sein. Sie h\u00e4ngt sich dann an die erste Person."
+	},
+	{
+		"key": "To deactivate endlessHook either toggle hook protection or retract your hook.",
+		"value": "Um den Endlos-Hook zu deaktivieren, schalte entweder 'hook protection' um oder ziehe den hook ein."
 	},
 ]}
