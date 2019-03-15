@@ -44,6 +44,9 @@ int CRoundStatistics::CPlayer::OnScoreEvent(int EventType, int Class)
 		case SCOREEVENT_MEDIC_REVIVE:
 			Points = 50;
 			break;
+		case SCOREEVENT_DESTROY_TURRET:
+			Points = 30;
+			break;
 	}
 
 	m_Score += Points;
