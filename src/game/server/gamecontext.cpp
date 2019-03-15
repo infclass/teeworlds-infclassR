@@ -190,7 +190,7 @@ int CGameContext::RandomZombieToWitch() {
 	return zombies_id[id];
 }
 
-void CGameContext::SetAvailabilities(std::vector<int> value) {
+void CGameContext::SetAvailabilities(std::vector<int> value) { // todo: should be order-independent, e.g with std map
 	if (value.empty())
 		value = std::vector<int>(10); //increased by 1 human class from 9 to 10
 	g_Config.m_InfEnableBiologist = value[0];
@@ -205,7 +205,7 @@ void CGameContext::SetAvailabilities(std::vector<int> value) {
 	g_Config.m_InfEnableLooper = value[9];
 }
 
-void CGameContext::SetProbabilities(std::vector<int> value) {
+void CGameContext::SetProbabilities(std::vector<int> value) { // todo: should be order-independent, e.g with std map
 	if (value.empty())
 		value = std::vector<int>(11);
 	g_Config.m_InfProbaBat = value[0];
@@ -2726,7 +2726,7 @@ bool CGameContext::ConStartFunRound(IConsole::IResult *pResult, void *pUserData)
 	auto zero_probabilities = [pSelf] () {
 		pSelf->SetProbabilities(std::vector<int>());
 	};
-	std::vector<int> probabilities = {
+	std::vector<int> probabilities = { // order is important!
 		g_Config.m_InfProbaBat,
 		g_Config.m_InfProbaBoomer,
 		g_Config.m_InfProbaGhost,
@@ -2744,9 +2744,8 @@ bool CGameContext::ConStartFunRound(IConsole::IResult *pResult, void *pUserData)
 	auto zero_availabilities = [pSelf] () {
 		pSelf->SetAvailabilities(std::vector<int>());
 	};
-	std::vector<int> availabilities = {
+	std::vector<int> availabilities = { // order is important!
 		g_Config.m_InfEnableBiologist,
-		g_Config.m_InfEnableLooper,
 		g_Config.m_InfEnableEngineer,
 		g_Config.m_InfEnableHero,
 		g_Config.m_InfEnableMedic,
@@ -2754,7 +2753,8 @@ bool CGameContext::ConStartFunRound(IConsole::IResult *pResult, void *pUserData)
 		g_Config.m_InfEnableNinja,
 		g_Config.m_InfEnableScientist,
 		g_Config.m_InfEnableSniper,
-		g_Config.m_InfEnableSoldier
+		g_Config.m_InfEnableSoldier,
+		g_Config.m_InfEnableLooper
 	};
 
 	std::vector<const char*> phrases = {
@@ -2774,7 +2774,7 @@ bool CGameContext::ConStartFunRound(IConsole::IResult *pResult, void *pUserData)
 		g_Config.m_SvTimelimit = g_Config.m_FunRoundDuration;
 
 	int type = random_int(0, 7);
-	switch (type) { // todo: generalize and shrink
+	switch (type) { // todo: generalize and shrink, or remove and make something configurable
 		case 0:
 			g_Config.m_InfProbaGhoul = 100;
 			g_Config.m_InfEnableNinja = 1;
