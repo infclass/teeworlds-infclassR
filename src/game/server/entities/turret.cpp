@@ -4,6 +4,7 @@
 #include <engine/shared/config.h>
 #include <game/generated/protocol.h>
 #include <game/server/gamecontext.h>
+#include <engine/server/roundstatistics.h>
 #include "turret.h"
 #include "plasma.h"
 #include "laser.h"
@@ -90,10 +91,15 @@ void CTurret::Tick()
 		{
 			pChr->TakeDamage(vec2(0.f, 0.f), g_Config.m_InfTurretSelfDestructDmg, m_Owner, WEAPON_RIFLE, TAKEDAMAGEMODE_NOINFECTION);
 			GameServer()->CreateSound(m_Pos, SOUND_RIFLE_FIRE);
+			int ClientID = pChr->GetPlayer()->GetCID();
 			char aBuf[64];
 			str_format(aBuf, sizeof(aBuf), "You destroyed %s's turret!", Server()->ClientName(m_Owner));
-			GameServer()->SendChatTarget(pChr->GetPlayer()->GetCID(), aBuf);
+			GameServer()->SendChatTarget(ClientID, aBuf);
 			GameServer()->SendChatTarget(m_Owner, "A zombie has destroyed your turret!");
+			
+			//increase score
+			Server()->RoundStatistics()->OnScoreEvent(ClientID, SCOREEVENT_DESTROY_TURRET, pChr->GetClass(), Server()->ClientName(ClientID), GameServer()->Console());
+			GameServer()->SendScoreSound(pChr->GetPlayer()->GetCID());
 			Reset();
 		}
 	}
