@@ -133,7 +133,7 @@ void CGameControllerMOD::GetPlayerCounter(int ClientException, int& NumHumans, i
 	
 	if(NumHumans + NumInfected <= 1)
 		NumFirstInfected = 0;
-	else if(NumHumans + NumInfected <= 2)
+	else if(NumHumans + NumInfected <= 3)
 		NumFirstInfected = 1;
 	else
 		NumFirstInfected = 2;
