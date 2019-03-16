@@ -4357,6 +4357,10 @@ public:
 void CServer::OnRoundEnd()
 {
 #ifdef CONF_SQL
+	// skip some maps that are not very fair
+	if (str_comp(m_aCurrentMap, "infc_toilet") == 0) {
+		return;
+	}
 	//Send round statistics
 	CSqlJob* pRoundJob = new CSqlJob_Server_SendRoundStatistics(this, RoundStatistics(), m_aCurrentMap);
 	pRoundJob->Start();
