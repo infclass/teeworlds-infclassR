@@ -239,7 +239,7 @@ void CGameControllerMOD::Tick()
 					// this player was lucky... decrease random number and try to infect the next player
 					if (random >= InfectionProb) 
 					{
-						random -= InfectionProb
+						random -= InfectionProb;
 						continue;
 					}
 					
