@@ -216,7 +216,7 @@ void CGameControllerMOD::Tick()
 			int NumNeededInfection = NumFirstInfected;
 			
 			//outer loop generates random numbers for each successful infected human
-			while(NumInfected < NumNeededInfection && NumHumans > 1)
+			while(NumInfected < NumNeededInfection)
 			{
 				
 				//propabillity for one human to get infected
