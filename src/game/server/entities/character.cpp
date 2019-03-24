@@ -958,6 +958,13 @@ void CCharacter::FireWeapon()
 
 										pTarget->m_EmoteType = EMOTE_HAPPY;
 										pTarget->m_EmoteStop = Server()->Tick() + Server()->TickSpeed();
+										
+										if(pTarget->GetClass() == PLAYERCLASS_VOODOO) 
+										{
+											int alivefactor = m_Armor * 2;
+											pTarget->m_VoodooTimeAlive = (Server()->TickSpeed()*g_Config.m_InfVoodooAliveTime * alivefactor) / 10;
+										}		
+										
 									}
 									
 									if(!pTarget->GetPlayer()->HookProtectionEnabled())
@@ -1675,16 +1682,19 @@ void CCharacter::Tick()
 	//~ }
 	//~ else
 		//~ m_InWater = 0;
-	// Delayed Death
-	if(GetClass() == PLAYERCLASS_VOODOO && m_VoodooAboutToDie && m_VoodooTimeAlive > 0)
-	{
-		m_VoodooTimeAlive-=1000;
+		
+	if(GetClass() == PLAYERCLASS_VOODOO)
+	{		
+		// Delayed Death
+		if(m_VoodooAboutToDie)
+		{
+			m_VoodooTimeAlive-=1000;
+			
+			if(m_VoodooTimeAlive <= 0)
+				Die(m_VoodooKiller, m_VoodooWeapon);
+		}
 	}
-	else if(GetClass() == PLAYERCLASS_VOODOO && m_VoodooAboutToDie && m_VoodooTimeAlive <= 0)
-	{
-		Die(m_VoodooKiller, m_VoodooWeapon);
-	}
-
+	
 	// Display time left to live
 	if(GetClass() == PLAYERCLASS_VOODOO && m_VoodooAboutToDie)
 	{
