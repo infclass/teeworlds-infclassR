@@ -4244,7 +4244,20 @@ public:
 	void UpdateScore(CSqlServer* pSqlServer, int ScoreType, int Score, const char* pScoreName)
 	{
 		char aBuf[512];
-				
+		
+		int PlayerCount = 0;
+		for(int i=0; i<MAX_CLIENTS; i++)
+		{
+			if(m_apPlayers[i] && m_apPlayers[i]->m_IsInGame == true)
+			{
+				if (std::find(vec.begin(), vec.end(), i) == vec.end())
+					PlayerCount++;
+			}
+		}
+
+		if (PlayerCount < 8)
+			return
+
 		str_format(aBuf, sizeof(aBuf), 
 			"INSERT INTO %s_infc_RoundScore "
 			"(UserId, RoundId, MapName, ScoreType, ScoreDate, Score) "
