@@ -111,6 +111,7 @@ m_pConsole(pConsole)
 	m_VoodooTimeAlive = Server()->TickSpeed()*g_Config.m_InfVoodooAliveTime;
 	m_VoodooAboutToDie = false;
 	m_BroadcastWhiteHoleReady = -100;
+	m_pHeroFlag = nullptr;
 /* INFECTION MODIFICATION END *****************************************/
 }
 
@@ -3455,6 +3456,7 @@ void CCharacter::ClassSpawnAttributes()
 			GiveWeapon(WEAPON_SHOTGUN, -1);
 			GiveWeapon(WEAPON_RIFLE, -1);
 			GiveWeapon(WEAPON_GRENADE, -1);
+			m_pHeroFlag = nullptr;
 			m_ActiveWeapon = WEAPON_GRENADE;
 			
 			GameServer()->SendBroadcast_ClassIntro(m_pPlayer->GetCID(), PLAYERCLASS_HERO);
