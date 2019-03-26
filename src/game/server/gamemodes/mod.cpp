@@ -185,20 +185,15 @@ void CGameControllerMOD::Tick()
 	//If the game can start ...
 	if(m_GameOverTick == -1 && NumHumans + NumInfected >= g_Config.m_InfMinPlayers)
 	{
+		//If the infection started
 		if(IsInfectionStarted())
 		{
 			bool StartInfectionTrigger = (m_RoundStartTick + Server()->TickSpeed()*10 == Server()->Tick());
-			bool InfSpecTrigger = StartInfectionTrigger;
-			
 			
 			GameServer()->EnableTargetToKill();
 			
 			m_InfectedStarted = true;
 	
-			
-			//If characters have no class
-			//					if infection is triggered -> give them a random class
-			//					after infection is triggered -> infect them
 			CPlayerIterator<PLAYERITER_INGAME> Iter(GameServer()->m_apPlayers);
 			while(Iter.Next())
 			{
@@ -217,59 +212,36 @@ void CGameControllerMOD::Tick()
 			
 			int NumNeededInfection = NumFirstInfected;
 			
-			//outer loop generates random numbers for each successful infected human
-			while(NumInfected < NumNeededInfection && NumHumans > 1)
+			while(NumInfected < NumNeededInfection)
 			{
-				
-				//propabillity for one human to get infected
 				float InfectionProb = 1.0/static_cast<float>(NumHumans);
-				
-				//generate random float
 				float random = random_float();
 				
 				//Fair infection
 				bool FairInfectionFound = false;
 				
-				//inner loop goes until a human is infected
 				Iter.Reset();
 				while(Iter.Next())
 				{
-					
-					//do not infect zombies
 					if(Iter.Player()->IsZombie()) continue;
 					
-					//do not infect clients in two rounds consecutively
-					if(Server()->IsClientInfectedBefore(Iter.ClientID())) continue;
-					
-					// this player was lucky... decrease random number and try to infect the next player
-					if (random >= InfectionProb) 
+					if(!Server()->IsClientInfectedBefore(Iter.ClientID()))
 					{
-						random -= InfectionProb;
-						continue;
-					}
-					
-					if(random < InfectionProb)
-					{
-						//infect player
 						Server()->InfecteClient(Iter.ClientID());
 						Iter.Player()->StartInfection();
 						NumInfected++;
 						NumHumans--;
 						
-						//notification to other players
 						GameServer()->SendChatTarget_Localization(-1, CHATCATEGORY_INFECTION, _("{str:VictimName} has been infected"),
 							"VictimName", Server()->ClientName(Iter.ClientID()),
 							NULL
 						);
-					
-						//found a human to infect, start new outer loop
 						FairInfectionFound = true;
 						break;
 					}
 				}
 				
-				
-				// fair infection not possible -> choose unfair infection as return statement
+				//Unfair infection
 				if(!FairInfectionFound)
 				{
 					Iter.Reset();
@@ -284,34 +256,17 @@ void CGameControllerMOD::Tick()
 							NumInfected++;
 							NumHumans--;
 							
-							GameServer()->SendChatTarget_Localization(-1, CHATCATEGORY_INFECTION, _("{str:VictimName} has been infected"), 
-								"VictimName", 
-								Server()->ClientName(Iter.ClientID()), 
-								NULL
-							);
+							GameServer()->SendChatTarget_Localization(-1, CHATCATEGORY_INFECTION, _("{str:VictimName} has been infected"), "VictimName", Server()->ClientName(Iter.ClientID()), NULL);
 							
 							break;
 						}
+						else
+						{
+							random -= InfectionProb;
+						}
 					}
 				}
-				
-				
 			}
-			
-			//Infect spectators after players got infected.
-			if (InfSpecTrigger) 
-			{
-				CPlayerIterator<PLAYERITER_SPECTATORS> IterSpec(GameServer()->m_apPlayers);
-				while(IterSpec.Next())
-				{
-					IterSpec.Player()->StartInfection();
-				}
-
-				InfSpecTrigger = false;
-
-			}
-			
-			
 		}
 		else
 		{			
@@ -461,7 +416,7 @@ void CGameControllerMOD::Tick()
 	{
 		GameServer()->DisableTargetToKill();
 		
-		m_RoundStartTick = Server()->Tick();		
+		m_RoundStartTick = Server()->Tick();
 	}
 }
 
