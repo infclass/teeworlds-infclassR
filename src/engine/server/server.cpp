@@ -4245,7 +4245,7 @@ public:
 	{
 		char aBuf[512];
 
-		if (GetActivePlayerCount() > 8)
+		if (m_pServer->GetActivePlayerCount() > 8)
 			return
 
 		str_format(aBuf, sizeof(aBuf), 
