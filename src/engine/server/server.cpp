@@ -351,9 +351,7 @@ void CServer::CClient::Reset(bool ResetScore)
 		
 		m_Session.m_RoundId = -1;
 		m_Session.m_Class = PLAYERCLASS_NONE;
-		
-		//removes mutes on new game sessions
-		//m_Session.m_MuteTick = 0;
+		m_Session.m_MuteTick = 0;
 		
 		m_Accusation.m_Num = 0;
 	}
