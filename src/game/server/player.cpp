@@ -775,7 +775,6 @@ void CPlayer::SetClass(int newClass)
 	char aBuf[256];
 	str_format(aBuf, sizeof(aBuf), "choose_class player='%s' class='%d'", Server()->ClientName(m_ClientID), newClass);
 	GameServer()->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "game", aBuf);
-	char aBuf[256]; //clear buffer
 }
 
 int CPlayer::GetOldClass()
