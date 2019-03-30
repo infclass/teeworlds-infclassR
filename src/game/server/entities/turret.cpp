@@ -19,6 +19,8 @@ CTurret::CTurret(CGameWorld *pGameWorld, vec2 Pos, int Owner, vec2 Direction, fl
 	m_StartTick = Server()->Tick();
 	m_Bounces = 0;
 	m_Radius = 15.0f;
+	m_foundTarget = false;
+	m_ammunition = g_Config.m_InfTurretAmmunition;
 	m_EvalTick = Server()->Tick();
 	m_LifeSpan = Server()->TickSpeed()*g_Config.m_InfTurretDuration;
 	m_WarmUpCounter = Server()->TickSpeed()*g_Config.m_InfTurretWarmUpDuration;
@@ -31,7 +33,10 @@ CTurret::CTurret(CGameWorld *pGameWorld, vec2 Pos, int Owner, vec2 Direction, fl
 	
 	if ( (g_Config.m_InfTurretEnableLaser && g_Config.m_InfTurretEnablePlasma) || (!g_Config.m_InfTurretEnableLaser && !g_Config.m_InfTurretEnablePlasma) )
 	{
-		dbg_msg("game", "error: turrets have no correct ammo type, admin has to choose ammo type with \"InfTurretEnablePlasma\" ");
+		char aBuf[256];
+		str_format(aBuf, sizeof(aBuf), "error: turrets have no correct ammo type, admin has to choose ammo type with \"inf_turret_enable_ammoType\"");
+		Console()->Print(IConsole::OUTPUT_LEVEL_DEBUG, "game", aBuf);
+		
 		Reset();
 		
 	}
@@ -47,7 +52,6 @@ CTurret::CTurret(CGameWorld *pGameWorld, vec2 Pos, int Owner, vec2 Direction, fl
 	}
 	
 	GameWorld()->InsertEntity(this);
-
 }
 
 CTurret::~CTurret()
@@ -70,7 +74,6 @@ int CTurret::GetOwner() const
 
 void CTurret::Tick()
 {
-
 	//marked for destroy
 	if(m_MarkedForDestroy) 
 		return;
@@ -104,12 +107,8 @@ void CTurret::Tick()
 		}
 	}
 	
-	
-	
-	
 	//reduce lifespan
 	m_LifeSpan--;
-	
 	
 	//reloading in progress
 	if(m_ReloadCounter > 0)
@@ -145,46 +144,57 @@ void CTurret::Tick()
 	//warmup finished, ready to find target
 	for(CCharacter *pChr = (CCharacter*) GameWorld()->FindFirst(CGameWorld::ENTTYPE_CHARACTER); pChr; pChr = (CCharacter *)pChr->TypeNext())
 	{
-		if(!pChr->IsInfected()) continue;
-		if(pChr->GetClass() == PLAYERCLASS_UNDEAD && pChr->IsFrozen()) continue;
-		if(pChr->GetClass() == PLAYERCLASS_VOODOO && pChr->m_VoodooAboutToDie) continue;
+		if(!m_ammunition) break;
+		
+		if(!pChr->IsInfected() ||
+			(pChr->GetClass() == PLAYERCLASS_UNDEAD && pChr->IsFrozen() ) ||
+			(pChr->GetClass() == PLAYERCLASS_VOODOO && pChr->m_VoodooAboutToDie) ) continue;
 		
 		float Len = distance(pChr->m_Pos, m_Pos);
 		
 		// attack zombie
 		if (Len < (float)g_Config.m_InfTurretRadarRange) //800
 		{
-			
 			vec2 Direction = normalize(pChr->m_Pos - m_Pos);
+			
+			m_foundTarget = true;
 			
 			switch(m_Type)
 			{
 				case INFAMMO_LASER:
 					new CLaser(GameWorld(), m_Pos, Direction, GameServer()->Tuning()->m_LaserReach, m_Owner, g_Config.m_InfTurretDmgHealthLaser);
+					m_ammunition--;
 					break;
 					
 				case INFAMMO_PLASMA:
 					new CPlasma(GameWorld(), m_Pos, m_Owner, pChr->GetPlayer()->GetCID() , Direction, 0, 1);
+					m_ammunition--;
 					break;
 			}
 			
 			GameServer()->CreateSound(m_Pos, SOUND_RIFLE_FIRE);
-			
-			//Reload ammo
-			if (g_Config.m_InfTurretEnablePlasma) 
-			{
-				m_ReloadCounter = Server()->TickSpeed()*g_Config.m_InfTurretPlasmaReloadDuration;
-			}
-			
-			if (g_Config.m_InfTurretEnableLaser) 
-			{
-				m_ReloadCounter = Server()->TickSpeed()*g_Config.m_InfTurretLaserReloadDuration;
-			}
-			
-			m_WarmUpCounter = Server()->TickSpeed()*g_Config.m_InfTurretWarmUpDuration;
 		}
 	}
-
+	
+	// either the turret found one target (single projectile) or it is out of ammo due to fire at different targets (multi projectile)
+	if(!m_ammunition || m_foundTarget)
+	{
+		//Reload ammo
+		if (g_Config.m_InfTurretEnablePlasma) 
+		{
+			m_ReloadCounter = Server()->TickSpeed()*g_Config.m_InfTurretPlasmaReloadDuration;
+		}
+		
+		if (g_Config.m_InfTurretEnableLaser) 
+		{
+			m_ReloadCounter = Server()->TickSpeed()*g_Config.m_InfTurretLaserReloadDuration;
+		}
+		
+		m_WarmUpCounter = Server()->TickSpeed()*g_Config.m_InfTurretWarmUpDuration;
+		m_ammunition = g_Config.m_InfTurretAmmunition;
+		m_foundTarget = false;
+	}
+	
 }
 
 void CTurret::Snap(int SnappingClient)
@@ -229,7 +239,6 @@ void CTurret::Snap(int SnappingClient)
 		return;
 	}
 	
-	
 	float time = (Server()->Tick()-m_StartTick)/(float)Server()->TickSpeed();
 	float angle = fmodf(time*pi/2, 2.0f*pi);
 	
@@ -246,10 +255,8 @@ void CTurret::Snap(int SnappingClient)
 		pObj->m_Y = (int)(m_Pos.y + m_Radius*sin(shiftedAngle));
 		pObj->m_VelX = 0;
 		pObj->m_VelY = 0;
-
 		pObj->m_StartTick = Server()->Tick();
 	}
-
 	
 	CNetObj_Laser *pObj = static_cast<CNetObj_Laser *>(Server()->SnapNewItem(NETOBJTYPE_LASER, m_IDs[m_IDs.size()-1], sizeof(CNetObj_Laser)));
 	
