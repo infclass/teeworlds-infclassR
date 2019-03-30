@@ -335,9 +335,6 @@ void CServer::CClient::Reset(bool ResetScore)
 	if(ResetScore)
 	{
 		m_NbRound = 0;
-		m_WaitingTime = 0;
-		m_WasInfected = 0;
-		
 		m_UserID = -1;
 #ifdef CONF_SQL
 		m_UserLevel = SQL_USERLEVEL_NORMAL;
@@ -2865,27 +2862,33 @@ int CServer::IsClientInfectedBefore(int ClientID)
 	return m_aClients[ClientID].m_WasInfected;
 }
 
-void CServer::InfecteClient(int ClientID)
+void CServer::InfectClient(int ClientID)
 {
 	m_aClients[ClientID].m_WasInfected = 1;
-	bool NonInfectedFound = false;
-	for(int i=0; i<MAX_CLIENTS; i++)
-	{
-		if(m_aClients[i].m_State == CServer::CClient::STATE_INGAME && m_aClients[i].m_WasInfected == 0)
-		{
-			NonInfectedFound = true;
-			break;
-		}
-	}
-	
-	if(!NonInfectedFound)
-	{
-		for(int i=0; i<MAX_CLIENTS; i++)
-		{
-			m_aClients[i].m_WasInfected = 0;
-		}
-	}
+// 	bool NonInfectedFound = false;
+// 	for(int i=0; i<MAX_CLIENTS; i++)
+// 	{
+// 		if(m_aClients[i].m_State == CServer::CClient::STATE_INGAME && m_aClients[i].m_WasInfected == 0)
+// 		{
+// 			NonInfectedFound = true;
+// 			break;
+// 		}
+// 	}
+// 	
+// 	if(!NonInfectedFound)
+// 	{
+// 		for(int i=0; i<MAX_CLIENTS; i++)
+// 		{
+// 			m_aClients[i].m_WasInfected = 0;
+// 		}
+// 	}
 }
+
+void CServer::UnInfectClient(int ClientID)
+{
+	m_aClients[ClientID].m_WasInfected = 0;
+}
+
 
 int CServer::GetClientAntiPing(int ClientID)
 {

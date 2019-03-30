@@ -283,7 +283,8 @@ public:
 	
 /* INFECTION MODIFICATION START ***************************************/
 	virtual int IsClientInfectedBefore(int ClientID) = 0;
-	virtual void InfecteClient(int ClientID) = 0;
+	virtual void InfectClient(int ClientID) = 0;
+	virtual void UnInfectClient(int ClientID) = 0;
 	
 	virtual int GetClientNbRound(int ClientID) = 0;
 	

@@ -179,10 +179,7 @@ void CGameControllerMOD::Tick()
 			bool InfSpecTrigger = StartInfectionTrigger;
 			
 			
-			GameServer()->EnableTargetToKill();
-			
-			m_InfectedStarted = true;
-	
+			GameServer()->EnableTargetToKill();	
 			
 			//If characters have no class
 			//					if infection is triggered -> give them a random class
@@ -203,87 +200,7 @@ void CGameControllerMOD::Tick()
 				}
 			}
 			
-			int NumNeededInfection = GetFirstInfNb();
-			
-			//outer loop generates random numbers for each successful infected human
-			while(GameServer()->GetZombieCount() < NumNeededInfection && GameServer()->GetHumanCount() > 1)
-			{
-				
-				//propabillity for one human to get infected
-				float InfectionProb = 1.0/static_cast<float>(GameServer()->GetHumanCount());
-				
-				//generate random float
-				float random = random_float();
-				
-				//Fair infection
-				bool FairInfectionFound = false;
-				
-				//inner loop goes until a human is infected
-				Iter.Reset();
-				while(Iter.Next())
-				{
-					
-					//do not infect zombies
-					if(Iter.Player()->IsZombie()) continue;
-					
-					//do not infect clients in two rounds consecutively
-					if(Server()->IsClientInfectedBefore(Iter.ClientID())) continue;
-					
-					// this player was lucky... decrease random number and try to infect the next player
-					if (random >= InfectionProb) 
-					{
-						random -= InfectionProb;
-						continue;
-					}
-					
-					if(random < InfectionProb)
-					{
-						//infect player
-						Server()->InfecteClient(Iter.ClientID());
-						Iter.Player()->StartInfection();
-						GameServer()->CountHumans(); //updates also zombies
-						
-						//notification to other players
-						GameServer()->SendChatTarget_Localization(-1, CHATCATEGORY_INFECTION, _("{str:VictimName} has been infected"),
-							"VictimName", Server()->ClientName(Iter.ClientID()),
-							NULL
-						);
-					
-						//found a human to infect, start new outer loop
-						FairInfectionFound = true;
-						break;
-					}
-				}
-				
-				
-				// fair infection not possible -> choose unfair infection as return statement
-				if(!FairInfectionFound)
-				{
-					Iter.Reset();
-					while(Iter.Next())
-					{
-						if(Iter.Player()->IsZombie()) continue;
-						
-						if(random < InfectionProb)
-						{
-							Server()->InfecteClient(Iter.ClientID());
-							Iter.Player()->StartInfection();
-							
-							GameServer()->SendChatTarget_Localization(-1, CHATCATEGORY_INFECTION, _("{str:VictimName} has been infected"), 
-								"VictimName", 
-								Server()->ClientName(Iter.ClientID()), 
-								NULL
-							);
-							
-							break;
-						}
-					}
-				}
-				
-				
-			}
-			
-			//Infect spectators after players got infected.
+			// Infect spectators
 			if (InfSpecTrigger) 
 			{
 				CPlayerIterator<PLAYERITER_SPECTATORS> IterSpec(GameServer()->m_apPlayers);
@@ -291,9 +208,104 @@ void CGameControllerMOD::Tick()
 				{
 					IterSpec.Player()->StartInfection();
 				}
+			}
+			InfSpecTrigger = false;
+			
+			
+			if (m_InfectedStarted == false)
+			{
+				//create FairInfVector
+				std::vector<int> FairInfVector; 
 
-				InfSpecTrigger = false;
+				//initiate infection vector when player is human and was no infected before
+				Iter.Reset();
+				while(Iter.Next())
+				{
+					//note: spectators are already zombies
+					
+					//do not infect zombies
+					if(Iter.Player()->IsZombie()) continue;
+					
+					//do not infect clients in two rounds consecutively
+					if(Server()->IsClientInfectedBefore(Iter.ClientID())) continue;
+					
+					FairInfVector.push_back(Iter.ClientID());
+					
+				}
+				
+				//Since spectators are zombies, NumNeededInfection has to be increased by SpectatorCount
+				int NumNeededInfection = GetFirstInfNb() + GameServer()->GetSpectatorCount();
+				
+				// fair infection process, 
+				while( FairInfVector.size() > 0 && GameServer()->GetHumanCount() > 1 && GameServer()->GetZombieCount() < NumNeededInfection)
+				{
+					dbg_msg("Game", "#FairToInfect: %d", FairInfVector.size());
+					
+					//generate random number
+					int random = random_int(0,FairInfVector.size()-1);
+					
+					//do not infect client consecutively in two rounds
+					Server()->InfectClient(FairInfVector[random]);
+					
+					//infect player behind clientid taken from vector
+					GameServer()->m_apPlayers[FairInfVector[random]]->StartInfection();
+					
+					//notification to other players
+					GameServer()->SendChatTarget_Localization(-1, CHATCATEGORY_INFECTION, _("{str:VictimName} has been infected"),
+								"VictimName", Server()->ClientName(FairInfVector[random]),
+								NULL
+					);
+					
+					//remove infected vector element
+					FairInfVector.erase(FairInfVector.begin() + random);
+					
+				}
+				
+				//create UnfairInfVector
+				std::vector<int> UnfairInfVector; 
 
+				//initiate infection vector when player is human and was no infected before
+				Iter.Reset();
+				while(Iter.Next())
+				{
+					//note: spectators are already zombies
+					
+					//do not infect zombies
+					if(Iter.Player()->IsZombie()) continue;
+					
+					UnfairInfVector.push_back(Iter.ClientID()); 
+					
+				}
+				
+				// Unfair infection process
+				while( UnfairInfVector.size() > 0 && GameServer()->GetHumanCount() > 1 && GameServer()->GetZombieCount() < NumNeededInfection)
+				{
+					dbg_msg("Game", "#NotFairToInfect: %d", UnfairInfVector.size());
+					
+					//generate random number
+					int random = random_int(0,UnfairInfVector.size()-1);
+					
+					//infect player behind clientid taken from vector
+					GameServer()->m_apPlayers[UnfairInfVector[random]]->StartInfection();
+					
+					//notification to other players
+					GameServer()->SendChatTarget_Localization(-1, CHATCATEGORY_INFECTION, _("{str:VictimName} has been infected"),
+								"VictimName", Server()->ClientName(UnfairInfVector[random]),
+								NULL
+					);
+					
+					//remove infected vector element
+					UnfairInfVector.erase(UnfairInfVector.begin() + random);
+				}
+				
+				//Reset not infected players of the UnfairInfVector
+				//for next round, next round they can be fairly infected again
+				for(std::vector<int>::iterator it = UnfairInfVector.begin(); it != UnfairInfVector.end(); ++it)
+				{
+					Server()->UnInfectClient(*it);
+				}
+				
+				m_InfectedStarted = true;
 			}
 			
 			
@@ -407,7 +419,8 @@ void CGameControllerMOD::Tick()
 			{
 				if(GameServer()->GetHumanCount())
 				{
-					GameServer()->SendChatTarget_Localization_P(-1, CHATCATEGORY_HUMANS, GameServer()->GetHumanCount(), _P("One human won the round", "{int:NumHumans} humans won the round"), "NumHumans", GameServer()->GetHumanCount(), NULL);
+					int NumHumans = GameServer()->GetHumanCount();
+					GameServer()->SendChatTarget_Localization_P(-1, CHATCATEGORY_HUMANS, NumHumans, _P("One human won the round", "{int:NumHumans} humans won the round"), "NumHumans", &NumHumans, NULL);
 					
 					char aBuf[512];
 					int Seconds = (Server()->Tick()-m_RoundStartTick)/((float)Server()->TickSpeed());
