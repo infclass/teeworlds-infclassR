@@ -190,7 +190,7 @@ void CWhiteHole::Tick()
 	if(m_LifeSpan < 0)
 	{
 		new CGrowingExplosion(GameWorld(), m_Pos, vec2(0.0, -1.0), m_Owner, 20, GROWINGEXPLOSIONEFFECT_BOOM_INFECTED);
-		GameServer()->m_World.DestroyEntity(this);
+		Reset();
 	}
 	else 
 	{

@@ -115,6 +115,7 @@ m_pConsole(pConsole)
 	m_VoodooAboutToDie = false;
 	m_BroadcastWhiteHoleReady = -100;
 	m_pHeroFlag = nullptr;
+	m_ResetKillsTime = 0;
 /* INFECTION MODIFICATION END *****************************************/
 }
 
@@ -2569,6 +2570,17 @@ void CCharacter::Tick()
 			}
 		}
 		
+		//Reset superweapon kill counter, two seconds after whiteHole explosion
+		if (pCurrentWhiteHole && 1+pCurrentWhiteHole->GetTick()/Server()->TickSpeed() == 1)
+			m_ResetKillsTime = Server()->TickSpeed()*3;
+
+		if (m_ResetKillsTime)
+		{
+			m_ResetKillsTime--;
+			if(!m_ResetKillsTime)
+				GetPlayer()->ResetNumberKills();
+		}
+
 		if(m_BroadcastWhiteHoleReady+(2*Server()->TickSpeed()) > Server()->Tick())
 		{
 			GameServer()->SendBroadcast_Localization(GetPlayer()->GetCID(), BROADCAST_PRIORITY_WEAPONSTATE, BROADCAST_DURATION_REALTIME,
