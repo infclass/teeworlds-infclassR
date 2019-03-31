@@ -140,8 +140,20 @@ public:
 	// helper functions
 	class CCharacter *GetPlayerChar(int ClientID);
 	// InfClassR
+	void CountActivePlayers();
+	int GetActivePlayerCount();
+	void CountSpectators();
+	int GetSpectatorCount();
+	void CountHumans();
+	int GetHumanCount();
+	void CountZombies();
 	int GetZombieCount();
-	int GetZombieCount(int zombie_class);
+	std::vector<int> spectators_id; //spectators vector
+	int m_NbActivePlayers;
+	int m_NbSpectators;
+	int m_NbHumans;
+	int m_NbZombies;
+	int GetIsOfClassCount(int player_class);
 	int RandomZombieToWitch();
 	std::vector<int> m_WitchCallers;
 

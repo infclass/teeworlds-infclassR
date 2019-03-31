@@ -527,7 +527,7 @@ void CPlayer::SetTeam(int Team, bool DoChatMsg)
 	Team = GameServer()->m_pController->ClampTeam(Team);
 	if(m_Team == Team)
 		return;
-
+	
 	char aBuf[512];
 	
 	if(DoChatMsg) //default is true
@@ -577,6 +577,12 @@ void CPlayer::SetTeam(int Team, bool DoChatMsg)
 		
 	}
 	
+	GameServer()->CountActivePlayers();
+	GameServer()->CountSpectators();
+	GameServer()->CountHumans(); // updates also zombies
+	
+	GameServer()->m_pController->CheckTeamBalance();
+	m_TeamChangeTick = Server()->Tick();
 }
 
 void CPlayer::TryRespawn()
@@ -775,6 +781,9 @@ void CPlayer::SetClass(int newClass)
 	char aBuf[256];
 	str_format(aBuf, sizeof(aBuf), "choose_class player='%s' class='%d'", Server()->ClientName(m_ClientID), newClass);
 	GameServer()->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "game", aBuf);
+	
+	//update number of humans and zombies
+	GameServer()->CountHumans(); //updates also zombies
 }
 
 int CPlayer::GetOldClass()

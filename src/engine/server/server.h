@@ -312,7 +312,8 @@ public:
 
 public:
 	virtual int IsClientInfectedBefore(int ClientID);
-	virtual void InfecteClient(int ClientID);
+	virtual void InfectClient(int ClientID);
+	virtual void UnInfectClient(int ClientID);
 	
 	virtual int GetClientAntiPing(int ClientID);
 	virtual void SetClientAntiPing(int ClientID, int Value);
@@ -412,9 +413,6 @@ public:
 	virtual void ResetMapVotes();
 	virtual IServer::CMapVote* GetMapVote();
 	virtual int GetMinPlayersForMap(const char* pMapName);
-
-	virtual int GetActivePlayerCount();
-	
 	virtual int GetTimeShiftUnit() const { return m_TimeShiftUnit; } //In ms
 /* INFECTION MODIFICATION END *****************************************/
 

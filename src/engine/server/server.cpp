@@ -13,7 +13,6 @@
 #include <engine/masterserver.h>
 #include <engine/server.h>
 #include <engine/storage.h>
-
 #include <engine/shared/compression.h>
 #include <engine/shared/config.h>
 #include <engine/shared/datafile.h>
@@ -336,9 +335,6 @@ void CServer::CClient::Reset(bool ResetScore)
 	if(ResetScore)
 	{
 		m_NbRound = 0;
-		m_WaitingTime = 0;
-		m_WasInfected = 0;
-		
 		m_UserID = -1;
 #ifdef CONF_SQL
 		m_UserLevel = SQL_USERLEVEL_NORMAL;
@@ -2866,27 +2862,33 @@ int CServer::IsClientInfectedBefore(int ClientID)
 	return m_aClients[ClientID].m_WasInfected;
 }
 
-void CServer::InfecteClient(int ClientID)
+void CServer::InfectClient(int ClientID)
 {
 	m_aClients[ClientID].m_WasInfected = 1;
-	bool NonInfectedFound = false;
-	for(int i=0; i<MAX_CLIENTS; i++)
-	{
-		if(m_aClients[i].m_State == CServer::CClient::STATE_INGAME && m_aClients[i].m_WasInfected == 0)
-		{
-			NonInfectedFound = true;
-			break;
-		}
-	}
-	
-	if(!NonInfectedFound)
-	{
-		for(int i=0; i<MAX_CLIENTS; i++)
-		{
-			m_aClients[i].m_WasInfected = 0;
-		}
-	}
+// 	bool NonInfectedFound = false;
+// 	for(int i=0; i<MAX_CLIENTS; i++)
+// 	{
+// 		if(m_aClients[i].m_State == CServer::CClient::STATE_INGAME && m_aClients[i].m_WasInfected == 0)
+// 		{
+// 			NonInfectedFound = true;
+// 			break;
+// 		}
+// 	}
+// 	
+// 	if(!NonInfectedFound)
+// 	{
+// 		for(int i=0; i<MAX_CLIENTS; i++)
+// 		{
+// 			m_aClients[i].m_WasInfected = 0;
+// 		}
+// 	}
 }
+
+void CServer::UnInfectClient(int ClientID)
+{
+	m_aClients[ClientID].m_WasInfected = 0;
+}
+
 
 int CServer::GetClientAntiPing(int ClientID)
 {
@@ -4389,22 +4391,6 @@ IServer::CClientSession* CServer::GetClientSession(int ClientID)
 	return &m_aClients[ClientID].m_Session;
 }
 
-// returns how many players are currently playing and not spectating
-int CServer::GetActivePlayerCount()
-{
-	int PlayerCount = 0;
-	auto& vec = spectators_id;
-	for(int i=0; i<MAX_CLIENTS; i++)
-	{
-		if(m_aClients[i].m_State == CClient::STATE_INGAME)
-		{
-			if (std::find(vec.begin(), vec.end(), i) == vec.end())
-				PlayerCount++;
-		}
-	}
-	return PlayerCount;
-}
-
 void CServer::AddAccusation(int From, int To, const char* pReason)
 {
 	if(From < 0 || From >= MAX_CLIENTS || To < 0 || To >= MAX_CLIENTS)
@@ -4550,7 +4536,7 @@ IServer::CMapVote* CServer::GetMapVote()
 	if (m_MapVotesCounter <= 0)
 		return 0;
 
-	float PlayerCount = GetActivePlayerCount();
+	float PlayerCount = GameServer()->GetActivePlayerCount();
 
 	int HighestNum = -1;
 	int HighestNumIndex = -1;
