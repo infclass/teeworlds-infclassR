@@ -239,7 +239,7 @@ void CGameControllerMOD::Tick()
 				// fair infection process, 
 				while( FairInfVector.size() > 0 && GameServer()->GetHumanCount() > 1 && GameServer()->GetZombieCount() < NumNeededInfection)
 				{
-					dbg_msg("Game", "#FairToInfect: %d", FairInfVector.size());
+					//dbg_msg("Game", "#FairToInfect: %d", FairInfVector.size());
 					
 					//generate random number
 					int random = random_int(0,FairInfVector.size()-1);
@@ -280,7 +280,7 @@ void CGameControllerMOD::Tick()
 				// Unfair infection process
 				while( UnfairInfVector.size() > 0 && GameServer()->GetHumanCount() > 1 && GameServer()->GetZombieCount() < NumNeededInfection)
 				{
-					dbg_msg("Game", "#NotFairToInfect: %d", UnfairInfVector.size());
+					//dbg_msg("Game", "#NotFairToInfect: %d", UnfairInfVector.size());
 					
 					//generate random number
 					int random = random_int(0,UnfairInfVector.size()-1);
