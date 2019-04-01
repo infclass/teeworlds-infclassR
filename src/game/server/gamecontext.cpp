@@ -3588,14 +3588,14 @@ bool CGameContext::ConHelp(IConsole::IResult *pResult, void *pUserData)
 			pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("The Hero has a shotgun, a laser rifle and grenades."), NULL); 
 			Buffer.append("\n\n");
 			pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("The Hero must find a flag only visible to them hidden in the map."), NULL);
+			Buffer.append("\n");
+			pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("The flag gifts 1 health point, 4 armor points, and full ammo to all humans, furthermore full health and armor to the hero."), NULL);
 			Buffer.append("\n\n");
-			pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("Once taken, the flag gifts 1 health point, 4 armor points, and full ammo to all humans, furthermore full health and armor to the hero."), NULL);
-			Buffer.append("\n\n");
-			pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("The gift to all humans is only applied when the flag is surrounded by hearts and armor. This gift cooldown is shared between all heros."), NULL);
+			pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("The gift to all humans is only applied when the flag is surrounded by hearts and armor."), NULL);
 			Buffer.append("\n\n");
 			pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("Cannot find a flag? Stand still for some seconds, maybe you will get enlightened."), NULL);
 			Buffer.append("\n\n");
-			pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("The hero cannot be healed by a medic, but he can withstand a thrust by an infected, an his health suffice."), NULL);
+			pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("The hero cannot be healed by a medic, but he can withstand a thrust by an infected."), NULL);
 			
 			pSelf->SendMOTD(ClientID, Buffer.buffer());
 		}
