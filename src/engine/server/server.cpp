@@ -4219,8 +4219,9 @@ public:
 	{
 		char aBuf[512];
 
-		if (m_pServer->GameServer()->GetActivePlayerCount() > 8)
+		if (m_pServer->GameServer()->GetActivePlayerCount() < 8) {
 			return;
+		}
 
 		str_format(aBuf, sizeof(aBuf), 
 			"INSERT INTO %s_infc_RoundScore "
