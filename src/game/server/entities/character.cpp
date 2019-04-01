@@ -2780,7 +2780,8 @@ bool CCharacter::TakeDamage(vec2 Force, int Dmg, int From, int Weapon, int Mode)
 		Mode = TAKEDAMAGEMODE_NOINFECTION;
 	}
 	
-	if(GetClass() != PLAYERCLASS_HUNTER || Weapon != WEAPON_SHOTGUN)
+	if((GetClass() != PLAYERCLASS_HUNTER || Weapon != WEAPON_SHOTGUN) &&
+			!(IsHuman() && Weapon == WEAPON_NINJA))
 	{
 		m_Core.m_Vel += Force;
 	}
