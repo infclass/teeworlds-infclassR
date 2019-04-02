@@ -35,7 +35,7 @@ CTurret::CTurret(CGameWorld *pGameWorld, vec2 Pos, int Owner, vec2 Direction, fl
 	{
 		char aBuf[256];
 		str_format(aBuf, sizeof(aBuf), "error: turrets have no correct ammo type, admin has to choose ammo type with \"inf_turret_enable_ammoType\"");
-		Console()->Print(IConsole::OUTPUT_LEVEL_DEBUG, "game", aBuf);
+		GameServer()->Console()->Print(IConsole::OUTPUT_LEVEL_DEBUG, "game", aBuf);
 		
 		Reset();
 		
