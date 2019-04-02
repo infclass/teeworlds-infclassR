@@ -4244,11 +4244,6 @@ public:
 	void UpdateScore(CSqlServer* pSqlServer, int ScoreType, int Score, const char* pScoreName)
 	{
 		char aBuf[512];
-
-		if (m_pServer->GetActivePlayerCount() < 8) {
-			return;
-		}
-
 		str_format(aBuf, sizeof(aBuf), 
 			"INSERT INTO %s_infc_RoundScore "
 			"(UserId, RoundId, MapName, ScoreType, ScoreDate, Score) "
@@ -4365,6 +4360,11 @@ void CServer::OnRoundEnd()
 	if (str_comp(m_aCurrentMap, "infc_toilet") == 0) {
 		return;
 	}
+
+	if (GetActivePlayerCount() < 8) {
+		return;
+	}
+
 	//Send round statistics
 	CSqlJob* pRoundJob = new CSqlJob_Server_SendRoundStatistics(this, RoundStatistics(), m_aCurrentMap);
 	pRoundJob->Start();
