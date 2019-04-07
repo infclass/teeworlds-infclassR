@@ -2464,6 +2464,7 @@ void CCharacter::GiveGift(int GiftType)
 			break;
 		case PLAYERCLASS_LOOPER:
 			GiveWeapon(WEAPON_RIFLE, -1);
+			GiveWeapon(WEAPON_GRENADE, -1);
 			break;
 		case PLAYERCLASS_MEDIC:
 			GiveWeapon(WEAPON_SHOTGUN, -1);
