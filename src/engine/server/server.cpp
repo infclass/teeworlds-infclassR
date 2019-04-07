@@ -1602,7 +1602,7 @@ void CServer::SendServerInfo(const NETADDR *pAddr, int Token, bool Extended, boo
 					str_format(aBuf, sizeof(aBuf), "%s | %s: %s", g_Config.m_SvName, "BiologistOfTheDay", m_aChallengeWinner);
 					break;
 				case SQL_SCORETYPE_LOOPER_SCORE:
-					str_format(aBuf, sizeof(aBuf), "%s | %s: %s", g_Config.m_SvName, "LoooperOfTheDay", m_aChallengeWinner);
+					str_format(aBuf, sizeof(aBuf), "%s | %s: %s", g_Config.m_SvName, "LooperOfTheDay", m_aChallengeWinner);
 					break;
 				case SQL_SCORETYPE_NINJA_SCORE:
 					str_format(aBuf, sizeof(aBuf), "%s | %s: %s", g_Config.m_SvName, "NinjaOfTheDay", m_aChallengeWinner);
