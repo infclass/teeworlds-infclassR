@@ -41,3 +41,6 @@ bam server_debug
 
 ## Server commands
 Read the [wiki](https://github.com/yavl/teeworlds-infclassR/wiki)
+
+This product includes GeoLite2 data created by MaxMind, available from
+[https://maxmind.com](https://www.maxmind.com).
