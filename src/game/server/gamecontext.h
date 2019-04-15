@@ -261,7 +261,8 @@ private:
 	static bool ConCmdList(IConsole::IResult *pResult, void *pUserData);
 	static bool ConWitch(IConsole::IResult *pResult, void *pUserData);
 	bool PrivateMessage(const char* pStr, int ClientID, bool TeamChat);
-
+	void MutePlayer(const char* pStr, int ClientID);
+	
 	void OnCallVote(void *pRawMsg, int ClientID);
 	int IsMapVote(const char *pVoteCommand);
 	void GetMapNameFromCommand(char* pMapName, const char *pCommand);
@@ -299,6 +300,7 @@ private:
 	int m_VoteLanguageTick[MAX_CLIENTS];
 	char m_VoteLanguage[MAX_CLIENTS][16];
 	int m_VoteBanClientID;
+	static bool m_ClientMuted[MAX_CLIENTS][MAX_CLIENTS]; // m_ClientMuted[i][j]: i muted j
 	
 	class CBroadcastState
 	{

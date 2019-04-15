@@ -23,6 +23,7 @@ enum
 };
 
 /* INFECTION MODIFICATION START ***************************************/
+bool CGameContext::m_ClientMuted[MAX_CLIENTS][MAX_CLIENTS];
 
 void CGameContext::OnSetAuthed(int ClientID, int Level)
 {
@@ -41,6 +42,13 @@ void CGameContext::Construct(int Resetting)
 	{
 		m_apPlayers[i] = 0;
 		m_aHitSoundState[i] = 0;
+	}
+
+	if(Resetting==NO_RESET) // first init
+	{
+		for(int i = 0; i < MAX_CLIENTS; i++)
+			for(int j = 0; j < MAX_CLIENTS; j++)
+				CGameContext::m_ClientMuted[i][j] = false;
 	}
 
 	m_pController = 0;
@@ -745,7 +753,15 @@ void CGameContext::SendChat(int ChatterClientID, int Team, const char *pText)
 		Msg.m_Team = 0;
 		Msg.m_ClientID = ChatterClientID;
 		Msg.m_pMessage = pText;
-		Server()->SendPackMsg(&Msg, MSGFLAG_VITAL, -1);
+
+		// send to the clients that did not mute chatter
+		for(int i = 0; i < MAX_CLIENTS; i++)
+		{
+			if(m_apPlayers[i] && !CGameContext::m_ClientMuted[i][ChatterClientID])
+			{
+				Server()->SendPackMsg(&Msg, MSGFLAG_VITAL, i);
+			}
+		}
 	}
 	else
 	{
@@ -1421,6 +1437,14 @@ void CGameContext::OnClientDrop(int ClientID, int Type, const char *pReason)
 	str_format(aBuf, sizeof(aBuf), "leave player='%d:%s'", ClientID, Server()->ClientName(ClientID));
 	Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "server", aBuf);
 
+	for(int i = 0; i < MAX_CLIENTS; i++)
+	{
+		// remove everyone this player had muted
+		CGameContext::m_ClientMuted[ClientID][i] = false;
+		
+		// reset mutes for everyone that muted this player
+		CGameContext::m_ClientMuted[i][ClientID] = false;
+	}
 	// InfClassR end
 }
 
@@ -1720,6 +1744,10 @@ void CGameContext::OnMessage(int MsgID, CUnpacker *pUnpacker, int ClientID)
 			else if(str_comp_num(pMsg->m_pMessage, "/w ", 3) == 0)
 			{
 				PrivateMessage(pMsg->m_pMessage+3, ClientID, (Team != CGameContext::CHAT_ALL));
+			}
+			else if(str_comp_num(pMsg->m_pMessage, "/mute ", 6) == 0)
+			{
+				MutePlayer(pMsg->m_pMessage+6, ClientID);
 			}
 			else if(pMsg->m_pMessage[0] == '/' || pMsg->m_pMessage[0] == '\\')
 			{
@@ -3206,6 +3234,23 @@ bool CGameContext::PrivateMessage(const char* pStr, int ClientID, bool TeamChat)
 	return true;
 }
 
+void CGameContext::MutePlayer(const char* pStr, int ClientID)
+{
+	for(int i=0; i<MAX_CLIENTS; i++)
+	{
+		if(m_apPlayers[i] && str_comp(Server()->ClientName(i), pStr) == 0)
+		{
+			CGameContext::m_ClientMuted[ClientID][i] = !CGameContext::m_ClientMuted[ClientID][i];
+			
+			if(CGameContext::m_ClientMuted[ClientID][i])
+				SendChatTarget(ClientID, "Player muted. Mute will persist until you or the muted player disconnects.");
+			else
+				SendChatTarget(ClientID, "Player unmuted. You can see his messages again.");
+			break;
+		}
+	}
+}
+
 #ifdef CONF_SQL
 
 bool CGameContext::ConRegister(IConsole::IResult *pResult, void *pUserData)
@@ -3824,6 +3869,21 @@ bool CGameContext::ConHelp(IConsole::IResult *pResult, void *pUserData)
 			
 			pSelf->SendMOTD(ClientID, Buffer.buffer());
 		}
+		else if(str_comp_nocase(pHelpPage, "mute") == 0)
+		{
+			Buffer.append("~~ ");
+			pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("Persistent player mute")); 
+			Buffer.append(" ~~\n\n");
+			Buffer.append("\n\n");
+			pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("Use “/mute <PlayerName>” to mute this player."), NULL);
+			Buffer.append("\n\n");
+			pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("Unlike a client mute this will persist between map changes and wears off when either you or the muted player disconnects."), NULL);
+			Buffer.append("\n\n");
+			pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("Example: “/mute nameless tee”"), NULL);
+			Buffer.append("\n\n");
+			
+			pSelf->SendMOTD(ClientID, Buffer.buffer());
+		}
 		else if(str_comp_nocase(pHelpPage, "taxi") == 0)
 		{
 			Buffer.append("~~ ");
@@ -3985,7 +4045,7 @@ bool CGameContext::ConCmdList(IConsole::IResult *pResult, void *pUserData)
 	Buffer.append(" ~~\n\n");
 	pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, "/antiping, /alwaysrandom, /customskin, /help, /info, /language", NULL);
 	Buffer.append("\n\n");
-	pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, "/msg", NULL);
+	pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, "/msg, /mute", NULL);
 	Buffer.append("\n\n");
 #ifdef CONF_SQL
 	pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, "/register, /login, /logout, /setemail", NULL);
