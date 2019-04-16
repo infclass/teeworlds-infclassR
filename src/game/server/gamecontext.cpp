@@ -3325,7 +3325,7 @@ void CGameContext::MutePlayer(const char* pStr, int ClientID)
 			if(CGameContext::m_ClientMuted[ClientID][i])
 				SendChatTarget(ClientID, "Player muted. Mute will persist until you or the muted player disconnects.");
 			else
-				SendChatTarget(ClientID, "Player unmuted. You can see his messages again.");
+				SendChatTarget(ClientID, "Player unmuted. You can see their messages again.");
 			break;
 		}
 	}
