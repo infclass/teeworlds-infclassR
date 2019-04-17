@@ -782,7 +782,7 @@ void CGameContext::SendChat(int ChatterClientID, int Team, const char *pText)
 				int PlayerTeam = (m_apPlayers[i]->IsZombie() ? CGameContext::CHAT_RED : CGameContext::CHAT_BLUE );
 				if(m_apPlayers[i]->GetTeam() == TEAM_SPECTATORS) PlayerTeam = CGameContext::CHAT_SPEC;
 				
-				if(PlayerTeam == Team)
+				if(PlayerTeam == Team && !CGameContext::m_ClientMuted[i][ChatterClientID])
 				{
 					Server()->SendPackMsg(&Msg, MSGFLAG_VITAL|MSGFLAG_NORECORD, i);
 				}
