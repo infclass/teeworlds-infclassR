@@ -22,7 +22,10 @@ enum
 };
 
 /* INFECTION MODIFICATION START ***************************************/
+
+// Attributes persisting between gamecontext creation and destruction
 bool CGameContext::m_ClientMuted[MAX_CLIENTS][MAX_CLIENTS];
+std::vector<int> CGameContext::spectators_id;
 
 void CGameContext::OnSetAuthed(int ClientID, int Level)
 {
@@ -4554,17 +4557,17 @@ void CGameContext::List(int ClientID, const char* filter)
 void CGameContext::AddSpectatorCID(int ClientID)
 {
 	Server()->RemoveMapVotesForID(ClientID);
-	auto& vec = spectators_id;
+	auto& vec = CGameContext::spectators_id;
 	if(!(std::find(vec.begin(), vec.end(), ClientID) != vec.end()))
 		vec.push_back(ClientID);
 }
 
 void CGameContext::RemoveSpectatorCID(int ClientID) {
-	auto& vec = spectators_id;
+	auto& vec = CGameContext::spectators_id;
 	vec.erase(std::remove(vec.begin(), vec.end(), ClientID), vec.end());
 }
 
 bool CGameContext::IsSpectatorCID(int ClientID) {
-	auto& vec = spectators_id;
+	auto& vec = CGameContext::spectators_id;
 	return std::find(vec.begin(), vec.end(), ClientID) != vec.end();
 }
