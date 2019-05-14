@@ -8,6 +8,7 @@ GameStateFlags = ["GAMEOVER", "SUDDENDEATH", "PAUSED"]
 Emoticons = ["OOP", "EXCLAMATION", "HEARTS", "DROP", "DOTDOT", "MUSIC", "SORRY", "GHOST", "SUSHI", "SPLATTEE", "DEVILTEE", "ZOMG", "ZZZ", "WTF", "EYES", "QUESTION"]
 
 Powerups = ["HEALTH", "ARMOR", "WEAPON", "NINJA"]
+Authed = ["NO", "HELPER", "MOD", "ADMIN"]
 
 RawHeader = '''
 
@@ -42,7 +43,8 @@ RawSource = '''
 Enums = [
 	Enum("EMOTE", Emotes),
 	Enum("POWERUP", Powerups),
-	Enum("EMOTICON", Emoticons)
+	Enum("EMOTICON", Emoticons),
+	Enum("AUTHED", Authed),
 ]
 
 Flags = [
