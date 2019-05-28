@@ -3014,7 +3014,7 @@ bool CCharacter::TakeDamage(vec2 Force, int Dmg, int From, int Weapon, int Mode)
 		GameServer()->CreateSound(m_Pos, SOUND_PLAYER_PAIN_SHORT);
 
 	m_EmoteType = EMOTE_PAIN;
-	m_EmoteStop = Server()->Tick() + 500 * Server()->TickSpeed() / 1000;
+	m_EmoteStop = Server()->Tick() + Server()->TickSpeed() / 2;
 
 	return true;
 }
