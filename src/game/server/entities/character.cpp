@@ -2832,9 +2832,22 @@ bool CCharacter::TakeDamage(vec2 Force, int Dmg, int From, int Weapon, int Mode)
 	CCharacter *pKillerChar = 0; // before using this variable check if it exists with "if (pKillerChar)"
 	if (pKillerPlayer)
 		pKillerChar = pKillerPlayer->GetCharacter();
-	
-	if(GetClass() == PLAYERCLASS_HERO && Mode == TAKEDAMAGEMODE_INFECTION && pKillerPlayer && pKillerPlayer->IsZombie())
+
+	if(Mode == TAKEDAMAGEMODE_INFECTION)
+	{
+	        if (!pKillerPlayer || !pKillerPlayer->IsZombie() || !IsHuman())
+		{
+		        // The infection is only possible if the killer is a zombie and the target is a human
+		        Mode = TAKEDAMAGEMODE_NOINFECTION;
+		}
+	}
+
+	if(GetClass() == PLAYERCLASS_HERO && Mode == TAKEDAMAGEMODE_INFECTION)
+	{
 		Dmg = 12;
+		// A zombie can't infect a hero
+		Mode = TAKEDAMAGEMODE_NOINFECTION;
+	}
 	
 	if(pKillerChar && pKillerChar->IsInLove())
 	{
@@ -2948,7 +2961,7 @@ bool CCharacter::TakeDamage(vec2 Force, int Dmg, int From, int Weapon, int Mode)
 	// do damage Hit sound
 	
 /* INFECTION MODIFICATION START ***************************************/
-	if(Mode == TAKEDAMAGEMODE_INFECTION && pKillerPlayer && pKillerPlayer->IsZombie() && IsHuman() && GetClass() != PLAYERCLASS_HERO)
+	if(Mode == TAKEDAMAGEMODE_INFECTION)
 	{
 		m_pPlayer->StartInfection();
 		
