@@ -1694,23 +1694,20 @@ void CCharacter::Tick()
 	
 	{
 		int Index0 = GameServer()->Collision()->GetZoneValueAt(GameServer()->m_ZoneHandle_Damage, m_Pos.x+m_ProximityRadius/3.f, m_Pos.y-m_ProximityRadius/3.f);
-		int Index1 = GameServer()->Collision()->GetZoneValueAt(GameServer()->m_ZoneHandle_Damage, m_Pos.x+m_ProximityRadius/3.f, m_Pos.y-m_ProximityRadius/3.f);
-		int Index2 = GameServer()->Collision()->GetZoneValueAt(GameServer()->m_ZoneHandle_Damage, m_Pos.x+m_ProximityRadius/3.f, m_Pos.y-m_ProximityRadius/3.f);
-		int Index3 = GameServer()->Collision()->GetZoneValueAt(GameServer()->m_ZoneHandle_Damage, m_Pos.x+m_ProximityRadius/3.f, m_Pos.y-m_ProximityRadius/3.f);
 		
-		if(Index0 == ZONE_DAMAGE_DEATH || Index1 == ZONE_DAMAGE_DEATH || Index2 == ZONE_DAMAGE_DEATH || Index3 == ZONE_DAMAGE_DEATH)
+		if(Index0 == ZONE_DAMAGE_DEATH)
 		{
 			Die(m_pPlayer->GetCID(), WEAPON_WORLD);
 		}
-		else if(GetClass() != PLAYERCLASS_UNDEAD && (Index0 == ZONE_DAMAGE_DEATH_NOUNDEAD || Index1 == ZONE_DAMAGE_DEATH_NOUNDEAD || Index2 == ZONE_DAMAGE_DEATH_NOUNDEAD || Index3 == ZONE_DAMAGE_DEATH_NOUNDEAD))
+		else if(GetClass() != PLAYERCLASS_UNDEAD && (Index0 == ZONE_DAMAGE_DEATH_NOUNDEAD))
 		{
 			Die(m_pPlayer->GetCID(), WEAPON_WORLD);
 		}
-		else if(IsZombie() && (Index0 == ZONE_DAMAGE_DEATH_INFECTED || Index1 == ZONE_DAMAGE_DEATH_INFECTED || Index2 == ZONE_DAMAGE_DEATH_INFECTED || Index3 == ZONE_DAMAGE_DEATH_INFECTED))
+		else if(IsZombie() && (Index0 == ZONE_DAMAGE_DEATH_INFECTED))
 		{
 			Die(m_pPlayer->GetCID(), WEAPON_WORLD);
 		}
-		else if(m_Alive && (Index0 == ZONE_DAMAGE_INFECTION || Index1 == ZONE_DAMAGE_INFECTION || Index2 == ZONE_DAMAGE_INFECTION || Index3 == ZONE_DAMAGE_INFECTION))
+		else if(m_Alive && (Index0 == ZONE_DAMAGE_INFECTION))
 		{
 			if(IsZombie())
 			{
@@ -1726,7 +1723,7 @@ void CCharacter::Tick()
 				m_pPlayer->StartInfection();
 			}
 		}
-		if(m_Alive && (Index0 != ZONE_DAMAGE_INFECTION && Index1 != ZONE_DAMAGE_INFECTION && Index2 != ZONE_DAMAGE_INFECTION && Index3 != ZONE_DAMAGE_INFECTION))
+		if(m_Alive && (Index0 != ZONE_DAMAGE_INFECTION))
 		{
 			m_InfZoneTick = -1;// Reset Tick when zombie is not in infection zone
 		}
