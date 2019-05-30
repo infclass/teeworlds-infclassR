@@ -817,11 +817,6 @@ void CPlayer::StartInfection(bool force)
 	SetClass(c);
 }
 
-bool CPlayer::IsInfected() const
-{
-	return (m_class > END_HUMANCLASS);
-}
-
 bool CPlayer::IsZombie() const
 {
 	return (m_class > END_HUMANCLASS);
