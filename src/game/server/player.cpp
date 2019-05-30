@@ -815,7 +815,7 @@ bool CPlayer::IsHuman() const
 	return !(m_class > END_HUMANCLASS);
 }
 
-bool CPlayer::IsKownClass(int c)
+bool CPlayer::IsKnownClass(int c)
 {
 	return m_knownClass[c];
 }

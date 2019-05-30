@@ -161,7 +161,7 @@ public:
 	bool IsZombie() const;
 	bool IsHuman() const;
 	void StartInfection(bool force = false);
-	bool IsKownClass(int c);
+	bool IsKnownClass(int c);
 	
 	const char* GetLanguage();
 	void SetLanguage(const char* pLanguage);
