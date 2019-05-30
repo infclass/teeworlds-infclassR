@@ -91,7 +91,7 @@ void CMercenaryBomb::Snap(int SnappingClient)
 		return;
 
 	//CPlayer* pClient = GameServer()->m_apPlayers[SnappingClient];
-	//if(pClient->IsInfected()) // invisible for zombies
+	//if(pClient->IsZombie()) // invisible for zombies
 	//	return;
 
 	float AngleStart = (2.0f * pi * Server()->Tick()/static_cast<float>(Server()->TickSpeed()))/10.0f;

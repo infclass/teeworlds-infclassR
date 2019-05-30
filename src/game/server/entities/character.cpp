@@ -3781,11 +3781,6 @@ void CCharacter::SetClass(int ClassChoosed)
 	GameServer()->CreatePlayerSpawn(m_Pos);
 }
 
-bool CCharacter::IsInfected() const
-{
-	return m_pPlayer->IsInfected();
-}
-
 bool CCharacter::IsZombie() const
 {
 	return m_pPlayer->IsZombie();

@@ -238,7 +238,6 @@ public:
 	int GetClass();
 
 	void SetClass(int ClassChoosed);
-	bool IsInfected() const;
 	bool IsZombie() const;
 	bool IsHuman() const;
 	void Infection(bool v);
