@@ -195,7 +195,7 @@ int CGameContext::GetSpectatorCount()
 }
 
 
-void CGameContext::CountHumans()
+void CGameContext::CountInfPlayers()
 {
 	int humanCounter = 0;
 	int zombieCounter = 0;
@@ -1425,7 +1425,7 @@ void CGameContext::OnClientEnter(int ClientID)
 	//Count players
 	CountActivePlayers();
 	CountSpectators();
-	CountHumans(); //updates also zombies
+	CountInfPlayers();
 	
 }
 
@@ -1481,7 +1481,7 @@ void CGameContext::OnClientConnected(int ClientID)
 	
 	CountActivePlayers();
 	CountSpectators();
-	CountHumans(); //updates also zombies
+	CountInfPlayers();
 	
 }
 
@@ -1523,7 +1523,7 @@ void CGameContext::OnClientDrop(int ClientID, int Type, const char *pReason)
 	//Count players
 	CountActivePlayers();
 	CountSpectators();
-	CountHumans(); //updates also zombies
+	CountInfPlayers();
 	
 	
 	// InfClassR end
