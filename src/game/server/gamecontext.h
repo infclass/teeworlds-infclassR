@@ -146,7 +146,6 @@ public:
 	int GetSpectatorCount();
 	void CountHumans();
 	int GetHumanCount();
-	void CountZombies();
 	int GetZombieCount();
 	static std::vector<int> spectators_id; //spectators vector
 	int m_NbActivePlayers;

@@ -217,23 +217,6 @@ int CGameContext::GetHumanCount()
 	return m_NbHumans;
 }
 
-void CGameContext::CountZombies()
-{
-	int humanCounter = 0;
-	int zombieCounter = 0;
-	for(int i = 0; i < MAX_CLIENTS; i++)
-	{
-		if (!m_apPlayers[i])
-			continue;
-		if (m_apPlayers[i]->IsZombie())
-			zombieCounter++;
-		else
-			humanCounter++;
-	}
-	m_NbZombies = zombieCounter;
-	m_NbHumans = humanCounter;
-}
-
 int CGameContext::GetZombieCount()
 {
 	return m_NbZombies;
