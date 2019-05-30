@@ -57,7 +57,6 @@ CPlayer::CPlayer(CGameContext *pGameServer, int ClientID, int Team)
 	m_PrevTuningParams = *pGameServer->Tuning();
 	m_NextTuningParams = m_PrevTuningParams;
 	m_IsInGame = false;
-	m_IsSpectator = false;
 	
 	for(unsigned int i=0; i<sizeof(m_LastHumanClasses)/sizeof(int); i++)
 		m_LastHumanClasses[i] = -1;
@@ -566,15 +565,11 @@ void CPlayer::SetTeam(int Team, bool DoChatMsg)
 		
 		//add spectator
 		GameServer()->AddSpectatorCID(m_ClientID);
-		m_IsSpectator = true;
-		
 	} 
 	else
 	{
 		//remove spectator
 		GameServer()->RemoveSpectatorCID(m_ClientID);
-		m_IsSpectator = false;
-		
 	}
 	
 	GameServer()->CountActivePlayers();
@@ -839,7 +834,7 @@ bool CPlayer::IsHuman() const
 
 bool CPlayer::IsSpectator() const
 {
-	return m_IsSpectator;
+	return m_Team == TEAM_SPECTATORS;
 }
 
 bool CPlayer::IsKnownClass(int c)
