@@ -3672,16 +3672,11 @@ void CCharacter::ClassSpawnAttributes()
 }
 
 void CCharacter::GiveArmorIfLonely() {
-	if (this->IsZombie()) {
-		unsigned int nbZombies=0;
-		CPlayerIterator<PLAYERITER_INGAME> Iter(GameServer()->m_apPlayers);
-		while(Iter.Next())
-		{
-			if (Iter.Player()->IsZombie())
-				nbZombies++;
+	if (IsZombie()) {
+		if (GameServer()->GetZombieCount() <= 1) {
+			/* Lonely zombie */
+			IncreaseArmor(10);
 		}
-		if (nbZombies <= 1) /* Lonely zombie */
-			m_Armor = 10;
 	}
 }
 
