@@ -231,12 +231,9 @@ void CGameControllerMOD::Tick()
 					FairInfVector.push_back(Iter.ClientID());
 					
 				}
-				
-				//Since spectators are zombies, NumNeededInfection has to be increased by SpectatorCount
-				int NumNeededInfection = GetFirstInfNb() + GameServer()->GetSpectatorCount();
-				
+
 				// fair infection process, 
-				while( FairInfVector.size() > 0 && GameServer()->GetHumanCount() > 1 && GameServer()->GetZombieCount() < NumNeededInfection)
+				while( FairInfVector.size() > 0 && GameServer()->GetHumanCount() > 1 && GameServer()->GetZombieCount() < GetFirstInfNb())
 				{
 					//dbg_msg("Game", "#FairToInfect: %d", FairInfVector.size());
 					
@@ -277,7 +274,7 @@ void CGameControllerMOD::Tick()
 				}
 				
 				// Unfair infection process
-				while( UnfairInfVector.size() > 0 && GameServer()->GetHumanCount() > 1 && GameServer()->GetZombieCount() < NumNeededInfection)
+				while( UnfairInfVector.size() > 0 && GameServer()->GetHumanCount() > 1 && GameServer()->GetZombieCount() < GetFirstInfNb())
 				{
 					//dbg_msg("Game", "#NotFairToInfect: %d", UnfairInfVector.size());
 					

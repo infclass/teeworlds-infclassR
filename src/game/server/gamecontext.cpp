@@ -205,7 +205,7 @@ void CGameContext::CountInfPlayers()
 			continue;
 		if (m_apPlayers[i]->IsHuman())
 			humanCounter++;
-		else
+		else if (m_apPlayers[i]->IsZombie())
 			zombieCounter++;
 	}
 	m_NbHumans = humanCounter;
