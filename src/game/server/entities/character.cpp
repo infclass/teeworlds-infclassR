@@ -3402,7 +3402,7 @@ void CCharacter::ClassSpawnAttributes()
 			m_ActiveWeapon = WEAPON_RIFLE;
 			
 			GameServer()->SendBroadcast_ClassIntro(m_pPlayer->GetCID(), PLAYERCLASS_ENGINEER);
-			if(!m_pPlayer->IsKownClass(PLAYERCLASS_ENGINEER))
+			if(!m_pPlayer->IsKnownClass(PLAYERCLASS_ENGINEER))
 			{
 				GameServer()->SendChatTarget_Localization(m_pPlayer->GetCID(), CHATCATEGORY_DEFAULT, _("Type “/help {str:ClassName}” for more information about your class"), "ClassName", "engineer", NULL);
 				m_pPlayer->m_knownClass[PLAYERCLASS_ENGINEER] = true;
@@ -3419,7 +3419,7 @@ void CCharacter::ClassSpawnAttributes()
 			m_ActiveWeapon = WEAPON_GRENADE;
 			
 			GameServer()->SendBroadcast_ClassIntro(m_pPlayer->GetCID(), PLAYERCLASS_SOLDIER);
-			if(!m_pPlayer->IsKownClass(PLAYERCLASS_SOLDIER))
+			if(!m_pPlayer->IsKnownClass(PLAYERCLASS_SOLDIER))
 			{
 				GameServer()->SendChatTarget_Localization(m_pPlayer->GetCID(), CHATCATEGORY_DEFAULT, _("Type “/help {str:ClassName}” for more information about your class"), "ClassName", "soldier", NULL);
 				m_pPlayer->m_knownClass[PLAYERCLASS_SOLDIER] = true;
@@ -3436,7 +3436,7 @@ void CCharacter::ClassSpawnAttributes()
 			m_ActiveWeapon = WEAPON_GUN;
 			
 			GameServer()->SendBroadcast_ClassIntro(m_pPlayer->GetCID(), PLAYERCLASS_MERCENARY);
-			if(!m_pPlayer->IsKownClass(PLAYERCLASS_MERCENARY))
+			if(!m_pPlayer->IsKnownClass(PLAYERCLASS_MERCENARY))
 			{
 				GameServer()->SendChatTarget_Localization(m_pPlayer->GetCID(), CHATCATEGORY_DEFAULT, _("Type “/help {str:ClassName}” for more information about your class"), "ClassName", "mercenary", NULL);
 				m_pPlayer->m_knownClass[PLAYERCLASS_MERCENARY] = true;
@@ -3453,7 +3453,7 @@ void CCharacter::ClassSpawnAttributes()
 			m_ActiveWeapon = WEAPON_RIFLE;
 			
 			GameServer()->SendBroadcast_ClassIntro(m_pPlayer->GetCID(), PLAYERCLASS_SNIPER);
-			if(!m_pPlayer->IsKownClass(PLAYERCLASS_SNIPER))
+			if(!m_pPlayer->IsKnownClass(PLAYERCLASS_SNIPER))
 			{
 				GameServer()->SendChatTarget_Localization(m_pPlayer->GetCID(), CHATCATEGORY_DEFAULT, _("Type “/help {str:ClassName}” for more information about your class"), "ClassName", "sniper", NULL);
 				m_pPlayer->m_knownClass[PLAYERCLASS_SNIPER] = true;
@@ -3471,7 +3471,7 @@ void CCharacter::ClassSpawnAttributes()
 			m_ActiveWeapon = WEAPON_GRENADE;
 			
 			GameServer()->SendBroadcast_ClassIntro(m_pPlayer->GetCID(), PLAYERCLASS_SCIENTIST);
-			if(!m_pPlayer->IsKownClass(PLAYERCLASS_SCIENTIST))
+			if(!m_pPlayer->IsKnownClass(PLAYERCLASS_SCIENTIST))
 			{
 				GameServer()->SendChatTarget_Localization(m_pPlayer->GetCID(), CHATCATEGORY_DEFAULT, _("Type “/help {str:ClassName}” for more information about your class"), "ClassName", "scientist", NULL);
 				m_pPlayer->m_knownClass[PLAYERCLASS_SCIENTIST] = true;
@@ -3489,7 +3489,7 @@ void CCharacter::ClassSpawnAttributes()
 			m_ActiveWeapon = WEAPON_SHOTGUN;
 			
 			GameServer()->SendBroadcast_ClassIntro(m_pPlayer->GetCID(), PLAYERCLASS_BIOLOGIST);
-			if(!m_pPlayer->IsKownClass(PLAYERCLASS_BIOLOGIST))
+			if(!m_pPlayer->IsKnownClass(PLAYERCLASS_BIOLOGIST))
 			{
 				GameServer()->SendChatTarget_Localization(m_pPlayer->GetCID(), CHATCATEGORY_DEFAULT, _("Type “/help {str:ClassName}” for more information about your class"), "ClassName", "biologist", NULL);
 				m_pPlayer->m_knownClass[PLAYERCLASS_BIOLOGIST] = true;
@@ -3506,7 +3506,7 @@ void CCharacter::ClassSpawnAttributes()
 			m_ActiveWeapon = WEAPON_RIFLE;
 			
 			GameServer()->SendBroadcast_ClassIntro(m_pPlayer->GetCID(), PLAYERCLASS_LOOPER);
-			if(!m_pPlayer->IsKownClass(PLAYERCLASS_LOOPER))
+			if(!m_pPlayer->IsKnownClass(PLAYERCLASS_LOOPER))
 			{
 				GameServer()->SendChatTarget_Localization(m_pPlayer->GetCID(), CHATCATEGORY_DEFAULT, _("Type “/help {str:ClassName}” for more information about your class"), "ClassName", "looper", NULL);
 				m_pPlayer->m_knownClass[PLAYERCLASS_LOOPER] = true;
@@ -3526,7 +3526,7 @@ void CCharacter::ClassSpawnAttributes()
 			m_ActiveWeapon = WEAPON_SHOTGUN;
 			
 			GameServer()->SendBroadcast_ClassIntro(m_pPlayer->GetCID(), PLAYERCLASS_MEDIC);
-			if(!m_pPlayer->IsKownClass(PLAYERCLASS_MEDIC))
+			if(!m_pPlayer->IsKnownClass(PLAYERCLASS_MEDIC))
 			{
 				GameServer()->SendChatTarget_Localization(m_pPlayer->GetCID(), CHATCATEGORY_DEFAULT, _("Type “/help {str:ClassName}” for more information about your class"), "ClassName", "medic", NULL);
 				m_pPlayer->m_knownClass[PLAYERCLASS_MEDIC] = true;
@@ -3545,7 +3545,7 @@ void CCharacter::ClassSpawnAttributes()
 			m_ActiveWeapon = WEAPON_GRENADE;
 			
 			GameServer()->SendBroadcast_ClassIntro(m_pPlayer->GetCID(), PLAYERCLASS_HERO);
-			if(!m_pPlayer->IsKownClass(PLAYERCLASS_HERO))
+			if(!m_pPlayer->IsKnownClass(PLAYERCLASS_HERO))
 			{
 				GameServer()->SendChatTarget_Localization(m_pPlayer->GetCID(), CHATCATEGORY_DEFAULT, _("Type “/help {str:ClassName}” for more information about your class"), "ClassName", "hero", NULL);
 				m_pPlayer->m_knownClass[PLAYERCLASS_HERO] = true;
@@ -3561,7 +3561,7 @@ void CCharacter::ClassSpawnAttributes()
 			m_ActiveWeapon = WEAPON_HAMMER;
 			
 			GameServer()->SendBroadcast_ClassIntro(m_pPlayer->GetCID(), PLAYERCLASS_NINJA);
-			if(!m_pPlayer->IsKownClass(PLAYERCLASS_NINJA))
+			if(!m_pPlayer->IsKnownClass(PLAYERCLASS_NINJA))
 			{
 				GameServer()->SendChatTarget_Localization(m_pPlayer->GetCID(), CHATCATEGORY_DEFAULT, _("Type “/help {str:ClassName}” for more information about your class"), "ClassName", "ninja", NULL);
 				m_pPlayer->m_knownClass[PLAYERCLASS_NINJA] = true;
@@ -3583,7 +3583,7 @@ void CCharacter::ClassSpawnAttributes()
 			m_ActiveWeapon = WEAPON_HAMMER;
 			
 			GameServer()->SendBroadcast_ClassIntro(m_pPlayer->GetCID(), PLAYERCLASS_SMOKER);
-			if(!m_pPlayer->IsKownClass(PLAYERCLASS_SMOKER))
+			if(!m_pPlayer->IsKnownClass(PLAYERCLASS_SMOKER))
 			{   
 				GameServer()->SendChatTarget_Localization(m_pPlayer->GetCID(), CHATCATEGORY_DEFAULT, _("Type “/help {str:ClassName}” for more information about your class"), "ClassName", "smoker", NULL);
 				m_pPlayer->m_knownClass[PLAYERCLASS_SMOKER] = true;
@@ -3598,7 +3598,7 @@ void CCharacter::ClassSpawnAttributes()
 			m_ActiveWeapon = WEAPON_HAMMER;
 			
 			GameServer()->SendBroadcast_ClassIntro(m_pPlayer->GetCID(), PLAYERCLASS_BOOMER);
-			if(!m_pPlayer->IsKownClass(PLAYERCLASS_BOOMER))
+			if(!m_pPlayer->IsKnownClass(PLAYERCLASS_BOOMER))
 			{
 				GameServer()->SendChatTarget_Localization(m_pPlayer->GetCID(), CHATCATEGORY_DEFAULT, _("Type “/help {str:ClassName}” for more information about your class"), "ClassName", "boomer", NULL);
 				m_pPlayer->m_knownClass[PLAYERCLASS_BOOMER] = true;
@@ -3613,7 +3613,7 @@ void CCharacter::ClassSpawnAttributes()
 			m_ActiveWeapon = WEAPON_HAMMER;
 			
 			GameServer()->SendBroadcast_ClassIntro(m_pPlayer->GetCID(), PLAYERCLASS_HUNTER);
-			if(!m_pPlayer->IsKownClass(PLAYERCLASS_HUNTER))
+			if(!m_pPlayer->IsKnownClass(PLAYERCLASS_HUNTER))
 			{
 				GameServer()->SendChatTarget_Localization(m_pPlayer->GetCID(), CHATCATEGORY_DEFAULT, _("Type “/help {str:ClassName}” for more information about your class"), "ClassName", "hunter", NULL);
 				m_pPlayer->m_knownClass[PLAYERCLASS_HUNTER] = true;
@@ -3628,7 +3628,7 @@ void CCharacter::ClassSpawnAttributes()
 			m_ActiveWeapon = WEAPON_HAMMER;
 			
 			GameServer()->SendBroadcast_ClassIntro(m_pPlayer->GetCID(), PLAYERCLASS_BAT);
-			if(!m_pPlayer->IsKownClass(PLAYERCLASS_BAT))
+			if(!m_pPlayer->IsKnownClass(PLAYERCLASS_BAT))
 			{
 				GameServer()->SendChatTarget_Localization(m_pPlayer->GetCID(), CHATCATEGORY_DEFAULT, _("Type “/help {str:ClassName}” for more information about your class"), "ClassName", "bat", NULL);
 				m_pPlayer->m_knownClass[PLAYERCLASS_BAT] = true;
@@ -3643,7 +3643,7 @@ void CCharacter::ClassSpawnAttributes()
 			m_ActiveWeapon = WEAPON_HAMMER;
 			
 			GameServer()->SendBroadcast_ClassIntro(m_pPlayer->GetCID(), PLAYERCLASS_GHOST);
-			if(!m_pPlayer->IsKownClass(PLAYERCLASS_GHOST))
+			if(!m_pPlayer->IsKnownClass(PLAYERCLASS_GHOST))
 			{
 				GameServer()->SendChatTarget_Localization(m_pPlayer->GetCID(), CHATCATEGORY_DEFAULT, _("Type “/help {str:ClassName}” for more information about your class"), "ClassName", "ghost", NULL);
 				m_pPlayer->m_knownClass[PLAYERCLASS_GHOST] = true;
@@ -3658,7 +3658,7 @@ void CCharacter::ClassSpawnAttributes()
 			m_ActiveWeapon = WEAPON_HAMMER;
 			
 			GameServer()->SendBroadcast_ClassIntro(m_pPlayer->GetCID(), PLAYERCLASS_SPIDER);
-			if(!m_pPlayer->IsKownClass(PLAYERCLASS_SPIDER))
+			if(!m_pPlayer->IsKnownClass(PLAYERCLASS_SPIDER))
 			{
 				GameServer()->SendChatTarget_Localization(m_pPlayer->GetCID(), CHATCATEGORY_DEFAULT, _("Type “/help {str:ClassName}” for more information about your class"), "ClassName", "spider", NULL);
 				m_pPlayer->m_knownClass[PLAYERCLASS_SPIDER] = true;
@@ -3673,7 +3673,7 @@ void CCharacter::ClassSpawnAttributes()
 			m_ActiveWeapon = WEAPON_HAMMER;
 
 			GameServer()->SendBroadcast_ClassIntro(m_pPlayer->GetCID(), PLAYERCLASS_VOODOO);
-			if(!m_pPlayer->IsKownClass(PLAYERCLASS_VOODOO))
+			if(!m_pPlayer->IsKnownClass(PLAYERCLASS_VOODOO))
 			{
 				GameServer()->SendChatTarget_Localization(m_pPlayer->GetCID(), CHATCATEGORY_DEFAULT, _("Type “/help {str:ClassName}” for more information about your class"), "ClassName", "voodoo", NULL);
 				m_pPlayer->m_knownClass[PLAYERCLASS_VOODOO] = true;
@@ -3688,7 +3688,7 @@ void CCharacter::ClassSpawnAttributes()
 			m_ActiveWeapon = WEAPON_HAMMER;
 			
 			GameServer()->SendBroadcast_ClassIntro(m_pPlayer->GetCID(), PLAYERCLASS_GHOUL);
-			if(!m_pPlayer->IsKownClass(PLAYERCLASS_GHOUL))
+			if(!m_pPlayer->IsKnownClass(PLAYERCLASS_GHOUL))
 			{
 				GameServer()->SendChatTarget_Localization(m_pPlayer->GetCID(), CHATCATEGORY_DEFAULT, _("Type “/help {str:ClassName}” for more information about your class"), "ClassName", "ghoul", NULL);
 				m_pPlayer->m_knownClass[PLAYERCLASS_GHOUL] = true;
@@ -3703,7 +3703,7 @@ void CCharacter::ClassSpawnAttributes()
 			m_ActiveWeapon = WEAPON_HAMMER;
 			
 			GameServer()->SendBroadcast_ClassIntro(m_pPlayer->GetCID(), PLAYERCLASS_SLUG);
-			if(!m_pPlayer->IsKownClass(PLAYERCLASS_SLUG))
+			if(!m_pPlayer->IsKnownClass(PLAYERCLASS_SLUG))
 			{
 				GameServer()->SendChatTarget_Localization(m_pPlayer->GetCID(), CHATCATEGORY_DEFAULT, _("Type “/help {str:ClassName}” for more information about your class"), "ClassName", "slug", NULL);
 				m_pPlayer->m_knownClass[PLAYERCLASS_SLUG] = true;
@@ -3718,7 +3718,7 @@ void CCharacter::ClassSpawnAttributes()
 			m_ActiveWeapon = WEAPON_HAMMER;
 			
 			GameServer()->SendBroadcast_ClassIntro(m_pPlayer->GetCID(), PLAYERCLASS_UNDEAD);
-			if(!m_pPlayer->IsKownClass(PLAYERCLASS_UNDEAD))
+			if(!m_pPlayer->IsKnownClass(PLAYERCLASS_UNDEAD))
 			{
 				GameServer()->SendChatTarget_Localization(m_pPlayer->GetCID(), CHATCATEGORY_DEFAULT, _("Type “/help {str:ClassName}” for more information about your class"), "ClassName", "undead", NULL);
 				m_pPlayer->m_knownClass[PLAYERCLASS_HUNTER] = true;
@@ -3733,7 +3733,7 @@ void CCharacter::ClassSpawnAttributes()
 			m_ActiveWeapon = WEAPON_HAMMER;
 			
 			GameServer()->SendBroadcast_ClassIntro(m_pPlayer->GetCID(), PLAYERCLASS_WITCH);
-			if(!m_pPlayer->IsKownClass(PLAYERCLASS_WITCH))
+			if(!m_pPlayer->IsKnownClass(PLAYERCLASS_WITCH))
 			{
 				GameServer()->SendChatTarget_Localization(m_pPlayer->GetCID(), CHATCATEGORY_DEFAULT, _("Type “/help {str:ClassName}” for more information about your class"), "ClassName", "witch", NULL);
 				m_pPlayer->m_knownClass[PLAYERCLASS_WITCH] = true;

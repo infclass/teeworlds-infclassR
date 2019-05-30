@@ -163,7 +163,7 @@ public:
 	bool IsHuman() const;
 	bool IsSpectator() const;
 	void StartInfection(bool force = false);
-	bool IsKownClass(int c);
+	bool IsKnownClass(int c);
 	
 	const char* GetLanguage();
 	void SetLanguage(const char* pLanguage);

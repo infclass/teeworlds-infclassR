@@ -842,7 +842,7 @@ bool CPlayer::IsSpectator() const
 	return m_IsSpectator;
 }
 
-bool CPlayer::IsKownClass(int c)
+bool CPlayer::IsKnownClass(int c)
 {
 	return m_knownClass[c];
 }
