@@ -807,7 +807,7 @@ bool CGameControllerMOD::PickupAllowed(int Index)
 	else return true;
 }
 
-int CGameControllerMOD::ChooseHumanClass(CPlayer* pPlayer)
+int CGameControllerMOD::ChooseHumanClass(const CPlayer *pPlayer) const
 {
 	//Get information about existing humans
 	int nbSupport = 0;
@@ -893,7 +893,7 @@ int CGameControllerMOD::ChooseHumanClass(CPlayer* pPlayer)
 	return START_HUMANCLASS + 1 + random_distribution(Probability, Probability + NB_HUMANCLASS);
 }
 
-int CGameControllerMOD::ChooseInfectedClass(CPlayer* pPlayer)
+int CGameControllerMOD::ChooseInfectedClass(const CPlayer *pPlayer) const
 {
 	//Get information about existing infected
 	int nbInfected = 0;
