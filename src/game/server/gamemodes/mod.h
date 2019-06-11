@@ -37,6 +37,9 @@ public:
 	void ResetFinalExplosion();
 	int GetFirstInfNb();
 	
+	void DoFairInfection();
+	void DoUnfairInfection();
+
 private:
 	bool IsSpawnable(vec2 Pos, int TeleZoneIndex);
 	void SetFirstInfectedNumber();
