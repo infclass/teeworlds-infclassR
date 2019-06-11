@@ -176,7 +176,6 @@ void CGameControllerMOD::Tick()
 		if(IsInfectionStarted())
 		{
 			bool StartInfectionTrigger = (m_RoundStartTick + Server()->TickSpeed()*10 == Server()->Tick());
-			bool InfSpecTrigger = StartInfectionTrigger;
 			
 			GameServer()->EnableTargetToKill();	
 			
@@ -200,7 +199,7 @@ void CGameControllerMOD::Tick()
 			}
 			
 			// Infect spectators
-			if (InfSpecTrigger) 
+			if (StartInfectionTrigger)
 			{
 				CPlayerIterator<PLAYERITER_SPECTATORS> IterSpec(GameServer()->m_apPlayers);
 				while(IterSpec.Next())
@@ -208,7 +207,6 @@ void CGameControllerMOD::Tick()
 					IterSpec.Player()->StartInfection();
 				}
 			}
-			InfSpecTrigger = false;
 			
 			
 			if (m_InfectedStarted == false)
