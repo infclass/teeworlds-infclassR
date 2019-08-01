@@ -229,6 +229,7 @@ public:
 	int m_RefreshTime;
 	bool m_VoodooAboutToDie;
 	int m_TurretCount;
+	int m_ResetKillsTime;
 	
 
 public:
