@@ -46,6 +46,8 @@ public:
 	int NewID();
 	void TimeoutIDs();
 	void FreeID(int ID);
+	int GetIDCount();
+	int GetMaxIDs() { return MAX_IDS; }
 };
 
 
@@ -290,6 +292,7 @@ public:
 /* DDNET MODIFICATION START *******************************************/
 	static bool ConAddSqlServer(IConsole::IResult *pResult, void *pUserData);
 	static bool ConDumpSqlServers(IConsole::IResult *pResult, void *pUserData);
+	static bool ConGetIDCount(IConsole::IResult *pResult, void *pUser);
 
 	static void CreateTablesThread(void *pData);
 /* DDNET MODIFICATION END *********************************************/
