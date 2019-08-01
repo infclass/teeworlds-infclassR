@@ -33,6 +33,8 @@ private:
 	const float m_RadiusGrowthRate = 4.0f;
 	int m_WarmUpCounter;
 	int m_ReloadCounter;
+	int m_ammunition;
+	bool m_foundTarget;
 	
 	array<int> m_IDs;
 

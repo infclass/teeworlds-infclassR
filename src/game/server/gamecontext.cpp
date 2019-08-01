@@ -3715,9 +3715,11 @@ bool CGameContext::ConHelp(IConsole::IResult *pResult, void *pUserData)
 			Buffer.append(" ~~\n\n");
 			pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("The Hero has a shotgun, a laser rifle and grenades."), NULL); 
 			Buffer.append("\n\n");
-			pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("The Hero must find a flag only visible to them hidden in the map."), NULL);
+			pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("The Hero can find a flag on the map which is only visible to himself."), NULL);
 			Buffer.append("\n\n");
 			pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("Once taken, the flag gives 1 health point, 4 armor points, and full ammo to all humans, furthermore full health and armor to the hero."), NULL);
+			Buffer.append("\n\n");
+			pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("Besides you get a hammer to place a turret. Do \"/help turret\" for more information. "), NULL);
 			Buffer.append("\n\n");
 			pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("The gift to all humans is only applied when the flag is surrounded by hearts and armor. This gift cooldown is shared between all heros."), NULL);
 			Buffer.append("\n\n");
@@ -3995,6 +3997,23 @@ bool CGameContext::ConHelp(IConsole::IResult *pResult, void *pUserData)
 			Buffer.append("\n\n");
 			pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("To deactivate endlessHook either toggle hook protection or retract your hook."), NULL);
 
+			pSelf->SendMOTD(ClientID, Buffer.buffer());
+		}
+		else if(str_comp_nocase(pHelpPage, "turret") == 0)
+		{
+			Buffer.append("~~ ");
+			pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("turret"), NULL);
+			Buffer.append(" ~~\n\n");
+			pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("Collect a flag to find a turret"), NULL);
+			Buffer.append("\n\n");
+			pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("As a hero you can place the turret with your hammer"), NULL);
+			Buffer.append("\n\n");
+			pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("The turret has a reload and warm up time before it either shoots laser or plasma projectiles"), NULL);
+			Buffer.append("\n\n");
+			pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("It dissapears after a while and targets maximal 3 zombies at the same time."), NULL);
+			Buffer.append("\n\n");
+			pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("Zombies can destroy the turret by running into it, but it costs them many life points"), NULL);
+			
 			pSelf->SendMOTD(ClientID, Buffer.buffer());
 		}
 		
