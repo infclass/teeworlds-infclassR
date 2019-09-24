@@ -4361,7 +4361,7 @@ void CServer::OnRoundEnd()
 		return;
 	}
 
-	if (GetActivePlayerCount() < 8) {
+	if (GetActivePlayerCount() < 4) {
 		return;
 	}
 
