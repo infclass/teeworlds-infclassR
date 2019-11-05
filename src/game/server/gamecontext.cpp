@@ -75,14 +75,12 @@ void CGameContext::Construct(int Resetting)
 
 CGameContext::CGameContext(int Resetting)
 {
-	geolocation = new Geolocation("GeoLite2-Country.mmdb");
 	fout.open(g_Config.m_PlayerLogfile, std::ios_base::app);
 	Construct(Resetting);
 }
 
 CGameContext::CGameContext()
 {
-	geolocation = new Geolocation("GeoLite2-Country.mmdb");
 	fout.open(g_Config.m_PlayerLogfile, std::ios_base::app);
 	Construct(NO_RESET);
 }
