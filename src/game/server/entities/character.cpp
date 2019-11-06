@@ -2799,6 +2799,22 @@ void CCharacter::Die(int Killer, int Weapon)
 		m_Core.m_Passenger = nullptr;
 	}
 /* INFECTION MODIFICATION END *****************************************/
+
+	if (m_pPlayer != pKillerPlayer)
+	{
+		// set attacker's face to happy (taunt!)
+		if (pKillerCharacter)
+		{
+			pKillerCharacter->m_EmoteType = EMOTE_HAPPY;
+			pKillerCharacter->m_EmoteStop = Server()->Tick() + Server()->TickSpeed();
+		}
+		pKillerPlayer->IncreaseNumberKills();
+	}
+
+	if (pKillerCharacter)
+	{
+		pKillerCharacter->CheckSuperWeaponAccess();
+	}
 }
 
 bool CCharacter::TakeDamage(vec2 Force, int Dmg, int From, int Weapon, int Mode)
@@ -2969,21 +2985,6 @@ bool CCharacter::TakeDamage(vec2 Force, int Dmg, int From, int Weapon, int Mode)
 	{
 		Die(From, Weapon);
 
-		// set attacker's face to happy (taunt!)
-		if (From >= 0 && From != m_pPlayer->GetCID() && pKillerPlayer)
-		{
-			if (pKillerChar)
-			{
-				pKillerChar->m_EmoteType = EMOTE_HAPPY;
-				pKillerChar->m_EmoteStop = Server()->Tick() + Server()->TickSpeed();
-			}
-		}
-		
-		if (pKillerPlayer)
-			pKillerPlayer->IncreaseNumberKills();
-		if (pKillerChar)
-			pKillerChar->CheckSuperWeaponAccess();
-		
 		return false;
 	}
 
