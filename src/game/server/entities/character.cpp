@@ -1720,7 +1720,22 @@ void CCharacter::Tick()
 			}
 			else
 			{
-				m_pPlayer->StartInfection();
+				CPlayer *pKiller = nullptr;
+				for(CCharacter *pHooker = (CCharacter*) GameServer()->m_World.FindFirst(CGameWorld::ENTTYPE_CHARACTER); pHooker; pHooker = (CCharacter *)pHooker->TypeNext())
+				{
+					if (pHooker->GetPlayer() && pHooker->m_Core.m_HookedPlayer == m_pPlayer->GetCID())
+					{
+						if (pKiller) {
+							// More than one player hooked this victim
+							// We don't support cooperative killing
+							pKiller = nullptr;
+							break;
+						}
+						pKiller = pHooker->GetPlayer();
+					}
+				}
+
+				m_pPlayer->Infect(pKiller);
 			}
 		}
 		if(m_Alive && (Index0 != ZONE_DAMAGE_INFECTION))
