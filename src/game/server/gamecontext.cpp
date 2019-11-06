@@ -289,7 +289,7 @@ void CGameContext::SetAvailabilities(std::vector<int> value) { // todo: should b
 
 void CGameContext::SetProbabilities(std::vector<int> value) { // todo: should be order-independent, e.g with std map
 	if (value.empty())
-		value = std::vector<int>(10);
+		value = std::vector<int>(11);
 	g_Config.m_InfProbaBat = value[0];
 	g_Config.m_InfProbaBoomer = value[1];
 	g_Config.m_InfProbaGhost = value[2];
@@ -298,8 +298,9 @@ void CGameContext::SetProbabilities(std::vector<int> value) { // todo: should be
 	g_Config.m_InfProbaSlug = value[5];
 	g_Config.m_InfProbaSmoker = value[6];
 	g_Config.m_InfProbaSpider = value[7];
-	g_Config.m_InfGhoulThreshold = value[8];
-	g_Config.m_InfGhoulStomachSize = value[9];
+	g_Config.m_InfProbaVoodoo = value[8];
+	g_Config.m_InfGhoulThreshold = value[9];
+	g_Config.m_InfGhoulStomachSize = value[10];
 }
 
 void CGameContext::CreateDamageInd(vec2 Pos, float Angle, int Amount)
@@ -2817,6 +2818,7 @@ bool CGameContext::ConStartFunRound(IConsole::IResult *pResult, void *pUserData)
 		g_Config.m_InfProbaSlug,
 		g_Config.m_InfProbaSmoker,
 		g_Config.m_InfProbaSpider,
+		g_Config.m_InfProbaVoodoo,
 		g_Config.m_InfGhoulThreshold,
 		g_Config.m_InfGhoulStomachSize
 	};
