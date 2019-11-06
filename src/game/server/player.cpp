@@ -798,6 +798,7 @@ void CPlayer::StartInfection(bool force)
 	int c = GameServer()->m_pController->ChooseInfectedClass(this);
 	
 	SetClass(c);
+	GameServer()->m_pController->OnPlayerInfected(this);
 }
 
 bool CPlayer::IsZombie() const

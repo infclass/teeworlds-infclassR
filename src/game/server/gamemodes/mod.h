@@ -32,6 +32,7 @@ public:
 	virtual bool IsChoosableClass(int PlayerClass);
 	virtual bool CanVote();
 	virtual void OnClientDrop(int ClientID, int Type);
+	virtual void OnPlayerInfected(CPlayer* pPlayer);
 	virtual bool IsInfectionStarted();
 	
 	void ResetFinalExplosion();

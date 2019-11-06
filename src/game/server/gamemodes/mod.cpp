@@ -65,7 +65,11 @@ void CGameControllerMOD::OnClientDrop(int ClientID, int Type)
 		{
 			Server()->Ban(ClientID, 60*g_Config.m_InfLeaverBanTime, "Leaver");
 		}
-	}
+    }
+}
+
+void CGameControllerMOD::OnPlayerInfected(CPlayer *pPlayer)
+{
 }
 
 bool CGameControllerMOD::OnEntity(const char* pName, vec2 Pivot, vec2 P0, vec2 P1, vec2 P2, vec2 P3, int PosEnv)
