@@ -571,23 +571,6 @@ void CGameControllerMOD::Snap(int SnappingClient)
 
 int CGameControllerMOD::OnCharacterDeath(class CCharacter *pVictim, class CPlayer *pKiller, int Weapon)
 {
-	if (!pKiller && Weapon == WEAPON_WORLD && pVictim->GetPlayer()) {
-		//Search for hook
-		for(CCharacter *pHooker = (CCharacter*) GameServer()->m_World.FindFirst(CGameWorld::ENTTYPE_CHARACTER); pHooker; pHooker = (CCharacter *)pHooker->TypeNext())
-		{
-			if (pHooker->GetPlayer() && pHooker->m_Core.m_HookedPlayer == pVictim->GetPlayer()->GetCID())
-			{
-				if (pKiller) {
-					// More than one player hooked this victim
-					// We don't support cooperative killing
-					pKiller = nullptr;
-					break;
-				}
-				pKiller = pHooker->GetPlayer();
-			}
-		}
-	}
-
 	// do scoreing
 	if(!pKiller || Weapon == WEAPON_GAME)
 		return 0;

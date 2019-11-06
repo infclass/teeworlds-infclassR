@@ -2701,7 +2701,31 @@ void CCharacter::Die(int Killer, int Weapon)
 	
 	DestroyChildEntities();
 /* INFECTION MODIFICATION END *****************************************/
-	
+
+	CCharacter *pKillerCharacter = nullptr;
+	if (Weapon == WEAPON_WORLD && Killer == m_pPlayer->GetCID()) {
+		//Search for the real killer (if somebody hooked this player)
+		for(CCharacter *pHooker = (CCharacter*) GameServer()->m_World.FindFirst(CGameWorld::ENTTYPE_CHARACTER); pHooker; pHooker = (CCharacter *)pHooker->TypeNext())
+		{
+			if (pHooker->GetPlayer() && pHooker->m_Core.m_HookedPlayer == m_pPlayer->GetCID())
+			{
+				if (pKillerCharacter) {
+					// More than one player hooked this victim
+					// We don't support cooperative killing
+					pKillerCharacter = nullptr;
+					break;
+				}
+				pKillerCharacter = pHooker;
+			}
+		}
+
+		if (pKillerCharacter && pKillerCharacter->GetPlayer())
+		{
+			Killer = pKillerCharacter->GetPlayer()->GetCID();
+			Weapon = WEAPON_NINJA;
+		}
+	}
+
 	// we got to wait 0.5 secs before respawning
 	m_pPlayer->m_RespawnTick = Server()->Tick()+Server()->TickSpeed()/2;
 	int ModeSpecial = GameServer()->m_pController->OnCharacterDeath(this, GameServer()->m_apPlayers[Killer], Weapon);
