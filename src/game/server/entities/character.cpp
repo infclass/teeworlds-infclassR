@@ -1694,23 +1694,20 @@ void CCharacter::Tick()
 	
 	{
 		int Index0 = GameServer()->Collision()->GetZoneValueAt(GameServer()->m_ZoneHandle_Damage, m_Pos.x+m_ProximityRadius/3.f, m_Pos.y-m_ProximityRadius/3.f);
-		int Index1 = GameServer()->Collision()->GetZoneValueAt(GameServer()->m_ZoneHandle_Damage, m_Pos.x+m_ProximityRadius/3.f, m_Pos.y-m_ProximityRadius/3.f);
-		int Index2 = GameServer()->Collision()->GetZoneValueAt(GameServer()->m_ZoneHandle_Damage, m_Pos.x+m_ProximityRadius/3.f, m_Pos.y-m_ProximityRadius/3.f);
-		int Index3 = GameServer()->Collision()->GetZoneValueAt(GameServer()->m_ZoneHandle_Damage, m_Pos.x+m_ProximityRadius/3.f, m_Pos.y-m_ProximityRadius/3.f);
 		
-		if(Index0 == ZONE_DAMAGE_DEATH || Index1 == ZONE_DAMAGE_DEATH || Index2 == ZONE_DAMAGE_DEATH || Index3 == ZONE_DAMAGE_DEATH)
+		if(Index0 == ZONE_DAMAGE_DEATH)
 		{
 			Die(m_pPlayer->GetCID(), WEAPON_WORLD);
 		}
-		else if(GetClass() != PLAYERCLASS_UNDEAD && (Index0 == ZONE_DAMAGE_DEATH_NOUNDEAD || Index1 == ZONE_DAMAGE_DEATH_NOUNDEAD || Index2 == ZONE_DAMAGE_DEATH_NOUNDEAD || Index3 == ZONE_DAMAGE_DEATH_NOUNDEAD))
+		else if(GetClass() != PLAYERCLASS_UNDEAD && (Index0 == ZONE_DAMAGE_DEATH_NOUNDEAD))
 		{
 			Die(m_pPlayer->GetCID(), WEAPON_WORLD);
 		}
-		else if(IsZombie() && (Index0 == ZONE_DAMAGE_DEATH_INFECTED || Index1 == ZONE_DAMAGE_DEATH_INFECTED || Index2 == ZONE_DAMAGE_DEATH_INFECTED || Index3 == ZONE_DAMAGE_DEATH_INFECTED))
+		else if(IsZombie() && (Index0 == ZONE_DAMAGE_DEATH_INFECTED))
 		{
 			Die(m_pPlayer->GetCID(), WEAPON_WORLD);
 		}
-		else if(m_Alive && (Index0 == ZONE_DAMAGE_INFECTION || Index1 == ZONE_DAMAGE_INFECTION || Index2 == ZONE_DAMAGE_INFECTION || Index3 == ZONE_DAMAGE_INFECTION))
+		else if(m_Alive && (Index0 == ZONE_DAMAGE_INFECTION))
 		{
 			if(IsZombie())
 			{
@@ -1723,10 +1720,25 @@ void CCharacter::Tick()
 			}
 			else
 			{
-				m_pPlayer->StartInfection();
+				CPlayer *pKiller = nullptr;
+				for(CCharacter *pHooker = (CCharacter*) GameServer()->m_World.FindFirst(CGameWorld::ENTTYPE_CHARACTER); pHooker; pHooker = (CCharacter *)pHooker->TypeNext())
+				{
+					if (pHooker->GetPlayer() && pHooker->m_Core.m_HookedPlayer == m_pPlayer->GetCID())
+					{
+						if (pKiller) {
+							// More than one player hooked this victim
+							// We don't support cooperative killing
+							pKiller = nullptr;
+							break;
+						}
+						pKiller = pHooker->GetPlayer();
+					}
+				}
+
+				m_pPlayer->Infect(pKiller);
 			}
 		}
-		if(m_Alive && (Index0 != ZONE_DAMAGE_INFECTION && Index1 != ZONE_DAMAGE_INFECTION && Index2 != ZONE_DAMAGE_INFECTION && Index3 != ZONE_DAMAGE_INFECTION))
+		if(m_Alive && (Index0 != ZONE_DAMAGE_INFECTION))
 		{
 			m_InfZoneTick = -1;// Reset Tick when zombie is not in infection zone
 		}
@@ -2771,9 +2783,22 @@ bool CCharacter::TakeDamage(vec2 Force, int Dmg, int From, int Weapon, int Mode)
 	CCharacter *pKillerChar = 0; // before using this variable check if it exists with "if (pKillerChar)"
 	if (pKillerPlayer)
 		pKillerChar = pKillerPlayer->GetCharacter();
-	
-	if(GetClass() == PLAYERCLASS_HERO && Mode == TAKEDAMAGEMODE_INFECTION && pKillerPlayer && pKillerPlayer->IsZombie())
+
+	if(Mode == TAKEDAMAGEMODE_INFECTION)
+	{
+	        if (!pKillerPlayer || !pKillerPlayer->IsZombie() || !IsHuman())
+		{
+		        // The infection is only possible if the killer is a zombie and the target is a human
+		        Mode = TAKEDAMAGEMODE_NOINFECTION;
+		}
+	}
+
+	if(GetClass() == PLAYERCLASS_HERO && Mode == TAKEDAMAGEMODE_INFECTION)
+	{
 		Dmg = 12;
+		// A zombie can't infect a hero
+		Mode = TAKEDAMAGEMODE_NOINFECTION;
+	}
 	
 	if(pKillerChar && pKillerChar->IsInLove())
 	{
@@ -2781,8 +2806,10 @@ bool CCharacter::TakeDamage(vec2 Force, int Dmg, int From, int Weapon, int Mode)
 		Mode = TAKEDAMAGEMODE_NOINFECTION;
 	}
 	
-	if((GetClass() != PLAYERCLASS_HUNTER || Weapon != WEAPON_SHOTGUN) &&
-			!(IsHuman() && Weapon == WEAPON_NINJA))
+	if(
+			(GetClass() != PLAYERCLASS_HUNTER || Weapon != WEAPON_SHOTGUN) &&
+			!(IsHuman() && Weapon == WEAPON_NINJA) &&
+			!(GetClass() == PLAYERCLASS_SOLDIER && Weapon == WEAPON_HAMMER))
 	{
 		m_Core.m_Vel += Force;
 	}
@@ -2890,27 +2917,10 @@ bool CCharacter::TakeDamage(vec2 Force, int Dmg, int From, int Weapon, int Mode)
 	// do damage Hit sound
 	
 /* INFECTION MODIFICATION START ***************************************/
-	if(Mode == TAKEDAMAGEMODE_INFECTION && pKillerPlayer && pKillerPlayer->IsZombie() && IsHuman() && GetClass() != PLAYERCLASS_HERO)
+	if(Mode == TAKEDAMAGEMODE_INFECTION)
 	{
-		m_pPlayer->StartInfection();
+		m_pPlayer->Infect(pKillerPlayer);
 		
-		GameServer()->SendChatTarget_Localization(From, CHATCATEGORY_SCORE, _("You have infected {str:VictimName}, +3 points"), "VictimName", Server()->ClientName(m_pPlayer->GetCID()), NULL);
-		Server()->RoundStatistics()->OnScoreEvent(From, SCOREEVENT_INFECTION, pKillerPlayer->GetClass(), Server()->ClientName(From), Console());
-		GameServer()->SendScoreSound(From);
-	
-		//Search for hook
-		for(CCharacter *pHook = (CCharacter*) GameServer()->m_World.FindFirst(CGameWorld::ENTTYPE_CHARACTER); pHook; pHook = (CCharacter *)pHook->TypeNext())
-		{
-			if(
-				pHook->GetPlayer() &&
-				pHook->m_Core.m_HookedPlayer == m_pPlayer->GetCID() &&
-				pHook->GetPlayer()->GetCID() != From
-			)
-			{
-				Server()->RoundStatistics()->OnScoreEvent(pHook->GetPlayer()->GetCID(), SCOREEVENT_HELP_HOOK_INFECTION, pHook->GetClass(), Server()->ClientName(pHook->GetPlayer()->GetCID()), Console());
-				GameServer()->SendScoreSound(pHook->GetPlayer()->GetCID());
-			}
-		}
 		
 		char aBuf[256];
 		str_format(aBuf, sizeof(aBuf), "kill killer='%s' victim='%s' weapon=%d",
@@ -2956,7 +2966,7 @@ bool CCharacter::TakeDamage(vec2 Force, int Dmg, int From, int Weapon, int Mode)
 		GameServer()->CreateSound(m_Pos, SOUND_PLAYER_PAIN_SHORT);
 
 	m_EmoteType = EMOTE_PAIN;
-	m_EmoteStop = Server()->Tick() + 500 * Server()->TickSpeed() / 1000;
+	m_EmoteStop = Server()->Tick() + Server()->TickSpeed() / 2;
 
 	return true;
 }
@@ -3319,7 +3329,7 @@ void CCharacter::ClassSpawnAttributes()
 			m_ActiveWeapon = WEAPON_RIFLE;
 			
 			GameServer()->SendBroadcast_ClassIntro(m_pPlayer->GetCID(), PLAYERCLASS_ENGINEER);
-			if(!m_pPlayer->IsKownClass(PLAYERCLASS_ENGINEER))
+			if(!m_pPlayer->IsKnownClass(PLAYERCLASS_ENGINEER))
 			{
 				GameServer()->SendChatTarget_Localization(m_pPlayer->GetCID(), CHATCATEGORY_DEFAULT, _("Type “/help {str:ClassName}” for more information about your class"), "ClassName", "engineer", NULL);
 				m_pPlayer->m_knownClass[PLAYERCLASS_ENGINEER] = true;
@@ -3336,7 +3346,7 @@ void CCharacter::ClassSpawnAttributes()
 			m_ActiveWeapon = WEAPON_GRENADE;
 			
 			GameServer()->SendBroadcast_ClassIntro(m_pPlayer->GetCID(), PLAYERCLASS_SOLDIER);
-			if(!m_pPlayer->IsKownClass(PLAYERCLASS_SOLDIER))
+			if(!m_pPlayer->IsKnownClass(PLAYERCLASS_SOLDIER))
 			{
 				GameServer()->SendChatTarget_Localization(m_pPlayer->GetCID(), CHATCATEGORY_DEFAULT, _("Type “/help {str:ClassName}” for more information about your class"), "ClassName", "soldier", NULL);
 				m_pPlayer->m_knownClass[PLAYERCLASS_SOLDIER] = true;
@@ -3353,7 +3363,7 @@ void CCharacter::ClassSpawnAttributes()
 			m_ActiveWeapon = WEAPON_GUN;
 			
 			GameServer()->SendBroadcast_ClassIntro(m_pPlayer->GetCID(), PLAYERCLASS_MERCENARY);
-			if(!m_pPlayer->IsKownClass(PLAYERCLASS_MERCENARY))
+			if(!m_pPlayer->IsKnownClass(PLAYERCLASS_MERCENARY))
 			{
 				GameServer()->SendChatTarget_Localization(m_pPlayer->GetCID(), CHATCATEGORY_DEFAULT, _("Type “/help {str:ClassName}” for more information about your class"), "ClassName", "mercenary", NULL);
 				m_pPlayer->m_knownClass[PLAYERCLASS_MERCENARY] = true;
@@ -3370,7 +3380,7 @@ void CCharacter::ClassSpawnAttributes()
 			m_ActiveWeapon = WEAPON_RIFLE;
 			
 			GameServer()->SendBroadcast_ClassIntro(m_pPlayer->GetCID(), PLAYERCLASS_SNIPER);
-			if(!m_pPlayer->IsKownClass(PLAYERCLASS_SNIPER))
+			if(!m_pPlayer->IsKnownClass(PLAYERCLASS_SNIPER))
 			{
 				GameServer()->SendChatTarget_Localization(m_pPlayer->GetCID(), CHATCATEGORY_DEFAULT, _("Type “/help {str:ClassName}” for more information about your class"), "ClassName", "sniper", NULL);
 				m_pPlayer->m_knownClass[PLAYERCLASS_SNIPER] = true;
@@ -3388,7 +3398,7 @@ void CCharacter::ClassSpawnAttributes()
 			m_ActiveWeapon = WEAPON_GRENADE;
 			
 			GameServer()->SendBroadcast_ClassIntro(m_pPlayer->GetCID(), PLAYERCLASS_SCIENTIST);
-			if(!m_pPlayer->IsKownClass(PLAYERCLASS_SCIENTIST))
+			if(!m_pPlayer->IsKnownClass(PLAYERCLASS_SCIENTIST))
 			{
 				GameServer()->SendChatTarget_Localization(m_pPlayer->GetCID(), CHATCATEGORY_DEFAULT, _("Type “/help {str:ClassName}” for more information about your class"), "ClassName", "scientist", NULL);
 				m_pPlayer->m_knownClass[PLAYERCLASS_SCIENTIST] = true;
@@ -3406,7 +3416,7 @@ void CCharacter::ClassSpawnAttributes()
 			m_ActiveWeapon = WEAPON_SHOTGUN;
 			
 			GameServer()->SendBroadcast_ClassIntro(m_pPlayer->GetCID(), PLAYERCLASS_BIOLOGIST);
-			if(!m_pPlayer->IsKownClass(PLAYERCLASS_BIOLOGIST))
+			if(!m_pPlayer->IsKnownClass(PLAYERCLASS_BIOLOGIST))
 			{
 				GameServer()->SendChatTarget_Localization(m_pPlayer->GetCID(), CHATCATEGORY_DEFAULT, _("Type “/help {str:ClassName}” for more information about your class"), "ClassName", "biologist", NULL);
 				m_pPlayer->m_knownClass[PLAYERCLASS_BIOLOGIST] = true;
@@ -3423,7 +3433,7 @@ void CCharacter::ClassSpawnAttributes()
 			m_ActiveWeapon = WEAPON_RIFLE;
 			
 			GameServer()->SendBroadcast_ClassIntro(m_pPlayer->GetCID(), PLAYERCLASS_LOOPER);
-			if(!m_pPlayer->IsKownClass(PLAYERCLASS_LOOPER))
+			if(!m_pPlayer->IsKnownClass(PLAYERCLASS_LOOPER))
 			{
 				GameServer()->SendChatTarget_Localization(m_pPlayer->GetCID(), CHATCATEGORY_DEFAULT, _("Type “/help {str:ClassName}” for more information about your class"), "ClassName", "looper", NULL);
 				m_pPlayer->m_knownClass[PLAYERCLASS_LOOPER] = true;
@@ -3443,7 +3453,7 @@ void CCharacter::ClassSpawnAttributes()
 			m_ActiveWeapon = WEAPON_SHOTGUN;
 			
 			GameServer()->SendBroadcast_ClassIntro(m_pPlayer->GetCID(), PLAYERCLASS_MEDIC);
-			if(!m_pPlayer->IsKownClass(PLAYERCLASS_MEDIC))
+			if(!m_pPlayer->IsKnownClass(PLAYERCLASS_MEDIC))
 			{
 				GameServer()->SendChatTarget_Localization(m_pPlayer->GetCID(), CHATCATEGORY_DEFAULT, _("Type “/help {str:ClassName}” for more information about your class"), "ClassName", "medic", NULL);
 				m_pPlayer->m_knownClass[PLAYERCLASS_MEDIC] = true;
@@ -3462,7 +3472,7 @@ void CCharacter::ClassSpawnAttributes()
 			m_ActiveWeapon = WEAPON_GRENADE;
 			
 			GameServer()->SendBroadcast_ClassIntro(m_pPlayer->GetCID(), PLAYERCLASS_HERO);
-			if(!m_pPlayer->IsKownClass(PLAYERCLASS_HERO))
+			if(!m_pPlayer->IsKnownClass(PLAYERCLASS_HERO))
 			{
 				GameServer()->SendChatTarget_Localization(m_pPlayer->GetCID(), CHATCATEGORY_DEFAULT, _("Type “/help {str:ClassName}” for more information about your class"), "ClassName", "hero", NULL);
 				m_pPlayer->m_knownClass[PLAYERCLASS_HERO] = true;
@@ -3478,7 +3488,7 @@ void CCharacter::ClassSpawnAttributes()
 			m_ActiveWeapon = WEAPON_HAMMER;
 			
 			GameServer()->SendBroadcast_ClassIntro(m_pPlayer->GetCID(), PLAYERCLASS_NINJA);
-			if(!m_pPlayer->IsKownClass(PLAYERCLASS_NINJA))
+			if(!m_pPlayer->IsKnownClass(PLAYERCLASS_NINJA))
 			{
 				GameServer()->SendChatTarget_Localization(m_pPlayer->GetCID(), CHATCATEGORY_DEFAULT, _("Type “/help {str:ClassName}” for more information about your class"), "ClassName", "ninja", NULL);
 				m_pPlayer->m_knownClass[PLAYERCLASS_NINJA] = true;
@@ -3500,7 +3510,7 @@ void CCharacter::ClassSpawnAttributes()
 			m_ActiveWeapon = WEAPON_HAMMER;
 			
 			GameServer()->SendBroadcast_ClassIntro(m_pPlayer->GetCID(), PLAYERCLASS_SMOKER);
-			if(!m_pPlayer->IsKownClass(PLAYERCLASS_SMOKER))
+			if(!m_pPlayer->IsKnownClass(PLAYERCLASS_SMOKER))
 			{   
 				GameServer()->SendChatTarget_Localization(m_pPlayer->GetCID(), CHATCATEGORY_DEFAULT, _("Type “/help {str:ClassName}” for more information about your class"), "ClassName", "smoker", NULL);
 				m_pPlayer->m_knownClass[PLAYERCLASS_SMOKER] = true;
@@ -3515,7 +3525,7 @@ void CCharacter::ClassSpawnAttributes()
 			m_ActiveWeapon = WEAPON_HAMMER;
 			
 			GameServer()->SendBroadcast_ClassIntro(m_pPlayer->GetCID(), PLAYERCLASS_BOOMER);
-			if(!m_pPlayer->IsKownClass(PLAYERCLASS_BOOMER))
+			if(!m_pPlayer->IsKnownClass(PLAYERCLASS_BOOMER))
 			{
 				GameServer()->SendChatTarget_Localization(m_pPlayer->GetCID(), CHATCATEGORY_DEFAULT, _("Type “/help {str:ClassName}” for more information about your class"), "ClassName", "boomer", NULL);
 				m_pPlayer->m_knownClass[PLAYERCLASS_BOOMER] = true;
@@ -3530,7 +3540,7 @@ void CCharacter::ClassSpawnAttributes()
 			m_ActiveWeapon = WEAPON_HAMMER;
 			
 			GameServer()->SendBroadcast_ClassIntro(m_pPlayer->GetCID(), PLAYERCLASS_HUNTER);
-			if(!m_pPlayer->IsKownClass(PLAYERCLASS_HUNTER))
+			if(!m_pPlayer->IsKnownClass(PLAYERCLASS_HUNTER))
 			{
 				GameServer()->SendChatTarget_Localization(m_pPlayer->GetCID(), CHATCATEGORY_DEFAULT, _("Type “/help {str:ClassName}” for more information about your class"), "ClassName", "hunter", NULL);
 				m_pPlayer->m_knownClass[PLAYERCLASS_HUNTER] = true;
@@ -3545,7 +3555,7 @@ void CCharacter::ClassSpawnAttributes()
 			m_ActiveWeapon = WEAPON_HAMMER;
 			
 			GameServer()->SendBroadcast_ClassIntro(m_pPlayer->GetCID(), PLAYERCLASS_BAT);
-			if(!m_pPlayer->IsKownClass(PLAYERCLASS_BAT))
+			if(!m_pPlayer->IsKnownClass(PLAYERCLASS_BAT))
 			{
 				GameServer()->SendChatTarget_Localization(m_pPlayer->GetCID(), CHATCATEGORY_DEFAULT, _("Type “/help {str:ClassName}” for more information about your class"), "ClassName", "bat", NULL);
 				m_pPlayer->m_knownClass[PLAYERCLASS_BAT] = true;
@@ -3560,7 +3570,7 @@ void CCharacter::ClassSpawnAttributes()
 			m_ActiveWeapon = WEAPON_HAMMER;
 			
 			GameServer()->SendBroadcast_ClassIntro(m_pPlayer->GetCID(), PLAYERCLASS_GHOST);
-			if(!m_pPlayer->IsKownClass(PLAYERCLASS_GHOST))
+			if(!m_pPlayer->IsKnownClass(PLAYERCLASS_GHOST))
 			{
 				GameServer()->SendChatTarget_Localization(m_pPlayer->GetCID(), CHATCATEGORY_DEFAULT, _("Type “/help {str:ClassName}” for more information about your class"), "ClassName", "ghost", NULL);
 				m_pPlayer->m_knownClass[PLAYERCLASS_GHOST] = true;
@@ -3575,7 +3585,7 @@ void CCharacter::ClassSpawnAttributes()
 			m_ActiveWeapon = WEAPON_HAMMER;
 			
 			GameServer()->SendBroadcast_ClassIntro(m_pPlayer->GetCID(), PLAYERCLASS_SPIDER);
-			if(!m_pPlayer->IsKownClass(PLAYERCLASS_SPIDER))
+			if(!m_pPlayer->IsKnownClass(PLAYERCLASS_SPIDER))
 			{
 				GameServer()->SendChatTarget_Localization(m_pPlayer->GetCID(), CHATCATEGORY_DEFAULT, _("Type “/help {str:ClassName}” for more information about your class"), "ClassName", "spider", NULL);
 				m_pPlayer->m_knownClass[PLAYERCLASS_SPIDER] = true;
@@ -3590,7 +3600,7 @@ void CCharacter::ClassSpawnAttributes()
 			m_ActiveWeapon = WEAPON_HAMMER;
 
 			GameServer()->SendBroadcast_ClassIntro(m_pPlayer->GetCID(), PLAYERCLASS_VOODOO);
-			if(!m_pPlayer->IsKownClass(PLAYERCLASS_VOODOO))
+			if(!m_pPlayer->IsKnownClass(PLAYERCLASS_VOODOO))
 			{
 				GameServer()->SendChatTarget_Localization(m_pPlayer->GetCID(), CHATCATEGORY_DEFAULT, _("Type “/help {str:ClassName}” for more information about your class"), "ClassName", "voodoo", NULL);
 				m_pPlayer->m_knownClass[PLAYERCLASS_VOODOO] = true;
@@ -3605,7 +3615,7 @@ void CCharacter::ClassSpawnAttributes()
 			m_ActiveWeapon = WEAPON_HAMMER;
 			
 			GameServer()->SendBroadcast_ClassIntro(m_pPlayer->GetCID(), PLAYERCLASS_GHOUL);
-			if(!m_pPlayer->IsKownClass(PLAYERCLASS_GHOUL))
+			if(!m_pPlayer->IsKnownClass(PLAYERCLASS_GHOUL))
 			{
 				GameServer()->SendChatTarget_Localization(m_pPlayer->GetCID(), CHATCATEGORY_DEFAULT, _("Type “/help {str:ClassName}” for more information about your class"), "ClassName", "ghoul", NULL);
 				m_pPlayer->m_knownClass[PLAYERCLASS_GHOUL] = true;
@@ -3620,7 +3630,7 @@ void CCharacter::ClassSpawnAttributes()
 			m_ActiveWeapon = WEAPON_HAMMER;
 			
 			GameServer()->SendBroadcast_ClassIntro(m_pPlayer->GetCID(), PLAYERCLASS_SLUG);
-			if(!m_pPlayer->IsKownClass(PLAYERCLASS_SLUG))
+			if(!m_pPlayer->IsKnownClass(PLAYERCLASS_SLUG))
 			{
 				GameServer()->SendChatTarget_Localization(m_pPlayer->GetCID(), CHATCATEGORY_DEFAULT, _("Type “/help {str:ClassName}” for more information about your class"), "ClassName", "slug", NULL);
 				m_pPlayer->m_knownClass[PLAYERCLASS_SLUG] = true;
@@ -3635,7 +3645,7 @@ void CCharacter::ClassSpawnAttributes()
 			m_ActiveWeapon = WEAPON_HAMMER;
 			
 			GameServer()->SendBroadcast_ClassIntro(m_pPlayer->GetCID(), PLAYERCLASS_UNDEAD);
-			if(!m_pPlayer->IsKownClass(PLAYERCLASS_UNDEAD))
+			if(!m_pPlayer->IsKnownClass(PLAYERCLASS_UNDEAD))
 			{
 				GameServer()->SendChatTarget_Localization(m_pPlayer->GetCID(), CHATCATEGORY_DEFAULT, _("Type “/help {str:ClassName}” for more information about your class"), "ClassName", "undead", NULL);
 				m_pPlayer->m_knownClass[PLAYERCLASS_HUNTER] = true;
@@ -3650,7 +3660,7 @@ void CCharacter::ClassSpawnAttributes()
 			m_ActiveWeapon = WEAPON_HAMMER;
 			
 			GameServer()->SendBroadcast_ClassIntro(m_pPlayer->GetCID(), PLAYERCLASS_WITCH);
-			if(!m_pPlayer->IsKownClass(PLAYERCLASS_WITCH))
+			if(!m_pPlayer->IsKnownClass(PLAYERCLASS_WITCH))
 			{
 				GameServer()->SendChatTarget_Localization(m_pPlayer->GetCID(), CHATCATEGORY_DEFAULT, _("Type “/help {str:ClassName}” for more information about your class"), "ClassName", "witch", NULL);
 				m_pPlayer->m_knownClass[PLAYERCLASS_WITCH] = true;
@@ -3660,16 +3670,11 @@ void CCharacter::ClassSpawnAttributes()
 }
 
 void CCharacter::GiveArmorIfLonely() {
-	if (this->IsZombie()) {
-		unsigned int nbZombies=0;
-		CPlayerIterator<PLAYERITER_INGAME> Iter(GameServer()->m_apPlayers);
-		while(Iter.Next())
-		{
-			if (Iter.Player()->IsZombie())
-				nbZombies++;
+	if (IsZombie()) {
+		if (GameServer()->GetZombieCount() <= 1) {
+			/* Lonely zombie */
+			IncreaseArmor(10);
 		}
-		if (nbZombies <= 1) /* Lonely zombie */
-			m_Armor = 10;
 	}
 }
 
@@ -3767,11 +3772,6 @@ void CCharacter::SetClass(int ClassChoosed)
 	m_NeedFullHeal = false;
 	
 	GameServer()->CreatePlayerSpawn(m_Pos);
-}
-
-bool CCharacter::IsInfected() const
-{
-	return m_pPlayer->IsInfected();
 }
 
 bool CCharacter::IsZombie() const

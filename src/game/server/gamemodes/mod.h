@@ -26,12 +26,13 @@ public:
 	virtual void EndRound();
 	virtual bool PreSpawn(CPlayer* pPlayer, vec2 *pPos);
 	virtual bool PickupAllowed(int Index);
-	virtual int ChooseHumanClass(CPlayer* pPlayer);
-	virtual int ChooseInfectedClass(CPlayer* pPlayer);
+	virtual int ChooseHumanClass(const CPlayer *pPlayer) const;
+	virtual int ChooseInfectedClass(const CPlayer *pPlayer) const;
 	virtual bool IsEnabledClass(int PlayerClass);
 	virtual bool IsChoosableClass(int PlayerClass);
 	virtual bool CanVote();
 	virtual void OnClientDrop(int ClientID, int Type);
+	virtual void OnPlayerInfected(CPlayer* pPlayer, CPlayer* pInfectiousPlayer);
 	virtual bool IsInfectionStarted();
 	
 	void ResetFinalExplosion();

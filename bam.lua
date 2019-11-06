@@ -190,13 +190,11 @@ function build(settings)
 			settings.link.libs:Add("icui18n")
 			settings.link.libs:Add("icuuc")
 			settings.link.libs:Add("c++")
-			settings.link.libs:Add("maxminddb")
 			settings.link.libpath:Add("/usr/local/opt/icu4c/lib")
 			settings.link.frameworks:Add("Carbon")
 			settings.link.frameworks:Add("AppKit")
 		else
 			settings.link.libs:Add("pthread")
-			settings.link.libs:Add("maxminddb")  -- for ip geolocation
 			-- add ICU for linux
 			if ExecuteSilent("pkg-config icu-uc icu-i18n") == 0 then
 			end
@@ -205,6 +203,10 @@ function build(settings)
 			settings.link.flags:Add("`pkg-config --libs icu-uc icu-i18n`")
 		end
 		
+		if not config.nogeolocation.value then
+			settings.link.libs:Add("maxminddb")  -- for ip geolocation
+		end
+
 		if platform == "solaris" then
 		    settings.link.flags:Add("-lsocket")
 		    settings.link.flags:Add("-lnsl")

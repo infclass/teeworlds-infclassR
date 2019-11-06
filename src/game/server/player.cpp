@@ -784,7 +784,12 @@ void CPlayer::SetOldClass(int oldClass)
 	m_classOld = oldClass;
 }
 
-void CPlayer::StartInfection(bool force)
+void CPlayer::Infect(CPlayer *pInfectiousPlayer)
+{
+	StartInfection(/* force */ false, pInfectiousPlayer);
+}
+
+void CPlayer::StartInfection(bool force, CPlayer *pInfectiousPlayer)
 {
 	if(!force && IsZombie())
 		return;
@@ -798,11 +803,7 @@ void CPlayer::StartInfection(bool force)
 	int c = GameServer()->m_pController->ChooseInfectedClass(this);
 	
 	SetClass(c);
-}
-
-bool CPlayer::IsInfected() const
-{
-	return (m_class > END_HUMANCLASS);
+	GameServer()->m_pController->OnPlayerInfected(this, pInfectiousPlayer);
 }
 
 bool CPlayer::IsZombie() const
@@ -815,7 +816,7 @@ bool CPlayer::IsHuman() const
 	return !(m_class > END_HUMANCLASS);
 }
 
-bool CPlayer::IsKownClass(int c)
+bool CPlayer::IsKnownClass(int c)
 {
 	return m_knownClass[c];
 }

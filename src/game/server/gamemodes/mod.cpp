@@ -65,6 +65,32 @@ void CGameControllerMOD::OnClientDrop(int ClientID, int Type)
 		{
 			Server()->Ban(ClientID, 60*g_Config.m_InfLeaverBanTime, "Leaver");
 		}
+    }
+}
+
+void CGameControllerMOD::OnPlayerInfected(CPlayer *pPlayer, CPlayer *pInfectiousPlayer)
+{
+	if (!pInfectiousPlayer) {
+		return;
+	}
+
+	const int InfectedByCID = pInfectiousPlayer->GetCID();
+	GameServer()->SendChatTarget_Localization(InfectedByCID, CHATCATEGORY_SCORE, _("You have infected {str:VictimName}, +3 points"), "VictimName", Server()->ClientName(pPlayer->GetCID()), NULL);
+	Server()->RoundStatistics()->OnScoreEvent(InfectedByCID, SCOREEVENT_INFECTION, pInfectiousPlayer->GetClass(), Server()->ClientName(InfectedByCID), GameServer()->Console());
+	GameServer()->SendScoreSound(InfectedByCID);
+
+	//Search for hook
+	for(CCharacter *pHook = (CCharacter*) GameServer()->m_World.FindFirst(CGameWorld::ENTTYPE_CHARACTER); pHook; pHook = (CCharacter *)pHook->TypeNext())
+	{
+		if(
+			pHook->GetPlayer() &&
+			pHook->m_Core.m_HookedPlayer == pPlayer->GetCID() &&
+			pHook->GetPlayer()->GetCID() != InfectedByCID
+		)
+		{
+			Server()->RoundStatistics()->OnScoreEvent(pHook->GetPlayer()->GetCID(), SCOREEVENT_HELP_HOOK_INFECTION, pHook->GetClass(), Server()->ClientName(pHook->GetPlayer()->GetCID()), GameServer()->Console());
+			GameServer()->SendScoreSound(pHook->GetPlayer()->GetCID());
+		}
 	}
 }
 
@@ -545,6 +571,23 @@ void CGameControllerMOD::Snap(int SnappingClient)
 
 int CGameControllerMOD::OnCharacterDeath(class CCharacter *pVictim, class CPlayer *pKiller, int Weapon)
 {
+	if (!pKiller && Weapon == WEAPON_WORLD && pVictim->GetPlayer()) {
+		//Search for hook
+		for(CCharacter *pHooker = (CCharacter*) GameServer()->m_World.FindFirst(CGameWorld::ENTTYPE_CHARACTER); pHooker; pHooker = (CCharacter *)pHooker->TypeNext())
+		{
+			if (pHooker->GetPlayer() && pHooker->m_Core.m_HookedPlayer == pVictim->GetPlayer()->GetCID())
+			{
+				if (pKiller) {
+					// More than one player hooked this victim
+					// We don't support cooperative killing
+					pKiller = nullptr;
+					break;
+				}
+				pKiller = pHooker->GetPlayer();
+			}
+		}
+	}
+
 	// do scoreing
 	if(!pKiller || Weapon == WEAPON_GAME)
 		return 0;
@@ -556,23 +599,7 @@ int CGameControllerMOD::OnCharacterDeath(class CCharacter *pVictim, class CPlaye
 		{
 			if(pVictim->IsHuman())
 			{
-				GameServer()->SendChatTarget_Localization(pKiller->GetCID(), CHATCATEGORY_SCORE, _("You have infected {str:VictimName}, +3 points"), "VictimName", Server()->ClientName(pVictimPlayer->GetCID()), NULL);
-				Server()->RoundStatistics()->OnScoreEvent(pKiller->GetCID(), SCOREEVENT_INFECTION, pKiller->GetClass(), Server()->ClientName(pKiller->GetCID()), GameServer()->Console());
-				GameServer()->SendScoreSound(pKiller->GetCID());
-				
-				//Search for hook
-				for(CCharacter *pHook = (CCharacter*) GameServer()->m_World.FindFirst(CGameWorld::ENTTYPE_CHARACTER); pHook; pHook = (CCharacter *)pHook->TypeNext())
-				{
-					if(
-						pHook->GetPlayer() &&
-						pHook->m_Core.m_HookedPlayer == pVictim->GetPlayer()->GetCID() &&
-						pHook->GetPlayer()->GetCID() != pKiller->GetCID()
-					)
-					{
-						Server()->RoundStatistics()->OnScoreEvent(pHook->GetPlayer()->GetCID(), SCOREEVENT_HELP_HOOK_INFECTION, pHook->GetClass(), Server()->ClientName(pHook->GetPlayer()->GetCID()), GameServer()->Console());
-						GameServer()->SendScoreSound(pHook->GetPlayer()->GetCID());
-					}
-				}
+				pVictimPlayer->Infect(pKiller);
 			}
 		}
 	}
@@ -761,7 +788,7 @@ bool CGameControllerMOD::PickupAllowed(int Index)
 	else return true;
 }
 
-int CGameControllerMOD::ChooseHumanClass(CPlayer* pPlayer)
+int CGameControllerMOD::ChooseHumanClass(const CPlayer *pPlayer) const
 {
 	//Get information about existing humans
 	int nbSupport = 0;
@@ -847,7 +874,7 @@ int CGameControllerMOD::ChooseHumanClass(CPlayer* pPlayer)
 	return START_HUMANCLASS + 1 + random_distribution(Probability, Probability + NB_HUMANCLASS);
 }
 
-int CGameControllerMOD::ChooseInfectedClass(CPlayer* pPlayer)
+int CGameControllerMOD::ChooseInfectedClass(const CPlayer *pPlayer) const
 {
 	//Get information about existing infected
 	int nbInfected = 0;
