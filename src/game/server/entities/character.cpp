@@ -2755,14 +2755,17 @@ void CCharacter::Die(int Killer, int Weapon)
 	GameServer()->m_World.m_Core.m_apCharacters[m_pPlayer->GetCID()] = 0;
 	GameServer()->CreateDeath(m_Pos, m_pPlayer->GetCID());
 	
+	CPlayer* pKillerPlayer = nullptr;
 	if(Killer >=0 && Killer < MAX_CLIENTS)
 	{
-		CPlayer* pKillerPlayer = GameServer()->m_apPlayers[Killer];
-		if(pKillerPlayer && pKillerPlayer->GetClass() == PLAYERCLASS_SNIPER)
+		pKillerPlayer = GameServer()->m_apPlayers[Killer];
+		if (pKillerPlayer)
 		{
-			CCharacter* pKiller = GameServer()->m_apPlayers[Killer]->GetCharacter();
-			if(pKiller)
-				GiveWeapon(WEAPON_RIFLE, 1);
+			pKillerCharacter = pKillerPlayer->GetCharacter();
+		}
+		if(pKillerCharacter && pKillerPlayer->GetClass() == PLAYERCLASS_SNIPER)
+		{
+			GiveWeapon(WEAPON_RIFLE, 1);
 		}
 	}
 	
