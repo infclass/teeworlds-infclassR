@@ -2701,7 +2701,31 @@ void CCharacter::Die(int Killer, int Weapon)
 	
 	DestroyChildEntities();
 /* INFECTION MODIFICATION END *****************************************/
-	
+
+	CCharacter *pKillerCharacter = nullptr;
+	if (Weapon == WEAPON_WORLD && Killer == m_pPlayer->GetCID()) {
+		//Search for the real killer (if somebody hooked this player)
+		for(CCharacter *pHooker = (CCharacter*) GameServer()->m_World.FindFirst(CGameWorld::ENTTYPE_CHARACTER); pHooker; pHooker = (CCharacter *)pHooker->TypeNext())
+		{
+			if (pHooker->GetPlayer() && pHooker->m_Core.m_HookedPlayer == m_pPlayer->GetCID())
+			{
+				if (pKillerCharacter) {
+					// More than one player hooked this victim
+					// We don't support cooperative killing
+					pKillerCharacter = nullptr;
+					break;
+				}
+				pKillerCharacter = pHooker;
+			}
+		}
+
+		if (pKillerCharacter && pKillerCharacter->GetPlayer())
+		{
+			Killer = pKillerCharacter->GetPlayer()->GetCID();
+			Weapon = WEAPON_NINJA;
+		}
+	}
+
 	// we got to wait 0.5 secs before respawning
 	m_pPlayer->m_RespawnTick = Server()->Tick()+Server()->TickSpeed()/2;
 	int ModeSpecial = GameServer()->m_pController->OnCharacterDeath(this, GameServer()->m_apPlayers[Killer], Weapon);
@@ -2731,14 +2755,17 @@ void CCharacter::Die(int Killer, int Weapon)
 	GameServer()->m_World.m_Core.m_apCharacters[m_pPlayer->GetCID()] = 0;
 	GameServer()->CreateDeath(m_Pos, m_pPlayer->GetCID());
 	
+	CPlayer* pKillerPlayer = nullptr;
 	if(Killer >=0 && Killer < MAX_CLIENTS)
 	{
-		CPlayer* pKillerPlayer = GameServer()->m_apPlayers[Killer];
-		if(pKillerPlayer && pKillerPlayer->GetClass() == PLAYERCLASS_SNIPER)
+		pKillerPlayer = GameServer()->m_apPlayers[Killer];
+		if (pKillerPlayer)
 		{
-			CCharacter* pKiller = GameServer()->m_apPlayers[Killer]->GetCharacter();
-			if(pKiller)
-				GiveWeapon(WEAPON_RIFLE, 1);
+			pKillerCharacter = pKillerPlayer->GetCharacter();
+		}
+		if(pKillerCharacter && pKillerPlayer->GetClass() == PLAYERCLASS_SNIPER)
+		{
+			GiveWeapon(WEAPON_RIFLE, 1);
 		}
 	}
 	
@@ -2772,6 +2799,22 @@ void CCharacter::Die(int Killer, int Weapon)
 		m_Core.m_Passenger = nullptr;
 	}
 /* INFECTION MODIFICATION END *****************************************/
+
+	if (m_pPlayer != pKillerPlayer)
+	{
+		// set attacker's face to happy (taunt!)
+		if (pKillerCharacter)
+		{
+			pKillerCharacter->m_EmoteType = EMOTE_HAPPY;
+			pKillerCharacter->m_EmoteStop = Server()->Tick() + Server()->TickSpeed();
+		}
+		pKillerPlayer->IncreaseNumberKills();
+	}
+
+	if (pKillerCharacter)
+	{
+		pKillerCharacter->CheckSuperWeaponAccess();
+	}
 }
 
 bool CCharacter::TakeDamage(vec2 Force, int Dmg, int From, int Weapon, int Mode)
@@ -2942,21 +2985,6 @@ bool CCharacter::TakeDamage(vec2 Force, int Dmg, int From, int Weapon, int Mode)
 	{
 		Die(From, Weapon);
 
-		// set attacker's face to happy (taunt!)
-		if (From >= 0 && From != m_pPlayer->GetCID() && pKillerPlayer)
-		{
-			if (pKillerChar)
-			{
-				pKillerChar->m_EmoteType = EMOTE_HAPPY;
-				pKillerChar->m_EmoteStop = Server()->Tick() + Server()->TickSpeed();
-			}
-		}
-		
-		if (pKillerPlayer)
-			pKillerPlayer->IncreaseNumberKills();
-		if (pKillerChar)
-			pKillerChar->CheckSuperWeaponAccess();
-		
 		return false;
 	}
 
