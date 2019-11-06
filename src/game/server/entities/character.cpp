@@ -2904,25 +2904,8 @@ bool CCharacter::TakeDamage(vec2 Force, int Dmg, int From, int Weapon, int Mode)
 /* INFECTION MODIFICATION START ***************************************/
 	if(Mode == TAKEDAMAGEMODE_INFECTION)
 	{
-		m_pPlayer->StartInfection();
+		m_pPlayer->Infect(pKillerPlayer);
 		
-		GameServer()->SendChatTarget_Localization(From, CHATCATEGORY_SCORE, _("You have infected {str:VictimName}, +3 points"), "VictimName", Server()->ClientName(m_pPlayer->GetCID()), NULL);
-		Server()->RoundStatistics()->OnScoreEvent(From, SCOREEVENT_INFECTION, pKillerPlayer->GetClass(), Server()->ClientName(From), Console());
-		GameServer()->SendScoreSound(From);
-	
-		//Search for hook
-		for(CCharacter *pHook = (CCharacter*) GameServer()->m_World.FindFirst(CGameWorld::ENTTYPE_CHARACTER); pHook; pHook = (CCharacter *)pHook->TypeNext())
-		{
-			if(
-				pHook->GetPlayer() &&
-				pHook->m_Core.m_HookedPlayer == m_pPlayer->GetCID() &&
-				pHook->GetPlayer()->GetCID() != From
-			)
-			{
-				Server()->RoundStatistics()->OnScoreEvent(pHook->GetPlayer()->GetCID(), SCOREEVENT_HELP_HOOK_INFECTION, pHook->GetClass(), Server()->ClientName(pHook->GetPlayer()->GetCID()), Console());
-				GameServer()->SendScoreSound(pHook->GetPlayer()->GetCID());
-			}
-		}
 		
 		char aBuf[256];
 		str_format(aBuf, sizeof(aBuf), "kill killer='%s' victim='%s' weapon=%d",

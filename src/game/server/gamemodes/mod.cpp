@@ -68,8 +68,30 @@ void CGameControllerMOD::OnClientDrop(int ClientID, int Type)
     }
 }
 
-void CGameControllerMOD::OnPlayerInfected(CPlayer *pPlayer)
+void CGameControllerMOD::OnPlayerInfected(CPlayer *pPlayer, CPlayer *pInfectiousPlayer)
 {
+	if (!pInfectiousPlayer) {
+		return;
+	}
+
+	const int InfectedByCID = pInfectiousPlayer->GetCID();
+	GameServer()->SendChatTarget_Localization(InfectedByCID, CHATCATEGORY_SCORE, _("You have infected {str:VictimName}, +3 points"), "VictimName", Server()->ClientName(pPlayer->GetCID()), NULL);
+	Server()->RoundStatistics()->OnScoreEvent(InfectedByCID, SCOREEVENT_INFECTION, pInfectiousPlayer->GetClass(), Server()->ClientName(InfectedByCID), GameServer()->Console());
+	GameServer()->SendScoreSound(InfectedByCID);
+
+	//Search for hook
+	for(CCharacter *pHook = (CCharacter*) GameServer()->m_World.FindFirst(CGameWorld::ENTTYPE_CHARACTER); pHook; pHook = (CCharacter *)pHook->TypeNext())
+	{
+		if(
+			pHook->GetPlayer() &&
+			pHook->m_Core.m_HookedPlayer == pPlayer->GetCID() &&
+			pHook->GetPlayer()->GetCID() != InfectedByCID
+		)
+		{
+			Server()->RoundStatistics()->OnScoreEvent(pHook->GetPlayer()->GetCID(), SCOREEVENT_HELP_HOOK_INFECTION, pHook->GetClass(), Server()->ClientName(pHook->GetPlayer()->GetCID()), GameServer()->Console());
+			GameServer()->SendScoreSound(pHook->GetPlayer()->GetCID());
+		}
+	}
 }
 
 bool CGameControllerMOD::OnEntity(const char* pName, vec2 Pivot, vec2 P0, vec2 P1, vec2 P2, vec2 P3, int PosEnv)
@@ -577,23 +599,7 @@ int CGameControllerMOD::OnCharacterDeath(class CCharacter *pVictim, class CPlaye
 		{
 			if(pVictim->IsHuman())
 			{
-				GameServer()->SendChatTarget_Localization(pKiller->GetCID(), CHATCATEGORY_SCORE, _("You have infected {str:VictimName}, +3 points"), "VictimName", Server()->ClientName(pVictimPlayer->GetCID()), NULL);
-				Server()->RoundStatistics()->OnScoreEvent(pKiller->GetCID(), SCOREEVENT_INFECTION, pKiller->GetClass(), Server()->ClientName(pKiller->GetCID()), GameServer()->Console());
-				GameServer()->SendScoreSound(pKiller->GetCID());
-				
-				//Search for hook
-				for(CCharacter *pHook = (CCharacter*) GameServer()->m_World.FindFirst(CGameWorld::ENTTYPE_CHARACTER); pHook; pHook = (CCharacter *)pHook->TypeNext())
-				{
-					if(
-						pHook->GetPlayer() &&
-						pHook->m_Core.m_HookedPlayer == pVictim->GetPlayer()->GetCID() &&
-						pHook->GetPlayer()->GetCID() != pKiller->GetCID()
-					)
-					{
-						Server()->RoundStatistics()->OnScoreEvent(pHook->GetPlayer()->GetCID(), SCOREEVENT_HELP_HOOK_INFECTION, pHook->GetClass(), Server()->ClientName(pHook->GetPlayer()->GetCID()), GameServer()->Console());
-						GameServer()->SendScoreSound(pHook->GetPlayer()->GetCID());
-					}
-				}
+				pVictimPlayer->Infect(pKiller);
 			}
 		}
 	}

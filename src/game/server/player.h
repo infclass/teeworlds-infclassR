@@ -159,7 +159,8 @@ public:
 	void SetOldClass(int oldClass);
 	bool IsZombie() const;
 	bool IsHuman() const;
-	void StartInfection(bool force = false);
+	void Infect(CPlayer* pInfectiousPlayer);
+	void StartInfection(bool force = false, CPlayer* pInfectiousPlayer = nullptr);
 	bool IsKnownClass(int c);
 	
 	const char* GetLanguage();
