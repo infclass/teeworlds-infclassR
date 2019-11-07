@@ -2800,7 +2800,7 @@ void CCharacter::Die(int Killer, int Weapon)
 	}
 /* INFECTION MODIFICATION END *****************************************/
 
-	if (m_pPlayer != pKillerPlayer)
+	if (pKillerPlayer && (pKillerPlayer != m_pPlayer))
 	{
 		// set attacker's face to happy (taunt!)
 		if (pKillerCharacter)
