@@ -2754,21 +2754,7 @@ void CCharacter::Die(int Killer, int Weapon)
 	GameServer()->m_World.RemoveEntity(this);
 	GameServer()->m_World.m_Core.m_apCharacters[m_pPlayer->GetCID()] = 0;
 	GameServer()->CreateDeath(m_Pos, m_pPlayer->GetCID());
-	
-	CPlayer* pKillerPlayer = nullptr;
-	if(Killer >=0 && Killer < MAX_CLIENTS)
-	{
-		pKillerPlayer = GameServer()->m_apPlayers[Killer];
-		if (pKillerPlayer)
-		{
-			pKillerCharacter = pKillerPlayer->GetCharacter();
-		}
-		if(pKillerCharacter && pKillerPlayer->GetClass() == PLAYERCLASS_SNIPER)
-		{
-			GiveWeapon(WEAPON_RIFLE, 1);
-		}
-	}
-	
+
 /* INFECTION MODIFICATION START ***************************************/
 	if(GetClass() == PLAYERCLASS_BOOMER && !IsFrozen() && Weapon != WEAPON_GAME && !(IsInLove() && Weapon == WEAPON_SELF) )
 	{
@@ -2800,20 +2786,28 @@ void CCharacter::Die(int Killer, int Weapon)
 	}
 /* INFECTION MODIFICATION END *****************************************/
 
-	if (pKillerPlayer && (pKillerPlayer != m_pPlayer))
+	CPlayer* pKillerPlayer = nullptr;
+	if(Killer >=0 && Killer < MAX_CLIENTS)
 	{
+		pKillerPlayer = GameServer()->m_apPlayers[Killer];
+	}
+
+	if(pKillerPlayer && (pKillerPlayer != m_pPlayer))
+	{
+		pKillerPlayer->IncreaseNumberKills();
+		pKillerCharacter = pKillerPlayer->GetCharacter();
 		// set attacker's face to happy (taunt!)
-		if (pKillerCharacter)
+		if(pKillerCharacter)
 		{
 			pKillerCharacter->m_EmoteType = EMOTE_HAPPY;
 			pKillerCharacter->m_EmoteStop = Server()->Tick() + Server()->TickSpeed();
-		}
-		pKillerPlayer->IncreaseNumberKills();
-	}
+			pKillerCharacter->CheckSuperWeaponAccess();
 
-	if (pKillerCharacter)
-	{
-		pKillerCharacter->CheckSuperWeaponAccess();
+			if(pKillerPlayer->GetClass() == PLAYERCLASS_SNIPER)
+			{
+				GiveWeapon(WEAPON_RIFLE, 1);
+			}
+		}
 	}
 }
 
