@@ -394,25 +394,6 @@ void CPlayer::Snap(int SnappingClient)
 	}
 }
 
-void CPlayer::FakeSnap(int SnappingClient)
-{
-	IServer::CClientInfo info;
-	Server()->GetClientInfo(SnappingClient, &info);
-	if (info.m_CustClt)
-		return;
-
-	int id = VANILLA_MAX_CLIENTS - 1;
-
-	CNetObj_ClientInfo *pClientInfo = static_cast<CNetObj_ClientInfo *>(Server()->SnapNewItem(NETOBJTYPE_CLIENTINFO, id, sizeof(CNetObj_ClientInfo)));
-
-	if(!pClientInfo)
-		return;
-
-	StrToInts(&pClientInfo->m_Name0, 4, " ");
-	StrToInts(&pClientInfo->m_Clan0, 3, Server()->ClientClan(m_ClientID));
-	StrToInts(&pClientInfo->m_Skin0, 6, m_TeeInfos.m_SkinName);
-}
-
 void CPlayer::OnDisconnect(int Type, const char *pReason)
 {
 	KillCharacter();
