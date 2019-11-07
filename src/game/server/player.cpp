@@ -57,7 +57,6 @@ CPlayer::CPlayer(CGameContext *pGameServer, int ClientID, int Team)
 	m_PrevTuningParams = *pGameServer->Tuning();
 	m_NextTuningParams = m_PrevTuningParams;
 	m_IsInGame = false;
-	m_IsSpectator = false;
 	
 	for(unsigned int i=0; i<sizeof(m_LastHumanClasses)/sizeof(int); i++)
 		m_LastHumanClasses[i] = -1;
@@ -566,20 +565,16 @@ void CPlayer::SetTeam(int Team, bool DoChatMsg)
 		
 		//add spectator
 		GameServer()->AddSpectatorCID(m_ClientID);
-		m_IsSpectator = true;
-		
 	} 
 	else
 	{
 		//remove spectator
 		GameServer()->RemoveSpectatorCID(m_ClientID);
-		m_IsSpectator = false;
-		
 	}
 	
 	GameServer()->CountActivePlayers();
 	GameServer()->CountSpectators();
-	GameServer()->CountHumans(); // updates also zombies
+	GameServer()->CountInfPlayers();
 	
 	GameServer()->m_pController->CheckTeamBalance();
 	m_TeamChangeTick = Server()->Tick();
@@ -782,8 +777,7 @@ void CPlayer::SetClass(int newClass)
 	str_format(aBuf, sizeof(aBuf), "choose_class player='%s' class='%d'", Server()->ClientName(m_ClientID), newClass);
 	GameServer()->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "game", aBuf);
 	
-	//update number of humans and zombies
-	GameServer()->CountHumans(); //updates also zombies
+	GameServer()->CountInfPlayers();
 }
 
 int CPlayer::GetOldClass()
@@ -822,11 +816,6 @@ void CPlayer::StartInfection(bool force)
 	SetClass(c);
 }
 
-bool CPlayer::IsInfected() const
-{
-	return (m_class > END_HUMANCLASS);
-}
-
 bool CPlayer::IsZombie() const
 {
 	return (m_class > END_HUMANCLASS);
@@ -839,10 +828,10 @@ bool CPlayer::IsHuman() const
 
 bool CPlayer::IsSpectator() const
 {
-	return m_IsSpectator;
+	return m_Team == TEAM_SPECTATORS;
 }
 
-bool CPlayer::IsKownClass(int c)
+bool CPlayer::IsKnownClass(int c)
 {
 	return m_knownClass[c];
 }

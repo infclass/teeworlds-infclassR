@@ -83,7 +83,7 @@ void CTurret::Tick()
 	
 	for(CCharacter *pChr = (CCharacter*) GameWorld()->FindFirst(CGameWorld::ENTTYPE_CHARACTER); pChr; pChr = (CCharacter *)pChr->TypeNext()) 
 	{
-		if(!pChr->IsInfected()) continue;
+		if(!pChr->IsZombie()) continue;
 		if(pChr->GetClass() == PLAYERCLASS_UNDEAD && pChr->IsFrozen()) continue;
 		if(pChr->GetClass() == PLAYERCLASS_VOODOO && pChr->m_VoodooAboutToDie) continue;
 		
@@ -146,7 +146,7 @@ void CTurret::Tick()
 	{
 		if(!m_ammunition) break;
 		
-		if(!pChr->IsInfected() ||
+		if(!pChr->IsZombie() ||
 			(pChr->GetClass() == PLAYERCLASS_UNDEAD && pChr->IsFrozen() ) ||
 			(pChr->GetClass() == PLAYERCLASS_VOODOO && pChr->m_VoodooAboutToDie) ) continue;
 		

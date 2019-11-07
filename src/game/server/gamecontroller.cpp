@@ -742,25 +742,3 @@ int IGameController::ClampTeam(int Team)
 		return Team&1;
 	return 0;
 }
-
-/* INFECTION MODIFICATION START ***************************************/
-int IGameController::ChooseHumanClass(CPlayer* pPlayer)
-{
-	return PLAYERCLASS_ENGINEER;
-}
-
-int IGameController::ChooseInfectedClass(CPlayer* pPlayer)
-{
-	return PLAYERCLASS_SMOKER;
-}
-
-bool IGameController::IsChoosableClass(int PlayerClass)
-{
-	return false;
-}
-
-bool IGameController::IsSpawnable(vec2 Position, int TeleZoneType)
-{
-	return true;
-}
-/* INFECTION MODIFICATION END *****************************************/
