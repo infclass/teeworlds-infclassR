@@ -1416,6 +1416,17 @@ void CCharacter::CheckSuperWeaponAccess()
 	}
 }
 
+bool CCharacter::CanDie() const
+{
+	if ((GetClass() == PLAYERCLASS_UNDEAD) && IsFrozen()) {
+		return false;
+	}
+	if ((GetClass() == PLAYERCLASS_VOODOO) && m_VoodooAboutToDie) {
+		return false;
+	}
+
+	return true;
+}
 
 void CCharacter::SaturateVelocity(vec2 Force, float MaxSpeed)
 {

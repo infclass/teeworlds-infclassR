@@ -67,8 +67,7 @@ void CEngineerWall::Tick()
 					{
 						
 						//skip classes that can't die.
-						if(p->GetClass() == PLAYERCLASS_UNDEAD && p->IsFrozen()) continue;
-						if(p->GetClass() == PLAYERCLASS_VOODOO && p->m_VoodooAboutToDie) continue;
+						if(!p->CanDie()) continue;
 						
 						if(
 							pHook->GetPlayer() &&
