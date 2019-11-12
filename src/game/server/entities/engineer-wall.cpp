@@ -61,44 +61,7 @@ void CEngineerWall::Tick()
 			float Len = distance(p->m_Pos, IntersectPos);
 			if(Len < p->m_ProximityRadius+g_BarrierRadius)
 			{
-				if(p->GetPlayer())
-				{
-					for(CCharacter *pHook = (CCharacter*) GameWorld()->FindFirst(CGameWorld::ENTTYPE_CHARACTER); pHook; pHook = (CCharacter *)pHook->TypeNext())
-					{
-						
-						//skip classes that can't die.
-						if(!p->CanDie()) continue;
-						
-						if(
-							pHook->GetPlayer() &&
-							pHook->IsHuman() &&
-							pHook->m_Core.m_HookedPlayer == p->GetPlayer()->GetCID() &&
-							pHook->GetPlayer()->GetCID() != m_Owner && //The engineer will get the point when the infected dies
-							p->m_LastFreezer != pHook->GetPlayer()->GetCID() //The ninja will get the point when the infected dies
-						)
-						{
-							int ClientID = pHook->GetPlayer()->GetCID();
-							Server()->RoundStatistics()->OnScoreEvent(ClientID, SCOREEVENT_HELP_HOOK_BARRIER, pHook->GetClass(), Server()->ClientName(ClientID), GameServer()->Console());
-							GameServer()->SendScoreSound(pHook->GetPlayer()->GetCID());
-						}
-					}
-					
-					if(p->GetClass() != PLAYERCLASS_UNDEAD && p->GetClass() != PLAYERCLASS_VOODOO)
-					{
-						int LifeSpanReducer = ((Server()->TickSpeed()*g_Config.m_InfBarrierTimeReduce)/100);
-						m_WallFlashTicks = 10;
-						
-						if(p->GetClass() == PLAYERCLASS_GHOUL)
-						{
-							float Factor = p->GetPlayer()->GetGhoulPercent();
-							LifeSpanReducer += Server()->TickSpeed() * 5.0f * Factor;
-						}
-						
-						m_LifeSpan -= LifeSpanReducer;
-					}
-				}
-				
-				p->Die(m_Owner, WEAPON_HAMMER);
+				OnZombieHit(p);
 			}
 		}
 	}
@@ -168,4 +131,45 @@ void CEngineerWall::Snap(int SnappingClient)
 		pObj->m_FromY = (int)Pos.y;
 		pObj->m_StartTick = Server()->Tick();
 	}
+}
+
+void CEngineerWall::OnZombieHit(CCharacter *pZombie)
+{
+	if(pZombie->GetPlayer())
+	{
+		if(pZombie->CanDie())
+		{
+			for(CCharacter *pHook = (CCharacter*) GameWorld()->FindFirst(CGameWorld::ENTTYPE_CHARACTER); pHook; pHook = (CCharacter *)pHook->TypeNext())
+			{
+				if(
+					pHook->GetPlayer() &&
+					pHook->IsHuman() &&
+					pHook->m_Core.m_HookedPlayer == pZombie->GetPlayer()->GetCID() &&
+					pHook->GetPlayer()->GetCID() != m_Owner && //The engineer will get the point when the infected dies
+					pZombie->m_LastFreezer != pHook->GetPlayer()->GetCID() //The ninja will get the point when the infected dies
+				)
+				{
+					int ClientID = pHook->GetPlayer()->GetCID();
+					Server()->RoundStatistics()->OnScoreEvent(ClientID, SCOREEVENT_HELP_HOOK_BARRIER, pHook->GetClass(), Server()->ClientName(ClientID), GameServer()->Console());
+					GameServer()->SendScoreSound(pHook->GetPlayer()->GetCID());
+				}
+			}
+		}
+
+		if(pZombie->GetClass() != PLAYERCLASS_UNDEAD && pZombie->GetClass() != PLAYERCLASS_VOODOO)
+		{
+			int LifeSpanReducer = ((Server()->TickSpeed()*g_Config.m_InfBarrierTimeReduce)/100);
+			m_WallFlashTicks = 10;
+
+			if(pZombie->GetClass() == PLAYERCLASS_GHOUL)
+			{
+				float Factor = pZombie->GetPlayer()->GetGhoulPercent();
+				LifeSpanReducer += Server()->TickSpeed() * 5.0f * Factor;
+			}
+
+			m_LifeSpan -= LifeSpanReducer;
+		}
+	}
+
+	pZombie->Die(m_Owner, WEAPON_HAMMER);
 }
