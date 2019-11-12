@@ -564,7 +564,7 @@ void CPlayer::TryRespawn()
 }
 
 /* INFECTION MODIFICATION START ***************************************/
-int CPlayer::GetClass()
+int CPlayer::GetClass() const
 {
 	return m_class;
 }

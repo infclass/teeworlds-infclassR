@@ -77,6 +77,7 @@ public:
 	void FireWeapon();
 	void CheckSuperWeaponAccess();
 
+	bool CanDie() const;
 	void Die(int Killer, int Weapon);
 	bool TakeDamage(vec2 Force, int Dmg, int From, int Weapon, int Mode);
 
@@ -235,7 +236,7 @@ public:
 	void ClassSpawnAttributes();
 	void GiveArmorIfLonely();
 	void OpenClassChooser();
-	int GetClass();
+	int GetClass() const;
 
 	void SetClass(int ClassChoosed);
 	bool IsZombie() const;

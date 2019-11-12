@@ -3306,7 +3306,7 @@ void CCharacter::OpenClassChooser()
 	}
 }
 
-int CCharacter::GetClass()
+int CCharacter::GetClass() const
 {
 	if(!m_pPlayer)
 		return PLAYERCLASS_NONE;
