@@ -551,9 +551,9 @@ void CGameControllerMOD::DoWincheck()
 	GetPlayerCounter(-1, NumHumans, NumInfected, NumFirstInfected);
 
 	//Win check
+	const int Seconds = (Server()->Tick()-m_RoundStartTick)/((float)Server()->TickSpeed());
 	if(m_InfectedStarted && NumHumans == 0 && NumInfected > 1)
 	{
-		int Seconds = (Server()->Tick()-m_RoundStartTick)/((float)Server()->TickSpeed());
 
 		GameServer()->SendChatTarget_Localization(-1, CHATCATEGORY_INFECTED, _("Infected won the round in {sec:RoundDuration}"), "RoundDuration", &Seconds, NULL);
 
@@ -565,7 +565,7 @@ void CGameControllerMOD::DoWincheck()
 	}
 
 	//Start the final explosion if the time is over
-	if(m_InfectedStarted && !m_ExplosionStarted && g_Config.m_SvTimelimit > 0 && (Server()->Tick()-m_RoundStartTick) >= g_Config.m_SvTimelimit*Server()->TickSpeed()*60)
+	if(m_InfectedStarted && !m_ExplosionStarted && g_Config.m_SvTimelimit > 0 && Seconds >= g_Config.m_SvTimelimit*60)
 	{
 		for(CCharacter *p = (CCharacter*) GameServer()->m_World.FindFirst(CGameWorld::ENTTYPE_CHARACTER); p; p = (CCharacter *)p->TypeNext())
 		{
@@ -649,7 +649,6 @@ void CGameControllerMOD::DoWincheck()
 				GameServer()->SendChatTarget_Localization_P(-1, CHATCATEGORY_HUMANS, NumHumans, _P("One human won the round", "{int:NumHumans} humans won the round"), "NumHumans", &NumHumans, NULL);
 
 				char aBuf[512];
-				int Seconds = (Server()->Tick()-m_RoundStartTick)/((float)Server()->TickSpeed());
 				str_format(aBuf, sizeof(aBuf), "round_end winner='humans' survivors='%d' duration='%d' round='%d of %d'", NumHumans, Seconds, m_RoundCount+1, g_Config.m_SvRoundsPerMap);
 				GameServer()->Console()->Print(IConsole::OUTPUT_LEVEL_DEBUG, "game", aBuf);
 					CPlayerIterator<PLAYERITER_INGAME> Iter(GameServer()->m_apPlayers);
@@ -672,7 +671,6 @@ void CGameControllerMOD::DoWincheck()
 			}
 			else
 			{
-				int Seconds = g_Config.m_SvTimelimit*60;
 				GameServer()->SendChatTarget_Localization(-1, CHATCATEGORY_INFECTED, _("Infected won the round in {sec:RoundDuration}"), "RoundDuration", &Seconds, NULL);
 			}
 
