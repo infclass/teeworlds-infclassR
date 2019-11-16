@@ -62,6 +62,7 @@ class CConsole : public IConsole
 	static bool ConToggle(IResult *pResult, void *pUser);
 	static bool ConToggleStroke(IResult *pResult, void *pUser);
 	static bool ConModCommandGet(IResult *pResult, void *pUserData);
+	static bool ConModCommandDumpVariables(IResult *pResult, void *pUserData);
 	static bool ConModCommandAccess(IResult *pResult, void *pUser);
 	static bool ConModCommandStatus(IConsole::IResult *pResult, void *pUser);
 

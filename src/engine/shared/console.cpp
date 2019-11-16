@@ -727,6 +727,23 @@ bool CConsole::ConModCommandGet(IConsole::IResult *pArguments, void *pUserData)
 	return aBuf[0];
 }
 
+bool CConsole::ConModCommandDumpVariables(IConsole::IResult *pArguments, void *pUserData)
+{
+	CConsole *pConsole = (CConsole*)pUserData;
+
+	char aBuf[240];
+	for (CIntVariableData *var : pConsole->m_configIntVariables) {
+		str_format(aBuf, sizeof(aBuf), "%s %d", var->m_Name, *var->m_pVariable);
+		pConsole->Print(OUTPUT_LEVEL_STANDARD, "Console", aBuf);
+	}
+	for (CStrVariableData *var : pConsole->m_configStrVariables) {
+		str_format(aBuf, sizeof(aBuf), "%s \"%s\"", var->m_Name, var->m_pStr);
+		pConsole->Print(OUTPUT_LEVEL_STANDARD, "Console", aBuf);
+	}
+	
+	return true;
+}
+
 CConsole::CConsole(int FlagMask)
 {
 	m_FlagMask = FlagMask;
@@ -754,6 +771,7 @@ CConsole::CConsole(int FlagMask)
 	Register("mod_command", "s?i", CFGFLAG_SERVER, ConModCommandAccess, this, "Specify command accessibility for moderators");
 	Register("mod_status", "", CFGFLAG_SERVER, ConModCommandStatus, this, "List all commands which are accessible for moderators");
 	Register("get", "s", CFGFLAG_SERVER, ConModCommandGet, this, "Get the value of a config variable");
+	Register("dump_variables", "", CFGFLAG_SERVER|CFGFLAG_CLIENT, ConModCommandDumpVariables, this, "Dump all config variables");
 
 	// TODO: this should disappear
 	#define MACRO_CONFIG_INT(Name,ScriptName,Def,Min,Max,Flags,Desc) \
