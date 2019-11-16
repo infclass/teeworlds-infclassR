@@ -344,6 +344,8 @@ public:
 	virtual int GetClientNbRound(int ClientID);
 	
 	virtual int IsClassChooserEnabled();
+	bool GetPlayerClassEnabled(int PlayerClass) const override;
+	void SetPlayerClassEnabled(int PlayerClass, bool Enabled) override;
 	virtual bool IsClientLogged(int ClientID);
 #ifdef CONF_SQL
 	virtual void Login(int ClientID, const char* pUsername, const char* pPassword);

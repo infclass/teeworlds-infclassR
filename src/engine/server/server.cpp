@@ -3016,6 +3016,77 @@ int CServer::IsClassChooserEnabled()
 	return m_InfClassChooser;
 }
 
+bool CServer::GetPlayerClassEnabled(int PlayerClass) const
+{
+	switch (PlayerClass)
+	{
+		case PLAYERCLASS_MERCENARY:
+			return g_Config.m_InfEnableMercenary;
+		case PLAYERCLASS_MEDIC:
+			return g_Config.m_InfEnableMedic;
+		case PLAYERCLASS_HERO:
+			return g_Config.m_InfEnableHero;
+		case PLAYERCLASS_ENGINEER:
+			return g_Config.m_InfEnableEngineer;
+		case PLAYERCLASS_SOLDIER:
+			return g_Config.m_InfEnableSoldier;
+		case PLAYERCLASS_NINJA:
+			return g_Config.m_InfEnableNinja;
+		case PLAYERCLASS_SNIPER:
+			return g_Config.m_InfEnableSniper;
+		case PLAYERCLASS_SCIENTIST:
+			return g_Config.m_InfEnableScientist;
+		case PLAYERCLASS_BIOLOGIST:
+			return g_Config.m_InfEnableBiologist;
+		case PLAYERCLASS_LOOPER:
+			return g_Config.m_InfEnableLooper;
+		default:
+			m_pConsole->Print(IConsole::OUTPUT_LEVEL_STANDARD, "server", "WARNING: Invalid GetPlayerClassEnabled() call");
+			return false;
+	}
+}
+
+void CServer::SetPlayerClassEnabled(int PlayerClass, bool Enabled)
+{
+	const int Value = Enabled ? 1 : 0;
+	switch (PlayerClass)
+	{
+		case PLAYERCLASS_MERCENARY:
+			g_Config.m_InfEnableMercenary = Value;
+			break;
+		case PLAYERCLASS_MEDIC:
+			g_Config.m_InfEnableMedic = Value;
+			break;
+		case PLAYERCLASS_HERO:
+			g_Config.m_InfEnableHero = Value;
+			break;
+		case PLAYERCLASS_ENGINEER:
+			g_Config.m_InfEnableEngineer = Value;
+			break;
+		case PLAYERCLASS_SOLDIER:
+			g_Config.m_InfEnableSoldier = Value;
+			break;
+		case PLAYERCLASS_NINJA:
+			g_Config.m_InfEnableNinja = Value;
+			break;
+		case PLAYERCLASS_SNIPER:
+			g_Config.m_InfEnableSniper = Value;
+			break;
+		case PLAYERCLASS_SCIENTIST:
+			g_Config.m_InfEnableScientist = Value;
+			break;
+		case PLAYERCLASS_BIOLOGIST:
+			g_Config.m_InfEnableBiologist = Value;
+			break;
+		case PLAYERCLASS_LOOPER:
+			g_Config.m_InfEnableLooper = Value;
+			break;
+		default:
+			m_pConsole->Print(IConsole::OUTPUT_LEVEL_STANDARD, "server", "WARNING: Invalid SetPlayerClassEnabled() call");
+			return;
+	}
+}
+
 bool CServer::IsClientLogged(int ClientID)
 {
 	return m_aClients[ClientID].m_UserID >= 0;
