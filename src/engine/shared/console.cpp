@@ -513,7 +513,7 @@ bool CConsole::ConModCommandAccess(IResult *pResult, void *pUser)
 		str_format(aBuf, sizeof(aBuf), "No such command: '%s'.", pResult->GetString(0));
 
 	pConsole->Print(OUTPUT_LEVEL_STANDARD, "Console", aBuf);
-	
+
 	return true;
 }
 
@@ -557,6 +557,7 @@ bool CConsole::ConModCommandStatus(IResult *pResult, void *pUser)
 struct CIntVariableData
 {
 	IConsole *m_pConsole;
+	const char *m_Name;
 	int *m_pVariable;
 	int m_Min;
 	int m_Max;
@@ -565,6 +566,7 @@ struct CIntVariableData
 struct CStrVariableData
 {
 	IConsole *m_pConsole;
+	const char *m_Name;
 	char *m_pStr;
 	int m_MaxSize;
 };
@@ -692,8 +694,37 @@ bool CConsole::ConToggleStroke(IConsole::IResult *pResult, void *pUser)
 
 	if(aBuf[0] != 0)
 		pConsole->Print(OUTPUT_LEVEL_STANDARD, "Console", aBuf);
-	
+
 	return true;
+}
+
+bool CConsole::ConModCommandGet(IConsole::IResult *pArguments, void *pUserData)
+{
+	CConsole *pConsole = (CConsole*)pUserData;
+
+	const char *variableName = pArguments->GetString(0);
+	char aBuf[1024];
+	aBuf[0] = 0;
+	for (CIntVariableData *var : pConsole->m_configIntVariables) {
+		if (str_comp_nocase(variableName, var->m_Name) == 0) {
+			str_format(aBuf, sizeof(aBuf), "%s %d", variableName, *var->m_pVariable);
+			break;
+		}
+	}
+	if (!aBuf[0])
+	{
+		for (CStrVariableData *var : pConsole->m_configStrVariables) {
+			if (str_comp_nocase(variableName, var->m_Name) == 0) {
+				str_format(aBuf, sizeof(aBuf), "%s %s", variableName, var->m_pStr);
+				break;
+			}
+		}
+	}
+
+	if (aBuf[0])
+		pConsole->Print(OUTPUT_LEVEL_STANDARD, "Console", aBuf);
+	
+	return aBuf[0];
 }
 
 CConsole::CConsole(int FlagMask)
@@ -722,18 +753,21 @@ CConsole::CConsole(int FlagMask)
 
 	Register("mod_command", "s?i", CFGFLAG_SERVER, ConModCommandAccess, this, "Specify command accessibility for moderators");
 	Register("mod_status", "", CFGFLAG_SERVER, ConModCommandStatus, this, "List all commands which are accessible for moderators");
+	Register("get", "s", CFGFLAG_SERVER, ConModCommandGet, this, "Get the value of a config variable");
 
 	// TODO: this should disappear
 	#define MACRO_CONFIG_INT(Name,ScriptName,Def,Min,Max,Flags,Desc) \
 	{ \
-		static CIntVariableData Data = { this, &g_Config.m_##Name, Min, Max }; \
+		static CIntVariableData Data = { this, #ScriptName, &g_Config.m_##Name, Min, Max }; \
 		Register(#ScriptName, "?i", Flags, IntVariableCommand, &Data, Desc); \
+		m_configIntVariables.push_back(&Data); \
 	}
 
 	#define MACRO_CONFIG_STR(Name,ScriptName,Len,Def,Flags,Desc) \
 	{ \
-		static CStrVariableData Data = { this, g_Config.m_##Name, Len }; \
+		static CStrVariableData Data = { this, #ScriptName, g_Config.m_##Name, Len }; \
 		Register(#ScriptName, "?r", Flags, StrVariableCommand, &Data, Desc); \
+		m_configStrVariables.push_back(&Data); \
 	}
 
 	#include "config_variables.h"
