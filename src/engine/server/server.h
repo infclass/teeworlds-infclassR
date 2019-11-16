@@ -346,6 +346,8 @@ public:
 	virtual int IsClassChooserEnabled();
 	bool GetPlayerClassEnabled(int PlayerClass) const override;
 	void SetPlayerClassEnabled(int PlayerClass, bool Enabled) override;
+	int GetPlayerClassProbability(int PlayerClass) const override;
+	void SetPlayerClassProbability(int PlayerClass, int Probability) override;
 	virtual bool IsClientLogged(int ClientID);
 #ifdef CONF_SQL
 	virtual void Login(int ClientID, const char* pUsername, const char* pPassword);

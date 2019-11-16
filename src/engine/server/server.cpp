@@ -3087,6 +3087,81 @@ void CServer::SetPlayerClassEnabled(int PlayerClass, bool Enabled)
 	}
 }
 
+int CServer::GetPlayerClassProbability(int PlayerClass) const
+{
+	switch (PlayerClass)
+	{
+		case PLAYERCLASS_SMOKER:
+			return g_Config.m_InfProbaSmoker;
+		case PLAYERCLASS_BOOMER:
+			return g_Config.m_InfProbaBoomer;
+		case PLAYERCLASS_HUNTER:
+			return g_Config.m_InfProbaHunter;
+		case PLAYERCLASS_BAT:
+			return g_Config.m_InfProbaBat;
+		case PLAYERCLASS_GHOST:
+			return g_Config.m_InfProbaGhost;
+		case PLAYERCLASS_SPIDER:
+			return g_Config.m_InfProbaSpider;
+		case PLAYERCLASS_GHOUL:
+			return g_Config.m_InfProbaGhoul;
+		case PLAYERCLASS_SLUG:
+			return g_Config.m_InfProbaSlug;
+		case PLAYERCLASS_VOODOO:
+			return g_Config.m_InfProbaVoodoo;
+		case PLAYERCLASS_WITCH:
+			return g_Config.m_InfProbaWitch;
+		case PLAYERCLASS_UNDEAD:
+			return g_Config.m_InfProbaUndead;
+		default:
+			m_pConsole->Print(IConsole::OUTPUT_LEVEL_STANDARD, "server", "WARNING: Invalid GetPlayerClassProbability() call");
+			return false;
+	}
+}
+
+void CServer::SetPlayerClassProbability(int PlayerClass, int Probability)
+{
+	switch (PlayerClass)
+	{
+		case PLAYERCLASS_SMOKER:
+			g_Config.m_InfProbaSmoker = Probability;
+			break;
+		case PLAYERCLASS_BOOMER:
+			g_Config.m_InfProbaBoomer = Probability;
+			break;
+		case PLAYERCLASS_HUNTER:
+			g_Config.m_InfProbaHunter = Probability;
+			break;
+		case PLAYERCLASS_BAT:
+			g_Config.m_InfProbaBat = Probability;
+			break;
+		case PLAYERCLASS_GHOST:
+			g_Config.m_InfProbaGhost = Probability;
+			break;
+		case PLAYERCLASS_SPIDER:
+			g_Config.m_InfProbaSpider = Probability;
+			break;
+		case PLAYERCLASS_GHOUL:
+			g_Config.m_InfProbaGhoul = Probability;
+			break;
+		case PLAYERCLASS_SLUG:
+			g_Config.m_InfProbaSlug = Probability;
+			break;
+		case PLAYERCLASS_VOODOO:
+			g_Config.m_InfProbaVoodoo = Probability;
+			break;
+		case PLAYERCLASS_WITCH:
+			g_Config.m_InfProbaWitch = Probability;
+			break;
+		case PLAYERCLASS_UNDEAD:
+			g_Config.m_InfProbaUndead = Probability;
+			break;
+		default:
+			m_pConsole->Print(IConsole::OUTPUT_LEVEL_STANDARD, "server", "WARNING: Invalid SetPlayerClassProbability() call");
+			return;
+	}
+}
+
 bool CServer::IsClientLogged(int ClientID)
 {
 	return m_aClients[ClientID].m_UserID >= 0;
