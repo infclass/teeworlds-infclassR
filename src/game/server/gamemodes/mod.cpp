@@ -843,6 +843,13 @@ int CGameControllerMOD::ChooseHumanClass(const CPlayer *pPlayer) const
 		1.0f : 0.0f;
 	
 
+	// Honor the players count
+	int ActivePlayerCount = Server()->GetActivePlayerCount();
+	if (g_Config.m_InfMinPlayersForEngineer && (ActivePlayerCount < g_Config.m_InfMinPlayersForEngineer))
+	{
+		Probability[PLAYERCLASS_ENGINEER - START_HUMANCLASS - 1] = 0.0f;
+	}
+
 	//Random is not fair enough. We keep the last two classes took by the player, and avoid to give him those again
 	if(!GameServer()->m_FunRound) { // if normal round is being played
 		for(unsigned int i=0; i<sizeof(pPlayer->m_LastHumanClasses)/sizeof(int); i++)
@@ -951,6 +958,19 @@ bool CGameControllerMOD::IsChoosableClass(int PlayerClass)
 {
 	if (!IsEnabledClass(PlayerClass))
 		return false;
+
+	int ActivePlayerCount = Server()->GetActivePlayerCount();
+	switch(PlayerClass)
+	{
+		case PLAYERCLASS_ENGINEER:
+			if (g_Config.m_InfMinPlayersForEngineer && (ActivePlayerCount < g_Config.m_InfMinPlayersForEngineer))
+			{
+				return false;
+			}
+			break;
+		default:
+			break;
+	}
 
 	int nbDefender = 0;
 	int nbMedic = 0;
