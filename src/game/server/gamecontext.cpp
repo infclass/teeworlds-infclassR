@@ -2702,28 +2702,44 @@ bool CGameContext::ConVote(IConsole::IResult *pResult, void *pUserData)
 bool CGameContext::ConStartFunRound(IConsole::IResult *pResult, void *pUserData)
 {
 	CGameContext *pSelf = (CGameContext *)pUserData;
+	static const FunRoundSettings PossbleSettings[] = {
+		{ PLAYERCLASS_GHOUL, PLAYERCLASS_NINJA, "Ghouls vs Ninjas" },
+		{ PLAYERCLASS_GHOST, PLAYERCLASS_SNIPER, "Ghosts vs Snipers" },
+		{ PLAYERCLASS_GHOUL, PLAYERCLASS_HERO, "Ghouls vs Heroes" },
+		{ PLAYERCLASS_BAT, PLAYERCLASS_MERCENARY, "Bats vs Mercenaries" },
+		{ PLAYERCLASS_BAT, PLAYERCLASS_NINJA, "Bats vs Ninjas" },
+		{ PLAYERCLASS_GHOUL, PLAYERCLASS_MEDIC, "Ghouls vs Medics" },
+		{ PLAYERCLASS_BOOMER, PLAYERCLASS_NINJA, "Boomers vs Ninjas" },
+		{ PLAYERCLASS_GHOUL, PLAYERCLASS_SOLDIER, "Ghouls vs Soldiers" },
+		{ PLAYERCLASS_VOODOO, PLAYERCLASS_ENGINEER, "Voodoos vs Engineers" },
+	};
+
+	const int type = random_int(0, sizeof(PossbleSettings) / sizeof(PossbleSettings[0]) - 1);
+	const FunRoundSettings &Settings = PossbleSettings[type];
+	return pSelf->StartFunRound(Settings);
+}
+
+bool CGameContext::StartFunRound(const FunRoundSettings &Settings)
+{
 	const char* title = g_Config.m_FunRoundTitle;
 	char aBuf[256];
 
-	if (pSelf->m_FunRound) {
+	if (m_FunRound) {
 		str_format(aBuf, sizeof(aBuf), "%s is not over yet", title);
-		pSelf->SendChatTarget(-1, aBuf);
+		SendChatTarget(-1, aBuf);
 		return true;
 	}
-	else if (pSelf->m_FunRoundsPassed >= g_Config.m_FunRoundLimit) {
+	else if (m_FunRoundsPassed >= g_Config.m_FunRoundLimit) {
 		switch (g_Config.m_FunRoundLimit) {
 			case 1: str_format(aBuf, sizeof(aBuf), "%s can be played only once per map", title); break;
 			case 2: str_format(aBuf, sizeof(aBuf), "%s can be played only twice per map", title); break;
 			default: str_format(aBuf, sizeof(aBuf), "%s can be played only %d times per map", title, g_Config.m_FunRoundLimit);
 		}
-		pSelf->SendChatTarget(-1, aBuf);
+		SendChatTarget(-1, aBuf);
 		return true;
 	}
 
 	// zombies
-	auto zero_probabilities = [pSelf] () {
-		pSelf->SetProbabilities(std::vector<int>());
-	};
 	std::vector<int> probabilities = { // order is important!
 		g_Config.m_InfProbaBat,
 		g_Config.m_InfProbaBoomer,
@@ -2739,9 +2755,6 @@ bool CGameContext::ConStartFunRound(IConsole::IResult *pResult, void *pUserData)
 	};
 
 	// humans
-	auto zero_availabilities = [pSelf] () {
-		pSelf->SetAvailabilities(std::vector<int>());
-	};
 	std::vector<int> availabilities = { // order is important!
 		g_Config.m_InfEnableBiologist,
 		g_Config.m_InfEnableEngineer,
@@ -2764,37 +2777,24 @@ bool CGameContext::ConStartFunRound(IConsole::IResult *pResult, void *pUserData)
 		", good luck!"
 	};
 	const char* random_phrase = phrases[random_int(0, phrases.size()-1)];
-	zero_probabilities();
-	zero_availabilities();
+	SetProbabilities(std::vector<int>());
+	SetAvailabilities(std::vector<int>());
 	g_Config.m_InfGhoulStomachSize = g_Config.m_FunRoundGhoulStomachSize;
-	pSelf->m_DefaultTimelimit = g_Config.m_SvTimelimit;
+	m_DefaultTimelimit = g_Config.m_SvTimelimit;
 	if (g_Config.m_SvTimelimit > g_Config.m_FunRoundDuration)
 		g_Config.m_SvTimelimit = g_Config.m_FunRoundDuration;
 
-	static const FunRoundSettings PossbleSettings[] = {
-		{ PLAYERCLASS_GHOUL, PLAYERCLASS_NINJA, "Ghouls vs Ninjas" },
-		{ PLAYERCLASS_GHOST, PLAYERCLASS_SNIPER, "Ghosts vs Snipers" },
-		{ PLAYERCLASS_GHOUL, PLAYERCLASS_HERO, "Ghouls vs Heroes" },
-		{ PLAYERCLASS_BAT, PLAYERCLASS_MERCENARY, "Bats vs Mercenaries" },
-		{ PLAYERCLASS_BAT, PLAYERCLASS_NINJA, "Bats vs Ninjas" },
-		{ PLAYERCLASS_GHOUL, PLAYERCLASS_MEDIC, "Ghouls vs Medics" },
-		{ PLAYERCLASS_BOOMER, PLAYERCLASS_NINJA, "Boomers vs Ninjas" },
-		{ PLAYERCLASS_GHOUL, PLAYERCLASS_SOLDIER, "Ghouls vs Soldiers" },
-		{ PLAYERCLASS_VOODOO, PLAYERCLASS_ENGINEER, "Voodoos vs Engineers" },
-	};
-
-	const int type = random_int(0, sizeof(PossbleSettings) / sizeof(PossbleSettings[0]) - 1);
-	const FunRoundSettings &Settings = PossbleSettings[type];
 	Server()->SetPlayerClassEnabled(Settings.HumanClass, true);
 	Server()->SetPlayerClassProbability(Settings.InfectedClass, 100);
 	str_format(aBuf, sizeof(aBuf), "%s! %s%s", title, Settings.RoundName, random_phrase);
 
-	pSelf->m_pController->StartRound();
-	pSelf->CreateSoundGlobal(SOUND_CTF_CAPTURE);
-	pSelf->SendChatTarget(-1, aBuf);
-	pSelf->m_FunRound = true;
-	pSelf->m_DefaultAvailabilities = availabilities;
-	pSelf->m_DefaultProbabilities = probabilities;
+	m_pController->StartRound();
+	CreateSoundGlobal(SOUND_CTF_CAPTURE);
+	SendChatTarget(-1, aBuf);
+	m_FunRound = true;
+	m_DefaultAvailabilities = availabilities;
+	m_DefaultProbabilities = probabilities;
+	
 	return true;
 }
 
