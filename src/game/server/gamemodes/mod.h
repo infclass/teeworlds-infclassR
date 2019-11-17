@@ -10,16 +10,14 @@
 struct FunRoundSettings
 {
 	FunRoundSettings() = default;
-	FunRoundSettings(int Infected, int Human, const char *Name)
+	FunRoundSettings(int Infected, int Human)
 	: InfectedClass(Infected),
-	  HumanClass(Human),
-	  RoundName(Name)
+	  HumanClass(Human)
 	{
 	}
 
 	int InfectedClass = 0;
 	int HumanClass = 0;
-	const char *RoundName = nullptr;
 };
 
 // you can subclass GAMECONTROLLER_CTF, GAMECONTROLLER_TDM etc if you want

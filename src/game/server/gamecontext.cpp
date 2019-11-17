@@ -2703,15 +2703,15 @@ bool CGameContext::ConStartFunRound(IConsole::IResult *pResult, void *pUserData)
 {
 	CGameContext *pSelf = (CGameContext *)pUserData;
 	static const FunRoundSettings PossbleSettings[] = {
-		{ PLAYERCLASS_GHOUL, PLAYERCLASS_NINJA, "Ghouls vs Ninjas" },
-		{ PLAYERCLASS_GHOST, PLAYERCLASS_SNIPER, "Ghosts vs Snipers" },
-		{ PLAYERCLASS_GHOUL, PLAYERCLASS_HERO, "Ghouls vs Heroes" },
-		{ PLAYERCLASS_BAT, PLAYERCLASS_MERCENARY, "Bats vs Mercenaries" },
-		{ PLAYERCLASS_BAT, PLAYERCLASS_NINJA, "Bats vs Ninjas" },
-		{ PLAYERCLASS_GHOUL, PLAYERCLASS_MEDIC, "Ghouls vs Medics" },
-		{ PLAYERCLASS_BOOMER, PLAYERCLASS_NINJA, "Boomers vs Ninjas" },
-		{ PLAYERCLASS_GHOUL, PLAYERCLASS_SOLDIER, "Ghouls vs Soldiers" },
-		{ PLAYERCLASS_VOODOO, PLAYERCLASS_ENGINEER, "Voodoos vs Engineers" },
+		{ PLAYERCLASS_GHOUL, PLAYERCLASS_NINJA },
+		{ PLAYERCLASS_GHOST, PLAYERCLASS_SNIPER },
+		{ PLAYERCLASS_GHOUL, PLAYERCLASS_HERO },
+		{ PLAYERCLASS_BAT, PLAYERCLASS_MERCENARY },
+		{ PLAYERCLASS_BAT, PLAYERCLASS_NINJA },
+		{ PLAYERCLASS_GHOUL, PLAYERCLASS_MEDIC },
+		{ PLAYERCLASS_BOOMER, PLAYERCLASS_NINJA },
+		{ PLAYERCLASS_GHOUL, PLAYERCLASS_SOLDIER },
+		{ PLAYERCLASS_VOODOO, PLAYERCLASS_ENGINEER },
 	};
 
 	const int type = random_int(0, sizeof(PossbleSettings) / sizeof(PossbleSettings[0]) - 1);
@@ -2786,7 +2786,10 @@ bool CGameContext::StartFunRound(const FunRoundSettings &Settings)
 
 	Server()->SetPlayerClassEnabled(Settings.HumanClass, true);
 	Server()->SetPlayerClassProbability(Settings.InfectedClass, 100);
-	str_format(aBuf, sizeof(aBuf), "%s! %s%s", title, Settings.RoundName, random_phrase);
+	const char *HumanClassText = CGameControllerMOD::GetClassPluralDisplayName(Settings.HumanClass);
+	const char *InfectedClassText = CGameControllerMOD::GetClassPluralDisplayName(Settings.InfectedClass);
+
+	str_format(aBuf, sizeof(aBuf), "%s! %s vs %s%s", title, InfectedClassText, HumanClassText, random_phrase);
 
 	m_pController->StartRound();
 	CreateSoundGlobal(SOUND_CTF_CAPTURE);
