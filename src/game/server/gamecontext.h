@@ -199,8 +199,6 @@ public:
 	void SendEmoticon(int ClientID, int Emoticon);
 	void SendWeaponPickup(int ClientID, int Weapon);
 
-	void List(int ClientID, const char* filter);
-
 	//
 	void CheckPureTuning();
 	void SendTuningParams(int ClientID);

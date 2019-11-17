@@ -6,6 +6,9 @@
 #include <engine/console.h>
 #include "memheap.h"
 
+struct CIntVariableData;
+struct CStrVariableData;
+
 class CConsole : public IConsole
 {
 	class CCommand : public CCommandInfo
@@ -50,12 +53,16 @@ class CConsole : public IConsole
 
 	CCommand *m_pRecycleList;
 	CHeap m_TempCommands;
+	std::vector<CIntVariableData*> m_configIntVariables;
+	std::vector<CStrVariableData*> m_configStrVariables;
 
 	static bool Con_Chain(IResult *pResult, void *pUserData);
 	static bool Con_Echo(IResult *pResult, void *pUserData);
 	static bool Con_Exec(IResult *pResult, void *pUserData);
 	static bool ConToggle(IResult *pResult, void *pUser);
 	static bool ConToggleStroke(IResult *pResult, void *pUser);
+	static bool ConModCommandGet(IResult *pResult, void *pUserData);
+	static bool ConModCommandDumpVariables(IResult *pResult, void *pUserData);
 	static bool ConModCommandAccess(IResult *pResult, void *pUser);
 	static bool ConModCommandStatus(IConsole::IResult *pResult, void *pUser);
 

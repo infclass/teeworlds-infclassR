@@ -314,139 +314,8 @@ void CGameControllerMOD::Tick()
 				IterSpec.Player()->SetClass(PLAYERCLASS_NONE);
 			}
 		}
-		
-		//Win check
-		if(m_InfectedStarted && NumHumans == 0 && NumInfected > 1)
-		{			
-			int Seconds = (Server()->Tick()-m_RoundStartTick)/((float)Server()->TickSpeed());
-			
-			GameServer()->SendChatTarget_Localization(-1, CHATCATEGORY_INFECTED, _("Infected won the round in {sec:RoundDuration}"), "RoundDuration", &Seconds, NULL);
-			
-			char aBuf[512];
-			str_format(aBuf, sizeof(aBuf), "round_end winner='zombies' survivors='0' duration='%d' round='%d of %d'", Seconds, m_RoundCount+1, g_Config.m_SvRoundsPerMap);
-			GameServer()->Console()->Print(IConsole::OUTPUT_LEVEL_DEBUG, "game", aBuf);
 
-			EndRound();
-		}
-		
-		//Start the final explosion if the time is over
-		if(m_InfectedStarted && !m_ExplosionStarted && g_Config.m_SvTimelimit > 0 && (Server()->Tick()-m_RoundStartTick) >= g_Config.m_SvTimelimit*Server()->TickSpeed()*60)
-		{
-			for(CCharacter *p = (CCharacter*) GameServer()->m_World.FindFirst(CGameWorld::ENTTYPE_CHARACTER); p; p = (CCharacter *)p->TypeNext())
-			{
-				if(p->IsZombie())
-				{
-					GameServer()->SendEmoticon(p->GetPlayer()->GetCID(), EMOTICON_GHOST);
-				}
-				else
-				{
-					GameServer()->SendEmoticon(p->GetPlayer()->GetCID(), EMOTICON_EYES);
-				}
-			}
-			m_ExplosionStarted = true;
-		}
-		
-		//Do the final explosion
-		if(m_ExplosionStarted)
-		{		
-			bool NewExplosion = false;
-			
-			for(int j=0; j<m_MapHeight; j++)
-			{
-				for(int i=0; i<m_MapWidth; i++)
-				{
-					if((m_GrowingMap[j*m_MapWidth+i] & 1) && (
-						(i > 0 && m_GrowingMap[j*m_MapWidth+i-1] & 2) ||
-						(i < m_MapWidth-1 && m_GrowingMap[j*m_MapWidth+i+1] & 2) ||
-						(j > 0 && m_GrowingMap[(j-1)*m_MapWidth+i] & 2) ||
-						(j < m_MapHeight-1 && m_GrowingMap[(j+1)*m_MapWidth+i] & 2)
-					))
-					{
-						NewExplosion = true;
-						m_GrowingMap[j*m_MapWidth+i] |= 8;
-						m_GrowingMap[j*m_MapWidth+i] &= ~1;
-						if(random_prob(0.1f))
-						{
-							vec2 TilePos = vec2(16.0f, 16.0f) + vec2(i*32.0f, j*32.0f);
-							GameServer()->CreateExplosion(TilePos, -1, WEAPON_GAME, true);
-							GameServer()->CreateSound(TilePos, SOUND_GRENADE_EXPLODE);
-						}
-					}
-				}
-			}
-			
-			for(int j=0; j<m_MapHeight; j++)
-			{
-				for(int i=0; i<m_MapWidth; i++)
-				{
-					if(m_GrowingMap[j*m_MapWidth+i] & 8)
-					{
-						m_GrowingMap[j*m_MapWidth+i] &= ~8;
-						m_GrowingMap[j*m_MapWidth+i] |= 2;
-					}
-				}
-			}
-			
-			for(CCharacter *p = (CCharacter*) GameServer()->m_World.FindFirst(CGameWorld::ENTTYPE_CHARACTER); p; p = (CCharacter *)p->TypeNext())
-			{
-				if(p->IsHuman())
-					continue;
-				
-				int tileX = static_cast<int>(round(p->m_Pos.x))/32;
-				int tileY = static_cast<int>(round(p->m_Pos.y))/32;
-				
-				if(tileX < 0) tileX = 0;
-				if(tileX >= m_MapWidth) tileX = m_MapWidth-1;
-				if(tileY < 0) tileY = 0;
-				if(tileY >= m_MapHeight) tileY = m_MapHeight-1;
-				
-				if(m_GrowingMap[tileY*m_MapWidth+tileX] & 2 && p->GetPlayer())
-				{
-					p->Die(p->GetPlayer()->GetCID(), WEAPON_GAME);
-				}
-			}
-		
-			//If no more explosions, game over, decide who win
-			if(!NewExplosion)
-			{
-				if(NumHumans)
-				{
-					GameServer()->SendChatTarget_Localization_P(-1, CHATCATEGORY_HUMANS, NumHumans, _P("One human won the round", "{int:NumHumans} humans won the round"), "NumHumans", &NumHumans, NULL);
-					
-					char aBuf[512];
-					int Seconds = (Server()->Tick()-m_RoundStartTick)/((float)Server()->TickSpeed());
-					str_format(aBuf, sizeof(aBuf), "round_end winner='humans' survivors='%d' duration='%d' round='%d of %d'", NumHumans, Seconds, m_RoundCount+1, g_Config.m_SvRoundsPerMap);
-					GameServer()->Console()->Print(IConsole::OUTPUT_LEVEL_DEBUG, "game", aBuf);
-
-					CPlayerIterator<PLAYERITER_INGAME> Iter(GameServer()->m_apPlayers);
-					while(Iter.Next())
-					{
-						if(Iter.Player()->IsHuman())
-						{
-							//TAG_SCORE
-							Server()->RoundStatistics()->OnScoreEvent(Iter.ClientID(), SCOREEVENT_HUMAN_SURVIVE, Iter.Player()->GetClass(), Server()->ClientName(Iter.ClientID()), GameServer()->Console());
-							Server()->RoundStatistics()->SetPlayerAsWinner(Iter.ClientID());
-							GameServer()->SendScoreSound(Iter.ClientID());
-							Iter.Player()->m_WinAsHuman++;
-							
-							GameServer()->SendChatTarget_Localization(Iter.ClientID(), CHATCATEGORY_SCORE, _("You have survived, +5 points"), NULL);
-
-							char aBuf[256];
-							str_format(aBuf, sizeof(aBuf), "survived player='%s'", Server()->ClientName(Iter.ClientID()));
-							GameServer()->Console()->Print(IConsole::OUTPUT_LEVEL_DEBUG, "game", aBuf);
-
-						}
-					}
-				}
-				else
-				{
-					int Seconds = g_Config.m_SvTimelimit*60;
-					GameServer()->SendChatTarget_Localization(-1, CHATCATEGORY_INFECTED, _("Infected won the round in {sec:RoundDuration}"), "RoundDuration", &Seconds, NULL);
-				}
-				
-				EndRound();
-			}
-		}
+		DoWincheck();
 	}
 	else
 	{
@@ -676,7 +545,138 @@ void CGameControllerMOD::OnPlayerInfoChange(class CPlayer *pP)
 
 void CGameControllerMOD::DoWincheck()
 {
-	
+	int NumHumans = 0;
+	int NumInfected = 0;
+	int NumFirstInfected = 0;
+	GetPlayerCounter(-1, NumHumans, NumInfected, NumFirstInfected);
+
+	//Win check
+	const int Seconds = (Server()->Tick()-m_RoundStartTick)/((float)Server()->TickSpeed());
+	if(m_InfectedStarted && NumHumans == 0 && NumInfected > 1)
+	{
+
+		GameServer()->SendChatTarget_Localization(-1, CHATCATEGORY_INFECTED, _("Infected won the round in {sec:RoundDuration}"), "RoundDuration", &Seconds, NULL);
+
+		char aBuf[512];
+		str_format(aBuf, sizeof(aBuf), "round_end winner='zombies' survivors='0' duration='%d' round='%d of %d'", Seconds, m_RoundCount+1, g_Config.m_SvRoundsPerMap);
+		GameServer()->Console()->Print(IConsole::OUTPUT_LEVEL_DEBUG, "game", aBuf);
+
+		EndRound();
+	}
+
+	//Start the final explosion if the time is over
+	if(m_InfectedStarted && !m_ExplosionStarted && g_Config.m_SvTimelimit > 0 && Seconds >= g_Config.m_SvTimelimit*60)
+	{
+		for(CCharacter *p = (CCharacter*) GameServer()->m_World.FindFirst(CGameWorld::ENTTYPE_CHARACTER); p; p = (CCharacter *)p->TypeNext())
+		{
+			if(p->IsZombie())
+			{
+				GameServer()->SendEmoticon(p->GetPlayer()->GetCID(), EMOTICON_GHOST);
+			}
+			else
+			{
+				GameServer()->SendEmoticon(p->GetPlayer()->GetCID(), EMOTICON_EYES);
+			}
+		}
+		m_ExplosionStarted = true;
+	}
+
+	//Do the final explosion
+	if(m_ExplosionStarted)
+	{
+		bool NewExplosion = false;
+
+		for(int j=0; j<m_MapHeight; j++)
+		{
+			for(int i=0; i<m_MapWidth; i++)
+			{
+				if((m_GrowingMap[j*m_MapWidth+i] & 1) && (
+					(i > 0 && m_GrowingMap[j*m_MapWidth+i-1] & 2) ||
+					(i < m_MapWidth-1 && m_GrowingMap[j*m_MapWidth+i+1] & 2) ||
+					(j > 0 && m_GrowingMap[(j-1)*m_MapWidth+i] & 2) ||
+					(j < m_MapHeight-1 && m_GrowingMap[(j+1)*m_MapWidth+i] & 2)
+				))
+				{
+					NewExplosion = true;
+					m_GrowingMap[j*m_MapWidth+i] |= 8;
+					m_GrowingMap[j*m_MapWidth+i] &= ~1;
+					if(random_prob(0.1f))
+					{
+						vec2 TilePos = vec2(16.0f, 16.0f) + vec2(i*32.0f, j*32.0f);
+						GameServer()->CreateExplosion(TilePos, -1, WEAPON_GAME, true);
+						GameServer()->CreateSound(TilePos, SOUND_GRENADE_EXPLODE);
+					}
+				}
+			}
+		}
+
+		for(int j=0; j<m_MapHeight; j++)
+		{
+			for(int i=0; i<m_MapWidth; i++)
+			{
+				if(m_GrowingMap[j*m_MapWidth+i] & 8)
+				{
+					m_GrowingMap[j*m_MapWidth+i] &= ~8;
+					m_GrowingMap[j*m_MapWidth+i] |= 2;
+				}
+			}
+		}
+
+		for(CCharacter *p = (CCharacter*) GameServer()->m_World.FindFirst(CGameWorld::ENTTYPE_CHARACTER); p; p = (CCharacter *)p->TypeNext())
+		{
+			if(p->IsHuman())
+				continue;
+
+			int tileX = static_cast<int>(round(p->m_Pos.x))/32;
+			int tileY = static_cast<int>(round(p->m_Pos.y))/32;
+
+			if(tileX < 0) tileX = 0;
+			if(tileX >= m_MapWidth) tileX = m_MapWidth-1;
+			if(tileY < 0) tileY = 0;
+			if(tileY >= m_MapHeight) tileY = m_MapHeight-1;
+
+			if(m_GrowingMap[tileY*m_MapWidth+tileX] & 2 && p->GetPlayer())
+			{
+				p->Die(p->GetPlayer()->GetCID(), WEAPON_GAME);
+			}
+		}
+
+		//If no more explosions, game over, decide who win
+		if(!NewExplosion)
+		{
+			if(NumHumans)
+			{
+				GameServer()->SendChatTarget_Localization_P(-1, CHATCATEGORY_HUMANS, NumHumans, _P("One human won the round", "{int:NumHumans} humans won the round"), "NumHumans", &NumHumans, NULL);
+
+				char aBuf[512];
+				str_format(aBuf, sizeof(aBuf), "round_end winner='humans' survivors='%d' duration='%d' round='%d of %d'", NumHumans, Seconds, m_RoundCount+1, g_Config.m_SvRoundsPerMap);
+				GameServer()->Console()->Print(IConsole::OUTPUT_LEVEL_DEBUG, "game", aBuf);
+					CPlayerIterator<PLAYERITER_INGAME> Iter(GameServer()->m_apPlayers);
+				while(Iter.Next())
+				{
+					if(Iter.Player()->IsHuman())
+					{
+						//TAG_SCORE
+						Server()->RoundStatistics()->OnScoreEvent(Iter.ClientID(), SCOREEVENT_HUMAN_SURVIVE, Iter.Player()->GetClass(), Server()->ClientName(Iter.ClientID()), GameServer()->Console());
+						Server()->RoundStatistics()->SetPlayerAsWinner(Iter.ClientID());
+						GameServer()->SendScoreSound(Iter.ClientID());
+						Iter.Player()->m_WinAsHuman++;
+
+						GameServer()->SendChatTarget_Localization(Iter.ClientID(), CHATCATEGORY_SCORE, _("You have survived, +5 points"), NULL);
+							char aBuf[256];
+						str_format(aBuf, sizeof(aBuf), "survived player='%s'", Server()->ClientName(Iter.ClientID()));
+						GameServer()->Console()->Print(IConsole::OUTPUT_LEVEL_DEBUG, "game", aBuf);
+						}
+				}
+			}
+			else
+			{
+				GameServer()->SendChatTarget_Localization(-1, CHATCATEGORY_INFECTED, _("Infected won the round in {sec:RoundDuration}"), "RoundDuration", &Seconds, NULL);
+			}
+
+			EndRound();
+		}
+	}
 }
 
 bool CGameControllerMOD::IsSpawnable(vec2 Pos, int TeleZoneIndex)
@@ -843,6 +843,13 @@ int CGameControllerMOD::ChooseHumanClass(const CPlayer *pPlayer) const
 		1.0f : 0.0f;
 	
 
+	// Honor the players count
+	int ActivePlayerCount = Server()->GetActivePlayerCount();
+	if (g_Config.m_InfMinPlayersForEngineer && (ActivePlayerCount < g_Config.m_InfMinPlayersForEngineer))
+	{
+		Probability[PLAYERCLASS_ENGINEER - START_HUMANCLASS - 1] = 0.0f;
+	}
+
 	//Random is not fair enough. We keep the last two classes took by the player, and avoid to give him those again
 	if(!GameServer()->m_FunRound) { // if normal round is being played
 		for(unsigned int i=0; i<sizeof(pPlayer->m_LastHumanClasses)/sizeof(int); i++)
@@ -951,6 +958,19 @@ bool CGameControllerMOD::IsChoosableClass(int PlayerClass)
 {
 	if (!IsEnabledClass(PlayerClass))
 		return false;
+
+	int ActivePlayerCount = Server()->GetActivePlayerCount();
+	switch(PlayerClass)
+	{
+		case PLAYERCLASS_ENGINEER:
+			if (g_Config.m_InfMinPlayersForEngineer && (ActivePlayerCount < g_Config.m_InfMinPlayersForEngineer))
+			{
+				return false;
+			}
+			break;
+		default:
+			break;
+	}
 
 	int nbDefender = 0;
 	int nbMedic = 0;

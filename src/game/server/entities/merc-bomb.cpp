@@ -52,8 +52,7 @@ void CMercenaryBomb::Tick()
 	for(CCharacter *p = (CCharacter*) GameWorld()->FindFirst(CGameWorld::ENTTYPE_CHARACTER); p; p = (CCharacter *)p->TypeNext())
 	{
 		if(p->IsHuman()) continue;
-		if(p->GetClass() == PLAYERCLASS_UNDEAD && p->IsFrozen()) continue;
-		if(p->GetClass() == PLAYERCLASS_VOODOO && p->m_VoodooAboutToDie) continue;
+		if(!p->CanDie()) continue;
 
 		float Len = distance(p->m_Pos, m_Pos);
 		if(Len < p->m_ProximityRadius+80.0f)

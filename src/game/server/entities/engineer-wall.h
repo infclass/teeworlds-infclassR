@@ -16,6 +16,7 @@ public:
 	virtual void TickPaused();
 	virtual void Snap(int SnappingClient);
 	int GetTick() { return m_LifeSpan; }
+	void OnZombieHit(CCharacter *pZombie);
 
 public:
 	int m_Owner;

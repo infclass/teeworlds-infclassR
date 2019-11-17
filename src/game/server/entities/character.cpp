@@ -1416,6 +1416,17 @@ void CCharacter::CheckSuperWeaponAccess()
 	}
 }
 
+bool CCharacter::CanDie() const
+{
+	if ((GetClass() == PLAYERCLASS_UNDEAD) && IsFrozen()) {
+		return false;
+	}
+	if ((GetClass() == PLAYERCLASS_VOODOO) && m_VoodooAboutToDie) {
+		return false;
+	}
+
+	return true;
+}
 
 void CCharacter::SaturateVelocity(vec2 Force, float MaxSpeed)
 {
@@ -1639,27 +1650,23 @@ void CCharacter::Tick()
 	//~ }
 	//~ else
 		//~ m_InWater = 0;
-	// Delayed Death
-	if(GetClass() == PLAYERCLASS_VOODOO && m_VoodooAboutToDie && m_VoodooTimeAlive > 0)
-	{
-		m_VoodooTimeAlive-=1000;
-	}
-	else if(GetClass() == PLAYERCLASS_VOODOO && m_VoodooAboutToDie && m_VoodooTimeAlive <= 0)
-	{
-		Die(m_VoodooKiller, m_VoodooWeapon);
-	}
 
-	// Display time left to live
 	if(GetClass() == PLAYERCLASS_VOODOO && m_VoodooAboutToDie)
 	{
+        // Delayed Death
+		if (m_VoodooTimeAlive > 0)
+			m_VoodooTimeAlive-=1000;
+		else
+			Die(m_VoodooKiller, m_VoodooWeapon);
+
+		// Display time left to live
 		int Time = m_VoodooTimeAlive/Server()->TickSpeed();
 		GameServer()->SendBroadcast_Localization(GetPlayer()->GetCID(), BROADCAST_PRIORITY_WEAPONSTATE, BROADCAST_DURATION_REALTIME,
-		_("Staying alive for: {int:RemainingTime}"),
-		"RemainingTime", &Time,
-		NULL
+			_("Staying alive for: {int:RemainingTime}"),
+			"RemainingTime", &Time,
+			NULL
 		);
 	}
-
 
 	if(GetClass() == PLAYERCLASS_SNIPER && m_PositionLocked)
 	{
@@ -3306,7 +3313,7 @@ void CCharacter::OpenClassChooser()
 	}
 }
 
-int CCharacter::GetClass()
+int CCharacter::GetClass() const
 {
 	if(!m_pPlayer)
 		return PLAYERCLASS_NONE;
