@@ -3087,6 +3087,30 @@ void CServer::SetPlayerClassEnabled(int PlayerClass, bool Enabled)
 	}
 }
 
+int CServer::GetMinPlayersForClass(int PlayerClass) const
+{
+	switch (PlayerClass)
+	{
+		case PLAYERCLASS_ENGINEER:
+			return g_Config.m_InfMinPlayersForEngineer;
+		default:
+			return 0;
+	}
+}
+
+int CServer::GetClassPlayerLimit(int PlayerClass) const
+{
+	switch (PlayerClass)
+	{
+		case PLAYERCLASS_MEDIC:
+			return g_Config.m_InfMedicLimit;
+		case PLAYERCLASS_HERO:
+			return g_Config.m_InfHeroLimit;
+		default:
+			return g_Config.m_SvMaxClients;
+	}
+}
+
 int CServer::GetPlayerClassProbability(int PlayerClass) const
 {
 	switch (PlayerClass)

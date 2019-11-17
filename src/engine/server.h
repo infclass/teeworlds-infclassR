@@ -309,6 +309,8 @@ public:
 	virtual int IsClassChooserEnabled() = 0;
 	virtual bool GetPlayerClassEnabled(int PlayerClass) const = 0;
 	virtual void SetPlayerClassEnabled(int PlayerClass, bool Enabled) = 0;
+	virtual int GetMinPlayersForClass(int PlayerClass) const = 0;
+	virtual int GetClassPlayerLimit(int PlayerClass) const = 0;
 
 	virtual int GetPlayerClassProbability(int PlayerClass) const = 0;
 	virtual void SetPlayerClassProbability(int PlayerClass, int Probability) = 0;
