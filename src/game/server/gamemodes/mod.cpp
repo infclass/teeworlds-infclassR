@@ -10,6 +10,7 @@
 #include <game/mapitems.h>
 #include <time.h>
 #include <iostream>
+#include <map>
 
 CGameControllerMOD::CGameControllerMOD(class CGameContext *pGameServer)
 : IGameController(pGameServer)
@@ -803,79 +804,45 @@ int CGameControllerMOD::ChooseHumanClass(const CPlayer *pPlayer) const
 {
 	//Get information about existing humans
 	int nbSupport = 0;
-	int nbHero = 0;
-	int nbMedic = 0;
 	int nbDefender = 0;
+	std::map<int, int> nbClass;
+	for (int PlayerClass = START_HUMANCLASS + 1; PlayerClass < END_HUMANCLASS; ++PlayerClass)
+		nbClass[PlayerClass] = 0;
+
 	CPlayerIterator<PLAYERITER_INGAME> Iter(GameServer()->m_apPlayers);	
-	
 	while(Iter.Next())
 	{
-		switch(Iter.Player()->GetClass())
-		{
-			case PLAYERCLASS_NINJA:
-			case PLAYERCLASS_MERCENARY:
-			case PLAYERCLASS_SNIPER:
-				nbSupport++;
-				break;
-			case PLAYERCLASS_MEDIC:
-				nbMedic++;
-				break;
-			case PLAYERCLASS_HERO:
-				nbHero++;
-				break;
-			case PLAYERCLASS_ENGINEER:
-			case PLAYERCLASS_SOLDIER:
-			case PLAYERCLASS_SCIENTIST:
-			case PLAYERCLASS_BIOLOGIST:
-				nbDefender++;
-				break;
-			case PLAYERCLASS_LOOPER:
-				nbDefender++;
-				break;
-		}
+		const int AnotherPlayerClass = Iter.Player()->GetClass();
+		if ((AnotherPlayerClass < START_HUMANCLASS + 1) || (AnotherPlayerClass > END_HUMANCLASS - 1))
+			continue;
+		if (IsDefenderClass(AnotherPlayerClass))
+			nbDefender++;
+		if (IsSupportClass(AnotherPlayerClass))
+			nbSupport++;
+		nbClass[AnotherPlayerClass]++;
 	}
 	
 	double Probability[NB_HUMANCLASS];
 	
-	Probability[PLAYERCLASS_ENGINEER - START_HUMANCLASS - 1] =
-		(nbDefender < g_Config.m_InfDefenderLimit && g_Config.m_InfEnableEngineer) ?
-		1.0f : 0.0f;
-	Probability[PLAYERCLASS_SOLDIER - START_HUMANCLASS - 1] =
-		(nbDefender < g_Config.m_InfDefenderLimit && g_Config.m_InfEnableSoldier) ?
-		1.0f : 0.0f;
-	Probability[PLAYERCLASS_SCIENTIST - START_HUMANCLASS - 1] =
-		(nbDefender < g_Config.m_InfDefenderLimit && g_Config.m_InfEnableScientist) ?
-		1.0f : 0.0f;
-	Probability[PLAYERCLASS_BIOLOGIST - START_HUMANCLASS - 1] =
-		(nbDefender < g_Config.m_InfDefenderLimit && g_Config.m_InfEnableBiologist) ?
-		1.0f : 0.0f;
-
-	Probability[PLAYERCLASS_MERCENARY - START_HUMANCLASS - 1] =
-		(nbSupport < g_Config.m_InfSupportLimit && g_Config.m_InfEnableMercenary) ?
-		1.0f : 0.0f;
-	Probability[PLAYERCLASS_SNIPER - START_HUMANCLASS - 1] =
-		(nbSupport < g_Config.m_InfSupportLimit && g_Config.m_InfEnableSniper) ?
-		1.0f : 0.0f;
-	Probability[PLAYERCLASS_NINJA - START_HUMANCLASS - 1] =
-		(nbSupport < g_Config.m_InfSupportLimit && g_Config.m_InfEnableNinja) ?
-		1.0f : 0.0f;
-
-	Probability[PLAYERCLASS_MEDIC - START_HUMANCLASS - 1] =
-		(nbMedic < g_Config.m_InfMedicLimit && g_Config.m_InfEnableMedic) ?
-		1.0f : 0.0f;
-	Probability[PLAYERCLASS_HERO - START_HUMANCLASS - 1] =
-		(nbHero < g_Config.m_InfHeroLimit && g_Config.m_InfEnableHero) ?
-		1.0f : 0.0f;
-	Probability[PLAYERCLASS_LOOPER - START_HUMANCLASS - 1] =
-		(nbDefender < g_Config.m_InfDefenderLimit && g_Config.m_InfEnableLooper) ?
-		1.0f : 0.0f;
-	
-
-	// Honor the players count
-	int ActivePlayerCount = Server()->GetActivePlayerCount();
-	if (g_Config.m_InfMinPlayersForEngineer && (ActivePlayerCount < g_Config.m_InfMinPlayersForEngineer))
+	for (int PlayerClass = START_HUMANCLASS + 1; PlayerClass < END_HUMANCLASS; ++PlayerClass)
 	{
-		Probability[PLAYERCLASS_ENGINEER - START_HUMANCLASS - 1] = 0.0f;
+		double &ClassProbability = Probability[PlayerClass - START_HUMANCLASS - 1];
+		ClassProbability = Server()->GetPlayerClassEnabled(PlayerClass) ? 1.0f : 0.0f;
+
+		if (IsDefenderClass(PlayerClass) && (nbDefender >= g_Config.m_InfDefenderLimit))
+			ClassProbability = 0.0f;
+
+		if (IsSupportClass(PlayerClass) && (nbSupport >= g_Config.m_InfSupportLimit))
+			ClassProbability = 0.0f;
+
+		if (nbClass[PlayerClass] >= Server()->GetClassPlayerLimit(PlayerClass))
+			ClassProbability = 0.0f;
+
+		// Honor the players count
+		int ActivePlayerCount = Server()->GetActivePlayerCount();
+		int MinPlayersForClass = Server()->GetMinPlayersForClass(PlayerClass);
+		if (ActivePlayerCount < MinPlayersForClass)
+			ClassProbability = 0.0f;
 	}
 
 	//Random is not fair enough. We keep the last two classes took by the player, and avoid to give him those again
@@ -988,71 +955,39 @@ bool CGameControllerMOD::IsChoosableClass(int PlayerClass)
 		return false;
 
 	int ActivePlayerCount = Server()->GetActivePlayerCount();
-	switch(PlayerClass)
-	{
-		case PLAYERCLASS_ENGINEER:
-			if (g_Config.m_InfMinPlayersForEngineer && (ActivePlayerCount < g_Config.m_InfMinPlayersForEngineer))
-			{
-				return false;
-			}
-			break;
-		default:
-			break;
-	}
+	int MinPlayersForClass = Server()->GetMinPlayersForClass(PlayerClass);
+	if (ActivePlayerCount < MinPlayersForClass)
+		return false;
 
-	int nbDefender = 0;
-	int nbMedic = 0;
-	int nbHero = 0;
 	int nbSupport = 0;
+	int nbDefender = 0;
+	std::map<int, int> nbClass;
+	for (int PlayerClass = START_HUMANCLASS + 1; PlayerClass < END_HUMANCLASS; ++PlayerClass)
+		nbClass[PlayerClass] = 0;
 
 	CPlayerIterator<PLAYERITER_INGAME> Iter(GameServer()->m_apPlayers);
 	while(Iter.Next())
 	{
-		switch(Iter.Player()->GetClass())
-		{
-			case PLAYERCLASS_NINJA:
-			case PLAYERCLASS_MERCENARY:
-			case PLAYERCLASS_SNIPER:
-				nbSupport++;
-				break;
-			case PLAYERCLASS_MEDIC:
-				nbMedic++;
-				break;
-			case PLAYERCLASS_HERO:
-				nbHero++;
-				break;
-			case PLAYERCLASS_ENGINEER:
-			case PLAYERCLASS_SOLDIER:
-			case PLAYERCLASS_SCIENTIST:
-			case PLAYERCLASS_BIOLOGIST:
-				nbDefender++;
-				break;
-			case PLAYERCLASS_LOOPER:
-				nbDefender++;
-				break;
-		}
+		const int AnotherPlayerClass = Iter.Player()->GetClass();
+		if ((AnotherPlayerClass < START_HUMANCLASS + 1) || (AnotherPlayerClass > END_HUMANCLASS - 1))
+			continue;
+		if (IsDefenderClass(AnotherPlayerClass))
+			nbDefender++;
+		if (IsSupportClass(AnotherPlayerClass))
+			nbSupport++;
+		nbClass[AnotherPlayerClass]++;
 	}
 	
-	switch(PlayerClass)
-	{
-		case PLAYERCLASS_ENGINEER:
-		case PLAYERCLASS_SOLDIER:
-		case PLAYERCLASS_SCIENTIST:
-		case PLAYERCLASS_BIOLOGIST:
-			return (nbDefender < g_Config.m_InfDefenderLimit);
-		case PLAYERCLASS_MEDIC:
-			return (nbMedic < g_Config.m_InfMedicLimit);
-		case PLAYERCLASS_HERO:
-			return (nbHero < g_Config.m_InfHeroLimit);
-		case PLAYERCLASS_NINJA:
-		case PLAYERCLASS_MERCENARY:
-		case PLAYERCLASS_SNIPER:
-			return (nbSupport < g_Config.m_InfSupportLimit);
-		case PLAYERCLASS_LOOPER:
-			return (nbDefender < g_Config.m_InfDefenderLimit);
-	}
+	if (IsDefenderClass(PlayerClass) && (nbDefender >= g_Config.m_InfDefenderLimit))
+		return false;
+
+	if (IsSupportClass(PlayerClass) && (nbSupport >= g_Config.m_InfSupportLimit))
+		return false;
+
+	if (nbClass[PlayerClass] >= Server()->GetClassPlayerLimit(PlayerClass))
+		return false;
 	
-	return false;
+	return true;
 }
 
 bool CGameControllerMOD::CanVote()
