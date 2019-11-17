@@ -103,6 +103,7 @@ class CGameContext : public IGameServer
 	static bool ConClearVotes(IConsole::IResult *pResult, void *pUserData);
 	static bool ConVote(IConsole::IResult *pResult, void *pUserData);
 	static bool ConStartFunRound(IConsole::IResult *pResult, void *pUserData);
+	static bool ConStartSpecialFunRound(IConsole::IResult *pResult, void *pUserData);
 	static bool ConchainSpecialMotdupdate(IConsole::IResult *pResult, void *pUserData, IConsole::FCommandCallback pfnCallback, void *pCallbackUserData);
 
 	CGameContext(int Resetting);

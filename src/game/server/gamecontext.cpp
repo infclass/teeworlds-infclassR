@@ -2719,6 +2719,40 @@ bool CGameContext::ConStartFunRound(IConsole::IResult *pResult, void *pUserData)
 	return pSelf->StartFunRound(Settings);
 }
 
+bool CGameContext::ConStartSpecialFunRound(IConsole::IResult *pResult, void *pUserData)
+{
+	CGameContext *pSelf = (CGameContext *)pUserData;
+	FunRoundSettings Settings;
+
+	for (int argN = 0; argN < pResult->NumArguments(); ++argN)
+	{
+		const char *argument = pResult->GetString(argN);
+		for (int PlayerClass = 0; PlayerClass < NB_PLAYERCLASS; ++PlayerClass)
+		{
+			if (str_comp(argument, CGameControllerMOD::GetClassPluralName(PlayerClass)) == 0)
+			{
+				if ((PlayerClass > START_HUMANCLASS) && (PlayerClass < END_HUMANCLASS))
+				{
+					Settings.HumanClass = PlayerClass;
+					break;
+				}
+				if ((PlayerClass > START_INFECTEDCLASS) && (PlayerClass < END_INFECTEDCLASS))
+				{
+					Settings.InfectedClass = PlayerClass;
+					break;
+				}
+			}
+		}
+	}
+
+	if (!Settings.HumanClass || !Settings.InfectedClass)
+	{
+		pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "server", "invalid special fun round configuration");
+		return false;
+	}
+	return pSelf->StartFunRound(Settings);
+}
+
 bool CGameContext::StartFunRound(const FunRoundSettings &Settings)
 {
 	const char* title = g_Config.m_FunRoundTitle;
@@ -4117,6 +4151,7 @@ void CGameContext::OnConsoleInit()
 	Console()->Register("clear_votes", "", CFGFLAG_SERVER, ConClearVotes, this, "Clears the voting options");
 	Console()->Register("vote", "r", CFGFLAG_SERVER, ConVote, this, "Force a vote to yes/no");
 	Console()->Register("start_fun_round", "", CFGFLAG_SERVER, ConStartFunRound, this, "Start fun round");
+	Console()->Register("start_special_fun_round", "sss", CFGFLAG_SERVER, ConStartSpecialFunRound, this, "Start fun round");
 	
 /* INFECTION MODIFICATION START ***************************************/
 	Console()->Register("inf_set_class", "is", CFGFLAG_SERVER, ConSetClass, this, "Set the class of a player");
