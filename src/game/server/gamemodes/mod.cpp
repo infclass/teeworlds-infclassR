@@ -828,6 +828,11 @@ int CGameControllerMOD::ChooseHumanClass(const CPlayer *pPlayer) const
 	{
 		double &ClassProbability = Probability[PlayerClass - START_HUMANCLASS - 1];
 		ClassProbability = Server()->GetPlayerClassEnabled(PlayerClass) ? 1.0f : 0.0f;
+		if (GameServer()->m_FunRound)
+		{
+			// We care only about the class enablement
+			continue;
+		}
 
 		if (IsDefenderClass(PlayerClass) && (nbDefender >= g_Config.m_InfDefenderLimit))
 			ClassProbability = 0.0f;
