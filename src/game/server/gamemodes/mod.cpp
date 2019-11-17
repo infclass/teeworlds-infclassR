@@ -164,6 +164,218 @@ bool CGameControllerMOD::IsSupportClass(int PlayerClass)
 	}
 }
 
+const char *CGameControllerMOD::GetClassName(int PlayerClass)
+{
+	switch (PlayerClass)
+	{
+		case PLAYERCLASS_MERCENARY:
+			return "mercenary";
+		case PLAYERCLASS_MEDIC:
+			return "medic";
+		case PLAYERCLASS_HERO:
+			return "hero";
+		case PLAYERCLASS_ENGINEER:
+			return "engineer";
+		case PLAYERCLASS_SOLDIER:
+			return "soldier";
+		case PLAYERCLASS_NINJA:
+			return "ninja";
+		case PLAYERCLASS_SNIPER:
+			return "sniper";
+		case PLAYERCLASS_SCIENTIST:
+			return "scientist";
+		case PLAYERCLASS_BIOLOGIST:
+			return "biologist";
+		case PLAYERCLASS_LOOPER:
+			return "looper";
+
+		case PLAYERCLASS_SMOKER:
+			return "smoker";
+		case PLAYERCLASS_BOOMER:
+			return "boomer";
+		case PLAYERCLASS_HUNTER:
+			return "hunter";
+		case PLAYERCLASS_BAT:
+			return "bat";
+		case PLAYERCLASS_GHOST:
+			return "ghost";
+		case PLAYERCLASS_SPIDER:
+			return "spider";
+		case PLAYERCLASS_GHOUL:
+			return "ghoul";
+		case PLAYERCLASS_SLUG:
+			return "slug";
+		case PLAYERCLASS_VOODOO:
+			return "voodoo";
+		case PLAYERCLASS_WITCH:
+			return "witch";
+		case PLAYERCLASS_UNDEAD:
+			return "undead";
+
+		default:
+			return "unknown";
+	}
+}
+
+const char *CGameControllerMOD::GetClassPluralName(int PlayerClass)
+{
+	switch (PlayerClass)
+	{
+		case PLAYERCLASS_MERCENARY:
+			return "mercenaries";
+		case PLAYERCLASS_MEDIC:
+			return "medics";
+		case PLAYERCLASS_HERO:
+			return "heroes";
+		case PLAYERCLASS_ENGINEER:
+			return "engineers";
+		case PLAYERCLASS_SOLDIER:
+			return "soldiers";
+		case PLAYERCLASS_NINJA:
+			return "ninjas";
+		case PLAYERCLASS_SNIPER:
+			return "snipers";
+		case PLAYERCLASS_SCIENTIST:
+			return "scientists";
+		case PLAYERCLASS_BIOLOGIST:
+			return "biologists";
+		case PLAYERCLASS_LOOPER:
+			return "loopers";
+
+		case PLAYERCLASS_SMOKER:
+			return "smokers";
+		case PLAYERCLASS_BOOMER:
+			return "boomers";
+		case PLAYERCLASS_HUNTER:
+			return "hunters";
+		case PLAYERCLASS_BAT:
+			return "bats";
+		case PLAYERCLASS_GHOST:
+			return "ghosts";
+		case PLAYERCLASS_SPIDER:
+			return "spiders";
+		case PLAYERCLASS_GHOUL:
+			return "ghouls";
+		case PLAYERCLASS_SLUG:
+			return "slugs";
+		case PLAYERCLASS_VOODOO:
+			return "voodoos";
+		case PLAYERCLASS_WITCH:
+			return "witches";
+		case PLAYERCLASS_UNDEAD:
+			return "undeads";
+
+		default:
+			return "unknown";
+	}
+}
+
+const char *CGameControllerMOD::GetClassDisplayName(int PlayerClass)
+{
+	switch (PlayerClass)
+	{
+		case PLAYERCLASS_MERCENARY:
+			return "Mercenary";
+		case PLAYERCLASS_MEDIC:
+			return "Medic";
+		case PLAYERCLASS_HERO:
+			return "Hero";
+		case PLAYERCLASS_ENGINEER:
+			return "Engineer";
+		case PLAYERCLASS_SOLDIER:
+			return "Soldier";
+		case PLAYERCLASS_NINJA:
+			return "Ninja";
+		case PLAYERCLASS_SNIPER:
+			return "Sniper";
+		case PLAYERCLASS_SCIENTIST:
+			return "Scientist";
+		case PLAYERCLASS_BIOLOGIST:
+			return "Biologist";
+		case PLAYERCLASS_LOOPER:
+			return "Looper";
+
+		case PLAYERCLASS_SMOKER:
+			return "Smoker";
+		case PLAYERCLASS_BOOMER:
+			return "Boomer";
+		case PLAYERCLASS_HUNTER:
+			return "Hunter";
+		case PLAYERCLASS_BAT:
+			return "Bat";
+		case PLAYERCLASS_GHOST:
+			return "Ghost";
+		case PLAYERCLASS_SPIDER:
+			return "Spider";
+		case PLAYERCLASS_GHOUL:
+			return "Ghoul";
+		case PLAYERCLASS_SLUG:
+			return "Slug";
+		case PLAYERCLASS_VOODOO:
+			return "Voodoo";
+		case PLAYERCLASS_WITCH:
+			return "Witch";
+		case PLAYERCLASS_UNDEAD:
+			return "Undead";
+
+		default:
+			return "unknown";
+	}
+}
+
+const char *CGameControllerMOD::GetClassPluralDisplayName(int PlayerClass)
+{
+	switch (PlayerClass)
+	{
+		case PLAYERCLASS_MERCENARY:
+			return "Mercenaries";
+		case PLAYERCLASS_MEDIC:
+			return "Medics";
+		case PLAYERCLASS_HERO:
+			return "Heroes";
+		case PLAYERCLASS_ENGINEER:
+			return "Engineers";
+		case PLAYERCLASS_SOLDIER:
+			return "Soldiers";
+		case PLAYERCLASS_NINJA:
+			return "Ninjas";
+		case PLAYERCLASS_SNIPER:
+			return "Snipers";
+		case PLAYERCLASS_SCIENTIST:
+			return "Scientists";
+		case PLAYERCLASS_BIOLOGIST:
+			return "Biologists";
+		case PLAYERCLASS_LOOPER:
+			return "Loopers";
+
+		case PLAYERCLASS_SMOKER:
+			return "Smokers";
+		case PLAYERCLASS_BOOMER:
+			return "Boomers";
+		case PLAYERCLASS_HUNTER:
+			return "Hunters";
+		case PLAYERCLASS_BAT:
+			return "Bats";
+		case PLAYERCLASS_GHOST:
+			return "Ghosts";
+		case PLAYERCLASS_SPIDER:
+			return "Spiders";
+		case PLAYERCLASS_GHOUL:
+			return "Ghouls";
+		case PLAYERCLASS_SLUG:
+			return "Slugs";
+		case PLAYERCLASS_VOODOO:
+			return "Voodoos";
+		case PLAYERCLASS_WITCH:
+			return "Witches";
+		case PLAYERCLASS_UNDEAD:
+			return "Undeads";
+
+		default:
+			return "unknown";
+	}
+}
+
 void CGameControllerMOD::EndRound()
 {	
 	m_InfectedStarted = false;

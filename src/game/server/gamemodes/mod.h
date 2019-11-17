@@ -54,6 +54,10 @@ public:
 	
 	static bool IsDefenderClass(int PlayerClass);
 	static bool IsSupportClass(int PlayerClass);
+	static const char *GetClassName(int PlayerClass);
+	static const char *GetClassPluralName(int PlayerClass);
+	static const char *GetClassDisplayName(int PlayerClass);
+	static const char *GetClassPluralDisplayName(int PlayerClass);
 
 private:
 	bool IsSpawnable(vec2 Pos, int TeleZoneIndex);
