@@ -37,6 +37,9 @@ public:
 	
 	void ResetFinalExplosion();
 	
+	static bool IsDefenderClass(int PlayerClass);
+	static bool IsSupportClass(int PlayerClass);
+
 private:
 	bool IsSpawnable(vec2 Pos, int TeleZoneIndex);
 	void GetPlayerCounter(int ClientException, int& NumHumans, int& NumInfected, int& NumFirstInfected);

@@ -135,6 +135,34 @@ void CGameControllerMOD::ResetFinalExplosion()
 	}
 }
 
+bool CGameControllerMOD::IsDefenderClass(int PlayerClass)
+{
+	switch (PlayerClass)
+	{
+		case PLAYERCLASS_ENGINEER:
+		case PLAYERCLASS_SOLDIER:
+		case PLAYERCLASS_SCIENTIST:
+		case PLAYERCLASS_BIOLOGIST:
+		case PLAYERCLASS_LOOPER:
+			return true;
+		default:
+			return false;
+	}
+}
+
+bool CGameControllerMOD::IsSupportClass(int PlayerClass)
+{
+	switch (PlayerClass)
+	{
+		case PLAYERCLASS_NINJA:
+		case PLAYERCLASS_MERCENARY:
+		case PLAYERCLASS_SNIPER:
+			return true;
+		default:
+			return false;
+	}
+}
+
 void CGameControllerMOD::EndRound()
 {	
 	m_InfectedStarted = false;
