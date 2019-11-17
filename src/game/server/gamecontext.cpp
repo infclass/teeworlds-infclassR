@@ -2771,7 +2771,7 @@ bool CGameContext::ConStartFunRound(IConsole::IResult *pResult, void *pUserData)
 	if (g_Config.m_SvTimelimit > g_Config.m_FunRoundDuration)
 		g_Config.m_SvTimelimit = g_Config.m_FunRoundDuration;
 
-	int type = random_int(0, 7);
+	int type = random_int(0, 8);
 	switch (type) { // todo: generalize and shrink, or remove and make something configurable
 		case 0:
 			g_Config.m_InfProbaGhoul = 100;
@@ -2812,6 +2812,11 @@ bool CGameContext::ConStartFunRound(IConsole::IResult *pResult, void *pUserData)
 			g_Config.m_InfProbaGhoul = 100;
 			g_Config.m_InfEnableSoldier = 1;
 			str_format(aBuf, sizeof(aBuf), "%s! Ghouls vs Soldiers%s", title, random_phrase);
+			break;
+		case 8:
+			g_Config.m_InfProbaVoodoo = 100;
+			g_Config.m_InfEnableEngineer = 1;
+			str_format(aBuf, sizeof(aBuf), "%s! Voodoos vs Engineers%s", title, random_phrase);
 			break;
 	}
 	pSelf->m_pController->StartRound();
