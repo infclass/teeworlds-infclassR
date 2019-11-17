@@ -2771,54 +2771,24 @@ bool CGameContext::ConStartFunRound(IConsole::IResult *pResult, void *pUserData)
 	if (g_Config.m_SvTimelimit > g_Config.m_FunRoundDuration)
 		g_Config.m_SvTimelimit = g_Config.m_FunRoundDuration;
 
-	int type = random_int(0, 8);
-	switch (type) { // todo: generalize and shrink, or remove and make something configurable
-		case 0:
-			g_Config.m_InfProbaGhoul = 100;
-			g_Config.m_InfEnableNinja = 1;
-			str_format(aBuf, sizeof(aBuf), "%s! Ghouls vs Ninjas%s", title, random_phrase);
-			break;
-		case 1:
-			g_Config.m_InfProbaGhost = 100;
-			g_Config.m_InfEnableSniper = 1;
-			str_format(aBuf, sizeof(aBuf), "%s! Ghosts vs Snipers%s", title, random_phrase);
-			break;
-		case 2:
-			g_Config.m_InfProbaGhoul = 100;
-			g_Config.m_InfEnableHero = 1;
-			str_format(aBuf, sizeof(aBuf), "%s! Ghouls vs Heroes%s", title, random_phrase);
-			break;
-		case 3:
-			g_Config.m_InfProbaBat = 100;
-			g_Config.m_InfEnableMercenary = 1;
-			str_format(aBuf, sizeof(aBuf), "%s! Bats vs Mercenaries%s", title, random_phrase);
-			break;
-		case 4:;
-			g_Config.m_InfProbaBat = 100;
-			g_Config.m_InfEnableNinja = 1;
-			str_format(aBuf, sizeof(aBuf), "%s! Bats vs Ninjas%s", title, random_phrase);
-			break;
-		case 5:
-			g_Config.m_InfProbaGhoul = 100;
-			g_Config.m_InfEnableMedic = 1;
-			str_format(aBuf, sizeof(aBuf), "%s! Ghouls vs Medics%s", title, random_phrase);
-			break;
-		case 6:
-			g_Config.m_InfProbaBoomer = 100;
-			g_Config.m_InfEnableNinja = 1;
-			str_format(aBuf, sizeof(aBuf), "%s! Boomers vs Ninjas%s", title, random_phrase);
-			break;
-		case 7:
-			g_Config.m_InfProbaGhoul = 100;
-			g_Config.m_InfEnableSoldier = 1;
-			str_format(aBuf, sizeof(aBuf), "%s! Ghouls vs Soldiers%s", title, random_phrase);
-			break;
-		case 8:
-			g_Config.m_InfProbaVoodoo = 100;
-			g_Config.m_InfEnableEngineer = 1;
-			str_format(aBuf, sizeof(aBuf), "%s! Voodoos vs Engineers%s", title, random_phrase);
-			break;
-	}
+	static const FunRoundSettings PossbleSettings[] = {
+		{ PLAYERCLASS_GHOUL, PLAYERCLASS_NINJA, "Ghouls vs Ninjas" },
+		{ PLAYERCLASS_GHOST, PLAYERCLASS_SNIPER, "Ghosts vs Snipers" },
+		{ PLAYERCLASS_GHOUL, PLAYERCLASS_HERO, "Ghouls vs Heroes" },
+		{ PLAYERCLASS_BAT, PLAYERCLASS_MERCENARY, "Bats vs Mercenaries" },
+		{ PLAYERCLASS_BAT, PLAYERCLASS_NINJA, "Bats vs Ninjas" },
+		{ PLAYERCLASS_GHOUL, PLAYERCLASS_MEDIC, "Ghouls vs Medics" },
+		{ PLAYERCLASS_BOOMER, PLAYERCLASS_NINJA, "Boomers vs Ninjas" },
+		{ PLAYERCLASS_GHOUL, PLAYERCLASS_SOLDIER, "Ghouls vs Soldiers" },
+		{ PLAYERCLASS_VOODOO, PLAYERCLASS_ENGINEER, "Voodoos vs Engineers" },
+	};
+
+	const int type = random_int(0, sizeof(PossbleSettings) / sizeof(PossbleSettings[0]) - 1);
+	const FunRoundSettings &Settings = PossbleSettings[type];
+	Server()->SetPlayerClassEnabled(Settings.HumanClass, true);
+	Server()->SetPlayerClassProbability(Settings.InfectedClass, 100);
+	str_format(aBuf, sizeof(aBuf), "%s! %s%s", title, Settings.RoundName, random_phrase);
+
 	pSelf->m_pController->StartRound();
 	pSelf->CreateSoundGlobal(SOUND_CTF_CAPTURE);
 	pSelf->SendChatTarget(-1, aBuf);

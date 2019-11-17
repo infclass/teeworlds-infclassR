@@ -7,6 +7,21 @@
 #include <game/server/classes.h>
 #include <game/server/entities/hero-flag.h>
 
+struct FunRoundSettings
+{
+	FunRoundSettings() = default;
+	FunRoundSettings(int Infected, int Human, const char *Name)
+	: InfectedClass(Infected),
+	  HumanClass(Human),
+	  RoundName(Name)
+	{
+	}
+
+	int InfectedClass = 0;
+	int HumanClass = 0;
+	const char *RoundName = nullptr;
+};
+
 // you can subclass GAMECONTROLLER_CTF, GAMECONTROLLER_TDM etc if you want
 // todo a modification with their base as well.
 class CGameControllerMOD : public IGameController
