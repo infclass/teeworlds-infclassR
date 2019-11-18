@@ -188,35 +188,42 @@ int CGameContext::RandomZombieToWitch() {
 	return zombies_id[id];
 }
 
-void CGameContext::SetAvailabilities(std::vector<int> value) { // todo: should be order-independent, e.g with std map
-	if (value.empty())
-		value = std::vector<int>(10); //increased by 1 human class from 9 to 10
-	g_Config.m_InfEnableBiologist = value[0];
-	g_Config.m_InfEnableEngineer = value[1];
-	g_Config.m_InfEnableHero = value[2];
-	g_Config.m_InfEnableMedic = value[3];
-	g_Config.m_InfEnableMercenary = value[4];
-	g_Config.m_InfEnableNinja = value[5];
-	g_Config.m_InfEnableScientist = value[6];
-	g_Config.m_InfEnableSniper = value[7];
-	g_Config.m_InfEnableSoldier = value[8];
-	g_Config.m_InfEnableLooper = value[9];
+void CGameContext::SetAvailabilities(std::vector<int> value)
+{
+	static const int ValuesNumber = NB_HUMANCLASS;
+	if (value.size() < ValuesNumber)
+		value.resize(ValuesNumber, 0);
+
+	for (int PlayerClass = START_HUMANCLASS + 1; PlayerClass < END_HUMANCLASS; PlayerClass++)
+	{
+		const int ClassEnabledValue = value.at(PlayerClass - START_HUMANCLASS - 1);
+		Server()->SetPlayerClassEnabled(PlayerClass, ClassEnabledValue);
+	}
 }
 
-void CGameContext::SetProbabilities(std::vector<int> value) { // todo: should be order-independent, e.g with std map
-	if (value.empty())
-		value = std::vector<int>(11);
-	g_Config.m_InfProbaBat = value[0];
-	g_Config.m_InfProbaBoomer = value[1];
-	g_Config.m_InfProbaGhost = value[2];
-	g_Config.m_InfProbaGhoul = value[3];
-	g_Config.m_InfProbaHunter = value[4];
-	g_Config.m_InfProbaSlug = value[5];
-	g_Config.m_InfProbaSmoker = value[6];
-	g_Config.m_InfProbaSpider = value[7];
-	g_Config.m_InfProbaVoodoo = value[8];
-	g_Config.m_InfGhoulThreshold = value[9];
-	g_Config.m_InfGhoulStomachSize = value[10];
+void CGameContext::SetProbabilities(std::vector<int> value)
+{
+	int *extraConfigValues[] =
+	{
+		// The order is still important!
+		&g_Config.m_InfGhoulThreshold,
+		&g_Config.m_InfGhoulStomachSize,
+	};
+	static const int ExtraValuesNumber = sizeof(extraConfigValues) / sizeof(extraConfigValues[0]);
+	static const int ValuesNumber = NB_INFECTEDCLASS + ExtraValuesNumber;
+	if (value.size() < ValuesNumber)
+		value.resize(ValuesNumber, 0);
+
+	for (int PlayerClass = START_INFECTEDCLASS + 1; PlayerClass < END_INFECTEDCLASS; PlayerClass++)
+	{
+		const int ClassProbability = value.at(PlayerClass - START_INFECTEDCLASS - 1);
+		Server()->SetPlayerClassProbability(PlayerClass, ClassProbability);
+	}
+	for (int i = 0; i < ExtraValuesNumber; ++i)
+	{
+		const int newValue = value.at(NB_INFECTEDCLASS + i);
+		*extraConfigValues[i] = newValue;
+	}
 }
 
 void CGameContext::CreateDamageInd(vec2 Pos, float Angle, int Amount)
@@ -2774,33 +2781,28 @@ bool CGameContext::StartFunRound(const FunRoundSettings &Settings)
 	}
 
 	// zombies
-	std::vector<int> probabilities = { // order is important!
-		g_Config.m_InfProbaBat,
-		g_Config.m_InfProbaBoomer,
-		g_Config.m_InfProbaGhost,
-		g_Config.m_InfProbaGhoul,
-		g_Config.m_InfProbaHunter,
-		g_Config.m_InfProbaSlug,
-		g_Config.m_InfProbaSmoker,
-		g_Config.m_InfProbaSpider,
-		g_Config.m_InfProbaVoodoo,
+	std::vector<int> infectedProbabilities;
+	for (int PlayerClass = START_INFECTEDCLASS + 1; PlayerClass < END_INFECTEDCLASS; PlayerClass++)
+	{
+		infectedProbabilities.push_back(Server()->GetPlayerClassProbability(PlayerClass));
+	}
+	const auto extraConfigValues =
+	{
+		// The order is still important!
 		g_Config.m_InfGhoulThreshold,
-		g_Config.m_InfGhoulStomachSize
+		g_Config.m_InfGhoulStomachSize,
 	};
+	for (const int &extraValue : extraConfigValues)
+	{
+		infectedProbabilities.push_back(extraValue);
+	}
 
 	// humans
-	std::vector<int> availabilities = { // order is important!
-		g_Config.m_InfEnableBiologist,
-		g_Config.m_InfEnableEngineer,
-		g_Config.m_InfEnableHero,
-		g_Config.m_InfEnableMedic,
-		g_Config.m_InfEnableMercenary,
-		g_Config.m_InfEnableNinja,
-		g_Config.m_InfEnableScientist,
-		g_Config.m_InfEnableSniper,
-		g_Config.m_InfEnableSoldier,
-		g_Config.m_InfEnableLooper
-	};
+	std::vector<int> humanAvailabilities;
+	for (int PlayerClass = START_HUMANCLASS + 1; PlayerClass < END_HUMANCLASS; PlayerClass++)
+	{
+		humanAvailabilities.push_back(Server()->GetPlayerClassEnabled(PlayerClass));
+	}
 
 	std::vector<const char*> phrases = {
 		", glhf!",
@@ -2829,8 +2831,8 @@ bool CGameContext::StartFunRound(const FunRoundSettings &Settings)
 	CreateSoundGlobal(SOUND_CTF_CAPTURE);
 	SendChatTarget(-1, aBuf);
 	m_FunRound = true;
-	m_DefaultAvailabilities = availabilities;
-	m_DefaultProbabilities = probabilities;
+	m_DefaultAvailabilities = humanAvailabilities;
+	m_DefaultProbabilities = infectedProbabilities;
 	
 	return true;
 }
