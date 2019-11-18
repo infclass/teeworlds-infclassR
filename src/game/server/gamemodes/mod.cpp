@@ -1097,6 +1097,11 @@ int CGameControllerMOD::ChooseInfectedClass(const CPlayer *pPlayer) const
 	{
 		double &ClassProbability = Probability[PlayerClass - START_INFECTEDCLASS - 1];
 		ClassProbability = Server()->GetClassAvailability(PlayerClass) ? Server()->GetPlayerClassProbability(PlayerClass) : 0;
+		if (GameServer()->m_FunRound)
+		{
+			// We care only about the class enablement
+			continue;
+		}
 
 		switch(PlayerClass)
 		{
