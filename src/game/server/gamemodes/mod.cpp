@@ -168,6 +168,9 @@ const char *CGameControllerMOD::GetClassName(int PlayerClass)
 {
 	switch (PlayerClass)
 	{
+		case PLAYERCLASS_NONE:
+			return "none";
+
 		case PLAYERCLASS_MERCENARY:
 			return "mercenary";
 		case PLAYERCLASS_MEDIC:
