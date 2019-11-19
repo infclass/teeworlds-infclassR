@@ -62,6 +62,20 @@ bool IGameController::PreSpawn(CPlayer* pPlayer, vec2 *pOutPos)
 	
 	return false;
 }
+
+void IGameController::MaybeSendStatistics()
+{
+	// skip some maps that are not very fair
+	if (str_comp(g_Config.m_SvMap, "infc_toilet") == 0) {
+		return;
+	}
+
+	if (Server()->GetActivePlayerCount() < 4) {
+		return;
+	}
+
+	Server()->SendStatistics();
+}
 /* INFECTION MODIFICATION END *****************************************/
 
 
@@ -91,8 +105,7 @@ void IGameController::EndRound()
 	m_GameOverTick = Server()->Tick();
 	m_SuddenDeath = 0;
 	
-	//Send score to the server
-	Server()->SendStatistics();
+	MaybeSendStatistics();
 
 	if (GameServer()->m_FunRound)
 		GameServer()->EndFunRound();

@@ -4526,15 +4526,6 @@ public:
 void CServer::SendStatistics()
 {
 #ifdef CONF_SQL
-	// skip some maps that are not very fair
-	if (str_comp(m_aCurrentMap, "infc_toilet") == 0) {
-		return;
-	}
-
-	if (GetActivePlayerCount() < 4) {
-		return;
-	}
-
 	//Send round statistics
 	CSqlJob* pRoundJob = new CSqlJob_Server_SendRoundStatistics(this, RoundStatistics(), m_aCurrentMap);
 	pRoundJob->Start();

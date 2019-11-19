@@ -155,6 +155,7 @@ public:
 	virtual void OnPlayerInfected(CPlayer* pPlayer, CPlayer* pInfectiousPlayer) = 0;
 	virtual bool IsInfectionStarted() = 0;
 	
+	void MaybeSendStatistics();
 	int GetRoundId() { return m_RoundId; }
 /* INFECTION MODIFICATION END *****************************************/
 
