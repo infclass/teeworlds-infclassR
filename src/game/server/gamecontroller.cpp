@@ -92,7 +92,7 @@ void IGameController::EndRound()
 	m_SuddenDeath = 0;
 	
 	//Send score to the server
-	Server()->OnRoundEnd();
+	Server()->SendStatistics();
 
 	if (GameServer()->m_FunRound)
 		GameServer()->EndFunRound();
@@ -136,7 +136,7 @@ void IGameController::StartRound()
 {
 	ResetGame();
 	
-	Server()->OnRoundStart();
+	Server()->ResetStatistics();
 	GameServer()->OnStartRound();
 	
 /* INFECTION MODIFICATION START ***************************************/

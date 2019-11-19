@@ -4523,7 +4523,7 @@ public:
 };
 #endif
 
-void CServer::OnRoundEnd()
+void CServer::SendStatistics()
 {
 #ifdef CONF_SQL
 	// skip some maps that are not very fair
@@ -4555,7 +4555,7 @@ void CServer::OnRoundEnd()
 #endif
 }
 
-void CServer::OnRoundStart()
+void CServer::ResetStatistics()
 {
 	RoundStatistics()->Reset();
 }
