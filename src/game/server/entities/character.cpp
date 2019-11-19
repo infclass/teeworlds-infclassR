@@ -3494,8 +3494,6 @@ void CCharacter::ClassSpawnAttributes()
 			m_ActiveWeapon = WEAPON_HAMMER;
 			break;
 		case PLAYERCLASS_WITCH:
-			// Override armor settings
-			m_Armor = 10;
 			m_aWeapons[WEAPON_HAMMER].m_Got = true;
 			GiveWeapon(WEAPON_HAMMER, -1);
 			m_ActiveWeapon = WEAPON_HAMMER;
