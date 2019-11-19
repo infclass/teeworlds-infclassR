@@ -74,6 +74,9 @@ void IGameController::MaybeSendStatistics()
 		return;
 	}
 
+	if (GameServer()->m_FunRound)
+		return;
+
 	Server()->SendStatistics();
 }
 /* INFECTION MODIFICATION END *****************************************/
