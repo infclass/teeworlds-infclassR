@@ -8,6 +8,7 @@
 #include <engine/server/mapconverter.h>
 #include <engine/server/roundstatistics.h>
 #include <game/server/gamecontext.h>
+#include <game/server/gamemodes/mod.h>
 #include <game/mapitems.h>
 #include <iostream>
 
@@ -3345,134 +3346,74 @@ void CCharacter::GiveNinjaBuf()
 
 void CCharacter::ClassSpawnAttributes()
 {
-	switch(GetClass())
+	RemoveAllGun();
+	m_Health = 10;
+
+	const int PlayerClass = GetClass();
+	const bool isHuman = PlayerClass < END_HUMANCLASS; // PLAYERCLASS_NONE is also a human (not infected) class
+	if (isHuman)
+	{
+		m_pPlayer->m_InfectionTick = -1;
+	}
+	else
+	{
+		m_Armor = 0;
+	}
+
+	switch(PlayerClass)
 	{
 		case PLAYERCLASS_ENGINEER:
-			RemoveAllGun();
-			m_pPlayer->m_InfectionTick = -1;
-			m_Health = 10;
 			m_aWeapons[WEAPON_HAMMER].m_Got = true;
 			GiveWeapon(WEAPON_HAMMER, -1);
 			GiveWeapon(WEAPON_GUN, -1);
 			GiveWeapon(WEAPON_RIFLE, -1);
 			m_ActiveWeapon = WEAPON_RIFLE;
-			
-			GameServer()->SendBroadcast_ClassIntro(m_pPlayer->GetCID(), PLAYERCLASS_ENGINEER);
-			if(!m_pPlayer->IsKnownClass(PLAYERCLASS_ENGINEER))
-			{
-				GameServer()->SendChatTarget_Localization(m_pPlayer->GetCID(), CHATCATEGORY_DEFAULT, _("Type “/help {str:ClassName}” for more information about your class"), "ClassName", "engineer", NULL);
-				m_pPlayer->m_knownClass[PLAYERCLASS_ENGINEER] = true;
-			}
 			break;
 		case PLAYERCLASS_SOLDIER:
-			RemoveAllGun();
-			m_pPlayer->m_InfectionTick = -1;
-			m_Health = 10;
 			m_aWeapons[WEAPON_HAMMER].m_Got = true;
 			GiveWeapon(WEAPON_HAMMER, -1);
 			GiveWeapon(WEAPON_GUN, -1);
 			GiveWeapon(WEAPON_GRENADE, -1);
 			m_ActiveWeapon = WEAPON_GRENADE;
-			
-			GameServer()->SendBroadcast_ClassIntro(m_pPlayer->GetCID(), PLAYERCLASS_SOLDIER);
-			if(!m_pPlayer->IsKnownClass(PLAYERCLASS_SOLDIER))
-			{
-				GameServer()->SendChatTarget_Localization(m_pPlayer->GetCID(), CHATCATEGORY_DEFAULT, _("Type “/help {str:ClassName}” for more information about your class"), "ClassName", "soldier", NULL);
-				m_pPlayer->m_knownClass[PLAYERCLASS_SOLDIER] = true;
-			}
 			break;
 		case PLAYERCLASS_MERCENARY:
-			RemoveAllGun();
-			m_pPlayer->m_InfectionTick = -1;
-			m_Health = 10;
 			m_aWeapons[WEAPON_HAMMER].m_Got = true;
 			GiveWeapon(WEAPON_HAMMER, -1);
 			GiveWeapon(WEAPON_GRENADE, -1);
 			GiveWeapon(WEAPON_GUN, -1);
 			m_ActiveWeapon = WEAPON_GUN;
-			
-			GameServer()->SendBroadcast_ClassIntro(m_pPlayer->GetCID(), PLAYERCLASS_MERCENARY);
-			if(!m_pPlayer->IsKnownClass(PLAYERCLASS_MERCENARY))
-			{
-				GameServer()->SendChatTarget_Localization(m_pPlayer->GetCID(), CHATCATEGORY_DEFAULT, _("Type “/help {str:ClassName}” for more information about your class"), "ClassName", "mercenary", NULL);
-				m_pPlayer->m_knownClass[PLAYERCLASS_MERCENARY] = true;
-			}
 			break;
 		case PLAYERCLASS_SNIPER:
-			RemoveAllGun();
-			m_pPlayer->m_InfectionTick = -1;
-			m_Health = 10;
 			m_aWeapons[WEAPON_HAMMER].m_Got = true;
 			GiveWeapon(WEAPON_HAMMER, -1);
 			GiveWeapon(WEAPON_GUN, -1);
 			GiveWeapon(WEAPON_RIFLE, -1);
 			m_ActiveWeapon = WEAPON_RIFLE;
-			
-			GameServer()->SendBroadcast_ClassIntro(m_pPlayer->GetCID(), PLAYERCLASS_SNIPER);
-			if(!m_pPlayer->IsKnownClass(PLAYERCLASS_SNIPER))
-			{
-				GameServer()->SendChatTarget_Localization(m_pPlayer->GetCID(), CHATCATEGORY_DEFAULT, _("Type “/help {str:ClassName}” for more information about your class"), "ClassName", "sniper", NULL);
-				m_pPlayer->m_knownClass[PLAYERCLASS_SNIPER] = true;
-			}
 			break;
 		case PLAYERCLASS_SCIENTIST:
-			RemoveAllGun();
-			m_pPlayer->m_InfectionTick = -1;
-			m_Health = 10;
 			m_aWeapons[WEAPON_HAMMER].m_Got = true;
 			GiveWeapon(WEAPON_HAMMER, -1);
 			GiveWeapon(WEAPON_GUN, -1);
 			GiveWeapon(WEAPON_RIFLE, -1);
 			GiveWeapon(WEAPON_GRENADE, -1);
 			m_ActiveWeapon = WEAPON_GRENADE;
-			
-			GameServer()->SendBroadcast_ClassIntro(m_pPlayer->GetCID(), PLAYERCLASS_SCIENTIST);
-			if(!m_pPlayer->IsKnownClass(PLAYERCLASS_SCIENTIST))
-			{
-				GameServer()->SendChatTarget_Localization(m_pPlayer->GetCID(), CHATCATEGORY_DEFAULT, _("Type “/help {str:ClassName}” for more information about your class"), "ClassName", "scientist", NULL);
-				m_pPlayer->m_knownClass[PLAYERCLASS_SCIENTIST] = true;
-			}
 			break;
 		case PLAYERCLASS_BIOLOGIST:
-			RemoveAllGun();
-			m_pPlayer->m_InfectionTick = -1;
-			m_Health = 10;
 			m_aWeapons[WEAPON_HAMMER].m_Got = true;
 			GiveWeapon(WEAPON_HAMMER, -1);
 			GiveWeapon(WEAPON_GUN, -1);
 			GiveWeapon(WEAPON_RIFLE, -1);
 			GiveWeapon(WEAPON_SHOTGUN, -1);
 			m_ActiveWeapon = WEAPON_SHOTGUN;
-			
-			GameServer()->SendBroadcast_ClassIntro(m_pPlayer->GetCID(), PLAYERCLASS_BIOLOGIST);
-			if(!m_pPlayer->IsKnownClass(PLAYERCLASS_BIOLOGIST))
-			{
-				GameServer()->SendChatTarget_Localization(m_pPlayer->GetCID(), CHATCATEGORY_DEFAULT, _("Type “/help {str:ClassName}” for more information about your class"), "ClassName", "biologist", NULL);
-				m_pPlayer->m_knownClass[PLAYERCLASS_BIOLOGIST] = true;
-			}
 			break;
 		case PLAYERCLASS_LOOPER:
-			RemoveAllGun();
-			m_pPlayer->m_InfectionTick = -1;
-			m_Health = 10;
 			m_aWeapons[WEAPON_HAMMER].m_Got = true;
 			GiveWeapon(WEAPON_HAMMER, -1);
 			GiveWeapon(WEAPON_RIFLE, -1);
 			GiveWeapon(WEAPON_GRENADE, -1);
 			m_ActiveWeapon = WEAPON_RIFLE;
-			
-			GameServer()->SendBroadcast_ClassIntro(m_pPlayer->GetCID(), PLAYERCLASS_LOOPER);
-			if(!m_pPlayer->IsKnownClass(PLAYERCLASS_LOOPER))
-			{
-				GameServer()->SendChatTarget_Localization(m_pPlayer->GetCID(), CHATCATEGORY_DEFAULT, _("Type “/help {str:ClassName}” for more information about your class"), "ClassName", "looper", NULL);
-				m_pPlayer->m_knownClass[PLAYERCLASS_LOOPER] = true;
-			}
 			break;
-	
 		case PLAYERCLASS_MEDIC:
-			RemoveAllGun();
-			m_pPlayer->m_InfectionTick = -1;
-			m_Health = 10;
 			m_aWeapons[WEAPON_HAMMER].m_Got = true;
 			GiveWeapon(WEAPON_HAMMER, -1);
 			GiveWeapon(WEAPON_GUN, -1);
@@ -3480,18 +3421,8 @@ void CCharacter::ClassSpawnAttributes()
 			GiveWeapon(WEAPON_GRENADE, -1);
 			GiveWeapon(WEAPON_RIFLE, -1);
 			m_ActiveWeapon = WEAPON_SHOTGUN;
-			
-			GameServer()->SendBroadcast_ClassIntro(m_pPlayer->GetCID(), PLAYERCLASS_MEDIC);
-			if(!m_pPlayer->IsKnownClass(PLAYERCLASS_MEDIC))
-			{
-				GameServer()->SendChatTarget_Localization(m_pPlayer->GetCID(), CHATCATEGORY_DEFAULT, _("Type “/help {str:ClassName}” for more information about your class"), "ClassName", "medic", NULL);
-				m_pPlayer->m_knownClass[PLAYERCLASS_MEDIC] = true;
-			}
 			break;
 		case PLAYERCLASS_HERO:
-			RemoveAllGun();
-			m_pPlayer->m_InfectionTick = -1;
-			m_Health = 10;
 			m_aWeapons[WEAPON_HAMMER].m_Got = false;
 			GiveWeapon(WEAPON_GUN, -1);
 			GiveWeapon(WEAPON_SHOTGUN, -1);
@@ -3499,202 +3430,88 @@ void CCharacter::ClassSpawnAttributes()
 			GiveWeapon(WEAPON_GRENADE, -1);
 			m_pHeroFlag = nullptr;
 			m_ActiveWeapon = WEAPON_GRENADE;
-			
-			GameServer()->SendBroadcast_ClassIntro(m_pPlayer->GetCID(), PLAYERCLASS_HERO);
-			if(!m_pPlayer->IsKnownClass(PLAYERCLASS_HERO))
-			{
-				GameServer()->SendChatTarget_Localization(m_pPlayer->GetCID(), CHATCATEGORY_DEFAULT, _("Type “/help {str:ClassName}” for more information about your class"), "ClassName", "hero", NULL);
-				m_pPlayer->m_knownClass[PLAYERCLASS_HERO] = true;
-			}
 			break;
 		case PLAYERCLASS_NINJA:
-			RemoveAllGun();
-			m_pPlayer->m_InfectionTick = -1;
-			m_Health = 10;
 			m_aWeapons[WEAPON_HAMMER].m_Got = true;
 			GiveWeapon(WEAPON_GUN, -1);
 			GiveWeapon(WEAPON_GRENADE, -1);
 			m_ActiveWeapon = WEAPON_HAMMER;
-			
-			GameServer()->SendBroadcast_ClassIntro(m_pPlayer->GetCID(), PLAYERCLASS_NINJA);
-			if(!m_pPlayer->IsKnownClass(PLAYERCLASS_NINJA))
-			{
-				GameServer()->SendChatTarget_Localization(m_pPlayer->GetCID(), CHATCATEGORY_DEFAULT, _("Type “/help {str:ClassName}” for more information about your class"), "ClassName", "ninja", NULL);
-				m_pPlayer->m_knownClass[PLAYERCLASS_NINJA] = true;
-			}
-			break;
+
 		case PLAYERCLASS_NONE:
-			m_pPlayer->m_InfectionTick = -1;
-			m_Health = 10;
 			m_aWeapons[WEAPON_HAMMER].m_Got = true;
 			GiveWeapon(WEAPON_HAMMER, -1);
 			m_ActiveWeapon = WEAPON_HAMMER;
 			break;
+
 		case PLAYERCLASS_SMOKER:
-			m_Health = 10;
-			m_Armor = 0;
-			RemoveAllGun();
 			m_aWeapons[WEAPON_HAMMER].m_Got = true;
 			GiveWeapon(WEAPON_HAMMER, -1);
 			m_ActiveWeapon = WEAPON_HAMMER;
-			
-			GameServer()->SendBroadcast_ClassIntro(m_pPlayer->GetCID(), PLAYERCLASS_SMOKER);
-			if(!m_pPlayer->IsKnownClass(PLAYERCLASS_SMOKER))
-			{   
-				GameServer()->SendChatTarget_Localization(m_pPlayer->GetCID(), CHATCATEGORY_DEFAULT, _("Type “/help {str:ClassName}” for more information about your class"), "ClassName", "smoker", NULL);
-				m_pPlayer->m_knownClass[PLAYERCLASS_SMOKER] = true;
-			}
 			break;
 		case PLAYERCLASS_BOOMER:
-			m_Health = 10;
-			m_Armor = 0;
-			RemoveAllGun();
 			m_aWeapons[WEAPON_HAMMER].m_Got = true;
 			GiveWeapon(WEAPON_HAMMER, -1);
 			m_ActiveWeapon = WEAPON_HAMMER;
-			
-			GameServer()->SendBroadcast_ClassIntro(m_pPlayer->GetCID(), PLAYERCLASS_BOOMER);
-			if(!m_pPlayer->IsKnownClass(PLAYERCLASS_BOOMER))
-			{
-				GameServer()->SendChatTarget_Localization(m_pPlayer->GetCID(), CHATCATEGORY_DEFAULT, _("Type “/help {str:ClassName}” for more information about your class"), "ClassName", "boomer", NULL);
-				m_pPlayer->m_knownClass[PLAYERCLASS_BOOMER] = true;
-			}
 			break;
 		case PLAYERCLASS_HUNTER:
-			m_Health = 10;
-			m_Armor = 0;
-			RemoveAllGun();
 			m_aWeapons[WEAPON_HAMMER].m_Got = true;
 			GiveWeapon(WEAPON_HAMMER, -1);
 			m_ActiveWeapon = WEAPON_HAMMER;
-			
-			GameServer()->SendBroadcast_ClassIntro(m_pPlayer->GetCID(), PLAYERCLASS_HUNTER);
-			if(!m_pPlayer->IsKnownClass(PLAYERCLASS_HUNTER))
-			{
-				GameServer()->SendChatTarget_Localization(m_pPlayer->GetCID(), CHATCATEGORY_DEFAULT, _("Type “/help {str:ClassName}” for more information about your class"), "ClassName", "hunter", NULL);
-				m_pPlayer->m_knownClass[PLAYERCLASS_HUNTER] = true;
-			}
 			break;
 		case PLAYERCLASS_BAT:
-			m_Health = 10;
-			m_Armor = 0;
-			RemoveAllGun();
 			m_aWeapons[WEAPON_HAMMER].m_Got = true;
 			GiveWeapon(WEAPON_HAMMER, -1);
 			m_ActiveWeapon = WEAPON_HAMMER;
-			
-			GameServer()->SendBroadcast_ClassIntro(m_pPlayer->GetCID(), PLAYERCLASS_BAT);
-			if(!m_pPlayer->IsKnownClass(PLAYERCLASS_BAT))
-			{
-				GameServer()->SendChatTarget_Localization(m_pPlayer->GetCID(), CHATCATEGORY_DEFAULT, _("Type “/help {str:ClassName}” for more information about your class"), "ClassName", "bat", NULL);
-				m_pPlayer->m_knownClass[PLAYERCLASS_BAT] = true;
-			}
 			break;
 		case PLAYERCLASS_GHOST:
-			m_Health = 10;
-			m_Armor = 0;
-			RemoveAllGun();
 			m_aWeapons[WEAPON_HAMMER].m_Got = true;
 			GiveWeapon(WEAPON_HAMMER, -1);
 			m_ActiveWeapon = WEAPON_HAMMER;
-			
-			GameServer()->SendBroadcast_ClassIntro(m_pPlayer->GetCID(), PLAYERCLASS_GHOST);
-			if(!m_pPlayer->IsKnownClass(PLAYERCLASS_GHOST))
-			{
-				GameServer()->SendChatTarget_Localization(m_pPlayer->GetCID(), CHATCATEGORY_DEFAULT, _("Type “/help {str:ClassName}” for more information about your class"), "ClassName", "ghost", NULL);
-				m_pPlayer->m_knownClass[PLAYERCLASS_GHOST] = true;
-			}
 			break;
 		case PLAYERCLASS_SPIDER:
-			m_Health = 10;
-			m_Armor = 0;
-			RemoveAllGun();
 			m_aWeapons[WEAPON_HAMMER].m_Got = true;
 			GiveWeapon(WEAPON_HAMMER, -1);
 			m_ActiveWeapon = WEAPON_HAMMER;
-			
-			GameServer()->SendBroadcast_ClassIntro(m_pPlayer->GetCID(), PLAYERCLASS_SPIDER);
-			if(!m_pPlayer->IsKnownClass(PLAYERCLASS_SPIDER))
-			{
-				GameServer()->SendChatTarget_Localization(m_pPlayer->GetCID(), CHATCATEGORY_DEFAULT, _("Type “/help {str:ClassName}” for more information about your class"), "ClassName", "spider", NULL);
-				m_pPlayer->m_knownClass[PLAYERCLASS_SPIDER] = true;
-			}
 			break;
 		case PLAYERCLASS_VOODOO:
-			m_Health = 10;
-			m_Armor = 0;
-			RemoveAllGun();
 			m_aWeapons[WEAPON_HAMMER].m_Got = true;
 			GiveWeapon(WEAPON_HAMMER, -1);
 			m_ActiveWeapon = WEAPON_HAMMER;
-
-			GameServer()->SendBroadcast_ClassIntro(m_pPlayer->GetCID(), PLAYERCLASS_VOODOO);
-			if(!m_pPlayer->IsKnownClass(PLAYERCLASS_VOODOO))
-			{
-				GameServer()->SendChatTarget_Localization(m_pPlayer->GetCID(), CHATCATEGORY_DEFAULT, _("Type “/help {str:ClassName}” for more information about your class"), "ClassName", "voodoo", NULL);
-				m_pPlayer->m_knownClass[PLAYERCLASS_VOODOO] = true;
-			}
 			break;
 		case PLAYERCLASS_GHOUL:
-			m_Health = 10;
-			m_Armor = 0;
-			RemoveAllGun();
 			m_aWeapons[WEAPON_HAMMER].m_Got = true;
 			GiveWeapon(WEAPON_HAMMER, -1);
 			m_ActiveWeapon = WEAPON_HAMMER;
-			
-			GameServer()->SendBroadcast_ClassIntro(m_pPlayer->GetCID(), PLAYERCLASS_GHOUL);
-			if(!m_pPlayer->IsKnownClass(PLAYERCLASS_GHOUL))
-			{
-				GameServer()->SendChatTarget_Localization(m_pPlayer->GetCID(), CHATCATEGORY_DEFAULT, _("Type “/help {str:ClassName}” for more information about your class"), "ClassName", "ghoul", NULL);
-				m_pPlayer->m_knownClass[PLAYERCLASS_GHOUL] = true;
-			}
 			break;
 		case PLAYERCLASS_SLUG:
-			m_Health = 10;
-			m_Armor = 0;
-			RemoveAllGun();
 			m_aWeapons[WEAPON_HAMMER].m_Got = true;
 			GiveWeapon(WEAPON_HAMMER, -1);
 			m_ActiveWeapon = WEAPON_HAMMER;
-			
-			GameServer()->SendBroadcast_ClassIntro(m_pPlayer->GetCID(), PLAYERCLASS_SLUG);
-			if(!m_pPlayer->IsKnownClass(PLAYERCLASS_SLUG))
-			{
-				GameServer()->SendChatTarget_Localization(m_pPlayer->GetCID(), CHATCATEGORY_DEFAULT, _("Type “/help {str:ClassName}” for more information about your class"), "ClassName", "slug", NULL);
-				m_pPlayer->m_knownClass[PLAYERCLASS_SLUG] = true;
-			}
 			break;
 		case PLAYERCLASS_UNDEAD:
-			m_Health = 10;
-			m_Armor = 0;
-			RemoveAllGun();
 			m_aWeapons[WEAPON_HAMMER].m_Got = true;
 			GiveWeapon(WEAPON_HAMMER, -1);
 			m_ActiveWeapon = WEAPON_HAMMER;
-			
-			GameServer()->SendBroadcast_ClassIntro(m_pPlayer->GetCID(), PLAYERCLASS_UNDEAD);
-			if(!m_pPlayer->IsKnownClass(PLAYERCLASS_UNDEAD))
-			{
-				GameServer()->SendChatTarget_Localization(m_pPlayer->GetCID(), CHATCATEGORY_DEFAULT, _("Type “/help {str:ClassName}” for more information about your class"), "ClassName", "undead", NULL);
-				m_pPlayer->m_knownClass[PLAYERCLASS_HUNTER] = true;
-			}
 			break;
 		case PLAYERCLASS_WITCH:
-			m_Health = 10;
+			// Override armor settings
 			m_Armor = 10;
-			RemoveAllGun();
 			m_aWeapons[WEAPON_HAMMER].m_Got = true;
 			GiveWeapon(WEAPON_HAMMER, -1);
 			m_ActiveWeapon = WEAPON_HAMMER;
 			
-			GameServer()->SendBroadcast_ClassIntro(m_pPlayer->GetCID(), PLAYERCLASS_WITCH);
-			if(!m_pPlayer->IsKnownClass(PLAYERCLASS_WITCH))
-			{
-				GameServer()->SendChatTarget_Localization(m_pPlayer->GetCID(), CHATCATEGORY_DEFAULT, _("Type “/help {str:ClassName}” for more information about your class"), "ClassName", "witch", NULL);
-				m_pPlayer->m_knownClass[PLAYERCLASS_WITCH] = true;
-			}
 			break;
+	}
+
+	if (PlayerClass != PLAYERCLASS_NONE)
+	{
+		GameServer()->SendBroadcast_ClassIntro(m_pPlayer->GetCID(), PlayerClass);
+		if(!m_pPlayer->IsKnownClass(PlayerClass))
+		{
+			const char *className = CGameControllerMOD::GetClassName(PlayerClass);
+			GameServer()->SendChatTarget_Localization(m_pPlayer->GetCID(), CHATCATEGORY_DEFAULT, _("Type “/help {str:ClassName}” for more information about your class"), "ClassName", className, NULL);
+			m_pPlayer->m_knownClass[PlayerClass] = true;
+		}
 	}
 }
 
