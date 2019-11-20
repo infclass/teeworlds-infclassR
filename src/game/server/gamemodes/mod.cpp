@@ -10,6 +10,7 @@
 #include <game/mapitems.h>
 #include <time.h>
 #include <iostream>
+#include <map>
 
 CGameControllerMOD::CGameControllerMOD(class CGameContext *pGameServer)
 : IGameController(pGameServer)
@@ -132,6 +133,249 @@ void CGameControllerMOD::ResetFinalExplosion()
 				m_GrowingMap[j*m_MapWidth+i] = 1;
 			}
 		}
+	}
+}
+
+bool CGameControllerMOD::IsDefenderClass(int PlayerClass)
+{
+	switch (PlayerClass)
+	{
+		case PLAYERCLASS_ENGINEER:
+		case PLAYERCLASS_SOLDIER:
+		case PLAYERCLASS_SCIENTIST:
+		case PLAYERCLASS_BIOLOGIST:
+		case PLAYERCLASS_LOOPER:
+			return true;
+		default:
+			return false;
+	}
+}
+
+bool CGameControllerMOD::IsSupportClass(int PlayerClass)
+{
+	switch (PlayerClass)
+	{
+		case PLAYERCLASS_NINJA:
+		case PLAYERCLASS_MERCENARY:
+		case PLAYERCLASS_SNIPER:
+			return true;
+		default:
+			return false;
+	}
+}
+
+const char *CGameControllerMOD::GetClassName(int PlayerClass)
+{
+	switch (PlayerClass)
+	{
+		case PLAYERCLASS_NONE:
+			return "none";
+
+		case PLAYERCLASS_MERCENARY:
+			return "mercenary";
+		case PLAYERCLASS_MEDIC:
+			return "medic";
+		case PLAYERCLASS_HERO:
+			return "hero";
+		case PLAYERCLASS_ENGINEER:
+			return "engineer";
+		case PLAYERCLASS_SOLDIER:
+			return "soldier";
+		case PLAYERCLASS_NINJA:
+			return "ninja";
+		case PLAYERCLASS_SNIPER:
+			return "sniper";
+		case PLAYERCLASS_SCIENTIST:
+			return "scientist";
+		case PLAYERCLASS_BIOLOGIST:
+			return "biologist";
+		case PLAYERCLASS_LOOPER:
+			return "looper";
+
+		case PLAYERCLASS_SMOKER:
+			return "smoker";
+		case PLAYERCLASS_BOOMER:
+			return "boomer";
+		case PLAYERCLASS_HUNTER:
+			return "hunter";
+		case PLAYERCLASS_BAT:
+			return "bat";
+		case PLAYERCLASS_GHOST:
+			return "ghost";
+		case PLAYERCLASS_SPIDER:
+			return "spider";
+		case PLAYERCLASS_GHOUL:
+			return "ghoul";
+		case PLAYERCLASS_SLUG:
+			return "slug";
+		case PLAYERCLASS_VOODOO:
+			return "voodoo";
+		case PLAYERCLASS_WITCH:
+			return "witch";
+		case PLAYERCLASS_UNDEAD:
+			return "undead";
+
+		default:
+			return "unknown";
+	}
+}
+
+const char *CGameControllerMOD::GetClassPluralName(int PlayerClass)
+{
+	switch (PlayerClass)
+	{
+		case PLAYERCLASS_MERCENARY:
+			return "mercenaries";
+		case PLAYERCLASS_MEDIC:
+			return "medics";
+		case PLAYERCLASS_HERO:
+			return "heroes";
+		case PLAYERCLASS_ENGINEER:
+			return "engineers";
+		case PLAYERCLASS_SOLDIER:
+			return "soldiers";
+		case PLAYERCLASS_NINJA:
+			return "ninjas";
+		case PLAYERCLASS_SNIPER:
+			return "snipers";
+		case PLAYERCLASS_SCIENTIST:
+			return "scientists";
+		case PLAYERCLASS_BIOLOGIST:
+			return "biologists";
+		case PLAYERCLASS_LOOPER:
+			return "loopers";
+
+		case PLAYERCLASS_SMOKER:
+			return "smokers";
+		case PLAYERCLASS_BOOMER:
+			return "boomers";
+		case PLAYERCLASS_HUNTER:
+			return "hunters";
+		case PLAYERCLASS_BAT:
+			return "bats";
+		case PLAYERCLASS_GHOST:
+			return "ghosts";
+		case PLAYERCLASS_SPIDER:
+			return "spiders";
+		case PLAYERCLASS_GHOUL:
+			return "ghouls";
+		case PLAYERCLASS_SLUG:
+			return "slugs";
+		case PLAYERCLASS_VOODOO:
+			return "voodoos";
+		case PLAYERCLASS_WITCH:
+			return "witches";
+		case PLAYERCLASS_UNDEAD:
+			return "undeads";
+
+		default:
+			return "unknown";
+	}
+}
+
+const char *CGameControllerMOD::GetClassDisplayName(int PlayerClass)
+{
+	switch (PlayerClass)
+	{
+		case PLAYERCLASS_MERCENARY:
+			return "Mercenary";
+		case PLAYERCLASS_MEDIC:
+			return "Medic";
+		case PLAYERCLASS_HERO:
+			return "Hero";
+		case PLAYERCLASS_ENGINEER:
+			return "Engineer";
+		case PLAYERCLASS_SOLDIER:
+			return "Soldier";
+		case PLAYERCLASS_NINJA:
+			return "Ninja";
+		case PLAYERCLASS_SNIPER:
+			return "Sniper";
+		case PLAYERCLASS_SCIENTIST:
+			return "Scientist";
+		case PLAYERCLASS_BIOLOGIST:
+			return "Biologist";
+		case PLAYERCLASS_LOOPER:
+			return "Looper";
+
+		case PLAYERCLASS_SMOKER:
+			return "Smoker";
+		case PLAYERCLASS_BOOMER:
+			return "Boomer";
+		case PLAYERCLASS_HUNTER:
+			return "Hunter";
+		case PLAYERCLASS_BAT:
+			return "Bat";
+		case PLAYERCLASS_GHOST:
+			return "Ghost";
+		case PLAYERCLASS_SPIDER:
+			return "Spider";
+		case PLAYERCLASS_GHOUL:
+			return "Ghoul";
+		case PLAYERCLASS_SLUG:
+			return "Slug";
+		case PLAYERCLASS_VOODOO:
+			return "Voodoo";
+		case PLAYERCLASS_WITCH:
+			return "Witch";
+		case PLAYERCLASS_UNDEAD:
+			return "Undead";
+
+		default:
+			return "unknown";
+	}
+}
+
+const char *CGameControllerMOD::GetClassPluralDisplayName(int PlayerClass)
+{
+	switch (PlayerClass)
+	{
+		case PLAYERCLASS_MERCENARY:
+			return "Mercenaries";
+		case PLAYERCLASS_MEDIC:
+			return "Medics";
+		case PLAYERCLASS_HERO:
+			return "Heroes";
+		case PLAYERCLASS_ENGINEER:
+			return "Engineers";
+		case PLAYERCLASS_SOLDIER:
+			return "Soldiers";
+		case PLAYERCLASS_NINJA:
+			return "Ninjas";
+		case PLAYERCLASS_SNIPER:
+			return "Snipers";
+		case PLAYERCLASS_SCIENTIST:
+			return "Scientists";
+		case PLAYERCLASS_BIOLOGIST:
+			return "Biologists";
+		case PLAYERCLASS_LOOPER:
+			return "Loopers";
+
+		case PLAYERCLASS_SMOKER:
+			return "Smokers";
+		case PLAYERCLASS_BOOMER:
+			return "Boomers";
+		case PLAYERCLASS_HUNTER:
+			return "Hunters";
+		case PLAYERCLASS_BAT:
+			return "Bats";
+		case PLAYERCLASS_GHOST:
+			return "Ghosts";
+		case PLAYERCLASS_SPIDER:
+			return "Spiders";
+		case PLAYERCLASS_GHOUL:
+			return "Ghouls";
+		case PLAYERCLASS_SLUG:
+			return "Slugs";
+		case PLAYERCLASS_VOODOO:
+			return "Voodoos";
+		case PLAYERCLASS_WITCH:
+			return "Witches";
+		case PLAYERCLASS_UNDEAD:
+			return "Undeads";
+
+		default:
+			return "unknown";
 	}
 }
 
@@ -727,7 +971,7 @@ bool CGameControllerMOD::PreSpawn(CPlayer* pPlayer, vec2 *pOutPos)
 	if(pPlayer->IsZombie() && m_ExplosionStarted)
 		return false;
 		
-	if(m_InfectedStarted && pPlayer->IsZombie() && random_prob(0.66f))
+	if(m_InfectedStarted && pPlayer->IsZombie() && random_prob(g_Config.m_InfProbaSpawnNearWitch / 100.0f))
 	{
 		CPlayerIterator<PLAYERITER_INGAME> Iter(GameServer()->m_apPlayers);
 		while(Iter.Next())
@@ -775,79 +1019,50 @@ int CGameControllerMOD::ChooseHumanClass(const CPlayer *pPlayer) const
 {
 	//Get information about existing humans
 	int nbSupport = 0;
-	int nbHero = 0;
-	int nbMedic = 0;
 	int nbDefender = 0;
+	std::map<int, int> nbClass;
+	for (int PlayerClass = START_HUMANCLASS + 1; PlayerClass < END_HUMANCLASS; ++PlayerClass)
+		nbClass[PlayerClass] = 0;
+
 	CPlayerIterator<PLAYERITER_INGAME> Iter(GameServer()->m_apPlayers);	
-	
 	while(Iter.Next())
 	{
-		switch(Iter.Player()->GetClass())
-		{
-			case PLAYERCLASS_NINJA:
-			case PLAYERCLASS_MERCENARY:
-			case PLAYERCLASS_SNIPER:
-				nbSupport++;
-				break;
-			case PLAYERCLASS_MEDIC:
-				nbMedic++;
-				break;
-			case PLAYERCLASS_HERO:
-				nbHero++;
-				break;
-			case PLAYERCLASS_ENGINEER:
-			case PLAYERCLASS_SOLDIER:
-			case PLAYERCLASS_SCIENTIST:
-			case PLAYERCLASS_BIOLOGIST:
-				nbDefender++;
-				break;
-			case PLAYERCLASS_LOOPER:
-				nbDefender++;
-				break;
-		}
+		const int AnotherPlayerClass = Iter.Player()->GetClass();
+		if ((AnotherPlayerClass < START_HUMANCLASS + 1) || (AnotherPlayerClass > END_HUMANCLASS - 1))
+			continue;
+		if (IsDefenderClass(AnotherPlayerClass))
+			nbDefender++;
+		if (IsSupportClass(AnotherPlayerClass))
+			nbSupport++;
+		nbClass[AnotherPlayerClass]++;
 	}
 	
 	double Probability[NB_HUMANCLASS];
 	
-	Probability[PLAYERCLASS_ENGINEER - START_HUMANCLASS - 1] =
-		(nbDefender < g_Config.m_InfDefenderLimit && g_Config.m_InfEnableEngineer) ?
-		1.0f : 0.0f;
-	Probability[PLAYERCLASS_SOLDIER - START_HUMANCLASS - 1] =
-		(nbDefender < g_Config.m_InfDefenderLimit && g_Config.m_InfEnableSoldier) ?
-		1.0f : 0.0f;
-	Probability[PLAYERCLASS_SCIENTIST - START_HUMANCLASS - 1] =
-		(nbDefender < g_Config.m_InfDefenderLimit && g_Config.m_InfEnableScientist) ?
-		1.0f : 0.0f;
-	Probability[PLAYERCLASS_BIOLOGIST - START_HUMANCLASS - 1] =
-		(nbDefender < g_Config.m_InfDefenderLimit && g_Config.m_InfEnableBiologist) ?
-		1.0f : 0.0f;
-
-	Probability[PLAYERCLASS_MERCENARY - START_HUMANCLASS - 1] =
-		(nbSupport < g_Config.m_InfSupportLimit && g_Config.m_InfEnableMercenary) ?
-		1.0f : 0.0f;
-	Probability[PLAYERCLASS_SNIPER - START_HUMANCLASS - 1] =
-		(nbSupport < g_Config.m_InfSupportLimit && g_Config.m_InfEnableSniper) ?
-		1.0f : 0.0f;
-	Probability[PLAYERCLASS_NINJA - START_HUMANCLASS - 1] =
-		(nbSupport < g_Config.m_InfSupportLimit && g_Config.m_InfEnableNinja) ?
-		1.0f : 0.0f;
-
-	Probability[PLAYERCLASS_MEDIC - START_HUMANCLASS - 1] =
-		(nbMedic < g_Config.m_InfMedicLimit && g_Config.m_InfEnableMedic) ?
-		1.0f : 0.0f;
-	Probability[PLAYERCLASS_HERO - START_HUMANCLASS - 1] =
-		(nbHero < g_Config.m_InfHeroLimit && g_Config.m_InfEnableHero) ?
-		1.0f : 0.0f;
-	Probability[PLAYERCLASS_LOOPER - START_HUMANCLASS - 1] =
-		(nbDefender < g_Config.m_InfDefenderLimit && g_Config.m_InfEnableLooper) ?
-		1.0f : 0.0f;
-	
-
-	// Honor the players count
-	int ActivePlayerCount = Server()->GetActivePlayerCount();
-	if (g_Config.m_InfMinPlayersForEngineer && (ActivePlayerCount < g_Config.m_InfMinPlayersForEngineer))
+	for (int PlayerClass = START_HUMANCLASS + 1; PlayerClass < END_HUMANCLASS; ++PlayerClass)
 	{
-		Probability[PLAYERCLASS_ENGINEER - START_HUMANCLASS - 1] = 0.0f;
+		double &ClassProbability = Probability[PlayerClass - START_HUMANCLASS - 1];
+		ClassProbability = Server()->GetPlayerClassEnabled(PlayerClass) ? 1.0f : 0.0f;
+		if (GameServer()->m_FunRound)
+		{
+			// We care only about the class enablement
+			continue;
+		}
+
+		if (IsDefenderClass(PlayerClass) && (nbDefender >= g_Config.m_InfDefenderLimit))
+			ClassProbability = 0.0f;
+
+		if (IsSupportClass(PlayerClass) && (nbSupport >= g_Config.m_InfSupportLimit))
+			ClassProbability = 0.0f;
+
+		if (nbClass[PlayerClass] >= Server()->GetClassPlayerLimit(PlayerClass))
+			ClassProbability = 0.0f;
+
+		// Honor the players count
+		int ActivePlayerCount = Server()->GetActivePlayerCount();
+		int MinPlayersForClass = Server()->GetMinPlayersForClass(PlayerClass);
+		if (ActivePlayerCount < MinPlayersForClass)
+			ClassProbability = 0.0f;
 	}
 
 	//Random is not fair enough. We keep the last two classes took by the player, and avoid to give him those again
@@ -868,54 +1083,44 @@ int CGameControllerMOD::ChooseInfectedClass(const CPlayer *pPlayer) const
 {
 	//Get information about existing infected
 	int nbInfected = 0;
-	bool thereIsAWitch = false;
-	bool thereIsAnUndead = false;
+	std::map<int, int> nbClass;
+	for (int PlayerClass = START_INFECTEDCLASS + 1; PlayerClass < END_INFECTEDCLASS; ++PlayerClass)
+		nbClass[PlayerClass] = 0;
 
 	CPlayerIterator<PLAYERITER_INGAME> Iter(GameServer()->m_apPlayers);
 	while(Iter.Next())
 	{
+		const int AnotherPlayerClass = Iter.Player()->GetClass();
 		if(Iter.Player()->IsZombie()) nbInfected++;
-		if(Iter.Player()->GetClass() == PLAYERCLASS_WITCH) thereIsAWitch = true;
-		if(Iter.Player()->GetClass() == PLAYERCLASS_UNDEAD) thereIsAnUndead = true;
+		nbClass[AnotherPlayerClass]++;
 	}
 	
 	double Probability[NB_INFECTEDCLASS];
-	
-	Probability[PLAYERCLASS_SMOKER - START_INFECTEDCLASS - 1] =
-		(Server()->GetClassAvailability(PLAYERCLASS_SMOKER)) ?
-		(double) g_Config.m_InfProbaSmoker : 0.0f;
-	Probability[PLAYERCLASS_HUNTER - START_INFECTEDCLASS - 1] =
-		(Server()->GetClassAvailability(PLAYERCLASS_HUNTER)) ?
-		(double) g_Config.m_InfProbaHunter : 0.0f;
-	Probability[PLAYERCLASS_BAT - START_INFECTEDCLASS - 1] =
-		(Server()->GetClassAvailability(PLAYERCLASS_BAT)) ?
-		(double) g_Config.m_InfProbaBat : 0.0f;
-	Probability[PLAYERCLASS_BOOMER - START_INFECTEDCLASS - 1] =
-		(Server()->GetClassAvailability(PLAYERCLASS_BOOMER)) ?
-		(double) g_Config.m_InfProbaBoomer : 0.0f;
-	
-	Probability[PLAYERCLASS_GHOST - START_INFECTEDCLASS - 1] =
-		(Server()->GetClassAvailability(PLAYERCLASS_GHOST)) ?
-		(double) g_Config.m_InfProbaGhost : 0.0f;
-	Probability[PLAYERCLASS_SPIDER - START_INFECTEDCLASS - 1] =
-		(Server()->GetClassAvailability(PLAYERCLASS_SPIDER)) ?
-		(double) g_Config.m_InfProbaSpider : 0.0f;
-	Probability[PLAYERCLASS_GHOUL - START_INFECTEDCLASS - 1] =
-		(Server()->GetClassAvailability(PLAYERCLASS_GHOUL) && nbInfected >= g_Config.m_InfGhoulThreshold) ?
-		(double) g_Config.m_InfProbaGhoul : 0.0f;
-	Probability[PLAYERCLASS_SLUG - START_INFECTEDCLASS - 1] =
-		(Server()->GetClassAvailability(PLAYERCLASS_SLUG)) ?
-		(double) g_Config.m_InfProbaSlug : 0.0f;
-	Probability[PLAYERCLASS_VOODOO - START_INFECTEDCLASS - 1] =
-		(Server()->GetClassAvailability(PLAYERCLASS_VOODOO)) ?
-		(double) g_Config.m_InfProbaVoodoo : 0.0f;
-	
-	Probability[PLAYERCLASS_WITCH - START_INFECTEDCLASS - 1] =
-		(Server()->GetClassAvailability(PLAYERCLASS_WITCH) && nbInfected > 2 && !thereIsAWitch) ?
-		(double) g_Config.m_InfProbaWitch : 0.0f;
-	Probability[PLAYERCLASS_UNDEAD - START_INFECTEDCLASS - 1] =
-		(Server()->GetClassAvailability(PLAYERCLASS_UNDEAD) && nbInfected > 2 && !thereIsAnUndead) ?
-		(double) g_Config.m_InfProbaUndead : 0.0f;
+	for (int PlayerClass = START_INFECTEDCLASS + 1; PlayerClass < END_INFECTEDCLASS; ++PlayerClass)
+	{
+		double &ClassProbability = Probability[PlayerClass - START_INFECTEDCLASS - 1];
+		ClassProbability = Server()->GetClassAvailability(PlayerClass) ? Server()->GetPlayerClassProbability(PlayerClass) : 0;
+		if (GameServer()->m_FunRound)
+		{
+			// We care only about the class enablement
+			continue;
+		}
+
+		switch(PlayerClass)
+		{
+			case PLAYERCLASS_GHOUL:
+				if (nbInfected < g_Config.m_InfGhoulThreshold)
+					ClassProbability = 0;
+				break;
+			case PLAYERCLASS_WITCH:
+			case PLAYERCLASS_UNDEAD:
+				if ((nbInfected <= 2) || nbClass[PlayerClass] > 0)
+					ClassProbability = 0;
+				break;
+			default:
+				break;
+		}
+	}
 	
 	int Seconds = (Server()->Tick()-m_RoundStartTick)/((float)Server()->TickSpeed());
 	char aBuf[256];
@@ -960,71 +1165,39 @@ bool CGameControllerMOD::IsChoosableClass(int PlayerClass)
 		return false;
 
 	int ActivePlayerCount = Server()->GetActivePlayerCount();
-	switch(PlayerClass)
-	{
-		case PLAYERCLASS_ENGINEER:
-			if (g_Config.m_InfMinPlayersForEngineer && (ActivePlayerCount < g_Config.m_InfMinPlayersForEngineer))
-			{
-				return false;
-			}
-			break;
-		default:
-			break;
-	}
+	int MinPlayersForClass = Server()->GetMinPlayersForClass(PlayerClass);
+	if (ActivePlayerCount < MinPlayersForClass)
+		return false;
 
-	int nbDefender = 0;
-	int nbMedic = 0;
-	int nbHero = 0;
 	int nbSupport = 0;
+	int nbDefender = 0;
+	std::map<int, int> nbClass;
+	for (int PlayerClass = START_HUMANCLASS + 1; PlayerClass < END_HUMANCLASS; ++PlayerClass)
+		nbClass[PlayerClass] = 0;
 
 	CPlayerIterator<PLAYERITER_INGAME> Iter(GameServer()->m_apPlayers);
 	while(Iter.Next())
 	{
-		switch(Iter.Player()->GetClass())
-		{
-			case PLAYERCLASS_NINJA:
-			case PLAYERCLASS_MERCENARY:
-			case PLAYERCLASS_SNIPER:
-				nbSupport++;
-				break;
-			case PLAYERCLASS_MEDIC:
-				nbMedic++;
-				break;
-			case PLAYERCLASS_HERO:
-				nbHero++;
-				break;
-			case PLAYERCLASS_ENGINEER:
-			case PLAYERCLASS_SOLDIER:
-			case PLAYERCLASS_SCIENTIST:
-			case PLAYERCLASS_BIOLOGIST:
-				nbDefender++;
-				break;
-			case PLAYERCLASS_LOOPER:
-				nbDefender++;
-				break;
-		}
+		const int AnotherPlayerClass = Iter.Player()->GetClass();
+		if ((AnotherPlayerClass < START_HUMANCLASS + 1) || (AnotherPlayerClass > END_HUMANCLASS - 1))
+			continue;
+		if (IsDefenderClass(AnotherPlayerClass))
+			nbDefender++;
+		if (IsSupportClass(AnotherPlayerClass))
+			nbSupport++;
+		nbClass[AnotherPlayerClass]++;
 	}
 	
-	switch(PlayerClass)
-	{
-		case PLAYERCLASS_ENGINEER:
-		case PLAYERCLASS_SOLDIER:
-		case PLAYERCLASS_SCIENTIST:
-		case PLAYERCLASS_BIOLOGIST:
-			return (nbDefender < g_Config.m_InfDefenderLimit);
-		case PLAYERCLASS_MEDIC:
-			return (nbMedic < g_Config.m_InfMedicLimit);
-		case PLAYERCLASS_HERO:
-			return (nbHero < g_Config.m_InfHeroLimit);
-		case PLAYERCLASS_NINJA:
-		case PLAYERCLASS_MERCENARY:
-		case PLAYERCLASS_SNIPER:
-			return (nbSupport < g_Config.m_InfSupportLimit);
-		case PLAYERCLASS_LOOPER:
-			return (nbDefender < g_Config.m_InfDefenderLimit);
-	}
+	if (IsDefenderClass(PlayerClass) && (nbDefender >= g_Config.m_InfDefenderLimit))
+		return false;
+
+	if (IsSupportClass(PlayerClass) && (nbSupport >= g_Config.m_InfSupportLimit))
+		return false;
+
+	if (nbClass[PlayerClass] >= Server()->GetClassPlayerLimit(PlayerClass))
+		return false;
 	
-	return false;
+	return true;
 }
 
 bool CGameControllerMOD::CanVote()

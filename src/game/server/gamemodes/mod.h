@@ -7,6 +7,19 @@
 #include <game/server/classes.h>
 #include <game/server/entities/hero-flag.h>
 
+struct FunRoundSettings
+{
+	FunRoundSettings() = default;
+	FunRoundSettings(int Infected, int Human)
+	: InfectedClass(Infected),
+	  HumanClass(Human)
+	{
+	}
+
+	int InfectedClass = 0;
+	int HumanClass = 0;
+};
+
 // you can subclass GAMECONTROLLER_CTF, GAMECONTROLLER_TDM etc if you want
 // todo a modification with their base as well.
 class CGameControllerMOD : public IGameController
@@ -37,6 +50,13 @@ public:
 	
 	void ResetFinalExplosion();
 	
+	static bool IsDefenderClass(int PlayerClass);
+	static bool IsSupportClass(int PlayerClass);
+	static const char *GetClassName(int PlayerClass);
+	static const char *GetClassPluralName(int PlayerClass);
+	static const char *GetClassDisplayName(int PlayerClass);
+	static const char *GetClassPluralDisplayName(int PlayerClass);
+
 private:
 	bool IsSpawnable(vec2 Pos, int TeleZoneIndex);
 	void GetPlayerCounter(int ClientException, int& NumHumans, int& NumInfected, int& NumFirstInfected);

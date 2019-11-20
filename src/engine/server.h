@@ -307,6 +307,13 @@ public:
 	virtual void SetClassAvailability(int CID, int n) = 0;
 	
 	virtual int IsClassChooserEnabled() = 0;
+	virtual bool GetPlayerClassEnabled(int PlayerClass) const = 0;
+	virtual void SetPlayerClassEnabled(int PlayerClass, bool Enabled) = 0;
+	virtual int GetMinPlayersForClass(int PlayerClass) const = 0;
+	virtual int GetClassPlayerLimit(int PlayerClass) const = 0;
+
+	virtual int GetPlayerClassProbability(int PlayerClass) const = 0;
+	virtual void SetPlayerClassProbability(int PlayerClass, int Probability) = 0;
 	
 	virtual bool IsClientLogged(int ClientID) = 0;
 #ifdef CONF_SQL
@@ -325,8 +332,8 @@ public:
 
 public:
 	virtual class CRoundStatistics* RoundStatistics() = 0;
-	virtual void OnRoundStart() = 0;
-	virtual void OnRoundEnd() = 0;
+	virtual void ResetStatistics() = 0;
+	virtual void SendStatistics() = 0;
 	
 	virtual void SetClientMemory(int ClientID, int Memory, bool Value = true) = 0;
 	virtual void ResetClientMemoryAboutGame(int ClientID) = 0;

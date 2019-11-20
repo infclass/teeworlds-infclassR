@@ -188,35 +188,42 @@ int CGameContext::RandomZombieToWitch() {
 	return zombies_id[id];
 }
 
-void CGameContext::SetAvailabilities(std::vector<int> value) { // todo: should be order-independent, e.g with std map
-	if (value.empty())
-		value = std::vector<int>(10); //increased by 1 human class from 9 to 10
-	g_Config.m_InfEnableBiologist = value[0];
-	g_Config.m_InfEnableEngineer = value[1];
-	g_Config.m_InfEnableHero = value[2];
-	g_Config.m_InfEnableMedic = value[3];
-	g_Config.m_InfEnableMercenary = value[4];
-	g_Config.m_InfEnableNinja = value[5];
-	g_Config.m_InfEnableScientist = value[6];
-	g_Config.m_InfEnableSniper = value[7];
-	g_Config.m_InfEnableSoldier = value[8];
-	g_Config.m_InfEnableLooper = value[9];
+void CGameContext::SetAvailabilities(std::vector<int> value)
+{
+	static const int ValuesNumber = NB_HUMANCLASS;
+	if (value.size() < ValuesNumber)
+		value.resize(ValuesNumber, 0);
+
+	for (int PlayerClass = START_HUMANCLASS + 1; PlayerClass < END_HUMANCLASS; PlayerClass++)
+	{
+		const int ClassEnabledValue = value.at(PlayerClass - START_HUMANCLASS - 1);
+		Server()->SetPlayerClassEnabled(PlayerClass, ClassEnabledValue);
+	}
 }
 
-void CGameContext::SetProbabilities(std::vector<int> value) { // todo: should be order-independent, e.g with std map
-	if (value.empty())
-		value = std::vector<int>(11);
-	g_Config.m_InfProbaBat = value[0];
-	g_Config.m_InfProbaBoomer = value[1];
-	g_Config.m_InfProbaGhost = value[2];
-	g_Config.m_InfProbaGhoul = value[3];
-	g_Config.m_InfProbaHunter = value[4];
-	g_Config.m_InfProbaSlug = value[5];
-	g_Config.m_InfProbaSmoker = value[6];
-	g_Config.m_InfProbaSpider = value[7];
-	g_Config.m_InfProbaVoodoo = value[8];
-	g_Config.m_InfGhoulThreshold = value[9];
-	g_Config.m_InfGhoulStomachSize = value[10];
+void CGameContext::SetProbabilities(std::vector<int> value)
+{
+	int *extraConfigValues[] =
+	{
+		// The order is still important!
+		&g_Config.m_InfGhoulThreshold,
+		&g_Config.m_InfGhoulStomachSize,
+	};
+	static const int ExtraValuesNumber = sizeof(extraConfigValues) / sizeof(extraConfigValues[0]);
+	static const int ValuesNumber = NB_INFECTEDCLASS + ExtraValuesNumber;
+	if (value.size() < ValuesNumber)
+		value.resize(ValuesNumber, 0);
+
+	for (int PlayerClass = START_INFECTEDCLASS + 1; PlayerClass < END_INFECTEDCLASS; PlayerClass++)
+	{
+		const int ClassProbability = value.at(PlayerClass - START_INFECTEDCLASS - 1);
+		Server()->SetPlayerClassProbability(PlayerClass, ClassProbability);
+	}
+	for (int i = 0; i < ExtraValuesNumber; ++i)
+	{
+		const int newValue = value.at(NB_INFECTEDCLASS + i);
+		*extraConfigValues[i] = newValue;
+	}
 }
 
 void CGameContext::CreateDamageInd(vec2 Pos, float Angle, int Amount)
@@ -2703,58 +2710,100 @@ bool CGameContext::ConVote(IConsole::IResult *pResult, void *pUserData)
 bool CGameContext::ConStartFunRound(IConsole::IResult *pResult, void *pUserData)
 {
 	CGameContext *pSelf = (CGameContext *)pUserData;
+	static const FunRoundSettings PossbleSettings[] = {
+		{ PLAYERCLASS_GHOUL, PLAYERCLASS_NINJA },
+		{ PLAYERCLASS_GHOST, PLAYERCLASS_SNIPER },
+		{ PLAYERCLASS_GHOUL, PLAYERCLASS_HERO },
+		{ PLAYERCLASS_BAT, PLAYERCLASS_MERCENARY },
+		{ PLAYERCLASS_BAT, PLAYERCLASS_NINJA },
+		{ PLAYERCLASS_GHOUL, PLAYERCLASS_MEDIC },
+		{ PLAYERCLASS_BOOMER, PLAYERCLASS_NINJA },
+		{ PLAYERCLASS_GHOUL, PLAYERCLASS_SOLDIER },
+		{ PLAYERCLASS_VOODOO, PLAYERCLASS_ENGINEER },
+	};
+
+	const int type = random_int(0, sizeof(PossbleSettings) / sizeof(PossbleSettings[0]) - 1);
+	const FunRoundSettings &Settings = PossbleSettings[type];
+	return pSelf->StartFunRound(Settings);
+}
+
+bool CGameContext::ConStartSpecialFunRound(IConsole::IResult *pResult, void *pUserData)
+{
+	CGameContext *pSelf = (CGameContext *)pUserData;
+	FunRoundSettings Settings;
+
+	for (int argN = 0; argN < pResult->NumArguments(); ++argN)
+	{
+		const char *argument = pResult->GetString(argN);
+		for (int PlayerClass = 0; PlayerClass < NB_PLAYERCLASS; ++PlayerClass)
+		{
+			if (str_comp(argument, CGameControllerMOD::GetClassPluralName(PlayerClass)) == 0)
+			{
+				if ((PlayerClass > START_HUMANCLASS) && (PlayerClass < END_HUMANCLASS))
+				{
+					Settings.HumanClass = PlayerClass;
+					break;
+				}
+				if ((PlayerClass > START_INFECTEDCLASS) && (PlayerClass < END_INFECTEDCLASS))
+				{
+					Settings.InfectedClass = PlayerClass;
+					break;
+				}
+			}
+		}
+	}
+
+	if (!Settings.HumanClass || !Settings.InfectedClass)
+	{
+		pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "server", "invalid special fun round configuration");
+		return false;
+	}
+	return pSelf->StartFunRound(Settings);
+}
+
+bool CGameContext::StartFunRound(const FunRoundSettings &Settings)
+{
 	const char* title = g_Config.m_FunRoundTitle;
 	char aBuf[256];
 
-	if (pSelf->m_FunRound) {
+	if (m_FunRound) {
 		str_format(aBuf, sizeof(aBuf), "%s is not over yet", title);
-		pSelf->SendChatTarget(-1, aBuf);
+		SendChatTarget(-1, aBuf);
 		return true;
 	}
-	else if (pSelf->m_FunRoundsPassed >= g_Config.m_FunRoundLimit) {
+	else if (m_FunRoundsPassed >= g_Config.m_FunRoundLimit) {
 		switch (g_Config.m_FunRoundLimit) {
 			case 1: str_format(aBuf, sizeof(aBuf), "%s can be played only once per map", title); break;
 			case 2: str_format(aBuf, sizeof(aBuf), "%s can be played only twice per map", title); break;
 			default: str_format(aBuf, sizeof(aBuf), "%s can be played only %d times per map", title, g_Config.m_FunRoundLimit);
 		}
-		pSelf->SendChatTarget(-1, aBuf);
+		SendChatTarget(-1, aBuf);
 		return true;
 	}
 
 	// zombies
-	auto zero_probabilities = [pSelf] () {
-		pSelf->SetProbabilities(std::vector<int>());
-	};
-	std::vector<int> probabilities = { // order is important!
-		g_Config.m_InfProbaBat,
-		g_Config.m_InfProbaBoomer,
-		g_Config.m_InfProbaGhost,
-		g_Config.m_InfProbaGhoul,
-		g_Config.m_InfProbaHunter,
-		g_Config.m_InfProbaSlug,
-		g_Config.m_InfProbaSmoker,
-		g_Config.m_InfProbaSpider,
-		g_Config.m_InfProbaVoodoo,
+	std::vector<int> infectedProbabilities;
+	for (int PlayerClass = START_INFECTEDCLASS + 1; PlayerClass < END_INFECTEDCLASS; PlayerClass++)
+	{
+		infectedProbabilities.push_back(Server()->GetPlayerClassProbability(PlayerClass));
+	}
+	const auto extraConfigValues =
+	{
+		// The order is still important!
 		g_Config.m_InfGhoulThreshold,
-		g_Config.m_InfGhoulStomachSize
+		g_Config.m_InfGhoulStomachSize,
 	};
+	for (const int &extraValue : extraConfigValues)
+	{
+		infectedProbabilities.push_back(extraValue);
+	}
 
 	// humans
-	auto zero_availabilities = [pSelf] () {
-		pSelf->SetAvailabilities(std::vector<int>());
-	};
-	std::vector<int> availabilities = { // order is important!
-		g_Config.m_InfEnableBiologist,
-		g_Config.m_InfEnableEngineer,
-		g_Config.m_InfEnableHero,
-		g_Config.m_InfEnableMedic,
-		g_Config.m_InfEnableMercenary,
-		g_Config.m_InfEnableNinja,
-		g_Config.m_InfEnableScientist,
-		g_Config.m_InfEnableSniper,
-		g_Config.m_InfEnableSoldier,
-		g_Config.m_InfEnableLooper
-	};
+	std::vector<int> humanAvailabilities;
+	for (int PlayerClass = START_HUMANCLASS + 1; PlayerClass < END_HUMANCLASS; PlayerClass++)
+	{
+		humanAvailabilities.push_back(Server()->GetPlayerClassEnabled(PlayerClass));
+	}
 
 	std::vector<const char*> phrases = {
 		", glhf!",
@@ -2765,67 +2814,27 @@ bool CGameContext::ConStartFunRound(IConsole::IResult *pResult, void *pUserData)
 		", good luck!"
 	};
 	const char* random_phrase = phrases[random_int(0, phrases.size()-1)];
-	zero_probabilities();
-	zero_availabilities();
+	SetProbabilities(std::vector<int>());
+	SetAvailabilities(std::vector<int>());
 	g_Config.m_InfGhoulStomachSize = g_Config.m_FunRoundGhoulStomachSize;
-	pSelf->m_DefaultTimelimit = g_Config.m_SvTimelimit;
+	m_DefaultTimelimit = g_Config.m_SvTimelimit;
 	if (g_Config.m_SvTimelimit > g_Config.m_FunRoundDuration)
 		g_Config.m_SvTimelimit = g_Config.m_FunRoundDuration;
 
-	int type = random_int(0, 8);
-	switch (type) { // todo: generalize and shrink, or remove and make something configurable
-		case 0:
-			g_Config.m_InfProbaGhoul = 100;
-			g_Config.m_InfEnableNinja = 1;
-			str_format(aBuf, sizeof(aBuf), "%s! Ghouls vs Ninjas%s", title, random_phrase);
-			break;
-		case 1:
-			g_Config.m_InfProbaGhost = 100;
-			g_Config.m_InfEnableSniper = 1;
-			str_format(aBuf, sizeof(aBuf), "%s! Ghosts vs Snipers%s", title, random_phrase);
-			break;
-		case 2:
-			g_Config.m_InfProbaGhoul = 100;
-			g_Config.m_InfEnableHero = 1;
-			str_format(aBuf, sizeof(aBuf), "%s! Ghouls vs Heroes%s", title, random_phrase);
-			break;
-		case 3:
-			g_Config.m_InfProbaBat = 100;
-			g_Config.m_InfEnableMercenary = 1;
-			str_format(aBuf, sizeof(aBuf), "%s! Bats vs Mercenaries%s", title, random_phrase);
-			break;
-		case 4:;
-			g_Config.m_InfProbaBat = 100;
-			g_Config.m_InfEnableNinja = 1;
-			str_format(aBuf, sizeof(aBuf), "%s! Bats vs Ninjas%s", title, random_phrase);
-			break;
-		case 5:
-			g_Config.m_InfProbaGhoul = 100;
-			g_Config.m_InfEnableMedic = 1;
-			str_format(aBuf, sizeof(aBuf), "%s! Ghouls vs Medics%s", title, random_phrase);
-			break;
-		case 6:
-			g_Config.m_InfProbaBoomer = 100;
-			g_Config.m_InfEnableNinja = 1;
-			str_format(aBuf, sizeof(aBuf), "%s! Boomers vs Ninjas%s", title, random_phrase);
-			break;
-		case 7:
-			g_Config.m_InfProbaGhoul = 100;
-			g_Config.m_InfEnableSoldier = 1;
-			str_format(aBuf, sizeof(aBuf), "%s! Ghouls vs Soldiers%s", title, random_phrase);
-			break;
-		case 8:
-			g_Config.m_InfProbaVoodoo = 100;
-			g_Config.m_InfEnableEngineer = 1;
-			str_format(aBuf, sizeof(aBuf), "%s! Voodoos vs Engineers%s", title, random_phrase);
-			break;
-	}
-	pSelf->m_pController->StartRound();
-	pSelf->CreateSoundGlobal(SOUND_CTF_CAPTURE);
-	pSelf->SendChatTarget(-1, aBuf);
-	pSelf->m_FunRound = true;
-	pSelf->m_DefaultAvailabilities = availabilities;
-	pSelf->m_DefaultProbabilities = probabilities;
+	Server()->SetPlayerClassEnabled(Settings.HumanClass, true);
+	Server()->SetPlayerClassProbability(Settings.InfectedClass, 100);
+	const char *HumanClassText = CGameControllerMOD::GetClassPluralDisplayName(Settings.HumanClass);
+	const char *InfectedClassText = CGameControllerMOD::GetClassPluralDisplayName(Settings.InfectedClass);
+
+	str_format(aBuf, sizeof(aBuf), "%s! %s vs %s%s", title, InfectedClassText, HumanClassText, random_phrase);
+
+	m_pController->StartRound();
+	CreateSoundGlobal(SOUND_CTF_CAPTURE);
+	SendChatTarget(-1, aBuf);
+	m_FunRound = true;
+	m_DefaultAvailabilities = humanAvailabilities;
+	m_DefaultProbabilities = infectedProbabilities;
+	
 	return true;
 }
 
@@ -2867,46 +2876,28 @@ bool CGameContext::ConSetClass(IConsole::IResult *pResult, void *pUserData)
 	if(!pPlayer)
 		return true;
 
-	if(str_comp(pClassName, "engineer") == 0) pPlayer->SetClass(PLAYERCLASS_ENGINEER);
-	else if(str_comp(pClassName, "soldier") == 0) pPlayer->SetClass(PLAYERCLASS_SOLDIER);
-	else if(str_comp(pClassName, "scientist") == 0) pPlayer->SetClass(PLAYERCLASS_SCIENTIST);
-	else if(str_comp(pClassName, "biologist") == 0) pPlayer->SetClass(PLAYERCLASS_BIOLOGIST);
-	else if(str_comp(pClassName, "looper") == 0) pPlayer->SetClass(PLAYERCLASS_LOOPER);
-	else if(str_comp(pClassName, "medic") == 0) pPlayer->SetClass(PLAYERCLASS_MEDIC);
-	else if(str_comp(pClassName, "hero") == 0) pPlayer->SetClass(PLAYERCLASS_HERO);
-	else if(str_comp(pClassName, "ninja") == 0) pPlayer->SetClass(PLAYERCLASS_NINJA);
-	else if(str_comp(pClassName, "mercenary") == 0) pPlayer->SetClass(PLAYERCLASS_MERCENARY);
-	else if(str_comp(pClassName, "sniper") == 0) pPlayer->SetClass(PLAYERCLASS_SNIPER);
-	else if(str_comp(pClassName, "smoker") == 0) pPlayer->SetClass(PLAYERCLASS_SMOKER);
-	else if(str_comp(pClassName, "hunter") == 0) pPlayer->SetClass(PLAYERCLASS_HUNTER);
-	else if(str_comp(pClassName, "bat") == 0) pPlayer->SetClass(PLAYERCLASS_BAT);
-	else if(str_comp(pClassName, "boomer") == 0) pPlayer->SetClass(PLAYERCLASS_BOOMER);
-	else if(str_comp(pClassName, "ghost") == 0) pPlayer->SetClass(PLAYERCLASS_GHOST);
-	else if(str_comp(pClassName, "spider") == 0) pPlayer->SetClass(PLAYERCLASS_SPIDER);
-	else if(str_comp(pClassName, "ghoul") == 0) pPlayer->SetClass(PLAYERCLASS_GHOUL);
-	else if(str_comp(pClassName, "slug") == 0) pPlayer->SetClass(PLAYERCLASS_SLUG);
-	else if(str_comp(pClassName, "voodoo") == 0) pPlayer->SetClass(PLAYERCLASS_VOODOO);
-	else if(str_comp(pClassName, "undead") == 0) pPlayer->SetClass(PLAYERCLASS_UNDEAD);
-	else if(str_comp(pClassName, "witch") == 0) pPlayer->SetClass(PLAYERCLASS_WITCH);
-	else if(str_comp(pClassName, "none") == 0)
+	for (int PlayerClass = PLAYERCLASS_NONE; PlayerClass < NB_PLAYERCLASS; ++PlayerClass)
 	{
-		pPlayer->SetClass(PLAYERCLASS_NONE);
-		CCharacter* pChar = pPlayer->GetCharacter();
-		if(pChar)
+		if (str_comp(pClassName, CGameControllerMOD::GetClassName(PlayerClass)) != 0)
+			continue;
+
+		pPlayer->SetClass(PlayerClass);
+		if (PlayerClass == PLAYERCLASS_NONE)
 		{
-			pChar->OpenClassChooser();
+			CCharacter* pChar = pPlayer->GetCharacter();
+			if(pChar)
+			{
+				pChar->OpenClassChooser();
+			}
 		}
-	}
-	else
-	{
-		pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "inf_set_class", "Unknown class");
+		char aBuf[256];
+		str_format(aBuf, sizeof(aBuf), "The admin change the class of %s to %s", pSelf->Server()->ClientName(PlayerID), pClassName);
+		pSelf->SendChat(-1, CGameContext::CHAT_ALL, aBuf);
+
 		return true;
 	}
-	
-	char aBuf[256];
-	str_format(aBuf, sizeof(aBuf), "The admin change the class of %s to %s", pSelf->Server()->ClientName(PlayerID), pClassName);
-	pSelf->SendChat(-1, CGameContext::CHAT_ALL, aBuf);
-	
+
+	pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "inf_set_class", "Unknown class");
 	return true;
 }
 
@@ -4145,6 +4136,7 @@ void CGameContext::OnConsoleInit()
 	Console()->Register("clear_votes", "", CFGFLAG_SERVER, ConClearVotes, this, "Clears the voting options");
 	Console()->Register("vote", "r", CFGFLAG_SERVER, ConVote, this, "Force a vote to yes/no");
 	Console()->Register("start_fun_round", "", CFGFLAG_SERVER, ConStartFunRound, this, "Start fun round");
+	Console()->Register("start_special_fun_round", "sss", CFGFLAG_SERVER, ConStartSpecialFunRound, this, "Start fun round");
 	
 /* INFECTION MODIFICATION START ***************************************/
 	Console()->Register("inf_set_class", "is", CFGFLAG_SERVER, ConSetClass, this, "Set the class of a player");
