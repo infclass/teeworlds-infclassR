@@ -57,6 +57,8 @@ typedef unsigned __int64 uint64_t;
 #define BROADCAST_DURATION_REALTIME (0)
 #define BROADCAST_DURATION_GAMEANNOUNCE (Server()->TickSpeed()*2)
 
+struct FunRoundSettings;
+
 enum
 {
 	BROADCAST_PRIORITY_LOWEST=0,
@@ -101,6 +103,7 @@ class CGameContext : public IGameServer
 	static bool ConClearVotes(IConsole::IResult *pResult, void *pUserData);
 	static bool ConVote(IConsole::IResult *pResult, void *pUserData);
 	static bool ConStartFunRound(IConsole::IResult *pResult, void *pUserData);
+	static bool ConStartSpecialFunRound(IConsole::IResult *pResult, void *pUserData);
 	static bool ConchainSpecialMotdupdate(IConsole::IResult *pResult, void *pUserData, IConsole::FCommandCallback pfnCallback, void *pCallbackUserData);
 
 	CGameContext(int Resetting);
@@ -141,6 +144,7 @@ public:
 	std::vector<int> m_WitchCallers;
 
 	// InfClassR fun round
+	bool StartFunRound(const FunRoundSettings &Settings);
 	void EndFunRound();
 	bool m_FunRound;
 	int m_FunRoundsPassed;

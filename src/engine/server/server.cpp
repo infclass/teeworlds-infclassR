@@ -3016,6 +3016,176 @@ int CServer::IsClassChooserEnabled()
 	return m_InfClassChooser;
 }
 
+bool CServer::GetPlayerClassEnabled(int PlayerClass) const
+{
+	switch (PlayerClass)
+	{
+		case PLAYERCLASS_MERCENARY:
+			return g_Config.m_InfEnableMercenary;
+		case PLAYERCLASS_MEDIC:
+			return g_Config.m_InfEnableMedic;
+		case PLAYERCLASS_HERO:
+			return g_Config.m_InfEnableHero;
+		case PLAYERCLASS_ENGINEER:
+			return g_Config.m_InfEnableEngineer;
+		case PLAYERCLASS_SOLDIER:
+			return g_Config.m_InfEnableSoldier;
+		case PLAYERCLASS_NINJA:
+			return g_Config.m_InfEnableNinja;
+		case PLAYERCLASS_SNIPER:
+			return g_Config.m_InfEnableSniper;
+		case PLAYERCLASS_SCIENTIST:
+			return g_Config.m_InfEnableScientist;
+		case PLAYERCLASS_BIOLOGIST:
+			return g_Config.m_InfEnableBiologist;
+		case PLAYERCLASS_LOOPER:
+			return g_Config.m_InfEnableLooper;
+		default:
+			m_pConsole->Print(IConsole::OUTPUT_LEVEL_STANDARD, "server", "WARNING: Invalid GetPlayerClassEnabled() call");
+			return false;
+	}
+}
+
+void CServer::SetPlayerClassEnabled(int PlayerClass, bool Enabled)
+{
+	const int Value = Enabled ? 1 : 0;
+	switch (PlayerClass)
+	{
+		case PLAYERCLASS_MERCENARY:
+			g_Config.m_InfEnableMercenary = Value;
+			break;
+		case PLAYERCLASS_MEDIC:
+			g_Config.m_InfEnableMedic = Value;
+			break;
+		case PLAYERCLASS_HERO:
+			g_Config.m_InfEnableHero = Value;
+			break;
+		case PLAYERCLASS_ENGINEER:
+			g_Config.m_InfEnableEngineer = Value;
+			break;
+		case PLAYERCLASS_SOLDIER:
+			g_Config.m_InfEnableSoldier = Value;
+			break;
+		case PLAYERCLASS_NINJA:
+			g_Config.m_InfEnableNinja = Value;
+			break;
+		case PLAYERCLASS_SNIPER:
+			g_Config.m_InfEnableSniper = Value;
+			break;
+		case PLAYERCLASS_SCIENTIST:
+			g_Config.m_InfEnableScientist = Value;
+			break;
+		case PLAYERCLASS_BIOLOGIST:
+			g_Config.m_InfEnableBiologist = Value;
+			break;
+		case PLAYERCLASS_LOOPER:
+			g_Config.m_InfEnableLooper = Value;
+			break;
+		default:
+			m_pConsole->Print(IConsole::OUTPUT_LEVEL_STANDARD, "server", "WARNING: Invalid SetPlayerClassEnabled() call");
+			return;
+	}
+}
+
+int CServer::GetMinPlayersForClass(int PlayerClass) const
+{
+	switch (PlayerClass)
+	{
+		case PLAYERCLASS_ENGINEER:
+			return g_Config.m_InfMinPlayersForEngineer;
+		default:
+			return 0;
+	}
+}
+
+int CServer::GetClassPlayerLimit(int PlayerClass) const
+{
+	switch (PlayerClass)
+	{
+		case PLAYERCLASS_MEDIC:
+			return g_Config.m_InfMedicLimit;
+		case PLAYERCLASS_HERO:
+			return g_Config.m_InfHeroLimit;
+		default:
+			return g_Config.m_SvMaxClients;
+	}
+}
+
+int CServer::GetPlayerClassProbability(int PlayerClass) const
+{
+	switch (PlayerClass)
+	{
+		case PLAYERCLASS_SMOKER:
+			return g_Config.m_InfProbaSmoker;
+		case PLAYERCLASS_BOOMER:
+			return g_Config.m_InfProbaBoomer;
+		case PLAYERCLASS_HUNTER:
+			return g_Config.m_InfProbaHunter;
+		case PLAYERCLASS_BAT:
+			return g_Config.m_InfProbaBat;
+		case PLAYERCLASS_GHOST:
+			return g_Config.m_InfProbaGhost;
+		case PLAYERCLASS_SPIDER:
+			return g_Config.m_InfProbaSpider;
+		case PLAYERCLASS_GHOUL:
+			return g_Config.m_InfProbaGhoul;
+		case PLAYERCLASS_SLUG:
+			return g_Config.m_InfProbaSlug;
+		case PLAYERCLASS_VOODOO:
+			return g_Config.m_InfProbaVoodoo;
+		case PLAYERCLASS_WITCH:
+			return g_Config.m_InfProbaWitch;
+		case PLAYERCLASS_UNDEAD:
+			return g_Config.m_InfProbaUndead;
+		default:
+			m_pConsole->Print(IConsole::OUTPUT_LEVEL_STANDARD, "server", "WARNING: Invalid GetPlayerClassProbability() call");
+			return false;
+	}
+}
+
+void CServer::SetPlayerClassProbability(int PlayerClass, int Probability)
+{
+	switch (PlayerClass)
+	{
+		case PLAYERCLASS_SMOKER:
+			g_Config.m_InfProbaSmoker = Probability;
+			break;
+		case PLAYERCLASS_BOOMER:
+			g_Config.m_InfProbaBoomer = Probability;
+			break;
+		case PLAYERCLASS_HUNTER:
+			g_Config.m_InfProbaHunter = Probability;
+			break;
+		case PLAYERCLASS_BAT:
+			g_Config.m_InfProbaBat = Probability;
+			break;
+		case PLAYERCLASS_GHOST:
+			g_Config.m_InfProbaGhost = Probability;
+			break;
+		case PLAYERCLASS_SPIDER:
+			g_Config.m_InfProbaSpider = Probability;
+			break;
+		case PLAYERCLASS_GHOUL:
+			g_Config.m_InfProbaGhoul = Probability;
+			break;
+		case PLAYERCLASS_SLUG:
+			g_Config.m_InfProbaSlug = Probability;
+			break;
+		case PLAYERCLASS_VOODOO:
+			g_Config.m_InfProbaVoodoo = Probability;
+			break;
+		case PLAYERCLASS_WITCH:
+			g_Config.m_InfProbaWitch = Probability;
+			break;
+		case PLAYERCLASS_UNDEAD:
+			g_Config.m_InfProbaUndead = Probability;
+			break;
+		default:
+			m_pConsole->Print(IConsole::OUTPUT_LEVEL_STANDARD, "server", "WARNING: Invalid SetPlayerClassProbability() call");
+			return;
+	}
+}
+
 bool CServer::IsClientLogged(int ClientID)
 {
 	return m_aClients[ClientID].m_UserID >= 0;
@@ -4353,18 +4523,9 @@ public:
 };
 #endif
 
-void CServer::OnRoundEnd()
+void CServer::SendStatistics()
 {
 #ifdef CONF_SQL
-	// skip some maps that are not very fair
-	if (str_comp(m_aCurrentMap, "infc_toilet") == 0) {
-		return;
-	}
-
-	if (GetActivePlayerCount() < 4) {
-		return;
-	}
-
 	//Send round statistics
 	CSqlJob* pRoundJob = new CSqlJob_Server_SendRoundStatistics(this, RoundStatistics(), m_aCurrentMap);
 	pRoundJob->Start();
@@ -4385,7 +4546,7 @@ void CServer::OnRoundEnd()
 #endif
 }
 
-void CServer::OnRoundStart()
+void CServer::ResetStatistics()
 {
 	RoundStatistics()->Reset();
 }
