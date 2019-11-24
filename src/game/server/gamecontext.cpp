@@ -2720,6 +2720,7 @@ bool CGameContext::ConStartFunRound(IConsole::IResult *pResult, void *pUserData)
 		{ PLAYERCLASS_BOOMER, PLAYERCLASS_NINJA },
 		{ PLAYERCLASS_GHOUL, PLAYERCLASS_SOLDIER },
 		{ PLAYERCLASS_VOODOO, PLAYERCLASS_ENGINEER },
+		{ PLAYERCLASS_SLUG, PLAYERCLASS_HERO },
 	};
 
 	const int type = random_int(0, sizeof(PossbleSettings) / sizeof(PossbleSettings[0]) - 1);
