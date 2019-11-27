@@ -182,8 +182,11 @@ void CPortal::MoveParallelsParticles()
 		vec2 PosStart = m_Pos + vec2(m_Radius * cos(m_Angle + AngleStep*i), m_Radius * sin(m_Angle + AngleStep * i));
 		m_ParticlePos[NUM_HINT + i] = PosStart;
 	}
-	float AngleDelta = AngleStep / 24;
-	AngleDelta *= GetSpeedMultiplier();
+
+	float AngleDelta = AngleStep / 20;
+	const int readyTick = m_ConnectedTick + g_Config.m_InfPortalConnectionTime * Server()->TickSpeed();
+	if (!m_AnotherPortal || (Server()->Tick() < readyTick))
+		AngleDelta *= 0.25;
 
 	switch (m_PortalType)
 	{
@@ -300,7 +303,17 @@ void CPortal::TeleportCharacters()
 
 float CPortal::GetSpeedMultiplier()
 {
-	return m_AnotherPortal ? 1 : 0.20;
+	static const float c_InactivePortalAnimationSpeed = 0.25;
+	if (!m_AnotherPortal)
+		return c_InactivePortalAnimationSpeed;
+
+	const int PortalConnectionTime = g_Config.m_InfPortalConnectionTime;
+	const int readyTick = m_ConnectedTick + PortalConnectionTime * Server()->TickSpeed();
+	if (Server()->Tick() >= readyTick)
+		return 1.0;
+
+	const float warmupProgress = (Server()->Tick() - m_ConnectedTick) / float(PortalConnectionTime * Server()->TickSpeed());
+	return c_InactivePortalAnimationSpeed + warmupProgress * 0.6;
 }
 
 void CPortal::Tick()
