@@ -994,6 +994,21 @@ void CCharacter::FireWeapon()
 	/* INFECTION MODIFICATION END *****************************************/
 						Hits++;
 					}
+
+					for(CPortal* pPortal = (CPortal*) GameWorld()->FindFirst(CGameWorld::ENTTYPE_PORTAL); pPortal; pPortal = (CPortal*) pPortal->TypeNext())
+					{
+						if(m_pPlayer->IsZombie())
+							continue;
+
+						if(pPortal->GetOwner() == m_pPlayer->GetCID())
+							continue;
+
+						if(distance(m_Pos, pPortal->m_Pos) > (pPortal->m_ProximityRadius + m_ProximityRadius*0.5f))
+							continue;
+
+						pPortal->TakeDamage(g_pData->m_Weapons.m_Hammer.m_pBase->m_Damage, m_pPlayer->GetCID(), m_ActiveWeapon, TAKEDAMAGEMODE_NOINFECTION);
+						Hits++;
+					}
 				}
 				
 				// if we Hit anything, we have to wait for the reload
