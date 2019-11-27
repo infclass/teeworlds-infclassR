@@ -5,6 +5,7 @@
 
 #include "portal.h"
 #include "character.h"
+#include "growingexplosion.h"
 
 CPortal::CPortal(CGameWorld *pGameWorld, vec2 CenterPos, int OwnerClientID, PortalType Type)
 : CEntity(pGameWorld, CGameWorld::ENTTYPE_PORTAL)
@@ -81,6 +82,27 @@ void CPortal::Disconnect()
 CPortal *CPortal::GetAnotherPortal() const
 {
 	return m_AnotherPortal;
+}
+
+void CPortal::TakeDamage(int Dmg, int From, int Weapon, int Mode)
+{
+	if (m_MarkedForDestroy)
+	{
+		return;
+	}
+	Explode(From);
+}
+
+void CPortal::Explode(int DetonatedBy)
+{
+	CCharacter *pOwner = GameServer()->GetPlayerChar(GetOwner());
+	if (pOwner)
+	{
+		pOwner->OnPortalDestroy(this);
+	}
+
+	new CGrowingExplosion(GameWorld(), m_Pos, vec2(0.0, -1.0), m_Owner, 6, GROWINGEXPLOSIONEFFECT_ELECTRIC_INFECTED);
+	GameServer()->m_World.DestroyEntity(this);
 }
 
 void CPortal::StartParallelsVisualEffect()

@@ -38,6 +38,9 @@ public:
 	CPortal *GetAnotherPortal() const;
 	float GetRadius() const { return m_Radius; }
 
+	void TakeDamage(int Dmg, int From, int Weapon, int Mode);
+	void Explode(int From);
+
 protected:
 	void StartParallelsVisualEffect();
 	void StartMeridiansVisualEffect();
