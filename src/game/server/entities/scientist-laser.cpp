@@ -7,6 +7,7 @@
 
 #include "white-hole.h"
 #include "growingexplosion.h"
+#include "portal.h"
 
 CScientistLaser::CScientistLaser(CGameWorld *pGameWorld, vec2 Pos, vec2 Direction, float StartEnergy, int Owner, int Dmg)
 : CLaser(pGameWorld, Pos, Direction, StartEnergy, Owner, Dmg, CGameWorld::ENTTYPE_LASER)
@@ -20,13 +21,31 @@ bool CScientistLaser::HitCharacter(vec2 From, vec2 To)
 	vec2 At;
 	CCharacter *pOwnerChar = GameServer()->GetPlayerChar(m_Owner);
 	CCharacter *pHit = GameServer()->m_World.IntersectCharacter(m_Pos, To, 0.f, At, pOwnerChar);
-	if(!pHit)
+	vec2 At2;
+	CEntity *pPortalEntity = GameServer()->m_World.IntersectEntity(m_Pos, To, 0, &At2, CGameWorld::ENTTYPE_PORTAL);
+
+	if(!pHit && !pPortalEntity)
 		return false;
 
 	m_From = From;
 	m_Pos = At;
 	m_Energy = -1;
-	
+
+	if (pPortalEntity)
+	{
+		if (pHit && (distance(From, pHit->m_Pos) < distance(From, pPortalEntity->m_Pos)))
+		{
+			// The Character pHit is closer than the Portal. Nothing to do.
+		}
+		else
+		{
+			m_Pos = At2;
+			CPortal *pPortal = static_cast<CPortal*>(pPortalEntity);
+			pPortal->TakeDamage(m_Dmg, m_Owner, WEAPON_RIFLE, TAKEDAMAGEMODE_NOINFECTION);
+			return true;
+		}
+	}
+
 	return true;
 }
 
