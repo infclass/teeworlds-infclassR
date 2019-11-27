@@ -1329,6 +1329,14 @@ void CCharacter::FireWeapon()
 				else
 					return;
 			}
+			else if((GetClass() == PLAYERCLASS_WITCH) && g_Config.m_InfEnableWitchPortals)
+			{
+				if(!IsFrozen() && !IsInLove())
+				{
+					PlacePortal();
+					m_ReloadTimer = Server()->TickSpeed() / 4;
+				}
+			}
 			else
 			{
 				int Damage = GameServer()->Tuning()->m_LaserDamage;
@@ -3220,7 +3228,7 @@ void CCharacter::Snap(int SnappingClient)
 				pObj->m_Type = WEAPON_HAMMER;
 			}
 		}
-		else if(GetClass() == PLAYERCLASS_WITCH)
+		else if((GetClass() == PLAYERCLASS_WITCH) && !g_Config.m_InfEnableWitchPortals)
 		{
 			vec2 SpawnPos;
 			if(FindWitchSpawnPosition(SpawnPos))
@@ -3576,6 +3584,8 @@ void CCharacter::ClassSpawnAttributes()
 		case PLAYERCLASS_WITCH:
 			m_aWeapons[WEAPON_HAMMER].m_Got = true;
 			GiveWeapon(WEAPON_HAMMER, -1);
+			if (GameServer()->m_pController->PortalsAvailableForCharacter(this))
+				GiveWeapon(WEAPON_RIFLE, -1);
 			m_ActiveWeapon = WEAPON_HAMMER;
 			
 			break;
@@ -3872,6 +3882,8 @@ int CCharacter::GetInfWeaponID(int WID)
 				return INFWEAPON_BIOLOGIST_RIFLE;
 			case PLAYERCLASS_MEDIC:
 				return INFWEAPON_MEDIC_RIFLE;
+			case PLAYERCLASS_WITCH:
+				return INFWEAPON_WITCH_PORTAL_RIFLE;
 			default:
 				return INFWEAPON_RIFLE;
 		}

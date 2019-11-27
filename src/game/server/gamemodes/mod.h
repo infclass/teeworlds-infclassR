@@ -47,6 +47,7 @@ public:
 	virtual void OnClientDrop(int ClientID, int Type);
 	virtual void OnPlayerInfected(CPlayer* pPlayer, CPlayer* pInfectiousPlayer);
 	virtual bool IsInfectionStarted();
+	bool PortalsAvailableForCharacter(class CCharacter *pCharacter) override;
 	
 	void ResetFinalExplosion();
 	

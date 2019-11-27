@@ -578,6 +578,14 @@ bool CGameControllerMOD::IsInfectionStarted()
 	return (m_RoundStartTick + Server()->TickSpeed()*10 <= Server()->Tick());
 }
 
+bool CGameControllerMOD::PortalsAvailableForCharacter(class CCharacter *pCharacter)
+{
+	if (!g_Config.m_InfEnableWitchPortals)
+		return false;
+
+	return true;
+}
+
 void CGameControllerMOD::Snap(int SnappingClient)
 {
 	CNetObj_GameInfo *pGameInfoObj = (CNetObj_GameInfo *)Server()->SnapNewItem(NETOBJTYPE_GAMEINFO, 0, sizeof(CNetObj_GameInfo));
