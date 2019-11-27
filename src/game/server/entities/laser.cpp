@@ -5,8 +5,8 @@
 #include "laser.h"
 #include <engine/server/roundstatistics.h>
 
-CLaser::CLaser(CGameWorld *pGameWorld, vec2 Pos, vec2 Direction, float StartEnergy, int Owner, int Dmg)
-: CEntity(pGameWorld, CGameWorld::ENTTYPE_LASER)
+CLaser::CLaser(CGameWorld *pGameWorld, vec2 Pos, vec2 Direction, float StartEnergy, int Owner, int Dmg, int ObjType)
+: CEntity(pGameWorld, ObjType)
 {
 	m_Dmg = Dmg;
 	m_Pos = Pos;
@@ -15,6 +15,11 @@ CLaser::CLaser(CGameWorld *pGameWorld, vec2 Pos, vec2 Direction, float StartEner
 	m_Dir = Direction;
 	m_Bounces = 0;
 	m_EvalTick = 0;
+}
+
+CLaser::CLaser(CGameWorld *pGameWorld, vec2 Pos, vec2 Direction, float StartEnergy, int Owner, int Dmg)
+: CLaser(pGameWorld, Pos, Direction, StartEnergy, Owner, Dmg, CGameWorld::ENTTYPE_LASER)
+{
 	GameWorld()->InsertEntity(this);
 	DoBounce();
 }
