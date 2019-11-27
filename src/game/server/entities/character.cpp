@@ -34,6 +34,7 @@
 #include "white-hole.h"
 #include "superweapon-indicator.h"
 #include "laser-teleport.h"
+#include "portal.h"
 
 //input count
 struct CInputCount
@@ -1421,6 +1422,57 @@ void CCharacter::CheckSuperWeaponAccess()
 				} 
 			} 
 		}
+	}
+}
+
+void CCharacter::PlacePortal()
+{
+	vec2 TargetPos = m_Pos;
+
+	if(m_pPortalIn && m_pPortalOut)
+	{
+		return;
+	}
+
+	// Place new portal
+	int OwnerCID = GetPlayer() ? GetPlayer()->GetCID() : -1;
+	CPortal *existingPortal = m_pPortalIn ? m_pPortalIn : m_pPortalOut;
+	if(existingPortal && distance(existingPortal->m_Pos, TargetPos) < g_Config.m_InfMinPortalDistance)
+	{
+		char aBuf[256];
+		str_format(aBuf, sizeof(aBuf), "Unable to place portals that close to each other");
+		GameServer()->SendChatTarget(OwnerCID, aBuf);
+		return;
+	}
+
+	if (m_pPortalIn)
+	{
+		m_pPortalOut = new CPortal(GameWorld(), TargetPos, OwnerCID, CPortal::PortalType::Out);
+		m_pPortalOut->ConnectPortal(m_pPortalIn);
+		GameServer()->CreateSound(m_pPortalOut->m_Pos, m_pPortalOut->GetNewEntitySound());
+	}
+	else
+	{
+		m_pPortalIn = new CPortal(GameWorld(), TargetPos, OwnerCID, CPortal::PortalType::In);
+		m_pPortalIn->ConnectPortal(m_pPortalOut);
+		GameServer()->CreateSound(m_pPortalIn->m_Pos, m_pPortalIn->GetNewEntitySound());
+	}
+}
+
+void CCharacter::OnPortalDestroy(CPortal *pPortal)
+{
+	if (!pPortal)
+		return;
+
+	if (m_pPortalIn == pPortal)
+	{
+		m_pPortalIn->Disconnect();
+		m_pPortalIn = nullptr;
+	}
+	else if (m_pPortalOut == pPortal)
+	{
+		m_pPortalOut->Disconnect();
+		m_pPortalOut = nullptr;
 	}
 }
 
@@ -3606,6 +3658,12 @@ void CCharacter::DestroyChildEntities()
 	{
 		if(pFlag->GetOwner() != m_pPlayer->GetCID()) continue;
 		GameServer()->m_World.DestroyEntity(pFlag);
+	}
+
+	for(CPortal* pPortal = (CPortal*) GameWorld()->FindFirst(CGameWorld::ENTTYPE_PORTAL); pPortal; pPortal = (CPortal*) pPortal->TypeNext())
+	{
+		if(pPortal->GetOwner() != m_pPlayer->GetCID()) continue;
+		GameServer()->m_World.DestroyEntity(pPortal);
 	}
 			
 	m_FirstShot = true;
