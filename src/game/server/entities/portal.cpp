@@ -103,6 +103,10 @@ void CPortal::Explode(int DetonatedBy)
 
 	new CGrowingExplosion(GameWorld(), m_Pos, vec2(0.0, -1.0), m_Owner, 6, GROWINGEXPLOSIONEFFECT_ELECTRIC_INFECTED);
 	GameServer()->m_World.DestroyEntity(this);
+
+	char aBuf[256];
+	str_format(aBuf, sizeof(aBuf), "A portal destroyed by %s", Server()->ClientName(DetonatedBy));
+	GameServer()->SendChatTarget(-1, aBuf);
 }
 
 void CPortal::StartParallelsVisualEffect()
