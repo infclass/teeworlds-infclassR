@@ -58,6 +58,11 @@ CPortal::PortalType CPortal::GetPortalType() const
 
 void CPortal::ConnectPortal(CPortal *anotherPortal)
 {
+	if (m_AnotherPortal == anotherPortal)
+	{
+		return;
+	}
+
 	if (anotherPortal)
 	{
 		if (anotherPortal->m_PortalType == m_PortalType)
@@ -66,6 +71,8 @@ void CPortal::ConnectPortal(CPortal *anotherPortal)
 			return;
 		}
 		anotherPortal->m_AnotherPortal = this;
+		anotherPortal->m_ConnectedTick = Server()->Tick();
+		m_ConnectedTick = Server()->Tick();
 	}
 	m_AnotherPortal = anotherPortal;
 }
@@ -253,6 +260,11 @@ void CPortal::MoveMeridiansParticles()
 void CPortal::TeleportCharacters()
 {
 	if (!m_AnotherPortal)
+	{
+		return;
+	}
+	const int readyTick = m_ConnectedTick + g_Config.m_InfPortalConnectionTime * Server()->TickSpeed();
+	if (Server()->Tick() < readyTick)
 	{
 		return;
 	}

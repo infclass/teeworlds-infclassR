@@ -65,6 +65,7 @@ protected:
 	CPortal *m_AnotherPortal = nullptr;
 
 	int m_StartTick;
+	int m_ConnectedTick = 0;
 	int m_Owner;
 };
 
