@@ -9,25 +9,17 @@
 #include "growingexplosion.h"
 
 CScientistLaser::CScientistLaser(CGameWorld *pGameWorld, vec2 Pos, vec2 Direction, float StartEnergy, int Owner, int Dmg)
-: CEntity(pGameWorld, CGameWorld::ENTTYPE_LASER)
+: CLaser(pGameWorld, Pos, Direction, StartEnergy, Owner, Dmg, CGameWorld::ENTTYPE_LASER)
 {
-	m_Dmg = Dmg;
-	m_Pos = Pos;
-	m_Owner = Owner;
-	m_Energy = StartEnergy;
-	m_Dir = Direction;
-	m_Bounces = 0;
-	m_EvalTick = 0;
-	m_OwnerChar = GameServer()->GetPlayerChar(m_Owner);
 	GameWorld()->InsertEntity(this);
 	DoBounce();
 }
 
-
 bool CScientistLaser::HitCharacter(vec2 From, vec2 To)
 {
 	vec2 At;
-	CCharacter *pHit = GameServer()->m_World.IntersectCharacter(m_Pos, To, 0.f, At, m_OwnerChar);
+	CCharacter *pOwnerChar = GameServer()->GetPlayerChar(m_Owner);
+	CCharacter *pHit = GameServer()->m_World.IntersectCharacter(m_Pos, To, 0.f, At, pOwnerChar);
 	if(!pHit)
 		return false;
 
@@ -72,46 +64,15 @@ void CScientistLaser::DoBounce()
 	GameServer()->CreateExplosion(m_Pos, m_Owner, WEAPON_RIFLE, false, TAKEDAMAGEMODE_NOINFECTION);
 	
 	//Create a white hole entity
-	if(m_OwnerChar && m_OwnerChar->m_HasWhiteHole)
+	CCharacter *pOwnerChar = GameServer()->GetPlayerChar(m_Owner);
+	if(pOwnerChar && pOwnerChar->m_HasWhiteHole)
 	{
 		new CGrowingExplosion(GameWorld(), m_Pos, vec2(0.0, -1.0), m_Owner, 5, GROWINGEXPLOSIONEFFECT_BOOM_INFECTED);
 		new CWhiteHole(GameWorld(), To, m_Owner);
 		
 		//Make it unavailable
-		m_OwnerChar->m_HasWhiteHole = false;
-		m_OwnerChar->m_HasIndicator = false;
-		m_OwnerChar->GetPlayer()->ResetNumberKills();
+		pOwnerChar->m_HasWhiteHole = false;
+		pOwnerChar->m_HasIndicator = false;
+		pOwnerChar->GetPlayer()->ResetNumberKills();
 	}
-}
-
-void CScientistLaser::Reset()
-{
-	GameServer()->m_World.DestroyEntity(this);
-}
-
-void CScientistLaser::Tick()
-{
-	if(Server()->Tick() > m_EvalTick+(Server()->TickSpeed()*GameServer()->Tuning()->m_LaserBounceDelay)/1000.0f)
-		DoBounce();
-}
-
-void CScientistLaser::TickPaused()
-{
-	++m_EvalTick;
-}
-
-void CScientistLaser::Snap(int SnappingClient)
-{
-	if(NetworkClipped(SnappingClient))
-		return;
-
-	CNetObj_Laser *pObj = static_cast<CNetObj_Laser *>(Server()->SnapNewItem(NETOBJTYPE_LASER, m_ID, sizeof(CNetObj_Laser)));
-	if(!pObj)
-		return;
-
-	pObj->m_X = (int)m_Pos.x;
-	pObj->m_Y = (int)m_Pos.y;
-	pObj->m_FromX = (int)m_From.x;
-	pObj->m_FromY = (int)m_From.y;
-	pObj->m_StartTick = m_EvalTick;
 }
