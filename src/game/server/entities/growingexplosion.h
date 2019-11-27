@@ -30,6 +30,8 @@ public:
 	int GetOwner() const;
 
 private:
+	void DamagePortals();
+
 	int m_MaxGrowing;
 	int m_GrowingMap_Length;
 	int m_GrowingMap_Size;
