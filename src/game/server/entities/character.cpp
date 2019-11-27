@@ -1437,6 +1437,15 @@ void CCharacter::PlacePortal()
 {
 	vec2 TargetPos = m_Pos;
 
+	if (GetClass() == PLAYERCLASS_WITCH)
+	{
+		if(!FindWitchSpawnPosition(TargetPos))
+		{
+			// Witch can't place the portal here
+			return;
+		}
+	}
+
 	if(m_pPortalIn && m_pPortalOut)
 	{
 		return;
@@ -1488,6 +1497,18 @@ bool CCharacter::ProcessCharacterOnPortal(CPortal *pPortal, CCharacter *pCharact
 {
 	switch (GetClass())
 	{
+		case PLAYERCLASS_WITCH:
+			if (pPortal->GetPortalType() != CPortal::PortalType::In)
+				return false;
+
+			if(!pCharacter->IsZombie())
+				return false;
+
+			if (pCharacter == this)
+				return false;
+
+			break;
+
 		default:
 			return false;
 	}
@@ -3233,7 +3254,7 @@ void CCharacter::Snap(int SnappingClient)
 				pObj->m_Type = WEAPON_HAMMER;
 			}
 		}
-		else if((GetClass() == PLAYERCLASS_WITCH) && !g_Config.m_InfEnableWitchPortals)
+		else if((GetClass() == PLAYERCLASS_WITCH) && ((m_ActiveWeapon == WEAPON_RIFLE) || ((m_ActiveWeapon == WEAPON_HAMMER) && !HasPortal())))
 		{
 			vec2 SpawnPos;
 			if(FindWitchSpawnPosition(SpawnPos))
