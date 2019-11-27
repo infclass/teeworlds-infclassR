@@ -82,6 +82,7 @@ public:
 	void CheckSuperWeaponAccess();
 	void PlacePortal();
 	void OnPortalDestroy(CPortal *pPortal);
+	bool ProcessCharacterOnPortal(CPortal *pPortal, CCharacter *pCharacter);
 
 	bool CanDie() const;
 	void Die(int Killer, int Weapon);

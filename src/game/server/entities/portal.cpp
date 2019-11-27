@@ -244,6 +244,9 @@ void CPortal::TeleportCharacters()
 		if(Distance > pCharacter->m_ProximityRadius + m_Radius)
 			continue;
 
+		if (!pOwner->ProcessCharacterOnPortal(this, pCharacter))
+			continue;
+
 		// Teleport the character
 		pCharacter->m_Core.m_Pos = TargetPos;
 		pCharacter->m_Core.m_Vel *= 0;

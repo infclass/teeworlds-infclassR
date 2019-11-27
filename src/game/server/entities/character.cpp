@@ -1476,6 +1476,18 @@ void CCharacter::OnPortalDestroy(CPortal *pPortal)
 	}
 }
 
+bool CCharacter::ProcessCharacterOnPortal(CPortal *pPortal, CCharacter *pCharacter)
+{
+	switch (GetClass())
+	{
+		default:
+			return false;
+	}
+
+	// The idea here is to have a point to catch all allowed teleportations
+	return true;
+}
+
 bool CCharacter::CanDie() const
 {
 	if ((GetClass() == PLAYERCLASS_UNDEAD) && IsFrozen()) {
