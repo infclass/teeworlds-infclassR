@@ -292,6 +292,31 @@ CCharacter *CGameWorld::IntersectCharacter(vec2 Pos0, vec2 Pos1, float Radius, v
 	return pClosest;
 }
 
+CEntity *CGameWorld::IntersectEntity(vec2 Pos0, vec2 Pos1, float Radius, vec2 *NewPos, int EntityType)
+{
+	float ClosestLen = distance(Pos0, Pos1) * 100.0f;
+
+	CEntity *pClosest = nullptr;
+	CEntity *p = FindFirst(EntityType);
+	for(; p; p = (CEntity *)p->TypeNext())
+	{
+		vec2 IntersectPos = closest_point_on_line(Pos0, Pos1, p->m_Pos);
+		float Len = distance(p->m_Pos, IntersectPos);
+		if(Len < p->m_ProximityRadius+Radius)
+		{
+			Len = distance(Pos0, IntersectPos);
+			if(Len < ClosestLen)
+			{
+				*NewPos = IntersectPos;
+				ClosestLen = Len;
+				pClosest = p;
+			}
+		}
+	}
+
+	return pClosest;
+}
+
 
 CCharacter *CGameWorld::ClosestCharacter(vec2 Pos, float Radius, CEntity *pNotThis)
 {
