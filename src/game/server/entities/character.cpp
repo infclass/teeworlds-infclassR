@@ -2620,6 +2620,30 @@ void CCharacter::Tick()
 			);
 		}
 	}
+	else if(GetClass() == PLAYERCLASS_WITCH)
+	{
+		if (m_pPortalIn && m_pPortalOut)
+		{
+			GameServer()->SendBroadcast(GetPlayer()->GetCID(),
+				"The portals system is active!",
+				BROADCAST_PRIORITY_WEAPONSTATE, BROADCAST_DURATION_REALTIME
+			);
+		}
+		else if (m_pPortalIn)
+		{
+			GameServer()->SendBroadcast(GetPlayer()->GetCID(),
+				"The IN portal is open",
+				BROADCAST_PRIORITY_WEAPONSTATE, BROADCAST_DURATION_REALTIME
+			);
+		}
+		else if (m_pPortalOut)
+		{
+			GameServer()->SendBroadcast(GetPlayer()->GetCID(),
+				"The OUT portal is open",
+				BROADCAST_PRIORITY_WEAPONSTATE, BROADCAST_DURATION_REALTIME
+			);
+		}
+	}
 /* INFECTION MODIFICATION END *****************************************/
 
 	// Previnput
