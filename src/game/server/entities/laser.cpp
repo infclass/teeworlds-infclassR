@@ -5,6 +5,8 @@
 #include "laser.h"
 #include <engine/server/roundstatistics.h>
 
+#include "portal.h"
+
 CLaser::CLaser(CGameWorld *pGameWorld, vec2 Pos, vec2 Direction, float StartEnergy, int Owner, int Dmg, int ObjType)
 : CEntity(pGameWorld, ObjType)
 {
@@ -30,19 +32,41 @@ bool CLaser::HitCharacter(vec2 From, vec2 To)
 	vec2 At;
 	CCharacter *pOwnerChar = GameServer()->GetPlayerChar(m_Owner);
 	CCharacter *pHit = GameServer()->m_World.IntersectCharacter(m_Pos, To, 0.f, At, pOwnerChar);
-	if(!pHit)
+	vec2 PortalHitAt;
+	CEntity *pPortalEntity = GameServer()->m_World.IntersectEntity(m_Pos, To, 0, &PortalHitAt, CGameWorld::ENTTYPE_PORTAL);
+
+	if (pHit && pPortalEntity)
+	{
+		if (distance(From, pHit->m_Pos) < distance(From, pPortalEntity->m_Pos))
+		{
+			// The Character pHit is closer than the Portal.
+			pPortalEntity = nullptr;
+		}
+		else
+		{
+			pHit = nullptr;
+			At = PortalHitAt;
+		}
+	}
+
+	if(!pHit && !pPortalEntity)
 		return false;
 
 	m_From = From;
 	m_Pos = At;
 	m_Energy = -1;
-	
+
 	if (pOwnerChar && pOwnerChar->GetClass() == PLAYERCLASS_MEDIC) { // Revive zombie
+		CCharacter *medic = pOwnerChar;
+		CCharacter *zombie = pHit;
+		if (!zombie)
+		{
+			// Medic hits something else (not a zombie)
+			return true;
+		}
 		const int MIN_ZOMBIES = 4;
 		const int DAMAGE_ON_REVIVE = 17;
 		int old_class = pHit->GetPlayer()->GetOldClass();
-		auto& medic = pOwnerChar;
-		auto& zombie = pHit;
 
 		char aBuf[256];
 		if (medic->GetPlayer()->GetCharacter() && medic->GetPlayer()->GetCharacter()->GetHealthArmorSum() <= DAMAGE_ON_REVIVE) {
@@ -67,8 +91,16 @@ bool CLaser::HitCharacter(vec2 From, vec2 To)
 				Server()->RoundStatistics()->OnScoreEvent(ClientID, SCOREEVENT_MEDIC_REVIVE, medic->GetClass(), Server()->ClientName(ClientID), GameServer()->Console());
 			}
 		}
+		return true;
 	}
-	else {
+
+	if (pPortalEntity)
+	{
+		CPortal *pPortal = static_cast<CPortal*>(pPortalEntity);
+		pPortal->TakeDamage(m_Dmg, m_Owner, WEAPON_RIFLE, TAKEDAMAGEMODE_NOINFECTION);
+	}
+	else
+	{
 		pHit->TakeDamage(vec2(0.f, 0.f), m_Dmg, m_Owner, WEAPON_RIFLE, TAKEDAMAGEMODE_NOINFECTION);
 	}
 	return true;
