@@ -401,6 +401,16 @@ void CCharacter::HandleNinja()
 
 				aEnts[i]->TakeDamage(vec2(0, -10.0f), min(g_pData->m_Weapons.m_Ninja.m_pBase->m_Damage + m_NinjaStrengthBuff, 20), m_pPlayer->GetCID(), WEAPON_NINJA, TAKEDAMAGEMODE_NOINFECTION);
 			}
+
+			const int Damage = min(g_pData->m_Weapons.m_Ninja.m_pBase->m_Damage + m_NinjaStrengthBuff, 20);
+			for(CPortal* pPortal = (CPortal*) GameServer()->m_World.FindFirst(CGameWorld::ENTTYPE_PORTAL); pPortal; pPortal = (CPortal*) pPortal->TypeNext())
+			{
+				// check so we are sufficiently close
+				if (distance(pPortal->m_Pos, m_Pos) > (m_ProximityRadius * 2.0f))
+					continue;
+
+				pPortal->TakeDamage(Damage, m_pPlayer->GetCID(), WEAPON_NINJA, TAKEDAMAGEMODE_NOINFECTION);
+			}
 		}
 	}
 }
