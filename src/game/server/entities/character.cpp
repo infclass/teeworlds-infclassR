@@ -627,6 +627,11 @@ void CCharacter::FireWeapon()
 	if(!WillFire || m_pPlayer->MapMenu() > 0)
 		return;
 
+	if (GetInfWeaponID(m_ActiveWeapon) == INFWEAPON_WITCH_PORTAL_RIFLE && FindPortalInTarget())
+	{
+		// Give the ammo in advance for portal taking
+		GiveWeapon(m_ActiveWeapon, m_aWeapons[m_ActiveWeapon].m_Ammo + 1);
+	}
 	// check for ammo
 	if(!m_aWeapons[m_ActiveWeapon].m_Ammo && (GetInfWeaponID(m_ActiveWeapon) != INFWEAPON_MERCENARY_GRENADE)
 										  && (GetInfWeaponID(m_ActiveWeapon) != INFWEAPON_MEDIC_GRENADE))
@@ -1446,6 +1451,21 @@ void CCharacter::PlacePortal()
 		}
 	}
 
+	CPortal *PortalToTake = FindPortalInTarget();
+	if (PortalToTake)
+	{
+		PortalToTake->Disconnect();
+		GameServer()->m_World.DestroyEntity(PortalToTake);
+
+		if (PortalToTake == m_pPortalIn)
+			m_pPortalIn = nullptr;
+		if (PortalToTake == m_pPortalOut)
+			m_pPortalOut = nullptr;
+
+		GiveWeapon(WEAPON_RIFLE, m_aWeapons[WEAPON_RIFLE].m_Ammo + 1);
+		return;
+	}
+
 	if(m_pPortalIn && m_pPortalOut)
 	{
 		return;
@@ -1474,6 +1494,34 @@ void CCharacter::PlacePortal()
 		m_pPortalIn->ConnectPortal(m_pPortalOut);
 		GameServer()->CreateSound(m_pPortalIn->m_Pos, m_pPortalIn->GetNewEntitySound());
 	}
+}
+
+CPortal *CCharacter::FindPortalInTarget()
+{
+	vec2 TargetPos = m_Pos;
+
+	if (GetClass() == PLAYERCLASS_WITCH)
+	{
+		if(!FindWitchSpawnPosition(TargetPos))
+		{
+			// Witch can't place the portal here
+			return nullptr;
+		}
+	}
+
+	// Check if unmount wanted
+	const int displacementExtraDistance = 20;
+	if(m_pPortalIn && (distance(m_pPortalIn->m_Pos, TargetPos) < m_ProximityRadius + m_pPortalIn->GetRadius() + displacementExtraDistance))
+	{
+		return m_pPortalIn;
+	}
+
+	if(m_pPortalOut && (distance(m_pPortalOut->m_Pos, TargetPos) < m_ProximityRadius + m_pPortalOut->GetRadius() + displacementExtraDistance))
+	{
+		return m_pPortalOut;
+	}
+
+	return nullptr;
 }
 
 void CCharacter::OnPortalDestroy(CPortal *pPortal)

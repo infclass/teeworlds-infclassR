@@ -81,6 +81,7 @@ public:
 	void FireWeapon();
 	void CheckSuperWeaponAccess();
 	void PlacePortal();
+	CPortal *FindPortalInTarget();
 	void OnPortalDestroy(CPortal *pPortal);
 	bool ProcessCharacterOnPortal(CPortal *pPortal, CCharacter *pCharacter);
 	bool HasPortal();
