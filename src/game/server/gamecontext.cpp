@@ -4063,14 +4063,13 @@ bool CGameContext::ConWitch(IConsole::IResult *pResult, void *pUserData)
 	int callers_count = pSelf->m_WitchCallers.size();
 	const int REQUIRED_CALLERS_COUNT = 5;
 	const int MIN_ZOMBIES = 2;
-	const int MAX_WITCHES = 2;
 
 	char aBuf[256];
 	str_format(aBuf, sizeof(aBuf), "ConWitch() called");
 	pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_DEBUG, "conwitch", aBuf);
 
-	if (pSelf->GetZombieCount(PLAYERCLASS_WITCH) >= MAX_WITCHES) {
-		str_format(aBuf, sizeof(aBuf), "All witches are already here", MAX_WITCHES);
+	if (pSelf->GetZombieCount(PLAYERCLASS_WITCH) >= pSelf->Server()->GetClassPlayerLimit(PLAYERCLASS_WITCH)) {
+		str_format(aBuf, sizeof(aBuf), "All witches are already here");
 		pSelf->SendChatTarget(ClientID, aBuf);
 		return true;
 	}

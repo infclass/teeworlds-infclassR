@@ -3106,6 +3106,8 @@ int CServer::GetClassPlayerLimit(int PlayerClass) const
 			return g_Config.m_InfMedicLimit;
 		case PLAYERCLASS_HERO:
 			return g_Config.m_InfHeroLimit;
+		case PLAYERCLASS_WITCH:
+			return g_Config.m_InfWitchLimit;
 		default:
 			return g_Config.m_SvMaxClients;
 	}
