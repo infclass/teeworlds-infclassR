@@ -116,6 +116,11 @@ m_pConsole(pConsole)
 /* INFECTION MODIFICATION END *****************************************/
 }
 
+CCharacter::~CCharacter()
+{
+	Destroy();
+}
+
 bool CCharacter::FindWitchSpawnPosition(vec2& Pos)
 {
 	float Angle = atan2f(m_Input.m_TargetY, m_Input.m_TargetX);//atan2f instead of atan2

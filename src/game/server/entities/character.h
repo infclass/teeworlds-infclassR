@@ -53,6 +53,7 @@ public:
 	static const int ms_PhysSize = 28;
 
 	CCharacter(CGameWorld *pWorld, IConsole *pConsole);
+	~CCharacter() override;
 
 	virtual void Reset();
 	virtual void Destroy();
