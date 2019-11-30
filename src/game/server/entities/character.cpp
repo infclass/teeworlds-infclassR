@@ -236,7 +236,8 @@ void CCharacter::Destroy()
 /* INFECTION MODIFICATION START ***************************************/
 	DestroyChildEntities();
 	
-	m_pPlayer->ResetNumberKills();
+	if (m_pPlayer)
+		m_pPlayer->ResetNumberKills();
 	
 	if(m_FlagID >= 0)
 	{
@@ -272,7 +273,8 @@ void CCharacter::Destroy()
 	
 /* INFECTION MODIFICATION END *****************************************/
 
-	GameServer()->m_World.m_Core.m_apCharacters[m_pPlayer->GetCID()] = 0;
+	if (m_pPlayer)
+		GameServer()->m_World.m_Core.m_apCharacters[m_pPlayer->GetCID()] = 0;
 	m_Alive = false;
 }
 
