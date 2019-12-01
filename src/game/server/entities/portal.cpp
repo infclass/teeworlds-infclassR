@@ -289,11 +289,21 @@ void CPortal::TeleportCharacters()
 			continue;
 
 		// Teleport the character
+		const int CharacterClientID = pCharacter->GetPlayer() ? pCharacter->GetPlayer()->GetCID() : -1;
 		pCharacter->m_Core.m_Pos = TargetPos;
 		pCharacter->m_Core.m_Vel *= 0;
 		pCharacter->m_Core.m_HookedPlayer = -1;
 		pCharacter->m_Core.m_HookState = HOOK_RETRACTED;
 		pCharacter->m_Core.m_HookPos = TargetPos;
+		for(CCharacter *pPossibleHooker = (CCharacter*) GameWorld()->FindFirst(CGameWorld::ENTTYPE_CHARACTER); pPossibleHooker; pPossibleHooker = (CCharacter *)pPossibleHooker->TypeNext())
+		{
+			if (pPossibleHooker->m_Core.m_HookedPlayer == CharacterClientID)
+			{
+				pPossibleHooker->m_Core.m_HookedPlayer = -1;
+				pPossibleHooker->m_Core.m_HookState = HOOK_RETRACTED;
+				pPossibleHooker->m_Core.m_HookPos = pPossibleHooker->m_Core.m_Pos;
+			}
+		}
 
 		GameServer()->CreateDeath(TargetPos, m_Owner);
 		GameServer()->CreateSound(TargetPos, SOUND_PLAYER_JUMP);
