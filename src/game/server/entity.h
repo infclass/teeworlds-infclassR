@@ -66,7 +66,6 @@ class CEntity
 protected:
 	bool m_MarkedForDestroy;
 	int m_ID;
-	array<int> m_IDs;
 	int m_ObjType;
 public:
 	CEntity(CGameWorld *pGameWorld, int Objtype);
