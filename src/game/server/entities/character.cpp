@@ -1329,7 +1329,7 @@ void CCharacter::FireWeapon()
 				else
 					return;
 			}
-			else if((GetClass() == PLAYERCLASS_WITCH) && g_Config.m_InfEnableWitchPortals)
+			else if(CanOpenPortals())
 			{
 				if(!IsFrozen() && !IsInLove())
 				{
@@ -1501,6 +1501,11 @@ bool CCharacter::ProcessCharacterOnPortal(CPortal *pPortal, CCharacter *pCharact
 bool CCharacter::HasPortal()
 {
 	return m_pPortalIn || m_pPortalOut;
+}
+
+bool CCharacter::CanOpenPortals() const
+{
+	return m_canOpenPortals;
 }
 
 bool CCharacter::CanDie() const
@@ -3584,7 +3589,8 @@ void CCharacter::ClassSpawnAttributes()
 		case PLAYERCLASS_WITCH:
 			m_aWeapons[WEAPON_HAMMER].m_Got = true;
 			GiveWeapon(WEAPON_HAMMER, -1);
-			if (GameServer()->m_pController->PortalsAvailableForCharacter(this))
+			m_canOpenPortals = GameServer()->m_pController->PortalsAvailableForCharacter(this);
+			if (CanOpenPortals())
 				GiveWeapon(WEAPON_RIFLE, -1);
 			m_ActiveWeapon = WEAPON_HAMMER;
 			

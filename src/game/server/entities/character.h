@@ -84,6 +84,7 @@ public:
 	void OnPortalDestroy(CPortal *pPortal);
 	bool ProcessCharacterOnPortal(CPortal *pPortal, CCharacter *pCharacter);
 	bool HasPortal();
+	bool CanOpenPortals() const;
 
 	bool CanDie() const;
 	void Die(int Killer, int Weapon);
@@ -213,6 +214,7 @@ private:
 	int m_VoodooWeapon;
 
 	CHeroFlag* m_pHeroFlag;
+	bool m_canOpenPortals = false;
 	CPortal *m_pPortalIn = nullptr;
 	CPortal *m_pPortalOut = nullptr;
 

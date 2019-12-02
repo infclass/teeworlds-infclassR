@@ -583,6 +583,22 @@ bool CGameControllerMOD::PortalsAvailableForCharacter(class CCharacter *pCharact
 	if (!g_Config.m_InfEnableWitchPortals)
 		return false;
 
+	if (pCharacter->GetClass() != PLAYERCLASS_WITCH)
+		return false;
+
+	CPlayerIterator<PLAYERITER_INGAME> Iter(GameServer()->m_apPlayers);
+	while(Iter.Next())
+	{
+		if (!Iter.Player()->GetCharacter())
+			continue;
+
+		if (Iter.Player()->GetCharacter() == pCharacter)
+			continue;
+
+		if (Iter.Player()->GetCharacter()->CanOpenPortals())
+			return false;
+	}
+
 	return true;
 }
 
