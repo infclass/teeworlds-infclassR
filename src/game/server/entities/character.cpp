@@ -1751,6 +1751,11 @@ void CCharacter::Tick()
 				}
 
 				m_pPlayer->Infect(pKiller);
+
+				if (g_Config.m_InfInfzoneFreezeDuration > 0)
+				{
+					Freeze(g_Config.m_InfInfzoneFreezeDuration, GetPlayer()->GetCID(), FREEZEREASON_INFECTION);
+				}
 			}
 		}
 		if(m_Alive && (Index0 != ZONE_DAMAGE_INFECTION))
