@@ -2711,16 +2711,14 @@ bool CGameContext::ConStartFunRound(IConsole::IResult *pResult, void *pUserData)
 {
 	CGameContext *pSelf = (CGameContext *)pUserData;
 	static const FunRoundSettings PossbleSettings[] = {
-		{ PLAYERCLASS_GHOUL, PLAYERCLASS_NINJA },
 		{ PLAYERCLASS_GHOST, PLAYERCLASS_SNIPER },
 		{ PLAYERCLASS_GHOUL, PLAYERCLASS_HERO },
 		{ PLAYERCLASS_BAT, PLAYERCLASS_MERCENARY },
 		{ PLAYERCLASS_BAT, PLAYERCLASS_NINJA },
-		{ PLAYERCLASS_GHOUL, PLAYERCLASS_MEDIC },
 		{ PLAYERCLASS_BOOMER, PLAYERCLASS_NINJA },
-		{ PLAYERCLASS_GHOUL, PLAYERCLASS_SOLDIER },
 		{ PLAYERCLASS_VOODOO, PLAYERCLASS_ENGINEER },
 		{ PLAYERCLASS_SLUG, PLAYERCLASS_HERO },
+		{ PLAYERCLASS_WITCH, PLAYERCLASS_ENGINEER },
 	};
 
 	const int type = random_int(0, sizeof(PossbleSettings) / sizeof(PossbleSettings[0]) - 1);
