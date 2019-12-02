@@ -583,6 +583,9 @@ bool CGameControllerMOD::PortalsAvailableForCharacter(class CCharacter *pCharact
 	if (!g_Config.m_InfEnableWitchPortals)
 		return false;
 
+	if (GameServer()->m_FunRound)
+		return false;
+
 	if (pCharacter->GetClass() != PLAYERCLASS_WITCH)
 		return false;
 
