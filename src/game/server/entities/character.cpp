@@ -1466,11 +1466,6 @@ void CCharacter::PlacePortal()
 		return;
 	}
 
-	if(m_pPortalIn && m_pPortalOut)
-	{
-		return;
-	}
-
 	// Place new portal
 	int OwnerCID = GetPlayer() ? GetPlayer()->GetCID() : -1;
 	CPortal *existingPortal = m_pPortalIn ? m_pPortalIn : m_pPortalOut;
@@ -1480,6 +1475,13 @@ void CCharacter::PlacePortal()
 		str_format(aBuf, sizeof(aBuf), "Unable to place portals that close to each other");
 		GameServer()->SendChatTarget(OwnerCID, aBuf);
 		return;
+	}
+
+	if(m_pPortalIn && m_pPortalOut)
+	{
+		m_pPortalOut->Disconnect();
+		GameServer()->m_World.DestroyEntity(m_pPortalOut);
+		m_pPortalOut = nullptr;
 	}
 
 	if (m_pPortalIn)
