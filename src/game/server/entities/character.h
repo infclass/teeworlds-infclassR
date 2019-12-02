@@ -83,6 +83,7 @@ public:
 	void PlacePortal();
 	void OnPortalDestroy(CPortal *pPortal);
 	bool ProcessCharacterOnPortal(CPortal *pPortal, CCharacter *pCharacter);
+	bool HasPortal();
 
 	bool CanDie() const;
 	void Die(int Killer, int Weapon);

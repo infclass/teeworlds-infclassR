@@ -1488,6 +1488,11 @@ bool CCharacter::ProcessCharacterOnPortal(CPortal *pPortal, CCharacter *pCharact
 	return true;
 }
 
+bool CCharacter::HasPortal()
+{
+	return m_pPortalIn || m_pPortalOut;
+}
+
 bool CCharacter::CanDie() const
 {
 	if ((GetClass() == PLAYERCLASS_UNDEAD) && IsFrozen()) {
