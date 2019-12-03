@@ -1502,6 +1502,14 @@ void CCharacter::PlacePortal()
 		return;
 	}
 
+	if (TargetPos.y < -20)
+	{
+		char aBuf[256];
+		str_format(aBuf, sizeof(aBuf), "Unable to open a portal at this height");
+		GameServer()->SendChatTarget(OwnerCID, aBuf);
+		return;
+	}
+
 	if(m_pPortalIn && m_pPortalOut)
 	{
 		m_pPortalOut->Disconnect();
