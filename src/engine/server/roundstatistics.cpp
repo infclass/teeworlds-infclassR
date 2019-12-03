@@ -41,6 +41,9 @@ int CRoundStatistics::CPlayer::OnScoreEvent(int EventType, int Class)
 		case SCOREEVENT_HERO_FLAG:
 			Points = 10;
 			break;
+		case SCOREEVENT_PORTAL_USED:
+			Points = 5;
+			break;
 		case SCOREEVENT_BONUS:
 			Points = 50;
 			break;

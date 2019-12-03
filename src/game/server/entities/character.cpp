@@ -1591,6 +1591,10 @@ bool CCharacter::ProcessCharacterOnPortal(CPortal *pPortal, CCharacter *pCharact
 	// The idea here is to have a point to catch all allowed teleportations
 	SetEmote(EMOTE_HAPPY, Server()->Tick() + Server()->TickSpeed());
 	GameServer()->SendEmoticon(GetPlayer()->GetCID(), EMOTICON_MUSIC);
+
+	Server()->RoundStatistics()->OnScoreEvent(m_pPlayer->GetCID(), SCOREEVENT_PORTAL_USED, GetClass(), Server()->ClientName(m_pPlayer->GetCID()), Console());
+	GameServer()->SendScoreSound(m_pPlayer->GetCID());
+
 	return true;
 }
 
