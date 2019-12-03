@@ -48,6 +48,7 @@ protected:
 	void MoveMeridiansParticles();
 	void TeleportCharacters();
 	float GetSpeedMultiplier();
+	void PrepareAntipingParticles(vec2 *Output);
 
 protected:
 	// visual

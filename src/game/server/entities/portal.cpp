@@ -159,13 +159,33 @@ void CPortal::StartMeridiansVisualEffect()
 
 void CPortal::Snap(int SnappingClient)
 {
+	vec2 *ParticlePos = nullptr;
+
+	// Draw AntiPing white hole effect
+	vec2 AntipingParticlePos[NUM_IDS];
+	static_assert(sizeof(AntipingParticlePos) == sizeof(m_ParticlePos), "Default and antiping versions must have the same SnapIDs count");
+
+	if (Server()->GetClientAntiPing(SnappingClient))
+	{
+		// Draw medians
+		
+		static_assert(NUM_HINT == 12, "The antiping drawing code is hardcoded for 12 IDs");
+		PrepareAntipingParticles(AntipingParticlePos);
+		ParticlePos = AntipingParticlePos;
+	}
+	else
+	{
+		// AntiPing is off, draw precomputed particles
+		ParticlePos = m_ParticlePos;
+	}
+
 	for(int i = 0; i < NUM_IDS; i++)
 	{
 		CNetObj_Projectile *pObj = static_cast<CNetObj_Projectile *>(Server()->SnapNewItem(NETOBJTYPE_PROJECTILE, m_IDs[i], sizeof(CNetObj_Projectile)));
 		if(pObj)
 		{
-			pObj->m_X = m_ParticlePos[i].x;
-			pObj->m_Y = m_ParticlePos[i].y;
+			pObj->m_X = ParticlePos[i].x;
+			pObj->m_Y = ParticlePos[i].y;
 			pObj->m_VelX = 0;
 			pObj->m_VelY = 0;
 			pObj->m_StartTick = Server()->Tick();
@@ -324,6 +344,67 @@ float CPortal::GetSpeedMultiplier()
 
 	const float warmupProgress = (Server()->Tick() - m_ConnectedTick) / float(PortalConnectionTime * Server()->TickSpeed());
 	return c_InactivePortalAnimationSpeed + warmupProgress * 0.6;
+}
+
+void CPortal::PrepareAntipingParticles(vec2 *ParticlePos)
+{
+	const vec2 BasePosition = m_Pos;
+	const float Scale = m_Radius / 2;
+	const vec2 ArrowOffset = vec2(m_Radius * 0.25, 0);
+	switch (GetPortalType())
+	{
+		case PortalType::Disconnected:
+			for(int i = 0; i < NUM_HINT; i++)
+			{
+				ParticlePos[i] = m_Pos;
+			}
+			break;
+		case PortalType::In:
+			ParticlePos[0] = BasePosition + ArrowOffset + vec2(0.00, 0) * Scale;
+			ParticlePos[1] = BasePosition + ArrowOffset + vec2(0.25, +0.3) * Scale;
+			ParticlePos[2] = BasePosition + ArrowOffset + vec2(0.25, -0.3) * Scale;
+			ParticlePos[3] = BasePosition + ArrowOffset + vec2(0.50, 0) * Scale;
+			ParticlePos[4] = BasePosition + ArrowOffset + vec2(0.75, 0) * Scale;
+			ParticlePos[5] = BasePosition + ArrowOffset + vec2(1.00, 0) * Scale;
+
+			ParticlePos[ 6] = BasePosition - ArrowOffset + vec2(-0.00, 0.0) * Scale;
+			ParticlePos[ 7] = BasePosition - ArrowOffset + vec2(-0.25, +0.3) * Scale;
+			ParticlePos[ 8] = BasePosition - ArrowOffset + vec2(-0.25, -0.3) * Scale;
+			ParticlePos[ 9] = BasePosition - ArrowOffset + vec2(-0.50, 0.0) * Scale;
+			ParticlePos[10] = BasePosition - ArrowOffset + vec2(-0.75, 0.0) * Scale;
+			ParticlePos[11] = BasePosition - ArrowOffset + vec2(-1.00, 0.0) * Scale;
+			break;
+		case PortalType::Out:
+			ParticlePos[0] = BasePosition + ArrowOffset + vec2(1.00, 0) * Scale;
+			ParticlePos[1] = BasePosition + ArrowOffset + vec2(0.75, +0.3) * Scale;
+			ParticlePos[2] = BasePosition + ArrowOffset + vec2(0.75, -0.3) * Scale;
+			ParticlePos[3] = BasePosition + ArrowOffset + vec2(0.50, 0) * Scale;
+			ParticlePos[4] = BasePosition + ArrowOffset + vec2(0.25, 0) * Scale;
+			ParticlePos[5] = BasePosition + ArrowOffset + vec2(0.00, 0) * Scale;
+
+			ParticlePos[ 6] = BasePosition - ArrowOffset + vec2(-1.00, 0.0) * Scale;
+			ParticlePos[ 7] = BasePosition - ArrowOffset + vec2(-0.75, +0.3) * Scale;
+			ParticlePos[ 8] = BasePosition - ArrowOffset + vec2(-0.75, -0.3) * Scale;
+			ParticlePos[ 9] = BasePosition - ArrowOffset + vec2(-0.50, 0.0) * Scale;
+			ParticlePos[10] = BasePosition - ArrowOffset + vec2(-0.25, 0.0) * Scale;
+			ParticlePos[11] = BasePosition - ArrowOffset + vec2(-0.00, 0.0) * Scale;
+			break;
+	}
+
+	const int readyTick = m_ConnectedTick + g_Config.m_InfPortalConnectionTime * Server()->TickSpeed();
+	if (!m_AnotherPortal || (Server()->Tick() < readyTick))
+	{
+		ParticlePos[5] = ParticlePos[0];
+		ParticlePos[11] = ParticlePos[6];
+	}
+
+	// Draw parallels
+	static const float AngleStep = 2.0f * pi / NUM_SIDE;
+	for(int i = 0; i < NUM_SIDE; i++)
+	{
+		vec2 PosStart = m_Pos + vec2(m_Radius * cos(AngleStep * i), m_Radius * sin(AngleStep * i));
+		ParticlePos[NUM_HINT + i] = PosStart;
+	}
 }
 
 void CPortal::Tick()
