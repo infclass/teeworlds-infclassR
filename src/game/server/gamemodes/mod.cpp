@@ -812,7 +812,13 @@ void CGameControllerMOD::DoWincheck()
 	GetPlayerCounter(-1, NumHumans, NumInfected, NumFirstInfected);
 
 	static const char *ClassicRound = "classic";
+	static const char *WitchPortalsRound = "witch_portals";
 	const char *RoundType = ClassicRound;
+
+	if (g_Config.m_InfEnableWitchPortals)
+	{
+		RoundType = WitchPortalsRound;
+	}
 
 	//Win check
 	const int Seconds = (Server()->Tick()-m_RoundStartTick)/((float)Server()->TickSpeed());
