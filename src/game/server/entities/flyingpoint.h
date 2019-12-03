@@ -18,6 +18,7 @@ public:
 	
 	virtual void Tick();
 	virtual void Snap(int SnappingClient);
+	virtual void Reset();
 };
 
 #endif
