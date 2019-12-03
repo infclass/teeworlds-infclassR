@@ -7,6 +7,8 @@
 #include "character.h"
 #include "growingexplosion.h"
 
+#include <engine/server/roundstatistics.h>
+
 CPortal::CPortal(CGameWorld *pGameWorld, vec2 CenterPos, int OwnerClientID, PortalType Type)
 : CEntity(pGameWorld, CGameWorld::ENTTYPE_PORTAL)
 {
@@ -114,6 +116,13 @@ void CPortal::Explode(int DetonatedBy)
 	char aBuf[256];
 	str_format(aBuf, sizeof(aBuf), "A portal destroyed by %s", Server()->ClientName(DetonatedBy));
 	GameServer()->SendChatTarget(-1, aBuf);
+
+	CPlayer *PlayerDestroyer = GameServer()->m_apPlayers[DetonatedBy];
+	if (!PlayerDestroyer)
+		return;
+
+	Server()->RoundStatistics()->OnScoreEvent(DetonatedBy, SCOREEVENT_DESTROY_PORTAL, PlayerDestroyer->GetClass(), Server()->ClientName(DetonatedBy), GameServer()->Console());
+	GameServer()->SendScoreSound(DetonatedBy);
 }
 
 void CPortal::StartParallelsVisualEffect()
