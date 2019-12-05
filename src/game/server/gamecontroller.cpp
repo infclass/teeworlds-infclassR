@@ -70,7 +70,7 @@ void IGameController::MaybeSendStatistics()
 		return;
 	}
 
-	if (Server()->GetActivePlayerCount() < 4) {
+	if (Server()->GetActivePlayerCount() < 6) {
 		return;
 	}
 
