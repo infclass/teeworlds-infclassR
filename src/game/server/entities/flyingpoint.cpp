@@ -50,3 +50,8 @@ void CFlyingPoint::Snap(int SnappingClient)
 		pObj->m_Type = WEAPON_HAMMER;
 	}
 }
+
+void CFlyingPoint::Reset()
+{
+	GameServer()->m_World.DestroyEntity(this);
+}
