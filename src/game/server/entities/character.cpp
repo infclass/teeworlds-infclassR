@@ -2971,8 +2971,13 @@ bool CCharacter::TakeDamage(vec2 Force, int Dmg, int From, int Weapon, int Mode)
 	m_DamageTakenTick = Server()->Tick();
 	m_InvisibleTick = Server()->Tick();
 
-	// do damage Hit sound
-	
+	// check for death
+	if(m_Health <= 0)
+	{
+		Die(From, Weapon);
+		return false;
+	}
+
 /* INFECTION MODIFICATION START ***************************************/
 	if(Mode == TAKEDAMAGEMODE_INFECTION)
 	{
@@ -2993,14 +2998,6 @@ bool CCharacter::TakeDamage(vec2 Force, int Dmg, int From, int Weapon, int Mode)
 		Server()->SendPackMsg(&Msg, MSGFLAG_VITAL, -1);
 	}
 /* INFECTION MODIFICATION END *****************************************/
-
-	// check for death
-	if(m_Health <= 0)
-	{
-		Die(From, Weapon);
-
-		return false;
-	}
 
 	if (Dmg > 2)
 		GameServer()->CreateSound(m_Pos, SOUND_PLAYER_PAIN_LONG);
