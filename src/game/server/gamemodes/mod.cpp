@@ -688,18 +688,7 @@ int CGameControllerMOD::OnCharacterDeath(class CCharacter *pVictim, class CPlaye
 	if(!pKiller || Weapon == WEAPON_GAME)
 		return 0;
 		
-	if(pKiller->IsZombie())
-	{
-		CPlayer* pVictimPlayer = pVictim->GetPlayer();
-		if(pVictimPlayer)
-		{
-			if(pVictim->IsHuman())
-			{
-				pVictimPlayer->Infect(pKiller);
-			}
-		}
-	}
-	else
+	if(pKiller->IsHuman())
 	{
 		if(pKiller == pVictim->GetPlayer())
 		{
