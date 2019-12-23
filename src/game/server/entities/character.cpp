@@ -100,6 +100,7 @@ m_pConsole(pConsole)
 	m_PoisonTick = 0;
 	m_HealTick = 0;
 	m_InfZoneTick = -1;
+	m_ProtectionTick = 0;
 	m_InAirTick = 0;
 	m_InWater = 0;
 	m_BonusTick = 0;
@@ -1754,7 +1755,10 @@ void CCharacter::Tick()
 					m_HealTick = Server()->Tick();
 					IncreaseHealth(1);
 				}
-				if (m_InfZoneTick < 0) m_InfZoneTick = Server()->Tick(); // Save Tick when zombie enters infection zone
+				if (m_InfZoneTick < 0) {
+					m_InfZoneTick = Server()->Tick(); // Save Tick when zombie enters infection zone
+					GrantSpawnProtection();
+				}
 			}
 			else
 			{
@@ -1814,6 +1818,25 @@ void CCharacter::Tick()
 	
 	if(m_SlipperyTick > 0)
 		--m_SlipperyTick;
+
+	if(m_ProtectionTick > 0) {
+		--m_ProtectionTick;
+
+		// Indicate time left being protected via armor
+		int maxProtectionTick = Server()->TickSpeed() * g_Config.m_InfSpawnProtectionTime;
+		float timeLeft = 10 * (m_ProtectionTick / (float)maxProtectionTick);
+		m_Armor = (int)timeLeft;
+	
+		// Player left spawn before protection ran out: remove all remaining armor
+		if(m_InfZoneTick == -1)
+		{
+			int maxProtectionTick = Server()->TickSpeed() * g_Config.m_InfSpawnProtectionTime;
+			float timeLeft = 10 * (m_ProtectionTick / (float)maxProtectionTick);
+			IncreaseArmor(-(int)timeLeft);
+
+			m_ProtectionTick = 0;
+		}
+	}
 	
 	if(m_Poison > 0)
 	{
@@ -2868,6 +2891,11 @@ bool CCharacter::TakeDamage(vec2 Force, int Dmg, int From, int Weapon, int Mode)
 		Dmg = DamageAccepted;
 	}
 
+	if(m_ProtectionTick > 0)
+	{
+		Dmg = 0;
+	}
+
 	if(From != m_pPlayer->GetCID() && pKillerPlayer)
 	{
 		if(IsZombie())
@@ -3888,6 +3916,14 @@ void CCharacter::SlipperyEffect()
 {
 	if(m_SlipperyTick <= 0)
 		m_SlipperyTick = Server()->TickSpeed()/2;
+}
+
+void CCharacter::GrantSpawnProtection()
+{
+	IncreaseArmor(10); // Use Armor as time left indicator that ticks down
+
+	if(m_ProtectionTick <= 0)
+		m_ProtectionTick = Server()->TickSpeed() * g_Config.m_InfSpawnProtectionTime;
 }
 
 void CCharacter::Freeze(float Time, int Player, int Reason)
