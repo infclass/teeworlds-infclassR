@@ -2803,7 +2803,7 @@ void CCharacter::Die(int Killer, int Weapon)
 	}
 	else
 	{
-		m_pPlayer->StartInfection(false);
+		m_pPlayer->Infect(pKillerPlayer);
 	}	
 	if (m_Core.m_Passenger) {
 		m_Core.m_Passenger->m_IsPassenger = false; // InfClassR taxi mode
