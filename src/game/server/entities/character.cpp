@@ -2776,6 +2776,12 @@ void CCharacter::Die(int Killer, int Weapon)
 	GameServer()->CreateDeath(m_Pos, m_pPlayer->GetCID());
 
 /* INFECTION MODIFICATION START ***************************************/
+	CPlayer* pKillerPlayer = nullptr;
+	if(Killer >=0 && Killer < MAX_CLIENTS)
+	{
+		pKillerPlayer = GameServer()->m_apPlayers[Killer];
+	}
+
 	if(GetClass() == PLAYERCLASS_BOOMER && !IsFrozen() && Weapon != WEAPON_GAME && !(IsInLove() && Weapon == WEAPON_SELF) )
 	{
 		GameServer()->CreateSound(m_Pos, SOUND_GRENADE_EXPLODE);
@@ -2797,7 +2803,7 @@ void CCharacter::Die(int Killer, int Weapon)
 	}
 	else
 	{
-		m_pPlayer->StartInfection(false);
+		m_pPlayer->Infect(pKillerPlayer);
 	}	
 	if (m_Core.m_Passenger) {
 		m_Core.m_Passenger->m_IsPassenger = false; // InfClassR taxi mode
@@ -2805,12 +2811,6 @@ void CCharacter::Die(int Killer, int Weapon)
 		m_Core.m_Passenger = nullptr;
 	}
 /* INFECTION MODIFICATION END *****************************************/
-
-	CPlayer* pKillerPlayer = nullptr;
-	if(Killer >=0 && Killer < MAX_CLIENTS)
-	{
-		pKillerPlayer = GameServer()->m_apPlayers[Killer];
-	}
 
 	if(pKillerPlayer && (pKillerPlayer != m_pPlayer))
 	{
