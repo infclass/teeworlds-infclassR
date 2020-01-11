@@ -476,7 +476,11 @@ void CGameControllerMOD::Tick()
 							Iter.Player()->GetCharacter()->IncreaseArmor(10);
 					}
 					else
+					{
 						Iter.Player()->StartInfection();
+						NumInfected++;
+						NumHumans--;
+					}
 				}
 			}
 			
