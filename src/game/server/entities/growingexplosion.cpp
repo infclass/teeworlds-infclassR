@@ -5,6 +5,8 @@
 
 #include <game/server/gamecontext.h>
 
+#include "portal.h"
+
 CGrowingExplosion::CGrowingExplosion(CGameWorld *pGameWorld, vec2 Pos, vec2 Dir, int Owner, int Radius, int ExplosionEffect)
 		: CEntity(pGameWorld, CGameWorld::ENTTYPE_GROWINGEXPLOSION),
 		m_pGrowingMap(NULL),
@@ -113,6 +115,20 @@ void CGrowingExplosion::Reset()
 int CGrowingExplosion::GetOwner() const
 {
 	return m_Owner;
+}
+
+void CGrowingExplosion::DamagePortals()
+{
+	const int tick = Server()->Tick();
+	for(CPortal* pPortal = (CPortal*) GameWorld()->FindFirst(CGameWorld::ENTTYPE_PORTAL); pPortal; pPortal = (CPortal*) pPortal->TypeNext())
+	{
+		const float d = distance(m_SeedPos, pPortal->m_Pos);
+		if(d > (pPortal->m_ProximityRadius + m_MaxGrowing))
+			continue;
+
+		int Damage = 5+20*((float)(m_MaxGrowing - min(tick - m_StartTick, (int)m_MaxGrowing)))/(m_MaxGrowing);
+		pPortal->TakeDamage(Damage, m_Owner, WEAPON_HAMMER, TAKEDAMAGEMODE_NOINFECTION);
+	}
 }
 
 void CGrowingExplosion::Tick()
@@ -311,6 +327,16 @@ void CGrowingExplosion::Tick()
 				}
 			}
 		}
+	}
+
+	switch(m_ExplosionEffect)
+	{
+		case GROWINGEXPLOSIONEFFECT_ELECTRIC_INFECTED:
+		case GROWINGEXPLOSIONEFFECT_BOOM_INFECTED:
+			DamagePortals();
+			break;
+		default:
+			break;
 	}
 	
 	// clean slug slime

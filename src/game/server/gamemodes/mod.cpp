@@ -578,6 +578,33 @@ bool CGameControllerMOD::IsInfectionStarted()
 	return (m_RoundStartTick + Server()->TickSpeed()*10 <= Server()->Tick());
 }
 
+bool CGameControllerMOD::PortalsAvailableForCharacter(class CCharacter *pCharacter)
+{
+	if (!g_Config.m_InfEnableWitchPortals)
+		return false;
+
+	if (GameServer()->m_FunRound)
+		return false;
+
+	if (pCharacter->GetClass() != PLAYERCLASS_WITCH)
+		return false;
+
+	CPlayerIterator<PLAYERITER_INGAME> Iter(GameServer()->m_apPlayers);
+	while(Iter.Next())
+	{
+		if (!Iter.Player()->GetCharacter())
+			continue;
+
+		if (Iter.Player()->GetCharacter() == pCharacter)
+			continue;
+
+		if (Iter.Player()->GetCharacter()->CanOpenPortals())
+			return false;
+	}
+
+	return true;
+}
+
 void CGameControllerMOD::Snap(int SnappingClient)
 {
 	CNetObj_GameInfo *pGameInfoObj = (CNetObj_GameInfo *)Server()->SnapNewItem(NETOBJTYPE_GAMEINFO, 0, sizeof(CNetObj_GameInfo));
@@ -787,6 +814,15 @@ void CGameControllerMOD::DoWincheck()
 	int NumFirstInfected = 0;
 	GetPlayerCounter(-1, NumHumans, NumInfected, NumFirstInfected);
 
+	static const char *ClassicRound = "classic";
+	static const char *WitchPortalsRound = "witch_portals";
+	const char *RoundType = ClassicRound;
+
+	if (g_Config.m_InfEnableWitchPortals)
+	{
+		RoundType = WitchPortalsRound;
+	}
+
 	//Win check
 	const int Seconds = (Server()->Tick()-m_RoundStartTick)/((float)Server()->TickSpeed());
 	if(m_InfectedStarted && NumHumans == 0 && NumInfected > 1)
@@ -795,7 +831,7 @@ void CGameControllerMOD::DoWincheck()
 		GameServer()->SendChatTarget_Localization(-1, CHATCATEGORY_INFECTED, _("Infected won the round in {sec:RoundDuration}"), "RoundDuration", &Seconds, NULL);
 
 		char aBuf[512];
-		str_format(aBuf, sizeof(aBuf), "round_end winner='zombies' survivors='0' duration='%d' round='%d of %d'", Seconds, m_RoundCount+1, g_Config.m_SvRoundsPerMap);
+		str_format(aBuf, sizeof(aBuf), "round_end winner='zombies' survivors='0' duration='%d' round='%d of %d' type='%s'", Seconds, m_RoundCount+1, g_Config.m_SvRoundsPerMap, RoundType);
 		GameServer()->Console()->Print(IConsole::OUTPUT_LEVEL_DEBUG, "game", aBuf);
 
 		EndRound();
@@ -886,8 +922,9 @@ void CGameControllerMOD::DoWincheck()
 				GameServer()->SendChatTarget_Localization_P(-1, CHATCATEGORY_HUMANS, NumHumans, _P("One human won the round", "{int:NumHumans} humans won the round"), "NumHumans", &NumHumans, NULL);
 
 				char aBuf[512];
-				str_format(aBuf, sizeof(aBuf), "round_end winner='humans' survivors='%d' duration='%d' round='%d of %d'", NumHumans, Seconds, m_RoundCount+1, g_Config.m_SvRoundsPerMap);
+				str_format(aBuf, sizeof(aBuf), "round_end winner='humans' survivors='%d' duration='%d' round='%d of %d' type='%s'", NumHumans, Seconds, m_RoundCount+1, g_Config.m_SvRoundsPerMap, RoundType);
 				GameServer()->Console()->Print(IConsole::OUTPUT_LEVEL_DEBUG, "game", aBuf);
+
 					CPlayerIterator<PLAYERITER_INGAME> Iter(GameServer()->m_apPlayers);
 				while(Iter.Next())
 				{
@@ -972,6 +1009,7 @@ bool CGameControllerMOD::PreSpawn(CPlayer* pPlayer, vec2 *pOutPos)
 			if(Iter.Player()->GetCID() == pPlayer->GetCID()) continue;
 			if(Iter.Player()->GetClass() != PLAYERCLASS_WITCH) continue;
 			if(!Iter.Player()->GetCharacter()) continue;
+			if (Iter.Player()->GetCharacter()->HasPortal()) continue;
 			
 			vec2 SpawnPos;
 			if(Iter.Player()->GetCharacter()->FindWitchSpawnPosition(SpawnPos))

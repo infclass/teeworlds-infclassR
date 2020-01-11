@@ -23,6 +23,9 @@ int CRoundStatistics::CPlayer::OnScoreEvent(int EventType, int Class)
 		case SCOREEVENT_KILL_WITCH:
 			Points = 50;
 			break;
+		case SCOREEVENT_DESTROY_PORTAL:
+			Points = 10;
+			break;
 		case SCOREEVENT_HELP_FREEZE:
 			Points = 10;
 			break;
@@ -37,6 +40,9 @@ int CRoundStatistics::CPlayer::OnScoreEvent(int EventType, int Class)
 			break;
 		case SCOREEVENT_HERO_FLAG:
 			Points = 10;
+			break;
+		case SCOREEVENT_PORTAL_USED:
+			Points = 5;
 			break;
 		case SCOREEVENT_BONUS:
 			Points = 50;

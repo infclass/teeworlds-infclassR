@@ -3,32 +3,18 @@
 #ifndef GAME_SERVER_ENTITIES_SCILASER_H
 #define GAME_SERVER_ENTITIES_SCILASER_H
 
-#include <game/server/entity.h>
+#include "laser.h"
 
-class CScientistLaser : public CEntity
+class CScientistLaser : public CLaser
 {
 public:
 	CScientistLaser(CGameWorld *pGameWorld, vec2 Pos, vec2 Direction, float StartEnergy, int Owner, int Dmg);
 
-	virtual void Reset();
-	virtual void Tick();
-	virtual void TickPaused();
-	virtual void Snap(int SnappingClient);
-	
 protected:
-	bool HitCharacter(vec2 From, vec2 To);
-	void DoBounce();
+	bool HitCharacter(vec2 From, vec2 To) override;
+	void DoBounce() override;
 	void CreateWhiteHole(vec2 CenterPos);
 
-private:
-	vec2 m_From;
-	vec2 m_Dir;
-	float m_Energy;
-	int m_Bounces;
-	int m_EvalTick;
-	int m_Owner;
-	int m_Dmg;
-	CCharacter *m_OwnerChar;
 };
 
 #endif

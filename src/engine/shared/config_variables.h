@@ -69,6 +69,7 @@ MACRO_CONFIG_INT(InfDefenderLimit, inf_defender_limit, 40, 0, 64, CFGFLAG_SERVER
 MACRO_CONFIG_INT(InfMedicLimit, inf_medic_limit, 20, 0, 64, CFGFLAG_SERVER, "Maximum number of medics in game")
 MACRO_CONFIG_INT(InfHeroLimit, inf_hero_limit, 10, 0, 64, CFGFLAG_SERVER, "Maximum number of heros in game")
 MACRO_CONFIG_INT(InfSupportLimit, inf_support_limit, 40, 0, 64, CFGFLAG_SERVER, "Maximum number of supports in game")
+MACRO_CONFIG_INT(InfWitchLimit, inf_witch_limit, 2, 0, 64, CFGFLAG_SERVER, "Maximum number of witches in game")
 MACRO_CONFIG_INT(InfSoldierBombs, inf_soldier_bombs, 3, 1, 16, CFGFLAG_SERVER, "Number of bombs for the soldier")
 MACRO_CONFIG_INT(InfMercBombs, inf_merc_bombs, 15, 1, 100, CFGFLAG_SERVER, "Number of poison grenades for the mercenary")
 MACRO_CONFIG_INT(InfMercLove, inf_merc_love, 1, 0, 1, CFGFLAG_SERVER, "Enables love bombs for the mercenary (hammer)")
@@ -123,6 +124,9 @@ MACRO_CONFIG_INT(InfEnableHero, inf_enable_hero, 1, 0, 1, CFGFLAG_SERVER, "Makes
 
 MACRO_CONFIG_INT(InfMinPlayersForEngineer, inf_min_players_for_engineer, 0, 0, 100, CFGFLAG_SERVER, "Minimum number of players that are needed to enable Engineer class")
 MACRO_CONFIG_INT(InfProbaSpawnNearWitch, inf_proba_spawn_near_witch, 66, 0, 100, CFGFLAG_SERVER, "Probability for an infected to spawn near a witch")
+MACRO_CONFIG_INT(InfMinPortalDistance, inf_min_portal_distance, 100, 0, 10000, CFGFLAG_SERVER, "Minimum distance between the portal in and outs")
+MACRO_CONFIG_INT(InfPortalConnectionTime, inf_portal_connection_time, 5, 0, 100, CFGFLAG_SERVER, "How long it will take for a portal to start working")
+MACRO_CONFIG_INT(InfEnableWitchPortals, inf_enable_witch_portals, 0, 0, 1, CFGFLAG_SERVER, "Enable witch to place portals instead of being a spawning point")
 
 MACRO_CONFIG_INT(InfHeroFlagIndicator, inf_hero_flag_indicator, 1, 0, 1, CFGFLAG_SERVER, "Shows the heros in which direction the next flag is")
 MACRO_CONFIG_INT(InfHeroFlagIndicatorTime, inf_hero_flag_indicator_time, 3, 0, 1000, CFGFLAG_SERVER, "How many seconds the hero has to stand still until the indicator is shown")

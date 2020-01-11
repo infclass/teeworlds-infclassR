@@ -154,6 +154,7 @@ public:
 	virtual void OnClientDrop(int ClientID, int Type) {};
 	virtual void OnPlayerInfected(CPlayer* pPlayer, CPlayer* pInfectiousPlayer) = 0;
 	virtual bool IsInfectionStarted() = 0;
+	virtual bool PortalsAvailableForCharacter(class CCharacter *pCharacter) = 0;
 	
 	void MaybeSendStatistics();
 	int GetRoundId() { return m_RoundId; }

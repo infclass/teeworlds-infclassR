@@ -10,6 +10,8 @@
 
 #include <game/gamecore.h>
 
+class CPortal;
+
 enum
 {
 	WEAPON_GAME = -3, // team switching etc
@@ -78,6 +80,12 @@ public:
 	void ResetInput();
 	void FireWeapon();
 	void CheckSuperWeaponAccess();
+	void PlacePortal();
+	CPortal *FindPortalInTarget();
+	void OnPortalDestroy(CPortal *pPortal);
+	bool ProcessCharacterOnPortal(CPortal *pPortal, CCharacter *pCharacter);
+	bool HasPortal();
+	bool CanOpenPortals() const;
 
 	bool CanDie() const;
 	void Die(int Killer, int Weapon);
@@ -207,6 +215,9 @@ private:
 	int m_VoodooWeapon;
 
 	CHeroFlag* m_pHeroFlag;
+	bool m_canOpenPortals = false;
+	CPortal *m_pPortalIn = nullptr;
+	CPortal *m_pPortalOut = nullptr;
 
 public:
 	int m_PositionLockTick;

@@ -582,6 +582,7 @@ int CServer::Init()
 	SetFireDelay(INFWEAPON_NINJA_GRENADE, GetFireDelay(INFWEAPON_GRENADE));
 	SetFireDelay(INFWEAPON_MERCENARY_GRENADE, GetFireDelay(INFWEAPON_GRENADE));
 	SetFireDelay(INFWEAPON_MERCENARY_GUN, 50);
+	SetFireDelay(INFWEAPON_WITCH_PORTAL_RIFLE, GetFireDelay(INFWEAPON_RIFLE));
 	
 	SetAmmoRegenTime(INFWEAPON_NONE, 0);
 	SetAmmoRegenTime(INFWEAPON_HAMMER, 0);
@@ -610,6 +611,7 @@ int CServer::Init()
 	SetAmmoRegenTime(INFWEAPON_BIOLOGIST_SHOTGUN, 675);
 	SetAmmoRegenTime(INFWEAPON_LOOPER_RIFLE, 500);
 	SetAmmoRegenTime(INFWEAPON_LOOPER_GRENADE, 5000);
+	SetAmmoRegenTime(INFWEAPON_WITCH_PORTAL_RIFLE, 5000);
 	
 	SetMaxAmmo(INFWEAPON_NONE, -1);
 	SetMaxAmmo(INFWEAPON_HAMMER, -1);
@@ -637,6 +639,7 @@ int CServer::Init()
 	SetMaxAmmo(INFWEAPON_BIOLOGIST_SHOTGUN, 10);
 	SetMaxAmmo(INFWEAPON_LOOPER_RIFLE, 20);
 	SetMaxAmmo(INFWEAPON_LOOPER_GRENADE, 10);
+	SetMaxAmmo(INFWEAPON_WITCH_PORTAL_RIFLE, 2);
 	
 	SetClassAvailability(PLAYERCLASS_ENGINEER, 2);
 	SetClassAvailability(PLAYERCLASS_SOLDIER, 2);
@@ -3106,6 +3109,8 @@ int CServer::GetClassPlayerLimit(int PlayerClass) const
 			return g_Config.m_InfMedicLimit;
 		case PLAYERCLASS_HERO:
 			return g_Config.m_InfHeroLimit;
+		case PLAYERCLASS_WITCH:
+			return g_Config.m_InfWitchLimit;
 		default:
 			return g_Config.m_SvMaxClients;
 	}

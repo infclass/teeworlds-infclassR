@@ -16,6 +16,8 @@
 #include "gamemodes/mod.h"
 #include <algorithm>
 
+#include "entities/portal.h"
+
 enum
 {
 	RESET,
@@ -319,6 +321,18 @@ void CGameContext::CreateExplosion(vec2 Pos, int Owner, int Weapon, bool NoDamag
 			float Dmg = 6 * l;
 			if((int)Dmg)
 				apEnts[i]->TakeDamage(ForceDir*Dmg*2, (int)Dmg, Owner, Weapon, TakeDamageMode);
+		}
+
+		for(CPortal* pPortal = (CPortal*) m_World.FindFirst(CGameWorld::ENTTYPE_PORTAL); pPortal; pPortal = (CPortal*) pPortal->TypeNext())
+		{
+			const float d = distance(Pos, pPortal->m_Pos);
+			if(d > (pPortal->m_ProximityRadius + Radius))
+				continue;
+
+			const float l = 1-clamp((d-InnerRadius)/(Radius-InnerRadius), 0.0f, 1.0f);
+			int Damage = 6 * l;
+			if(Damage)
+				pPortal->TakeDamage(Damage, Owner, Weapon, TakeDamageMode);
 		}
 	}
 }
@@ -3841,12 +3855,37 @@ bool CGameContext::ConHelp(IConsole::IResult *pResult, void *pUserData)
 			Buffer.append("\n\n");
 			pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("The Witch can infect humans and heal infected with the hammer."), NULL);
 			Buffer.append("\n\n");
-			pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("When an infected dies, it may re-spawn near witch."), NULL);
+			if (g_Config.m_InfEnableWitchPortals)
+				pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("Additionally a witch can place portals with the laser rifle. Further information on /help portals"), NULL);
+			else
+				pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("When an infected dies, it may re-spawn near witch."), NULL);
 			Buffer.append("\n\n");
 			pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("If the Witch dies, it disappears and is replaced by another class of infected."), NULL);
 			Buffer.append("\n\n");
 			pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("It can also inflict 1 damage point per second by hooking humans."), NULL);
 			
+			pSelf->SendMOTD(ClientID, Buffer.buffer());
+		}
+		else if(str_comp_nocase(pHelpPage, "portals") == 0)
+		{
+			Buffer.append("~~ ");
+			pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("How to use witch portals"), NULL);
+			Buffer.append(" ~~\n\n");
+			pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("A witch can build a pair of portals to let other infected get from spawn right to the battle."), NULL);
+			Buffer.append("\n\n");
+			pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("Use Rifle to place or \"take\" a portal. The first portal is always Enterance and the last one is always Exit."), NULL);
+			pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("Use Rifle to replace Exit if both portals already opened."), NULL);
+			Buffer.append("\n\n");
+			pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("Once both portals are in place, they need extra {sec:ConnectionTime} to become operational."), "ConnectionTime", &g_Config.m_InfPortalConnectionTime, NULL);
+
+			pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("The portals destroyed when the witch die."), NULL);
+			pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("Only one witch on a map can open a portal."), NULL);
+
+			if (g_Config.m_InfEnableWitchPortals)
+				pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("Portals are currently ENABLED."), NULL);
+			else
+				pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("Portals are currently DISABLED."), NULL);
+
 			pSelf->SendMOTD(ClientID, Buffer.buffer());
 		}
 		else if(str_comp_nocase(pHelpPage, "msg") == 0)
@@ -3909,7 +3948,7 @@ bool CGameContext::ConHelp(IConsole::IResult *pResult, void *pUserData)
 		pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "help", Buffer.buffer());
 		
 		pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "help", "engineer, soldier, scientist, medic, hero, ninja, mercenary, sniper, whitehole");		
-		pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "help", "smoker, hunter, bat, boomer, ghost, spider, ghoul, voodoo, undead, witch.");		
+		pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "help", "smoker, hunter, bat, boomer, ghost, spider, ghoul, voodoo, undead, witch, portals.");
 	}
 	
 	return true;
@@ -4063,14 +4102,13 @@ bool CGameContext::ConWitch(IConsole::IResult *pResult, void *pUserData)
 	int callers_count = pSelf->m_WitchCallers.size();
 	const int REQUIRED_CALLERS_COUNT = 5;
 	const int MIN_ZOMBIES = 2;
-	const int MAX_WITCHES = 2;
 
 	char aBuf[256];
 	str_format(aBuf, sizeof(aBuf), "ConWitch() called");
 	pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_DEBUG, "conwitch", aBuf);
 
-	if (pSelf->GetZombieCount(PLAYERCLASS_WITCH) >= MAX_WITCHES) {
-		str_format(aBuf, sizeof(aBuf), "All witches are already here", MAX_WITCHES);
+	if (pSelf->GetZombieCount(PLAYERCLASS_WITCH) >= pSelf->Server()->GetClassPlayerLimit(PLAYERCLASS_WITCH)) {
+		str_format(aBuf, sizeof(aBuf), "All witches are already here");
 		pSelf->SendChatTarget(ClientID, aBuf);
 		return true;
 	}

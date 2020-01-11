@@ -6,6 +6,7 @@
 #include <game/server/gamecontext.h>
 #include <game/server/entities/growingexplosion.h>
 #include "projectile.h"
+#include "portal.h"
 
 CProjectile::CProjectile(CGameWorld *pGameWorld, int Type, int Owner, vec2 Pos, vec2 Dir, int Span,
 		int Damage, bool Explosive, float Force, int SoundImpact, int Weapon, int TakeDamageMode)
@@ -76,13 +77,27 @@ void CProjectile::Tick()
 	vec2 PrevPos = GetPos(Pt);
 	vec2 CurPos = GetPos(Ct);
 	int Collide = GameServer()->Collision()->IntersectLine(PrevPos, CurPos, &CurPos, 0);
+	const float ProjectileRadius = 6.0f;
 	CCharacter *OwnerChar = GameServer()->GetPlayerChar(m_Owner);
-	CCharacter *TargetChr = GameServer()->m_World.IntersectCharacter(PrevPos, CurPos, 6.0f, CurPos, OwnerChar);
+	CCharacter *TargetChr = GameServer()->m_World.IntersectCharacter(PrevPos, CurPos, ProjectileRadius, CurPos, OwnerChar);
+	vec2 WitchPortalAt;
+	CEntity *TargetWitchPortal = GameServer()->m_World.IntersectEntity(PrevPos, CurPos, ProjectileRadius, &WitchPortalAt, CGameWorld::ENTTYPE_PORTAL);
+	if (TargetChr && TargetWitchPortal)
+	{
+		if (distance(PrevPos, TargetWitchPortal->m_Pos) < distance(PrevPos, TargetChr->m_Pos))
+		{
+			TargetChr = nullptr;
+		}
+		else
+		{
+			TargetWitchPortal = nullptr;
+		}
+	}
 
 	m_LifeSpan--;
-
+	
 /* INFECTION MODIFICATION START ***************************************/
-	if(TargetChr || Collide || m_LifeSpan < 0 || GameLayerClipped(CurPos))
+	if(TargetWitchPortal || TargetChr || Collide || m_LifeSpan < 0 || GameLayerClipped(CurPos))
 	{
 		if(m_LifeSpan >= 0 || (m_Weapon == WEAPON_GRENADE && !m_IsPortal))
 			GameServer()->CreateSound(CurPos, m_SoundImpact);
@@ -144,6 +159,11 @@ void CProjectile::Tick()
 					TargetChr->TakeDamage(m_Direction * max(0.001f, m_Force), m_Damage, m_Owner, m_Weapon, m_TakeDamageMode);
 				}
 			}
+		}
+		else if (TargetWitchPortal)
+		{
+			CPortal *Portal = static_cast<CPortal*>(TargetWitchPortal);
+			Portal->TakeDamage(m_Damage, m_Owner, m_Weapon, m_TakeDamageMode);
 		}
 
 		GameServer()->m_World.DestroyEntity(this);

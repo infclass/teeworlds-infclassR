@@ -34,6 +34,7 @@
 #include "white-hole.h"
 #include "superweapon-indicator.h"
 #include "laser-teleport.h"
+#include "portal.h"
 
 //input count
 struct CInputCount
@@ -400,6 +401,16 @@ void CCharacter::HandleNinja()
 
 				aEnts[i]->TakeDamage(vec2(0, -10.0f), min(g_pData->m_Weapons.m_Ninja.m_pBase->m_Damage + m_NinjaStrengthBuff, 20), m_pPlayer->GetCID(), WEAPON_NINJA, TAKEDAMAGEMODE_NOINFECTION);
 			}
+
+			const int Damage = min(g_pData->m_Weapons.m_Ninja.m_pBase->m_Damage + m_NinjaStrengthBuff, 20);
+			for(CPortal* pPortal = (CPortal*) GameServer()->m_World.FindFirst(CGameWorld::ENTTYPE_PORTAL); pPortal; pPortal = (CPortal*) pPortal->TypeNext())
+			{
+				// check so we are sufficiently close
+				if (distance(pPortal->m_Pos, m_Pos) > (m_ProximityRadius * 2.0f))
+					continue;
+
+				pPortal->TakeDamage(Damage, m_pPlayer->GetCID(), WEAPON_NINJA, TAKEDAMAGEMODE_NOINFECTION);
+			}
 		}
 	}
 }
@@ -626,6 +637,11 @@ void CCharacter::FireWeapon()
 	if(!WillFire || m_pPlayer->MapMenu() > 0)
 		return;
 
+	if (GetInfWeaponID(m_ActiveWeapon) == INFWEAPON_WITCH_PORTAL_RIFLE && FindPortalInTarget())
+	{
+		// Give the ammo in advance for portal taking
+		GiveWeapon(m_ActiveWeapon, m_aWeapons[m_ActiveWeapon].m_Ammo + 1);
+	}
 	// check for ammo
 	if(!m_aWeapons[m_ActiveWeapon].m_Ammo && (GetInfWeaponID(m_ActiveWeapon) != INFWEAPON_MERCENARY_GRENADE)
 										  && (GetInfWeaponID(m_ActiveWeapon) != INFWEAPON_MEDIC_GRENADE))
@@ -988,6 +1004,21 @@ void CCharacter::FireWeapon()
 	/* INFECTION MODIFICATION END *****************************************/
 						Hits++;
 					}
+
+					for(CPortal* pPortal = (CPortal*) GameWorld()->FindFirst(CGameWorld::ENTTYPE_PORTAL); pPortal; pPortal = (CPortal*) pPortal->TypeNext())
+					{
+						if(m_pPlayer->IsZombie())
+							continue;
+
+						if(pPortal->GetOwner() == m_pPlayer->GetCID())
+							continue;
+
+						if(distance(m_Pos, pPortal->m_Pos) > (pPortal->m_ProximityRadius + m_ProximityRadius*0.5f))
+							continue;
+
+						pPortal->TakeDamage(g_pData->m_Weapons.m_Hammer.m_pBase->m_Damage, m_pPlayer->GetCID(), m_ActiveWeapon, TAKEDAMAGEMODE_NOINFECTION);
+						Hits++;
+					}
 				}
 				
 				// if we Hit anything, we have to wait for the reload
@@ -1328,6 +1359,14 @@ void CCharacter::FireWeapon()
 				else
 					return;
 			}
+			else if(CanOpenPortals())
+			{
+				if(!IsFrozen() && !IsInLove())
+				{
+					PlacePortal();
+					m_ReloadTimer = Server()->TickSpeed() / 4;
+				}
+			}
 			else
 			{
 				int Damage = GameServer()->Tuning()->m_LaserDamage;
@@ -1422,6 +1461,159 @@ void CCharacter::CheckSuperWeaponAccess()
 			} 
 		}
 	}
+}
+
+void CCharacter::PlacePortal()
+{
+	vec2 TargetPos = m_Pos;
+
+	if (GetClass() == PLAYERCLASS_WITCH)
+	{
+		if(!FindWitchSpawnPosition(TargetPos))
+		{
+			// Witch can't place the portal here
+			return;
+		}
+	}
+
+	CPortal *PortalToTake = FindPortalInTarget();
+	if (PortalToTake)
+	{
+		PortalToTake->Disconnect();
+		GameServer()->m_World.DestroyEntity(PortalToTake);
+
+		if (PortalToTake == m_pPortalIn)
+			m_pPortalIn = nullptr;
+		if (PortalToTake == m_pPortalOut)
+			m_pPortalOut = nullptr;
+
+		GiveWeapon(WEAPON_RIFLE, m_aWeapons[WEAPON_RIFLE].m_Ammo + 1);
+		return;
+	}
+
+	// Place new portal
+	int OwnerCID = GetPlayer() ? GetPlayer()->GetCID() : -1;
+	CPortal *existingPortal = m_pPortalIn ? m_pPortalIn : m_pPortalOut;
+	if(existingPortal && distance(existingPortal->m_Pos, TargetPos) < g_Config.m_InfMinPortalDistance)
+	{
+		char aBuf[256];
+		str_format(aBuf, sizeof(aBuf), "Unable to place portals that close to each other");
+		GameServer()->SendChatTarget(OwnerCID, aBuf);
+		return;
+	}
+
+	if (TargetPos.y < -20)
+	{
+		char aBuf[256];
+		str_format(aBuf, sizeof(aBuf), "Unable to open a portal at this height");
+		GameServer()->SendChatTarget(OwnerCID, aBuf);
+		return;
+	}
+
+	if(m_pPortalIn && m_pPortalOut)
+	{
+		m_pPortalOut->Disconnect();
+		GameServer()->m_World.DestroyEntity(m_pPortalOut);
+		m_pPortalOut = nullptr;
+	}
+
+	if (m_pPortalIn)
+	{
+		m_pPortalOut = new CPortal(GameWorld(), TargetPos, OwnerCID, CPortal::PortalType::Out);
+		m_pPortalOut->ConnectPortal(m_pPortalIn);
+		GameServer()->CreateSound(m_pPortalOut->m_Pos, m_pPortalOut->GetNewEntitySound());
+	}
+	else
+	{
+		m_pPortalIn = new CPortal(GameWorld(), TargetPos, OwnerCID, CPortal::PortalType::In);
+		m_pPortalIn->ConnectPortal(m_pPortalOut);
+		GameServer()->CreateSound(m_pPortalIn->m_Pos, m_pPortalIn->GetNewEntitySound());
+	}
+}
+
+CPortal *CCharacter::FindPortalInTarget()
+{
+	vec2 TargetPos = m_Pos;
+
+	if (GetClass() == PLAYERCLASS_WITCH)
+	{
+		if(!FindWitchSpawnPosition(TargetPos))
+		{
+			// Witch can't place the portal here
+			return nullptr;
+		}
+	}
+
+	// Check if unmount wanted
+	const int displacementExtraDistance = 20;
+	if(m_pPortalIn && (distance(m_pPortalIn->m_Pos, TargetPos) < m_ProximityRadius + m_pPortalIn->GetRadius() + displacementExtraDistance))
+	{
+		return m_pPortalIn;
+	}
+
+	if(m_pPortalOut && (distance(m_pPortalOut->m_Pos, TargetPos) < m_ProximityRadius + m_pPortalOut->GetRadius() + displacementExtraDistance))
+	{
+		return m_pPortalOut;
+	}
+
+	return nullptr;
+}
+
+void CCharacter::OnPortalDestroy(CPortal *pPortal)
+{
+	if (!pPortal)
+		return;
+
+	if (m_pPortalIn == pPortal)
+	{
+		m_pPortalIn->Disconnect();
+		m_pPortalIn = nullptr;
+	}
+	else if (m_pPortalOut == pPortal)
+	{
+		m_pPortalOut->Disconnect();
+		m_pPortalOut = nullptr;
+	}
+}
+
+bool CCharacter::ProcessCharacterOnPortal(CPortal *pPortal, CCharacter *pCharacter)
+{
+	switch (GetClass())
+	{
+		case PLAYERCLASS_WITCH:
+			if (pPortal->GetPortalType() != CPortal::PortalType::In)
+				return false;
+
+			if(!pCharacter->IsZombie())
+				return false;
+
+			if (pCharacter == this)
+				return false;
+
+			break;
+
+		default:
+			return false;
+	}
+
+	// The idea here is to have a point to catch all allowed teleportations
+	SetEmote(EMOTE_HAPPY, Server()->Tick() + Server()->TickSpeed());
+	GameServer()->SendEmoticon(GetPlayer()->GetCID(), EMOTICON_MUSIC);
+
+	Server()->RoundStatistics()->OnScoreEvent(m_pPlayer->GetCID(), SCOREEVENT_PORTAL_USED, GetClass(), Server()->ClientName(m_pPlayer->GetCID()), Console());
+	GameServer()->SendScoreSound(m_pPlayer->GetCID());
+
+	return true;
+}
+
+bool CCharacter::HasPortal()
+{
+	return m_pPortalIn || m_pPortalOut;
+}
+
+bool CCharacter::CanOpenPortals() const
+{
+	return m_canOpenPortals;
 }
 
 bool CCharacter::CanDie() const
@@ -2465,6 +2657,30 @@ void CCharacter::Tick()
 			);
 		}
 	}
+	else if(GetClass() == PLAYERCLASS_WITCH)
+	{
+		if (m_pPortalIn && m_pPortalOut)
+		{
+			GameServer()->SendBroadcast(GetPlayer()->GetCID(),
+				"The portals system is active!",
+				BROADCAST_PRIORITY_WEAPONSTATE, BROADCAST_DURATION_REALTIME
+			);
+		}
+		else if (m_pPortalIn)
+		{
+			GameServer()->SendBroadcast(GetPlayer()->GetCID(),
+				"The IN portal is open",
+				BROADCAST_PRIORITY_WEAPONSTATE, BROADCAST_DURATION_REALTIME
+			);
+		}
+		else if (m_pPortalOut)
+		{
+			GameServer()->SendBroadcast(GetPlayer()->GetCID(),
+				"The OUT portal is open",
+				BROADCAST_PRIORITY_WEAPONSTATE, BROADCAST_DURATION_REALTIME
+			);
+		}
+	}
 /* INFECTION MODIFICATION END *****************************************/
 
 	// Previnput
@@ -3149,7 +3365,7 @@ void CCharacter::Snap(int SnappingClient)
 				pObj->m_Type = WEAPON_HAMMER;
 			}
 		}
-		else if(GetClass() == PLAYERCLASS_WITCH)
+		else if((GetClass() == PLAYERCLASS_WITCH) && ((m_ActiveWeapon == WEAPON_RIFLE) || ((m_ActiveWeapon == WEAPON_HAMMER) && !HasPortal())))
 		{
 			vec2 SpawnPos;
 			if(FindWitchSpawnPosition(SpawnPos))
@@ -3505,6 +3721,9 @@ void CCharacter::ClassSpawnAttributes()
 		case PLAYERCLASS_WITCH:
 			m_aWeapons[WEAPON_HAMMER].m_Got = true;
 			GiveWeapon(WEAPON_HAMMER, -1);
+			m_canOpenPortals = GameServer()->m_pController->PortalsAvailableForCharacter(this);
+			if (CanOpenPortals())
+				GiveWeapon(WEAPON_RIFLE, -1);
 			m_ActiveWeapon = WEAPON_HAMMER;
 			
 			break;
@@ -3606,6 +3825,12 @@ void CCharacter::DestroyChildEntities()
 	{
 		if(pFlag->GetOwner() != m_pPlayer->GetCID()) continue;
 		GameServer()->m_World.DestroyEntity(pFlag);
+	}
+
+	for(CPortal* pPortal = (CPortal*) GameWorld()->FindFirst(CGameWorld::ENTTYPE_PORTAL); pPortal; pPortal = (CPortal*) pPortal->TypeNext())
+	{
+		if(pPortal->GetOwner() != m_pPlayer->GetCID()) continue;
+		GameServer()->m_World.DestroyEntity(pPortal);
 	}
 			
 	m_FirstShot = true;
@@ -3795,6 +4020,8 @@ int CCharacter::GetInfWeaponID(int WID)
 				return INFWEAPON_BIOLOGIST_RIFLE;
 			case PLAYERCLASS_MEDIC:
 				return INFWEAPON_MEDIC_RIFLE;
+			case PLAYERCLASS_WITCH:
+				return INFWEAPON_WITCH_PORTAL_RIFLE;
 			default:
 				return INFWEAPON_RIFLE;
 		}
