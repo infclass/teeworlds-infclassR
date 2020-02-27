@@ -504,10 +504,19 @@ void CGameContext::SendChatTarget_Localization(int To, int Category, const char*
 					Buffer.append("☹ | ");
 					break;
 			}
+			if(To < 0 && i == 0)
+			{
+				// one message for record
+				dynamic_string tmpBuf;
+				tmpBuf.copy(Buffer);
+				Server()->Localization()->Format_VL(tmpBuf, "en", pText, VarArgs);
+				Msg.m_pMessage = tmpBuf.buffer();
+				Server()->SendPackMsg(&Msg, MSGFLAG_VITAL|MSGFLAG_NOSEND, -1);
+			}
 			Server()->Localization()->Format_VL(Buffer, m_apPlayers[i]->GetLanguage(), pText, VarArgs);
 			
 			Msg.m_pMessage = Buffer.buffer();
-			Server()->SendPackMsg(&Msg, MSGFLAG_VITAL, i);
+			Server()->SendPackMsg(&Msg, MSGFLAG_VITAL|MSGFLAG_NORECORD, i);
 		}
 	}
 	
@@ -630,6 +639,14 @@ void CGameContext::SendBroadcast(int To, const char *pText, int Priority, int Li
 	int Start = (To < 0 ? 0 : To);
 	int End = (To < 0 ? MAX_CLIENTS : To+1);
 	
+	// only for server demo record
+	if(To < 0)
+	{
+		CNetMsg_Sv_Broadcast Msg;
+		Msg.m_pMessage = pText;
+		Server()->SendPackMsg(&Msg, MSGFLAG_VITAL|MSGFLAG_NOSEND, -1);
+	}
+
 	for(int i = Start; i < End; i++)
 	{
 		if(m_apPlayers[i])
@@ -652,6 +669,15 @@ void CGameContext::SendBroadcast_Localization(int To, int Priority, int LifeSpan
 	va_list VarArgs;
 	va_start(VarArgs, pText);
 	
+	// only for server demo record
+	if(To < 0)
+	{
+		CNetMsg_Sv_Broadcast Msg;
+		Server()->Localization()->Format_VL(Buffer, "en", pText, VarArgs);
+		Msg.m_pMessage = Buffer.buffer();
+		Server()->SendPackMsg(&Msg, MSGFLAG_VITAL|MSGFLAG_NOSEND, -1);
+	}
+
 	for(int i = Start; i < End; i++)
 	{
 		if(m_apPlayers[i])
@@ -1082,7 +1108,7 @@ void CGameContext::OnTick()
 			{
 				CNetMsg_Sv_Broadcast Msg;
 				Msg.m_pMessage = m_BroadcastStates[i].m_NextMessage;
-				Server()->SendPackMsg(&Msg, MSGFLAG_VITAL, i);
+				Server()->SendPackMsg(&Msg, MSGFLAG_VITAL|MSGFLAG_NORECORD, i);
 				
 				str_copy(m_BroadcastStates[i].m_PrevMessage, m_BroadcastStates[i].m_NextMessage, sizeof(m_BroadcastStates[i].m_PrevMessage));
 				
