@@ -460,7 +460,11 @@ void CGameContext::SendChatTarget(int To, const char *pText)
 	Msg.m_Team = 0;
 	Msg.m_ClientID = -1;
 	Msg.m_pMessage = pText;
-	Server()->SendPackMsg(&Msg, MSGFLAG_VITAL, To);
+	// only for demo record
+	if(To < 0)
+		Server()->SendPackMsg(&Msg, MSGFLAG_VITAL|MSGFLAG_NOSEND, -1);
+
+	Server()->SendPackMsg(&Msg, MSGFLAG_VITAL|MSGFLAG_NORECORD, To);
 }
 
 /* INFECTION MODIFICATION START ***************************************/
@@ -744,12 +748,15 @@ void CGameContext::SendChat(int ChatterClientID, int Team, const char *pText)
 		Msg.m_ClientID = ChatterClientID;
 		Msg.m_pMessage = pText;
 
+		// pack one for the recording only
+		Server()->SendPackMsg(&Msg, MSGFLAG_VITAL|MSGFLAG_NOSEND, DemoClientID);
+
 		// send to the clients that did not mute chatter
 		for(int i = 0; i < MAX_CLIENTS; i++)
 		{
 			if(m_apPlayers[i] && !CGameContext::m_ClientMuted[i][ChatterClientID])
 			{
-				Server()->SendPackMsg(&Msg, MSGFLAG_VITAL, i);
+				Server()->SendPackMsg(&Msg, MSGFLAG_VITAL|MSGFLAG_NORECORD, i);
 			}
 		}
 	}
@@ -761,7 +768,7 @@ void CGameContext::SendChat(int ChatterClientID, int Team, const char *pText)
 		Msg.m_pMessage = pText;
 
 		// pack one for the recording only
-		Server()->SendPackMsg(&Msg, MSGFLAG_VITAL|MSGFLAG_NOSEND, -1);
+		Server()->SendPackMsg(&Msg, MSGFLAG_VITAL|MSGFLAG_NOSEND, DemoClientID);
 
 		// send to the clients
 		for(int i = 0; i < MAX_CLIENTS; i++)
