@@ -1390,6 +1390,7 @@ void CGameContext::OnClientEnter(int ClientID)
 
 void CGameContext::OnClientConnected(int ClientID)
 {
+	dbg_assert(!m_apPlayers[ClientID], "non-free player slot");
 	m_apPlayers[ClientID] = m_pController->CreatePlayer(ClientID);
 	
 	//Thanks to Stitch
@@ -4423,6 +4424,11 @@ void CGameContext::OnPreSnap() {}
 void CGameContext::OnPostSnap()
 {
 	m_Events.Clear();
+}
+
+bool CGameContext::IsClientBot(int ClientID) const
+{
+	return m_apPlayers[ClientID] && m_apPlayers[ClientID]->IsBot();
 }
 
 bool CGameContext::IsClientReady(int ClientID) const

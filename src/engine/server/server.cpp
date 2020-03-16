@@ -774,6 +774,10 @@ int CServer::SendMsgEx(CMsgPacker *pMsg, int Flags, int ClientID, bool System)
 	if(!pMsg)
 		return -1;
 
+	// drop packet to dummy client
+	if(0 <= ClientID && ClientID < MAX_CLIENTS && GameServer()->IsClientBot(ClientID))
+		return 0;
+
 	mem_zero(&Packet, sizeof(CNetChunk));
 
 	Packet.m_ClientID = ClientID;
@@ -981,6 +985,13 @@ int CServer::ClientRejoinCallback(int ClientID, void *pUser)
 int CServer::NewClientCallback(int ClientID, void *pUser)
 {
 	CServer *pThis = (CServer *)pUser;
+
+	// Remove non human player on same slot
+	if(pThis->GameServer()->IsClientBot(ClientID))
+	{
+		pThis->GameServer()->OnClientDrop(ClientID, CLIENTDROPTYPE_KICK, "removing dummy");
+	}
+
 	pThis->m_aClients[ClientID].m_State = CClient::STATE_AUTH;
 	pThis->m_aClients[ClientID].m_aName[0] = 0;
 	pThis->m_aClients[ClientID].m_aClan[0] = 0;
@@ -1012,7 +1023,7 @@ int CServer::NewClientCallback(int ClientID, void *pUser)
 		pThis->m_aClients[ClientID].m_Accusation = *pAccusation;
 		pThis->m_NetAccusation.RemoveSession(pThis->m_NetServer.ClientAddr(ClientID));
 	}
-	
+
 	return 0;
 }
 

@@ -28,6 +28,7 @@ public:
 	void SetTeam(int Team, bool DoChatMsg=true);
 	int GetTeam() const { return m_Team; };
 	int GetCID() const { return m_ClientID; };
+	virtual bool IsBot() const { return false; }
 
 	virtual void Tick();
 	void PostTick();
