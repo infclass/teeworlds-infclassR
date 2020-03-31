@@ -3566,7 +3566,7 @@ bool CGameContext::ConHelp(IConsole::IResult *pResult, void *pUserData)
 			Buffer.append("~~ ");
 			pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("Soldier"), NULL); 
 			Buffer.append(" ~~\n\n");
-			pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("The Soldier can pose floating bombs with the hammer."), NULL); 
+			pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("The Soldier creates floating bombs with the hammer."), NULL); 
 			Buffer.append("\n\n");
 			pSelf->Server()->Localization()->Format_LP(
 				Buffer, pLanguage, g_Config.m_InfSoldierBombs,
@@ -3577,7 +3577,7 @@ bool CGameContext::ConHelp(IConsole::IResult *pResult, void *pUserData)
 			Buffer.append("\n\n");
 			pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("Use the hammer to place the bomb and explode it multiple times."), NULL);
 			Buffer.append("\n\n");
-			pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("Bombs are limited to one per player at the same time."), NULL);
+			pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("A lucky Soldier, devoted to killing zombies, can get a bonus - stunning grenades."), NULL);
 			
 			pSelf->SendMOTD(ClientID, Buffer.buffer());
 		}
@@ -3617,6 +3617,8 @@ bool CGameContext::ConHelp(IConsole::IResult *pResult, void *pUserData)
 			pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("Looper"), NULL); 
 			Buffer.append(" ~~\n\n");
 			pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("The looper has a laser wall that slows down zombies and a low-range-laser-pistol."), NULL);
+			Buffer.append("\n\n");
+			pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("A lucky Looper, devoted to killing zombies, can get a bonus - stunning grenades."), NULL);
 			
 			pSelf->SendMOTD(ClientID, Buffer.buffer());
 		}
@@ -3648,7 +3650,7 @@ bool CGameContext::ConHelp(IConsole::IResult *pResult, void *pUserData)
 			Buffer.append("\n\n");
 			pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("The gift to all humans is only applied when the flag is surrounded by hearts and armor."), NULL);
 			Buffer.append("\n\n");
-			pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("Cannot find a flag? Stand still for some seconds, maybe you will get enlightened."), NULL);
+			pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("Cannot find a flag? Stand still for some seconds, laser will show you the way."), NULL);
 			Buffer.append("\n\n");
 			pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("The hero cannot be healed by a medic, but can withstand a thrust by an infected."), NULL);
 			
@@ -3667,6 +3669,8 @@ bool CGameContext::ConHelp(IConsole::IResult *pResult, void *pUserData)
 				"NinjaJump", &g_Config.m_InfNinjaJump,
 				NULL
 			);
+			Buffer.append("\n\n");
+			pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("Ninjas get special targets. For killing a target, extra points and abilities are awarded"), NULL);
 			
 			pSelf->SendMOTD(ClientID, Buffer.buffer());
 		}
@@ -3675,13 +3679,13 @@ bool CGameContext::ConHelp(IConsole::IResult *pResult, void *pUserData)
 			Buffer.append("~~ ");
 			pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("Mercenary"), NULL); 
 			Buffer.append(" ~~\n\n");
-			pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("The Mercenary fly in air using the machine gun."), NULL);
+			pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("The Mercenaries fly in the air using their machine gun."), NULL);
 			Buffer.append("\n\n");
-			pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("He can coil explosives with the hammer that hinder infected from harming."), NULL);
+			pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("They can create powerful bombs with their hammer."), NULL);
 			Buffer.append("\n\n");
 			pSelf->Server()->Localization()->Format_LP(
 				Buffer, pLanguage, g_Config.m_InfPoisonDamage,
-				_P("He can also throw poison grenades that each deal one damage point.", "He can also throw poison grenades that each deal {int:NumDamagePoints} damage points."),
+				_P("Mercenary can also throw poison grenades that each deal one damage point.", "Mercenary can also throw poison grenades that each deal {int:NumDamagePoints} damage points."),
 				"NumDamagePoints", &g_Config.m_InfPoisonDamage,
 				NULL
 			);
@@ -3708,7 +3712,9 @@ bool CGameContext::ConHelp(IConsole::IResult *pResult, void *pUserData)
 			Buffer.append(" ~~\n\n");
 			pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("The Smoker can infect humans and heal infected with the hammer."), NULL);
 			Buffer.append("\n\n");
-			pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("It also inflicts more damage points per second by hooking humans."), NULL);
+			pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("Smoker has a powerful hook that hurts human."), NULL);
+			Buffer.append("\n\n");
+			pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("Their hook not only hurts humans, but also sucks their blood, restoring the smokers health."), NULL);
 			
 			pSelf->SendMOTD(ClientID, Buffer.buffer());
 		}
@@ -3743,11 +3749,15 @@ bool CGameContext::ConHelp(IConsole::IResult *pResult, void *pUserData)
 			Buffer.append("~~ ");
 			pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("Bat"), NULL); 
 			Buffer.append(" ~~\n\n");
-			pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("The Bat can infect humans and heal infected with the hammer."), NULL);
+			pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("The Bat can heal infected with the hammer, but cannot infect humans"), NULL);
 			Buffer.append("\n\n");
-			pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("He can jump multiple times in air."), NULL);
+			pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("Instead, it can hammer humans to reduce their health or even kill them"), NULL);
 			Buffer.append("\n\n");
-			pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("He can also inflict 1 damage point per second by hooking humans."), NULL);
+			pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("Bat can jump multiple times in air."), NULL);
+			Buffer.append("\n\n");
+			pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("It can also inflict 1 damage point per second by hooking humans."), NULL);
+			Buffer.append("\n\n");
+			pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("Their hook not only hurts humans, but also sucks their blood, restoring the bats health."), NULL);
 			
 			pSelf->SendMOTD(ClientID, Buffer.buffer());
 		}
