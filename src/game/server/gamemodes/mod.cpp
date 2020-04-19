@@ -917,11 +917,7 @@ void CGameControllerMOD::DoWincheck()
 		//If no more explosions, game over, decide who win
 		if(!NewExplosion)
 		{
-      char aBuf[512];
-      str_format(aBuf, sizeof(aBuf), "EXPLOSIONS FINISHED. HUMAN COUNT: %d", NumHumans);
-      GameServer()->Console()->Print(IConsole::OUTPUT_LEVEL_DEBUG, "game", aBuf);
-			
-      if(NumHumans)
+			if(NumHumans)
 			{
 				GameServer()->SendChatTarget_Localization_P(-1, CHATCATEGORY_HUMANS, NumHumans, _P("One human won the round", "{int:NumHumans} humans won the round"), "NumHumans", &NumHumans, NULL);
 
@@ -929,14 +925,10 @@ void CGameControllerMOD::DoWincheck()
 				str_format(aBuf, sizeof(aBuf), "round_end winner='humans' survivors='%d' duration='%d' round='%d of %d' type='%s'", NumHumans, Seconds, m_RoundCount+1, g_Config.m_SvRoundsPerMap, RoundType);
 				GameServer()->Console()->Print(IConsole::OUTPUT_LEVEL_DEBUG, "game", aBuf);
 
-        CPlayerIterator<PLAYERITER_INGAME> Iter(GameServer()->m_apPlayers);
+					CPlayerIterator<PLAYERITER_INGAME> Iter(GameServer()->m_apPlayers);
 				while(Iter.Next())
 				{
-          char aBuf[512];
-          str_format(aBuf, sizeof(aBuf), "CHECKING IF %s IS HUMAN", Server()->ClientName(Iter.ClientID()));
-          GameServer()->Console()->Print(IConsole::OUTPUT_LEVEL_DEBUG, "game", aBuf);
-					
-          if(Iter.Player()->IsHuman())
+					if(Iter.Player()->IsHuman())
 					{
 						//TAG_SCORE
 						Server()->RoundStatistics()->OnScoreEvent(Iter.ClientID(), SCOREEVENT_HUMAN_SURVIVE, Iter.Player()->GetClass(), Server()->ClientName(Iter.ClientID()), GameServer()->Console());
@@ -945,7 +937,7 @@ void CGameControllerMOD::DoWincheck()
 						Iter.Player()->m_WinAsHuman++;
 
 						GameServer()->SendChatTarget_Localization(Iter.ClientID(), CHATCATEGORY_SCORE, _("You have survived, +5 points"), NULL);
-            char aBuf[256];
+							char aBuf[256];
 						str_format(aBuf, sizeof(aBuf), "survived player='%s'", Server()->ClientName(Iter.ClientID()));
 						GameServer()->Console()->Print(IConsole::OUTPUT_LEVEL_DEBUG, "game", aBuf);
 						}
@@ -953,10 +945,6 @@ void CGameControllerMOD::DoWincheck()
 			}
 			else
 			{
-        char aBuf[512];
-        str_format(aBuf, sizeof(aBuf), "ZOMBIES WON");
-        GameServer()->Console()->Print(IConsole::OUTPUT_LEVEL_DEBUG, "game", aBuf);
-
 				GameServer()->SendChatTarget_Localization(-1, CHATCATEGORY_INFECTED, _("Infected won the round in {sec:RoundDuration}"), "RoundDuration", &Seconds, NULL);
 			}
 
