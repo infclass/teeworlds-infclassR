@@ -1153,13 +1153,15 @@ int CGameControllerMOD::ChooseInfectedClass(const CPlayer *pPlayer) const
 		}
 	}
 	
+	int Class = START_INFECTEDCLASS + 1 + random_distribution(Probability, Probability + NB_INFECTEDCLASS);
+
 	int Seconds = (Server()->Tick()-m_RoundStartTick)/((float)Server()->TickSpeed());
 	char aBuf[256];
-	str_format(aBuf, sizeof(aBuf), "infected victim='%s' duration='%d'", 
-		Server()->ClientName(pPlayer->GetCID()), Seconds);
+	str_format(aBuf, sizeof(aBuf), "infected victim='%s' duration='%d' class='%d'", 
+		Server()->ClientName(pPlayer->GetCID()), Seconds, Class);
 	GameServer()->Console()->Print(IConsole::OUTPUT_LEVEL_DEBUG, "game", aBuf);
 
-	return START_INFECTEDCLASS + 1 + random_distribution(Probability, Probability + NB_INFECTEDCLASS);
+	return Class;
 }
 
 bool CGameControllerMOD::IsEnabledClass(int PlayerClass) {

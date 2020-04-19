@@ -2421,6 +2421,10 @@ void CCharacter::Tick()
 					m_pPlayer->SetClass(NewClass);
 					m_pPlayer->SetOldClass(NewClass);
 					
+					char aBuf[256];
+					str_format(aBuf, sizeof(aBuf), "choose_class player='%s' class='%d' random='%d'", Server()->ClientName(m_pPlayer->GetCID()), NewClass, Bonus);
+					GameServer()->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "game", aBuf);
+
 					if(Bonus)
 						IncreaseArmor(10);
 				}
