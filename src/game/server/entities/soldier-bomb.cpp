@@ -1,7 +1,5 @@
 /* (c) Magnus Auvinen. See licence.txt in the root of the distribution for more information. */
 /* If you are missing that file, acquire a complete release at teeworlds.com.                */
-
-#include <base/math.h>
 #include <game/server/gamecontext.h>
 #include <engine/shared/config.h>
 #include "soldier-bomb.h"
@@ -55,15 +53,6 @@ void CSoldierBomb::Explode()
 	{
 		float angle = static_cast<float>(i)*2.0*pi/12.0;
 		vec2 expPos = vec2(180.0*cos(angle), 180.0*sin(angle));
-		if(dot(expPos, dir) <= 0)
-		{
-			GameServer()->CreateExplosion(m_Pos + expPos, m_Owner, WEAPON_HAMMER, false, TAKEDAMAGEMODE_NOINFECTION);
-		}
-	}
-	for(int i=0; i<6; i++)
-	{
-		float angle = random_float()*2.0*pi;
-		vec2 expPos = vec2(270.0*cos(angle), 270.0*sin(angle));
 		if(dot(expPos, dir) <= 0)
 		{
 			GameServer()->CreateExplosion(m_Pos + expPos, m_Owner, WEAPON_HAMMER, false, TAKEDAMAGEMODE_NOINFECTION);
