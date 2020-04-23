@@ -275,6 +275,7 @@ public:
 
 	void PumpNetwork();
 
+	void ChangeMap(const char *pMap) override;
 	char *GetMapName();
 	int LoadMap(const char *pMapName);
 

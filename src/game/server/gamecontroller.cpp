@@ -326,7 +326,7 @@ void IGameController::CycleMap(bool Forced)
 		char aBuf[256];
 		str_format(aBuf, sizeof(aBuf), "rotating map to %s", m_aMapWish);
 		GameServer()->Console()->Print(IConsole::OUTPUT_LEVEL_DEBUG, "game", aBuf);
-		str_copy(g_Config.m_SvMap, m_aMapWish, sizeof(g_Config.m_SvMap));
+		Server()->ChangeMap(m_aMapWish);
 		m_aMapWish[0] = 0;
 		m_RoundCount = 0;
 		return;
@@ -339,7 +339,7 @@ void IGameController::CycleMap(bool Forced)
 		char aBuf[256];
 		str_format(aBuf, sizeof(aBuf), "rotating to a queued map %s", m_aQueuedMap);
 		GameServer()->Console()->Print(IConsole::OUTPUT_LEVEL_DEBUG, "game", aBuf);
-		str_copy(g_Config.m_SvMap, m_aQueuedMap, sizeof(g_Config.m_SvMap));
+		Server()->ChangeMap(m_aQueuedMap);
 		m_aQueuedMap[0] = 0;
 		m_RoundCount = 0;
 		return;
@@ -405,7 +405,7 @@ void IGameController::CycleMap(bool Forced)
 	char aBufMsg[256];
 	str_format(aBufMsg, sizeof(aBufMsg), "rotating map to %s", aBuf);
 	GameServer()->Console()->Print(IConsole::OUTPUT_LEVEL_DEBUG, "game", aBuf);
-	str_copy(g_Config.m_SvMap, aBuf, sizeof(g_Config.m_SvMap));
+	Server()->ChangeMap(aBuf);
 }
 
 void IGameController::SkipMap()

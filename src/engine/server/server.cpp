@@ -2042,6 +2042,12 @@ char *CServer::GetMapName()
 	return pMapShortName;
 }
 
+void CServer::ChangeMap(const char *pMap)
+{
+	str_copy(g_Config.m_SvMap, pMap, sizeof(g_Config.m_SvMap));
+	m_MapReload = str_comp(g_Config.m_SvMap, m_aCurrentMap) != 0;
+}
+
 int CServer::LoadMap(const char *pMapName)
 {
 	char aBuf[512];
