@@ -102,6 +102,7 @@ m_pConsole(pConsole)
 	m_InfZoneTick = -1;
 	m_InAirTick = 0;
 	m_InWater = 0;
+	m_ProtectionTick = 0;
 	m_BonusTick = 0;
 	m_WaterJumpLifeSpan = 0;
 	m_NinjaVelocityBuff = 0;
@@ -1923,7 +1924,10 @@ void CCharacter::Tick()
 					m_HealTick = Server()->Tick();
 					IncreaseHealth(1);
 				}
-				if (m_InfZoneTick < 0) m_InfZoneTick = Server()->Tick(); // Save Tick when zombie enters infection zone
+				if (m_InfZoneTick < 0) {
+					m_InfZoneTick = Server()->Tick(); // Save Tick when zombie enters infection zone
+					GrantSpawnProtection();
+				}
 			}
 			else
 			{
@@ -2004,6 +2008,17 @@ void CCharacter::Tick()
 	if(m_SlipperyTick > 0)
 		--m_SlipperyTick;
 	
+	if(m_ProtectionTick > 0) {
+		--m_ProtectionTick;
+
+		// Player left spawn before protection ran out
+		if(m_InfZoneTick == -1)
+		{
+			SetEmote(EMOTE_NORMAL, Server()->Tick() + Server()->TickSpeed());
+			m_ProtectionTick = 0;
+		}
+	}
+
 	if(m_Poison > 0)
 	{
 		if(m_PoisonTick == 0)
@@ -3102,6 +3117,11 @@ bool CCharacter::TakeDamage(vec2 Force, int Dmg, int From, int Weapon, int Mode)
 		Dmg = DamageAccepted;
 	}
 
+	if(m_ProtectionTick > 0)
+	{
+		Dmg = 0;
+	}
+
 	if(From != m_pPlayer->GetCID() && pKillerPlayer)
 	{
 		if(IsZombie())
@@ -3887,6 +3907,15 @@ void CCharacter::SlipperyEffect()
 {
 	if(m_SlipperyTick <= 0)
 		m_SlipperyTick = Server()->TickSpeed()/2;
+}
+
+void CCharacter::GrantSpawnProtection()
+{
+	// Indicate time left being protected via eyes
+	if(m_ProtectionTick <= 0) {
+		m_ProtectionTick = Server()->TickSpeed() * g_Config.m_InfSpawnProtectionTime;
+		SetEmote(EMOTE_SURPRISE, Server()->Tick() + m_ProtectionTick);
+  }
 }
 
 void CCharacter::Freeze(float Time, int Player, int Reason)
