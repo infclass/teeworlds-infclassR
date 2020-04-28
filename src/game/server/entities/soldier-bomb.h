@@ -20,10 +20,11 @@ public:
 	int GetNbBombs() { return m_nbBomb; }
 
 private:
+	virtual void ChargeBomb(float time);
 	int m_StartTick;
 	array<int> m_IDBomb;
 	int m_nbBomb;
-	int bombs_added;
+	int charged_bomb;
 	
 public:
 	float m_DetectionRadius;

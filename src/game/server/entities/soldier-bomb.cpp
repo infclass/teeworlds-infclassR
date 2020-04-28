@@ -14,8 +14,8 @@ CSoldierBomb::CSoldierBomb(CGameWorld *pGameWorld, vec2 Pos, int Owner)
 	m_StartTick = Server()->Tick();
 	m_Owner = Owner;
 
-	m_nbBomb = 1;
-	bombs_added = 1;
+	m_nbBomb = g_Config.m_InfSoldierBombs;
+	charged_bomb = g_Config.m_InfSoldierBombs;
 
 	m_IDBomb.set_size(g_Config.m_InfSoldierBombs);
 	for(int i=0; i<m_IDBomb.size(); i++)
@@ -46,19 +46,30 @@ void CSoldierBomb::Explode()
 	
 	GameServer()->CreateSound(m_Pos, SOUND_GRENADE_EXPLODE);
 	GameServer()->CreateExplosion(m_Pos, m_Owner, WEAPON_HAMMER, false, TAKEDAMAGEMODE_NOINFECTION);
-	for(int i=0; i<6; i++)
-	{
-		float angle = static_cast<float>(i)*2.0*pi/6.0;
-		vec2 expPos = m_Pos + vec2(90.0*cos(angle), 90.0*sin(angle));
-		GameServer()->CreateExplosion(expPos, m_Owner, WEAPON_HAMMER, false, TAKEDAMAGEMODE_NOINFECTION);
-	}
-	for(int i=0; i<12; i++)
-	{
-		float angle = static_cast<float>(i)*2.0*pi/12.0;
-		vec2 expPos = vec2(180.0*cos(angle), 180.0*sin(angle));
-		if(dot(expPos, dir) <= 0)
+	if (charged_bomb <= m_nbBomb) {
+		/*
+		 * Charged bomb makes a big explosion.
+		 *
+		 * there are m_nbBomb bombs. Firstly, bomb #m_nbBomb explodes. Then
+		 * #m_nbBomb-1. Then #m_nbBomb-2. If there are 3 bombs, bomb #3 explodes
+		 * first, bomb #2 second, bomb #1 last.
+		 * charged_bomb points to the last charged bomb. So, if charged_bomb == 1,
+		 * it means that bombs #m_mbBomb, ..., #2, #1 are charged.
+		 */
+		for(int i=0; i<6; i++)
 		{
-			GameServer()->CreateExplosion(m_Pos + expPos, m_Owner, WEAPON_HAMMER, false, TAKEDAMAGEMODE_NOINFECTION);
+			float angle = static_cast<float>(i)*2.0*pi/6.0;
+			vec2 expPos = m_Pos + vec2(90.0*cos(angle), 90.0*sin(angle));
+			GameServer()->CreateExplosion(expPos, m_Owner, WEAPON_HAMMER, false, TAKEDAMAGEMODE_NOINFECTION);
+		}
+		for(int i=0; i<12; i++)
+		{
+			float angle = static_cast<float>(i)*2.0*pi/12.0;
+			vec2 expPos = vec2(180.0*cos(angle), 180.0*sin(angle));
+			if(dot(expPos, dir) <= 0)
+			{
+				GameServer()->CreateExplosion(m_Pos + expPos, m_Owner, WEAPON_HAMMER, false, TAKEDAMAGEMODE_NOINFECTION);
+			}
 		}
 	}
 	
@@ -70,20 +81,25 @@ void CSoldierBomb::Explode()
 	}
 }
 
+void CSoldierBomb::ChargeBomb(float time)
+{
+	if (charged_bomb > 0) {
+		// time is multiplied by N, bombs will get charged every 1/N sec
+		if (std::floor(time * 2) >
+				g_Config.m_InfSoldierBombs - charged_bomb + 1) {
+			charged_bomb--;
+			GameServer()->CreateSound(m_Pos, SOUND_WEAPON_NOAMMO);
+		}
+	}
+}
+
 void CSoldierBomb::Snap(int SnappingClient)
 {
 	float time = (Server()->Tick()-m_StartTick)/(float)Server()->TickSpeed();
 	float angle = fmodf(time*pi/2, 2.0f*pi);
 
-	if (bombs_added < g_Config.m_InfSoldierBombs) {
-		// time is multiplied by 2, bombs will appear every 0.5 sec
-		// bombs_added - 1 is because the first bomb is already there
-		if (std::floor(time * 2) > bombs_added - 1) {
-			bombs_added++;
-			m_nbBomb++;
-		}
-	}
-	
+	ChargeBomb(time);
+
 	for(int i=0; i<m_nbBomb; i++)
 	{
 		if(NetworkClipped(SnappingClient))
