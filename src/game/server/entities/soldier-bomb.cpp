@@ -86,7 +86,7 @@ void CSoldierBomb::ChargeBomb(float time)
 	if (charged_bomb > 1) {
 		// time is multiplied by N, bombs will get charged every 1/N sec
 		if (std::floor(time * 2) >
-				g_Config.m_InfSoldierBombs - charged_bomb + 1) {
+				g_Config.m_InfSoldierBombs - charged_bomb) {
 			charged_bomb--;
 			GameServer()->CreateSound(m_Pos, SOUND_WEAPON_NOAMMO);
 		}
@@ -97,7 +97,6 @@ void CSoldierBomb::Snap(int SnappingClient)
 {
 	float time = (Server()->Tick()-m_StartTick)/(float)Server()->TickSpeed();
 	float angle = fmodf(time*pi/2, 2.0f*pi);
-
 	ChargeBomb(time);
 
 	for(int i=0; i<m_nbBomb; i++)
