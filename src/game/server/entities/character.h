@@ -192,6 +192,7 @@ private:
 	int m_HealTick;
 	int m_BonusTick;
 	int m_InfZoneTick;
+	int m_ProtectionTick;
 	
 	int m_FlagID;
 	int m_HeartID;
@@ -266,6 +267,7 @@ public:
 	void LoveEffect();
 	void HallucinationEffect();
 	void SlipperyEffect();
+	void GrantSpawnProtection();
 	bool IsTeleportable();
 	int GetInfWeaponID(int WID);
 	void UpdateTuningParam();
