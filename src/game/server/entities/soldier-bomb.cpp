@@ -3,6 +3,7 @@
 #include <game/server/gamecontext.h>
 #include <engine/shared/config.h>
 #include "soldier-bomb.h"
+#include <cmath>
 
 CSoldierBomb::CSoldierBomb(CGameWorld *pGameWorld, vec2 Pos, int Owner)
 : CEntity(pGameWorld, CGameWorld::ENTTYPE_SOLDIER_BOMB)
@@ -12,8 +13,10 @@ CSoldierBomb::CSoldierBomb(CGameWorld *pGameWorld, vec2 Pos, int Owner)
 	m_DetectionRadius = 60.0f;
 	m_StartTick = Server()->Tick();
 	m_Owner = Owner;
-	m_nbBomb = g_Config.m_InfSoldierBombs;
-	
+	// m_nbBomb = g_Config.m_InfSoldierBombs;
+	m_nbBomb = 1;
+	bombs_added = 1;
+
 	m_IDBomb.set_size(g_Config.m_InfSoldierBombs);
 	for(int i=0; i<m_IDBomb.size(); i++)
 	{
@@ -71,6 +74,15 @@ void CSoldierBomb::Snap(int SnappingClient)
 {
 	float time = (Server()->Tick()-m_StartTick)/(float)Server()->TickSpeed();
 	float angle = fmodf(time*pi/2, 2.0f*pi);
+
+	if (bombs_added < g_Config.m_InfSoldierBombs) {
+		// time is multiplied by 2, bombs will appear every 0.5 sec
+		// bombs_added - 1 is because the first bomb is already there
+		if (std::floor(time * 2) > bombs_added - 1) {
+			bombs_added++;
+			m_nbBomb++;
+		}
+	}
 	
 	for(int i=0; i<m_nbBomb; i++)
 	{
