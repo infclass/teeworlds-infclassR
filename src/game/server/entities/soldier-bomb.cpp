@@ -83,7 +83,7 @@ void CSoldierBomb::Explode()
 
 void CSoldierBomb::ChargeBomb(float time)
 {
-	if (charged_bomb > 0) {
+	if (charged_bomb > 1) {
 		// time is multiplied by N, bombs will get charged every 1/N sec
 		if (std::floor(time * 2) >
 				g_Config.m_InfSoldierBombs - charged_bomb + 1) {
