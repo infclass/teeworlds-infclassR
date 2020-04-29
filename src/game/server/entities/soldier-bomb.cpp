@@ -85,7 +85,7 @@ void CSoldierBomb::ChargeBomb(float time)
 {
 	if (charged_bomb > 1) {
 		// time is multiplied by N, bombs will get charged every 1/N sec
-		if (std::floor(time * 2) >
+		if (std::floor(time * 1.4) >
 				g_Config.m_InfSoldierBombs - charged_bomb) {
 			charged_bomb--;
 			GameServer()->CreateSound(m_Pos, SOUND_WEAPON_NOAMMO);
