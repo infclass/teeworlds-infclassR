@@ -3177,7 +3177,7 @@ bool CGameContext::PrivateMessage(const char* pStr, int ClientID, bool TeamChat)
 	int NumPlayerFound = 0;
 	for(int i=0; i<MAX_CLIENTS; i++)
 	{
-		if(m_apPlayers[i])
+		if(m_apPlayers[i] && !CGameContext::m_ClientMuted[i][ClientID])
 		{
 			if(i != ClientID)
 			{
