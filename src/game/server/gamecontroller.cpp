@@ -66,7 +66,9 @@ bool IGameController::PreSpawn(CPlayer* pPlayer, vec2 *pOutPos)
 void IGameController::MaybeSendStatistics()
 {
 	// skip some maps that are not very fair
-	if (str_comp(g_Config.m_SvMap, "infc_toilet") == 0) {
+	if (
+			str_comp(g_Config.m_SvMap, "infc_toilet") == 0 ||
+			str_comp(g_Config.m_SvMap, "infc_toilet_old") == 0) {
 		return;
 	}
 
