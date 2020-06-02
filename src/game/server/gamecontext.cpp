@@ -1688,13 +1688,13 @@ void CGameContext::OnMessage(int MsgID, CUnpacker *pUnpacker, int ClientID)
 	
 	if (pPlayer && MsgID == (NETMSGTYPE_CL_CALLVOTE + 1)) 
 	{
-        int Version = pUnpacker->GetInt();
+        	int Version = pUnpacker->GetInt();
 
 		if(g_Config.m_SvBannedVersions[0] != '\0' && IsVersionBanned(Version))
 		{
 			Server()->Kick(ClientID, "unsupported client");
 		}
-    }
+    	}
 	//HACK: DDNet Client did something wrong that we can detect
 	//Round and Score conditions are here only to prevent false-positif
 	if(!pPlayer && Server()->GetClientNbRound(ClientID) <= 1 && Server()->GetClientNbRound(ClientID) == 0)
