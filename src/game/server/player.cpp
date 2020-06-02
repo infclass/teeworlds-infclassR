@@ -25,7 +25,7 @@ CPlayer::CPlayer(CGameContext *pGameServer, int ClientID, int Team)
 	m_LastActionTick = Server()->Tick();
 	m_LastActionMoveTick = Server()->Tick();
 	m_TeamChangeTick = Server()->Tick();
-	
+	m_ClientVersion = 0;
 /* INFECTION MODIFICATION START ***************************************/
 	m_Authed = IServer::AUTHED_NO;
 	m_ScoreRound = 0;

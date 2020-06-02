@@ -1,6 +1,8 @@
 /* (c) Magnus Auvinen. See licence.txt in the root of the distribution for more information. */
 /* If you are missing that file, acquire a complete release at teeworlds.com.                */
 /* (c) Boris Bobrov, 2019 */
+/* (c) DDNet developers, ddnet.tw */
+
 #include <stdlib.h>
 #include <stdio.h>
 #include <stdarg.h>
@@ -1592,6 +1594,34 @@ void str_append(char *dst, const char *src, int dst_size)
 	}
 
 	dst[dst_size-1] = 0; /* assure null termination */
+}
+
+static const char *str_token_get(const char *str, const char *delim, int *length)
+{
+	size_t len = strspn(str, delim);
+	if(len > 1)
+		str++;
+	else
+		str += len;
+	if(!*str)
+		return NULL;
+
+	*length = strcspn(str, delim);
+	return str;
+}
+
+int str_in_list(const char *list, const char *delim, const char *needle)
+{
+	const char *tok = list;
+	int len = 0, notfound = 1, needlelen = str_length(needle);
+
+	while(notfound && (tok = str_token_get(tok, delim, &len)))
+	{
+		notfound = needlelen != len || str_comp_num(tok, needle, len);
+		tok = tok + len;
+	}
+
+	return !notfound;
 }
 
 //TeeUniverses

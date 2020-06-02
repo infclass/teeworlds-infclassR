@@ -232,7 +232,8 @@ public:
 	virtual const char *GameType();
 	virtual const char *Version();
 	virtual const char *NetVersion();
-	
+	int GetClientVersion(int ClientID);
+
 /* INFECTION MODIFICATION START ***************************************/
 public:
 	int m_ChatResponseTargetID;
@@ -365,6 +366,7 @@ public:
 	bool IsSpectatorCID(int ClientID);
 	std::ofstream fout;
 	// InfClassR end
+	bool IsVersionBanned(int Version);
 };
 
 inline int64_t CmaskAll() { return -1LL; }

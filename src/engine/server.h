@@ -412,6 +412,7 @@ public:
 	virtual int GetHeroGiftCoolDown() = 0;
 	virtual void FlagCollected() = 0;
 /* INFECTION MODIFICATION END *****************************************/
+	virtual int GetClientVersion(int ClientID) = 0;
 };
 
 extern IGameServer *CreateGameServer();
