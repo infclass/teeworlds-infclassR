@@ -71,7 +71,7 @@ void CGameControllerMOD::OnClientDrop(int ClientID, int Type)
 
 void CGameControllerMOD::OnPlayerInfected(CPlayer *pPlayer, CPlayer *pInfectiousPlayer)
 {
-	if (!pInfectiousPlayer) {
+	if (!pInfectiousPlayer || pInfectiousPlayer->GetTeam() == TEAM_SPECTATORS || pPlayer->GetCID() == pInfectiousPlayer->GetCID()) {
 		return;
 	}
 
