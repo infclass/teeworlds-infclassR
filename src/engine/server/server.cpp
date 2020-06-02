@@ -2463,7 +2463,7 @@ bool CServer::ConStatusExtended(IConsole::IResult *pResult, void *pUser)
 					pThis->IsClientLogged(i),
 					AuthLevel,
 					aAddrStr,
-					pThis->GameServer()->GetClientVersion(i);
+					pThis->GameServer()->GetClientVersion(i)
 				);
 			}
 			else
