@@ -1596,6 +1596,20 @@ void str_append(char *dst, const char *src, int dst_size)
 	dst[dst_size-1] = 0; /* assure null termination */
 }
 
+static const char *str_token_get(const char *str, const char *delim, int *length)
+{
+	size_t len = strspn(str, delim);
+	if(len > 1)
+		str++;
+	else
+		str += len;
+	if(!*str)
+		return NULL;
+
+	*length = strcspn(str, delim);
+	return str;
+}
+
 int str_in_list(const char *list, const char *delim, const char *needle)
 {
 	const char *tok = list;
