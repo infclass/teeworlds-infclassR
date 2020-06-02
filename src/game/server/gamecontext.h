@@ -366,6 +366,7 @@ public:
 	std::ofstream fout;
 	// InfClassR end
 	bool IsVersionBanned(int Version);
+	int GetClientVersion(int ClientID);
 };
 
 inline int64_t CmaskAll() { return -1LL; }

@@ -2432,6 +2432,50 @@ bool CServer::ConOptionStatus(IConsole::IResult *pResult, void *pUser)
 }
 /* INFECTION MODIFICATION END *****************************************/
 
+bool CServer::ConStatusExtended(IConsole::IResult *pResult, void *pUser)
+{
+	char aBuf[1024];
+	char aAddrStr[NETADDR_MAXSTRSIZE];
+	CServer* pThis = static_cast<CServer *>(pUser);
+
+/* INFECTION MODIFICATION START ***************************************/
+	for(int i = 0; i < MAX_CLIENTS; i++)
+	{
+		if(pThis->m_aClients[i].m_State != CClient::STATE_EMPTY)
+		{
+			net_addr_str(pThis->m_NetServer.ClientAddr(i), aAddrStr, sizeof(aAddrStr), true);
+			if(pThis->m_aClients[i].m_State == CClient::STATE_INGAME)
+			{				
+				//Add some padding to make the command more readable
+				char aBufName[18];
+				str_copy(aBufName, pThis->ClientName(i), sizeof(aBufName));
+				for(int c=str_length(aBufName); c<((int)sizeof(aBufName))-1; c++)
+					aBufName[c] = ' ';
+				aBufName[sizeof(aBufName)-1] = 0;
+				
+				int AuthLevel = pThis->m_aClients[i].m_Authed == CServer::AUTHED_ADMIN ? 2 :
+										pThis->m_aClients[i].m_Authed == CServer::AUTHED_MOD ? 1 : 0;
+				
+				str_format(aBuf, sizeof(aBuf), "(#%02i) %s: [antispoof=%d] [login=%d] [level=%d] [ip=%s] [version=%d]",
+					i,
+					aBufName,
+					pThis->m_NetServer.HasSecurityToken(i),
+					pThis->IsClientLogged(i),
+					AuthLevel,
+					aAddrStr,
+					pThis->GameServer()->GetClientVersion(i);
+				);
+			}
+			else
+				str_format(aBuf, sizeof(aBuf), "id=%d addr=%s connecting", i, aAddrStr);
+			pThis->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "Server", aBuf);
+		}
+	}
+	
+	return true;
+/* INFECTION MODIFICATION END *****************************************/
+}
+
 bool CServer::ConStatus(IConsole::IResult *pResult, void *pUser)
 {
 	char aBuf[1024];
@@ -2716,6 +2760,7 @@ void CServer::RegisterCommands()
 	// register console commands
 	Console()->Register("kick", "s<username or uid> ?r<reason>", CFGFLAG_SERVER, ConKick, this, "Kick player with specified id for any reason");
 	Console()->Register("status", "", CFGFLAG_SERVER, ConStatus, this, "List players");
+	Console()->Register("status_extended", "", CFGFLAG_SERVER, ConStatusExtended, this, "List players");
 	Console()->Register("option_status", "", CFGFLAG_SERVER, ConOptionStatus, this, "List player options");
 	Console()->Register("shutdown", "", CFGFLAG_SERVER, ConShutdown, this, "Shut down");
 	Console()->Register("logout", "", CFGFLAG_SERVER, ConLogout, this, "Logout of rcon");
