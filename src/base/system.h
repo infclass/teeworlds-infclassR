@@ -746,6 +746,19 @@ int net_tcp_close(NETSOCKET sock);
 */
 void str_append(char *dst, const char *src, int dst_size);
 
+/*
+	Function: str_in_list
+		Checks if needle is in list delimited by delim
+	Parameters:
+		list - List
+		delim - List delimiter.
+		needle - Item that is being looked for.
+	Returns:
+		1 - Item is in list.
+		0 - Item isn't in list.
+*/
+int str_in_list(const char *list, const char *delim, const char *needle);
+
 //TeeUniverses
 void str_append_num(char *dst, const char *src, int dst_size, int num);
 

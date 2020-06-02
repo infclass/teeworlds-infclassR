@@ -365,6 +365,7 @@ public:
 	bool IsSpectatorCID(int ClientID);
 	std::ofstream fout;
 	// InfClassR end
+	bool IsVersionBanned(int Version);
 };
 
 inline int64_t CmaskAll() { return -1LL; }
