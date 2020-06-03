@@ -2737,7 +2737,7 @@ bool CGameContext::ConStartFunRound(IConsole::IResult *pResult, void *pUserData)
 	CGameContext *pSelf = (CGameContext *)pUserData;
 	static const FunRoundSettings PossbleSettings[] = {
 		{ PLAYERCLASS_GHOST, PLAYERCLASS_SNIPER },
-		{ PLAYERCLASS_GHOUL, PLAYERCLASS_HERO },
+		{ PLAYERCLASS_GHOUL, PLAYERCLASS_BIOLOGIST },
 		{ PLAYERCLASS_BAT, PLAYERCLASS_MERCENARY },
 		{ PLAYERCLASS_BAT, PLAYERCLASS_NINJA },
 		{ PLAYERCLASS_BOOMER, PLAYERCLASS_NINJA },
