@@ -1397,6 +1397,7 @@ void CCharacter::FireWeapon()
 				else if(GetClass() == PLAYERCLASS_MERCENARY)
 				{
 					Damage = 0;
+					m_BombHit = false;
 					new CLaser(GameWorld(), m_Pos, Direction, GameServer()->Tuning()->m_LaserReach, m_pPlayer->GetCID(), Damage);
 					GameServer()->CreateSound(m_Pos, SOUND_RIFLE_FIRE);
 
@@ -1412,8 +1413,13 @@ void CCharacter::FireWeapon()
 					
 					if(pCurrentBomb)
 					{
-						pCurrentBomb->IncreaseDamage(WEAPON_RIFLE);
-						GameServer()->CreateSound(m_Pos, SOUND_PICKUP_ARMOR);
+						vec2 MercenaryBombHitAt;
+						vec2 To = m_Pos + Direction * GameServer()->Tuning()->m_LaserReach;
+						if(m_BombHit)
+						{
+							pCurrentBomb->IncreaseDamage(WEAPON_RIFLE);
+							GameServer()->CreateSound(m_Pos, SOUND_PICKUP_ARMOR);
+						}
 					}
 				}
 				else

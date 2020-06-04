@@ -17,6 +17,7 @@ CLaser::CLaser(CGameWorld *pGameWorld, vec2 Pos, vec2 Direction, float StartEner
 	m_Dir = Direction;
 	m_Bounces = 0;
 	m_EvalTick = 0;
+	m_BouncesStop = false;
 }
 
 CLaser::CLaser(CGameWorld *pGameWorld, vec2 Pos, vec2 Direction, float StartEnergy, int Owner, int Dmg)
@@ -34,6 +35,8 @@ bool CLaser::HitCharacter(vec2 From, vec2 To)
 	CCharacter *pHit = GameServer()->m_World.IntersectCharacter(m_Pos, To, 0.f, At, pOwnerChar);
 	vec2 PortalHitAt;
 	CEntity *pPortalEntity = GameServer()->m_World.IntersectEntity(m_Pos, To, 0, &PortalHitAt, CGameWorld::ENTTYPE_PORTAL);
+	vec2 MercenaryBombHitAt;
+	CEntity *pMercenaryEntity = GameServer()->m_World.IntersectEntity(m_Pos, To, 80.0f, &MercenaryBombHitAt, CGameWorld::ENTTYPE_MERCENARY_BOMB);
 
 	if (pHit && pPortalEntity)
 	{
@@ -49,8 +52,19 @@ bool CLaser::HitCharacter(vec2 From, vec2 To)
 		}
 	}
 
-	if(!pHit && !pPortalEntity)
+	if (pOwnerChar && pOwnerChar->GetClass() == PLAYERCLASS_MERCENARY)
+	{
+		if(pMercenaryEntity)
+		{
+			At = MercenaryBombHitAt;
+		}
+		m_BouncesStop = true;
+	}
+
+	if (!pHit && !pPortalEntity)
+	{
 		return false;
+	}
 
 	m_From = From;
 	m_Pos = At;
@@ -93,6 +107,14 @@ bool CLaser::HitCharacter(vec2 From, vec2 To)
 		}
 		return true;
 	}
+	else if (pOwnerChar && pOwnerChar->GetClass() == PLAYERCLASS_MERCENARY)
+	{
+		if(pMercenaryEntity)
+		{
+			pOwnerChar->m_BombHit = true;
+			return true;
+		}
+	}
 
 	if (pPortalEntity)
 	{
@@ -110,7 +132,7 @@ void CLaser::DoBounce()
 {
 	m_EvalTick = Server()->Tick();
 
-	if(m_Energy < 0)
+	if(m_Energy < 0 || m_BouncesStop)
 	{
 		GameServer()->m_World.DestroyEntity(this);
 		return;

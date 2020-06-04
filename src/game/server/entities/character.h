@@ -243,7 +243,8 @@ public:
 	int m_NinjaAmmoBuff;
 	int m_RefreshTime;
 	bool m_VoodooAboutToDie;
-	
+	//Mercenary
+	bool m_BombHit;
 
 public:
 	void DestroyChildEntities();
