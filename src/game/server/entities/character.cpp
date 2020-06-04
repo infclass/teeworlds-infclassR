@@ -2752,6 +2752,7 @@ void CCharacter::GiveGift(int GiftType)
 		case PLAYERCLASS_MERCENARY:
 			GiveWeapon(WEAPON_GUN, -1);
 			GiveWeapon(WEAPON_GRENADE, -1);
+			GiveWeapon(WEAPON_RIFLE, -1);
 			break;
 	}
 }
@@ -3630,6 +3631,7 @@ void CCharacter::ClassSpawnAttributes()
 			GiveWeapon(WEAPON_HAMMER, -1);
 			GiveWeapon(WEAPON_GRENADE, -1);
 			GiveWeapon(WEAPON_GUN, -1);
+			GiveWeapon(WEAPON_RIFLE, -1);
 			m_ActiveWeapon = WEAPON_GUN;
 			break;
 		case PLAYERCLASS_SNIPER:
@@ -4055,6 +4057,8 @@ int CCharacter::GetInfWeaponID(int WID)
 				return INFWEAPON_MEDIC_RIFLE;
 			case PLAYERCLASS_WITCH:
 				return INFWEAPON_WITCH_PORTAL_RIFLE;
+			case PLAYERCLASS_MERCENARY:
+				return INFWEAPON_MERCENARY_RIFLE;
 			default:
 				return INFWEAPON_RIFLE;
 		}
