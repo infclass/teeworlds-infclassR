@@ -1413,9 +1413,7 @@ void CCharacter::FireWeapon()
 					
 					if(pCurrentBomb)
 					{
-						vec2 MercenaryBombHitAt;
-						vec2 To = m_Pos + Direction * GameServer()->Tuning()->m_LaserReach;
-						if(m_BombHit)
+						if(m_BombHit && distance(pCurrentBomb->m_Pos, m_AtMercBomb) <= 80.0f)
 						{
 							pCurrentBomb->IncreaseDamage(WEAPON_RIFLE);
 							GameServer()->CreateSound(m_Pos, SOUND_PICKUP_ARMOR);

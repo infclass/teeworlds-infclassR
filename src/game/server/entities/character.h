@@ -245,6 +245,7 @@ public:
 	bool m_VoodooAboutToDie;
 	//Mercenary
 	bool m_BombHit;
+	vec2 m_AtMercBomb;
 
 public:
 	void DestroyChildEntities();

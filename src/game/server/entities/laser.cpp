@@ -54,14 +54,19 @@ bool CLaser::HitCharacter(vec2 From, vec2 To)
 
 	if (pOwnerChar && pOwnerChar->GetClass() == PLAYERCLASS_MERCENARY)
 	{
+		m_BouncesStop = true;
 		if(pMercenaryEntity)
 		{
 			At = MercenaryBombHitAt;
+			pOwnerChar->m_AtMercBomb = MercenaryBombHitAt;
 		}
-		m_BouncesStop = true;
+		else
+		{
+			pOwnerChar->m_AtMercBomb = MercenaryBombHitAt;
+			return false;
+		}
 	}
-
-	if (!pHit && !pPortalEntity)
+	else if (!pHit && !pPortalEntity)
 	{
 		return false;
 	}
