@@ -33,9 +33,9 @@ void CMercenaryBomb::Reset()
 	GameServer()->m_World.DestroyEntity(this);
 }
 
-void CMercenaryBomb::IncreaseDamage()
+void CMercenaryBomb::IncreaseDamage(int weapon)
 {
-	m_Damage += 2;
+	m_Damage = weapon == WEAPON_HAMMER ? m_Damage + 2 : m_Damage + 1.5;
 	if(m_Damage > g_Config.m_InfMercBombs)
 		m_Damage = g_Config.m_InfMercBombs;
 }

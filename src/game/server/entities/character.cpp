@@ -801,7 +801,7 @@ void CCharacter::FireWeapon()
 						pCurrentBomb->Explode();
 					else
 					{
-						pCurrentBomb->IncreaseDamage();
+						pCurrentBomb->IncreaseDamage(WEAPON_HAMMER);
 						GameServer()->CreateSound(m_Pos, SOUND_PICKUP_ARMOR);
 					}
 				}
@@ -1388,18 +1388,40 @@ void CCharacter::FireWeapon()
 					new CScientistLaser(GameWorld(), m_Pos, Direction, GameServer()->Tuning()->m_LaserReach*0.6f, m_pPlayer->GetCID(), Damage);
 					GameServer()->CreateSound(m_Pos, SOUND_RIFLE_FIRE);
 				}
-				else if (GetClass() == PLAYERCLASS_LOOPER) {
+				else if (GetClass() == PLAYERCLASS_LOOPER) 
+				{
 					Damage = 5;
 					new CLaser(GameWorld(), m_Pos, Direction, GameServer()->Tuning()->m_LaserReach*0.7f, m_pPlayer->GetCID(), Damage);
 					GameServer()->CreateSound(m_Pos, SOUND_RIFLE_FIRE);
+				}
+				else if(GetClass() == PLAYERCLASS_MERCENARY)
+				{
+					Damage = 0;
+					new CLaser(GameWorld(), m_Pos, Direction, GameServer()->Tuning()->m_LaserReach, m_pPlayer->GetCID(), Damage);
+					GameServer()->CreateSound(m_Pos, SOUND_RIFLE_FIRE);
+
+					CMercenaryBomb* pCurrentBomb = NULL;
+					for(CMercenaryBomb *pBomb = (CMercenaryBomb*) GameWorld()->FindFirst(CGameWorld::ENTTYPE_MERCENARY_BOMB); pBomb; pBomb = (CMercenaryBomb*) pBomb->TypeNext())
+					{
+						if(pBomb->m_Owner == m_pPlayer->GetCID())
+						{
+							pCurrentBomb = pBomb;
+							break;
+						}
+					}
+					
+					if(pCurrentBomb)
+					{
+						pCurrentBomb->IncreaseDamage(WEAPON_RIFLE);
+						GameServer()->CreateSound(m_Pos, SOUND_PICKUP_ARMOR);
+					}
 				}
 				else
 				{
 					new CLaser(GameWorld(), m_Pos, Direction, GameServer()->Tuning()->m_LaserReach, m_pPlayer->GetCID(), Damage);
 					GameServer()->CreateSound(m_Pos, SOUND_RIFLE_FIRE);
 				}
-				
-				
+		
 			}
 		} break;
 	}
