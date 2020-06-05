@@ -3097,7 +3097,7 @@ void CCharacter::Die(int Killer, int Weapon)
 			}
 			else if(pKillerPlayer->GetClass() == PLAYERCLASS_MERCENARY)
 			{
-				pKillerCharacter->GiveWeapon(WEAPON_RIFLE, 3);
+				pKillerCharacter->GiveWeapon(WEAPON_RIFLE, m_aWeapons[WEAPON_RIFLE].m_Ammo + 3);
 			}
 		}
 	}
