@@ -29,6 +29,7 @@ protected:
 	int m_EvalTick;
 	int m_Owner;
 	int m_Dmg;
+	bool m_BouncesStop;
 };
 
 #endif

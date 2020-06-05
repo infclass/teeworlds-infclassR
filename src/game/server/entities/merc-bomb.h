@@ -24,7 +24,7 @@ public:
 	virtual void Tick();
 	virtual void Reset();
 	void Explode();
-	void IncreaseDamage();
+	void IncreaseDamage(int weapon);
 	bool ReadyToExplode();
 
 private:
@@ -33,7 +33,7 @@ private:
 public:
 	int m_LoadingTick;
 	int m_Owner;
-	int m_Damage;
+	float m_Damage;
 };
 
 #endif
