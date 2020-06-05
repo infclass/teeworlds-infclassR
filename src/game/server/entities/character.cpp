@@ -1398,8 +1398,6 @@ void CCharacter::FireWeapon()
 				{
 					Damage = 0;
 					m_BombHit = false;
-					new CLaser(GameWorld(), m_Pos, Direction, GameServer()->Tuning()->m_LaserReach, m_pPlayer->GetCID(), Damage);
-					GameServer()->CreateSound(m_Pos, SOUND_RIFLE_FIRE);
 
 					CMercenaryBomb* pCurrentBomb = NULL;
 					for(CMercenaryBomb *pBomb = (CMercenaryBomb*) GameWorld()->FindFirst(CGameWorld::ENTTYPE_MERCENARY_BOMB); pBomb; pBomb = (CMercenaryBomb*) pBomb->TypeNext())
@@ -1410,9 +1408,16 @@ void CCharacter::FireWeapon()
 							break;
 						}
 					}
-					
-					if(pCurrentBomb)
+
+					if(!pCurrentBomb)
 					{
+						GameServer()->SendBroadcast_Localization(m_pPlayer->GetCID(), BROADCAST_PRIORITY_WEAPONSTATE, 60, "Bomb needed");
+						return;
+					}
+					else
+					{
+						new CLaser(GameWorld(), m_Pos, Direction, GameServer()->Tuning()->m_LaserReach, m_pPlayer->GetCID(), Damage);
+						GameServer()->CreateSound(m_Pos, SOUND_RIFLE_FIRE);
 						if(m_BombHit && distance(pCurrentBomb->m_Pos, m_AtMercBomb) <= 80.0f)
 						{
 							pCurrentBomb->IncreaseDamage(WEAPON_RIFLE);
@@ -1807,6 +1812,7 @@ bool CCharacter::GiveWeapon(int Weapon, int Ammo)
 	{
 		m_aWeapons[Weapon].m_Got = true;
 		m_aWeapons[Weapon].m_Ammo = min(MaxAmmo, Ammo);
+		//dbg_msg("TEST", "TRUE")
 		return true;
 	}
 	return false;
@@ -3088,6 +3094,10 @@ void CCharacter::Die(int Killer, int Weapon)
 			if(pKillerPlayer->GetClass() == PLAYERCLASS_SNIPER)
 			{
 				GiveWeapon(WEAPON_RIFLE, 1);
+			}
+			else if(pKillerPlayer->GetClass() == PLAYERCLASS_MERCENARY)
+			{
+				pKillerCharacter->GiveWeapon(WEAPON_RIFLE, 3);
 			}
 		}
 	}
