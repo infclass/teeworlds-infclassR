@@ -3091,11 +3091,7 @@ void CCharacter::Die(int Killer, int Weapon)
 			pKillerCharacter->m_EmoteStop = Server()->Tick() + Server()->TickSpeed();
 			pKillerCharacter->CheckSuperWeaponAccess();
 
-			if(pKillerPlayer->GetClass() == PLAYERCLASS_SNIPER)
-			{
-				GiveWeapon(WEAPON_RIFLE, 1);
-			}
-			else if(pKillerPlayer->GetClass() == PLAYERCLASS_MERCENARY)
+			if(pKillerPlayer->GetClass() == PLAYERCLASS_MERCENARY)
 			{
 				pKillerCharacter->GiveWeapon(WEAPON_RIFLE, m_aWeapons[WEAPON_RIFLE].m_Ammo + 3);
 			}
