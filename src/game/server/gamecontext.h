@@ -263,6 +263,7 @@ private:
 	static bool ConLanguage(IConsole::IResult *pResult, void *pUserData);
 	static bool ConCmdList(IConsole::IResult *pResult, void *pUserData);
 	static bool ConWitch(IConsole::IResult *pResult, void *pUserData);
+	static bool ConChangeLog(IConsole::IResult *pResult, void *pUserData);
 	bool PrivateMessage(const char* pStr, int ClientID, bool TeamChat);
 	void Converse(int ClientID, const char* pStr, int team);
 	void MutePlayer(const char* pStr, int ClientID);

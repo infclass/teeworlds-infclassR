@@ -4233,6 +4233,7 @@ void CGameContext::OnConsoleInit()
 	Console()->Register("stats", "i", CFGFLAG_CHAT|CFGFLAG_USER, ConStats, this, "Show stats by id");
 #endif
 	Console()->Register("help", "?s<page>", CFGFLAG_CHAT|CFGFLAG_USER, ConHelp, this, "Display help");
+	Console()->Register("changelog", "?i<list>", CFGFLAG_CHAT|CFGFLAG_USER, ConChangeLog, this, "Display changelogs");
 	Console()->Register("customskin", "s<all|me|none>", CFGFLAG_CHAT|CFGFLAG_USER, ConCustomSkin, this, "Display information about the mod");
 	Console()->Register("alwaysrandom", "i<0|1>", CFGFLAG_CHAT|CFGFLAG_USER, ConAlwaysRandom, this, "Display information about the mod");
 	Console()->Register("antiping", "i<0|1>", CFGFLAG_CHAT|CFGFLAG_USER, ConAntiPing, this, "Try to improve your ping");
@@ -4536,4 +4537,36 @@ void CGameContext::Converse(int ClientID, const char* pStr, int team)
 		//dbg_msg("TEST", aBuf);
 		PrivateMessage(aBuf, ClientID, (team != CGameContext::CHAT_ALL));
 	}
+}
+
+bool CGameContext::ConChangeLog(IConsole::IResult *pResult, void *pUserData)
+{
+	CGameContext *pSelf = (CGameContext *)pUserData;
+
+	int ClientID = pResult->GetClientID();
+
+	// if we don't get the parameter, the list = 1
+	int list = pResult->GetInteger(0); 
+	if (!list)
+		list = 1; 
+	int lists = 1;
+	char aBuf[256];
+	str_format(aBuf, sizeof(aBuf), "list %d/%d", list, lists);
+
+	switch(list)
+	{
+		case 1:
+			pSelf->SendChatTarget(ClientID, "----- Changelog -----");
+			pSelf->SendChatTarget(ClientID, "Fix Self killing/spectator gives you points.");
+			pSelf->SendChatTarget(ClientID, "Add new weapon rifle for mercenary's bomb.");
+			pSelf->SendChatTarget(ClientID, "Add converse (/c \"text\") for whisper-chat.");
+			pSelf->SendChatTarget(ClientID, "Add funround ghosts vs ninjas.");
+			pSelf->SendChatTarget(ClientID, "Add funround ghouls vs biologists.");
+			pSelf->SendChatTarget(ClientID, "-------------------------");
+			break;	
+		default:
+			pSelf->SendChatTarget(ClientID, "this list does not exist.");
+			break;
+	}
+	return true;
 }
