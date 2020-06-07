@@ -4122,6 +4122,8 @@ bool CGameContext::ConCmdList(IConsole::IResult *pResult, void *pUserData)
 	Buffer.append("\n\n");
 	pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, "/msg, /mute", NULL);
 	Buffer.append("\n\n");
+	pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, "/changelog", NULL);
+	Buffer.append("\n\n");
 #ifdef CONF_SQL
 	pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, "/register, /login, /logout, /setemail", NULL);
 	Buffer.append("\n\n");
