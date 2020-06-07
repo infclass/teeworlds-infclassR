@@ -17,13 +17,14 @@ bool CGameContext::ConChangeLog(IConsole::IResult *pResult, void *pUserData)
 	switch(list)
 	{
 		case 1:
-			pSelf->SendChatTarget(ClientID, "----- Changelog -----");
-			pSelf->SendChatTarget(ClientID, "Fix Self killing/spectator gives you points.");
-			pSelf->SendChatTarget(ClientID, "Add new weapon rifle for mercenary's bomb.");
-			pSelf->SendChatTarget(ClientID, "Add converse (/c \"text\") for whisper-chat.");
-			pSelf->SendChatTarget(ClientID, "Add funround ghosts vs ninjas.");
-			pSelf->SendChatTarget(ClientID, "Add funround ghouls vs biologists.");
-			pSelf->SendChatTarget(ClientID, "-------------------------");
+			pSelf->SendChatTarget(ClientID, "--------- Changelog ---------");
+			pSelf->SendChatTarget(ClientID, "Fix Self killing/spectator gives you points. [σℓí♡]");
+			pSelf->SendChatTarget(ClientID, "Add new weapon rifle for mercenary's bomb [σℓí♡]");
+			pSelf->SendChatTarget(ClientID, "Add converse (/c \"text\") for whisper-chat [σℓí♡]");
+			pSelf->SendChatTarget(ClientID, "Add funround ghosts vs ninjas [breton]");
+			pSelf->SendChatTarget(ClientID, "Add funround ghouls vs biologists [breton]");
+			pSelf->SendChatTarget(ClientID, "Add changelog [σℓí♡]");
+			pSelf->SendChatTarget(ClientID, "---------------------------------");
 			break;	
 		default:
 			pSelf->SendChatTarget(ClientID, "This list does not exist.");
