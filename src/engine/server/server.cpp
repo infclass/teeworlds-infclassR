@@ -2251,24 +2251,23 @@ int CServer::Run()
 
 	// start server
 	NETADDR BindAddr;
-	if(g_Config.m_Bindaddr[0] && net_host_lookup(g_Config.m_Bindaddr, &BindAddr, NETTYPE_ALL) == 0)
-	{
-		// sweet!
-		BindAddr.type = NETTYPE_ALL;
-		BindAddr.port = g_Config.m_SvPort;
-	}
-	else
-	{
-		mem_zero(&BindAddr, sizeof(BindAddr));
-		BindAddr.type = NETTYPE_ALL;
-		BindAddr.port = g_Config.m_SvPort;
-	}
+	int NetType = NETTYPE_ALL;
 
+	if(!g_Config.m_Bindaddr[0] || net_host_lookup(g_Config.m_Bindaddr, &BindAddr, NetType) != 0)
+		mem_zero(&BindAddr, sizeof(BindAddr));
+
+	BindAddr.type = NetType;
+
+	int Port = g_Config.m_SvPort;
+	BindAddr.port = Port;
 	if(!m_NetServer.Open(BindAddr, &m_ServerBan, g_Config.m_SvMaxClients, g_Config.m_SvMaxClientsPerIP, 0))
 	{
 		dbg_msg("server", "couldn't open socket. port %d might already be in use", g_Config.m_SvPort);
 		return -1;
 	}
+
+	if(Port == 0)
+		dbg_msg("server", "using port %d", BindAddr.port);
 
 	if(g_Config.m_InfCaptcha)
 	{

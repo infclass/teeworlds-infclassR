@@ -45,7 +45,7 @@ void CRegister::RegisterSendFwcheckresponse(NETADDR *pAddr)
 void CRegister::RegisterSendHeartbeat(NETADDR Addr)
 {
 	static unsigned char aData[sizeof(SERVERBROWSE_HEARTBEAT) + 2];
-	unsigned short Port = g_Config.m_SvPort;
+	unsigned short Port = m_pNetServer->Address().port;
 	CNetChunk Packet;
 
 	mem_copy(aData, SERVERBROWSE_HEARTBEAT, sizeof(SERVERBROWSE_HEARTBEAT));
@@ -269,7 +269,7 @@ int CRegister::RegisterProcessPacket(CNetChunk *pPacket)
 	{
 		m_pConsole->Print(IConsole::OUTPUT_LEVEL_STANDARD, "register", "ERROR: the master server reports that clients can not connect to this server.");
 		char aBuf[256];
-		str_format(aBuf, sizeof(aBuf), "ERROR: configure your firewall/nat to let through udp on port %d.", g_Config.m_SvPort);
+		str_format(aBuf, sizeof(aBuf), "ERROR: configure your firewall/nat to let through udp on port %d.", m_pNetServer->Address().port);
 		m_pConsole->Print(IConsole::OUTPUT_LEVEL_STANDARD, "register", aBuf);
 		//RegisterNewState(REGISTERSTATE_ERROR);
 		return 1;
