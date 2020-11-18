@@ -7,6 +7,8 @@
 #include "ringbuffer.h"
 #include "huffman.h"
 
+#include <base/math.h>
+
 /*
  * Thanks to DDNet for the Token system
  */

@@ -285,11 +285,8 @@ int CNetConnection::Feed(CNetPacketConstruct *pPacket, NETADDR *pAddr)
 				if(pPacket->m_DataSize > 1)
 				{
 					// make sure to sanitize the error string form the other party
-					if(pPacket->m_DataSize < 128)
-						str_copy(Str, (char *)&pPacket->m_aChunkData[1], pPacket->m_DataSize);
-					else
-						str_copy(Str, (char *)&pPacket->m_aChunkData[1], sizeof(Str));
-					str_sanitize_strong(Str);
+					str_utf8_copy(Str, (char *)&pPacket->m_aChunkData[1], minimum(pPacket->m_DataSize, (int)sizeof(Str)));
+					str_sanitize_cc(Str);
 				}
 
 				if(!m_BlockCloseMsg)
