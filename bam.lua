@@ -252,6 +252,7 @@ function build(settings)
 	-- build the small libraries
 	wavpack = Compile(settings, Collect("src/engine/external/wavpack/*.c"))
 	pnglite = Compile(settings, Collect("src/engine/external/pnglite/*.c"))
+	settings.cc.includes:Add("src/engine/external/pnglite")
 	md5 = Compile(settings, "src/engine/external/md5/md5.c")
 	json = Compile(settings, "src/engine/external/json-parser/json.c")
 
@@ -327,7 +328,7 @@ function build(settings)
 
 	-- build server, version server and master server
 	server_exe = Link(server_settings, "bin/server", engine, server,
-		game_shared, game_server, infclassr, teeuniverses, zlib, server_link_other, md5, json)
+		game_shared, game_server, infclassr, teeuniverses, zlib, server_link_other, pnglite, md5, json)
 
 	serverlaunch = {}
 	if platform == "macosx" then

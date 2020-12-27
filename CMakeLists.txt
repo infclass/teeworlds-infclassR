@@ -314,7 +314,7 @@ endif()
 find_package(Ogg)
 #find_package(Opus)
 #find_package(Opusfile)
-#find_package(Pnglite)
+find_package(Pnglite)
 find_package(PythonInterp)
 find_package(SDL2)
 find_package(Threads)
@@ -377,7 +377,7 @@ show_dependency_status("Ogg" OGG)
 show_dependency_status("OpenSSL Crypto" CRYPTO)
 show_dependency_status("Opus" OPUS)
 show_dependency_status("Opusfile" OPUSFILE)
-#show_dependency_status("Pnglite" PNGLITE)
+show_dependency_status("Pnglite" PNGLITE)
 show_dependency_status("PythonInterp" PYTHONINTERP)
 show_dependency_status("SDL2" SDL2)
 show_dependency_status("Zlib" ZLIB)
@@ -690,26 +690,23 @@ add_library(engine-shared EXCLUDE_FROM_ALL OBJECT ${ENGINE_INTERFACE} ${ENGINE_S
 add_library(game-shared EXCLUDE_FROM_ALL OBJECT ${GAME_SHARED} ${GAME_GENERATED_SHARED} ${ENGINE_UUID_SHARED} ${teeuniverses_SOURCES})
 list(APPEND TARGETS_OWN engine-shared game-shared)
 
-#add_library(pnglite STATIC
-#    ${CMAKE_CURRENT_SOURCE_DIR}/src/engine/external/pnglite/pnglite.c
-#    ${CMAKE_CURRENT_SOURCE_DIR}/src/engine/external/pnglite/pnglite.h
-#)
-#target_include_directories(pnglite PUBLIC
-#    ${CMAKE_CURRENT_SOURCE_DIR}/src/engine/external/pnglite
-#)
-#add_library(pnglite::pnglite ALIAS pnglite)
+add_library(pnglite STATIC
+  ${CMAKE_CURRENT_SOURCE_DIR}/src/engine/external/pnglite/pnglite.c
+  ${CMAKE_CURRENT_SOURCE_DIR}/src/engine/external/pnglite/pnglite.h
+)
+target_include_directories(pnglite PUBLIC
+  ${CMAKE_CURRENT_SOURCE_DIR}/src/engine/external/pnglite
+)
+add_library(pnglite::pnglite ALIAS pnglite)
 
 include_directories(SYSTEM
 	${CMAKE_CURRENT_SOURCE_DIR}/src
 	${CMAKE_CURRENT_BINARY_DIR}/src
 )
 
-#set(PNGLITE_INCLUDE_DIRS "${CMAKE_CURRENT_SOURCE_DIR}/src/engine/external/pnglite")
-#message(STATUS "PNGLITE_INCLUDE_DIRS: ${PNGLITE_INCLUDE_DIRS}")
-
-#target_link_libraries(engine-shared PUBLIC
-#  pnglite::pnglite
-#)
+target_link_libraries(engine-shared PUBLIC
+  pnglite::pnglite
+)
 
 #target_include_directories(src PUBLIC
 #    ${CMAKE_CURRENT_SOURCE_DIR}
