@@ -5,6 +5,83 @@
 #include <game/server/infclass/infcgamecontroller.h>
 #include <game/server/teeinfo.h>
 
+#include <pnglite.h>
+
+class CImageInfo
+{
+public:
+	enum
+	{
+		FORMAT_AUTO = -1,
+		FORMAT_RGB = 0,
+		FORMAT_RGBA = 1,
+		FORMAT_ALPHA = 2,
+	};
+
+	/* Variable: width
+		Contains the width of the image */
+	int m_Width;
+
+	/* Variable: height
+		Contains the height of the image */
+	int m_Height;
+
+	/* Variable: format
+		Contains the format of the image. See <Image Formats> for more information. */
+	int m_Format;
+
+	/* Variable: data
+		Pointer to the image data. */
+	void *m_pData;
+};
+
+int LoadPNG(CImageInfo *pImg, const char *pFilename)
+{
+	unsigned char *pBuffer;
+	png_t Png;
+
+	int Error = png_open_file(&Png, pFilename);
+	if(Error != PNG_NO_ERROR)
+	{
+		dbg_msg("MapConverter", "failed to open image file. filename='%s', pnglite: %s", pFilename, png_error_string(Error));
+		if(Error != PNG_FILE_ERROR)
+			png_close_file(&Png);
+		return 0;
+	}
+
+	if(Png.depth != 8 || (Png.color_type != PNG_TRUECOLOR && Png.color_type != PNG_TRUECOLOR_ALPHA) || Png.width > (2 << 12) || Png.height > (2 << 12))
+	{
+		dbg_msg("MapConverter", "invalid image format. filename='%s'", pFilename);
+		png_close_file(&Png);
+		return 0;
+	}
+
+	pBuffer = (unsigned char *)malloc((size_t)Png.width * Png.height * Png.bpp);
+	Error = png_get_data(&Png, pBuffer);
+	if(Error != PNG_NO_ERROR)
+	{
+		dbg_msg("MapConverter", "failed to read image. filename='%s', pnglite: %s", pFilename, png_error_string(Error));
+		free(pBuffer);
+		png_close_file(&Png);
+		return 0;
+	}
+	png_close_file(&Png);
+
+	pImg->m_Width = Png.width;
+	pImg->m_Height = Png.height;
+	if(Png.color_type == PNG_TRUECOLOR)
+		pImg->m_Format = CImageInfo::FORMAT_RGB;
+	else if(Png.color_type == PNG_TRUECOLOR_ALPHA)
+		pImg->m_Format = CImageInfo::FORMAT_RGBA;
+	else
+	{
+		free(pBuffer);
+		return 0;
+	}
+	pImg->m_pData = pBuffer;
+	return 1;
+}
+
 CMapConverter::CMapConverter(IStorage *pStorage, IEngineMap *pMap, IConsole* pConsole) :
 	m_pStorage(pStorage),
 	m_pMap(pMap),
@@ -559,6 +636,53 @@ int CMapConverter::AddExternalImage(const char* pImageName, int Width, int Heigh
 	return m_NumImages-1;
 }
 
+int CMapConverter::AddEmbeddedImage(const char *pImageName, int Width, int Height)
+{
+	CImageInfo img;
+	CImageInfo *pImg = &img;
+
+	char aBuf[512];
+	str_format(aBuf, sizeof(aBuf), "data/mapres/%s.png", pImageName);
+
+	if (!LoadPNG(pImg, aBuf)) {
+		return 0;
+	}
+
+	CMapItemImage Item;
+	Item.m_Version = 1;
+
+	Item.m_External = 0;
+	Item.m_Width = Width;
+	Item.m_Height = Height;
+	Item.m_ImageName = m_DataFile.AddData(str_length((char*)pImageName)+1, (char*)pImageName);
+
+	Item.m_Width = pImg->m_Width;
+	Item.m_Height = pImg->m_Height;
+
+	if(pImg->m_Format == CImageInfo::FORMAT_RGB)
+	{
+		// Convert to RGBA
+		unsigned char *pDataRGBA = (unsigned char *)malloc((size_t)Item.m_Width * Item.m_Height * 4);
+		unsigned char *pDataRGB = (unsigned char *)pImg->m_pData;
+		for(int i = 0; i < Item.m_Width * Item.m_Height; i++)
+		{
+			pDataRGBA[i * 4] = pDataRGB[i * 3];
+			pDataRGBA[i * 4 + 1] = pDataRGB[i * 3 + 1];
+			pDataRGBA[i * 4 + 2] = pDataRGB[i * 3 + 2];
+			pDataRGBA[i * 4 + 3] = 255;
+		}
+		Item.m_ImageData = m_DataFile.AddData(Item.m_Width * Item.m_Height * 4, pDataRGBA);
+		free(pDataRGBA);
+	}
+	else
+	{
+		Item.m_ImageData = m_DataFile.AddData(Item.m_Width * Item.m_Height * 4, pImg->m_pData);
+	}
+	m_DataFile.AddItem(MAPITEMTYPE_IMAGE, m_NumImages++, sizeof(Item), &Item);
+
+	return m_NumImages-1;
+}
+
 void CMapConverter::Finalize()
 {
 	int ClassImageID[NUM_MENUCLASS];
@@ -827,6 +951,8 @@ void CMapConverter::Finalize()
 
 bool CMapConverter::CreateMap(const char* pFilename)
 {
+	png_init(0, 0);
+
 	char aBuf[512];
 	if(!m_DataFile.Open(Storage(), pFilename))
 	{
