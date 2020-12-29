@@ -1917,21 +1917,10 @@ void CGameContext::OnMessage(int MsgID, CUnpacker *pUnpacker, int ClientID)
 			}
 			
 /* INFECTION MODIFICATION START ***************************************/
-			if(m_apPlayers[ClientID]->IsZombie() && pMsg->m_Team == TEAM_SPECTATORS) 
+			if(pMsg->m_Team == TEAM_SPECTATORS && !CanJoinSpec(ClientID))
 			{
-				int InfectedCount = 0;
-				CPlayerIterator<PLAYERITER_INGAME> Iter(m_apPlayers);
-				while(Iter.Next())
-				{
-					 if(Iter.Player()->IsZombie())
-						 InfectedCount++;
-				}
-
-				if(InfectedCount <= 2)
-				{
-					 SendBroadcast_Localization(ClientID, BROADCAST_PRIORITY_GAMEANNOUNCE, BROADCAST_DURATION_GAMEANNOUNCE, _("You can't join the spectators right now"), NULL);
-					 return;
-				}
+				SendBroadcast_Localization(ClientID, BROADCAST_PRIORITY_GAMEANNOUNCE, BROADCAST_DURATION_GAMEANNOUNCE, _("You can't join the spectators right now"), NULL);
+				return;
 			}
 /* INFECTION MODIFICATION END *****************************************/
 
@@ -4510,6 +4499,33 @@ void CGameContext::RemoveSpectatorCID(int ClientID) {
 bool CGameContext::IsSpectatorCID(int ClientID) {
 	auto& vec = Server()->spectators_id;
 	return std::find(vec.begin(), vec.end(), ClientID) != vec.end();
+}
+
+bool CGameContext::CanJoinSpec(int ClientID)
+{
+	if (m_pController->IsGameOver())
+		return true;
+
+	if (!m_apPlayers[ClientID]->IsZombie())
+		return true;
+
+	int InfectedCount = 0;
+	int IngamePlayersCount = 0;
+	CPlayerIterator<PLAYERITER_INGAME> Iter(m_apPlayers);
+	while(Iter.Next())
+	{
+		IngamePlayersCount++;
+		if(Iter.Player()->IsZombie())
+			InfectedCount++;
+	}
+
+	if (IngamePlayersCount == InfectedCount)
+		return true;
+
+	if (InfectedCount > 2)
+		return true;
+
+	return false;
 }
 
 bool CGameContext::IsVersionBanned(int Version)

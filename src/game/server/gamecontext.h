@@ -366,6 +366,7 @@ public:
 	void AddSpectatorCID(int ClientID);
 	void RemoveSpectatorCID(int ClientID);
 	bool IsSpectatorCID(int ClientID);
+	bool CanJoinSpec(int ClientID);
 	std::ofstream fout;
 	// InfClassR end
 	bool IsVersionBanned(int Version);
