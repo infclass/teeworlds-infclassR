@@ -789,9 +789,19 @@ bool CPlayer::IsZombie() const
 	return (m_class > END_HUMANCLASS);
 }
 
+bool CPlayer::IsActuallyZombie() const
+{
+	return IsZombie() && !IsSpectator();
+}
+
 bool CPlayer::IsHuman() const
 {
 	return !(m_class > END_HUMANCLASS);
+}
+
+bool CPlayer::IsSpectator() const
+{
+	return GetTeam() == TEAM_SPECTATORS;
 }
 
 bool CPlayer::IsKnownClass(int c)

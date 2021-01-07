@@ -161,7 +161,9 @@ public:
 	int GetOldClass();
 	void SetOldClass(int oldClass);
 	bool IsZombie() const;
+	bool IsActuallyZombie() const;
 	bool IsHuman() const;
+	bool IsSpectator() const;
 	void Infect(CPlayer* pInfectiousPlayer);
 	void StartInfection(bool force = false, CPlayer* pInfectiousPlayer = nullptr);
 	bool IsKnownClass(int c);
