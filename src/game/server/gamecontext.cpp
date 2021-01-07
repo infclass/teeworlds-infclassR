@@ -175,7 +175,7 @@ int CGameContext::RandomZombieToWitch() {
 	{
 		if (!m_apPlayers[i])
 			continue;
-		if (m_apPlayers[i]->IsZombie()) {
+		if (m_apPlayers[i]->IsActuallyZombie()) {
 			zombies_id.push_back(i);
 		}
 	}
