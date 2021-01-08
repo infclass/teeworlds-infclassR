@@ -29,9 +29,6 @@ IGameController::IGameController(class CGameContext *pGameServer)
 	m_UnbalancedTick = -1;
 	m_ForceBalanced = false;
 
-	m_aNumSpawnPoints[0] = 0;
-	m_aNumSpawnPoints[1] = 0;
-	
 	m_RoundId = -1;
 }
 
@@ -40,29 +37,6 @@ IGameController::~IGameController()
 }
 
 /* INFECTION MODIFICATION START ***************************************/
-bool IGameController::PreSpawn(CPlayer* pPlayer, vec2 *pOutPos)
-{
-	int Team = pPlayer->GetTeam();
-	
-	// spectators can't spawn
-	if(Team == TEAM_SPECTATORS)
-		return false;
-
-	int Type = (pPlayer->IsZombie() ? TEAM_RED : TEAM_BLUE);
-
-	// get spawn point
-	for(int i = 0; i < m_SpawnPoints[Type].size(); i++)
-	{
-		if(IsSpawnable(m_SpawnPoints[Type][i], 0))
-		{
-			*pOutPos = m_SpawnPoints[Type][i];
-			return true;
-		}
-	}
-	
-	return false;
-}
-
 void IGameController::MaybeSendStatistics()
 {
 	// skip some maps that are not very fair

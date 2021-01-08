@@ -33,7 +33,6 @@ protected:
 /* INFECTION MODIFICATION START ***************************************/
 	array<vec2> m_HeroFlagPositions;
 	array<vec2> m_SpawnPoints[2];
-	int m_aNumSpawnPoints[2];
 	int m_RoundId;
 	
 public:
@@ -146,7 +145,7 @@ public:
 
 	//
 /* INFECTION MODIFICATION START ***************************************/
-	virtual bool PreSpawn(CPlayer* pPlayer, vec2 *pPos);
+	virtual bool PreSpawn(CPlayer* pPlayer, vec2 *pPos) = 0;
 	virtual int ChooseHumanClass(const CPlayer* pPlayer) const = 0;
 	virtual int ChooseInfectedClass(const CPlayer* pPlayer) const = 0;
 	virtual bool IsChoosableClass(int PlayerClass) = 0;
