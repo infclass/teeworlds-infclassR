@@ -739,6 +739,7 @@ set_glob(ENGINE_SERVER GLOB src/engine/server
 )
 
 set_glob(GAME_SERVER GLOB_RECURSE src/game/server
+  alloc.h
   entities/character.cpp
   entities/character.h
   entities/laser.cpp
