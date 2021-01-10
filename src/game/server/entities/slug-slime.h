@@ -13,6 +13,7 @@ public:
 	virtual void Reset();
 	virtual void Tick();
 
+	void Replenish(int PlayerID);
 	int GetOwner() const;
 	
 public:

@@ -66,3 +66,9 @@ void CSlugSlime::Tick()
 	
 	m_LifeSpan--;
 }
+
+void CSlugSlime::Replenish(int PlayerID)
+{
+	m_Owner = PlayerID;
+	m_LifeSpan = Server()->TickSpeed()*g_Config.m_InfSlimeDuration;
+}

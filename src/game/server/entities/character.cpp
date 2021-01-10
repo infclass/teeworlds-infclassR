@@ -1032,16 +1032,24 @@ void CCharacter::FireWeapon()
 					vec2 CheckPos = m_Pos + Direction * 64.0f;
 					if(GameServer()->Collision()->IntersectLine(m_Pos, CheckPos, 0x0, &CheckPos))
 					{
-						float Distance = 99999999.0f;
+						static const float MinDistance = 84.0f;
+						float DistanceToTheNearestSlime = MinDistance * 2;
 						for(CSlugSlime* pSlime = (CSlugSlime*) GameWorld()->FindFirst(CGameWorld::ENTTYPE_SLUG_SLIME); pSlime; pSlime = (CSlugSlime*) pSlime->TypeNext())
 						{
-							if(distance(pSlime->m_Pos, m_Pos) < Distance)
+							const float d = distance(pSlime->m_Pos, m_Pos);
+							if(d < DistanceToTheNearestSlime)
 							{
-								Distance = distance(pSlime->m_Pos, m_Pos);
+								DistanceToTheNearestSlime = d;
+							}
+							if (d <= MinDistance / 2)
+							{
+								// Replenish the slime
+								pSlime->Replenish(m_pPlayer->GetCID());
+								break;
 							}
 						}
-						
-						if(Distance > 84.0f)
+
+						if(DistanceToTheNearestSlime > 84.0f)
 						{
 							ShowAttackAnimation = true;
 							new CSlugSlime(GameWorld(), CheckPos, m_pPlayer->GetCID());
