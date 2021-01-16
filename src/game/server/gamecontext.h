@@ -140,8 +140,6 @@ public:
 	// InfClassR
 	int GetZombieCount();
 	int GetZombieCount(int zombie_class);
-	int RandomZombieToWitch();
-	std::vector<int> m_WitchCallers;
 
 	// InfClassR fun round
 	bool StartFunRound(const FunRoundSettings &Settings);
@@ -262,7 +260,6 @@ private:
 	static bool ConAntiPing(IConsole::IResult *pResult, void *pUserData);
 	static bool ConLanguage(IConsole::IResult *pResult, void *pUserData);
 	static bool ConCmdList(IConsole::IResult *pResult, void *pUserData);
-	static bool ConWitch(IConsole::IResult *pResult, void *pUserData);
 	static bool ConChangeLog(IConsole::IResult *pResult, void *pUserData);
 	bool PrivateMessage(const char* pStr, int ClientID, bool TeamChat);
 	void Converse(int ClientID, const char* pStr, int team);

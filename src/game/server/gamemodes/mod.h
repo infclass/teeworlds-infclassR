@@ -61,9 +61,15 @@ public:
 
 	void RegisterChatCommands(class IConsole *pConsole) override;
 
+	static bool ChatWitch(IConsole::IResult *pResult, void *pUserData);
+	bool ChatWitch(IConsole::IResult *pResult);
+
 private:
 	bool IsSpawnable(vec2 Pos, int TeleZoneIndex);
 	void GetPlayerCounter(int ClientException, int& NumHumans, int& NumInfected, int& NumFirstInfected);
+
+	int RandomZombieToWitch();
+	std::vector<int> m_WitchCallers;
 	
 private:	
 	int m_MapWidth;

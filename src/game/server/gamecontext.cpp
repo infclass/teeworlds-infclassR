@@ -166,30 +166,6 @@ int CGameContext::GetZombieCount(int zombie_class) {
 	return count;
 }
 
-int CGameContext::RandomZombieToWitch() {
-	std::vector<int> zombies_id;
-
-	m_WitchCallers.clear();
-
-	for(int i = 0; i < MAX_CLIENTS; i++)
-	{
-		if (!m_apPlayers[i])
-			continue;
-		if (m_apPlayers[i]->IsActuallyZombie()) {
-			zombies_id.push_back(i);
-		}
-	}
-	
-	int id = random_int(0, zombies_id.size() - 1);
-	char aBuf[512];
-	/* debug */
-	str_format(aBuf, sizeof(aBuf), "going through MAX_CLIENTS=%d, zombie_count=%d, random_int=%d, id=%d", MAX_CLIENTS, zombies_id.size(), id, zombies_id[id]);
-	Console()->Print(IConsole::OUTPUT_LEVEL_DEBUG, "witch", aBuf);
-	/* /debug */
-	m_apPlayers[zombies_id[id]]->SetClass(PLAYERCLASS_WITCH);
-	return zombies_id[id];
-}
-
 void CGameContext::SetAvailabilities(std::vector<int> value)
 {
 	static const int ValuesNumber = NB_HUMANCLASS;
@@ -4125,55 +4101,6 @@ bool CGameContext::ConCmdList(IConsole::IResult *pResult, void *pUserData)
 	return true;
 }
 
-bool CGameContext::ConWitch(IConsole::IResult *pResult, void *pUserData)
-{
-	CGameContext *pSelf = (CGameContext *)pUserData;
-	int ClientID = pResult->GetClientID();
-	int callers_count = pSelf->m_WitchCallers.size();
-	const int REQUIRED_CALLERS_COUNT = 5;
-	const int MIN_ZOMBIES = 2;
-
-	char aBuf[256];
-	str_format(aBuf, sizeof(aBuf), "ConWitch() called");
-	pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_DEBUG, "conwitch", aBuf);
-
-	if (pSelf->GetZombieCount(PLAYERCLASS_WITCH) >= pSelf->Server()->GetClassPlayerLimit(PLAYERCLASS_WITCH)) {
-		str_format(aBuf, sizeof(aBuf), "All witches are already here");
-		pSelf->SendChatTarget(ClientID, aBuf);
-		return true;
-	}
-	if (pSelf->GetZombieCount() <= MIN_ZOMBIES) {
-		str_format(aBuf, sizeof(aBuf), "Too few zombies");
-		pSelf->SendChatTarget(ClientID, aBuf);
-		return true;
-	}
-
-	if (callers_count < REQUIRED_CALLERS_COUNT) {
-		auto& wc = pSelf->m_WitchCallers;
-		if(!(std::find(wc.begin(), wc.end(), ClientID) != wc.end())) {
-			wc.push_back(ClientID); // add to witch callers vector
-			callers_count += 1;
-			if (callers_count == 1)
-				str_format(aBuf, sizeof(aBuf), "%s is calling for Witch! (%d/%d) To call witch write: /witch",
-						pSelf->Server()->ClientName(ClientID), callers_count, REQUIRED_CALLERS_COUNT);
-			else
-				str_format(aBuf, sizeof(aBuf), "Witch (%d/%d)", callers_count, REQUIRED_CALLERS_COUNT);
-		}
-		else {
-			str_format(aBuf, sizeof(aBuf), "You can't call witch twice");
-			pSelf->SendChatTarget(ClientID, aBuf);
-			return true;
-		}
-	}
-	else {
-		int witch_id = pSelf->RandomZombieToWitch();
-		str_format(aBuf, sizeof(aBuf), "Witch %s has arrived!", pSelf->Server()->ClientName(witch_id));
-	}
-	
-	pSelf->SendChatTarget(-1, aBuf);
-	return true;
-}
-
 /* INFECTION MODIFICATION END *****************************************/
 
 void CGameContext::OnConsoleInit()
@@ -4229,7 +4156,6 @@ void CGameContext::OnConsoleInit()
 	Console()->Register("antiping", "i<0|1>", CFGFLAG_CHAT|CFGFLAG_USER, ConAntiPing, this, "Try to improve your ping");
 	Console()->Register("language", "s<en|fr|nl|de|bg|sr-Latn|hr|cs|pl|uk|ru|el|la|it|es|pt|hu|ar|tr|sah|fa|tl|zh-Hans|ja>", CFGFLAG_CHAT|CFGFLAG_USER, ConLanguage, this, "Display information about the mod");
 	Console()->Register("cmdlist", "", CFGFLAG_CHAT|CFGFLAG_USER, ConCmdList, this, "List of commands");
-	Console()->Register("witch", "", CFGFLAG_CHAT|CFGFLAG_USER, ConWitch, this, "Call Witch");
 /* INFECTION MODIFICATION END *****************************************/
 
 	Console()->Chain("sv_motd", ConchainSpecialMotdupdate, this);

@@ -9,6 +9,8 @@
 #include <engine/shared/network.h>
 #include <game/mapitems.h>
 #include <time.h>
+
+#include <algorithm>
 #include <iostream>
 #include <map>
 
@@ -381,6 +383,61 @@ const char *CGameControllerMOD::GetClassPluralDisplayName(int PlayerClass)
 
 void CGameControllerMOD::RegisterChatCommands(IConsole *pConsole)
 {
+	pConsole->Register("witch", "", CFGFLAG_CHAT|CFGFLAG_USER, ChatWitch, this, "Call Witch");
+}
+
+bool CGameControllerMOD::ChatWitch(IConsole::IResult *pResult, void *pUserData)
+{
+	CGameControllerMOD *pSelf = (CGameControllerMOD *)pUserData;
+	return pSelf->ChatWitch(pResult);
+}
+
+bool CGameControllerMOD::ChatWitch(IConsole::IResult *pResult)
+{
+	int ClientID = pResult->GetClientID();
+	int callers_count = m_WitchCallers.size();
+	const int REQUIRED_CALLERS_COUNT = 5;
+	const int MIN_ZOMBIES = 2;
+
+	char aBuf[256];
+	str_format(aBuf, sizeof(aBuf), "ConWitch() called");
+	GameServer()->Console()->Print(IConsole::OUTPUT_LEVEL_DEBUG, "conwitch", aBuf);
+
+	if (GameServer()->GetZombieCount(PLAYERCLASS_WITCH) >= Server()->GetClassPlayerLimit(PLAYERCLASS_WITCH)) {
+		str_format(aBuf, sizeof(aBuf), "All witches are already here");
+		GameServer()->SendChatTarget(ClientID, aBuf);
+		return true;
+	}
+	if (GameServer()->GetZombieCount() <= MIN_ZOMBIES) {
+		str_format(aBuf, sizeof(aBuf), "Too few zombies");
+		GameServer()->SendChatTarget(ClientID, aBuf);
+		return true;
+	}
+
+	if (callers_count < REQUIRED_CALLERS_COUNT) {
+		auto& wc = m_WitchCallers;
+		if(!(std::find(wc.begin(), wc.end(), ClientID) != wc.end())) {
+			wc.push_back(ClientID); // add to witch callers vector
+			callers_count += 1;
+			if (callers_count == 1)
+				str_format(aBuf, sizeof(aBuf), "%s is calling for Witch! (%d/%d) To call witch write: /witch",
+						Server()->ClientName(ClientID), callers_count, REQUIRED_CALLERS_COUNT);
+			else
+				str_format(aBuf, sizeof(aBuf), "Witch (%d/%d)", callers_count, REQUIRED_CALLERS_COUNT);
+		}
+		else {
+			str_format(aBuf, sizeof(aBuf), "You can't call witch twice");
+			GameServer()->SendChatTarget(ClientID, aBuf);
+			return true;
+		}
+	}
+	else {
+		int witch_id = RandomZombieToWitch();
+		str_format(aBuf, sizeof(aBuf), "Witch %s has arrived!", Server()->ClientName(witch_id));
+	}
+
+	GameServer()->SendChatTarget(-1, aBuf);
+	return true;
 }
 
 void CGameControllerMOD::EndRound()
@@ -411,6 +468,30 @@ void CGameControllerMOD::GetPlayerCounter(int ClientException, int& NumHumans, i
 		NumFirstInfected = 1;
 	else
 		NumFirstInfected = 2;
+}
+
+int CGameControllerMOD::RandomZombieToWitch() {
+	std::vector<int> zombies_id;
+
+	m_WitchCallers.clear();
+
+	for(int i = 0; i < MAX_CLIENTS; i++)
+	{
+		if (!GameServer()->m_apPlayers[i])
+			continue;
+		if (GameServer()->m_apPlayers[i]->IsActuallyZombie()) {
+			zombies_id.push_back(i);
+		}
+	}
+
+	int id = random_int(0, zombies_id.size() - 1);
+	char aBuf[512];
+	/* debug */
+	str_format(aBuf, sizeof(aBuf), "going through MAX_CLIENTS=%d, zombie_count=%d, random_int=%d, id=%d", MAX_CLIENTS, zombies_id.size(), id, zombies_id[id]);
+	GameServer()->Console()->Print(IConsole::OUTPUT_LEVEL_DEBUG, "witch", aBuf);
+	/* /debug */
+	GameServer()->m_apPlayers[zombies_id[id]]->SetClass(PLAYERCLASS_WITCH);
+	return zombies_id[id];
 }
 
 void CGameControllerMOD::Tick()
