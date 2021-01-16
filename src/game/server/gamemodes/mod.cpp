@@ -379,6 +379,10 @@ const char *CGameControllerMOD::GetClassPluralDisplayName(int PlayerClass)
 	}
 }
 
+void CGameControllerMOD::RegisterChatCommands(IConsole *pConsole)
+{
+}
+
 void CGameControllerMOD::EndRound()
 {	
 	m_InfectedStarted = false;

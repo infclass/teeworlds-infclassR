@@ -171,6 +171,8 @@ public:
 
 	virtual void PostReset();
 	double GetTime();
+
+	virtual void RegisterChatCommands(class IConsole *pConsole) = 0;
 };
 
 #endif

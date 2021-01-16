@@ -2,6 +2,7 @@
 /* If you are missing that file, acquire a complete release at teeworlds.com.                */
 #ifndef GAME_SERVER_GAMEMODES_MOD_H
 #define GAME_SERVER_GAMEMODES_MOD_H
+#include <engine/console.h>
 #include <game/server/gamecontroller.h>
 #include <game/server/gameworld.h>
 #include <game/server/classes.h>
@@ -57,6 +58,8 @@ public:
 	static const char *GetClassPluralName(int PlayerClass);
 	static const char *GetClassDisplayName(int PlayerClass);
 	static const char *GetClassPluralDisplayName(int PlayerClass);
+
+	void RegisterChatCommands(class IConsole *pConsole) override;
 
 private:
 	bool IsSpawnable(vec2 Pos, int TeleZoneIndex);
