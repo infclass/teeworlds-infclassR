@@ -48,7 +48,6 @@ CPlayer::CPlayer(CGameContext *pGameServer, int ClientID, int Team)
 	idMap[0] = ClientID;
 
 	}
-	m_WasHumanThisRound = false;
 	
 	m_MapMenu = 0;
 	m_MapMenuItem = -1;

@@ -171,7 +171,6 @@ public:
 	const char* GetLanguage();
 	void SetLanguage(const char* pLanguage);
 	
-	bool m_WasHumanThisRound;
 	int m_WinAsHuman;
 	bool m_HookProtection;
 	bool m_HookProtectionAutomatic;

@@ -995,8 +995,6 @@ bool CGameControllerMOD::PreSpawn(CPlayer* pPlayer, vec2 *pOutPos)
 	
 	if(m_InfectedStarted)
 		pPlayer->StartInfection();
-	else
-		pPlayer->m_WasHumanThisRound = true;
 		
 	if(pPlayer->IsZombie() && m_ExplosionStarted)
 		return false;
