@@ -383,7 +383,50 @@ const char *CGameControllerMOD::GetClassPluralDisplayName(int PlayerClass)
 
 void CGameControllerMOD::RegisterChatCommands(IConsole *pConsole)
 {
+	pConsole->Register("inf_set_class", "is", CFGFLAG_SERVER, ConSetClass, this, "Set the class of a player");
+
 	pConsole->Register("witch", "", CFGFLAG_CHAT|CFGFLAG_USER, ChatWitch, this, "Call Witch");
+}
+
+bool CGameControllerMOD::ConSetClass(IConsole::IResult *pResult, void *pUserData)
+{
+	CGameControllerMOD *pSelf = (CGameControllerMOD *)pUserData;
+	return pSelf->ConSetClass(pResult);
+}
+
+bool CGameControllerMOD::ConSetClass(IConsole::IResult *pResult)
+{
+	int PlayerID = pResult->GetInteger(0);
+	const char *pClassName = pResult->GetString(1);
+
+	CPlayer* pPlayer = GameServer()->m_apPlayers[PlayerID];
+
+	if(!pPlayer)
+		return true;
+
+	for (int PlayerClass = PLAYERCLASS_NONE; PlayerClass < NB_PLAYERCLASS; ++PlayerClass)
+	{
+		if (str_comp(pClassName, CGameControllerMOD::GetClassName(PlayerClass)) != 0)
+			continue;
+
+		pPlayer->SetClass(PlayerClass);
+		if (PlayerClass == PLAYERCLASS_NONE)
+		{
+			CCharacter* pChar = pPlayer->GetCharacter();
+			if(pChar)
+			{
+				pChar->OpenClassChooser();
+			}
+		}
+		char aBuf[256];
+		str_format(aBuf, sizeof(aBuf), "The admin change the class of %s to %s", GameServer()->Server()->ClientName(PlayerID), pClassName);
+		GameServer()->SendChat(-1, CGameContext::CHAT_ALL, aBuf);
+
+		return true;
+	}
+
+	GameServer()->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "inf_set_class", "Unknown class");
+	return true;
 }
 
 bool CGameControllerMOD::ChatWitch(IConsole::IResult *pResult, void *pUserData)

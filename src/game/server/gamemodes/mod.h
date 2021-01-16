@@ -61,6 +61,9 @@ public:
 
 	void RegisterChatCommands(class IConsole *pConsole) override;
 
+	static bool ConSetClass(IConsole::IResult *pResult, void *pUserData);
+	bool ConSetClass(IConsole::IResult *pResult);
+
 	static bool ChatWitch(IConsole::IResult *pResult, void *pUserData);
 	bool ChatWitch(IConsole::IResult *pResult);
 

@@ -2871,42 +2871,6 @@ bool CGameContext::ConchainSpecialMotdupdate(IConsole::IResult *pResult, void *p
 
 
 /* INFECTION MODIFICATION START ***************************************/
-bool CGameContext::ConSetClass(IConsole::IResult *pResult, void *pUserData)
-{
-	CGameContext *pSelf = (CGameContext *)pUserData;
-	int PlayerID = pResult->GetInteger(0);
-	const char *pClassName = pResult->GetString(1);
-
-	CPlayer* pPlayer = pSelf->m_apPlayers[PlayerID];
-	
-	if(!pPlayer)
-		return true;
-
-	for (int PlayerClass = PLAYERCLASS_NONE; PlayerClass < NB_PLAYERCLASS; ++PlayerClass)
-	{
-		if (str_comp(pClassName, CGameControllerMOD::GetClassName(PlayerClass)) != 0)
-			continue;
-
-		pPlayer->SetClass(PlayerClass);
-		if (PlayerClass == PLAYERCLASS_NONE)
-		{
-			CCharacter* pChar = pPlayer->GetCharacter();
-			if(pChar)
-			{
-				pChar->OpenClassChooser();
-			}
-		}
-		char aBuf[256];
-		str_format(aBuf, sizeof(aBuf), "The admin change the class of %s to %s", pSelf->Server()->ClientName(PlayerID), pClassName);
-		pSelf->SendChat(-1, CGameContext::CHAT_ALL, aBuf);
-
-		return true;
-	}
-
-	pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "inf_set_class", "Unknown class");
-	return true;
-}
-
 bool CGameContext::ConChatInfo(IConsole::IResult *pResult, void *pUserData)
 {	
 	CGameContext *pSelf = (CGameContext *)pUserData;
@@ -4133,7 +4097,6 @@ void CGameContext::OnConsoleInit()
 	Console()->Register("start_special_fun_round", "sss", CFGFLAG_SERVER, ConStartSpecialFunRound, this, "Start fun round");
 	
 /* INFECTION MODIFICATION START ***************************************/
-	Console()->Register("inf_set_class", "is", CFGFLAG_SERVER, ConSetClass, this, "Set the class of a player");
 	
 	//Chat Command
 	Console()->Register("info", "", CFGFLAG_CHAT|CFGFLAG_USER, ConChatInfo, this, "Display information about the mod");
