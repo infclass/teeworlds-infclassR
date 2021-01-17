@@ -46,6 +46,7 @@ public:
 		
 		int m_SmokerScore;
 		int m_HunterScore;
+		int m_JockeyScore;
 		int m_BatScore;
 		int m_BoomerScore;
 		int m_GhostScore;

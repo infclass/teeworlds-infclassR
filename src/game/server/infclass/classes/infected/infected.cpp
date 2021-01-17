@@ -172,6 +172,12 @@ void CInfClassInfected::SetupSkin(CTeeInfo *output)
 			output->m_ColorBody = 3866368;
 			output->m_ColorFeet = 65414;
 			break;
+		case PLAYERCLASS_JOCKEY:
+			output->SetSkinName("emo");
+			output->m_UseCustomColor = 1;
+			output->m_ColorBody = 3866368;
+			output->m_ColorFeet = 65414;
+			break;
 		case PLAYERCLASS_BAT:
 			output->SetSkinName("limekitty");
 			output->m_UseCustomColor = 1;

@@ -661,6 +661,7 @@ int CServer::Init()
 	
 	SetClassAvailability(PLAYERCLASS_SMOKER, 1);
 	SetClassAvailability(PLAYERCLASS_HUNTER, 1);
+	SetClassAvailability(PLAYERCLASS_JOCKEY, 1);
 	SetClassAvailability(PLAYERCLASS_BAT, 1);
 	SetClassAvailability(PLAYERCLASS_GHOST, 1);
 	SetClassAvailability(PLAYERCLASS_SPIDER, 1);
@@ -3374,6 +3375,8 @@ int CServer::GetPlayerClassProbability(int PlayerClass) const
 			return g_Config.m_InfProbaBoomer;
 		case PLAYERCLASS_HUNTER:
 			return g_Config.m_InfProbaHunter;
+		case PLAYERCLASS_JOCKEY:
+			return g_Config.m_InfProbaJockey;
 		case PLAYERCLASS_BAT:
 			return g_Config.m_InfProbaBat;
 		case PLAYERCLASS_GHOST:
@@ -3408,6 +3411,9 @@ void CServer::SetPlayerClassProbability(int PlayerClass, int Probability)
 			break;
 		case PLAYERCLASS_HUNTER:
 			g_Config.m_InfProbaHunter = Probability;
+			break;
+		case PLAYERCLASS_JOCKEY:
+			g_Config.m_InfProbaJockey = Probability;
 			break;
 		case PLAYERCLASS_BAT:
 			g_Config.m_InfProbaBat = Probability;

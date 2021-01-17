@@ -98,6 +98,9 @@ int CRoundStatistics::CPlayer::OnScoreEvent(int EventType, int Class)
 		case PLAYERCLASS_HUNTER:
 			m_HunterScore += Points;
 			break;
+		case PLAYERCLASS_JOCKEY:
+			m_JockeyScore += Points;
+			break;
 		case PLAYERCLASS_BAT:
 			m_BatScore += Points;
 			break;
