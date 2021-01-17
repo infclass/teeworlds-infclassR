@@ -105,9 +105,7 @@ void CCharacterCore::Tick(bool UseInput, CParams* pParams)
 
 	// InfClassR taxi mode, todo: cleanup & move out from core
 	if (m_Passenger && (m_Passenger->m_Input.m_Jump > 0 || m_Passenger->m_Infected || (m_Infected || m_HookProtected))) {
-		m_Passenger->m_IsPassenger = false;
-		m_Passenger->m_ProbablyStucked = true;
-		m_Passenger = nullptr;
+		SetPassenger(nullptr);
 	}
 
 	if (m_Passenger) {
@@ -378,8 +376,7 @@ void CCharacterCore::Tick(bool UseInput, CParams* pParams)
 
 					// InfClassR taxi mode, todo: cleanup
 					if (!pCharCore->m_Passenger && (!m_Infected && !pCharCore->m_Infected && !m_HookProtected) && !IsChildCharacter(pCharCore, this)) {
-						pCharCore->m_Passenger = this;
-						m_IsPassenger = true;
+						pCharCore->SetPassenger(this);
 						m_HookedPlayer = -1;
 						m_HookState = HOOK_RETRACTED;
 						m_HookPos = m_Pos;
@@ -515,3 +512,19 @@ bool CCharacterCore::IsChildCharacter(CCharacterCore *suspect, CCharacterCore *m
 	else return false;
 }
 
+void CCharacterCore::SetPassenger(CCharacterCore *pPassenger)
+{
+	if(m_Passenger == pPassenger)
+		return;
+
+	if (m_Passenger)
+	{
+		m_Passenger->m_IsPassenger = false;
+		m_Passenger->m_ProbablyStucked = true;
+	}
+	m_Passenger = pPassenger;
+	if (pPassenger)
+	{
+		m_Passenger->m_IsPassenger = true;
+	}
+}

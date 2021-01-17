@@ -3094,9 +3094,7 @@ void CCharacter::Die(int Killer, int Weapon)
 		m_pPlayer->Infect(pKillerPlayer);
 	}	
 	if (m_Core.m_Passenger) {
-		m_Core.m_Passenger->m_IsPassenger = false; // InfClassR taxi mode
-		m_Core.m_Passenger->m_ProbablyStucked = true;
-		m_Core.m_Passenger = nullptr;
+		m_Core.SetPassenger(nullptr);
 	}
 /* INFECTION MODIFICATION END *****************************************/
 

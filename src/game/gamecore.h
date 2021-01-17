@@ -234,6 +234,7 @@ public:
 	void Write(CNetObj_CharacterCore *pObjCore);
 	void Quantize();
 	bool IsChildCharacter(CCharacterCore *suspect, CCharacterCore *me);
+	void SetPassenger(CCharacterCore *pPassenger);
 };
 
 #endif
