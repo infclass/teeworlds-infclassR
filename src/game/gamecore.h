@@ -212,6 +212,7 @@ public:
 	bool m_HookProtected;
 	bool m_Infected;
 	// InfClassR
+	static const float PassengerYOffset;
 	CCharacterCore* m_Passenger;
 	bool m_IsPassenger;
 	bool m_ProbablyStucked;

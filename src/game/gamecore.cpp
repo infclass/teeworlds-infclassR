@@ -55,6 +55,8 @@ float VelocityRamp(float Value, float Start, float Range, float Curvature)
 	return 1.0f/powf(Curvature, (Value-Start)/Range);
 }
 
+const float CCharacterCore::PassengerYOffset = -50;
+
 void CCharacterCore::Init(CWorldCore *pWorld, CCollision *pCollision)
 {
 	m_pWorld = pWorld;
@@ -113,7 +115,7 @@ void CCharacterCore::Tick(bool UseInput, CParams* pParams)
 		if (abs(m_Passenger->m_Vel.y) <= 1.0f)
 			m_Passenger->m_Vel.y = 0.0f;
 		m_Passenger->m_Pos.x = m_Pos.x;
-		m_Passenger->m_Pos.y = m_Pos.y - 50;
+		m_Passenger->m_Pos.y = m_Pos.y + PassengerYOffset;
 	}
 
 	if (m_ProbablyStucked) {
