@@ -275,9 +275,10 @@ public:
 	bool FindPortalPosition(vec2 Pos, vec2& Res);
 	bool FindWitchSpawnPosition(vec2& Res);
 	void SaturateVelocity(vec2 Force, float MaxSpeed);
+	bool HasPassenger() const;
+	CCharacter *GetPassenger();
 	void GiveGift(int GiftType);
 	int GetInfZoneTick();
-
 	void EnableJump();
 /* INFECTION MODIFICATION END *****************************************/
 };

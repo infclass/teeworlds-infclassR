@@ -1705,6 +1705,28 @@ void CCharacter::SaturateVelocity(vec2 Force, float MaxSpeed)
 	m_Core.m_Vel = NewVel;
 }
 
+bool CCharacter::HasPassenger() const
+{
+	return m_Core.m_Passenger;
+}
+
+CCharacter *CCharacter::GetPassenger()
+{
+	if(!m_Core.m_Passenger)
+	{
+		return nullptr;
+	}
+
+	for(int i = 0; i < MAX_CLIENTS; i++)
+	{
+		CCharacterCore *pCharCore = GameServer()->m_World.m_Core.m_apCharacters[i];
+		if (pCharCore == m_Core.m_Passenger)
+			return GameServer()->GetPlayerChar(i);
+	}
+
+	return nullptr;
+}
+
 void CCharacter::HandleWeapons()
 {
 	if(IsFrozen())
