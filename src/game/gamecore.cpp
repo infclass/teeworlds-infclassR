@@ -55,6 +55,7 @@ float VelocityRamp(float Value, float Start, float Range, float Curvature)
 	return 1.0f/powf(Curvature, (Value-Start)/Range);
 }
 
+const float CCharacterCore::PhysicalSize = 28.0f;
 const float CCharacterCore::PassengerYOffset = -50;
 
 void CCharacterCore::Init(CWorldCore *pWorld, CCollision *pCollision)
@@ -82,18 +83,17 @@ void CCharacterCore::Reset()
 void CCharacterCore::Tick(bool UseInput, CParams* pParams)
 {
 	const CTuningParams* pTuningParams = pParams->m_pTuningParams;
-	float PhysSize = 28.0f;
 	m_TriggeredEvents = 0;
 
 	// get ground state
 	bool Grounded = false;
-	if(m_pCollision->CheckPoint(m_Pos.x+PhysSize/2, m_Pos.y+PhysSize/2+5))
+	if(m_pCollision->CheckPoint(m_Pos.x+PhysicalSize/2, m_Pos.y+PhysicalSize/2+5))
 		Grounded = true;
-	if(m_pCollision->CheckPoint(m_Pos.x-PhysSize/2, m_Pos.y+PhysSize/2+5))
+	if(m_pCollision->CheckPoint(m_Pos.x-PhysicalSize/2, m_Pos.y+PhysicalSize/2+5))
 		Grounded = true;
 	
 	bool Stucked = false;
-	Stucked = m_pCollision->TestBox(m_Pos, vec2(28.0f, 28.0f));
+	Stucked = m_pCollision->TestBox(m_Pos, vec2(PhysicalSize, PhysicalSize));
 	
 	vec2 TargetDirection = normalize(vec2(m_Input.m_TargetX, m_Input.m_TargetY));
 
@@ -170,7 +170,7 @@ void CCharacterCore::Tick(bool UseInput, CParams* pParams)
 			if(m_HookState == HOOK_IDLE)
 			{
 				m_HookState = HOOK_FLYING;
-				m_HookPos = m_Pos+TargetDirection*PhysSize*1.5f;
+				m_HookPos = m_Pos+TargetDirection*PhysicalSize*1.5f;
 				m_HookDir = TargetDirection;
 				m_HookedPlayer = -1;
 				m_HookTick = 0;
@@ -250,7 +250,7 @@ void CCharacterCore::Tick(bool UseInput, CParams* pParams)
 					continue;
 
 				vec2 ClosestPoint = closest_point_on_line(m_HookPos, NewPos, pCharCore->m_Pos);
-				if(distance(pCharCore->m_Pos, ClosestPoint) < PhysSize+2.0f)
+				if(distance(pCharCore->m_Pos, ClosestPoint) < PhysicalSize+2.0f)
 				{
 					if (m_HookedPlayer == -1 || distance(m_HookPos, pCharCore->m_Pos) < Distance)
 					{
@@ -361,7 +361,7 @@ void CCharacterCore::Tick(bool UseInput, CParams* pParams)
 			// handle hook influence
 			if(m_HookedPlayer == i)
 			{
-				if(Distance > PhysSize*1.50f) // TODO: fix tweakable variable
+				if(Distance > PhysicalSize*1.50f) // TODO: fix tweakable variable
 				{
 					float Accel = pTuningParams->m_HookDragAccel * (Distance/pTuningParams->m_HookLength);
 					float DragSpeed = pTuningParams->m_HookDragSpeed;
@@ -389,9 +389,9 @@ void CCharacterCore::Tick(bool UseInput, CParams* pParams)
 				continue;
 			if ((m_Infected && pCharCore->m_Infected) && (m_HookProtected || pCharCore->m_HookProtected))
 				continue;
-			if(!pTuningParams->m_PlayerCollision && Distance < PhysSize*1.25f && Distance > 0.0f)
+			if(!pTuningParams->m_PlayerCollision && Distance < PhysicalSize*1.25f && Distance > 0.0f)
 			{
-				float a = (PhysSize*1.45f - Distance);
+				float a = (PhysicalSize*1.45f - Distance);
 				float Velocity = 0.5f;
 
 				// make sure that we don't add excess force by checking the

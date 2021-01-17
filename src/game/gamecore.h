@@ -201,6 +201,7 @@ private:
 	CWorldCore *m_pWorld;
 	CCollision *m_pCollision;
 public:
+	static const float PhysicalSize;
 	vec2 m_Pos;
 	vec2 m_Vel;
 
