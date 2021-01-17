@@ -1767,6 +1767,14 @@ void CInfClassCharacter::PreCoreTick()
 	}
 
 	UpdateTuningParam();
+
+	if(HasPassenger())
+	{
+		if(m_Core.m_Passenger->m_Infected || m_Core.m_Infected || m_Core.m_HookProtected)
+		{
+			m_Core.SetPassenger(nullptr);
+		}
+	}
 }
 
 void CInfClassCharacter::PostCoreTick()

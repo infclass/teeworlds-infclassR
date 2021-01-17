@@ -106,7 +106,8 @@ void CCharacterCore::Tick(bool UseInput, CParams* pParams)
 	float Friction = Grounded ? pTuningParams->m_GroundFriction : pTuningParams->m_AirFriction;
 
 	// InfClassR taxi mode, todo: cleanup & move out from core
-	if (m_Passenger && (m_Passenger->m_Input.m_Jump > 0 || m_Passenger->m_Infected || (m_Infected || m_HookProtected))) {
+	if (m_Passenger && (m_Passenger->m_Input.m_Jump > 0))
+	{
 		SetPassenger(nullptr);
 	}
 
