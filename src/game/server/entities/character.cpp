@@ -900,7 +900,6 @@ void CCharacter::FireWeapon()
 					ShowAttackAnimation = true;
 					
 					m_NumObjectsHit = 0;
-					GameServer()->CreateSound(m_Pos, SOUND_HAMMER_FIRE);
 
 					if(GetClass() == PLAYERCLASS_GHOST)
 					{
@@ -918,12 +917,6 @@ void CCharacter::FireWeapon()
 
 						if ((pTarget == this) || GameServer()->Collision()->IntersectLine(ProjStartPos, pTarget->m_Pos, NULL, NULL))
 							continue;
-
-						// set his velocity to fast upward (for now)
-						if(length(pTarget->m_Pos-ProjStartPos) > 0.0f)
-							GameServer()->CreateHammerHit(pTarget->m_Pos-normalize(pTarget->m_Pos-ProjStartPos)*m_ProximityRadius*0.5f);
-						else
-							GameServer()->CreateHammerHit(ProjStartPos);
 
 						vec2 Dir;
 						if (length(pTarget->m_Pos - m_Pos) > 0.0f)
@@ -1005,6 +998,12 @@ void CCharacter::FireWeapon()
 						}
 	/* INFECTION MODIFICATION END *****************************************/
 						Hits++;
+
+						// set his velocity to fast upward (for now)
+						if(length(pTarget->m_Pos-ProjStartPos) > 0.0f)
+							GameServer()->CreateHammerHit(pTarget->m_Pos-normalize(pTarget->m_Pos-ProjStartPos)*m_ProximityRadius*0.5f);
+						else
+							GameServer()->CreateHammerHit(ProjStartPos);
 					}
 
 					for(CPortal* pPortal = (CPortal*) GameWorld()->FindFirst(CGameWorld::ENTTYPE_PORTAL); pPortal; pPortal = (CPortal*) pPortal->TypeNext())
@@ -1056,11 +1055,17 @@ void CCharacter::FireWeapon()
 							new CSlugSlime(GameWorld(), CheckPos, m_pPlayer->GetCID());
 						}
 					}
+					if(ShowAttackAnimation)
+					{
+						Hits++;
+					}
 				}
 				
 				if(!ShowAttackAnimation)
 					return;
-					
+
+				if(Hits)
+					GameServer()->CreateSound(m_Pos, SOUND_HAMMER_FIRE);
 /* INFECTION MODIFICATION START ***************************************/
 			}
 /* INFECTION MODIFICATION END *****************************************/
