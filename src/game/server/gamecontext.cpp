@@ -148,7 +148,7 @@ int CGameContext::GetZombieCount() {
 	{
 		if (!m_apPlayers[i])
 			continue;
-		if (m_apPlayers[i]->IsZombie())
+		if (m_apPlayers[i]->IsActuallyZombie())
 			count++;
 	}
 	return count;
@@ -160,7 +160,7 @@ int CGameContext::GetZombieCount(int zombie_class) {
 	{
 		if (!m_apPlayers[i])
 			continue;
-		if (m_apPlayers[i]->IsZombie() && m_apPlayers[i]->GetClass() == zombie_class)
+		if (m_apPlayers[i]->IsActuallyZombie() && m_apPlayers[i]->GetClass() == zombie_class)
 			count++;
 	}
 	return count;
