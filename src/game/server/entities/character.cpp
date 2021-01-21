@@ -1963,7 +1963,15 @@ void CCharacter::Tick()
 				if(Server()->Tick() >= m_HealTick + (Server()->TickSpeed()/g_Config.m_InfInfzoneHealRate))
 				{
 					m_HealTick = Server()->Tick();
-					IncreaseHealth(1);
+					if(GameServer()->GetZombieCount() == 1)
+					{
+						// See also: Character::GiveArmorIfLonely()
+						IncreaseOverallHp(1);
+					}
+					else
+					{
+						IncreaseHealth(1);
+					}
 				}
 				if (m_InfZoneTick < 0) {
 					m_InfZoneTick = Server()->Tick(); // Save Tick when zombie enters infection zone
