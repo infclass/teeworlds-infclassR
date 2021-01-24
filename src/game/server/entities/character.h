@@ -258,7 +258,6 @@ public:
 	void SetClass(int ClassChoosed);
 	bool IsZombie() const;
 	bool IsHuman() const;
-	void Infection(bool v);
 	void RemoveAllGun();
 	void Freeze(float Time, int Player, int Reason);
 	bool IsFrozen() const;
@@ -271,7 +270,6 @@ public:
 	void HallucinationEffect();
 	void SlipperyEffect();
 	void GrantSpawnProtection();
-	bool IsTeleportable();
 	int GetInfWeaponID(int WID);
 	void UpdateTuningParam();
 	bool FindPortalPosition(vec2 Pos, vec2& Res);
