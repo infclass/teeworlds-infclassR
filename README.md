@@ -1,6 +1,6 @@
 ###### *Note that this is a 0.6 teeworlds mod (DDNet-compatible), if you are looking for 0.7 version, check [InfCroya](https://github.com/yavl/teeworlds-infcroya)*
 
-> :exclamation: An actively maintained & up-to-date infclass could be found here: [my-infclass-server](https://github.com/bretonium/my-infclass-server).
+> :exclamation: An actively maintained & up-to-date infclass could be found here: [my-infclass-server](https://github.com/InfectionDust/teeworlds-infclassR).
 
 # Teeworlds InfClassR
 Slightly modified version of original [InfClass by necropotame](https://github.com/necropotame/teeworlds-infclass).
