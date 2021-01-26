@@ -1864,49 +1864,6 @@ int CServer::LoadMap(const char *pMapName)
 	str_copy(m_aCurrentMap, pMapName, sizeof(m_aCurrentMap));
 	ResetMapVotes();
 
-	//map_set(df);
-	
-	
-	{
-		//Open file
-		char MapInfoFilename[512];
-		str_format(MapInfoFilename, sizeof(MapInfoFilename), "maps/%s.mapinfo", pMapName);
-		IOHANDLE File = Storage()->OpenFile(MapInfoFilename, IOFLAG_READ, IStorage::TYPE_ALL);
-		if(File)
-		{
-			char MapInfoLine[512];
-			bool isEndOfFile = false;
-			while(!isEndOfFile)
-			{
-				isEndOfFile = true;
-				
-				//Load one line
-				int MapInfoLineLength = 0;
-				char c;
-				while(io_read(File, &c, 1))
-				{
-					isEndOfFile = false;
-					
-					if(c == '\n') break;
-					else
-					{
-						MapInfoLine[MapInfoLineLength] = c;
-						MapInfoLineLength++;
-					}
-				}
-				
-				MapInfoLine[MapInfoLineLength] = 0;
-				
-				//Get the key
-				if(str_comp_nocase_num(MapInfoLine, "timelimit ", 10) == 0)
-				{
-					g_Config.m_SvTimelimit = str_toint(MapInfoLine+10);
-				}
-			}
-		
-			io_close(File);
-		}
-	}
 /* INFECTION MODIFICATION END *****************************************/
 	
 	return 1;
@@ -1916,7 +1873,7 @@ int CServer::GetMinPlayersForMap(const char* pMapName)
 {
 	int MinPlayers = 0;
 	char MapInfoFilename[256];
-	str_format(MapInfoFilename, sizeof(MapInfoFilename), "maps/%s.mapinfo", pMapName);
+	str_format(MapInfoFilename, sizeof(MapInfoFilename), "maps/%s.cfg", pMapName);
 	IOHANDLE File = Storage()->OpenFile(MapInfoFilename, IOFLAG_READ, IStorage::TYPE_ALL);
 
 	if(!File)
@@ -1946,9 +1903,10 @@ int CServer::GetMinPlayersForMap(const char* pMapName)
 		MapInfoLine[MapInfoLineLength] = 0;
 		
 		//Get the key
-		if(str_comp_nocase_num(MapInfoLine, "minplayers ", 11) == 0)
+		static const char MinPlayersKey[] = "# mapinfo: minplayers ";
+		if(str_comp_nocase_num(MapInfoLine, MinPlayersKey, sizeof(MinPlayersKey) - 1) == 0)
 		{
-			MinPlayers = str_toint(MapInfoLine+11);
+			MinPlayers = str_toint(MapInfoLine+sizeof(MinPlayersKey) - 1);
 		}
 	}
 	io_close(File);

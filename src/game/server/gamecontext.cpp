@@ -4200,6 +4200,14 @@ void CGameContext::OnInit(/*class IKernel *pKernel*/)
 		}
 	}
 
+	{
+		//Open file
+		char *pMapShortName = &g_Config.m_SvMap[0];
+		char MapCfgFilename[512];
+		str_format(MapCfgFilename, sizeof(MapCfgFilename), "maps/%s.cfg", pMapShortName);
+		Console()->ExecuteFile(MapCfgFilename);
+	}
+
 	//game.world.insert_entity(game.Controller);
 
 #ifdef CONF_DEBUG
