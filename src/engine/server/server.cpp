@@ -1868,8 +1868,6 @@ int CServer::LoadMap(const char *pMapName)
 	
 	
 	{
-		g_Config.m_SvTimelimit = 5;
-		
 		//Open file
 		char MapInfoFilename[512];
 		str_format(MapInfoFilename, sizeof(MapInfoFilename), "maps/%s.mapinfo", pMapName);
@@ -1908,8 +1906,6 @@ int CServer::LoadMap(const char *pMapName)
 		
 			io_close(File);
 		}
-		else
-			g_Config.m_SvTimelimit = 5;
 	}
 /* INFECTION MODIFICATION END *****************************************/
 	
