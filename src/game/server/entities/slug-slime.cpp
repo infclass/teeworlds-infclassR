@@ -67,8 +67,18 @@ void CSlugSlime::Tick()
 	m_LifeSpan--;
 }
 
+int CSlugSlime::GetLifeSpan() const
+{
+	return m_LifeSpan;
+}
+
+int CSlugSlime::GetMaxLifeSpan()
+{
+	return Server()->TickSpeed()*g_Config.m_InfSlimeDuration;
+}
+
 void CSlugSlime::Replenish(int PlayerID)
 {
 	m_Owner = PlayerID;
-	m_LifeSpan = Server()->TickSpeed()*g_Config.m_InfSlimeDuration;
+	m_LifeSpan = GetMaxLifeSpan();
 }

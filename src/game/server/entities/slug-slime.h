@@ -13,6 +13,8 @@ public:
 	virtual void Reset();
 	virtual void Tick();
 
+	int GetLifeSpan() const;
+	int GetMaxLifeSpan();
 	void Replenish(int PlayerID);
 	int GetOwner() const;
 	

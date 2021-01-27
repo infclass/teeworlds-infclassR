@@ -1044,12 +1044,16 @@ void CCharacter::FireWeapon()
 							if (d <= MinDistance / 2)
 							{
 								// Replenish the slime
-								pSlime->Replenish(m_pPlayer->GetCID());
-								break;
+								if(pSlime->GetMaxLifeSpan() - pSlime->GetLifeSpan() > Server()->TickSpeed())
+								{
+									pSlime->Replenish(m_pPlayer->GetCID());
+									ShowAttackAnimation = true;
+									break;
+								}
 							}
 						}
 
-						if(DistanceToTheNearestSlime > 84.0f)
+						if(DistanceToTheNearestSlime > MinDistance)
 						{
 							ShowAttackAnimation = true;
 							new CSlugSlime(GameWorld(), CheckPos, m_pPlayer->GetCID());
