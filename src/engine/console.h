@@ -45,6 +45,8 @@ public:
 		unsigned m_NumArgs;
 
 	public:
+		int m_Value;
+		char m_aValue[128];
 		IResult() { m_NumArgs = 0; m_ClientID = -1; }
 		virtual ~IResult() {}
 
