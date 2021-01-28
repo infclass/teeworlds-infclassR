@@ -1059,17 +1059,12 @@ void CCharacter::FireWeapon()
 							new CSlugSlime(GameWorld(), CheckPos, m_pPlayer->GetCID());
 						}
 					}
-					if(ShowAttackAnimation)
-					{
-						Hits++;
-					}
 				}
 				
 				if(!ShowAttackAnimation)
 					return;
 
-				if(Hits)
-					GameServer()->CreateSound(m_Pos, SOUND_HAMMER_FIRE);
+				GameServer()->CreateSound(m_Pos, SOUND_HAMMER_FIRE);
 /* INFECTION MODIFICATION START ***************************************/
 			}
 /* INFECTION MODIFICATION END *****************************************/
