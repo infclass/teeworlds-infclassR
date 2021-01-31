@@ -277,6 +277,8 @@ public:
 	void SaturateVelocity(vec2 Force, float MaxSpeed);
 	void GiveGift(int GiftType);
 	int GetInfZoneTick();
+
+	void EnableJump();
 /* INFECTION MODIFICATION END *****************************************/
 };
 

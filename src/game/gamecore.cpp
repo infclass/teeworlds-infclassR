@@ -528,3 +528,8 @@ void CCharacterCore::SetPassenger(CCharacterCore *pPassenger)
 		m_Passenger->m_IsPassenger = true;
 	}
 }
+
+void CCharacterCore::EnableJump()
+{
+	m_Jumped &= ~2;
+}

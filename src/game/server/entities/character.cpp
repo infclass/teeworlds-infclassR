@@ -4137,4 +4137,9 @@ int CCharacter::GetInfZoneTick() // returns how many ticks long a player is alre
 	if (m_InfZoneTick < 0) return 0;
 	return Server()->Tick()-m_InfZoneTick;
 }
+
+void CCharacter::EnableJump()
+{
+	m_Core.EnableJump();
+}
 /* INFECTION MODIFICATION END *****************************************/
