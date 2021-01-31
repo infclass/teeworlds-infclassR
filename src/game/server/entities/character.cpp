@@ -3938,6 +3938,13 @@ void CCharacter::SetClass(int ClassChoosed)
 	m_NeedFullHeal = false;
 	
 	GameServer()->CreatePlayerSpawn(m_Pos);
+
+	if(GetClass() == PLAYERCLASS_BAT) {
+		if(m_AirJumpCounter < g_Config.m_InfBatAirjumpLimit) {
+			EnableJump();
+			m_AirJumpCounter++;
+		}
+	}
 }
 
 bool CCharacter::IsZombie() const
