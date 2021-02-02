@@ -3693,7 +3693,8 @@ void CCharacter::ClassSpawnAttributes()
 			GiveWeapon(WEAPON_HAMMER, -1);
 			GiveWeapon(WEAPON_GRENADE, -1);
 			GiveWeapon(WEAPON_GUN, -1);
-			GiveWeapon(WEAPON_RIFLE, -1);
+			if(!GameServer()->m_FunRound)
+				GiveWeapon(WEAPON_RIFLE, -1);
 			m_ActiveWeapon = WEAPON_GUN;
 			break;
 		case PLAYERCLASS_SNIPER:
