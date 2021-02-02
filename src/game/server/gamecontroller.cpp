@@ -237,7 +237,7 @@ void IGameController::CycleMap(bool Forced)
 	CMapRotationInfo pMapRotationInfo;
 	GetMapRotationInfo(&pMapRotationInfo);
 	
-	if (pMapRotationInfo.m_MapCount <= 1)
+	if (pMapRotationInfo.m_MapCount == 0)
 		return;
 
 	char aBuf[256] = {0};
