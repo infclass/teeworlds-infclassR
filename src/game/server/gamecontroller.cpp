@@ -25,6 +25,7 @@ IGameController::IGameController(class CGameContext *pGameServer)
 	m_aTeamscore[TEAM_RED] = 0;
 	m_aTeamscore[TEAM_BLUE] = 0;
 	m_aMapWish[0] = 0;
+	m_aPreviousMap[0] = 0;
 
 	m_UnbalancedTick = -1;
 	m_ForceBalanced = false;
@@ -185,8 +186,10 @@ void IGameController::GetMapRotationInfo(CMapRotationInfo *pMapRotationInfo)
 	if(!str_length(g_Config.m_SvMaprotation))
 		return;
 
+	int PreviousMapNumber = -1;
 	const char *pNextMap = g_Config.m_SvMaprotation;
 	const char *pCurrentMap = g_Config.m_SvMap;
+	const char *pPreviousMap = Server()->GetPreviousMapName();
 	bool insideWord = false;
 	char aBuf[128];
 	int i = 0;
@@ -206,11 +209,19 @@ void IGameController::GetMapRotationInfo(CMapRotationInfo *pMapRotationInfo)
 				GetWordFromList(aBuf, g_Config.m_SvMaprotation, i);
 				if (str_comp(aBuf, pCurrentMap) == 0)
 					pMapRotationInfo->m_CurrentMapNumber = pMapRotationInfo->m_MapCount;
+				if(pPreviousMap[0] && str_comp(aBuf, pPreviousMap) == 0)
+					PreviousMapNumber = pMapRotationInfo->m_MapCount;
 				pMapRotationInfo->m_MapCount++;
 			}
 		}
 		pNextMap++;
 		i++;
+	}
+	if((pMapRotationInfo->m_CurrentMapNumber < 0) && (PreviousMapNumber >= 0))
+	{
+		// The current map not found in the list (probably because this map is a custom one)
+		// Try to restore the rotation using the name of the previous map
+		pMapRotationInfo->m_CurrentMapNumber = PreviousMapNumber;
 	}
 }
 

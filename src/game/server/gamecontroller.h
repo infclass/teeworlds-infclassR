@@ -44,6 +44,7 @@ protected:
 	void ResetGame();
 
 	char m_aMapWish[128];
+	char m_aPreviousMap[128];
 
 
 	int m_RoundStartTick;
