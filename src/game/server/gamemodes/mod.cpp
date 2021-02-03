@@ -518,12 +518,24 @@ void CGameControllerMOD::GetPlayerCounter(int ClientException, int& NumHumans, i
 		else NumHumans++;
 	}
 	
-	if(NumHumans + NumInfected <= 1)
-		NumFirstInfected = 0;
-	else if(NumHumans + NumInfected <= 3)
+	const int NumPlayers = NumHumans + NumInfected;
+
+	if(NumPlayers > 20)
+		NumFirstInfected = 4;
+	else if(NumPlayers > 8)
+		NumFirstInfected = 3;
+	else if(NumPlayers > 3)
+		NumFirstInfected = 2;
+	else if(NumPlayers > 1)
 		NumFirstInfected = 1;
 	else
-		NumFirstInfected = 2;
+		NumFirstInfected = 0;
+
+	int FirstInfectedLimit = g_Config.m_InfFirstInfectedLimit;
+	if(FirstInfectedLimit && NumFirstInfected > FirstInfectedLimit)
+	{
+		NumFirstInfected = FirstInfectedLimit;
+	}
 }
 
 int CGameControllerMOD::RandomZombieToWitch() {
