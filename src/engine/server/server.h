@@ -190,7 +190,8 @@ public:
 
 	int64 m_Lastheartbeat;
 	//static NETADDR4 master_server;
-
+	
+	char m_aPreviousMap[64];
 	char m_aCurrentMap[64];
 	
 	unsigned m_CurrentMapCrc;
@@ -430,6 +431,7 @@ public:
 	char *GetAnnouncementLine(char const *FileName);
 	unsigned m_AnnouncementLastLine;
 
+	virtual const char *GetPreviousMapName() const;
 	virtual int* GetIdMap(int ClientID);
 	virtual void SetCustClt(int ClientID);
 };

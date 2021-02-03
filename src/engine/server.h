@@ -354,6 +354,7 @@ public:
 	virtual int GetTimeShiftUnit() const = 0; //In ms
 /* INFECTION MODIFICATION END *****************************************/
 
+	virtual const char *GetPreviousMapName() const = 0;
 	virtual int* GetIdMap(int ClientID) = 0;
 	virtual void SetCustClt(int ClientID) = 0;
 	// InfClassR spectators vector

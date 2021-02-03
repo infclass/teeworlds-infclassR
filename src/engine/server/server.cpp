@@ -556,6 +556,8 @@ int CServer::Init()
 #endif
 		
 /* INFECTION MODIFICATION START ***************************************/
+	m_aPreviousMap[0] = 0;
+
 	SetFireDelay(INFWEAPON_NONE, 0);
 	SetFireDelay(INFWEAPON_HAMMER, 125);
 	SetFireDelay(INFWEAPON_GUN, 125);
@@ -1861,6 +1863,7 @@ int CServer::LoadMap(const char *pMapName)
 	// reinit snapshot ids
 	m_IDPool.TimeoutIDs();
 
+	str_copy(m_aPreviousMap, m_aCurrentMap, sizeof(m_aPreviousMap));
 	str_copy(m_aCurrentMap, pMapName, sizeof(m_aCurrentMap));
 	ResetMapVotes();
 
@@ -4599,6 +4602,11 @@ int CServer::GetActivePlayerCount()
 		}
 	}
 	return PlayerCount;
+}
+
+const char *CServer::GetPreviousMapName() const
+{
+	return m_aPreviousMap;
 }
 
 void CServer::AddAccusation(int From, int To, const char* pReason)
