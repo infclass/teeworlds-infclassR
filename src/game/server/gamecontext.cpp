@@ -2404,6 +2404,14 @@ bool CGameContext::ConSkipMap(IConsole::IResult *pResult, void *pUserData)
 	return true;
 }
 
+bool CGameContext::ConQueueMap(IConsole::IResult *pResult, void *pUserData)
+{
+	CGameContext *pSelf = (CGameContext *)pUserData;
+	pSelf->m_pController->QueueMap(pResult->GetString(0));
+
+	return true;
+}
+
 bool CGameContext::ConRestart(IConsole::IResult *pResult, void *pUserData)
 {
 	CGameContext *pSelf = (CGameContext *)pUserData;
@@ -4081,6 +4089,7 @@ void CGameContext::OnConsoleInit()
 	Console()->Register("pause", "", CFGFLAG_SERVER, ConPause, this, "Pause/unpause game");
 	Console()->Register("change_map", "?r", CFGFLAG_SERVER|CFGFLAG_STORE, ConChangeMap, this, "Change map");
 	Console()->Register("skip_map", "", CFGFLAG_SERVER|CFGFLAG_STORE, ConSkipMap, this, "Change map to the next in the rotation");
+	Console()->Register("queue_map", "s", CFGFLAG_SERVER|CFGFLAG_STORE, ConQueueMap, this, "Set the next map");
 	Console()->Register("restart", "?i<sec>", CFGFLAG_SERVER|CFGFLAG_STORE, ConRestart, this, "Restart in x seconds (0 = abort)");
 	Console()->Register("broadcast", "r<message>", CFGFLAG_SERVER, ConBroadcast, this, "Broadcast message");
 	Console()->Register("say", "r", CFGFLAG_SERVER, ConSay, this, "Say in chat");

@@ -44,6 +44,7 @@ protected:
 	void ResetGame();
 
 	char m_aMapWish[128];
+	char m_aQueuedMap[128];
 	char m_aPreviousMap[128];
 
 
@@ -78,6 +79,7 @@ public:
 	void StartRound();
 	virtual void EndRound();
 	void ChangeMap(const char *pToMap);
+	void QueueMap(const char *pToMap);
 	int GetRoundCount();
 	bool IsRoundEndTime();
 

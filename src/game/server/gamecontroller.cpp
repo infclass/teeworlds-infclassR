@@ -25,6 +25,7 @@ IGameController::IGameController(class CGameContext *pGameServer)
 	m_aTeamscore[TEAM_RED] = 0;
 	m_aTeamscore[TEAM_BLUE] = 0;
 	m_aMapWish[0] = 0;
+	m_aQueuedMap[0] = 0;
 	m_aPreviousMap[0] = 0;
 
 	m_UnbalancedTick = -1;
@@ -162,7 +163,13 @@ void IGameController::StartRound()
 void IGameController::ChangeMap(const char *pToMap)
 {
 	str_copy(m_aMapWish, pToMap, sizeof(m_aMapWish));
+	m_aQueuedMap[0] = 0;
 	EndRound();
+}
+
+void IGameController::QueueMap(const char *pToMap)
+{
+	str_copy(m_aQueuedMap, pToMap, sizeof(m_aQueuedMap));
 }
 
 void IGameController::GetWordFromList(char *pNextWord, const char *pList, int ListIndex)
@@ -237,10 +244,21 @@ void IGameController::CycleMap(bool Forced)
 		m_RoundCount = 0;
 		return;
 	}
-	if(!str_length(g_Config.m_SvMaprotation))
+	if(!Forced && m_RoundCount < g_Config.m_SvRoundsPerMap-1)
 		return;
 
-	if(!Forced && m_RoundCount < g_Config.m_SvRoundsPerMap-1)
+	if(m_aQueuedMap[0] != 0)
+	{
+		char aBuf[256];
+		str_format(aBuf, sizeof(aBuf), "rotating to a queued map %s", m_aQueuedMap);
+		GameServer()->Console()->Print(IConsole::OUTPUT_LEVEL_DEBUG, "game", aBuf);
+		str_copy(g_Config.m_SvMap, m_aQueuedMap, sizeof(g_Config.m_SvMap));
+		m_aQueuedMap[0] = 0;
+		m_RoundCount = 0;
+		return;
+	}
+
+	if(!str_length(g_Config.m_SvMaprotation))
 		return;
 
 	int PlayerCount = Server()->GetActivePlayerCount();
