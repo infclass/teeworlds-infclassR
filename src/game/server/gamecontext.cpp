@@ -4095,7 +4095,7 @@ void CGameContext::OnConsoleInit()
 	Console()->Register("clear_votes", "", CFGFLAG_SERVER, ConClearVotes, this, "Clears the voting options");
 	Console()->Register("vote", "r", CFGFLAG_SERVER, ConVote, this, "Force a vote to yes/no");
 	Console()->Register("start_fun_round", "", CFGFLAG_SERVER, ConStartFunRound, this, "Start fun round");
-	Console()->Register("start_special_fun_round", "sss", CFGFLAG_SERVER, ConStartSpecialFunRound, this, "Start fun round");
+	Console()->Register("start_special_fun_round", "ss?s", CFGFLAG_SERVER, ConStartSpecialFunRound, this, "Start fun round");
 	
 /* INFECTION MODIFICATION START ***************************************/
 	
