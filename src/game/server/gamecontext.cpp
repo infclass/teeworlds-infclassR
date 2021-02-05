@@ -2838,10 +2838,10 @@ bool CGameContext::StartFunRound(const FunRoundConfiguration &Configuration)
 
 	str_format(aBuf, sizeof(aBuf), "%s! %s vs %s%s", title, InfectedClassText, HumanClassText, random_phrase);
 
+	m_FunRound = true;
 	m_pController->StartRound();
 	CreateSoundGlobal(SOUND_CTF_CAPTURE);
 	SendChatTarget(-1, aBuf);
-	m_FunRound = true;
 	m_DefaultAvailabilities = humanAvailabilities;
 	m_DefaultProbabilities = infectedProbabilities;
 	
