@@ -2724,7 +2724,7 @@ bool CGameContext::ConVote(IConsole::IResult *pResult, void *pUserData)
 bool CGameContext::ConStartFunRound(IConsole::IResult *pResult, void *pUserData)
 {
 	CGameContext *pSelf = (CGameContext *)pUserData;
-	static const FunRoundSettings PossbleSettings[] = {
+	static const FunRoundConfiguration PossbleSettings[] = {
 		{ PLAYERCLASS_GHOUL, PLAYERCLASS_BIOLOGIST },
 		{ PLAYERCLASS_BAT, PLAYERCLASS_MERCENARY },
 		{ PLAYERCLASS_BAT, PLAYERCLASS_NINJA },
@@ -2736,14 +2736,14 @@ bool CGameContext::ConStartFunRound(IConsole::IResult *pResult, void *pUserData)
 	};
 
 	const int type = random_int(0, sizeof(PossbleSettings) / sizeof(PossbleSettings[0]) - 1);
-	const FunRoundSettings &Settings = PossbleSettings[type];
+	const FunRoundConfiguration &Settings = PossbleSettings[type];
 	return pSelf->StartFunRound(Settings);
 }
 
 bool CGameContext::ConStartSpecialFunRound(IConsole::IResult *pResult, void *pUserData)
 {
 	CGameContext *pSelf = (CGameContext *)pUserData;
-	FunRoundSettings Settings;
+	FunRoundConfiguration Configuration;
 
 	for (int argN = 0; argN < pResult->NumArguments(); ++argN)
 	{
@@ -2751,23 +2751,23 @@ bool CGameContext::ConStartSpecialFunRound(IConsole::IResult *pResult, void *pUs
 		const int PlayerClass = CGameControllerMOD::GetClassByName(argument);
 		if ((PlayerClass > START_HUMANCLASS) && (PlayerClass < END_HUMANCLASS))
 		{
-			Settings.HumanClass = PlayerClass;
+			Configuration.HumanClass = PlayerClass;
 		}
 		if ((PlayerClass > START_INFECTEDCLASS) && (PlayerClass < END_INFECTEDCLASS))
 		{
-			Settings.InfectedClass = PlayerClass;
+			Configuration.InfectedClass = PlayerClass;
 		}
 	}
 
-	if (!Settings.HumanClass || !Settings.InfectedClass)
+	if (!Configuration.HumanClass || !Configuration.InfectedClass)
 	{
 		pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "server", "invalid special fun round configuration");
 		return false;
 	}
-	return pSelf->StartFunRound(Settings);
+	return pSelf->StartFunRound(Configuration);
 }
 
-bool CGameContext::StartFunRound(const FunRoundSettings &Settings)
+bool CGameContext::StartFunRound(const FunRoundConfiguration &Configuration)
 {
 	const char* title = g_Config.m_FunRoundTitle;
 	char aBuf[256];
@@ -2827,10 +2827,10 @@ bool CGameContext::StartFunRound(const FunRoundSettings &Settings)
 	if (g_Config.m_SvTimelimit > g_Config.m_FunRoundDuration)
 		g_Config.m_SvTimelimit = g_Config.m_FunRoundDuration;
 
-	Server()->SetPlayerClassEnabled(Settings.HumanClass, true);
-	Server()->SetPlayerClassProbability(Settings.InfectedClass, 100);
-	const char *HumanClassText = CGameControllerMOD::GetClassPluralDisplayName(Settings.HumanClass);
-	const char *InfectedClassText = CGameControllerMOD::GetClassPluralDisplayName(Settings.InfectedClass);
+	Server()->SetPlayerClassEnabled(Configuration.HumanClass, true);
+	Server()->SetPlayerClassProbability(Configuration.InfectedClass, 100);
+	const char *HumanClassText = CGameControllerMOD::GetClassPluralDisplayName(Configuration.HumanClass);
+	const char *InfectedClassText = CGameControllerMOD::GetClassPluralDisplayName(Configuration.InfectedClass);
 
 	str_format(aBuf, sizeof(aBuf), "%s! %s vs %s%s", title, InfectedClassText, HumanClassText, random_phrase);
 

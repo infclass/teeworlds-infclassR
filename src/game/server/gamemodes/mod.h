@@ -8,10 +8,10 @@
 #include <game/server/classes.h>
 #include <game/server/entities/hero-flag.h>
 
-struct FunRoundSettings
+struct FunRoundConfiguration
 {
-	FunRoundSettings() = default;
-	FunRoundSettings(int Infected, int Human)
+	FunRoundConfiguration() = default;
+	FunRoundConfiguration(int Infected, int Human)
 	: InfectedClass(Infected),
 	  HumanClass(Human)
 	{

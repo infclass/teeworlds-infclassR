@@ -57,7 +57,7 @@ typedef unsigned __int64 uint64_t;
 #define BROADCAST_DURATION_REALTIME (0)
 #define BROADCAST_DURATION_GAMEANNOUNCE (Server()->TickSpeed()*2)
 
-struct FunRoundSettings;
+struct FunRoundConfiguration;
 
 enum
 {
@@ -143,7 +143,7 @@ public:
 	int GetZombieCount(int zombie_class);
 
 	// InfClassR fun round
-	bool StartFunRound(const FunRoundSettings &Settings);
+	bool StartFunRound(const FunRoundConfiguration &Configuration);
 	void EndFunRound();
 	bool m_FunRound;
 	int m_FunRoundsPassed;
