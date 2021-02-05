@@ -3614,6 +3614,13 @@ void CCharacter::Snap(int SnappingClient)
 /* INFECTION MODIFICATION START ***************************************/
 void CCharacter::OpenClassChooser()
 {
+	if(GameServer()->m_FunRound)
+	{
+		IncreaseArmor(10);
+		m_pPlayer->CloseMapMenu();
+		return;
+	}
+
 	if(!Server()->IsClassChooserEnabled() || Server()->GetClientAlwaysRandom(m_pPlayer->GetCID()))
 	{
 		m_pPlayer->SetClass(GameServer()->m_pController->ChooseHumanClass(m_pPlayer));

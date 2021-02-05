@@ -2845,6 +2845,15 @@ bool CGameContext::StartFunRound(const FunRoundConfiguration &Configuration)
 	m_DefaultAvailabilities = humanAvailabilities;
 	m_DefaultProbabilities = infectedProbabilities;
 	
+	for(int i = 0; i < MAX_CLIENTS; ++i)
+	{
+		CPlayer *pPlayer = m_apPlayers[i];
+		if(!pPlayer)
+			continue;
+
+		pPlayer->SetClass(Configuration.HumanClass);
+	}
+
 	return true;
 }
 
