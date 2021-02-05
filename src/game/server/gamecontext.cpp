@@ -2721,23 +2721,27 @@ bool CGameContext::ConVote(IConsole::IResult *pResult, void *pUserData)
 	
 	return true;
 }
+
 bool CGameContext::ConStartFunRound(IConsole::IResult *pResult, void *pUserData)
 {
 	CGameContext *pSelf = (CGameContext *)pUserData;
-	static const FunRoundConfiguration PossbleSettings[] = {
-		{ PLAYERCLASS_GHOUL, PLAYERCLASS_BIOLOGIST },
-		{ PLAYERCLASS_BAT, PLAYERCLASS_MERCENARY },
-		{ PLAYERCLASS_BAT, PLAYERCLASS_NINJA },
-		{ PLAYERCLASS_GHOST, PLAYERCLASS_NINJA },
-		{ PLAYERCLASS_BOOMER, PLAYERCLASS_NINJA },
-		{ PLAYERCLASS_VOODOO, PLAYERCLASS_ENGINEER },
-		{ PLAYERCLASS_SLUG, PLAYERCLASS_HERO },
-		{ PLAYERCLASS_WITCH, PLAYERCLASS_ENGINEER },
-	};
-
-	const int type = random_int(0, sizeof(PossbleSettings) / sizeof(PossbleSettings[0]) - 1);
-	const FunRoundConfiguration &Settings = PossbleSettings[type];
-	return pSelf->StartFunRound(Settings);
+	if(pSelf->m_FunRoundConfigurations.empty())
+	{
+		int ClientID = pResult->GetClientID();
+		const char *pErrorMessage = "Unable to start a fun round: rounds configuration is empty";
+		if(ClientID >= 0)
+		{
+			pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "server", pErrorMessage);
+		}
+		else
+		{
+			pSelf->SendChatTarget(-1, pErrorMessage);
+		}
+		return false;
+	}
+	const int type = random_int(0, pSelf->m_FunRoundConfigurations.size() - 1);
+	const FunRoundConfiguration &Configuration = pSelf->m_FunRoundConfigurations[type];
+	return pSelf->StartFunRound(Configuration);
 }
 
 bool CGameContext::ConStartSpecialFunRound(IConsole::IResult *pResult, void *pUserData)
@@ -4065,6 +4069,51 @@ bool CGameContext::ConCmdList(IConsole::IResult *pResult, void *pUserData)
 	return true;
 }
 
+bool CGameContext::ConClearFunRounds(IConsole::IResult *pResult, void *pUserData)
+{
+	CGameContext *pSelf = (CGameContext *)pUserData;
+	pSelf->m_FunRoundConfigurations.clear();
+	pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "server", "fun rounds cleared");
+	return true;
+}
+
+bool CGameContext::ConAddFunRound(IConsole::IResult *pResult, void *pUserData)
+{
+	CGameContext *pSelf = (CGameContext *)pUserData;
+	FunRoundConfiguration Settings;
+
+	for (int argN = 0; argN < pResult->NumArguments(); ++argN)
+	{
+		const char *argument = pResult->GetString(argN);
+		const int PlayerClass = CGameControllerMOD::GetClassByName(argument);
+		if ((PlayerClass > START_HUMANCLASS) && (PlayerClass < END_HUMANCLASS))
+		{
+			Settings.HumanClass = PlayerClass;
+		}
+		if ((PlayerClass > START_INFECTEDCLASS) && (PlayerClass < END_INFECTEDCLASS))
+		{
+			Settings.InfectedClass = PlayerClass;
+		}
+	}
+
+	if (!Settings.HumanClass || !Settings.InfectedClass)
+	{
+		pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "server", "invalid special fun round configuration");
+		return false;
+	}
+	else
+	{
+		char aBuf[256];
+		const char *HumanClassText = CGameControllerMOD::GetClassPluralDisplayName(Settings.HumanClass);
+		const char *InfectedClassText = CGameControllerMOD::GetClassPluralDisplayName(Settings.InfectedClass);
+		str_format(aBuf, sizeof(aBuf), "Added fun round: %s vs %s", InfectedClassText, HumanClassText);
+		pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "server", aBuf);
+	}
+
+	pSelf->m_FunRoundConfigurations.push_back(Settings);
+
+	return true;
+}
 /* INFECTION MODIFICATION END *****************************************/
 
 void CGameContext::OnConsoleInit()
@@ -4096,6 +4145,8 @@ void CGameContext::OnConsoleInit()
 	Console()->Register("vote", "r", CFGFLAG_SERVER, ConVote, this, "Force a vote to yes/no");
 	Console()->Register("start_fun_round", "", CFGFLAG_SERVER, ConStartFunRound, this, "Start fun round");
 	Console()->Register("start_special_fun_round", "ss?s", CFGFLAG_SERVER, ConStartSpecialFunRound, this, "Start fun round");
+	Console()->Register("clear_fun_rounds", "", CFGFLAG_SERVER, ConClearFunRounds, this, "Start fun round");
+	Console()->Register("add_fun_round", "ss?s", CFGFLAG_SERVER, ConAddFunRound, this, "Start fun round");
 	
 /* INFECTION MODIFICATION START ***************************************/
 	

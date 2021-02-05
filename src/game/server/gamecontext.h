@@ -57,7 +57,18 @@ typedef unsigned __int64 uint64_t;
 #define BROADCAST_DURATION_REALTIME (0)
 #define BROADCAST_DURATION_GAMEANNOUNCE (Server()->TickSpeed()*2)
 
-struct FunRoundConfiguration;
+struct FunRoundConfiguration
+{
+	FunRoundConfiguration() = default;
+	FunRoundConfiguration(int Infected, int Human)
+	: InfectedClass(Infected),
+	  HumanClass(Human)
+	{
+	}
+
+	int InfectedClass = 0;
+	int HumanClass = 0;
+};
 
 enum
 {
@@ -260,6 +271,10 @@ private:
 	static bool ConLanguage(IConsole::IResult *pResult, void *pUserData);
 	static bool ConCmdList(IConsole::IResult *pResult, void *pUserData);
 	static bool ConChangeLog(IConsole::IResult *pResult, void *pUserData);
+
+	static bool ConClearFunRounds(IConsole::IResult *pResult, void *pUserData);
+	static bool ConAddFunRound(IConsole::IResult *pResult, void *pUserData);
+
 	bool PrivateMessage(const char* pStr, int ClientID, bool TeamChat);
 	void Converse(int ClientID, const char* pStr, int team);
 	void MutePlayer(const char* pStr, int ClientID);
@@ -348,6 +363,8 @@ private:
 	array<LoveDotState> m_LoveDots;
 	
 	int m_aHitSoundState[MAX_CLIENTS]; //1 for hit, 2 for kill (no sounds must be sent)	
+
+	std::vector<FunRoundConfiguration> m_FunRoundConfigurations;
 
 public:
 	virtual int GetTargetToKill();
