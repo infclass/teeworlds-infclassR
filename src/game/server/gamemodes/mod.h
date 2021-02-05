@@ -54,6 +54,7 @@ public:
 	
 	static bool IsDefenderClass(int PlayerClass);
 	static bool IsSupportClass(int PlayerClass);
+	static int GetClassByName(const char *pClassName);
 	static const char *GetClassName(int PlayerClass);
 	static const char *GetClassPluralName(int PlayerClass);
 	static const char *GetClassDisplayName(int PlayerClass);

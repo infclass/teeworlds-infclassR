@@ -2748,21 +2748,14 @@ bool CGameContext::ConStartSpecialFunRound(IConsole::IResult *pResult, void *pUs
 	for (int argN = 0; argN < pResult->NumArguments(); ++argN)
 	{
 		const char *argument = pResult->GetString(argN);
-		for (int PlayerClass = 0; PlayerClass < NB_PLAYERCLASS; ++PlayerClass)
+		const int PlayerClass = CGameControllerMOD::GetClassByName(argument);
+		if ((PlayerClass > START_HUMANCLASS) && (PlayerClass < END_HUMANCLASS))
 		{
-			if (str_comp(argument, CGameControllerMOD::GetClassPluralName(PlayerClass)) == 0)
-			{
-				if ((PlayerClass > START_HUMANCLASS) && (PlayerClass < END_HUMANCLASS))
-				{
-					Settings.HumanClass = PlayerClass;
-					break;
-				}
-				if ((PlayerClass > START_INFECTEDCLASS) && (PlayerClass < END_INFECTEDCLASS))
-				{
-					Settings.InfectedClass = PlayerClass;
-					break;
-				}
-			}
+			Settings.HumanClass = PlayerClass;
+		}
+		if ((PlayerClass > START_INFECTEDCLASS) && (PlayerClass < END_INFECTEDCLASS))
+		{
+			Settings.InfectedClass = PlayerClass;
 		}
 	}
 
