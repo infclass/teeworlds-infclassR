@@ -437,14 +437,6 @@ bool CGameControllerMOD::ConSetClass(IConsole::IResult *pResult)
 			continue;
 
 		pPlayer->SetClass(PlayerClass);
-		if (PlayerClass == PLAYERCLASS_NONE)
-		{
-			CCharacter* pChar = pPlayer->GetCharacter();
-			if(pChar)
-			{
-				pChar->OpenClassChooser();
-			}
-		}
 		char aBuf[256];
 		str_format(aBuf, sizeof(aBuf), "The admin change the class of %s to %s", GameServer()->Server()->ClientName(PlayerID), pClassName);
 		GameServer()->SendChat(-1, CGameContext::CHAT_ALL, aBuf);

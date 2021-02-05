@@ -3946,6 +3946,10 @@ void CCharacter::SetClass(int ClassChoosed)
 			m_AirJumpCounter++;
 		}
 	}
+	if(GetClass() == PLAYERCLASS_NONE)
+	{
+		OpenClassChooser();
+	}
 }
 
 bool CCharacter::IsZombie() const
