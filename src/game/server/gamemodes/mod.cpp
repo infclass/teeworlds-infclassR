@@ -956,6 +956,15 @@ void CGameControllerMOD::OnCharacterSpawn(class CCharacter *pChr)
 
 	// give default weapons
 	pChr->GiveWeapon(WEAPON_HAMMER, -1);
+
+	if(GameServer()->m_FunRound && !IsInfectionStarted() && pChr->GetClass() == PLAYERCLASS_NONE)
+	{
+		CPlayer *pPlayer = pChr->GetPlayer();
+		if(pPlayer)
+		{
+			pPlayer->SetClass(ChooseHumanClass(pPlayer));
+		}
+	}
 }
 
 void CGameControllerMOD::OnPlayerInfoChange(class CPlayer *pP)
