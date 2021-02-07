@@ -16,8 +16,6 @@
 #include "projectile.h"
 #include "laser.h"
 
-#include "flyingpoint.h"
-
 #include "engineer-wall.h"
 #include "looper-wall.h"
 #include "soldier-bomb.h"
@@ -2994,30 +2992,11 @@ void CCharacter::Die(int Killer, int Weapon)
 	{
 		return;
 	}
-  
-	
 
-	//Find the nearest ghoul
-	{
-		for(CCharacter *p = (CCharacter*) GameWorld()->FindFirst(CGameWorld::ENTTYPE_CHARACTER); p; p = (CCharacter *)p->TypeNext())
-		{
-			if(p->GetClass() != PLAYERCLASS_GHOUL || p == this) continue;
-			if(p->GetPlayer() && p->GetPlayer()->GetGhoulPercent() >= 1.0f) continue;
-
-			float Len = distance(p->m_Pos, m_Pos);
-			
-			if(p && Len < 800.0f)
-			{
-				int Points = (IsZombie() ? 8 : 14);
-				new CFlyingPoint(GameWorld(), m_Pos, p->GetPlayer()->GetCID(), Points, m_Core.m_Vel);
-			}
-		}
-	}
 	if(GetClass() == PLAYERCLASS_GHOUL)
 	{
 		m_pPlayer->IncreaseGhoulLevel(-20);
 	}
-	
 	
 	DestroyChildEntities();
 /* INFECTION MODIFICATION END *****************************************/

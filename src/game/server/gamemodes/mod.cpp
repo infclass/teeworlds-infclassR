@@ -2,6 +2,7 @@
 /* If you are missing that file, acquire a complete release at teeworlds.com.				*/
 #include "mod.h"
 
+#include <game/server/entities/flyingpoint.h>
 #include <game/server/player.h>
 #include <engine/shared/config.h>
 #include <engine/server/mapconverter.h>
@@ -502,6 +503,11 @@ bool CGameControllerMOD::ChatWitch(IConsole::IResult *pResult)
 	return true;
 }
 
+CGameWorld *CGameControllerMOD::GameWorld()
+{
+	return &GameServer()->m_World;
+}
+
 void CGameControllerMOD::EndRound()
 {	
 	m_InfectedStarted = false;
@@ -939,6 +945,23 @@ int CGameControllerMOD::OnCharacterDeath(class CCharacter *pVictim, class CPlaye
 						GameServer()->SendEmoticon(pFreezer->GetCID(), EMOTICON_MUSIC);
 					}
 				}
+			}
+		}
+	}
+	
+	//Find the nearest ghoul
+	{
+		for(CCharacter *p = (CCharacter*) GameWorld()->FindFirst(CGameWorld::ENTTYPE_CHARACTER); p; p = (CCharacter *)p->TypeNext())
+		{
+			if(p->GetClass() != PLAYERCLASS_GHOUL || p == pVictim) continue;
+			if(p->GetPlayer() && p->GetPlayer()->GetGhoulPercent() >= 1.0f) continue;
+
+			float Len = distance(p->m_Pos, pVictim->m_Pos);
+			
+			if(p && Len < 800.0f)
+			{
+				int Points = (pVictim->IsZombie() ? 8 : 14);
+				new CFlyingPoint(GameWorld(), pVictim->m_Pos, p->GetPlayer()->GetCID(), Points, pVictim->m_Core.m_Vel);
 			}
 		}
 	}

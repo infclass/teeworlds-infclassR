@@ -56,6 +56,8 @@ public:
 	bool ChatWitch(IConsole::IResult *pResult);
 
 private:
+	CGameWorld *GameWorld();
+
 	bool IsSpawnable(vec2 Pos, int TeleZoneIndex);
 	void GetPlayerCounter(int ClientException, int& NumHumans, int& NumInfected, int& NumFirstInfected);
 
