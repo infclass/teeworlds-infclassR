@@ -2439,7 +2439,7 @@ void CCharacter::Tick()
 				GameServer()->SendBroadcast_Localization(m_pPlayer->GetCID(), BROADCAST_PRIORITY_INTERFACE, BROADCAST_DURATION_REALTIME, _("Choose your class"), NULL);
 			}
 			
-			if(m_Input.m_Fire&1 && m_pPlayer->m_MapMenuItem >= 0)
+			if(m_pPlayer->MapMenuClickable() && m_Input.m_Fire&1 && m_pPlayer->m_MapMenuItem >= 0)
 			{
 				bool Bonus = false;
 				
