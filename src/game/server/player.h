@@ -150,7 +150,7 @@ public:
 	int GetClass() const;
 	void SetClassSkin(int newClass, int State = 0);
 	void SetClass(int newClass);
-	int GetOldClass();
+	int GetOldClass() const;
 	void SetOldClass(int oldClass);
 	bool IsZombie() const;
 	bool IsActuallyZombie() const;

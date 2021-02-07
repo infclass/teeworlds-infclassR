@@ -33,6 +33,7 @@ CPlayer::CPlayer(CGameContext *pGameServer, int ClientID, int Team)
 	m_ScoreMode = PLAYERSCOREMODE_SCORE;
 	m_WinAsHuman = 0;
 	m_class = PLAYERCLASS_NONE;
+	m_classOld = PLAYERCLASS_NONE;
 	m_InfectionTick = -1;
 	m_NumberKills = 0;
 	SetLanguage(Server()->GetClientLanguage(ClientID));
@@ -741,19 +742,14 @@ void CPlayer::SetClass(int newClass)
 	}
 }
 
-int CPlayer::GetOldClass()
+int CPlayer::GetOldClass() const
 {
-	bool hasOldClass = false;
-	for (int i = START_HUMANCLASS+1; i < END_HUMANCLASS; i++) {
-		if (m_classOld == i) {
-			hasOldClass = true;
-			break;
-		}
-	}
-	if (!hasOldClass)
+	if(m_classOld == PLAYERCLASS_NONE)
+	{
 		return PLAYERCLASS_MEDIC; // if old class was not set, it defaults to medic
-	else
-		return m_classOld;
+	}
+
+	return m_classOld;
 }
 
 void CPlayer::SetOldClass(int oldClass)
