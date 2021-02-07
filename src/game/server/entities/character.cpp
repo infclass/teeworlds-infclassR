@@ -3717,7 +3717,7 @@ void CCharacter::ClassSpawnAttributes()
 			GiveWeapon(WEAPON_GUN, -1);
 			GiveWeapon(WEAPON_RIFLE, -1);
 			GiveWeapon(WEAPON_GRENADE, -1);
-			m_ActiveWeapon = WEAPON_GRENADE;
+			m_ActiveWeapon = WEAPON_RIFLE;
 			break;
 		case PLAYERCLASS_BIOLOGIST:
 			m_aWeapons[WEAPON_HAMMER].m_Got = true;
