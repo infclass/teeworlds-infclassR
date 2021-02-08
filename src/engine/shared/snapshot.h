@@ -12,10 +12,10 @@ class CSnapshotItem
 public:
 	int m_TypeAndID;
 
-	int *Data() { return (int *)(this+1); }
-	int Type() { return m_TypeAndID>>16; }
-	int ID() { return m_TypeAndID&0xffff; }
-	int Key() { return m_TypeAndID; }
+	int *Data() { return (int *)(this + 1); }
+	int Type() const { return m_TypeAndID >> 16; }
+	int ID() const { return m_TypeAndID & 0xffff; }
+	int Key() const { return m_TypeAndID; }
 };
 
 
@@ -36,9 +36,9 @@ public:
 
 	void Clear() { m_DataSize = 0; m_NumItems = 0; }
 	int NumItems() const { return m_NumItems; }
-	CSnapshotItem *GetItem(int Index);
-	int GetItemSize(int Index);
-	int GetItemIndex(int Key);
+	CSnapshotItem *GetItem(int Index) const;
+	int GetItemSize(int Index) const;
+	int GetItemIndex(int Key) const;
 
 	int Crc();
 	void DebugDump();

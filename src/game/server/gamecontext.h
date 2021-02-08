@@ -233,13 +233,13 @@ public:
 	virtual void OnClientDirectInput(int ClientID, void *pInput);
 	virtual void OnClientPredictedInput(int ClientID, void *pInput);
 
-	virtual bool IsClientReady(int ClientID);
-	virtual bool IsClientPlayer(int ClientID);
+	virtual bool IsClientReady(int ClientID) const;
+	virtual bool IsClientPlayer(int ClientID) const;
 
-	virtual const char *GameType();
-	virtual const char *Version();
-	virtual const char *NetVersion();
-	int GetClientVersion(int ClientID);
+	virtual const char *GameType() const;
+	virtual const char *Version() const;
+	virtual const char *NetVersion() const;
+	int GetClientVersion(int ClientID) const;
 
 	bool RateLimitPlayerVote(int ClientID);
 

@@ -4425,19 +4425,19 @@ void CGameContext::OnPostSnap()
 	m_Events.Clear();
 }
 
-bool CGameContext::IsClientReady(int ClientID)
+bool CGameContext::IsClientReady(int ClientID) const
 {
 	return m_apPlayers[ClientID] && m_apPlayers[ClientID]->m_IsReady ? true : false;
 }
 
-bool CGameContext::IsClientPlayer(int ClientID)
+bool CGameContext::IsClientPlayer(int ClientID) const
 {
 	return m_apPlayers[ClientID] && m_apPlayers[ClientID]->GetTeam() == TEAM_SPECTATORS ? false : true;
 }
 
-const char *CGameContext::GameType() { return m_pController && m_pController->m_pGameType ? m_pController->m_pGameType : ""; }
-const char *CGameContext::Version() { return GAME_VERSION; }
-const char *CGameContext::NetVersion() { return GAME_NETVERSION; }
+const char *CGameContext::GameType() const { return m_pController && m_pController->m_pGameType ? m_pController->m_pGameType : ""; }
+const char *CGameContext::Version() const { return GAME_VERSION; }
+const char *CGameContext::NetVersion() const { return GAME_NETVERSION; }
 
 
 
@@ -4496,7 +4496,7 @@ bool CGameContext::IsVersionBanned(int Version)
 	return str_in_list(g_Config.m_SvBannedVersions, ",", aVersion);
 }
 
-int CGameContext::GetClientVersion(int ClientID)
+int CGameContext::GetClientVersion(int ClientID) const
 {
 	return m_apPlayers[ClientID]->m_ClientVersion;
 }

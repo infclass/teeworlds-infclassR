@@ -681,12 +681,12 @@ void CServer::SetRconCID(int ClientID)
 	m_RconClientID = ClientID;
 }
 
-bool CServer::IsAuthed(int ClientID)
+bool CServer::IsAuthed(int ClientID) const
 {
 	return m_aClients[ClientID].m_Authed;
 }
 
-int CServer::GetClientInfo(int ClientID, CClientInfo *pInfo)
+int CServer::GetClientInfo(int ClientID, CClientInfo *pInfo) const
 {
 	dbg_assert(ClientID >= 0 && ClientID < MAX_CLIENTS, "client_id is not valid");
 	dbg_assert(pInfo != 0, "info can not be null");
@@ -701,13 +701,13 @@ int CServer::GetClientInfo(int ClientID, CClientInfo *pInfo)
 	return 0;
 }
 
-void CServer::GetClientAddr(int ClientID, char *pAddrStr, int Size)
+void CServer::GetClientAddr(int ClientID, char *pAddrStr, int Size) const
 {
 	if(ClientID >= 0 && ClientID < MAX_CLIENTS && m_aClients[ClientID].m_State == CClient::STATE_INGAME)
 		net_addr_str(m_NetServer.ClientAddr(ClientID), pAddrStr, Size, false);
 }
 
-std::string CServer::GetClientIP(int ClientID)
+std::string CServer::GetClientIP(int ClientID) const
 {
 	char aAddrStr[NETADDR_MAXSTRSIZE];
 	net_addr_str(m_NetServer.ClientAddr(ClientID), aAddrStr, sizeof(aAddrStr), false);
@@ -716,7 +716,7 @@ std::string CServer::GetClientIP(int ClientID)
 }
 
 
-const char *CServer::ClientName(int ClientID)
+const char *CServer::ClientName(int ClientID) const
 {
 	if(ClientID < 0 || ClientID >= MAX_CLIENTS || m_aClients[ClientID].m_State == CServer::CClient::STATE_EMPTY)
 		return "(invalid)";
@@ -733,7 +733,7 @@ const char *CServer::ClientName(int ClientID)
 
 }
 
-const char *CServer::ClientClan(int ClientID)
+const char *CServer::ClientClan(int ClientID) const
 {
 	if(ClientID < 0 || ClientID >= MAX_CLIENTS || m_aClients[ClientID].m_State == CServer::CClient::STATE_EMPTY)
 		return "";
@@ -743,7 +743,7 @@ const char *CServer::ClientClan(int ClientID)
 		return "";
 }
 
-int CServer::ClientCountry(int ClientID)
+int CServer::ClientCountry(int ClientID) const
 {
 	if(ClientID < 0 || ClientID >= MAX_CLIENTS || m_aClients[ClientID].m_State == CServer::CClient::STATE_EMPTY)
 		return -1;
@@ -753,7 +753,7 @@ int CServer::ClientCountry(int ClientID)
 		return -1;
 }
 
-bool CServer::ClientIngame(int ClientID)
+bool CServer::ClientIngame(int ClientID) const
 {
 	return ClientID >= 0 && ClientID < MAX_CLIENTS && m_aClients[ClientID].m_State == CServer::CClient::STATE_INGAME;
 }

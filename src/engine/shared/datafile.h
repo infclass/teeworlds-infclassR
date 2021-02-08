@@ -36,16 +36,16 @@ public:
 	int GetDataSize(int Index);
 	void UnloadData(int Index);
 	void *GetItem(int Index, int *pType, int *pID);
-	int GetItemSize(int Index);
+	int GetItemSize(int Index) const;
 	void GetType(int Type, int *pStart, int *pNum);
 	int FindItemIndex(int Type, int ID);
 	void *FindItem(int Type, int ID);
-	int NumItems();
-	int NumData();
+	int NumItems() const;
+	int NumData() const;
 	void Unload();
-	
-	unsigned Crc();
-	int MapSize();
+
+	unsigned Crc() const;
+	int MapSize() const;
 	IOHANDLE File();
 };
 
