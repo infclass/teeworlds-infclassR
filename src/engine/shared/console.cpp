@@ -557,7 +557,6 @@ bool CConsole::ConModCommandStatus(IResult *pResult, void *pUser)
 struct CIntVariableData
 {
 	IConsole *m_pConsole;
-	const char *m_Name;
 	int *m_pVariable;
 	int m_Min;
 	int m_Max;
@@ -566,7 +565,6 @@ struct CIntVariableData
 struct CStrVariableData
 {
 	IConsole *m_pConsole;
-	const char *m_Name;
 	char *m_pStr;
 	int m_MaxSize;
 };
@@ -703,26 +701,35 @@ bool CConsole::ConModCommandGet(IConsole::IResult *pArguments, void *pUserData)
 	CConsole *pConsole = (CConsole*)pUserData;
 
 	const char *pVariableName = pArguments->GetString(0);
+
+	CCommand *pCommand = pConsole->FindCommand(pVariableName, pConsole->m_FlagMask);
+	if(!pCommand)
+	{
+		return false;
+	}
+
+	FCommandCallback pfnCallback = pCommand->m_pfnCallback;
+	void *pCommandUserData = pCommand->m_pUserData;
+
+	// check for chain
+	if(pCommand->m_pfnCallback == Con_Chain)
+	{
+		CChain *pChainInfo = static_cast<CChain *>(pCommand->m_pUserData);
+		pfnCallback = pChainInfo->m_pfnCallback;
+		pCommandUserData = pChainInfo->m_pCallbackUserData;
+	}
+
 	char aBuf[1024];
 	aBuf[0] = 0;
-	for(CIntVariableData *var : pConsole->m_configIntVariables)
+	if(pfnCallback == IntVariableCommand)
 	{
-		if(str_comp_nocase(pVariableName, var->m_Name) == 0)
-		{
-			str_format(aBuf, sizeof(aBuf), "%s %d", pVariableName, *var->m_pVariable);
-			break;
-		}
+		CIntVariableData *pData = static_cast<CIntVariableData *>(pCommandUserData);
+		str_format(aBuf, sizeof(aBuf), "%s %d", pCommand->m_pName, *pData->m_pVariable);
 	}
-	if(!aBuf[0])
+	if(pfnCallback == StrVariableCommand)
 	{
-		for(CStrVariableData *var : pConsole->m_configStrVariables)
-		{
-			if(str_comp_nocase(pVariableName, var->m_Name) == 0)
-			{
-				str_format(aBuf, sizeof(aBuf), "%s %s", pVariableName, var->m_pStr);
-				break;
-			}
-		}
+		CStrVariableData *pData = static_cast<CStrVariableData *>(pCommandUserData);
+		str_format(aBuf, sizeof(aBuf), "%s \"%s\"", pCommand->m_pName, pData->m_pStr);
 	}
 
 	if(aBuf[0])
@@ -735,18 +742,41 @@ bool CConsole::ConModCommandDumpVariables(IConsole::IResult *pArguments, void *p
 {
 	CConsole *pConsole = (CConsole*)pUserData;
 
-	char aBuf[240];
-	for (CIntVariableData *pVar : pConsole->m_configIntVariables)
+	// Allocate the buffer once outside of the loop
+	char aBuf[1024];
+	CCommand *pNextCommand = pConsole->m_pFirstCommand;
+	while(pNextCommand)
 	{
-		str_format(aBuf, sizeof(aBuf), "%s %d", pVar->m_Name, *pVar->m_pVariable);
-		pConsole->Print(OUTPUT_LEVEL_STANDARD, "Console", aBuf);
-	}
-	for (CStrVariableData *pVar : pConsole->m_configStrVariables)
-	{
-		str_format(aBuf, sizeof(aBuf), "%s \"%s\"", pVar->m_Name, pVar->m_pStr);
-		pConsole->Print(OUTPUT_LEVEL_STANDARD, "Console", aBuf);
-	}
+		const CCommand *pCommand = pNextCommand;
+		pNextCommand = pNextCommand->m_pNext;
+
+		FCommandCallback pfnCallback = pCommand->m_pfnCallback;
+		void *pCommandUserData = pCommand->m_pUserData;
 	
+		// check for chain
+		if(pCommand->m_pfnCallback == Con_Chain)
+		{
+			CChain *pChainInfo = static_cast<CChain *>(pCommand->m_pUserData);
+			pfnCallback = pChainInfo->m_pfnCallback;
+			pCommandUserData = pChainInfo->m_pCallbackUserData;
+		}
+
+		aBuf[0] = 0;
+		if(pfnCallback == IntVariableCommand)
+		{
+			CIntVariableData *pData = static_cast<CIntVariableData *>(pCommandUserData);
+			str_format(aBuf, sizeof(aBuf), "%s %d", pCommand->m_pName, *pData->m_pVariable);
+		}
+		if(pfnCallback == StrVariableCommand)
+		{
+			CStrVariableData *pData = static_cast<CStrVariableData *>(pCommandUserData);
+			str_format(aBuf, sizeof(aBuf), "%s \"%s\"", pCommand->m_pName, pData->m_pStr);
+		}
+
+		if(aBuf[0])
+			pConsole->Print(OUTPUT_LEVEL_STANDARD, "Console", aBuf);
+	}
+
 	return true;
 }
 
@@ -782,16 +812,14 @@ CConsole::CConsole(int FlagMask)
 	// TODO: this should disappear
 	#define MACRO_CONFIG_INT(Name,ScriptName,Def,Min,Max,Flags,Desc) \
 	{ \
-		static CIntVariableData Data = { this, #ScriptName, &g_Config.m_##Name, Min, Max }; \
+		static CIntVariableData Data = { this, &g_Config.m_##Name, Min, Max }; \
 		Register(#ScriptName, "?i", Flags, IntVariableCommand, &Data, Desc); \
-		m_configIntVariables.push_back(&Data); \
 	}
 
 	#define MACRO_CONFIG_STR(Name,ScriptName,Len,Def,Flags,Desc) \
 	{ \
-		static CStrVariableData Data = { this, #ScriptName, g_Config.m_##Name, Len }; \
+		static CStrVariableData Data = { this, g_Config.m_##Name, Len }; \
 		Register(#ScriptName, "?r", Flags, StrVariableCommand, &Data, Desc); \
-		m_configStrVariables.push_back(&Data); \
 	}
 
 	#include "config_variables.h"
