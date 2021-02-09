@@ -6,8 +6,6 @@
 #include <base/vmath.h>
 #include <base/tl/array.h>
 
-class CDoor;
-
 /*
 	Class: Game Controller
 		Controls the main game logic. Keeping track of team and player score,
