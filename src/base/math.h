@@ -40,8 +40,15 @@ int random_int(int Min, int Max);
 int random_distribution(double* pProb, double* pProb2);
 
 // float to fixed
-inline int f2fx(float v) { return (int)(v*(float)(1<<10)); }
-inline float fx2f(int v) { return v*(1.0f/(1<<10)); }
+constexpr inline int f2fx(float v)
+{
+	return (int)(v * (float)(1 << 10));
+}
+
+constexpr inline float fx2f(int v)
+{
+	return v * (1.0f / (1 << 10));
+}
 
 inline int gcd(int a, int b)
 {
@@ -57,18 +64,41 @@ inline int gcd(int a, int b)
 class fxp
 {
 	int value;
+
 public:
 	void set(int v) { value = v; }
 	int get() const { return value; }
-	fxp &operator = (int v) { value = v<<10; return *this; }
-	fxp &operator = (float v) { value = (int)(v*(float)(1<<10)); return *this; }
-	operator float() const { return value/(float)(1<<10); }
+	fxp &operator=(int v)
+	{
+		value = v << 10;
+		return *this;
+	}
+	fxp &operator=(float v)
+	{
+		value = (int)(v * (float)(1 << 10));
+		return *this;
+	}
+	operator float() const { return value / (float)(1 << 10); }
 };
 
-const float pi = 3.1415926535897932384626433f;
+constexpr float pi = 3.1415926535897932384626433f;
 
-template <typename T> inline T min(T a, T b) { return a<b?a:b; }
-template <typename T> inline T max(T a, T b) { return a>b?a:b; }
-template <typename T> inline T absolute(T a) { return a<T(0)?-a:a; }
+template<typename T>
+constexpr inline T minimum(T a, T b)
+{
+	return a < b ? a : b;
+}
+
+template<typename T>
+constexpr inline T maximum(T a, T b)
+{
+	return a > b ? a : b;
+}
+
+template<typename T>
+constexpr inline T absolute(T a)
+{
+	return a < T(0) ? -a : a;
+}
 
 #endif // BASE_MATH_H

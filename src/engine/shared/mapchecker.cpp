@@ -84,7 +84,7 @@ bool CMapChecker::ReadAndValidateMap(IStorage *pStorage, const char *pFilename, 
 	int Length = (int)(pEnd - pExtractedName);
 	if(Length <= 0 || Length >= MAX_MAP_LENGTH)
 		return true;
-	str_copy(aMapName, pExtractedName, min((int)MAX_MAP_LENGTH, (int)(pEnd-pExtractedName+1)));
+	str_copy(aMapName, pExtractedName, minimum((int)MAX_MAP_LENGTH, (int)(pEnd-pExtractedName+1)));
 
 	// check for valid map
 	for(CWhitelistEntry *pCurrent = m_pFirst; pCurrent; pCurrent = pCurrent->m_pNext)

@@ -87,7 +87,7 @@ void CBouncingBullet::Tick()
 			if(OwnerChar->IsHuman() && TargetChr->IsHuman())
 				TargetChr->TakeDamage(m_Direction * 0.001f, Damage, m_Owner, WEAPON_SHOTGUN, TAKEDAMAGEMODE_NOINFECTION);
 			else
-				TargetChr->TakeDamage(m_Direction * max(0.001f, 2.0f), Damage, m_Owner, WEAPON_SHOTGUN, TAKEDAMAGEMODE_NOINFECTION);
+				TargetChr->TakeDamage(m_Direction * maximum(0.001f, 2.0f), Damage, m_Owner, WEAPON_SHOTGUN, TAKEDAMAGEMODE_NOINFECTION);
 		}
 		else if (TargetWitchPortal)
 		{

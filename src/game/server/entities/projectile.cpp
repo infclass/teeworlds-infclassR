@@ -156,7 +156,7 @@ void CProjectile::Tick()
 				}
 				else
 				{
-					TargetChr->TakeDamage(m_Direction * max(0.001f, m_Force), m_Damage, m_Owner, m_Weapon, m_TakeDamageMode);
+					TargetChr->TakeDamage(m_Direction * maximum(0.001f, m_Force), m_Damage, m_Owner, m_Weapon, m_TakeDamageMode);
 				}
 			}
 		}

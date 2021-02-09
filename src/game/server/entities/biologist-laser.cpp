@@ -63,7 +63,7 @@ void CBiologistLaser::DoBounce()
 		m_Dir = normalize(TempDir);
 
 		m_Energy += 100.0f;
-		m_Energy -= max(0.0f, distance(m_From, m_Pos));
+		m_Energy -= maximum(0.0f, distance(m_From, m_Pos));
 		m_Bounces++;
 
 		if(m_Bounces > 4)

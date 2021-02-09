@@ -345,7 +345,7 @@ void CGameContext::CreateExplosionDisk(vec2 Pos, float InnerRadius, float Damage
 		}
 	}
 	
-	float CircleLength = 2.0*pi*max(DamageRadius-135.0f, 0.0f);
+	float CircleLength = 2.0*pi*maximum(DamageRadius-135.0f, 0.0f);
 	int NumSuroundingExplosions = CircleLength/32.0f;
 	float AngleStart = random_float()*pi*2.0f;
 	float AngleStep = pi*2.0f/static_cast<float>(NumSuroundingExplosions);
@@ -4409,7 +4409,7 @@ void CGameContext::TargetKilled()
 	while(Iter.Next())
 		PlayerCounter++;
 	
-	m_TargetToKillCoolDown = Server()->TickSpeed()*(10 + 3*max(0, 16 - PlayerCounter));
+	m_TargetToKillCoolDown = Server()->TickSpeed()*(10 + 3*maximum(0, 16 - PlayerCounter));
 }
 
 void CGameContext::FlagCollected()

@@ -403,7 +403,7 @@ void CMapConverter::CopyAnimations()
 			m_DataFile.AddItem(MAPITEMTYPE_ENVELOPE, m_NumEnvs++, sizeof(Item), &Item);
 			
 			if(pItem->m_NumPoints > 0)
-				NumEnvPoints = max(NumEnvPoints, pItem->m_StartPoint + pItem->m_NumPoints);
+				NumEnvPoints = maximum(NumEnvPoints, pItem->m_StartPoint + pItem->m_NumPoints);
 		}
 		
 		for(int i=0; i<NumEnvPoints; i++)

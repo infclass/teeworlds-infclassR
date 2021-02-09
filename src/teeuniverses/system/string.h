@@ -147,7 +147,7 @@ public:
 		
 		str_append(m_pBuffer+Pos, pBuffer, m_MaxSize-Pos);
 		
-		return min(Pos + BufferSize, m_MaxSize-1);
+		return minimum(Pos + BufferSize, m_MaxSize-1);
 	}
 	
 	inline int append_at_num(int Pos, const char* pBuffer, int Num)
@@ -164,7 +164,7 @@ public:
 		
 		str_append_num(m_pBuffer+Pos, pBuffer, m_MaxSize-Pos, Num);
 		
-		return min(Pos + Num, m_MaxSize-1);
+		return minimum(Pos + Num, m_MaxSize-1);
 	}
 };
 

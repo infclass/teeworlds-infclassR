@@ -126,7 +126,7 @@ void CGrowingExplosion::DamagePortals()
 		if(d > (pPortal->m_ProximityRadius + m_MaxGrowing))
 			continue;
 
-		int Damage = 5+20*((float)(m_MaxGrowing - min(tick - m_StartTick, (int)m_MaxGrowing)))/(m_MaxGrowing);
+		int Damage = 5+20*((float)(m_MaxGrowing - minimum(tick - m_StartTick, (int)m_MaxGrowing)))/(m_MaxGrowing);
 		pPortal->TakeDamage(Damage, m_Owner, WEAPON_HAMMER, TAKEDAMAGEMODE_NOINFECTION);
 	}
 }
@@ -319,7 +319,7 @@ void CGrowingExplosion::Tick()
 					}
 					case GROWINGEXPLOSIONEFFECT_ELECTRIC_INFECTED:
 					{
-						int Damage = 5+20*((float)(m_MaxGrowing - min(tick - m_StartTick, (int)m_MaxGrowing)))/(m_MaxGrowing);
+						int Damage = 5+20*((float)(m_MaxGrowing - minimum(tick - m_StartTick, (int)m_MaxGrowing)))/(m_MaxGrowing);
 						p->TakeDamage(normalize(p->m_Pos - m_SeedPos)*10.0f, Damage, m_Owner, WEAPON_HAMMER, TAKEDAMAGEMODE_NOINFECTION);
 						m_Hit[p->GetPlayer()->GetCID()] = true;
 						break;

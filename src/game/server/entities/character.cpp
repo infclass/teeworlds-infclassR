@@ -399,10 +399,10 @@ void CCharacter::HandleNinja()
 				if(m_NumObjectsHit < 10)
 					m_apHitObjects[m_NumObjectsHit++] = aEnts[i];
 
-				aEnts[i]->TakeDamage(vec2(0, -10.0f), min(g_pData->m_Weapons.m_Ninja.m_pBase->m_Damage + m_NinjaStrengthBuff, 20), m_pPlayer->GetCID(), WEAPON_NINJA, TAKEDAMAGEMODE_NOINFECTION);
+				aEnts[i]->TakeDamage(vec2(0, -10.0f), minimum(g_pData->m_Weapons.m_Ninja.m_pBase->m_Damage + m_NinjaStrengthBuff, 20), m_pPlayer->GetCID(), WEAPON_NINJA, TAKEDAMAGEMODE_NOINFECTION);
 			}
 
-			const int Damage = min(g_pData->m_Weapons.m_Ninja.m_pBase->m_Damage + m_NinjaStrengthBuff, 20);
+			const int Damage = minimum(g_pData->m_Weapons.m_Ninja.m_pBase->m_Damage + m_NinjaStrengthBuff, 20);
 			for(CPortal* pPortal = (CPortal*) GameServer()->m_World.FindFirst(CGameWorld::ENTTYPE_PORTAL); pPortal; pPortal = (CPortal*) pPortal->TypeNext())
 			{
 				// check so we are sufficiently close
@@ -1732,7 +1732,7 @@ void CCharacter::HandleWeapons()
 		int MaxAmmo = Server()->GetMaxAmmo(GetInfWeaponID(i));
 		
 		if(InfWID == INFWEAPON_NINJA_GRENADE)
-			MaxAmmo = min(MaxAmmo + m_NinjaAmmoBuff, 10);
+			MaxAmmo = minimum(MaxAmmo + m_NinjaAmmoBuff, 10);
 		
 		if(InfWID == INFWEAPON_MERCENARY_GUN)
 		{
@@ -1752,7 +1752,7 @@ void CCharacter::HandleWeapons()
 				if ((Server()->Tick() - m_aWeapons[i].m_AmmoRegenStart) >= AmmoRegenTime * Server()->TickSpeed() / 1000)
 				{
 					// Add some ammo
-					m_aWeapons[i].m_Ammo = min(m_aWeapons[i].m_Ammo + 1, MaxAmmo);
+					m_aWeapons[i].m_Ammo = minimum(m_aWeapons[i].m_Ammo + 1, MaxAmmo);
 					m_aWeapons[i].m_AmmoRegenStart = -1;
 				}
 			}
@@ -1814,7 +1814,7 @@ bool CCharacter::GiveWeapon(int Weapon, int Ammo)
 	int MaxAmmo = Server()->GetMaxAmmo(InfWID);
 	
 	if(InfWID == INFWEAPON_NINJA_GRENADE)
-		MaxAmmo = min(MaxAmmo + m_NinjaAmmoBuff, 10);
+		MaxAmmo = minimum(MaxAmmo + m_NinjaAmmoBuff, 10);
 	
 	if(Ammo < 0)
 		Ammo = MaxAmmo;
@@ -1822,7 +1822,7 @@ bool CCharacter::GiveWeapon(int Weapon, int Ammo)
 	if(m_aWeapons[Weapon].m_Ammo < MaxAmmo || !m_aWeapons[Weapon].m_Got)
 	{
 		m_aWeapons[Weapon].m_Got = true;
-		m_aWeapons[Weapon].m_Ammo = min(MaxAmmo, Ammo);
+		m_aWeapons[Weapon].m_Ammo = minimum(MaxAmmo, Ammo);
 		//dbg_msg("TEST", "TRUE")
 		return true;
 	}
@@ -3206,7 +3206,7 @@ bool CCharacter::TakeDamage(vec2 Force, int Dmg, int From, int Weapon, int Mode)
 										  || (GetClass() == PLAYERCLASS_LOOPER && m_ActiveWeapon == WEAPON_GRENADE))
 			return false; // no self harm
 		else
-			Dmg = max(1, Dmg/2);
+			Dmg = maximum(1, Dmg/2);
 	}
 
 	m_DamageTaken++;
