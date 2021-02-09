@@ -702,28 +702,32 @@ bool CConsole::ConModCommandGet(IConsole::IResult *pArguments, void *pUserData)
 {
 	CConsole *pConsole = (CConsole*)pUserData;
 
-	const char *variableName = pArguments->GetString(0);
+	const char *pVariableName = pArguments->GetString(0);
 	char aBuf[1024];
 	aBuf[0] = 0;
-	for (CIntVariableData *var : pConsole->m_configIntVariables) {
-		if (str_comp_nocase(variableName, var->m_Name) == 0) {
-			str_format(aBuf, sizeof(aBuf), "%s %d", variableName, *var->m_pVariable);
+	for(CIntVariableData *var : pConsole->m_configIntVariables)
+	{
+		if(str_comp_nocase(pVariableName, var->m_Name) == 0)
+		{
+			str_format(aBuf, sizeof(aBuf), "%s %d", pVariableName, *var->m_pVariable);
 			break;
 		}
 	}
-	if (!aBuf[0])
+	if(!aBuf[0])
 	{
-		for (CStrVariableData *var : pConsole->m_configStrVariables) {
-			if (str_comp_nocase(variableName, var->m_Name) == 0) {
-				str_format(aBuf, sizeof(aBuf), "%s %s", variableName, var->m_pStr);
+		for(CStrVariableData *var : pConsole->m_configStrVariables)
+		{
+			if(str_comp_nocase(pVariableName, var->m_Name) == 0)
+			{
+				str_format(aBuf, sizeof(aBuf), "%s %s", pVariableName, var->m_pStr);
 				break;
 			}
 		}
 	}
 
-	if (aBuf[0])
+	if(aBuf[0])
 		pConsole->Print(OUTPUT_LEVEL_STANDARD, "Console", aBuf);
-	
+
 	return aBuf[0];
 }
 
@@ -732,12 +736,14 @@ bool CConsole::ConModCommandDumpVariables(IConsole::IResult *pArguments, void *p
 	CConsole *pConsole = (CConsole*)pUserData;
 
 	char aBuf[240];
-	for (CIntVariableData *var : pConsole->m_configIntVariables) {
-		str_format(aBuf, sizeof(aBuf), "%s %d", var->m_Name, *var->m_pVariable);
+	for (CIntVariableData *pVar : pConsole->m_configIntVariables)
+	{
+		str_format(aBuf, sizeof(aBuf), "%s %d", pVar->m_Name, *pVar->m_pVariable);
 		pConsole->Print(OUTPUT_LEVEL_STANDARD, "Console", aBuf);
 	}
-	for (CStrVariableData *var : pConsole->m_configStrVariables) {
-		str_format(aBuf, sizeof(aBuf), "%s \"%s\"", var->m_Name, var->m_pStr);
+	for (CStrVariableData *pVar : pConsole->m_configStrVariables)
+	{
+		str_format(aBuf, sizeof(aBuf), "%s \"%s\"", pVar->m_Name, pVar->m_pStr);
 		pConsole->Print(OUTPUT_LEVEL_STANDARD, "Console", aBuf);
 	}
 	
