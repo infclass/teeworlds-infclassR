@@ -703,8 +703,9 @@ bool CConsole::ConModCommandGet(IConsole::IResult *pArguments, void *pUserData)
 	const char *pVariableName = pArguments->GetString(0);
 
 	CCommand *pCommand = pConsole->FindCommand(pVariableName, pConsole->m_FlagMask);
-	if(!pCommand)
+	if(!pCommand || (pCommand->m_Flags & CFGFLAG_ECON))
 	{
+		// Ignore the 'get' command for ECON variables
 		return false;
 	}
 
@@ -749,6 +750,10 @@ bool CConsole::ConModCommandDumpVariables(IConsole::IResult *pArguments, void *p
 	{
 		const CCommand *pCommand = pNextCommand;
 		pNextCommand = pNextCommand->m_pNext;
+
+		// Do not show ECON variables in the dump
+		if(pCommand->m_Flags & CFGFLAG_ECON)
+			continue;
 
 		FCommandCallback pfnCallback = pCommand->m_pfnCallback;
 		void *pCommandUserData = pCommand->m_pUserData;
