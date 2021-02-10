@@ -1961,7 +1961,7 @@ void CGameContext::OnMessage(int MsgID, CUnpacker *pUnpacker, int ClientID)
 				Console()->Print(IConsole::OUTPUT_LEVEL_DEBUG, "game", aBuf);
 			}
 			Server()->SetClientClan(ClientID, pMsg->m_pClan);
-#ifndef CONF_GEOLOCATION
+#ifndef CONF_FORCE_COUNTRY_BY_IP
 			Server()->SetClientCountry(ClientID, pMsg->m_Country);
 #endif
 			
@@ -2010,12 +2010,18 @@ void CGameContext::OnMessage(int MsgID, CUnpacker *pUnpacker, int ClientID)
 			Server()->SetClientClan(ClientID, pMsg->m_pClan);
 			Server()->SetClientCountry(ClientID, pMsg->m_Country);
 
-			// IP geolocation start
+			int LangCountry = pMsg->m_Country;
 #ifdef CONF_GEOLOCATION
 			std::string ip = Server()->GetClientIP(ClientID);
-			Server()->SetClientCountry(ClientID, m_pGeolocation->get_country_iso_numeric_code(ip));
-#endif
-			// IP geolocation end
+			int LocatedCountry = m_pGeolocation->get_country_iso_numeric_code(ip);
+#ifdef CONF_FORCE_COUNTRY_BY_IP
+			Server()->SetClientCountry(ClientID, LocatedCountry);
+#endif // CONF_FORCE_COUNTRY_BY_IP
+			if(LangCountry < 0)
+			{
+				LangCountry = LocatedCountry;
+			}
+#endif // CONF_GEOLOCATION
 
 			str_copy(pPlayer->m_TeeInfos.m_CustomSkinName, pMsg->m_pSkin, sizeof(pPlayer->m_TeeInfos.m_CustomSkinName));
 			//~ pPlayer->m_TeeInfos.m_UseCustomColor = pMsg->m_UseCustomColor;
@@ -2032,7 +2038,8 @@ void CGameContext::OnMessage(int MsgID, CUnpacker *pUnpacker, int ClientID)
 				
 				m_VoteLanguage[ClientID][0] = 0;
 				
-				switch(pMsg->m_Country)
+				// Constants from 'data/countryflags/index.txt'
+				switch(LangCountry)
 				{
 					/* ar - Arabic ************************************/
 					case 12: //Algeria
