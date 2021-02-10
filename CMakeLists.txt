@@ -106,8 +106,6 @@ set_property(DIRECTORY APPEND PROPERTY CMAKE_CONFIGURE_DEPENDS
   src/game/version.h
 )
 
-add_definitions(-DCONF_NOGEOLOCATION)
-
 set(SERVER_EXECUTABLE Infclass-Server CACHE STRING "Name of the built server executable")
 
 ########################################################################
