@@ -404,6 +404,161 @@ bool CLocalization::PreUpdate()
 	return true;
 }
 
+const char *CLocalization::LanguageCodeByCountryCode(int CountryCode)
+{
+	// Constants from 'data/countryflags/index.txt'
+	switch(CountryCode)
+	{
+		/* ar - Arabic ************************************/
+		case 12: //Algeria
+		case 48: //Bahrain
+		case 262: //Djibouti
+		case 818: //Egypt
+		case 368: //Iraq
+		case 400: //Jordan
+		case 414: //Kuwait
+		case 422: //Lebanon
+		case 434: //Libya
+		case 478: //Mauritania
+		case 504: //Morocco
+		case 512: //Oman
+		case 275: //Palestine
+		case 634: //Qatar
+		case 682: //Saudi Arabia
+		case 706: //Somalia
+		case 729: //Sudan
+		case 760: //Syria
+		case 788: //Tunisia
+		case 784: //United Arab Emirates
+		case 887: //Yemen
+			return "ar";
+		/* bg - Bosnian *************************************/
+		case 100: //Bulgaria
+			return "bg";
+		/* bs - Bosnian *************************************/
+		case 70: //Bosnia and Hercegovina
+			return "bs";
+		/* cs - Czech *************************************/
+		case 203: //Czechia
+			return "cs";
+		/* de - German ************************************/
+		case 40: //Austria
+		case 276: //Germany
+		case 438: //Liechtenstein
+		case 756: //Switzerland
+			return "de";
+		/* el - Greek ***********************************/
+		case 300: //Greece
+		case 196: //Cyprus
+			return "el";
+		/* es - Spanish ***********************************/
+		case 32: //Argentina
+		case 68: //Bolivia
+		case 152: //Chile
+		case 170: //Colombia
+		case 188: //Costa Rica
+		case 192: //Cuba
+		case 214: //Dominican Republic
+		case 218: //Ecuador
+		case 222: //El Salvador
+		case 226: //Equatorial Guinea
+		case 320: //Guatemala
+		case 340: //Honduras
+		case 484: //Mexico
+		case 558: //Nicaragua
+		case 591: //Panama
+		case 600: //Paraguay
+		case 604: //Peru
+		case 630: //Puerto Rico
+		case 724: //Spain
+		case 858: //Uruguay
+		case 862: //Venezuela
+			return "es";
+		/* fa - Farsi ************************************/
+		case 364: //Islamic Republic of Iran
+		case 4: //Afghanistan
+			return "fa";
+		/* fr - French ************************************/
+		case 204: //Benin
+		case 854: //Burkina Faso
+		case 178: //Republic of the Congo
+		case 384: //Cote d’Ivoire
+		case 266: //Gabon
+		case 324: //Ginea
+		case 466: //Mali
+		case 562: //Niger
+		case 686: //Senegal
+		case 768: //Togo
+		case 250: //France
+		case 492: //Monaco
+			return "fr";
+		/* hr - Croatian **********************************/
+		case 191: //Croatia
+			return "hr";
+		/* hu - Hungarian *********************************/
+		case 348: //Hungary
+			return "hu";
+		/* it - Italian ***********************************/
+		case 380: //Italy
+			return "it";
+		/* ja - Japanese **********************************/
+		case 392: //Japan
+			return "ja";
+		/* la - Latin *************************************/
+		case 336: //Vatican
+			return "la";
+		/* nl - Dutch *************************************/
+		case 533: //Aruba
+		case 531: //Curaçao
+		case 534: //Sint Maarten
+		case 528: //Netherland
+		case 740: //Suriname
+		case 56: //Belgique
+			return "nl";
+		/* pl - Polish *************************************/
+		case 616: //Poland
+			return "pl";
+		/* pt - Portuguese ********************************/
+		case 24: //Angola
+		case 76: //Brazil
+		case 132: //Cape Verde
+		//case 226: //Equatorial Guinea: official language, but not national language
+		//case 446: //Macao: official language, but spoken by less than 1% of the population
+		case 508: //Mozambique
+		case 626: //Timor-Leste
+		case 678: //São Tomé and Príncipe
+			return "pt";
+		/* ru - Russian ***********************************/
+		case 112: //Belarus
+		case 643: //Russia
+		case 398: //Kazakhstan
+			return "ru";
+		/* sk - Slovak ************************************/
+		case 703: //Slovakia
+			return "sk";
+		/* sr - Serbian ************************************/
+		case 688: //Serbia
+			return "sr";
+		/* tl - Tagalog ************************************/
+		case 608: //Philippines
+			return "tl";
+		/* tr - Turkish ************************************/
+		case 31: //Azerbaijan
+		case 792: //Turkey
+			return "tr";
+		/* uk - Ukrainian **********************************/
+		case 804: //Ukraine
+			return "uk";
+		/* zh-Hans - Chinese (Simplified) **********************************/
+		case 156: //People’s Republic of China
+		case 344: //Hong Kong
+		case 446: //Macau
+			return "zh-Hans";
+		default:
+			return "";
+	}
+}
+
 const char* CLocalization::LocalizeWithDepth(const char* pLanguageCode, const char* pText, int Depth)
 {
 	CLanguage* pLanguage = m_pMainLanguage;

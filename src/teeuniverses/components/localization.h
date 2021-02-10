@@ -52,6 +52,8 @@ public:
 	public:
 		virtual void OnLocalizationModified() = 0;
 	};
+
+	static const char *LanguageCodeByCountryCode(int country);
 	
 	class CLanguage
 	{
