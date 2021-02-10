@@ -304,6 +304,7 @@ public:
 	void SendHitSound(int ClientID);
 	void SendScoreSound(int ClientID);
 	void AddBroadcast(int ClientID, const char* pText, int Priority, int LifeSpan);
+	void SetClientLanguage(int ClientID, const char *pLanguage);
 	
 private:
 	int m_VoteLanguageTick[MAX_CLIENTS];

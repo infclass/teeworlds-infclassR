@@ -590,6 +590,15 @@ void CGameContext::AddBroadcast(int ClientID, const char* pText, int Priority, i
 	}
 }
 
+void CGameContext::SetClientLanguage(int ClientID, const char *pLanguage)
+{
+	Server()->SetClientLanguage(ClientID, pLanguage);
+	if(m_apPlayers[ClientID])
+	{
+		m_apPlayers[ClientID]->SetLanguage(pLanguage);
+	}
+}
+
 void CGameContext::SendBroadcast(int To, const char *pText, int Priority, int LifeSpan)
 {
 	int Start = (To < 0 ? 0 : To);
@@ -1828,11 +1837,7 @@ void CGameContext::OnMessage(int MsgID, CUnpacker *pUnpacker, int ClientID)
 				{
 					if(pMsg->m_Vote > 0)
 					{
-						Server()->SetClientLanguage(ClientID, m_VoteLanguage[ClientID]);
-						if(m_apPlayers[ClientID])
-						{
-							m_apPlayers[ClientID]->SetLanguage(m_VoteLanguage[ClientID]);
-						}
+						SetClientLanguage(ClientID, m_VoteLanguage[ClientID]);
 					}
 					
 					m_VoteLanguageTick[ClientID] = 0;
@@ -4093,9 +4098,7 @@ bool CGameContext::ConLanguage(IConsole::IResult *pResult, void *pUserData)
 	
 	if(aFinalLanguageCode[0])
 	{
-		pSelf->Server()->SetClientLanguage(ClientID, aFinalLanguageCode);
-		if(pSelf->m_apPlayers[ClientID])
-			pSelf->m_apPlayers[ClientID]->SetLanguage(aFinalLanguageCode);
+		pSelf->SetClientLanguage(ClientID, aFinalLanguageCode);
 	}
 	else
 	{
