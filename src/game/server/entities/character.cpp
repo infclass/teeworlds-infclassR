@@ -2520,6 +2520,33 @@ void CCharacter::Tick()
 			);
 		}
 	}
+	else if(GetClass() == PLAYERCLASS_MEDIC)
+	{
+		if(m_ActiveWeapon == WEAPON_RIFLE)
+		{
+			const int MIN_ZOMBIES = 4;
+			const int DAMAGE_ON_REVIVE = 17;
+
+			if (GetHealthArmorSum() <= DAMAGE_ON_REVIVE)
+			{
+				int MinHp = DAMAGE_ON_REVIVE + 1;
+				GameServer()->SendBroadcast_Localization(GetPlayer()->GetCID(), BROADCAST_PRIORITY_WEAPONSTATE, BROADCAST_DURATION_REALTIME,
+					_("You need at least {int:MinHp} HP to revive a zombie"),
+					"MinHp", &MinHp,
+					NULL
+				);
+			}
+			else if (GameServer()->GetZombieCount() <= MIN_ZOMBIES)
+			{
+				int MinZombies = MIN_ZOMBIES+1;
+				GameServer()->SendBroadcast_Localization(GetPlayer()->GetCID(), BROADCAST_PRIORITY_WEAPONSTATE, BROADCAST_DURATION_REALTIME,
+					_("Too few zombies to revive anyone (less than {int:MinZombies})"),
+					"MinZombies", &MinZombies,
+					NULL
+				);
+			}
+		}
+	}
 	else if(GetClass() == PLAYERCLASS_LOOPER)
 	{
 		//Potential variable name conflict with engineerwall with pCurrentWall
