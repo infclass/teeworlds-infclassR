@@ -213,8 +213,8 @@
 		"value": "{str:PlayerName} a chang\u00e9 son nom pour {str:NewName}"
 	},
 	{
-		"key": "Switch language to english ?",
-		"value": "Passer la langue en fran\u00e7ais ?"
+		"key": "Switch language to english?",
+		"value": "Passer la langue en fran\u00e7ais?"
 	},
 	{
 		"key": "You can change the language of this mod using the command /language.",

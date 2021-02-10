@@ -213,7 +213,7 @@
 		"value": "{str:PlayerName} veranderde zijn naam naar {str:NewName}"
 	},
 	{
-		"key": "Switch language to english ?",
+		"key": "Switch language to english?",
 		"value": "Verander taal in het Nederlands?"
 	},
 	{

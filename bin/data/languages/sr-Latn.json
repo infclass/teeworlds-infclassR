@@ -214,7 +214,7 @@
 		"value": "{str:PlayerName} je promenio svoje ime u {str:NewName}"
 	},
 	{
-		"key": "Switch language to english ?",
+		"key": "Switch language to english?",
 		"value": "Prebaciti jezik na srpski?"
 	},
 	{

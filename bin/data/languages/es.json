@@ -213,7 +213,7 @@
 		"value": "{str:PlayerName} ha cambiado su nombre por {str:NewName}"
 	},
 	{
-		"key": "Switch language to english ?",
+		"key": "Switch language to english?",
 		"value": "\u00bfPoner el idioma en espa\u00f1ol?\t"
 	},
 	{

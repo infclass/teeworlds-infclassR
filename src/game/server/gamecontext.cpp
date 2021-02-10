@@ -2073,7 +2073,7 @@ void CGameContext::OnMessage(int MsgID, CUnpacker *pUnpacker, int ClientID)
 					Msg.m_Timeout = 10;
 					Msg.m_pReason = "";
 					str_copy(m_VoteLanguage[ClientID], pLangForVote, sizeof(m_VoteLanguage[ClientID]));
-					Msg.m_pDescription = Server()->Localization()->Localize(m_VoteLanguage[ClientID], _("Switch language to english ?"));
+					Msg.m_pDescription = Server()->Localization()->Localize(m_VoteLanguage[ClientID], _("Switch language to english?"));
 					Server()->SendPackMsg(&Msg, MSGFLAG_VITAL, ClientID);
 					m_VoteLanguageTick[ClientID] = 10*Server()->TickSpeed();
 				}
