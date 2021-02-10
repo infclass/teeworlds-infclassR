@@ -85,6 +85,7 @@ public:
 		int m_CurrentMapNumber = -1; // at what place the current map is, from 0 to (m_MapCount-1)
 	};
 	void GetMapRotationInfo(CMapRotationInfo *pMapRotationInfo);
+	static bool IsWordSeparator(char c);
 	void GetWordFromList(char *pNextWord, const char *pList, int ListIndex);
 
 	/*

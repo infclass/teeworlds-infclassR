@@ -115,8 +115,6 @@ const char *IGameController::GetTeamName(int Team)
 	return "spectators";
 }
 
-static bool IsSeparator(char c) { return c == ';' || c == ' ' || c == ',' || c == '\t'; }
-
 int IGameController::GetRoundCount() {
 	return m_RoundCount;
 }
@@ -172,13 +170,18 @@ void IGameController::QueueMap(const char *pToMap)
 	str_copy(m_aQueuedMap, pToMap, sizeof(m_aQueuedMap));
 }
 
+bool IGameController::IsWordSeparator(char c)
+{
+	return c == ';' || c == ' ' || c == ',' || c == '\t';
+}
+
 void IGameController::GetWordFromList(char *pNextWord, const char *pList, int ListIndex)
 {
 	pList += ListIndex;
 	int i = 0;
 	while(*pList)
 	{
-		if (IsSeparator(*pList)) break;
+		if (IsWordSeparator(*pList)) break;
 		pNextWord[i] = *pList;
 		pList++;
 		i++;
@@ -202,7 +205,7 @@ void IGameController::GetMapRotationInfo(CMapRotationInfo *pMapRotationInfo)
 	int i = 0;
 	while(*pNextMap)
 	{
-		if (IsSeparator(*pNextMap))
+		if (IsWordSeparator(*pNextMap))
 		{
 			if (insideWord)
 				insideWord = false;
