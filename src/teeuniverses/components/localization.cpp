@@ -554,6 +554,9 @@ const char *CLocalization::LanguageCodeByCountryCode(int CountryCode)
 		case 344: //Hong Kong
 		case 446: //Macau
 			return "zh-Hans";
+		case 826: // United Kingdom of Great Britain and Northern Ireland
+		case 840: // United States of America
+			return "en";
 		default:
 			return "";
 	}
