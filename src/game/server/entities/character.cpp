@@ -2721,11 +2721,49 @@ void CCharacter::Tick()
 		if(pCurrentBomb)
 		{
 			float BombLevel = pCurrentBomb->m_Damage/static_cast<float>(g_Config.m_InfMercBombs);
-			GameServer()->SendBroadcast_Localization(GetPlayer()->GetCID(), BROADCAST_PRIORITY_WEAPONSTATE, BROADCAST_DURATION_REALTIME,
-				_("Explosive yield: {percent:BombLevel}"),
-				"BombLevel", &BombLevel,
-				NULL
-			);
+
+			if(m_ActiveWeapon == WEAPON_RIFLE)
+			{
+				if(BombLevel < 1.0)
+				{
+					dynamic_string Line1;
+					Server()->Localization()->Format(Line1, GetPlayer()->GetLanguage(), _("Use the laser to upgrade the bomb"), NULL);
+
+					dynamic_string Line2;
+					Server()->Localization()->Format(Line2, GetPlayer()->GetLanguage(), _("Explosive yield: {percent:BombLevel}"), "BombLevel", &BombLevel, NULL);
+
+					Line1.append("\n");
+					Line1.append(Line2);
+
+					GameServer()->AddBroadcast(GetPlayer()->GetCID(), Line1.buffer(), BROADCAST_PRIORITY_WEAPONSTATE, BROADCAST_DURATION_REALTIME);
+				}
+				else
+				{
+					GameServer()->SendBroadcast_Localization(GetPlayer()->GetCID(), BROADCAST_PRIORITY_WEAPONSTATE, BROADCAST_DURATION_REALTIME,
+						_("The bomb is fully upgraded.\n"
+						  "There is nothing to do with the laser."), NULL
+					);
+				}
+			}
+			else
+			{
+				GameServer()->SendBroadcast_Localization(GetPlayer()->GetCID(), BROADCAST_PRIORITY_WEAPONSTATE, BROADCAST_DURATION_REALTIME,
+					_("Explosive yield: {percent:BombLevel}"),
+					"BombLevel", &BombLevel,
+					NULL
+				);
+			}
+		}
+		else
+		{
+			if(m_ActiveWeapon == WEAPON_RIFLE)
+			{
+				GameServer()->SendBroadcast_Localization(GetPlayer()->GetCID(), BROADCAST_PRIORITY_WEAPONSTATE, BROADCAST_DURATION_REALTIME,
+					_("Use the hammer to place a bomb and\n"
+					  "then use the laser to upgrade it"),
+					NULL
+				);
+			}
 		}
 	}
 	else if(GetClass() == PLAYERCLASS_HERO)
