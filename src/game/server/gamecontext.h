@@ -19,7 +19,7 @@
 #include "gameworld.h"
 #include "player.h"
 
-#ifndef CONF_NOGEOLOCATION
+#ifdef CONF_GEOLOCATION
 #include <infclassr/geolocation.h>
 #endif
 #include <fstream>
@@ -85,9 +85,9 @@ class CGameContext : public IGameServer
 	int m_TargetToKillCoolDown;
 	int m_HeroGiftCooldown;
 
-	#ifndef CONF_NOGEOLOCATION
+#ifdef CONF_GEOLOCATION
 	Geolocation* geolocation;
-	#endif
+#endif
 
 	static bool ConTuneParam(IConsole::IResult *pResult, void *pUserData);
 	static bool ConTuneReset(IConsole::IResult *pResult, void *pUserData);

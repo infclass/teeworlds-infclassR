@@ -373,11 +373,11 @@ release_sql_settings.cc.defines:Add("CONF_RELEASE", "CONF_SQL")
 config.mysql:Apply(debug_sql_settings)
 config.mysql:Apply(release_sql_settings)
 
-if config.nogeolocation.value then
-	debug_settings.cc.defines:Add("CONF_NOGEOLOCATION")
-	debug_sql_settings.cc.defines:Add("CONF_NOGEOLOCATION")
-	release_settings.cc.defines:Add("CONF_NOGEOLOCATION")
-	release_sql_settings.cc.defines:Add("CONF_NOGEOLOCATION")
+if not config.nogeolocation.value then
+	debug_settings.cc.defines:Add("CONF_GEOLOCATION")
+	debug_sql_settings.cc.defines:Add("CONF_GEOLOCATION")
+	release_settings.cc.defines:Add("CONF_GEOLOCATION")
+	release_sql_settings.cc.defines:Add("CONF_GEOLOCATION")
 end
 
 if platform == "macosx" then
