@@ -2413,6 +2413,71 @@ bool CGameContext::ConQueueMap(IConsole::IResult *pResult, void *pUserData)
 	return true;
 }
 
+bool CGameContext::ConAddMap(IConsole::IResult *pResult, void *pUserData)
+{
+	CGameContext *pSelf = (CGameContext *)pUserData;
+
+	if(pResult->NumArguments() != 1)
+		return false;
+
+	const char *pMapName = pResult->GetString(0);
+	if(!str_utf8_check(pMapName))
+	{
+		pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "server", "Invalid (non UTF-8) filename");
+		return true;
+	}
+
+	{
+		const char *mapInTheList = str_find(g_Config.m_SvMaprotation, pMapName);
+		const char nextC = mapInTheList ? mapInTheList[str_length(pMapName)] : '\0';
+
+		if (mapInTheList && (!nextC || IGameController::IsWordSeparator(nextC)))
+		{
+			pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "server", "The map is already in the rotation list");
+			return true;
+		}
+	}
+
+	{
+		char aMapFilename[128];
+		str_format(aMapFilename, sizeof(aMapFilename), "%s.map", pMapName);
+
+		char aBuf[512];
+		if(!pSelf->Storage()->FindFile(aMapFilename, "maps", IStorage::TYPE_ALL, aBuf, sizeof(aBuf)))
+		{
+			str_format(aBuf, sizeof(aBuf), "Unable to find map %s", pMapName);
+			pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "server", aBuf);
+
+			return true;
+		}
+	}
+
+	char *pData = g_Config.m_SvMaprotation;
+	int MaxSize = sizeof(g_Config.m_SvMaprotation);
+	int i = 0;
+	for(i = 0; i < MaxSize; ++i)
+	{
+		if(pData[i] == 0)
+			break;
+	}
+	if(i + 1 + str_length(pMapName) >= MaxSize)
+	{
+		// Overflow
+		return true;
+	}
+	pData[i] = ' ';
+	++i;
+	str_copy(pData + i, pMapName, MaxSize - i);
+
+	{
+		char aBuf[256];
+		str_format(aBuf, sizeof(aBuf), "Map %s added to the rotation list", pMapName);
+		pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "server", aBuf);
+	}
+
+	return true;
+}
+
 bool CGameContext::ConRestart(IConsole::IResult *pResult, void *pUserData)
 {
 	CGameContext *pSelf = (CGameContext *)pUserData;
@@ -4142,6 +4207,7 @@ void CGameContext::OnConsoleInit()
 	Console()->Register("change_map", "?r", CFGFLAG_SERVER|CFGFLAG_STORE, ConChangeMap, this, "Change map");
 	Console()->Register("skip_map", "", CFGFLAG_SERVER|CFGFLAG_STORE, ConSkipMap, this, "Change map to the next in the rotation");
 	Console()->Register("queue_map", "s", CFGFLAG_SERVER|CFGFLAG_STORE, ConQueueMap, this, "Set the next map");
+	Console()->Register("add_map", "s", CFGFLAG_SERVER|CFGFLAG_STORE, ConAddMap, this, "Add a map to the maps rotation list");
 	Console()->Register("restart", "?i<sec>", CFGFLAG_SERVER|CFGFLAG_STORE, ConRestart, this, "Restart in x seconds (0 = abort)");
 	Console()->Register("broadcast", "r<message>", CFGFLAG_SERVER, ConBroadcast, this, "Broadcast message");
 	Console()->Register("say", "r", CFGFLAG_SERVER, ConSay, this, "Say in chat");
