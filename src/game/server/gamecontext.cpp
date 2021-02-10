@@ -71,7 +71,7 @@ void CGameContext::Construct(int Resetting)
 	m_FunRoundsPassed = 0;
 	
 #ifdef CONF_GEOLOCATION
-	geolocation = new Geolocation("GeoLite2-Country.mmdb");
+	m_pGeolocation = new Geolocation("GeoLite2-Country.mmdb");
 #endif
 }
 
@@ -100,8 +100,8 @@ CGameContext::~CGameContext()
 		delete m_pVoteOptionHeap;
 	
 #ifdef CONF_GEOLOCATION
-	delete geolocation;
-	geolocation = nullptr;
+	delete m_pGeolocation;
+	m_pGeolocation = nullptr;
 #endif
 }
 
@@ -2013,7 +2013,7 @@ void CGameContext::OnMessage(int MsgID, CUnpacker *pUnpacker, int ClientID)
 			// IP geolocation start
 #ifdef CONF_GEOLOCATION
 			std::string ip = Server()->GetClientIP(ClientID);
-			Server()->SetClientCountry(ClientID, geolocation->get_country_iso_numeric_code(ip));
+			Server()->SetClientCountry(ClientID, m_pGeolocation->get_country_iso_numeric_code(ip));
 #endif
 			// IP geolocation end
 

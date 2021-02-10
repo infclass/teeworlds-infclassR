@@ -86,7 +86,7 @@ class CGameContext : public IGameServer
 	int m_HeroGiftCooldown;
 
 #ifdef CONF_GEOLOCATION
-	Geolocation* geolocation;
+	Geolocation* m_pGeolocation;
 #endif
 
 	static bool ConTuneParam(IConsole::IResult *pResult, void *pUserData);
