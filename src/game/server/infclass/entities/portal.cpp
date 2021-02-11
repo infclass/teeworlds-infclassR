@@ -45,7 +45,7 @@ void CPortal::Reset()
 
 int CPortal::GetNewEntitySound() const
 {
-	return SOUND_RIFLE_FIRE;
+	return SOUND_LASER_FIRE;
 }
 
 CPortal::PortalType CPortal::GetPortalType() const

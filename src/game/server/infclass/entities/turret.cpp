@@ -63,8 +63,8 @@ void CTurret::Tick()
 		// selfdestruction
 		if(Len < pChr->GetProximityRadius() + 4.0f )
 		{
-			pChr->TakeDamage(vec2(0.f, 0.f), Config()->m_InfTurretSelfDestructDmg, m_Owner, WEAPON_RIFLE, TAKEDAMAGEMODE_NOINFECTION);
-			GameServer()->CreateSound(m_Pos, SOUND_RIFLE_FIRE);
+			pChr->TakeDamage(vec2(0.f, 0.f), Config()->m_InfTurretSelfDestructDmg, m_Owner, WEAPON_LASER, TAKEDAMAGEMODE_NOINFECTION);
+			GameServer()->CreateSound(m_Pos, SOUND_LASER_FIRE);
 			int ClientID = pChr->GetPlayer()->GetCID();
 			char aBuf[64];
 			str_format(aBuf, sizeof(aBuf), "You destroyed %s's turret!", Server()->ClientName(m_Owner));
@@ -150,7 +150,7 @@ void CTurret::AttackTargets()
 					break;
 			}
 
-			GameServer()->CreateSound(m_Pos, SOUND_RIFLE_FIRE);
+			GameServer()->CreateSound(m_Pos, SOUND_LASER_FIRE);
 		}
 	}
 

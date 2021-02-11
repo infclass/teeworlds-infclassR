@@ -58,7 +58,7 @@ void CHeroFlag::GiveGift(CCharacter* pHero)
 	pHero->IncreaseArmor(10);
 	pHero->GiveWeapon(WEAPON_SHOTGUN, -1);
 	pHero->GiveWeapon(WEAPON_GRENADE, -1);
-	pHero->GiveWeapon(WEAPON_RIFLE, -1);
+	pHero->GiveWeapon(WEAPON_LASER, -1);
 	SetCoolDown();
 
 	pHero->SetEmote(EMOTE_HAPPY, Server()->Tick() + Server()->TickSpeed());

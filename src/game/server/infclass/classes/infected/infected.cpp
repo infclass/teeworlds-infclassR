@@ -33,7 +33,7 @@ void CInfClassInfected::GiveClassAttributes()
 
 	if(m_pCharacter->CanOpenPortals())
 	{
-		m_pCharacter->GiveWeapon(WEAPON_RIFLE, -1);
+		m_pCharacter->GiveWeapon(WEAPON_LASER, -1);
 	}
 }
 

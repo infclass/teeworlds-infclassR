@@ -41,7 +41,7 @@ bool CScientistLaser::HitCharacter(vec2 From, vec2 To)
 		{
 			m_Pos = At2;
 			CPortal *pPortal = static_cast<CPortal*>(pPortalEntity);
-			pPortal->TakeDamage(m_Dmg, m_Owner, WEAPON_RIFLE, TAKEDAMAGEMODE_NOINFECTION);
+			pPortal->TakeDamage(m_Dmg, m_Owner, WEAPON_LASER, TAKEDAMAGEMODE_NOINFECTION);
 			return true;
 		}
 	}
@@ -80,7 +80,7 @@ void CScientistLaser::DoBounce()
 		}
 	}
 	
-	GameServer()->CreateExplosion(m_Pos, m_Owner, WEAPON_RIFLE, false, TAKEDAMAGEMODE_NOINFECTION);
+	GameServer()->CreateExplosion(m_Pos, m_Owner, WEAPON_LASER, false, TAKEDAMAGEMODE_NOINFECTION);
 	
 	//Create a white hole entity
 	CCharacter *pOwnerChar = GameServer()->GetPlayerChar(m_Owner);

@@ -1358,7 +1358,7 @@ bool CInfClassGameController::PickupAllowed(int Index)
 	if(Index == TILE_ENTITY_POWERUP_NINJA) return false;
 	else if(Index == TILE_ENTITY_WEAPON_SHOTGUN) return false;
 	else if(Index == TILE_ENTITY_WEAPON_GRENADE) return false;
-	else if(Index == TILE_ENTITY_WEAPON_RIFLE) return false;
+	else if(Index == TILE_ENTITY_WEAPON_LASER) return false;
 	else return true;
 }
 

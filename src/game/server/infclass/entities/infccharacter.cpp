@@ -76,7 +76,7 @@ void CInfClassCharacter::FireWeapon()
 
 	bool FullAuto = false;
 
-	if(m_ActiveWeapon == WEAPON_GUN || m_ActiveWeapon == WEAPON_GRENADE || m_ActiveWeapon == WEAPON_SHOTGUN || m_ActiveWeapon == WEAPON_RIFLE)
+	if(m_ActiveWeapon == WEAPON_GUN || m_ActiveWeapon == WEAPON_GRENADE || m_ActiveWeapon == WEAPON_SHOTGUN || m_ActiveWeapon == WEAPON_LASER)
 		FullAuto = true;
 
 	if(GetPlayerClass() == PLAYERCLASS_SLUG && m_ActiveWeapon == WEAPON_HAMMER)
@@ -145,7 +145,7 @@ void CInfClassCharacter::OnWeaponFired(WeaponFireContext *pFireContext)
 		case WEAPON_GRENADE:
 			OnGrenadeFired(pFireContext);
 			break;
-		case WEAPON_RIFLE:
+		case WEAPON_LASER:
 			OnLaserFired(pFireContext);
 			break;
 		case WEAPON_NINJA:
@@ -205,7 +205,7 @@ void CInfClassCharacter::OnHammerFired(WeaponFireContext *pFireContext)
 			{
 				m_FirstShot = true;
 				new CEngineerWall(GameServer(), m_FirstShotCoord, GetPos(), m_pPlayer->GetCID());
-				GameServer()->CreateSound(GetPos(), SOUND_RIFLE_FIRE);
+				GameServer()->CreateSound(GetPos(), SOUND_LASER_FIRE);
 			}
 		}
 	}
@@ -242,7 +242,7 @@ void CInfClassCharacter::OnHammerFired(WeaponFireContext *pFireContext)
 				
 				new CLooperWall(GameServer(), m_FirstShotCoord, GetPos(), m_pPlayer->GetCID());
 				
-				GameServer()->CreateSound(GetPos(), SOUND_RIFLE_FIRE);
+				GameServer()->CreateSound(GetPos(), SOUND_LASER_FIRE);
 			}
 		}
 	}
@@ -835,20 +835,20 @@ void CInfClassCharacter::OnLaserFired(WeaponFireContext *pFireContext)
 		else
 			Damage = random_int(10, 13);
 		new CLaser(GameWorld(), GetPos(), Direction, GameServer()->Tuning()->m_LaserReach, m_pPlayer->GetCID(), Damage);
-		GameServer()->CreateSound(GetPos(), SOUND_RIFLE_FIRE);
+		GameServer()->CreateSound(GetPos(), SOUND_LASER_FIRE);
 	}
 	else if(GetPlayerClass() == PLAYERCLASS_SCIENTIST)
 	{
 		//white hole activation in scientist-laser
 		
 		new CScientistLaser(GameServer(), GetPos(), Direction, GameServer()->Tuning()->m_LaserReach*0.6f, m_pPlayer->GetCID(), Damage);
-		GameServer()->CreateSound(GetPos(), SOUND_RIFLE_FIRE);
+		GameServer()->CreateSound(GetPos(), SOUND_LASER_FIRE);
 	}
 	else if (GetPlayerClass() == PLAYERCLASS_LOOPER) 
 	{
 		Damage = 5;
 		new CLaser(GameWorld(), GetPos(), Direction, GameServer()->Tuning()->m_LaserReach*0.7f, m_pPlayer->GetCID(), Damage);
-		GameServer()->CreateSound(GetPos(), SOUND_RIFLE_FIRE);
+		GameServer()->CreateSound(GetPos(), SOUND_LASER_FIRE);
 	}
 	else if(GetPlayerClass() == PLAYERCLASS_MERCENARY)
 	{
@@ -874,10 +874,10 @@ void CInfClassCharacter::OnLaserFired(WeaponFireContext *pFireContext)
 		else
 		{
 			new CLaser(GameWorld(), GetPos(), Direction, GameServer()->Tuning()->m_LaserReach, m_pPlayer->GetCID(), Damage);
-			GameServer()->CreateSound(GetPos(), SOUND_RIFLE_FIRE);
+			GameServer()->CreateSound(GetPos(), SOUND_LASER_FIRE);
 			if(m_BombHit && distance(pCurrentBomb->GetPos(), m_AtMercBomb) <= 80.0f)
 			{
-				pCurrentBomb->IncreaseDamage(WEAPON_RIFLE);
+				pCurrentBomb->IncreaseDamage(WEAPON_LASER);
 				GameServer()->CreateSound(GetPos(), SOUND_PICKUP_ARMOR);
 			}
 		}
@@ -885,7 +885,7 @@ void CInfClassCharacter::OnLaserFired(WeaponFireContext *pFireContext)
 	else
 	{
 		new CLaser(GameWorld(), GetPos(), Direction, GameServer()->Tuning()->m_LaserReach, m_pPlayer->GetCID(), Damage);
-		GameServer()->CreateSound(GetPos(), SOUND_RIFLE_FIRE);
+		GameServer()->CreateSound(GetPos(), SOUND_LASER_FIRE);
 	}
 }
 
@@ -1011,7 +1011,7 @@ void CInfClassCharacter::OnBiologistLaserFired(CInfClassCharacter::WeaponFireCon
 	if(GameServer()->Collision()->IntersectLine(GetPos(), To, 0x0, &To))
 	{
 		new CBiologistMine(GameServer(), GetPos(), To, m_pPlayer->GetCID());
-		GameServer()->CreateSound(GetPos(), SOUND_RIFLE_FIRE);
+		GameServer()->CreateSound(GetPos(), SOUND_LASER_FIRE);
 		pFireContext->AmmoConsumed = pFireContext->AmmoAvailable;
 	}
 	else
@@ -1316,7 +1316,7 @@ void CInfClassCharacter::Die(int Killer, int Weapon)
 
 		if(pKillerCharacter->GetPlayerClass() == PLAYERCLASS_MERCENARY)
 		{
-			pKillerCharacter->GiveWeapon(WEAPON_RIFLE, m_aWeapons[WEAPON_RIFLE].m_Ammo + 3);
+			pKillerCharacter->GiveWeapon(WEAPON_LASER, m_aWeapons[WEAPON_LASER].m_Ammo + 3);
 		}
 	}
 }
@@ -1477,7 +1477,7 @@ void CInfClassCharacter::PlacePortal(WeaponFireContext *pFireContext)
 		if (PortalToTake == m_pPortalOut)
 			m_pPortalOut = nullptr;
 
-		GiveWeapon(WEAPON_RIFLE, m_aWeapons[WEAPON_RIFLE].m_Ammo + 1);
+		GiveWeapon(WEAPON_LASER, m_aWeapons[WEAPON_LASER].m_Ammo + 1);
 		return;
 	}
 

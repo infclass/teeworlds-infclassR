@@ -27,7 +27,7 @@ void CBiologistLaser::HitCharacter(vec2 From, vec2 To)
 		float Len = distance(p->m_Pos, IntersectPos);
 		if(Len < p->m_ProximityRadius)
 		{
-			p->TakeDamage(vec2(0.f, 0.f), 10, m_Owner, WEAPON_RIFLE, TAKEDAMAGEMODE_NOINFECTION);
+			p->TakeDamage(vec2(0.f, 0.f), 10, m_Owner, WEAPON_LASER, TAKEDAMAGEMODE_NOINFECTION);
 			break;
 		}
 	}
@@ -67,7 +67,7 @@ void CBiologistLaser::DoBounce()
 		if(m_Bounces > 4)
 			m_Energy = -1;
 
-		GameServer()->CreateSound(m_Pos, SOUND_RIFLE_BOUNCE);
+		GameServer()->CreateSound(m_Pos, SOUND_LASER_BOUNCE);
 	}
 	else
 	{

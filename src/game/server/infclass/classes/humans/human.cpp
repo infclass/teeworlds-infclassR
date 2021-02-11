@@ -22,8 +22,8 @@ void CInfClassHuman::GiveClassAttributes()
 		case PLAYERCLASS_ENGINEER:
 			m_pCharacter->GiveWeapon(WEAPON_HAMMER, -1);
 			m_pCharacter->GiveWeapon(WEAPON_GUN, -1);
-			m_pCharacter->GiveWeapon(WEAPON_RIFLE, -1);
-			m_pCharacter->SetActiveWeapon(WEAPON_RIFLE);
+			m_pCharacter->GiveWeapon(WEAPON_LASER, -1);
+			m_pCharacter->SetActiveWeapon(WEAPON_LASER);
 			break;
 		case PLAYERCLASS_SOLDIER:
 			m_pCharacter->GiveWeapon(WEAPON_HAMMER, -1);
@@ -36,41 +36,41 @@ void CInfClassHuman::GiveClassAttributes()
 			m_pCharacter->GiveWeapon(WEAPON_GRENADE, -1);
 			m_pCharacter->GiveWeapon(WEAPON_GUN, -1);
 			if(!GameServer()->m_FunRound)
-				m_pCharacter->GiveWeapon(WEAPON_RIFLE, -1);
+				m_pCharacter->GiveWeapon(WEAPON_LASER, -1);
 			m_pCharacter->SetActiveWeapon(WEAPON_GUN);
 			break;
 		case PLAYERCLASS_SNIPER:
 			m_pCharacter->GiveWeapon(WEAPON_HAMMER, -1);
 			m_pCharacter->GiveWeapon(WEAPON_GUN, -1);
-			m_pCharacter->GiveWeapon(WEAPON_RIFLE, -1);
-			m_pCharacter->SetActiveWeapon(WEAPON_RIFLE);
+			m_pCharacter->GiveWeapon(WEAPON_LASER, -1);
+			m_pCharacter->SetActiveWeapon(WEAPON_LASER);
 			break;
 		case PLAYERCLASS_SCIENTIST:
 			m_pCharacter->GiveWeapon(WEAPON_HAMMER, -1);
 			m_pCharacter->GiveWeapon(WEAPON_GUN, -1);
-			m_pCharacter->GiveWeapon(WEAPON_RIFLE, -1);
+			m_pCharacter->GiveWeapon(WEAPON_LASER, -1);
 			m_pCharacter->GiveWeapon(WEAPON_GRENADE, -1);
-			m_pCharacter->SetActiveWeapon(WEAPON_RIFLE);
+			m_pCharacter->SetActiveWeapon(WEAPON_LASER);
 			break;
 		case PLAYERCLASS_BIOLOGIST:
 			m_pCharacter->GiveWeapon(WEAPON_HAMMER, -1);
 			m_pCharacter->GiveWeapon(WEAPON_GUN, -1);
-			m_pCharacter->GiveWeapon(WEAPON_RIFLE, -1);
+			m_pCharacter->GiveWeapon(WEAPON_LASER, -1);
 			m_pCharacter->GiveWeapon(WEAPON_SHOTGUN, -1);
 			m_pCharacter->SetActiveWeapon(WEAPON_SHOTGUN);
 			break;
 		case PLAYERCLASS_LOOPER:
 			m_pCharacter->GiveWeapon(WEAPON_HAMMER, -1);
-			m_pCharacter->GiveWeapon(WEAPON_RIFLE, -1);
+			m_pCharacter->GiveWeapon(WEAPON_LASER, -1);
 			m_pCharacter->GiveWeapon(WEAPON_GRENADE, -1);
-			m_pCharacter->SetActiveWeapon(WEAPON_RIFLE);
+			m_pCharacter->SetActiveWeapon(WEAPON_LASER);
 			break;
 		case PLAYERCLASS_MEDIC:
 			m_pCharacter->GiveWeapon(WEAPON_HAMMER, -1);
 			m_pCharacter->GiveWeapon(WEAPON_GUN, -1);
 			m_pCharacter->GiveWeapon(WEAPON_SHOTGUN, -1);
 			m_pCharacter->GiveWeapon(WEAPON_GRENADE, -1);
-			m_pCharacter->GiveWeapon(WEAPON_RIFLE, -1);
+			m_pCharacter->GiveWeapon(WEAPON_LASER, -1);
 			m_pCharacter->SetActiveWeapon(WEAPON_SHOTGUN);
 			break;
 		case PLAYERCLASS_HERO:
@@ -78,7 +78,7 @@ void CInfClassHuman::GiveClassAttributes()
 				m_pCharacter->GiveWeapon(WEAPON_HAMMER, -1);
 			m_pCharacter->GiveWeapon(WEAPON_GUN, -1);
 			m_pCharacter->GiveWeapon(WEAPON_SHOTGUN, -1);
-			m_pCharacter->GiveWeapon(WEAPON_RIFLE, -1);
+			m_pCharacter->GiveWeapon(WEAPON_LASER, -1);
 			m_pCharacter->GiveWeapon(WEAPON_GRENADE, -1);
 			m_pCharacter->SetActiveWeapon(WEAPON_GRENADE);
 			break;

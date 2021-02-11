@@ -19,7 +19,7 @@ bool CGameContext::ConChangeLog(IConsole::IResult *pResult, void *pUserData)
 		case 1:
 			pSelf->SendChatTarget(ClientID, "--------- Changelog ---------");
 			pSelf->SendChatTarget(ClientID, "Fix Self killing/spectator gives you points. [σℓí♡]");
-			pSelf->SendChatTarget(ClientID, "Add new weapon rifle for mercenary's bomb [σℓí♡]");
+			pSelf->SendChatTarget(ClientID, "Add new weapon laser for mercenary's bomb [σℓí♡]");
 			pSelf->SendChatTarget(ClientID, "Add converse (/c \"text\") for whisper-chat [σℓí♡]");
 			pSelf->SendChatTarget(ClientID, "Add funround ghosts vs ninjas [breton]");
 			pSelf->SendChatTarget(ClientID, "Add funround ghouls vs biologists [breton]");

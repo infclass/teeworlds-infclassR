@@ -104,7 +104,7 @@ bool CLaser::HitCharacter(vec2 From, vec2 To)
 			if (zombie->GetPlayer()->GetCharacter()) {
 				zombie->GetPlayer()->GetCharacter()->SetHealthArmor(1, 0);
 				zombie->Unfreeze();
-				medic->TakeDamage(vec2(0.f, 0.f), DAMAGE_ON_REVIVE * 2, m_Owner, WEAPON_RIFLE, TAKEDAMAGEMODE_SELFHARM);
+				medic->TakeDamage(vec2(0.f, 0.f), DAMAGE_ON_REVIVE * 2, m_Owner, WEAPON_LASER, TAKEDAMAGEMODE_SELFHARM);
 				str_format(aBuf, sizeof(aBuf), "Medic %s revived %s",
 						Server()->ClientName(medic->GetPlayer()->GetCID()),
 						Server()->ClientName(zombie->GetPlayer()->GetCID()));
@@ -127,11 +127,11 @@ bool CLaser::HitCharacter(vec2 From, vec2 To)
 	if (pPortalEntity)
 	{
 		CPortal *pPortal = static_cast<CPortal*>(pPortalEntity);
-		pPortal->TakeDamage(m_Dmg, m_Owner, WEAPON_RIFLE, TAKEDAMAGEMODE_NOINFECTION);
+		pPortal->TakeDamage(m_Dmg, m_Owner, WEAPON_LASER, TAKEDAMAGEMODE_NOINFECTION);
 	}
 	else
 	{
-		pHit->TakeDamage(vec2(0.f, 0.f), m_Dmg, m_Owner, WEAPON_RIFLE, TAKEDAMAGEMODE_NOINFECTION);
+		pHit->TakeDamage(vec2(0.f, 0.f), m_Dmg, m_Owner, WEAPON_LASER, TAKEDAMAGEMODE_NOINFECTION);
 
 		if(pOwnerChar && pOwnerChar->GetPlayerClass() == PLAYERCLASS_LOOPER)
 		{
@@ -176,7 +176,7 @@ void CLaser::DoBounce()
 			if(m_Bounces > GameServer()->Tuning()->m_LaserBounceNum)
 				m_Energy = -1;
 
-			GameServer()->CreateSound(m_Pos, SOUND_RIFLE_BOUNCE);
+			GameServer()->CreateSound(m_Pos, SOUND_LASER_BOUNCE);
 		}
 	}
 	else
