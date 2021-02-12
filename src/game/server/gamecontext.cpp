@@ -2057,8 +2057,6 @@ void CGameContext::OnMessage(int MsgID, CUnpacker *pUnpacker, int ClientID)
 			str_format(aBuf, sizeof(aBuf), "From client: \"%s\", for IP: \"%s\"", pLangFromClient, pDefaultLangForIp);
 			Console()->Print(IConsole::OUTPUT_LEVEL_DEBUG, "lang", aBuf);
 
-			SetClientLanguage(ClientID, pDefaultLang);
-
 			str_copy(pPlayer->m_TeeInfos.m_CustomSkinName, pMsg->m_pSkin, sizeof(pPlayer->m_TeeInfos.m_CustomSkinName));
 			//~ pPlayer->m_TeeInfos.m_UseCustomColor = pMsg->m_UseCustomColor;
 			//~ pPlayer->m_TeeInfos.m_ColorBody = pMsg->m_ColorBody;
@@ -2067,6 +2065,8 @@ void CGameContext::OnMessage(int MsgID, CUnpacker *pUnpacker, int ClientID)
 			
 			if(!Server()->GetClientMemory(ClientID, CLIENTMEMORY_LANGUAGESELECTION))
 			{
+				SetClientLanguage(ClientID, pDefaultLang);
+
 				if(pLangForVote[0])
 				{
 					CNetMsg_Sv_VoteSet Msg;
