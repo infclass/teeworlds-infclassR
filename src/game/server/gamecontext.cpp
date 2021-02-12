@@ -2023,13 +2023,14 @@ void CGameContext::OnMessage(int MsgID, CUnpacker *pUnpacker, int ClientID)
 			Server()->SetClientCountry(ClientID, LocatedCountry);
 #endif // CONF_FORCE_COUNTRY_BY_IP
 			const char * const pLangForIp = CLocalization::LanguageCodeByCountryCode(LocatedCountry);
-			const char * const pDefaultLangForIp = pLangForIp[0] ? pLangForIp : "en";
+			const char * const pDefaultLangForIp = CLocalization::FallbackLanguageForIpCountryCode(LocatedCountry);
 #else
 			const char * const pDefaultLangForIp = "en";
+			const char * const pLangForIp = pDefaultLangForIp;
 #endif // CONF_GEOLOCATION
 
 			const char * const pDefaultLang = pLangFromClient[0] ? pLangFromClient : pDefaultLangForIp;
-			const char * const pSecondLang = pLangFromClient[0] ? pDefaultLangForIp : "en";
+			const char * const pSecondLang = pLangFromClient[0] ? pLangForIp : "en";
 			const char *pLangForVote = str_comp(pDefaultLang, pSecondLang) == 0 ? "" : pSecondLang;
 			if (!pLangForVote[0] && (str_comp(pDefaultLang, "en") != 0))
 			{

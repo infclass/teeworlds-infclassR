@@ -562,6 +562,21 @@ const char *CLocalization::LanguageCodeByCountryCode(int CountryCode)
 	}
 }
 
+const char *CLocalization::FallbackLanguageForIpCountryCode(int Country)
+{
+	switch (Country) {
+	case 364: //Islamic Republic of Iran
+	case 4: //Afghanistan
+		return "fa";
+	case 112: //Belarus
+	case 643: //Russia
+	case 398: //Kazakhstan
+		return "ru";
+	default:
+		return "en";
+	}
+}
+
 const char* CLocalization::LocalizeWithDepth(const char* pLanguageCode, const char* pText, int Depth)
 {
 	CLanguage* pLanguage = m_pMainLanguage;
