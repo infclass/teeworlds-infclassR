@@ -80,8 +80,6 @@ void CPlayer::Tick()
 	if(!Server()->ClientIngame(m_ClientID))
 		return;
 
-	Server()->SetClientLanguage(m_ClientID, m_aLanguage);
-
 	// do latency stuff
 	{
 		IServer::CClientInfo Info;
