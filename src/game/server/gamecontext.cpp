@@ -2015,48 +2015,15 @@ void CGameContext::OnMessage(int MsgID, CUnpacker *pUnpacker, int ClientID)
 			Server()->SetClientClan(ClientID, pMsg->m_pClan);
 			Server()->SetClientCountry(ClientID, pMsg->m_Country);
 
-			const char * const pLangFromClient = CLocalization::LanguageCodeByCountryCode(pMsg->m_Country);
 #ifdef CONF_GEOLOCATION
 			std::string ip = Server()->GetClientIP(ClientID);
 			int LocatedCountry = m_pGeolocation->get_country_iso_numeric_code(ip);
 #ifdef CONF_FORCE_COUNTRY_BY_IP
 			Server()->SetClientCountry(ClientID, LocatedCountry);
 #endif // CONF_FORCE_COUNTRY_BY_IP
-			const char * const pLangForIp = CLocalization::LanguageCodeByCountryCode(LocatedCountry);
-			const char * const pDefaultLangForIp = CLocalization::FallbackLanguageForIpCountryCode(LocatedCountry);
 #else
-			const char * const pDefaultLangForIp = "en";
-			const char * const pLangForIp = pDefaultLangForIp;
+			int LocatedCountry = -1;
 #endif // CONF_GEOLOCATION
-
-			const char * const pDefaultLang = pLangFromClient[0] ? pLangFromClient : pDefaultLangForIp;
-			const char * const pSecondLang = pLangFromClient[0] ? pLangForIp : "en";
-			const char *pLangForVote = str_comp(pDefaultLang, pSecondLang) == 0 ? "" : pSecondLang;
-			if (!pLangForVote[0] && (str_comp(pDefaultLang, "en") != 0))
-			{
-				pLangForVote = "en";
-			}
-			// Consider both: set-by-client and detected languages.
-			// Prefer the set one, use detected as the second choice.
-			// Start a vote to the another one if the languages mismatch.
-			// Start a vote to set English if the languges match and are not English
-
-			// Examples:
-			// - If the client has no language set and IP address belongs to Qo'noS (Klingon home-world) then
-			//   the default language should be set to Klingon language and
-			//   English language should be suggested via votes.
-
-			// - If the client language is set to Klingon and IP address belongs to Qo'noS, then
-			//   the default language should be set to Klingon language.
-			//   English (as the primary game language) should be suggested via votes.
-
-			// - If the client language is set to English and IP address belongs to Qo'noS, then
-			//   the default language should be set to English and
-			//   Klingon language should be suggested via votes.
-
-			char aBuf[128];
-			str_format(aBuf, sizeof(aBuf), "From client: \"%s\", for IP: \"%s\"", pLangFromClient, pDefaultLangForIp);
-			Console()->Print(IConsole::OUTPUT_LEVEL_DEBUG, "lang", aBuf);
 
 			str_copy(pPlayer->m_TeeInfos.m_CustomSkinName, pMsg->m_pSkin, sizeof(pPlayer->m_TeeInfos.m_CustomSkinName));
 			//~ pPlayer->m_TeeInfos.m_UseCustomColor = pMsg->m_UseCustomColor;
@@ -2066,6 +2033,21 @@ void CGameContext::OnMessage(int MsgID, CUnpacker *pUnpacker, int ClientID)
 			
 			if(!Server()->GetClientMemory(ClientID, CLIENTMEMORY_LANGUAGESELECTION))
 			{
+				const char * const pLangFromClient = CLocalization::LanguageCodeByCountryCode(pMsg->m_Country);
+				const char * const pLangForIp = CLocalization::LanguageCodeByCountryCode(LocatedCountry);
+
+				const char * const pDefaultLang = "en";
+				const char *pLangForVote = "";
+
+				if(pLangFromClient[0] && (str_comp(pLangFromClient, pDefaultLang) != 0))
+					pLangForVote = pLangFromClient;
+				else if(pLangForIp[0] && (str_comp(pLangForIp, pDefaultLang) != 0))
+					pLangForVote = pLangForIp;
+
+				char aBuf[128];
+				str_format(aBuf, sizeof(aBuf), "From client: \"%s\", for IP: \"%s\"", pLangFromClient, pLangForIp);
+				Console()->Print(IConsole::OUTPUT_LEVEL_DEBUG, "lang", aBuf);
+
 				SetClientLanguage(ClientID, pDefaultLang);
 
 				if(pLangForVote[0])
