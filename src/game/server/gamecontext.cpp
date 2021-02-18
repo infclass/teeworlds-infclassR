@@ -1689,7 +1689,7 @@ void CGameContext::OnMessage(int MsgID, CUnpacker *pUnpacker, int ClientID)
 	}
 	//HACK: DDNet Client did something wrong that we can detect
 	//Round and Score conditions are here only to prevent false-positif
-	if(!pPlayer && Server()->GetClientNbRound(ClientID) <= 1 && Server()->GetClientNbRound(ClientID) == 0)
+	if(!pPlayer && Server()->GetClientNbRound(ClientID) == 0)
 	{
 		Server()->Kick(ClientID, "Kicked (is probably a dummy)");
 		return;
