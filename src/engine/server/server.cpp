@@ -4540,7 +4540,6 @@ void CServer::SendStatistics()
 	{
 		if(m_aClients[i].m_State == CClient::STATE_INGAME)
 		{
-			m_aClients[i].m_NbRound++;
 			if(m_aClients[i].m_UserID >= 0 && RoundStatistics()->IsValidePlayer(i))
 			{
 				CSqlJob* pJob = new CSqlJob_Server_SendPlayerStatistics(this, RoundStatistics()->PlayerStatistics(i), m_aCurrentMap, m_aClients[i].m_UserID, i);
@@ -4549,6 +4548,17 @@ void CServer::SendStatistics()
 		}
 	}
 #endif
+}
+
+void CServer::OnRoundIsOver()
+{
+	for(int i=0; i<MAX_CLIENTS; i++)
+	{
+		if(m_aClients[i].m_State == CClient::STATE_INGAME)
+		{
+			m_aClients[i].m_NbRound++;
+		}
+	}
 }
 
 void CServer::ResetStatistics()

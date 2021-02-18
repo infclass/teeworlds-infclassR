@@ -404,6 +404,8 @@ public:
 	virtual CRoundStatistics* RoundStatistics() { return &m_RoundStatistics; }
 	virtual void ResetStatistics();
 	virtual void SendStatistics();
+
+	void OnRoundIsOver();
 	
 	virtual void SetClientMemory(int ClientID, int Memory, bool Value = true);
 	virtual void ResetClientMemoryAboutGame(int ClientID);

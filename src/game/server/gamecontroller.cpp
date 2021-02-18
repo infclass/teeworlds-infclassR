@@ -87,6 +87,7 @@ void IGameController::EndRound()
 	m_SuddenDeath = 0;
 	
 	MaybeSendStatistics();
+	Server()->OnRoundIsOver();
 
 	if (GameServer()->m_FunRound)
 		GameServer()->EndFunRound();

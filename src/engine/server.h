@@ -337,6 +337,8 @@ public:
 	virtual class CRoundStatistics* RoundStatistics() = 0;
 	virtual void ResetStatistics() = 0;
 	virtual void SendStatistics() = 0;
+
+	virtual void OnRoundIsOver() = 0;
 	
 	virtual void SetClientMemory(int ClientID, int Memory, bool Value = true) = 0;
 	virtual void ResetClientMemoryAboutGame(int ClientID) = 0;
