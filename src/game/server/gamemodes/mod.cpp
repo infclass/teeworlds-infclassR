@@ -495,8 +495,15 @@ bool CGameControllerMOD::ChatWitch(IConsole::IResult *pResult)
 		}
 	}
 	else {
-		int witch_id = RandomZombieToWitch();
-		str_format(aBuf, sizeof(aBuf), "Witch %s has arrived!", Server()->ClientName(witch_id));
+		int WitchId = RandomZombieToWitch();
+		if(WitchId < 0)
+		{
+			str_format(aBuf, sizeof(aBuf), "All witches are already here");
+		}
+		else
+		{
+			str_format(aBuf, sizeof(aBuf), "Witch %s has arrived!", Server()->ClientName(WitchId));
+		}
 	}
 
 	GameServer()->SendChatTarget(-1, aBuf);
@@ -557,11 +564,19 @@ int CGameControllerMOD::RandomZombieToWitch() {
 
 	for(int i = 0; i < MAX_CLIENTS; i++)
 	{
-		if (!GameServer()->m_apPlayers[i])
+		if(!GameServer()->m_apPlayers[i])
 			continue;
-		if (GameServer()->m_apPlayers[i]->IsActuallyZombie()) {
+		if(GameServer()->m_apPlayers[i]->GetClass() == PLAYERCLASS_WITCH)
+			continue;
+		if(GameServer()->m_apPlayers[i]->IsActuallyZombie()) {
 			zombies_id.push_back(i);
 		}
+	}
+
+	if(zombies_id.empty())
+	{
+		GameServer()->Console()->Print(IConsole::OUTPUT_LEVEL_DEBUG, "witch", "Unable to find any suitable player");
+		return -1;
 	}
 
 	int id = random_int(0, zombies_id.size() - 1);
