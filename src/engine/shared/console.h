@@ -56,6 +56,7 @@ class CConsole : public IConsole
 	static bool Con_Exec(IResult *pResult, void *pUserData);
 	static bool ConToggle(IResult *pResult, void *pUser);
 	static bool ConToggleStroke(IResult *pResult, void *pUser);
+	static bool ConAdjustVariable(IResult *pResult, void *pUserData);
 	static bool ConModCommandGet(IResult *pResult, void *pUserData);
 	static bool ConModCommandDumpVariables(IResult *pResult, void *pUserData);
 	static bool ConModCommandAccess(IResult *pResult, void *pUser);

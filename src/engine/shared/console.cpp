@@ -696,6 +696,68 @@ bool CConsole::ConToggleStroke(IConsole::IResult *pResult, void *pUser)
 	return true;
 }
 
+bool CConsole::ConAdjustVariable(IConsole::IResult *pResult, void *pUserData)
+{
+	CConsole *pConsole = (CConsole*)pUserData;
+
+	if(pResult->NumArguments() != 2)
+	{
+		pConsole->Print(OUTPUT_LEVEL_STANDARD, "Console", "Invalid usage. Use: increase <variable> <amount>");
+		return false;
+	}
+
+	const char *pVariableName = pResult->GetString(0);
+	int Val = pResult->GetInteger(1);
+
+	CCommand *pCommand = pConsole->FindCommand(pVariableName, pConsole->m_FlagMask);
+	if(!pCommand || (pCommand->m_Flags & CFGFLAG_ECON))
+	{
+		// Ignore the command for ECON variables
+		pConsole->Print(OUTPUT_LEVEL_STANDARD, "Console", "The variable does not exist");
+		return false;
+	}
+
+	FCommandCallback pfnCallback = pCommand->m_pfnCallback;
+	void *pCommandUserData = pCommand->m_pUserData;
+
+	// check for chain
+	if(pCommand->m_pfnCallback == Con_Chain)
+	{
+		CChain *pChainInfo = static_cast<CChain *>(pCommand->m_pUserData);
+		pfnCallback = pChainInfo->m_pfnCallback;
+		pCommandUserData = pChainInfo->m_pCallbackUserData;
+	}
+
+	char aBuf[256];
+	aBuf[0] = 0;
+	if(pfnCallback == IntVariableCommand)
+	{
+		CIntVariableData *pData = static_cast<CIntVariableData *>(pCommandUserData);
+
+		Val = *(pData->m_pVariable) + Val;
+		// do clamping
+		if(pData->m_Min != pData->m_Max)
+		{
+			if (Val < pData->m_Min)
+				Val = pData->m_Min;
+			if (pData->m_Max != 0 && Val > pData->m_Max)
+				Val = pData->m_Max;
+		}
+
+		*(pData->m_pVariable) = Val;
+		str_format(aBuf, sizeof(aBuf), "%s %d", pCommand->m_pName, *pData->m_pVariable);
+	}
+	else
+	{
+		str_format(aBuf, sizeof(aBuf), "'%s' is not an integer variable", pCommand->m_pName);
+	}
+
+	if(aBuf[0])
+		pConsole->Print(OUTPUT_LEVEL_STANDARD, "Console", aBuf);
+
+	return aBuf[0];
+}
+
 bool CConsole::ConModCommandGet(IConsole::IResult *pArguments, void *pUserData)
 {
 	CConsole *pConsole = (CConsole*)pUserData;
@@ -811,6 +873,7 @@ CConsole::CConsole(int FlagMask)
 
 	Register("mod_command", "s?i", CFGFLAG_SERVER, ConModCommandAccess, this, "Specify command accessibility for moderators");
 	Register("mod_status", "", CFGFLAG_SERVER, ConModCommandStatus, this, "List all commands which are accessible for moderators");
+	Register("adjust", "si", CFGFLAG_SERVER, ConAdjustVariable, this, "Adjust the variable value (add the given delta)");
 	Register("get", "s", CFGFLAG_SERVER, ConModCommandGet, this, "Get the value of a config variable");
 	Register("dump_variables", "", CFGFLAG_SERVER|CFGFLAG_CLIENT, ConModCommandDumpVariables, this, "Dump all config variables");
 
