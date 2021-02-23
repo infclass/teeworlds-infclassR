@@ -33,13 +33,11 @@ private:
 	
 /* INFECTION MODIFICATION START ***************************************/
 	bool m_IsFlashGrenade;
-	bool m_IsPortal;
 	vec2 m_StartPos;
 	bool m_TakeDamageMode;
 	
 public:
 	void FlashGrenade();
-	void Portal();
 /* INFECTION MODIFICATION END *****************************************/
 };
 

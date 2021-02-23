@@ -28,7 +28,6 @@ CProjectile::CProjectile(CGameWorld *pGameWorld, int Type, int Owner, vec2 Pos, 
 	
 /* INFECTION MODIFICATION START ***************************************/
 	m_IsFlashGrenade = false;
-	m_IsPortal = false;
 	m_StartPos = Pos;
 /* INFECTION MODIFICATION END *****************************************/
 }
@@ -99,7 +98,7 @@ void CProjectile::Tick()
 /* INFECTION MODIFICATION START ***************************************/
 	if(TargetWitchPortal || TargetChr || Collide || m_LifeSpan < 0 || GameLayerClipped(CurPos))
 	{
-		if(m_LifeSpan >= 0 || (m_Weapon == WEAPON_GRENADE && !m_IsPortal))
+		if(m_LifeSpan >= 0 || (m_Weapon == WEAPON_GRENADE))
 			GameServer()->CreateSound(CurPos, m_SoundImpact);
 
 		if(m_IsFlashGrenade)
@@ -108,39 +107,6 @@ void CProjectile::Tick()
 			if(length(Dir) > 1.1) Dir = normalize(m_StartPos - CurPos);
 			
 			new CGrowingExplosion(GameWorld(), CurPos, Dir, m_Owner, 8, GROWINGEXPLOSIONEFFECT_FREEZE_INFECTED);
-		}
-		else if(m_IsPortal)
-		{
-			float Iterator = Ct;
-			while(Iterator > 0.0f)
-			{
-				vec2 CheckPos = GetPos(Iterator);
-				
-				vec2 PortalPos = vec2(16.0f, 16.0f) + vec2(
-				static_cast<float>(static_cast<int>(round(CheckPos.x))/32)*32.0,
-				static_cast<float>(static_cast<int>(round(CheckPos.y))/32)*32.0);
-				
-				if(GameServer()->m_pController->IsSpawnable(PortalPos, ZONE_TELE_NOSCIENTIST))
-				{
-					CCharacter *OwnerChar = GameServer()->GetPlayerChar(m_Owner);
-					if(OwnerChar)
-					{
-						vec2 OldPos = OwnerChar->m_Core.m_Pos;
-						
-						OwnerChar->m_Core.m_Pos = PortalPos;
-						OwnerChar->m_Core.m_HookedPlayer = -1;
-						OwnerChar->m_Core.m_HookState = HOOK_RETRACTED;
-						OwnerChar->m_Core.m_HookPos = OwnerChar->m_Core.m_Pos;
-						
-						GameServer()->CreateDeath(OldPos, m_Owner);
-						GameServer()->CreateDeath(PortalPos, m_Owner);
-						
-						break;
-					}
-				}
-					
-				Iterator -= 0.02f;
-			}
 		}
 		else if(m_Explosive)
 		{
@@ -205,8 +171,4 @@ void CProjectile::FlashGrenade()
 	m_IsFlashGrenade = true;
 }
 
-void CProjectile::Portal()
-{
-	m_IsPortal = true;
-}
 /* INFECTION MODIFICATION END *****************************************/
