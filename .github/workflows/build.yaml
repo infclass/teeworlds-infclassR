@@ -1,0 +1,37 @@
+name: Build
+
+on: [push]
+
+jobs:
+  build:
+    name: ${{ matrix.config.name }}
+    runs-on: ${{ matrix.config.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        config:
+        - {
+            name: "Ubuntu 18.04 GCC",
+            os: ubuntu-18.04,
+            cc: "gcc", cxx: "g++"
+          }
+    steps:
+    - name: Install the dependencies
+      run: |
+        sudo apt-get install libmaxminddb-dev
+
+    - uses: actions/checkout@v2
+      with:
+        path: "scripts"
+        repository: "InfectionDust/infclass-scripts"
+
+    - uses: actions/checkout@v2
+      with:
+        path: "scripts/ci/sources"
+
+    - name: Add the CI build configuration
+      run: |
+        cp scripts/ci/sources/.github/workflows/ci.conf scripts/conf
+
+    - name: Build the server
+      run: ./scripts/scripts/build.sh ci
