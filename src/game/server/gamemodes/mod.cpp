@@ -479,7 +479,8 @@ bool CGameControllerMOD::ChatWitch(IConsole::IResult *pResult)
 
 	if (callers_count < REQUIRED_CALLERS_COUNT) {
 		auto& wc = m_WitchCallers;
-		if(!(std::find(wc.begin(), wc.end(), ClientID) != wc.end())) {
+		if(!(std::find(wc.begin(), wc.end(), ClientID) != wc.end()))
+		{
 			wc.push_back(ClientID); // add to witch callers vector
 			callers_count += 1;
 			if (callers_count == 1)
@@ -488,13 +489,16 @@ bool CGameControllerMOD::ChatWitch(IConsole::IResult *pResult)
 			else
 				str_format(aBuf, sizeof(aBuf), "Witch (%d/%d)", callers_count, REQUIRED_CALLERS_COUNT);
 		}
-		else {
+		else
+		{
 			str_format(aBuf, sizeof(aBuf), "You can't call witch twice");
 			GameServer()->SendChatTarget(ClientID, aBuf);
 			return true;
 		}
 	}
-	else {
+
+	if (callers_count >= REQUIRED_CALLERS_COUNT)
+	{
 		int WitchId = RandomZombieToWitch();
 		if(WitchId < 0)
 		{
