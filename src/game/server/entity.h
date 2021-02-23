@@ -68,40 +68,52 @@ protected:
 	int m_ID;
 	int m_ObjType;
 public:
-	CEntity(CGameWorld *pGameWorld, int Objtype);
-	virtual ~CEntity();
+	/* Constructor */
+	CEntity(CGameWorld *pGameWorld, int Objtype, const vec2 &Pos = vec2(0,0), int ProximityRadius = 0);
 
+	/* Destructor */
+	virtual ~CEntity();
+	
+	/* Objects */
 	class CGameWorld *GameWorld() { return m_pGameWorld; }
 	class CGameContext *GameServer() { return GameWorld()->GameServer(); }
 	class IServer *Server() { return GameWorld()->Server(); }
-
-
+	
+	/* Getters */
 	CEntity *TypeNext() { return m_pNextTypeEntity; }
 	CEntity *TypePrev() { return m_pPrevTypeEntity; }
+	const vec2 &GetPos() const { return m_Pos; }
+	float GetProximityRadius() const { return m_ProximityRadius; }
+	bool IsMarkedForDestroy() const { return m_MarkedForDestroy; }
+
+	/* Setters */
+	void MarkForDestroy() { m_MarkedForDestroy = true; }
+
+	/* Other functions */
 
 	/*
-		Function: destroy
+		Function: Destroy
 			Destorys the entity.
 	*/
 	virtual void Destroy() { delete this; }
 
 	/*
-		Function: reset
+		Function: Reset
 			Called when the game resets the map. Puts the entity
 			back to it's starting state or perhaps destroys it.
 	*/
 	virtual void Reset() {}
 
 	/*
-		Function: tick
+		Function: Tick
 			Called progress the entity to the next tick. Updates
 			and moves the entity to it's new state and position.
 	*/
 	virtual void Tick() {}
 
 	/*
-		Function: tick_defered
-			Called after all entities tick() function has been called.
+		Function: TickDefered
+			Called after all entities Tick() function has been called.
 	*/
 	virtual void TickDefered() {}
 
@@ -112,12 +124,12 @@ public:
 	virtual void TickPaused() {}
 
 	/*
-		Function: snap
+		Function: Snap
 			Called when a new snapshot is being generated for a specific
 			client.
 
 		Arguments:
-			snapping_client - ID of the client which snapshot is
+			SnappingClient - ID of the client which snapshot is
 				being generated. Could be -1 to create a complete
 				snapshot of everything in the game for demo
 				recording.
@@ -125,12 +137,12 @@ public:
 	virtual void Snap(int SnappingClient) {}
 
 	/*
-		Function: networkclipped(int snapping_client)
+		Function: NetworkClipped(int SnappingClient)
 			Performs a series of test to see if a client can see the
 			entity.
 
 		Arguments:
-			snapping_client - ID of the client which snapshot is
+			SnappingClient - ID of the client which snapshot is
 				being generated. Could be -1 to create a complete
 				snapshot of everything in the game for demo
 				recording.
