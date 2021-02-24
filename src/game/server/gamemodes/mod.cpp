@@ -182,9 +182,36 @@ bool CGameControllerMOD::IsSupportClass(int PlayerClass)
 
 int CGameControllerMOD::GetClassByName(const char *pClassName, bool *pOk)
 {
+	struct ExtraName
+	{
+		ExtraName(const char *pN, int Class)
+			: pName(pN)
+			, PlayerClass(Class)
+		{
+		}
+
+		const char *pName = nullptr;
+		int PlayerClass = 0;
+	};
+
+	static const ExtraName extraNames[] =
+	{
+		ExtraName("merc", PLAYERCLASS_MERCENARY),
+		ExtraName("mercs", PLAYERCLASS_MERCENARY),
+		ExtraName("engi", PLAYERCLASS_ENGINEER),
+		ExtraName("bio", PLAYERCLASS_BIOLOGIST),
+		ExtraName("bios", PLAYERCLASS_BIOLOGIST),
+	};
 	if(pOk)
 	{
 		*pOk = true;
+	}
+	for(const ExtraName &Extra : extraNames)
+	{
+		if(str_comp(pClassName, Extra.pName) == 0)
+		{
+			return Extra.PlayerClass;
+		}
 	}
 
 	for (int PlayerClass = 0; PlayerClass < NB_PLAYERCLASS; ++PlayerClass)
