@@ -441,11 +441,10 @@ bool CGameControllerMOD::ConSetClass(IConsole::IResult *pResult)
 	if(!pPlayer)
 		return true;
 
-	for (int PlayerClass = PLAYERCLASS_NONE; PlayerClass < NB_PLAYERCLASS; ++PlayerClass)
+	bool Ok = false;
+	int PlayerClass = GetClassByName(pClassName, &Ok);
+	if(Ok)
 	{
-		if (str_comp(pClassName, CGameControllerMOD::GetClassName(PlayerClass)) != 0)
-			continue;
-
 		pPlayer->SetClass(PlayerClass);
 		char aBuf[256];
 		str_format(aBuf, sizeof(aBuf), "The admin change the class of %s to %s", GameServer()->Server()->ClientName(PlayerID), pClassName);
