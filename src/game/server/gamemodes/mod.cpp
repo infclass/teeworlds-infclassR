@@ -447,7 +447,8 @@ bool CGameControllerMOD::ConSetClass(IConsole::IResult *pResult)
 	{
 		pPlayer->SetClass(PlayerClass);
 		char aBuf[256];
-		str_format(aBuf, sizeof(aBuf), "The admin change the class of %s to %s", GameServer()->Server()->ClientName(PlayerID), pClassName);
+		const char *pClassDisplayName = GetClassDisplayName(PlayerClass);
+		str_format(aBuf, sizeof(aBuf), "The admin change the class of %s to %s", GameServer()->Server()->ClientName(PlayerID), pClassDisplayName);
 		GameServer()->SendChat(-1, CGameContext::CHAT_ALL, aBuf);
 
 		return true;
