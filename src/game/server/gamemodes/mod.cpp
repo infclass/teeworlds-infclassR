@@ -180,8 +180,13 @@ bool CGameControllerMOD::IsSupportClass(int PlayerClass)
 	}
 }
 
-int CGameControllerMOD::GetClassByName(const char *pClassName)
+int CGameControllerMOD::GetClassByName(const char *pClassName, bool *pOk)
 {
+	if(pOk)
+	{
+		*pOk = true;
+	}
+
 	for (int PlayerClass = 0; PlayerClass < NB_PLAYERCLASS; ++PlayerClass)
 	{
 		const char *pSingularName = CGameControllerMOD::GetClassName(PlayerClass);
@@ -191,6 +196,10 @@ int CGameControllerMOD::GetClassByName(const char *pClassName)
 		}
 	}
 
+	if(pOk)
+	{
+		*pOk = false;
+	}
 	return PLAYERCLASS_NONE;
 }
 
