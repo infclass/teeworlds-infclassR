@@ -1355,8 +1355,7 @@ void CGameContext::OnClientEnter(int ClientID)
 
 	SendChatTarget(ClientID, "Join our discord server: https://discord.gg/Sxk5ssv");
 	SendChatTarget(ClientID, "Join our matrix.org room: https://matrix.to/#/#teeworlds-infclass:matrix.org");
-	SendChatTarget(ClientID, "Sources: https://github.com/InfectionDust/teeworlds-infclassR");
-	
+
 	char output[512];
 	str_format(output, sizeof(output), "[%08x][%s][%s]", (int)time(0), Server()->GetClientIP(ClientID).c_str(), Server()->ClientName(ClientID));
 	fout << output << std::endl;
@@ -2823,8 +2822,6 @@ bool CGameContext::ConCredits(IConsole::IResult *pResult, void *pUserData)
 	Buffer.append("\n\n");
 	pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("Based on the concept of Infection mod by Gravity"), NULL);
 	Buffer.append("\n\n");
-	pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("Open source on \nhttps://github.com/InfectionDust/teeworlds-infclassR"), NULL);
-	Buffer.append("\n\n");
 	pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("Main contributors: {str:ListOfContributors}"), "ListOfContributors", aContributors, NULL);
 	Buffer.append("\n\n");
 	pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("Thanks to {str:ListOfContributors}"), "ListOfContributors", aThanks, NULL);
@@ -2856,6 +2853,12 @@ bool CGameContext::ConInfo(IConsole::IResult *pResult, void *pUserData)
 		str_format(aBuf, sizeof(aBuf), "Git revision hash: %s", GIT_SHORTREV_HASH);
 		pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "info", aBuf);
 	}
+
+	pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("Sources: {str:SourceUrl} "), "SourceUrl",
+	                                          "https://github.com/InfectionDust/teeworlds-infclassR", NULL);
+	pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "info", Buffer.buffer());
+	Buffer.clear();
+
 	pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "info",
 		"See also: /credits");
 
