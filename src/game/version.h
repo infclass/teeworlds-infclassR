@@ -8,4 +8,5 @@
 #define LAST_COMPILE_DATE __DATE__
 static const char GAME_RELEASE_VERSION[8] = "0.6.4";
 
+extern const char *GIT_SHORTREV_HASH;
 #endif

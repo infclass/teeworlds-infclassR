@@ -683,7 +683,7 @@ set(LIBS
 
 # Targets
 add_library(engine-shared EXCLUDE_FROM_ALL OBJECT ${ENGINE_INTERFACE} ${ENGINE_SHARED} ${BASE})
-add_library(game-shared EXCLUDE_FROM_ALL OBJECT ${GAME_SHARED} ${ENGINE_UUID_SHARED} ${teeuniverses_SOURCES})
+add_library(game-shared EXCLUDE_FROM_ALL OBJECT ${GAME_SHARED} ${GAME_GENERATED_SHARED} ${ENGINE_UUID_SHARED} ${teeuniverses_SOURCES})
 list(APPEND TARGETS_OWN engine-shared game-shared)
 
 #add_library(pnglite STATIC

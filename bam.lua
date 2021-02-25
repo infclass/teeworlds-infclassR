@@ -94,6 +94,20 @@ function ContentCompile(action, output)
 	return output
 end
 
+function GenerateGitRevision(output)
+	output = Path(output)
+	AddJob(
+		output,
+		"generating " .. output,
+		--Script("scripts/git_revision.py") .. " > ".. Path(output)
+		Script("scripts/git_revision.py")  .. " > " .. Path(output)
+	)
+	AddDependency(output, Path("scripts/git_revision.py"))
+	return output
+end
+
+git_revision = GenerateGitRevision("src/game/generated/git_revision.cpp")
+
 -- Content Compile
 network_source = ContentCompile("network_source", "src/game/generated/protocol.cpp")
 network_header = ContentCompile("network_header", "src/game/generated/protocol.h")
@@ -290,7 +304,7 @@ function build(settings)
 
 	versionserver = Compile(settings, Collect("src/versionsrv/*.cpp"))
 	masterserver = Compile(settings, Collect("src/mastersrv/*.cpp"))
-	game_shared = Compile(settings, Collect("src/game/*.cpp"), nethash, network_source)
+	game_shared = Compile(settings, Collect("src/game/*.cpp"), nethash, network_source, git_revision)
 	game_server = Compile(settings, CollectRecursive("src/game/server/*.cpp"), server_content_source)
 	if not config.nogeolocation.value then
 		infclassr = Compile(settings, Collect("src/infclassr/*.cpp", "src/infclassr/GeoLite2PP/*.cpp"))
