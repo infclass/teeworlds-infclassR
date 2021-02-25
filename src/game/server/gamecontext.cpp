@@ -2830,7 +2830,7 @@ bool CGameContext::ConCredits(IConsole::IResult *pResult, void *pUserData)
 	return true;
 }
 
-bool CGameContext::ConChatInfo(IConsole::IResult *pResult, void *pUserData)
+bool CGameContext::ConInfo(IConsole::IResult *pResult, void *pUserData)
 {
 	CGameContext *pSelf = (CGameContext *)pUserData;
 
@@ -2838,12 +2838,22 @@ bool CGameContext::ConChatInfo(IConsole::IResult *pResult, void *pUserData)
 	const char* pLanguage = pSelf->m_apPlayers[ClientID]->GetLanguage();
 
 	dynamic_string Buffer;
+	pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("InfectionClass, by necropotame (version {str:VersionCode})"), "VersionCode", GAME_VERSION, NULL);
+	pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "info", Buffer.buffer());
+	Buffer.clear();
 
-	pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("InfectionClass, by necropotame (version {str:VersionCode})"), "VersionCode", "InfectionDust", NULL);
-	Buffer.append("\n\n");
 	pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("Server version from {str:ServerCompileDate} "), "ServerCompileDate", LAST_COMPILE_DATE, NULL); 
-	Buffer.append("\n\n");	
-	pSelf->SendMOTD(ClientID, Buffer.buffer());
+	pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "info", Buffer.buffer());
+	Buffer.clear();
+
+	if(GIT_SHORTREV_HASH)
+	{
+		char aBuf[64];
+		str_format(aBuf, sizeof(aBuf), "Git revision hash: %s", GIT_SHORTREV_HASH);
+		pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "info", aBuf);
+	}
+	pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "info",
+		"See also: /credits");
 
 	return true;
 }
@@ -4094,7 +4104,7 @@ void CGameContext::OnConsoleInit()
 	
 	//Chat Command
 	Console()->Register("credits", "", CFGFLAG_CHAT | CFGFLAG_USER, ConCredits, this, "Shows the credits of the mod");
-	Console()->Register("info", "", CFGFLAG_CHAT|CFGFLAG_USER, ConChatInfo, this, "Display information about the mod");
+	Console()->Register("info", "", CFGFLAG_CHAT|CFGFLAG_USER, ConInfo, this, "Display information about the mod");
 #ifdef CONF_SQL
 	Console()->Register("register", "s<username> s<password> ?s<email>", CFGFLAG_CHAT|CFGFLAG_USER, ConRegister, this, "Create an account");
 	Console()->Register("login", "s<username> s<password>", CFGFLAG_CHAT|CFGFLAG_USER, ConLogin, this, "Login to an account");
