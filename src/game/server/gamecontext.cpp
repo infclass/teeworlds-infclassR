@@ -2799,19 +2799,21 @@ bool CGameContext::ConchainSpecialMotdupdate(IConsole::IResult *pResult, void *p
 
 
 /* INFECTION MODIFICATION START ***************************************/
-bool CGameContext::ConChatInfo(IConsole::IResult *pResult, void *pUserData)
-{	
+
+bool CGameContext::ConCredits(IConsole::IResult *pResult, void *pUserData)
+{
 	CGameContext *pSelf = (CGameContext *)pUserData;
-	
+
 	int ClientID = pResult->GetClientID();
 	const char* pLanguage = pSelf->m_apPlayers[ClientID]->GetLanguage();
-	
+
 	dynamic_string Buffer;
 	
 	const char aThanks[] = "guenstig werben, Defeater, Orangus, BlinderHeld, Warpaint, Serena, FakeDeath, tee_to_F_U_UP!, Denis, NanoSlime_, tria, pinkieval…";
-	const char aContributors[] = "necropotame, Stitch626, yavl, Socialdarwinist,\nbretonium,duralakun,FluffyTee,ResamVi";
-	
-	
+	const char aContributors[] = "necropotame, Stitch626, yavl, Socialdarwinist"
+	                             ", bretonium, duralakun, FluffyTee, ResamVi"
+	                             ;
+
 	pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("InfectionClass, by necropotame (version {str:VersionCode})"), "VersionCode", "OI2", NULL); 
 	Buffer.append("\n\n");
 	pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("Based on the concept of Infection mod by Gravity"), NULL); 
@@ -2822,10 +2824,26 @@ bool CGameContext::ConChatInfo(IConsole::IResult *pResult, void *pUserData)
 	Buffer.append("\n\n");
 	pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("Thanks to {str:ListOfContributors}"), "ListOfContributors", aThanks, NULL); 
 	Buffer.append("\n\n");
+	pSelf->SendMOTD(ClientID, Buffer.buffer());
+
+	return true;
+}
+
+bool CGameContext::ConChatInfo(IConsole::IResult *pResult, void *pUserData)
+{
+	CGameContext *pSelf = (CGameContext *)pUserData;
+
+	int ClientID = pResult->GetClientID();
+	const char* pLanguage = pSelf->m_apPlayers[ClientID]->GetLanguage();
+
+	dynamic_string Buffer;
+
+	pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("InfectionClass, by necropotame (version {str:VersionCode})"), "VersionCode", "InfectionDust", NULL);
+	Buffer.append("\n\n");
 	pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("Server version from {str:ServerCompileDate} "), "ServerCompileDate", LAST_COMPILE_DATE, NULL); 
 	Buffer.append("\n\n");	
 	pSelf->SendMOTD(ClientID, Buffer.buffer());
-	
+
 	return true;
 }
 
@@ -4074,6 +4092,7 @@ void CGameContext::OnConsoleInit()
 /* INFECTION MODIFICATION START ***************************************/
 	
 	//Chat Command
+	Console()->Register("credits", "", CFGFLAG_CHAT | CFGFLAG_USER, ConCredits, this, "Shows the credits of the mod");
 	Console()->Register("info", "", CFGFLAG_CHAT|CFGFLAG_USER, ConChatInfo, this, "Display information about the mod");
 #ifdef CONF_SQL
 	Console()->Register("register", "s<username> s<password> ?s<email>", CFGFLAG_CHAT|CFGFLAG_USER, ConRegister, this, "Create an account");
