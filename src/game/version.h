@@ -2,11 +2,13 @@
 /* If you are missing that file, acquire a complete release at teeworlds.com.                */
 #ifndef GAME_VERSION_H
 #define GAME_VERSION_H
+#ifndef GAME_RELEASE_VERSION
+#define GAME_RELEASE_VERSION "1.2.0"
+#endif
 #include "generated/nethash.cpp"
-#define GAME_VERSION "0.6.4"
+#define GAME_VERSION "0.6.4, " GAME_RELEASE_VERSION
 #define GAME_NETVERSION "0.6 " GAME_NETVERSION_HASH
+#define GAME_NAME "InfclassR"
 #define LAST_COMPILE_DATE __DATE__
-static const char GAME_RELEASE_VERSION[8] = "0.6.4";
-
 extern const char *GIT_SHORTREV_HASH;
 #endif
