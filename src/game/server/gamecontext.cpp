@@ -2803,6 +2803,26 @@ bool CGameContext::ConchainSpecialMotdupdate(IConsole::IResult *pResult, void *p
 
 /* INFECTION MODIFICATION START ***************************************/
 
+bool CGameContext::ConVersion(IConsole::IResult *pResult, void *pUserData)
+{
+	CGameContext *pSelf = (CGameContext *)pUserData;
+
+	pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "info",
+		"InfectionClass Mod. Version: " GAME_VERSION);
+
+	pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "info",
+		"Compiled: " LAST_COMPILE_DATE);
+
+	if(GIT_SHORTREV_HASH)
+	{
+		char aBuf[64];
+		str_format(aBuf, sizeof(aBuf), "Git revision hash: %s", GIT_SHORTREV_HASH);
+		pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "info", aBuf);
+	}
+
+	return true;
+}
+
 bool CGameContext::ConCredits(IConsole::IResult *pResult, void *pUserData)
 {
 	CGameContext *pSelf = (CGameContext *)pUserData;
@@ -4110,6 +4130,8 @@ void CGameContext::OnConsoleInit()
 /* INFECTION MODIFICATION START ***************************************/
 	
 	//Chat Command
+	Console()->Register("version", "", CFGFLAG_SERVER, ConVersion, this, "Display information about the server version and build");
+
 	Console()->Register("credits", "", CFGFLAG_CHAT | CFGFLAG_USER, ConCredits, this, "Shows the credits of the mod");
 	Console()->Register("info", "", CFGFLAG_CHAT|CFGFLAG_USER, ConInfo, this, "Display information about the mod");
 #ifdef CONF_SQL
