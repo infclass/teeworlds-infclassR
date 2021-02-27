@@ -7,8 +7,9 @@
 
 #include "portal.h"
 
-CGrowingExplosion::CGrowingExplosion(CGameWorld *pGameWorld, vec2 Pos, vec2 Dir, int Owner, int Radius, int ExplosionEffect)
+CGrowingExplosion::CGrowingExplosion(CGameWorld *pGameWorld, vec2 Pos, vec2 Dir, int Owner, int Radius, int ExplosionEffect, int TakeDamageMode)
 		: CEntity(pGameWorld, CGameWorld::ENTTYPE_GROWINGEXPLOSION),
+		m_TakeDamageMode(TakeDamageMode),
 		m_pGrowingMap(NULL),
 		m_pGrowingMapVec(NULL)
 {
@@ -127,7 +128,7 @@ void CGrowingExplosion::DamagePortals()
 			continue;
 
 		int Damage = 5+20*((float)(m_MaxGrowing - minimum(tick - m_StartTick, (int)m_MaxGrowing)))/(m_MaxGrowing);
-		pPortal->TakeDamage(Damage, m_Owner, WEAPON_HAMMER, TAKEDAMAGEMODE_NOINFECTION);
+		pPortal->TakeDamage(Damage, m_Owner, WEAPON_HAMMER, m_TakeDamageMode);
 	}
 }
 
@@ -190,7 +191,7 @@ void CGrowingExplosion::Tick()
 						case GROWINGEXPLOSIONEFFECT_BOOM_INFECTED:
 							if (random_prob(0.2f))
 							{
-								GameServer()->CreateExplosion(TileCenter, m_Owner, WEAPON_HAMMER, false, TAKEDAMAGEMODE_NOINFECTION);
+								GameServer()->CreateExplosion(TileCenter, m_Owner, WEAPON_HAMMER, false, m_TakeDamageMode);
 							}
 							break;
 						case GROWINGEXPLOSIONEFFECT_ELECTRIC_INFECTED:
@@ -320,7 +321,7 @@ void CGrowingExplosion::Tick()
 					case GROWINGEXPLOSIONEFFECT_ELECTRIC_INFECTED:
 					{
 						int Damage = 5+20*((float)(m_MaxGrowing - minimum(tick - m_StartTick, (int)m_MaxGrowing)))/(m_MaxGrowing);
-						p->TakeDamage(normalize(p->m_Pos - m_SeedPos)*10.0f, Damage, m_Owner, WEAPON_HAMMER, TAKEDAMAGEMODE_NOINFECTION);
+						p->TakeDamage(normalize(p->m_Pos - m_SeedPos)*10.0f, Damage, m_Owner, WEAPON_HAMMER, m_TakeDamageMode);
 						m_Hit[p->GetPlayer()->GetCID()] = true;
 						break;
 					}

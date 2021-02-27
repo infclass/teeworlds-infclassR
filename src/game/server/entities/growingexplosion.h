@@ -6,6 +6,7 @@
 
 #include <engine/shared/config.h>
 #include <game/server/entity.h>
+#include <game/server/entities/character.h>
 
 enum
 {
@@ -20,7 +21,7 @@ enum
 class CGrowingExplosion : public CEntity
 {
 public:
-	CGrowingExplosion(CGameWorld *pGameWorld, vec2 Pos, vec2 Dir, int Owner, int Radius, int ExplosionEffect);
+	CGrowingExplosion(CGameWorld *pGameWorld, vec2 Pos, vec2 Dir, int Owner, int Radius, int ExplosionEffect, int TakeDamageMode = TAKEDAMAGEMODE_NOINFECTION);
 	virtual ~CGrowingExplosion();
 	
 	virtual void Reset();
@@ -35,6 +36,7 @@ private:
 	int m_MaxGrowing;
 	int m_GrowingMap_Length;
 	int m_GrowingMap_Size;
+	int m_TakeDamageMode;
 	
 	int m_Owner;
 	vec2 m_SeedPos;
