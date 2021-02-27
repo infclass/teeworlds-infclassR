@@ -1,11 +1,11 @@
 /* (c) Magnus Auvinen. See licence.txt in the root of the distribution for more information. */
 /* If you are missing that file, acquire a complete release at teeworlds.com.                */
 
+#ifndef GAME_SERVER_ENTITIES_GROWINGEXPLOSION_H
+#define GAME_SERVER_ENTITIES_GROWINGEXPLOSION_H
+
 #include <engine/shared/config.h>
 #include <game/server/entity.h>
-
-#ifndef GAME_SERVER_ENTITIES_GROWINGEXP_H
-#define GAME_SERVER_ENTITIES_GROWINGEXP_H
 
 enum
 {
@@ -47,4 +47,4 @@ private:
 	bool m_Hit[MAX_CLIENTS];
 };
 
-#endif
+#endif // GAME_SERVER_ENTITIES_GROWINGEXPLOSION_H
