@@ -3288,12 +3288,10 @@ bool CCharacter::TakeDamage(vec2 Force, int Dmg, int From, int Weapon, int Mode)
 	// m_pPlayer only inflicts half damage on self
 	if(From == m_pPlayer->GetCID())
 	{
-		if(GetClass() == PLAYERCLASS_HERO || (GetClass() == PLAYERCLASS_SOLDIER && m_ActiveWeapon == WEAPON_GRENADE)
-										  || (GetClass() == PLAYERCLASS_SCIENTIST && Mode == TAKEDAMAGEMODE_NOINFECTION)
-										  || (GetClass() == PLAYERCLASS_LOOPER && m_ActiveWeapon == WEAPON_GRENADE))
-			return false; // no self harm
-		else
+		if(Mode == TAKEDAMAGEMODE_SELFHARM)
 			Dmg = maximum(1, Dmg/2);
+		else
+			return false;
 	}
 
 	m_DamageTaken++;

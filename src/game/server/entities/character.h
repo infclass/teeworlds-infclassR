@@ -34,7 +34,7 @@ enum
 {
 	TAKEDAMAGEMODE_NOINFECTION=0,
 	TAKEDAMAGEMODE_INFECTION,
-	TAKEDAMAGEMODE_SELFHARM,
+	TAKEDAMAGEMODE_SELFHARM, // works like NOINFECTION but also harms the owner of the damage with 50%
 };
 
 enum
