@@ -158,8 +158,12 @@ void CTurret::AttackTargets()
 		// attack zombie
 		if (Len < (float)g_Config.m_InfTurretRadarRange) //800
 		{
-			vec2 Direction = normalize(pChr->m_Pos - m_Pos);
+			if(GameServer()->Collision()->IntersectLine(m_Pos, pChr->m_Pos, nullptr, nullptr))
+			{
+				continue;
+			}
 
+			vec2 Direction = normalize(pChr->m_Pos - m_Pos);
 			m_foundTarget = true;
 
 			switch(m_Type)
