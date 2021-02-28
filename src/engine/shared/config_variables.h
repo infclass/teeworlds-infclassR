@@ -150,6 +150,7 @@ MACRO_CONFIG_INT(InfSlowMotionMaxSpeed, inf_slow_motion_max_speed, 50, 0, 500, C
 MACRO_CONFIG_INT(InfSlowMotionGravity, inf_slow_motion_gravity, 5, -100, 100, CFGFLAG_SERVER, "Modify gravity while in slowmotion")
 
 //Turret
+MACRO_CONFIG_INT(InfMinPlayersForTurrets, inf_min_players_for_turrets, 3, 0, 100, CFGFLAG_SERVER, "Minimum number of players that are needed to enable turrets")
 MACRO_CONFIG_INT(InfTurretEnable, inf_turret_enable, 1, 0, 1, CFGFLAG_SERVER, "If turrets are available")
 MACRO_CONFIG_INT(InfTurretGive, inf_turret_give, 1, 0, 1000, CFGFLAG_SERVER, "Gives hero extra turrets")
 

@@ -70,7 +70,7 @@ void CHeroFlag::GiveGift(CCharacter* pHero)
 
 	if (g_Config.m_InfTurretEnable)
 	{
-		if (Server()->GetActivePlayerCount() > 2)
+		if(Server()->GetActivePlayerCount() >= g_Config.m_InfMinPlayersForTurrets)
 		{
 			if(pHero->m_TurretCount < g_Config.m_InfTurretMaxPerPlayer)
 			{
