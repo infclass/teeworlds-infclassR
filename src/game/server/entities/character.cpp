@@ -17,6 +17,7 @@
 #include "laser.h"
 
 #include "engineer-wall.h"
+#include "turret.h"
 #include "looper-wall.h"
 #include "soldier-bomb.h"
 #include "scientist-laser.h"
@@ -28,6 +29,7 @@
 #include "medic-grenade.h"
 #include "hero-flag.h"
 #include "slug-slime.h"
+#include "plasma.h"
 #include "growingexplosion.h"
 #include "white-hole.h"
 #include "superweapon-indicator.h"
@@ -108,6 +110,7 @@ m_pConsole(pConsole)
 	m_NinjaAmmoBuff = 0;
 	m_HasWhiteHole = false;
 	m_HasIndicator = false;
+	m_TurretCount = 0;
 	m_HasStunGrenade = false;
 	m_VoodooTimeAlive = Server()->TickSpeed()*g_Config.m_InfVoodooAliveTime;
 	m_VoodooAboutToDie = false;
@@ -903,6 +906,34 @@ void CCharacter::FireWeapon()
 					{
 						m_IsInvisible = false;
 						m_InvisibleTick = Server()->Tick();
+					}
+
+					if(GetClass() == PLAYERCLASS_HERO)
+					{
+						if (g_Config.m_InfTurretEnable) {
+
+							if(m_TurretCount)
+							{
+								if (g_Config.m_InfTurretEnableLaser)
+								{
+									new CTurret(GameWorld(), m_Pos, m_pPlayer->GetCID(), Direction, GameServer()->Tuning()->m_LaserReach,INFAMMO_LASER);
+								}
+								else if (g_Config.m_InfTurretEnablePlasma)
+								{
+									new CTurret(GameWorld(), m_Pos, m_pPlayer->GetCID(), Direction, GameServer()->Tuning()->m_LaserReach,INFAMMO_PLASMA);
+								}
+
+								GameServer()->CreateSound(m_Pos, SOUND_GRENADE_FIRE);
+								m_TurretCount--;
+								char aBuf[256];
+								str_format(aBuf, sizeof(aBuf), "placed turret, %i left", m_TurretCount);
+								GameServer()->SendChatTarget_Localization(m_pPlayer->GetCID(), CHATCATEGORY_SCORE, aBuf, NULL);
+								if (m_TurretCount == 0)
+								{
+									m_aWeapons[WEAPON_HAMMER].m_Got = false;
+								}
+							}
+						}
 					}
 
 					CCharacter *apEnts[MAX_CLIENTS];
@@ -3980,6 +4011,16 @@ void CCharacter::DestroyChildEntities()
 	{
 		if(pIndicator->GetOwner() != m_pPlayer->GetCID()) continue;
 			GameServer()->m_World.DestroyEntity(pIndicator);
+	}
+	for(CTurret* pTurret = (CTurret*) GameWorld()->FindFirst(CGameWorld::ENTTYPE_TURRET); pTurret; pTurret = (CTurret*) pTurret->TypeNext())
+	{
+		if(pTurret->GetOwner() != m_pPlayer->GetCID()) continue;
+		GameServer()->m_World.DestroyEntity(pTurret);
+	}
+	for(CPlasma* pPlasma = (CPlasma*) GameWorld()->FindFirst(CGameWorld::ENTTYPE_PLASMA); pPlasma; pPlasma = (CPlasma*) pPlasma->TypeNext())
+	{
+		if(pPlasma->GetOwner() != m_pPlayer->GetCID()) continue;
+		GameServer()->m_World.DestroyEntity(pPlasma);
 	}
 	for(CHeroFlag* pFlag = (CHeroFlag*) GameWorld()->FindFirst(CGameWorld::ENTTYPE_HERO_FLAG); pFlag; pFlag = (CHeroFlag*) pFlag->TypeNext())
 	{

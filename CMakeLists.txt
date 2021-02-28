@@ -767,8 +767,8 @@ set_glob(GAME_SERVER GLOB_RECURSE src/game/server
   entities/medic-grenade.h
   entities/merc-bomb.cpp
   entities/merc-bomb.h
-  # entities/plasma.cpp
-  # entities/plasma.h
+  entities/plasma.cpp
+  entities/plasma.h
   entities/portal.cpp
   entities/portal.h
   entities/projectile.cpp
@@ -785,8 +785,8 @@ set_glob(GAME_SERVER GLOB_RECURSE src/game/server
   entities/soldier-bomb.h
   entities/superweapon-indicator.cpp
   entities/superweapon-indicator.h
-  # entities/turret.cpp
-  # entities/turret.h
+  entities/turret.cpp
+  entities/turret.h
   entities/white-hole.cpp
   entities/white-hole.h
   gamemodes/mod.cpp

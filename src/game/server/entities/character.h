@@ -246,6 +246,7 @@ public:
 	//Mercenary
 	bool m_BombHit;
 	vec2 m_AtMercBomb;
+	int m_TurretCount;
 	int m_ResetKillsTime;
 
 public:

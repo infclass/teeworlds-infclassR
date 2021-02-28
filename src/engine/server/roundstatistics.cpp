@@ -26,6 +26,9 @@ int CRoundStatistics::CPlayer::OnScoreEvent(int EventType, int Class)
 		case SCOREEVENT_DESTROY_PORTAL:
 			Points = 10;
 			break;
+		case SCOREEVENT_DESTROY_TURRET:
+			Points = 30;
+			break;
 		case SCOREEVENT_HELP_FREEZE:
 			Points = 10;
 			break;
