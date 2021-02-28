@@ -18,7 +18,7 @@ public:
 	int GetOwner() const;
 
 protected:
-	bool HitCharacter(vec2 From, vec2 To);
+	void AttackTargets();
 
 private:
 	vec2 m_Vel;

@@ -140,6 +140,11 @@ void CTurret::Tick()
 			return; //some warmup tick-cycles necessary
 	}
 
+	AttackTargets();
+}
+
+void CTurret::AttackTargets()
+{
 	//warmup finished, ready to find target
 	for(CCharacter *pChr = (CCharacter*) GameWorld()->FindFirst(CGameWorld::ENTTYPE_CHARACTER); pChr; pChr = (CCharacter *)pChr->TypeNext())
 	{
