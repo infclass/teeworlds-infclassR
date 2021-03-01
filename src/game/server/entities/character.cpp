@@ -16,7 +16,8 @@
 #include "projectile.h"
 #include "laser.h"
 
-#include "engineer-wall.h"
+#include <game/server/infclass/entities/engineer-wall.h>
+
 #include "turret.h"
 #include "looper-wall.h"
 #include "soldier-bomb.h"
@@ -736,7 +737,7 @@ void CCharacter::OnHammerFired(bool *pFireAccepted)
 	{
 		for(CEngineerWall *pWall = (CEngineerWall*) GameWorld()->FindFirst(CGameWorld::ENTTYPE_ENGINEER_WALL); pWall; pWall = (CEngineerWall*) pWall->TypeNext())
 		{
-			if(pWall->m_Owner == m_pPlayer->GetCID())
+			if(pWall->GetOwner() == m_pPlayer->GetCID())
 				GameServer()->m_World.DestroyEntity(pWall);
 		}
 
@@ -761,7 +762,7 @@ void CCharacter::OnHammerFired(bool *pFireAccepted)
 			if(isAccepted)
 			{
 				m_FirstShot = true;
-				new CEngineerWall(GameWorld(), m_FirstShotCoord, m_Pos, m_pPlayer->GetCID());
+				new CEngineerWall(GameServer(), m_FirstShotCoord, m_Pos, m_pPlayer->GetCID());
 				GameServer()->CreateSound(m_Pos, SOUND_RIFLE_FIRE);
 			}
 		}
@@ -2618,7 +2619,7 @@ void CCharacter::Tick()
 		CEngineerWall* pCurrentWall = NULL;
 		for(CEngineerWall *pWall = (CEngineerWall*) GameWorld()->FindFirst(CGameWorld::ENTTYPE_ENGINEER_WALL); pWall; pWall = (CEngineerWall*) pWall->TypeNext())
 		{
-			if(pWall->m_Owner == m_pPlayer->GetCID())
+			if(pWall->GetOwner() == m_pPlayer->GetCID())
 			{
 				pCurrentWall = pWall;
 				break;
@@ -3532,7 +3533,7 @@ void CCharacter::Snap(int SnappingClient)
 		CEngineerWall* pCurrentWall = NULL;
 		for(CEngineerWall *pWall = (CEngineerWall*) GameWorld()->FindFirst(CGameWorld::ENTTYPE_ENGINEER_WALL); pWall; pWall = (CEngineerWall*) pWall->TypeNext())
 		{
-			if(pWall->m_Owner == m_pPlayer->GetCID())
+			if(pWall->GetOwner() == m_pPlayer->GetCID())
 			{
 				pCurrentWall = pWall;
 				break;
@@ -4021,7 +4022,7 @@ void CCharacter::DestroyChildEntities()
 	}
 	for(CEngineerWall *pWall = (CEngineerWall*) GameWorld()->FindFirst(CGameWorld::ENTTYPE_ENGINEER_WALL); pWall; pWall = (CEngineerWall*) pWall->TypeNext())
 	{
-		if(pWall->m_Owner != m_pPlayer->GetCID()) continue;
+		if(pWall->GetOwner() != m_pPlayer->GetCID()) continue;
 			GameServer()->m_World.DestroyEntity(pWall);
 	}
 	for(CLooperWall *pWall = (CLooperWall*) GameWorld()->FindFirst(CGameWorld::ENTTYPE_LOOPER_WALL); pWall; pWall = (CLooperWall*) pWall->TypeNext())

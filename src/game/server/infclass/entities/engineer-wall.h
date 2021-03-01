@@ -3,23 +3,19 @@
 #ifndef GAME_SERVER_ENTITIES_ENGINEER_WALL_H
 #define GAME_SERVER_ENTITIES_ENGINEER_WALL_H
 
-#include <game/server/entity.h>
+#include "infcentity.h"
 
-class CEngineerWall : public CEntity
+class CEngineerWall : public CInfCEntity
 {
 public:
-	CEngineerWall(CGameWorld *pGameWorld, vec2 Pos, vec2 Direction, int Owner);
+	CEngineerWall(CGameContext *pGameContext, vec2 Pos, vec2 Direction, int Owner);
 	virtual ~CEngineerWall();
-	
-	virtual void Reset();
+
 	virtual void Tick();
 	virtual void TickPaused();
 	virtual void Snap(int SnappingClient);
 	int GetTick() { return m_LifeSpan; }
 	void OnZombieHit(CCharacter *pZombie);
-
-public:
-	int m_Owner;
 
 private:
 	vec2 m_Pos2;

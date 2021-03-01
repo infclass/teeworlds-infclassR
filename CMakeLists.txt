@@ -747,8 +747,6 @@ set_glob(GAME_SERVER GLOB_RECURSE src/game/server
   entities/bouncing-bullet.h
   entities/character.cpp
   entities/character.h
-  entities/engineer-wall.cpp
-  entities/engineer-wall.h
   # entities/entity-timer.cpp
   # entities/entity-timer.h
   entities/flyingpoint.cpp
@@ -791,6 +789,8 @@ set_glob(GAME_SERVER GLOB_RECURSE src/game/server
   entities/white-hole.h
   gamemodes/mod.cpp
   gamemodes/mod.h
+  infclass/entities/engineer-wall.cpp
+  infclass/entities/engineer-wall.h
   infclass/entities/infccharacter.cpp
   infclass/entities/infccharacter.h
   infclass/entities/infcentity.cpp

@@ -6,22 +6,24 @@
 #include <game/server/gamecontext.h>
 #include <engine/server/roundstatistics.h>
 #include <engine/shared/config.h>
+
 #include "engineer-wall.h"
 
 const float g_BarrierMaxLength = 300.0;
 const float g_BarrierRadius = 0.0;
 
-CEngineerWall::CEngineerWall(CGameWorld *pGameWorld, vec2 Pos1, vec2 Pos2, int Owner)
-: CEntity(pGameWorld, CGameWorld::ENTTYPE_ENGINEER_WALL)
+CEngineerWall::CEngineerWall(CGameContext *pGameContext, vec2 Pos1, vec2 Pos2, int Owner)
+	: CInfCEntity(pGameContext, CGameWorld::ENTTYPE_ENGINEER_WALL, Pos1, Owner)
 {
-	m_Pos = Pos1;
 	if(distance(Pos1, Pos2) > g_BarrierMaxLength)
 	{
 		m_Pos2 = Pos1 + normalize(Pos2 - Pos1)*g_BarrierMaxLength;
 	}
-	else m_Pos2 = Pos2;
-	m_Owner = Owner;
-	m_LifeSpan = Server()->TickSpeed()*g_Config.m_InfBarrierLifeSpan;
+	else
+	{
+		m_Pos2 = Pos2;
+	}
+	m_LifeSpan = Server()->TickSpeed()*Config()->m_InfBarrierLifeSpan;
 	GameWorld()->InsertEntity(this);
 	m_EndPointID = Server()->SnapNewID();
 	m_WallFlashTicks = 0;
@@ -30,11 +32,6 @@ CEngineerWall::CEngineerWall(CGameWorld *pGameWorld, vec2 Pos1, vec2 Pos2, int O
 CEngineerWall::~CEngineerWall()
 {
 	Server()->SnapFreeID(m_EndPointID);
-}
-
-void CEngineerWall::Reset()
-{
-	GameServer()->m_World.DestroyEntity(this);
 }
 
 void CEngineerWall::Tick()
@@ -158,7 +155,7 @@ void CEngineerWall::OnZombieHit(CCharacter *pZombie)
 
 		if(pZombie->GetClass() != PLAYERCLASS_UNDEAD && pZombie->GetClass() != PLAYERCLASS_VOODOO)
 		{
-			int LifeSpanReducer = ((Server()->TickSpeed()*g_Config.m_InfBarrierTimeReduce)/100);
+			int LifeSpanReducer = ((Server()->TickSpeed()*Config()->m_InfBarrierTimeReduce)/100);
 			m_WallFlashTicks = 10;
 
 			if(pZombie->GetClass() == PLAYERCLASS_GHOUL)
