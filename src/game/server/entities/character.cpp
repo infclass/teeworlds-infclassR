@@ -826,6 +826,7 @@ void CCharacter::OnHammerFired(bool *pFireAccepted)
 				if (m_TurretCount == 0)
 				{
 					m_aWeapons[WEAPON_HAMMER].m_Got = false;
+					m_ActiveWeapon = WEAPON_GRENADE;
 				}
 			}
 		}
