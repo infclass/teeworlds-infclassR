@@ -3,18 +3,16 @@
 #ifndef GAME_SERVER_ENTITIES_BOUNCINGBULLET_H
 #define GAME_SERVER_ENTITIES_BOUNCINGBULLET_H
 
-class CBouncingBullet : public CEntity
+#include "infcentity.h"
+
+class CBouncingBullet : public CInfCEntity
 {
 public:
-	int m_Owner;
-	
-public:
-	CBouncingBullet(CGameWorld *pGameWorld, int Owner, vec2 Pos, vec2 Dir);
+	CBouncingBullet(CGameContext *pGameContext, int Owner, vec2 Pos, vec2 Dir);
 
 	vec2 GetPos(float Time);
 	void FillInfo(CNetObj_Projectile *pProj);
 
-	virtual void Reset();
 	virtual void Tick();
 	virtual void TickPaused();
 	virtual void Snap(int SnappingClient);

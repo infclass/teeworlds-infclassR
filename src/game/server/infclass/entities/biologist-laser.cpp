@@ -4,12 +4,10 @@
 #include <game/server/gamecontext.h>
 #include "biologist-laser.h"
 
-CBiologistLaser::CBiologistLaser(CGameWorld *pGameWorld, vec2 Pos, vec2 Direction, int Owner, int Dmg)
-: CEntity(pGameWorld, CGameWorld::ENTTYPE_LASER)
+CBiologistLaser::CBiologistLaser(CGameContext *pGameContext, vec2 Pos, vec2 Direction, int Owner, int Dmg)
+	: CInfCEntity(pGameContext, CGameWorld::ENTTYPE_LASER, Pos, Owner)
 {
 	m_Dmg = Dmg;
-	m_Pos = Pos;
-	m_Owner = Owner;
 	m_Energy = 400.0f;
 	m_Dir = Direction;
 	m_Bounces = 0;
@@ -79,11 +77,6 @@ void CBiologistLaser::DoBounce()
 		m_Pos = To;
 		m_Energy = -1;
 	}
-}
-
-void CBiologistLaser::Reset()
-{
-	GameServer()->m_World.DestroyEntity(this);
 }
 
 void CBiologistLaser::Tick()

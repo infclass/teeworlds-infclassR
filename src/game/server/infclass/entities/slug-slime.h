@@ -3,23 +3,20 @@
 #ifndef GAME_SERVER_ENTITIES_SLUG_SLIME_H
 #define GAME_SERVER_ENTITIES_SLUG_SLIME_H
 
-#include <game/server/entity.h>
+#include "infcentity.h"
 
-class CSlugSlime : public CEntity
+class CSlugSlime : public CInfCEntity
 {
 public:
-	CSlugSlime(CGameWorld *pGameWorld, vec2 Pos, int Owner);
+	CSlugSlime(CGameContext *pGameContext, vec2 Pos, int Owner);
 
-	virtual void Reset();
 	virtual void Tick();
 
 	int GetLifeSpan() const;
 	int GetMaxLifeSpan();
 	void Replenish(int PlayerID);
-	int GetOwner() const;
-	
+
 public:
-	int m_Owner;
 	int m_LifeSpan;
 	int m_HealTick;
 };

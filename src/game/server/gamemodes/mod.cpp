@@ -1016,7 +1016,7 @@ int CGameControllerMOD::OnCharacterDeath(class CCharacter *pVictim, class CPlaye
 			if(p && Len < 800.0f)
 			{
 				int Points = (pVictim->IsZombie() ? 8 : 14);
-				new CFlyingPoint(GameWorld(), pVictim->m_Pos, p->GetPlayer()->GetCID(), Points, pVictim->m_Core.m_Vel);
+				new CFlyingPoint(GameServer(), pVictim->m_Pos, p->GetPlayer()->GetCID(), Points, pVictim->m_Core.m_Vel);
 			}
 		}
 	}

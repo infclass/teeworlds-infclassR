@@ -4,10 +4,9 @@
 #include <engine/server/roundstatistics.h>
 #include "flyingpoint.h"
 
-CFlyingPoint::CFlyingPoint(CGameWorld *pGameWorld, vec2 Pos, int TrackedPlayer, int Points, vec2 InitialVel)
-: CEntity(pGameWorld, CGameWorld::ENTTYPE_FLYINGPOINT)
+CFlyingPoint::CFlyingPoint(CGameContext *pGameContext, vec2 Pos, int TrackedPlayer, int Points, vec2 InitialVel)
+	: CInfCEntity(pGameContext, CGameWorld::ENTTYPE_FLYINGPOINT, Pos)
 {
-	m_Pos = Pos;
 	m_TrackedPlayer = TrackedPlayer;
 	m_InitialVel = InitialVel;
 	m_Points = Points;
@@ -49,9 +48,4 @@ void CFlyingPoint::Snap(int SnappingClient)
 		pObj->m_StartTick = Server()->Tick();
 		pObj->m_Type = WEAPON_HAMMER;
 	}
-}
-
-void CFlyingPoint::Reset()
-{
-	GameServer()->m_World.DestroyEntity(this);
 }

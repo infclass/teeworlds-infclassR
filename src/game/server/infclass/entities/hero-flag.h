@@ -3,9 +3,9 @@
 #ifndef GAME_SERVER_ENTITIES_HEROFLAG_H
 #define GAME_SERVER_ENTITIES_HEROFLAG_H
 
-#include <game/server/entity.h>
+#include "infcentity.h"
 
-class CHeroFlag : public CEntity
+class CHeroFlag : public CInfCEntity
 {
 public:
 	enum
@@ -17,17 +17,15 @@ public:
 
 private:
 	int m_CoolDownTick;
-	int m_OwnerID;
 	int m_IDs[SHIELD_COUNT];
 
 public:
 	static const int ms_PhysSize = 14;
 
-	CHeroFlag(CGameWorld *pGameWorld, int ClientID);
+	CHeroFlag(CGameContext *pGameContext, int Owner);
 	~CHeroFlag();
 
-	int GetOwner() const;
-	inline int GetCoolDown() { return m_CoolDownTick; }
+	int GetCoolDown() { return m_CoolDownTick; }
 
 	virtual void Tick();
 	virtual void FindPosition();

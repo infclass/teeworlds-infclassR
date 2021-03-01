@@ -6,12 +6,10 @@
 #include "biologist-mine.h"
 #include "biologist-laser.h"
 
-CBiologistMine::CBiologistMine(CGameWorld *pGameWorld, vec2 Pos, vec2 EndPos, int Owner)
-: CEntity(pGameWorld, CGameWorld::ENTTYPE_BIOLOGIST_MINE)
+CBiologistMine::CBiologistMine(CGameContext *pGameContext, vec2 Pos, vec2 EndPos, int Owner)
+	: CInfCEntity(pGameContext, CGameWorld::ENTTYPE_BIOLOGIST_MINE, Pos, Owner)
 {
-	m_Pos = Pos;
 	m_EndPos = EndPos;
-	m_Owner = Owner;
 	GameWorld()->InsertEntity(this);
 	
 	for(int i=0; i<NUM_IDS; i++)
@@ -28,23 +26,13 @@ CBiologistMine::~CBiologistMine()
 	}
 }
 
-void CBiologistMine::Reset()
-{
-	GameServer()->m_World.DestroyEntity(this);
-}
-
-int CBiologistMine::GetOwner() const
-{
-	return m_Owner;
-}
-
 void CBiologistMine::Explode()
 {
 	float AngleStep = 2.0f * pi / 15.0f;
 	float RandomShift = random_float() * 2.0f * pi;
 	for(int i=0; i<15; i++)
 	{
-		new CBiologistLaser(GameWorld(), m_Pos, vec2(cos(RandomShift + AngleStep*i), sin(RandomShift + AngleStep*i)), m_Owner, 10);
+		new CBiologistLaser(GameServer(), m_Pos, vec2(cos(RandomShift + AngleStep*i), sin(RandomShift + AngleStep*i)), m_Owner, 10);
 	}
 	
 	GameServer()->m_World.DestroyEntity(this);

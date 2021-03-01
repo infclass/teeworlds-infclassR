@@ -3,18 +3,13 @@
 #include <game/server/gamecontext.h>
 #include "laser-teleport.h"
 
-CLaserTeleport::CLaserTeleport(CGameWorld *pGameWorld, vec2 StartPos, vec2 EndPos)
-: CEntity(pGameWorld, CGameWorld::ENTTYPE_LASER_TELEPORT)
+CLaserTeleport::CLaserTeleport(CGameContext *pGameContext, vec2 StartPos, vec2 EndPos)
+	: CInfCEntity(pGameContext, CGameWorld::ENTTYPE_LASER_TELEPORT)
 {
 	m_StartPos = StartPos;
 	m_EndPos = EndPos;
 	m_LaserFired = false;
 	GameWorld()->InsertEntity(this);
-}
-
-void CLaserTeleport::Reset()
-{
-	GameServer()->m_World.DestroyEntity(this);
 }
 
 void CLaserTeleport::Tick()

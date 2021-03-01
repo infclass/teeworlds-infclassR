@@ -5,24 +5,12 @@
 
 #include "slug-slime.h"
 
-CSlugSlime::CSlugSlime(CGameWorld *pGameWorld, vec2 Pos, int Owner)
-: CEntity(pGameWorld, CGameWorld::ENTTYPE_SLUG_SLIME)
+CSlugSlime::CSlugSlime(CGameContext *pGameContext, vec2 Pos, int Owner)
+	: CInfCEntity(pGameContext, CGameWorld::ENTTYPE_SLUG_SLIME, Pos, Owner)
 {
-	m_Pos = Pos;
-	m_Owner = Owner;
-	m_LifeSpan = Server()->TickSpeed()*g_Config.m_InfSlimeDuration;
+	m_LifeSpan = Server()->TickSpeed()*Config()->m_InfSlimeDuration;
 	GameWorld()->InsertEntity(this);
 	m_HealTick = 0;
-}
-
-void CSlugSlime::Reset()
-{
-	GameServer()->m_World.DestroyEntity(this);
-}
-
-int CSlugSlime::GetOwner() const
-{
-	return m_Owner;
 }
 
 void CSlugSlime::Tick()
@@ -46,7 +34,7 @@ void CSlugSlime::Tick()
 			if(p->GetClass() != PLAYERCLASS_SLUG)
 			{
 				p->SetEmote(EMOTE_HAPPY, Server()->Tick());
-				if(Server()->Tick() >= m_HealTick + (Server()->TickSpeed()/g_Config.m_InfSlimeHealRate))
+				if(Server()->Tick() >= m_HealTick + (Server()->TickSpeed()/Config()->m_InfSlimeHealRate))
 				{
 					m_HealTick = Server()->Tick();
 					p->IncreaseHealth(1);
@@ -55,7 +43,7 @@ void CSlugSlime::Tick()
 		} 
 		else // p->IsHuman()
 		{ 
-			p->Poison(g_Config.m_InfSlimePoisonDuration, m_Owner); 
+			p->Poison(Config()->m_InfSlimePoisonDuration, m_Owner); 
 		}
 	}
 	
@@ -74,7 +62,7 @@ int CSlugSlime::GetLifeSpan() const
 
 int CSlugSlime::GetMaxLifeSpan()
 {
-	return Server()->TickSpeed()*g_Config.m_InfSlimeDuration;
+	return Server()->TickSpeed()*Config()->m_InfSlimeDuration;
 }
 
 void CSlugSlime::Replenish(int PlayerID)

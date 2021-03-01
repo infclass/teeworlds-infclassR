@@ -4,14 +4,12 @@
 #include <engine/shared/config.h>
 #include "superweapon-indicator.h"
 
-CSuperWeaponIndicator::CSuperWeaponIndicator(CGameWorld *pGameWorld, vec2 Pos, int Owner)
-: CEntity(pGameWorld, CGameWorld::ENTTYPE_SUPERWEAPON_INDICATOR)
+CSuperWeaponIndicator::CSuperWeaponIndicator(CGameContext *pGameContext, vec2 Pos, int Owner)
+	: CInfCEntity(pGameContext, CGameWorld::ENTTYPE_SUPERWEAPON_INDICATOR, Pos, Owner)
 {
-	m_Pos = Pos;
 	GameWorld()->InsertEntity(this);
 	m_Radius = 40.0f;
 	m_StartTick = Server()->Tick();
-	m_Owner = Owner;
 	m_OwnerChar = GameServer()->GetPlayerChar(m_Owner);
 	m_warmUpCounter = Server()->TickSpeed()*3;
 	m_IsWarmingUp = true;
@@ -27,16 +25,6 @@ CSuperWeaponIndicator::~CSuperWeaponIndicator()
 {
 	for(int i=0; i<m_IDs.size(); i++)
 		Server()->SnapFreeID(m_IDs[i]);
-}
-
-void CSuperWeaponIndicator::Reset()
-{
-	GameServer()->m_World.DestroyEntity(this);
-}
-
-int CSuperWeaponIndicator::GetOwner() const
-{
-	return m_Owner;
 }
 
 void CSuperWeaponIndicator::Snap(int SnappingClient)

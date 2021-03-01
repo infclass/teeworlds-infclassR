@@ -3,9 +3,9 @@
 #ifndef GAME_SERVER_ENTITIES_FLYINGPOINT_H
 #define GAME_SERVER_ENTITIES_FLYINGPOINT_H
 
-#include <game/server/entity.h>
+#include "infcentity.h"
 
-class CFlyingPoint : public CEntity
+class CFlyingPoint : public CInfCEntity
 {
 private:
 	int m_TrackedPlayer;
@@ -14,11 +14,10 @@ private:
 	int m_Points;
 	
 public:
-	CFlyingPoint(CGameWorld *pGameWorld, vec2 Pos, int TrackedPlayer, int Points, vec2 InitialVel);
+	CFlyingPoint(CGameContext *pGameContext, vec2 Pos, int TrackedPlayer, int Points, vec2 InitialVel);
 	
 	virtual void Tick();
 	virtual void Snap(int SnappingClient);
-	virtual void Reset();
 };
 
 #endif

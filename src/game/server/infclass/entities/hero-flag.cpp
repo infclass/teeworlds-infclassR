@@ -1,15 +1,14 @@
 /* (c) Magnus Auvinen. See licence.txt in the root of the distribution for more information. */
 /* If you are missing that file, acquire a complete release at teeworlds.com.                */
+#include "hero-flag.h"
+
 #include <game/server/gamecontext.h>
 #include <engine/server/roundstatistics.h>
 #include <engine/shared/config.h>
-#include "hero-flag.h"
 
-CHeroFlag::CHeroFlag(CGameWorld *pGameWorld, int ClientID)
-: CEntity(pGameWorld, CGameWorld::ENTTYPE_HERO_FLAG)
+CHeroFlag::CHeroFlag(CGameContext *pGameContext, int Owner)
+	: CInfCEntity(pGameContext, CGameWorld::ENTTYPE_HERO_FLAG, vec2(), Owner, ms_PhysSize)
 {
-	m_ProximityRadius = ms_PhysSize;
-	m_OwnerID = ClientID;
 	m_CoolDownTick = 0;
 	for(int i=0; i<CHeroFlag::SHIELD_COUNT; i++)
 	{
@@ -25,11 +24,6 @@ CHeroFlag::~CHeroFlag()
 	{
 		Server()->SnapFreeID(m_IDs[i]);
 	}
-}
-
-int CHeroFlag::GetOwner() const
-{
-	return m_OwnerID;
 }
 
 void CHeroFlag::FindPosition()
@@ -68,16 +62,16 @@ void CHeroFlag::GiveGift(CCharacter* pHero)
 	pHero->SetEmote(EMOTE_HAPPY, Server()->Tick() + Server()->TickSpeed());
 	GameServer()->SendEmoticon(pHero->GetPlayer()->GetCID(), EMOTICON_MUSIC);
 
-	if (g_Config.m_InfTurretEnable)
+	if (Config()->m_InfTurretEnable)
 	{
-		if(Server()->GetActivePlayerCount() >= g_Config.m_InfMinPlayersForTurrets)
+		if(Server()->GetActivePlayerCount() >= Config()->m_InfMinPlayersForTurrets)
 		{
-			if(pHero->m_TurretCount < g_Config.m_InfTurretMaxPerPlayer)
+			if(pHero->m_TurretCount < Config()->m_InfTurretMaxPerPlayer)
 			{
 				if (pHero->m_TurretCount == 0)
 				pHero->GiveWeapon(WEAPON_HAMMER, -1);
 
-				pHero->m_TurretCount += g_Config.m_InfTurretGive;
+				pHero->m_TurretCount += Config()->m_InfTurretGive;
 
 				char aBuf[256];
 				str_format(aBuf, sizeof(aBuf), "you gained a turret (%i), place it with the hammer", pHero->m_TurretCount);
@@ -123,7 +117,7 @@ void CHeroFlag::Tick()
 			if(p->GetClass() != PLAYERCLASS_HERO)
 				continue;
 
-			if(p->GetPlayer()->GetCID() != m_OwnerID)
+			if(p->GetPlayer()->GetCID() != m_Owner)
 				continue;
 
 			float Len = distance(p->m_Pos, m_Pos);
@@ -155,7 +149,7 @@ void CHeroFlag::Snap(int SnappingClient)
 	if(NetworkClipped(SnappingClient))
 		return;
 	
-	if(SnappingClient != m_OwnerID)
+	if(SnappingClient != m_Owner)
 		return;
 	
 	CPlayer* pClient = GameServer()->m_apPlayers[SnappingClient];

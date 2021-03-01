@@ -6,34 +6,21 @@
 #include <game/server/gamecontext.h>
 #include "plasma.h"
 
-CPlasma::CPlasma(CGameWorld *pGameWorld, vec2 Pos, int Owner, int TrackedPlayer,vec2 Direction, bool Freeze, bool Explosive)
-: CEntity(pGameWorld, CGameWorld::ENTTYPE_PLASMA)
+CPlasma::CPlasma(CGameContext *pGameContext, vec2 Pos, int Owner, int TrackedPlayer, vec2 Direction, bool Freeze, bool Explosive)
+	: CInfCEntity(pGameContext, CGameWorld::ENTTYPE_PLASMA, Pos, Owner)
 {
-	m_Owner = Owner;
-	m_Pos = Pos;
 	m_Freeze = Freeze;
 	m_TrackedPlayer = TrackedPlayer;
 	m_Dir = Direction;
 	m_Explosive = Explosive;
 	m_StartTick = Server()->Tick();
-	m_LifeSpan = Server()->TickSpeed()*g_Config.m_InfTurretPlasmaLifeSpan;
+	m_LifeSpan = Server()->TickSpeed()*Config()->m_InfTurretPlasmaLifeSpan;
 	m_InitialAmount = 1.0f;
 	GameWorld()->InsertEntity(this);
 }
 
-int CPlasma::GetOwner() const
-{
-	return m_Owner;
-}
-
-void CPlasma::Reset()
-{
-	GameServer()->m_World.DestroyEntity(this);
-}
-
 void CPlasma::Tick()
 {
-	
 	//reduce lifespan
 	if (m_LifeSpan < 0)
 	{
@@ -85,7 +72,7 @@ void CPlasma::Explode()
 	//GameServer()->CreateSound(CurPos, m_SoundImpact);
 	if (m_Explosive) 
 	{
-		GameServer()->CreateExplosion(m_Pos, m_Owner, WEAPON_GRENADE, false, TAKEDAMAGEMODE_NOINFECTION, g_Config.m_InfTurretDmgFactor*0.1f);
+		GameServer()->CreateExplosion(m_Pos, m_Owner, WEAPON_GRENADE, false, TAKEDAMAGEMODE_NOINFECTION, Config()->m_InfTurretDmgFactor*0.1f);
 	}
 	Reset();
 }

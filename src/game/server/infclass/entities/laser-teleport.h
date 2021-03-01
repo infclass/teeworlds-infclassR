@@ -1,15 +1,14 @@
 #ifndef GAME_SERVER_ENTITIES_LASER_TELEPORT_H
 #define GAME_SERVER_ENTITIES_LASER_TELEPORT_H
 
-#include <game/server/entity.h>
+#include "infcentity.h"
 
-class CLaserTeleport : public CEntity
+class CLaserTeleport : public CInfCEntity
 {
 
 public:
-	CLaserTeleport(CGameWorld *pGameWorld, vec2 StartPos, vec2 EndPos);
+	CLaserTeleport(CGameContext *pGameContext, vec2 StartPos, vec2 EndPos);
 
-	virtual void Reset();
 	virtual void Tick();
 	virtual void Snap(int SnappingClient);
 

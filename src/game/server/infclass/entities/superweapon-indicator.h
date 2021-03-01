@@ -3,21 +3,19 @@
 #ifndef GAME_SERVER_ENTITIES_SUPERWEAPON_INDICATOR_H
 #define GAME_SERVER_ENTITIES_SUPERWEAPON_INDICATOR_H
 
-#include <game/server/entity.h>
+#include "infcentity.h"
+
 #include <base/tl/array.h>
 
-class CSuperWeaponIndicator : public CEntity
+class CSuperWeaponIndicator : public CInfCEntity
 {
 public:
-	CSuperWeaponIndicator(CGameWorld *pGameWorld, vec2 Pos, int Owner);
-	virtual ~CSuperWeaponIndicator();
+	CSuperWeaponIndicator(CGameContext *pGameContext, vec2 Pos, int Owner);
+	~CSuperWeaponIndicator() override;
 	
 	virtual void Snap(int SnappingClient);
-	virtual void Reset();
 	virtual void Tick();
-	
-	int GetOwner() const;
-	
+
 private:
 	int m_StartTick;
 	int m_warmUpCounter;
@@ -27,7 +25,6 @@ private:
 	
 public:
 	float m_Radius;
-	int m_Owner;
 };
 
 #endif

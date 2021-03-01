@@ -9,8 +9,8 @@
 #include "growingexplosion.h"
 #include "portal.h"
 
-CScientistLaser::CScientistLaser(CGameWorld *pGameWorld, vec2 Pos, vec2 Direction, float StartEnergy, int Owner, int Dmg)
-: CLaser(pGameWorld, Pos, Direction, StartEnergy, Owner, Dmg, CGameWorld::ENTTYPE_LASER)
+CScientistLaser::CScientistLaser(CGameContext *pGameContext, vec2 Pos, vec2 Direction, float StartEnergy, int Owner, int Dmg)
+	: CLaser(pGameContext->GameWorld(), Pos, Direction, StartEnergy, Owner, Dmg, CGameWorld::ENTTYPE_LASER)
 {
 	GameWorld()->InsertEntity(this);
 	DoBounce();

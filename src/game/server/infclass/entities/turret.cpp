@@ -1,30 +1,31 @@
 /* (c) Magnus Auvinen. See licence.txt in the root of the distribution for more information. */
 /* If you are missing that file, acquire a complete release at teeworlds.com.                */
+#include "turret.h"
+
 #include <engine/config.h>
 #include <engine/shared/config.h>
 #include <game/generated/protocol.h>
 #include <game/server/gamecontext.h>
 #include <engine/server/roundstatistics.h>
-#include "turret.h"
+
+#include "infccharacter.h"
 #include "plasma.h"
 
 #include <game/server/entities/laser.h>
 
-CTurret::CTurret(CGameWorld *pGameWorld, vec2 Pos, int Owner, vec2 Direction, float StartEnergy, int Type)
-	: CEntity(pGameWorld, CGameWorld::ENTTYPE_TURRET)
+CTurret::CTurret(CGameContext *pGameContext, vec2 Pos, int Owner, vec2 Direction, float StartEnergy, int Type)
+	: CInfCEntity(pGameContext, CGameWorld::ENTTYPE_TURRET, Pos, Owner)
 {
-	m_Pos = Pos;
-	m_Owner = Owner;
 	m_Energy = StartEnergy;
 	m_Dir = Direction;
 	m_StartTick = Server()->Tick();
 	m_Bounces = 0;
 	m_Radius = 15.0f;
 	m_foundTarget = false;
-	m_ammunition = g_Config.m_InfTurretAmmunition;
+	m_ammunition = Config()->m_InfTurretAmmunition;
 	m_EvalTick = Server()->Tick();
-	m_LifeSpan = Server()->TickSpeed()*g_Config.m_InfTurretDuration;
-	m_WarmUpCounter = Server()->TickSpeed()*g_Config.m_InfTurretWarmUpDuration;
+	m_LifeSpan = Server()->TickSpeed()*Config()->m_InfTurretDuration;
+	m_WarmUpCounter = Server()->TickSpeed()*Config()->m_InfTurretWarmUpDuration;
 	m_Type = Type;
 	m_IDs.set_size(9);
 	for(int i = 0; i < m_IDs.size(); i++)
@@ -32,7 +33,7 @@ CTurret::CTurret(CGameWorld *pGameWorld, vec2 Pos, int Owner, vec2 Direction, fl
 		m_IDs[i] = Server()->SnapNewID();
 	}
 
-	if ( (g_Config.m_InfTurretEnableLaser && g_Config.m_InfTurretEnablePlasma) || (!g_Config.m_InfTurretEnableLaser && !g_Config.m_InfTurretEnablePlasma) )
+	if ( (Config()->m_InfTurretEnableLaser && Config()->m_InfTurretEnablePlasma) || (!Config()->m_InfTurretEnableLaser && !Config()->m_InfTurretEnablePlasma) )
 	{
 		char aBuf[256];
 		str_format(aBuf, sizeof(aBuf), "error: turrets have no correct ammo type, admin has to choose ammo type with \"inf_turret_enable_ammoType\"");
@@ -41,14 +42,14 @@ CTurret::CTurret(CGameWorld *pGameWorld, vec2 Pos, int Owner, vec2 Direction, fl
 		Reset();
 	}
 
-	if (g_Config.m_InfTurretEnablePlasma)
+	if (Config()->m_InfTurretEnablePlasma)
 	{
-		m_ReloadCounter = Server()->TickSpeed()*g_Config.m_InfTurretPlasmaReloadDuration;
+		m_ReloadCounter = Server()->TickSpeed()*Config()->m_InfTurretPlasmaReloadDuration;
 	}
 
-	if (g_Config.m_InfTurretEnableLaser)
+	if (Config()->m_InfTurretEnableLaser)
 	{
-		m_ReloadCounter = Server()->TickSpeed()*g_Config.m_InfTurretLaserReloadDuration;
+		m_ReloadCounter = Server()->TickSpeed()*Config()->m_InfTurretLaserReloadDuration;
 	}
 
 	GameWorld()->InsertEntity(this);
@@ -60,16 +61,6 @@ CTurret::~CTurret()
 	{
 		Server()->SnapFreeID(m_IDs[i]);
 	}
-}
-
-void CTurret::Reset()
-{
-	GameServer()->m_World.DestroyEntity(this);
-}
-
-int CTurret::GetOwner() const
-{
-	return m_Owner;
 }
 
 void CTurret::Tick()
@@ -90,9 +81,9 @@ void CTurret::Tick()
 		float Len = distance(pChr->m_Pos, m_Pos);
 
 		// selfdestruction
-		if(Len < pChr->m_ProximityRadius + 4.0f )
+		if(Len < pChr->GetProximityRadius() + 4.0f )
 		{
-			pChr->TakeDamage(vec2(0.f, 0.f), g_Config.m_InfTurretSelfDestructDmg, m_Owner, WEAPON_RIFLE, TAKEDAMAGEMODE_NOINFECTION);
+			pChr->TakeDamage(vec2(0.f, 0.f), Config()->m_InfTurretSelfDestructDmg, m_Owner, WEAPON_RIFLE, TAKEDAMAGEMODE_NOINFECTION);
 			GameServer()->CreateSound(m_Pos, SOUND_RIFLE_FIRE);
 			int ClientID = pChr->GetPlayer()->GetCID();
 			char aBuf[64];
@@ -157,7 +148,7 @@ void CTurret::AttackTargets()
 		float Len = distance(pChr->m_Pos, m_Pos);
 
 		// attack zombie
-		if (Len < (float)g_Config.m_InfTurretRadarRange) //800
+		if (Len < (float)Config()->m_InfTurretRadarRange) //800
 		{
 			if(GameServer()->Collision()->IntersectLine(m_Pos, pChr->m_Pos, nullptr, nullptr))
 			{
@@ -170,12 +161,12 @@ void CTurret::AttackTargets()
 			switch(m_Type)
 			{
 				case INFAMMO_LASER:
-					new CLaser(GameWorld(), m_Pos, Direction, GameServer()->Tuning()->m_LaserReach, m_Owner, g_Config.m_InfTurretDmgHealthLaser);
+					new CLaser(GameWorld(), m_Pos, Direction, GameServer()->Tuning()->m_LaserReach, m_Owner, Config()->m_InfTurretDmgHealthLaser);
 					m_ammunition--;
 					break;
 
 				case INFAMMO_PLASMA:
-					new CPlasma(GameWorld(), m_Pos, m_Owner, pChr->GetPlayer()->GetCID() , Direction, 0, 1);
+					new CPlasma(GameServer(), m_Pos, m_Owner, pChr->GetPlayer()->GetCID() , Direction, 0, 1);
 					m_ammunition--;
 					break;
 			}
@@ -188,18 +179,18 @@ void CTurret::AttackTargets()
 	if(!m_ammunition || m_foundTarget)
 	{
 		//Reload ammo
-		if (g_Config.m_InfTurretEnablePlasma)
+		if (Config()->m_InfTurretEnablePlasma)
 		{
-			m_ReloadCounter = Server()->TickSpeed()*g_Config.m_InfTurretPlasmaReloadDuration;
+			m_ReloadCounter = Server()->TickSpeed()*Config()->m_InfTurretPlasmaReloadDuration;
 		}
 
-		if (g_Config.m_InfTurretEnableLaser)
+		if (Config()->m_InfTurretEnableLaser)
 		{
-			m_ReloadCounter = Server()->TickSpeed()*g_Config.m_InfTurretLaserReloadDuration;
+			m_ReloadCounter = Server()->TickSpeed()*Config()->m_InfTurretLaserReloadDuration;
 		}
 
-		m_WarmUpCounter = Server()->TickSpeed()*g_Config.m_InfTurretWarmUpDuration;
-		m_ammunition = g_Config.m_InfTurretAmmunition;
+		m_WarmUpCounter = Server()->TickSpeed()*Config()->m_InfTurretWarmUpDuration;
+		m_ammunition = Config()->m_InfTurretAmmunition;
 		m_foundTarget = false;
 	}
 }

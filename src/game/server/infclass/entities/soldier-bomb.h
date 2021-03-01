@@ -3,17 +3,17 @@
 #ifndef GAME_SERVER_ENTITIES_SOLDIER_BOMB_H
 #define GAME_SERVER_ENTITIES_SOLDIER_BOMB_H
 
-#include <game/server/entity.h>
+#include "infcentity.h"
+
 #include <base/tl/array.h>
 
-class CSoldierBomb : public CEntity
+class CSoldierBomb : public CInfCEntity
 {
 public:
-	CSoldierBomb(CGameWorld *pGameWorld, vec2 Pos, int Owner);
+	CSoldierBomb(CGameContext *pGameContext, vec2 Pos, int Owner);
 	virtual ~CSoldierBomb();
 
 	virtual void Snap(int SnappingClient);
-	virtual void Reset();
 	virtual void TickPaused();
 	void Explode();
 	bool AddBomb();
@@ -28,7 +28,6 @@ private:
 	
 public:
 	float m_DetectionRadius;
-	int m_Owner;
 };
 
 #endif

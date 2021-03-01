@@ -7,23 +7,24 @@
 #include <engine/shared/config.h>
 #include "looper-wall.h"
 
-CLooperWall::CLooperWall(CGameWorld *pGameWorld, vec2 Pos1, vec2 Pos2, int Owner)
-: CEntity(pGameWorld, CGameWorld::ENTTYPE_LOOPER_WALL)
+CLooperWall::CLooperWall(CGameContext *pGameContext, vec2 Pos1, vec2 Pos2, int Owner)
+	: CInfCEntity(pGameContext, CGameWorld::ENTTYPE_LOOPER_WALL, Pos1, Owner)
 {
-	m_Pos = Pos1;
 	if(distance(Pos1, Pos2) > g_BarrierMaxLength)
 	{
 		m_Pos2 = Pos1 + normalize(Pos2 - Pos1)*g_BarrierMaxLength;
 	}
-	else m_Pos2 = Pos2;
-	m_Owner = Owner;
+	else
+	{
+		m_Pos2 = Pos2;
+	}
 	m_IDs.set_size(2);
 	for(int i=0; i<2; i++)
 	{
 		m_IDs[i] = Server()->SnapNewID();
 	}
 
-	m_LifeSpan = Server()->TickSpeed()*g_Config.m_InfLooperBarrierLifeSpan;
+	m_LifeSpan = Server()->TickSpeed()*Config()->m_InfLooperBarrierLifeSpan;
 	GameWorld()->InsertEntity(this);
 	
 	m_EndPointIDs.set_size(2);
@@ -53,11 +54,6 @@ CLooperWall::~CLooperWall()
 	}
 }
 
-void CLooperWall::Reset()
-{
-	GameServer()->m_World.DestroyEntity(this);
-}
-
 void CLooperWall::Tick()
 {
 	if(m_MarkedForDestroy) return;
@@ -81,7 +77,7 @@ void CLooperWall::Tick()
 			{
 				if(p->GetPlayer())
 				{
-					int LifeSpanReducer = ((Server()->TickSpeed()*g_Config.m_InfLooperBarrierTimeReduce)/100);
+					int LifeSpanReducer = ((Server()->TickSpeed()*Config()->m_InfLooperBarrierTimeReduce)/100);
 					if(!p->IsInSlowMotion()) 
 					{
 						if(p->GetClass() == PLAYERCLASS_GHOUL)
@@ -97,7 +93,7 @@ void CLooperWall::Tick()
 				//Slow-Motion modification here
 				if (!p->IsInSlowMotion())
 				{
-					p->SlowMotionEffect(g_Config.m_InfSlowMotionWallDuration);
+					p->SlowMotionEffect(Config()->m_InfSlowMotionWallDuration);
 					GameServer()->SendEmoticon(p->GetPlayer()->GetCID(), EMOTICON_EXCLAMATION);			  
 				}
 			}

@@ -771,7 +771,7 @@ void CCharacter::OnHammerFired(bool *pFireAccepted)
 		//Potential variable name conflicts with engineers wall (for example *pWall is used twice for both Looper and Engineer)
 		for(CLooperWall *pWall = (CLooperWall*) GameWorld()->FindFirst(CGameWorld::ENTTYPE_LOOPER_WALL); pWall; pWall = (CLooperWall*) pWall->TypeNext())
 		{
-			if(pWall->m_Owner == m_pPlayer->GetCID())
+			if(pWall->GetOwner() == m_pPlayer->GetCID())
 				GameServer()->m_World.DestroyEntity(pWall);
 		}
 
@@ -797,7 +797,7 @@ void CCharacter::OnHammerFired(bool *pFireAccepted)
 			{
 				m_FirstShot = true;
 				
-				new CLooperWall(GameWorld(), m_FirstShotCoord, m_Pos, m_pPlayer->GetCID());
+				new CLooperWall(GameServer(), m_FirstShotCoord, m_Pos, m_pPlayer->GetCID());
 				
 				GameServer()->CreateSound(m_Pos, SOUND_RIFLE_FIRE);
 			}
@@ -811,11 +811,11 @@ void CCharacter::OnHammerFired(bool *pFireAccepted)
 			{
 				if (g_Config.m_InfTurretEnableLaser)
 				{
-					new CTurret(GameWorld(), m_Pos, m_pPlayer->GetCID(), Direction, GameServer()->Tuning()->m_LaserReach,INFAMMO_LASER);
+					new CTurret(GameServer(), m_Pos, m_pPlayer->GetCID(), Direction, GameServer()->Tuning()->m_LaserReach,INFAMMO_LASER);
 				}
 				else if (g_Config.m_InfTurretEnablePlasma)
 				{
-					new CTurret(GameWorld(), m_Pos, m_pPlayer->GetCID(), Direction, GameServer()->Tuning()->m_LaserReach,INFAMMO_PLASMA);
+					new CTurret(GameServer(), m_Pos, m_pPlayer->GetCID(), Direction, GameServer()->Tuning()->m_LaserReach,INFAMMO_PLASMA);
 				}
 
 				GameServer()->CreateSound(m_Pos, SOUND_GRENADE_FIRE);
@@ -836,7 +836,7 @@ void CCharacter::OnHammerFired(bool *pFireAccepted)
 		bool BombFound = false;
 		for(CSoldierBomb *pBomb = (CSoldierBomb*) GameWorld()->FindFirst(CGameWorld::ENTTYPE_SOLDIER_BOMB); pBomb; pBomb = (CSoldierBomb*) pBomb->TypeNext())
 		{
-			if(pBomb->m_Owner == m_pPlayer->GetCID())
+			if(pBomb->GetOwner() == m_pPlayer->GetCID())
 			{
 				pBomb->Explode();
 				BombFound = true;
@@ -845,7 +845,7 @@ void CCharacter::OnHammerFired(bool *pFireAccepted)
 
 		if(!BombFound)
 		{
-			new CSoldierBomb(GameWorld(), ProjStartPos, m_pPlayer->GetCID());
+			new CSoldierBomb(GameServer(), ProjStartPos, m_pPlayer->GetCID());
 			GameServer()->CreateSound(m_Pos, SOUND_GRENADE_FIRE);
 		}
 	}
@@ -871,7 +871,7 @@ void CCharacter::OnHammerFired(bool *pFireAccepted)
 		CMercenaryBomb* pCurrentBomb = NULL;
 		for(CMercenaryBomb *pBomb = (CMercenaryBomb*) GameWorld()->FindFirst(CGameWorld::ENTTYPE_MERCENARY_BOMB); pBomb; pBomb = (CMercenaryBomb*) pBomb->TypeNext())
 		{
-			if(pBomb->m_Owner == m_pPlayer->GetCID())
+			if(pBomb->GetOwner() == m_pPlayer->GetCID())
 			{
 				pCurrentBomb = pBomb;
 				break;
@@ -1138,7 +1138,7 @@ void CCharacter::OnHammerFired(bool *pFireAccepted)
 				if(DistanceToTheNearestSlime > MinDistance)
 				{
 					ShowAttackAnimation = true;
-					new CSlugSlime(GameWorld(), CheckPos, m_pPlayer->GetCID());
+					new CSlugSlime(GameServer(), CheckPos, m_pPlayer->GetCID());
 				}
 			}
 		}
@@ -1236,7 +1236,7 @@ void CCharacter::OnShotgunFired(bool *pFireAccepted)
 
 		if(GetClass() == PLAYERCLASS_BIOLOGIST)
 		{
-			CBouncingBullet *pProj = new CBouncingBullet(GameWorld(), m_pPlayer->GetCID(), ProjStartPos, vec2(cosf(a), sinf(a))*Speed);
+			CBouncingBullet *pProj = new CBouncingBullet(GameServer(), m_pPlayer->GetCID(), ProjStartPos, vec2(cosf(a), sinf(a))*Speed);
 
 			// pack the Projectile and send it to the client Directly
 			CNetObj_Projectile p;
@@ -1373,7 +1373,7 @@ void CCharacter::OnGrenadeFired(bool *pFireAccepted)
 			GameServer()->CreateDeath(OldPos, GetPlayer()->GetCID());
 			GameServer()->CreateDeath(PortalPos, GetPlayer()->GetCID());
 			GameServer()->CreateSound(PortalPos, SOUND_CTF_RETURN);
-			new CLaserTeleport(GameWorld(), PortalPos, OldPos);
+			new CLaserTeleport(GameServer(), PortalPos, OldPos);
 		}
 	}
 	else
@@ -1449,14 +1449,14 @@ void CCharacter::OnLaserFired(bool *pFireAccepted)
 	{
 		for(CBiologistMine* pMine = (CBiologistMine*) GameWorld()->FindFirst(CGameWorld::ENTTYPE_BIOLOGIST_MINE); pMine; pMine = (CBiologistMine*) pMine->TypeNext())
 		{
-			if(pMine->m_Owner != m_pPlayer->GetCID()) continue;
+			if(pMine->GetOwner() != m_pPlayer->GetCID()) continue;
 				GameServer()->m_World.DestroyEntity(pMine);
 		}
 
 		vec2 To = m_Pos + Direction*400.0f;
 		if(GameServer()->Collision()->IntersectLine(m_Pos, To, 0x0, &To))
 		{
-			new CBiologistMine(GameWorld(), m_Pos, To, m_pPlayer->GetCID());
+			new CBiologistMine(GameServer(), m_Pos, To, m_pPlayer->GetCID());
 			GameServer()->CreateSound(m_Pos, SOUND_RIFLE_FIRE);
 			m_aWeapons[WEAPON_RIFLE].m_Ammo = 0;
 		}
@@ -1491,7 +1491,7 @@ void CCharacter::OnLaserFired(bool *pFireAccepted)
 		{
 			//white hole activation in scientist-laser
 			
-			new CScientistLaser(GameWorld(), m_Pos, Direction, GameServer()->Tuning()->m_LaserReach*0.6f, m_pPlayer->GetCID(), Damage);
+			new CScientistLaser(GameServer(), m_Pos, Direction, GameServer()->Tuning()->m_LaserReach*0.6f, m_pPlayer->GetCID(), Damage);
 			GameServer()->CreateSound(m_Pos, SOUND_RIFLE_FIRE);
 		}
 		else if (GetClass() == PLAYERCLASS_LOOPER) 
@@ -1508,7 +1508,7 @@ void CCharacter::OnLaserFired(bool *pFireAccepted)
 			CMercenaryBomb* pCurrentBomb = NULL;
 			for(CMercenaryBomb *pBomb = (CMercenaryBomb*) GameWorld()->FindFirst(CGameWorld::ENTTYPE_MERCENARY_BOMB); pBomb; pBomb = (CMercenaryBomb*) pBomb->TypeNext())
 			{
-				if(pBomb->m_Owner == m_pPlayer->GetCID())
+				if(pBomb->GetOwner() == m_pPlayer->GetCID())
 				{
 					pCurrentBomb = pBomb;
 					break;
@@ -1567,7 +1567,7 @@ void CCharacter::CheckSuperWeaponAccess()
 					if (m_HasIndicator == false) {
 						m_HasIndicator = true;
 						GameServer()->SendChatTarget_Localization(m_pPlayer->GetCID(), CHATCATEGORY_SCORE, _("white hole found, adjusting scientific parameters..."), NULL);
-						new CSuperWeaponIndicator(GameWorld(), m_Pos, m_pPlayer->GetCID());
+						new CSuperWeaponIndicator(GameServer(), m_Pos, m_pPlayer->GetCID());
 					}
 				} 
 			} 
@@ -2668,7 +2668,7 @@ void CCharacter::Tick()
 		CLooperWall* pCurrentWall = NULL;
 		for(CLooperWall *pWall = (CLooperWall*) GameWorld()->FindFirst(CGameWorld::ENTTYPE_LOOPER_WALL); pWall; pWall = (CLooperWall*) pWall->TypeNext())
 		{
-			if(pWall->m_Owner == m_pPlayer->GetCID())
+			if(pWall->GetOwner() == m_pPlayer->GetCID())
 			{
 				pCurrentWall = pWall;
 				break;
@@ -2690,7 +2690,7 @@ void CCharacter::Tick()
 		int NumBombs = 0;
 		for(CSoldierBomb *pBomb = (CSoldierBomb*) GameWorld()->FindFirst(CGameWorld::ENTTYPE_SOLDIER_BOMB); pBomb; pBomb = (CSoldierBomb*) pBomb->TypeNext())
 		{
-			if(pBomb->m_Owner == m_pPlayer->GetCID())
+			if(pBomb->GetOwner() == m_pPlayer->GetCID())
 				NumBombs += pBomb->GetNbBombs();
 		}
 		
@@ -2774,7 +2774,7 @@ void CCharacter::Tick()
 		int NumMines = 0;
 		for(CBiologistMine *pMine = (CBiologistMine*) GameWorld()->FindFirst(CGameWorld::ENTTYPE_BIOLOGIST_MINE); pMine; pMine = (CBiologistMine*) pMine->TypeNext())
 		{
-			if(pMine->m_Owner == m_pPlayer->GetCID())
+			if(pMine->GetOwner() == m_pPlayer->GetCID())
 				NumMines++;
 		}
 		
@@ -2826,7 +2826,7 @@ void CCharacter::Tick()
 		CMercenaryBomb* pCurrentBomb = NULL;
 		for(CMercenaryBomb *pBomb = (CMercenaryBomb*) GameWorld()->FindFirst(CGameWorld::ENTTYPE_MERCENARY_BOMB); pBomb; pBomb = (CMercenaryBomb*) pBomb->TypeNext())
 		{
-			if(pBomb->m_Owner == m_pPlayer->GetCID())
+			if(pBomb->GetOwner() == m_pPlayer->GetCID())
 			{
 				pCurrentBomb = pBomb;
 				break;
@@ -2884,7 +2884,7 @@ void CCharacter::Tick()
 	else if(GetClass() == PLAYERCLASS_HERO)
 	{
 		if (!m_pHeroFlag)
-			m_pHeroFlag = new CHeroFlag(&GameServer()->m_World, m_pPlayer->GetCID());
+			m_pHeroFlag = new CHeroFlag(GameServer(), m_pPlayer->GetCID());
 
 		//Search for flag
 		int CoolDown = m_pHeroFlag->GetCoolDown();
@@ -3558,7 +3558,7 @@ void CCharacter::Snap(int SnappingClient)
 		CLooperWall* pCurrentWall = NULL;
 		for(CLooperWall *pWall = (CLooperWall*) GameWorld()->FindFirst(CGameWorld::ENTTYPE_LOOPER_WALL); pWall; pWall = (CLooperWall*) pWall->TypeNext())
 		{
-			if(pWall->m_Owner == m_pPlayer->GetCID())
+			if(pWall->GetOwner() == m_pPlayer->GetCID())
 			{
 				pCurrentWall = pWall;
 				break;
@@ -4026,12 +4026,12 @@ void CCharacter::DestroyChildEntities()
 	}
 	for(CLooperWall *pWall = (CLooperWall*) GameWorld()->FindFirst(CGameWorld::ENTTYPE_LOOPER_WALL); pWall; pWall = (CLooperWall*) pWall->TypeNext())
 	{
-		if(pWall->m_Owner != m_pPlayer->GetCID()) continue;
+		if(pWall->GetOwner() != m_pPlayer->GetCID()) continue;
 			GameServer()->m_World.DestroyEntity(pWall);
 	}
 	for(CSoldierBomb *pBomb = (CSoldierBomb*) GameWorld()->FindFirst(CGameWorld::ENTTYPE_SOLDIER_BOMB); pBomb; pBomb = (CSoldierBomb*) pBomb->TypeNext())
 	{
-		if(pBomb->m_Owner != m_pPlayer->GetCID()) continue;
+		if(pBomb->GetOwner() != m_pPlayer->GetCID()) continue;
 			GameServer()->m_World.DestroyEntity(pBomb);
 	}
 	for(CScatterGrenade* pGrenade = (CScatterGrenade*) GameWorld()->FindFirst(CGameWorld::ENTTYPE_SCATTER_GRENADE); pGrenade; pGrenade = (CScatterGrenade*) pGrenade->TypeNext())
@@ -4056,7 +4056,7 @@ void CCharacter::DestroyChildEntities()
 	}
 	for(CBiologistMine* pMine = (CBiologistMine*) GameWorld()->FindFirst(CGameWorld::ENTTYPE_BIOLOGIST_MINE); pMine; pMine = (CBiologistMine*) pMine->TypeNext())
 	{
-		if(pMine->m_Owner != m_pPlayer->GetCID()) continue;
+		if(pMine->GetOwner() != m_pPlayer->GetCID()) continue;
 			GameServer()->m_World.DestroyEntity(pMine);
 	}
 	for(CSlugSlime* pSlime = (CSlugSlime*) GameWorld()->FindFirst(CGameWorld::ENTTYPE_SLUG_SLIME); pSlime; pSlime = (CSlugSlime*) pSlime->TypeNext())

@@ -5,19 +5,17 @@
 #include "soldier-bomb.h"
 #include <cmath>
 
-CSoldierBomb::CSoldierBomb(CGameWorld *pGameWorld, vec2 Pos, int Owner)
-: CEntity(pGameWorld, CGameWorld::ENTTYPE_SOLDIER_BOMB)
+CSoldierBomb::CSoldierBomb(CGameContext *pGameContext, vec2 Pos, int Owner)
+	: CInfCEntity(pGameContext, CGameWorld::ENTTYPE_SOLDIER_BOMB, Pos, Owner)
 {
-	m_Pos = Pos;
 	GameWorld()->InsertEntity(this);
 	m_DetectionRadius = 60.0f;
 	m_StartTick = Server()->Tick();
-	m_Owner = Owner;
 
-	m_nbBomb = g_Config.m_InfSoldierBombs;
-	charged_bomb = g_Config.m_InfSoldierBombs;
+	m_nbBomb = Config()->m_InfSoldierBombs;
+	charged_bomb = Config()->m_InfSoldierBombs;
 
-	m_IDBomb.set_size(g_Config.m_InfSoldierBombs);
+	m_IDBomb.set_size(Config()->m_InfSoldierBombs);
 	for(int i=0; i<m_IDBomb.size(); i++)
 	{
 		m_IDBomb[i] = Server()->SnapNewID();
@@ -28,11 +26,6 @@ CSoldierBomb::~CSoldierBomb()
 {
 	for(int i=0; i<m_IDBomb.size(); i++)
 		Server()->SnapFreeID(m_IDBomb[i]);
-}
-
-void CSoldierBomb::Reset()
-{
-	GameServer()->m_World.DestroyEntity(this);
 }
 
 void CSoldierBomb::Explode()
@@ -86,7 +79,7 @@ void CSoldierBomb::ChargeBomb(float time)
 	if (charged_bomb > 1) {
 		// time is multiplied by N, bombs will get charged every 1/N sec
 		if (std::floor(time * 1.4) >
-				g_Config.m_InfSoldierBombs - charged_bomb) {
+				Config()->m_InfSoldierBombs - charged_bomb) {
 			charged_bomb--;
 			GameServer()->CreateSound(m_Pos, SOUND_WEAPON_NOAMMO);
 		}

@@ -8,7 +8,7 @@
 class CScientistLaser : public CLaser
 {
 public:
-	CScientistLaser(CGameWorld *pGameWorld, vec2 Pos, vec2 Direction, float StartEnergy, int Owner, int Dmg);
+	CScientistLaser(CGameContext *pGameContext, vec2 Pos, vec2 Direction, float StartEnergy, int Owner, int Dmg);
 
 protected:
 	bool HitCharacter(vec2 From, vec2 To) override;

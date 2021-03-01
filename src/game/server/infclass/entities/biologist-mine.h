@@ -3,9 +3,9 @@
 #ifndef GAME_SERVER_ENTITIES_BIOLOGIST_MINE_H
 #define GAME_SERVER_ENTITIES_BIOLOGIST_MINE_H
 
-#include <game/server/entity.h>
+#include "infcentity.h"
 
-class CBiologistMine : public CEntity
+class CBiologistMine : public CInfCEntity
 {
 public:
 	enum
@@ -16,21 +16,18 @@ public:
 	};
 	
 public:
-	CBiologistMine(CGameWorld *pGameWorld, vec2 Pos, vec2 EndPos, int Owner);
+	CBiologistMine(CGameContext *pGameContext, vec2 Pos, vec2 EndPos, int Owner);
 	virtual ~CBiologistMine();
 
 	virtual void Snap(int SnappingClient);
-	virtual void Reset();
 	virtual void Tick();
 
-	int GetOwner() const;
 	void Explode();
 
 private:
 	int m_IDs[NUM_IDS];
 	
 public:
-	int m_Owner;
 	vec2 m_EndPos;
 };
 

@@ -8,25 +8,18 @@
 #include "bouncing-bullet.h"
 #include <game/server/infclass/entities/portal.h>
 
-CBouncingBullet::CBouncingBullet(CGameWorld *pGameWorld, int Owner, vec2 Pos, vec2 Dir)
-: CEntity(pGameWorld, CGameWorld::ENTTYPE_BOUNCING_BULLET)
+CBouncingBullet::CBouncingBullet(CGameContext *pGameContext, int Owner, vec2 Pos, vec2 Dir)
+	: CInfCEntity(pGameContext, CGameWorld::ENTTYPE_BOUNCING_BULLET, Pos, Owner)
 {
-	m_Pos = Pos;
 	m_ActualPos = Pos;
 	m_ActualDir = Dir;
 	m_Direction = Dir;
-	m_Owner = Owner;
 	m_StartTick = Server()->Tick();
 	m_LifeSpan = Server()->TickSpeed()*2;
 	m_BounceLeft = 3; // the number of time that a bullet can bounce. It's usefull to remove bullets laying on the ground
 	m_DistanceLeft = 1200; // the max distance a bullet can travel
 	
 	GameWorld()->InsertEntity(this);
-}
-
-void CBouncingBullet::Reset()
-{
-	GameServer()->m_World.DestroyEntity(this);
 }
 
 vec2 CBouncingBullet::GetPos(float Time)
