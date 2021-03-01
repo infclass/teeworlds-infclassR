@@ -1,18 +1,16 @@
 #ifndef GAME_SERVER_ENTITIES_MEDICGRENADE_H
 #define GAME_SERVER_ENTITIES_MEDICGRENADE_H
 
-class CMedicGrenade : public CEntity
+#include "infcentity.h"
+
+class CMedicGrenade : public CInfCEntity
 {
 public:
-	int m_Owner;
-	
-public:
-	CMedicGrenade(CGameWorld *pGameWorld, int Owner, vec2 Pos, vec2 Dir);
+	CMedicGrenade(CGameContext *pGameContext, int Owner, vec2 Pos, vec2 Dir);
 
 	vec2 GetPos(float Time);
 	void FillInfo(CNetObj_Projectile *pProj);
 
-	virtual void Reset();
 	virtual void Tick();
 	virtual void TickPaused();
 	virtual void Explode();

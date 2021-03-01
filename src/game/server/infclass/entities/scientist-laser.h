@@ -3,7 +3,7 @@
 #ifndef GAME_SERVER_ENTITIES_SCILASER_H
 #define GAME_SERVER_ENTITIES_SCILASER_H
 
-#include "laser.h"
+#include <game/server/entities/laser.h>
 
 class CScientistLaser : public CLaser
 {

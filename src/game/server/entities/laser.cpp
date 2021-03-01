@@ -5,7 +5,7 @@
 #include "laser.h"
 #include <engine/server/roundstatistics.h>
 
-#include "portal.h"
+#include <game/server/infclass/entities/portal.h>
 
 CLaser::CLaser(CGameWorld *pGameWorld, vec2 Pos, vec2 Direction, float StartEnergy, int Owner, int Dmg, int ObjType)
 : CEntity(pGameWorld, ObjType)

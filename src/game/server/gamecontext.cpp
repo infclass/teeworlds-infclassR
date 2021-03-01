@@ -16,7 +16,7 @@
 #include "gamemodes/mod.h"
 #include <algorithm>
 
-#include "entities/portal.h"
+#include <game/server/infclass/entities/portal.h>
 
 #include "infclass/infcplayer.h"
 

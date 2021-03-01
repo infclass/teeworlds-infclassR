@@ -4,6 +4,8 @@
 #ifndef GAME_SERVER_ENTITIES_GROWINGEXPLOSION_H
 #define GAME_SERVER_ENTITIES_GROWINGEXPLOSION_H
 
+#include "infcentity.h"
+
 #include <engine/shared/config.h>
 #include <game/server/entity.h>
 #include <game/server/entities/character.h>
@@ -18,17 +20,14 @@ enum
 	GROWINGEXPLOSIONEFFECT_HEAL_HUMANS,
 };
 
-class CGrowingExplosion : public CEntity
+class CGrowingExplosion : public CInfCEntity
 {
 public:
-	CGrowingExplosion(CGameWorld *pGameWorld, vec2 Pos, vec2 Dir, int Owner, int Radius, int ExplosionEffect, int TakeDamageMode = TAKEDAMAGEMODE_NOINFECTION);
+	CGrowingExplosion(CGameContext *pGameContext, vec2 Pos, vec2 Dir, int Owner, int Radius, int ExplosionEffect, int TakeDamageMode = TAKEDAMAGEMODE_NOINFECTION);
 	virtual ~CGrowingExplosion();
-	
-	virtual void Reset();
+
 	virtual void Tick();
 	virtual void TickPaused();
-
-	int GetOwner() const;
 
 private:
 	void DamagePortals();
@@ -38,7 +37,6 @@ private:
 	int m_GrowingMap_Size;
 	int m_TakeDamageMode;
 	
-	int m_Owner;
 	vec2 m_SeedPos;
 	int m_SeedX;
 	int m_SeedY;

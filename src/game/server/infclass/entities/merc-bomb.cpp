@@ -5,13 +5,11 @@
 #include "growingexplosion.h"
 #include "merc-bomb.h"
 
-CMercenaryBomb::CMercenaryBomb(CGameWorld *pGameWorld, vec2 Pos, int Owner)
-: CEntity(pGameWorld, CGameWorld::ENTTYPE_MERCENARY_BOMB)
+CMercenaryBomb::CMercenaryBomb(CGameContext *pGameContext, vec2 Pos, int Owner)
+	: CInfCEntity(pGameContext, CGameWorld::ENTTYPE_MERCENARY_BOMB, Pos, Owner)
 {
-	m_Pos = Pos;
 	GameWorld()->InsertEntity(this);
 	m_LoadingTick = Server()->TickSpeed();
-	m_Owner = Owner;
 	m_Damage = 0;
 	
 	for(int i=0; i<NUM_IDS; i++)
@@ -28,23 +26,18 @@ CMercenaryBomb::~CMercenaryBomb()
 	}
 }
 
-void CMercenaryBomb::Reset()
-{
-	GameServer()->m_World.DestroyEntity(this);
-}
-
 void CMercenaryBomb::IncreaseDamage(int weapon)
 {
 	m_Damage = weapon == WEAPON_HAMMER ? m_Damage + 2 : m_Damage + 1.5;
-	if(m_Damage > g_Config.m_InfMercBombs)
-		m_Damage = g_Config.m_InfMercBombs;
+	if(m_Damage > Config()->m_InfMercBombs)
+		m_Damage = Config()->m_InfMercBombs;
 }
 
 void CMercenaryBomb::Tick()
 {
 	if(m_MarkedForDestroy) return;
 	
-	if(m_Damage >= g_Config.m_InfMercBombs && m_LoadingTick > 0)
+	if(m_Damage >= Config()->m_InfMercBombs && m_LoadingTick > 0)
 		m_LoadingTick--;
 	
 	// Find other players
@@ -68,12 +61,12 @@ void CMercenaryBomb::Tick()
 
 void CMercenaryBomb::Explode()
 {
-	float Factor = static_cast<float>(m_Damage)/g_Config.m_InfMercBombs;
+	float Factor = static_cast<float>(m_Damage)/Config()->m_InfMercBombs;
 	
 	if(m_Damage > 1)
 	{
 		GameServer()->CreateSound(m_Pos, SOUND_GRENADE_EXPLODE);
-		new CGrowingExplosion(GameWorld(), m_Pos, vec2(0.0, -1.0), m_Owner, 16.0f * Factor, GROWINGEXPLOSIONEFFECT_BOOM_INFECTED, TAKEDAMAGEMODE_SELFHARM);
+		new CGrowingExplosion(GameServer(), m_Pos, vec2(0.0, -1.0), m_Owner, 16.0f * Factor, GROWINGEXPLOSIONEFFECT_BOOM_INFECTED, TAKEDAMAGEMODE_SELFHARM);
 	}
 				
 	GameServer()->m_World.DestroyEntity(this);
@@ -95,7 +88,7 @@ void CMercenaryBomb::Snap(int SnappingClient)
 
 	float AngleStart = (2.0f * pi * Server()->Tick()/static_cast<float>(Server()->TickSpeed()))/10.0f;
 	float AngleStep = 2.0f * pi / CMercenaryBomb::NUM_SIDE;
-	float R = 50.0f*static_cast<float>(m_Damage)/g_Config.m_InfMercBombs;
+	float R = 50.0f*static_cast<float>(m_Damage)/Config()->m_InfMercBombs;
 	for(int i=0; i<CMercenaryBomb::NUM_SIDE; i++)
 	{
 		vec2 PosStart = m_Pos + vec2(R * cos(AngleStart + AngleStep*i), R * sin(AngleStart + AngleStep*i));

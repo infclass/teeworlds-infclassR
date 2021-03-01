@@ -7,8 +7,8 @@
 
 #include "portal.h"
 
-CGrowingExplosion::CGrowingExplosion(CGameWorld *pGameWorld, vec2 Pos, vec2 Dir, int Owner, int Radius, int ExplosionEffect, int TakeDamageMode)
-		: CEntity(pGameWorld, CGameWorld::ENTTYPE_GROWINGEXPLOSION),
+CGrowingExplosion::CGrowingExplosion(CGameContext *pGameContext, vec2 Pos, vec2 Dir, int Owner, int Radius, int ExplosionEffect, int TakeDamageMode)
+		: CInfCEntity(pGameContext, CGameWorld::ENTTYPE_GROWINGEXPLOSION, Pos, Owner),
 		m_TakeDamageMode(TakeDamageMode),
 		m_pGrowingMap(NULL),
 		m_pGrowingMapVec(NULL)
@@ -19,10 +19,9 @@ CGrowingExplosion::CGrowingExplosion(CGameWorld *pGameWorld, vec2 Pos, vec2 Dir,
 	
 	m_pGrowingMap = new int[m_GrowingMap_Size];
 	m_pGrowingMapVec = new vec2[m_GrowingMap_Size];
-	
-	m_Pos = Pos;
+
 	m_StartTick = Server()->Tick();
-	m_Owner = Owner;
+
 	m_ExplosionEffect = ExplosionEffect;
 	
 	mem_zero(m_Hit, sizeof(m_Hit));
@@ -106,16 +105,6 @@ CGrowingExplosion::~CGrowingExplosion()
 		delete[] m_pGrowingMapVec;
 		m_pGrowingMapVec = NULL;
 	}
-}
-
-void CGrowingExplosion::Reset()
-{
-	GameServer()->m_World.DestroyEntity(this);
-}
-
-int CGrowingExplosion::GetOwner() const
-{
-	return m_Owner;
 }
 
 void CGrowingExplosion::DamagePortals()
@@ -299,7 +288,7 @@ void CGrowingExplosion::Tick()
 						m_Hit[p->GetPlayer()->GetCID()] = true;
 						break;
 					case GROWINGEXPLOSIONEFFECT_POISON_INFECTED:
-						p->Poison(g_Config.m_InfPoisonDamage, m_Owner);
+						p->Poison(Config()->m_InfPoisonDamage, m_Owner);
 						GameServer()->SendEmoticon(p->GetPlayer()->GetCID(), EMOTICON_DROP);
 						m_Hit[p->GetPlayer()->GetCID()] = true;
 						break;

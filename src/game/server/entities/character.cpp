@@ -17,25 +17,26 @@
 #include "laser.h"
 
 #include <game/server/infclass/entities/engineer-wall.h>
+#include <game/server/infclass/entities/growingexplosion.h>
+#include <game/server/infclass/entities/medic-grenade.h>
+#include <game/server/infclass/entities/merc-bomb.h>
+#include <game/server/infclass/entities/portal.h>
+#include <game/server/infclass/entities/scatter-grenade.h>
+#include <game/server/infclass/entities/scientist-laser.h>
+#include <game/server/infclass/entities/scientist-mine.h>
+#include <game/server/infclass/entities/white-hole.h>
 
 #include "turret.h"
 #include "looper-wall.h"
 #include "soldier-bomb.h"
-#include "scientist-laser.h"
-#include "scientist-mine.h"
 #include "biologist-mine.h"
 #include "bouncing-bullet.h"
-#include "scatter-grenade.h"
-#include "merc-bomb.h"
-#include "medic-grenade.h"
+
 #include "hero-flag.h"
 #include "slug-slime.h"
 #include "plasma.h"
-#include "growingexplosion.h"
-#include "white-hole.h"
 #include "superweapon-indicator.h"
 #include "laser-teleport.h"
-#include "portal.h"
 
 //input count
 struct CInputCount
@@ -891,7 +892,7 @@ void CCharacter::OnHammerFired(bool *pFireAccepted)
 		}
 		else
 		{
-			new CMercenaryBomb(GameWorld(), m_Pos, m_pPlayer->GetCID());
+			new CMercenaryBomb(GameServer(), m_Pos, m_pPlayer->GetCID());
 			GameServer()->CreateSound(m_Pos, SOUND_PICKUP_ARMOR);
 		}
 
@@ -941,7 +942,7 @@ void CCharacter::OnHammerFired(bool *pFireAccepted)
 			else if(NbMine >= g_Config.m_InfMineLimit && pOlderMine)
 				GameServer()->m_World.DestroyEntity(pOlderMine);
 			
-			new CScientistMine(GameWorld(), ProjStartPos, m_pPlayer->GetCID());
+			new CScientistMine(GameServer(), ProjStartPos, m_pPlayer->GetCID());
 			
 			m_ReloadTimer = Server()->TickSpeed()/2;
 		}
@@ -1278,7 +1279,7 @@ void CCharacter::OnGrenadeFired(bool *pFireAccepted)
 		bool BombFound = false;
 		for(CScatterGrenade *pGrenade = (CScatterGrenade*) GameWorld()->FindFirst(CGameWorld::ENTTYPE_SCATTER_GRENADE); pGrenade; pGrenade = (CScatterGrenade*) pGrenade->TypeNext())
 		{
-			if(pGrenade->m_Owner != m_pPlayer->GetCID()) continue;
+			if(pGrenade->GetOwner() != m_pPlayer->GetCID()) continue;
 			pGrenade->Explode();
 			BombFound = true;
 		}
@@ -1294,7 +1295,7 @@ void CCharacter::OnGrenadeFired(bool *pFireAccepted)
 			{
 				float a = GetAngle(Direction) + random_float()/3.0f;
 
-				CScatterGrenade *pProj = new CScatterGrenade(GameWorld(), m_pPlayer->GetCID(), m_Pos, vec2(cosf(a), sinf(a)));
+				CScatterGrenade *pProj = new CScatterGrenade(GameServer(), m_pPlayer->GetCID(), m_Pos, vec2(cosf(a), sinf(a)));
 
 				// pack the Projectile and send it to the client Directly
 				CNetObj_Projectile p;
@@ -1316,7 +1317,7 @@ void CCharacter::OnGrenadeFired(bool *pFireAccepted)
 		bool BombFound = false;
 		for(CMedicGrenade *pGrenade = (CMedicGrenade*) GameWorld()->FindFirst(CGameWorld::ENTTYPE_MEDIC_GRENADE); pGrenade; pGrenade = (CMedicGrenade*) pGrenade->TypeNext())
 		{
-			if(pGrenade->m_Owner != m_pPlayer->GetCID()) continue;
+			if(pGrenade->GetOwner() != m_pPlayer->GetCID()) continue;
 			pGrenade->Explode();
 			BombFound = true;
 		}
@@ -1332,7 +1333,7 @@ void CCharacter::OnGrenadeFired(bool *pFireAccepted)
 			{
 				float a = GetAngle(Direction) + random_float()/5.0f;
 
-				CMedicGrenade *pProj = new CMedicGrenade(GameWorld(), m_pPlayer->GetCID(), m_Pos, vec2(cosf(a), sinf(a)));
+				CMedicGrenade *pProj = new CMedicGrenade(GameServer(), m_pPlayer->GetCID(), m_Pos, vec2(cosf(a), sinf(a)));
 
 				// pack the Projectile and send it to the client Directly
 				CNetObj_Projectile p;
@@ -1390,7 +1391,7 @@ void CCharacter::OnGrenadeFired(bool *pFireAccepted)
 			{
 				float a = GetAngle(Direction) + random_float()/3.0f;
 				
-				CScatterGrenade *pProj = new CScatterGrenade(GameWorld(), m_pPlayer->GetCID(), m_Pos, vec2(cosf(a), sinf(a)));
+				CScatterGrenade *pProj = new CScatterGrenade(GameServer(), m_pPlayer->GetCID(), m_Pos, vec2(cosf(a), sinf(a)));
 				
 				if (m_HasStunGrenade)
 				{
@@ -1651,13 +1652,13 @@ void CCharacter::PlacePortal()
 
 	if (m_pPortalIn)
 	{
-		m_pPortalOut = new CPortal(GameWorld(), TargetPos, OwnerCID, CPortal::PortalType::Out);
+		m_pPortalOut = new CPortal(GameServer(), TargetPos, OwnerCID, CPortal::PortalType::Out);
 		m_pPortalOut->ConnectPortal(m_pPortalIn);
 		GameServer()->CreateSound(m_pPortalOut->m_Pos, m_pPortalOut->GetNewEntitySound());
 	}
 	else
 	{
-		m_pPortalIn = new CPortal(GameWorld(), TargetPos, OwnerCID, CPortal::PortalType::In);
+		m_pPortalIn = new CPortal(GameServer(), TargetPos, OwnerCID, CPortal::PortalType::In);
 		m_pPortalIn->ConnectPortal(m_pPortalOut);
 		GameServer()->CreateSound(m_pPortalIn->m_Pos, m_pPortalIn->GetNewEntitySound());
 	}
@@ -2709,14 +2710,14 @@ void CCharacter::Tick()
 		int NumMines = 0;
 		for(CScientistMine *pMine = (CScientistMine*) GameWorld()->FindFirst(CGameWorld::ENTTYPE_SCIENTIST_MINE); pMine; pMine = (CScientistMine*) pMine->TypeNext())
 		{
-			if(pMine->m_Owner == m_pPlayer->GetCID())
+			if(pMine->GetOwner() == m_pPlayer->GetCID())
 				NumMines++;
 		}
 
 		CWhiteHole* pCurrentWhiteHole = NULL;
 		for(CWhiteHole *pWhiteHole = (CWhiteHole*) GameWorld()->FindFirst(CGameWorld::ENTTYPE_WHITE_HOLE); pWhiteHole; pWhiteHole = (CWhiteHole*) pWhiteHole->TypeNext())
 		{
-			if(pWhiteHole->m_Owner == m_pPlayer->GetCID())
+			if(pWhiteHole->GetOwner() == m_pPlayer->GetCID())
 			{
 				pCurrentWhiteHole = pWhiteHole;
 				break;
@@ -4037,22 +4038,22 @@ void CCharacter::DestroyChildEntities()
 	}
 	for(CScatterGrenade* pGrenade = (CScatterGrenade*) GameWorld()->FindFirst(CGameWorld::ENTTYPE_SCATTER_GRENADE); pGrenade; pGrenade = (CScatterGrenade*) pGrenade->TypeNext())
 	{
-		if(pGrenade->m_Owner != m_pPlayer->GetCID()) continue;
+		if(pGrenade->GetOwner() != m_pPlayer->GetCID()) continue;
 			GameServer()->m_World.DestroyEntity(pGrenade);
 	}
 	for(CMedicGrenade* pGrenade = (CMedicGrenade*) GameWorld()->FindFirst(CGameWorld::ENTTYPE_MEDIC_GRENADE); pGrenade; pGrenade = (CMedicGrenade*) pGrenade->TypeNext())
 	{
-		if(pGrenade->m_Owner != m_pPlayer->GetCID()) continue;
+		if(pGrenade->GetOwner() != m_pPlayer->GetCID()) continue;
 			GameServer()->m_World.DestroyEntity(pGrenade);
 	}
 	for(CMercenaryBomb *pBomb = (CMercenaryBomb*) GameWorld()->FindFirst(CGameWorld::ENTTYPE_MERCENARY_BOMB); pBomb; pBomb = (CMercenaryBomb*) pBomb->TypeNext())
 	{
-		if(pBomb->m_Owner != m_pPlayer->GetCID()) continue;
+		if(pBomb->GetOwner() != m_pPlayer->GetCID()) continue;
 			GameServer()->m_World.DestroyEntity(pBomb);
 	}
 	for(CScientistMine* pMine = (CScientistMine*) GameWorld()->FindFirst(CGameWorld::ENTTYPE_SCIENTIST_MINE); pMine; pMine = (CScientistMine*) pMine->TypeNext())
 	{
-		if(pMine->m_Owner != m_pPlayer->GetCID()) continue;
+		if(pMine->GetOwner() != m_pPlayer->GetCID()) continue;
 			GameServer()->m_World.DestroyEntity(pMine);
 	}
 	for(CBiologistMine* pMine = (CBiologistMine*) GameWorld()->FindFirst(CGameWorld::ENTTYPE_BIOLOGIST_MINE); pMine; pMine = (CBiologistMine*) pMine->TypeNext())

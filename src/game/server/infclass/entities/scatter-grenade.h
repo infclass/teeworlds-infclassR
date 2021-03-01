@@ -3,18 +3,16 @@
 #ifndef GAME_SERVER_ENTITIES_SCATTERGRENADE_H
 #define GAME_SERVER_ENTITIES_SCATTERGRENADE_H
 
-class CScatterGrenade : public CEntity
+#include "infcentity.h"
+
+class CScatterGrenade : public CInfCEntity
 {
 public:
-	int m_Owner;
-	
-public:
-	CScatterGrenade(CGameWorld *pGameWorld, int Owner, vec2 Pos, vec2 Dir);
+	CScatterGrenade(CGameContext *pGameContext, int Owner, vec2 Pos, vec2 Dir);
 
 	vec2 GetPos(float Time);
 	void FillInfo(CNetObj_Projectile *pProj);
 
-	virtual void Reset();
 	virtual void Tick();
 	virtual void TickPaused();
 	virtual void Explode();

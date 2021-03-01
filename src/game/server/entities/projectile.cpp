@@ -4,9 +4,10 @@
 #include <base/vmath.h>
 #include <game/generated/protocol.h>
 #include <game/server/gamecontext.h>
-#include <game/server/entities/growingexplosion.h>
+#include <game/server/infclass/entities/growingexplosion.h>
+#include <game/server/infclass/entities/portal.h>
+
 #include "projectile.h"
-#include "portal.h"
 
 CProjectile::CProjectile(CGameWorld *pGameWorld, int Type, int Owner, vec2 Pos, vec2 Dir, int Span,
 		int Damage, bool Explosive, float Force, int SoundImpact, int Weapon, int TakeDamageMode)
@@ -106,7 +107,7 @@ void CProjectile::Tick()
 			vec2 Dir = normalize(PrevPos - CurPos);
 			if(length(Dir) > 1.1) Dir = normalize(m_StartPos - CurPos);
 			
-			new CGrowingExplosion(GameWorld(), CurPos, Dir, m_Owner, 8, GROWINGEXPLOSIONEFFECT_FREEZE_INFECTED);
+			new CGrowingExplosion(GameServer(), CurPos, Dir, m_Owner, 8, GROWINGEXPLOSIONEFFECT_FREEZE_INFECTED);
 		}
 		else if(m_Explosive)
 		{

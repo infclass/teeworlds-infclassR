@@ -6,7 +6,7 @@
 #include <game/server/gamecontext.h>
 
 #include "bouncing-bullet.h"
-#include "portal.h"
+#include <game/server/infclass/entities/portal.h>
 
 CBouncingBullet::CBouncingBullet(CGameWorld *pGameWorld, int Owner, vec2 Pos, vec2 Dir)
 : CEntity(pGameWorld, CGameWorld::ENTTYPE_BOUNCING_BULLET)

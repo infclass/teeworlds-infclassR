@@ -751,8 +751,6 @@ set_glob(GAME_SERVER GLOB_RECURSE src/game/server
   # entities/entity-timer.h
   entities/flyingpoint.cpp
   entities/flyingpoint.h
-  entities/growingexplosion.cpp
-  entities/growingexplosion.h
   entities/hero-flag.cpp
   entities/hero-flag.h
   entities/laser.cpp
@@ -761,22 +759,10 @@ set_glob(GAME_SERVER GLOB_RECURSE src/game/server
   entities/laser-teleport.h
   entities/looper-wall.cpp
   entities/looper-wall.h
-  entities/medic-grenade.cpp
-  entities/medic-grenade.h
-  entities/merc-bomb.cpp
-  entities/merc-bomb.h
   entities/plasma.cpp
   entities/plasma.h
-  entities/portal.cpp
-  entities/portal.h
   entities/projectile.cpp
   entities/projectile.h
-  entities/scatter-grenade.cpp
-  entities/scatter-grenade.h
-  entities/scientist-laser.cpp
-  entities/scientist-laser.h
-  entities/scientist-mine.cpp
-  entities/scientist-mine.h
   entities/slug-slime.cpp
   entities/slug-slime.h
   entities/soldier-bomb.cpp
@@ -785,16 +771,30 @@ set_glob(GAME_SERVER GLOB_RECURSE src/game/server
   entities/superweapon-indicator.h
   entities/turret.cpp
   entities/turret.h
-  entities/white-hole.cpp
-  entities/white-hole.h
   gamemodes/mod.cpp
   gamemodes/mod.h
   infclass/entities/engineer-wall.cpp
   infclass/entities/engineer-wall.h
+  infclass/entities/growingexplosion.cpp
+  infclass/entities/growingexplosion.h
   infclass/entities/infccharacter.cpp
   infclass/entities/infccharacter.h
   infclass/entities/infcentity.cpp
   infclass/entities/infcentity.h
+  infclass/entities/medic-grenade.cpp
+  infclass/entities/medic-grenade.h
+  infclass/entities/merc-bomb.cpp
+  infclass/entities/merc-bomb.h
+  infclass/entities/portal.cpp
+  infclass/entities/portal.h
+  infclass/entities/scatter-grenade.cpp
+  infclass/entities/scatter-grenade.h
+  infclass/entities/scientist-laser.cpp
+  infclass/entities/scientist-laser.h
+  infclass/entities/scientist-mine.cpp
+  infclass/entities/scientist-mine.h
+  infclass/entities/white-hole.cpp
+  infclass/entities/white-hole.h
   infclass/infcplayer.cpp
   infclass/infcplayer.h
   changelog.cpp

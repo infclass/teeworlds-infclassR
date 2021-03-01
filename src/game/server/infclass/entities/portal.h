@@ -3,9 +3,9 @@
 #ifndef GAME_SERVER_ENTITIES_PORTAL_H
 #define GAME_SERVER_ENTITIES_PORTAL_H
 
-#include <game/server/entity.h>
+#include "infcentity.h"
 
-class CPortal : public CEntity
+class CPortal : public CInfCEntity
 {
 public:
 	enum
@@ -21,7 +21,7 @@ public:
 		In,
 		Out,
 	};
-	CPortal(CGameWorld *pGameWorld, vec2 CenterPos, int OwnerClientID, PortalType Type);
+	CPortal(CGameContext *pGameContext, vec2 CenterPos, int Owner, PortalType Type);
 	~CPortal() override;
 
 	void Snap(int SnappingClient) override;
@@ -29,7 +29,6 @@ public:
 	void TickPaused() override;
 	void Tick() override;
 
-	int GetOwner() const;
 	int GetNewEntitySound() const;
 
 	PortalType GetPortalType() const;
@@ -67,7 +66,6 @@ protected:
 
 	int m_StartTick;
 	int m_ConnectedTick = 0;
-	int m_Owner;
 };
 
 #endif // GAME_SERVER_ENTITIES_PORTAL_H

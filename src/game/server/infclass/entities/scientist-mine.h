@@ -3,9 +3,9 @@
 #ifndef GAME_SERVER_ENTITIES_SCIENTIST_MINE_H
 #define GAME_SERVER_ENTITIES_SCIENTIST_MINE_H
 
-#include <game/server/entity.h>
+#include "infcentity.h"
 
-class CScientistMine : public CEntity
+class CScientistMine : public CInfCEntity
 {
 public:
 	enum
@@ -16,15 +16,13 @@ public:
 	};
 	
 public:
-	CScientistMine(CGameWorld *pGameWorld, vec2 Pos, int Owner);
+	CScientistMine(CGameContext *pGameContext, vec2 Pos, int Owner);
 	virtual ~CScientistMine();
 
 	virtual void Snap(int SnappingClient);
-	virtual void Reset();
 	virtual void TickPaused();
 	virtual void Tick();
 
-	int GetOwner() const;
 	void Explode(int DetonatedBy);
 
 private:
@@ -33,7 +31,6 @@ private:
 public:
 	int m_StartTick;
 	float m_DetectionRadius;
-	int m_Owner;
 };
 
 #endif

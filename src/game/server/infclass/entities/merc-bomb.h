@@ -3,10 +3,9 @@
 #ifndef GAME_SERVER_ENTITIES_MERCENARY_BOMB_H
 #define GAME_SERVER_ENTITIES_MERCENARY_BOMB_H
 
-#include <game/server/entity.h>
-#include <base/tl/array.h>
+#include "infcentity.h"
 
-class CMercenaryBomb : public CEntity
+class CMercenaryBomb : public CInfCEntity
 {
 public:
 	enum
@@ -15,14 +14,13 @@ public:
 		NUM_HINT = 12,
 		NUM_IDS = NUM_SIDE + NUM_HINT,
 	};
-	
+
 public:
-	CMercenaryBomb(CGameWorld *pGameWorld, vec2 Pos, int Owner);
+	CMercenaryBomb(CGameContext *pGameContext, vec2 Pos, int Owner);
 	~CMercenaryBomb();
 
 	virtual void Snap(int SnappingClient);
 	virtual void Tick();
-	virtual void Reset();
 	void Explode();
 	void IncreaseDamage(int weapon);
 	bool ReadyToExplode();
@@ -32,7 +30,6 @@ private:
 	
 public:
 	int m_LoadingTick;
-	int m_Owner;
 	float m_Damage;
 };
 

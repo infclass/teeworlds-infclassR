@@ -6,19 +6,17 @@
 #include "white-hole.h"
 #include "growingexplosion.h"
 
-CWhiteHole::CWhiteHole(CGameWorld *pGameWorld, vec2 CenterPos, int OwnerClientID)
-: CEntity(pGameWorld, CGameWorld::ENTTYPE_WHITE_HOLE)
+CWhiteHole::CWhiteHole(CGameContext *pGameContext, vec2 CenterPos, int Owner)
+	: CInfCEntity(pGameContext, CGameWorld::ENTTYPE_WHITE_HOLE, CenterPos, Owner)
 {
-	m_Pos = CenterPos;
 	GameWorld()->InsertEntity(this);
 	m_StartTick = Server()->Tick();
-	m_Owner = OwnerClientID;
-	m_LifeSpan = Server()->TickSpeed()*g_Config.m_InfWhiteHoleLifeSpan;
+	m_LifeSpan = Server()->TickSpeed()*Config()->m_InfWhiteHoleLifeSpan;
 	m_Radius = 0.0f;
 	isDieing = false;
-	m_PlayerPullStrength = g_Config.m_InfWhiteHolePullStrength/10.0f;
+	m_PlayerPullStrength = Config()->m_InfWhiteHolePullStrength/10.0f;
 
-	m_NumParticles = g_Config.m_InfWhiteHoleNumParticles;
+	m_NumParticles = Config()->m_InfWhiteHoleNumParticles;
 	m_IDs = new int[m_NumParticles];
 	m_ParticlePos = new vec2[m_NumParticles];
 	m_ParticleVec = new vec2[m_NumParticles];
@@ -41,19 +39,9 @@ CWhiteHole::~CWhiteHole()
 	delete[] m_ParticleVec;
 }
 
-void CWhiteHole::Reset()
-{
-	GameServer()->m_World.DestroyEntity(this);
-}
-
-int CWhiteHole::GetOwner() const
-{
-	return m_Owner;
-}
-
 void CWhiteHole::StartVisualEffect()
 {
-	float Radius = g_Config.m_InfWhiteHoleRadius;
+	float Radius = Config()->m_InfWhiteHoleRadius;
 	float RandomRadius, RandomAngle;
 	float VecX, VecY;
 	for(int i=0; i<m_NumParticles; i++)
@@ -94,7 +82,7 @@ void CWhiteHole::Snap(int SnappingClient)
 	if (Server()->GetClientAntiPing(SnappingClient)) {	
 		int NumSide = 6;
 		float AngleStep = 2.0f * pi / NumSide;
-		float Radius = g_Config.m_InfWhiteHoleRadius;
+		float Radius = Config()->m_InfWhiteHoleRadius;
 		for(int i=0; i<NumSide; i++)
 		{
 			vec2 PartPosStart = m_Pos + vec2(Radius * cos(AngleStep*i), Radius * sin(AngleStep*i));
@@ -133,7 +121,7 @@ void CWhiteHole::Snap(int SnappingClient)
 
 void CWhiteHole::MoveParticles()
 {
-	float Radius = g_Config.m_InfWhiteHoleRadius;
+	float Radius = Config()->m_InfWhiteHoleRadius;
 	float RandomAngle, Speed;
 	float VecX, VecY;
 	vec2 VecMid;
@@ -169,7 +157,7 @@ void CWhiteHole::MovePlayers()
 	// Find a player to pull
 	for(CCharacter *pPlayer = (CCharacter*) GameWorld()->FindFirst(CGameWorld::ENTTYPE_CHARACTER); pPlayer; pPlayer = (CCharacter *)pPlayer->TypeNext())
 	{
-		if(!g_Config.m_InfWhiteHoleAffectsHumans && pPlayer->IsHuman()) continue; // stops humans from being sucked in, if config var is set
+		if(!Config()->m_InfWhiteHoleAffectsHumans && pPlayer->IsHuman()) continue; // stops humans from being sucked in, if config var is set
 		
 		Dir = m_Pos - pPlayer->m_Pos;
 		Distance = length(Dir);
@@ -189,21 +177,21 @@ void CWhiteHole::Tick()
 	m_LifeSpan--;
 	if(m_LifeSpan < 0)
 	{
-		new CGrowingExplosion(GameWorld(), m_Pos, vec2(0.0, -1.0), m_Owner, 20, GROWINGEXPLOSIONEFFECT_BOOM_INFECTED);
+		new CGrowingExplosion(GameServer(), m_Pos, vec2(0.0, -1.0), m_Owner, 20, GROWINGEXPLOSIONEFFECT_BOOM_INFECTED);
 		Reset();
 	}
 	else 
 	{
 		if (m_LifeSpan < m_ParticleStopTickTime) // shrink radius
 		{
-			m_Radius = m_LifeSpan/(float)m_ParticleStopTickTime * g_Config.m_InfWhiteHoleRadius;
+			m_Radius = m_LifeSpan/(float)m_ParticleStopTickTime * Config()->m_InfWhiteHoleRadius;
 			isDieing = true;
 		}
-		else if (m_Radius < g_Config.m_InfWhiteHoleRadius) // grow radius
+		else if (m_Radius < Config()->m_InfWhiteHoleRadius) // grow radius
 		{
 			m_Radius += m_RadiusGrowthRate;
-			if (m_Radius > g_Config.m_InfWhiteHoleRadius)
-				m_Radius = g_Config.m_InfWhiteHoleRadius;
+			if (m_Radius > Config()->m_InfWhiteHoleRadius)
+				m_Radius = Config()->m_InfWhiteHoleRadius;
 		}
 
 		MoveParticles();

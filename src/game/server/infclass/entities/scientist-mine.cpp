@@ -7,14 +7,12 @@
 
 #include "growingexplosion.h"
 
-CScientistMine::CScientistMine(CGameWorld *pGameWorld, vec2 Pos, int Owner)
-: CEntity(pGameWorld, CGameWorld::ENTTYPE_SCIENTIST_MINE)
+CScientistMine::CScientistMine(CGameContext *pGameContext, vec2 Pos, int Owner)
+	: CInfCEntity(pGameContext, CGameWorld::ENTTYPE_SCIENTIST_MINE, Pos, Owner)
 {
-	m_Pos = Pos;
 	GameWorld()->InsertEntity(this);
 	m_DetectionRadius = 60.0f;
 	m_StartTick = Server()->Tick();
-	m_Owner = Owner;
 	
 	for(int i=0; i<NUM_IDS; i++)
 	{
@@ -30,31 +28,21 @@ CScientistMine::~CScientistMine()
 	}
 }
 
-void CScientistMine::Reset()
-{
-	GameServer()->m_World.DestroyEntity(this);
-}
-
-int CScientistMine::GetOwner() const
-{
-	return m_Owner;
-}
-
 void CScientistMine::Explode(int DetonatedBy)
 {
-	new CGrowingExplosion(GameWorld(), m_Pos, vec2(0.0, -1.0), m_Owner, 6, GROWINGEXPLOSIONEFFECT_ELECTRIC_INFECTED);
+	new CGrowingExplosion(GameServer(), m_Pos, vec2(0.0, -1.0), m_Owner, 6, GROWINGEXPLOSIONEFFECT_ELECTRIC_INFECTED);
 	GameServer()->m_World.DestroyEntity(this);
 	
 	//Self damage
 	CCharacter *OwnerChar = GameServer()->GetPlayerChar(m_Owner);
 	if(OwnerChar)
 	{
-		float Dist = distance(m_Pos, OwnerChar->m_Pos);
-		if(Dist < OwnerChar->m_ProximityRadius+g_Config.m_InfMineRadius)
+		float Dist = distance(m_Pos, OwnerChar->GetPos());
+		if(Dist < OwnerChar->GetProximityRadius()+Config()->m_InfMineRadius)
 			OwnerChar->TakeDamage(vec2(0.0f, 0.0f), 4, DetonatedBy, WEAPON_HAMMER, TAKEDAMAGEMODE_SELFHARM);
-		else if(Dist < OwnerChar->m_ProximityRadius+2*g_Config.m_InfMineRadius)
+		else if(Dist < OwnerChar->GetProximityRadius()+2*Config()->m_InfMineRadius)
 		{
-			float Alpha = (Dist - g_Config.m_InfMineRadius-OwnerChar->m_ProximityRadius)/g_Config.m_InfMineRadius;
+			float Alpha = (Dist - Config()->m_InfMineRadius-OwnerChar->GetProximityRadius())/Config()->m_InfMineRadius;
 			OwnerChar->TakeDamage(vec2(0.0f, 0.0f), 4*Alpha, DetonatedBy, WEAPON_HAMMER, TAKEDAMAGEMODE_SELFHARM);
 		}
 	}
@@ -62,7 +50,7 @@ void CScientistMine::Explode(int DetonatedBy)
 
 void CScientistMine::Snap(int SnappingClient)
 {
-	float Radius = g_Config.m_InfMineRadius;
+	float Radius = Config()->m_InfMineRadius;
 	
 	int NumSide = CScientistMine::NUM_SIDE;
 	if(Server()->GetClientAntiPing(SnappingClient))
@@ -120,8 +108,8 @@ void CScientistMine::Tick()
 		if(p->IsHuman()) continue;
 		if(!p->CanDie()) continue;
 
-		float Len = distance(p->m_Pos, m_Pos);
-		if(Len < p->m_ProximityRadius+g_Config.m_InfMineRadius)
+		float Len = distance(p->GetPos(), m_Pos);
+		if(Len < p->GetProximityRadius()+Config()->m_InfMineRadius)
 		{
 			MustExplode = true;
 			CPlayer *pDetonatedBy = p->GetPlayer();

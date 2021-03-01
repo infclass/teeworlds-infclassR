@@ -3,26 +3,23 @@
 #ifndef GAME_SERVER_ENTITIES_WHITE_HOLE_H
 #define GAME_SERVER_ENTITIES_WHITE_HOLE_H
 
-#include <game/server/entity.h>
+#include "infcentity.h"
 
-class CWhiteHole : public CEntity
+class CWhiteHole : public CInfCEntity
 {
-	
 private:
 	void StartVisualEffect();
 	void MoveParticles();
 	void MovePlayers();
 
 public:
-	CWhiteHole(CGameWorld *pGameWorld, vec2 CenterPos, int OwnerClientID);
+	CWhiteHole(CGameContext *pGameContext, vec2 CenterPos, int Owner);
 	virtual ~CWhiteHole();
 	
 	virtual void Snap(int SnappingClient);
-	virtual void Reset();
 	virtual void TickPaused();
 	virtual void Tick();
-	
-	int GetOwner() const;
+
 	int GetTick() { return m_LifeSpan; }
 	
 private:
@@ -44,7 +41,6 @@ private:
 	
 public:
 	int m_StartTick;
-	int m_Owner;
 	int m_LifeSpan;
 	int m_Radius; // changes overtime - grows when created - shrinks when dieing
 };

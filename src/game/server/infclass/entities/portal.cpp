@@ -4,20 +4,19 @@
 #include <engine/shared/config.h>
 
 #include "portal.h"
-#include "character.h"
+#include "infccharacter.h"
 #include "growingexplosion.h"
 
 #include <engine/server/roundstatistics.h>
 
-CPortal::CPortal(CGameWorld *pGameWorld, vec2 CenterPos, int OwnerClientID, PortalType Type)
-: CEntity(pGameWorld, CGameWorld::ENTTYPE_PORTAL)
+static const float PortalRadius = 30.f;
+
+CPortal::CPortal(CGameContext *pGameContext, vec2 CenterPos, int Owner, PortalType Type)
+	: CInfCEntity(pGameContext, CGameWorld::ENTTYPE_PORTAL, CenterPos, Owner, PortalRadius)
 {
-	m_Pos = CenterPos;
 	GameWorld()->InsertEntity(this);
 	m_StartTick = Server()->Tick();
-	m_Owner = OwnerClientID;
-	m_Radius = 30.0f;
-	m_ProximityRadius = m_Radius;
+	m_Radius = PortalRadius;
 	m_PortalType = Type;
 
 	for(int i = 0; i < NUM_IDS; i++)
@@ -41,11 +40,6 @@ CPortal::~CPortal()
 void CPortal::Reset()
 {
 	GameServer()->m_World.DestroyEntity(this);
-}
-
-int CPortal::GetOwner() const
-{
-	return m_Owner;
 }
 
 int CPortal::GetNewEntitySound() const
@@ -110,7 +104,7 @@ void CPortal::Explode(int DetonatedBy)
 		pOwner->OnPortalDestroy(this);
 	}
 
-	new CGrowingExplosion(GameWorld(), m_Pos, vec2(0.0, -1.0), m_Owner, 6, GROWINGEXPLOSIONEFFECT_ELECTRIC_INFECTED);
+	new CGrowingExplosion(GameServer(), m_Pos, vec2(0.0, -1.0), m_Owner, 6, GROWINGEXPLOSIONEFFECT_ELECTRIC_INFECTED);
 	GameServer()->m_World.DestroyEntity(this);
 
 	char aBuf[256];
@@ -213,7 +207,7 @@ void CPortal::MoveParallelsParticles()
 	}
 
 	float AngleDelta = AngleStep / 20;
-	const int readyTick = m_ConnectedTick + g_Config.m_InfPortalConnectionTime * Server()->TickSpeed();
+	const int readyTick = m_ConnectedTick + Config()->m_InfPortalConnectionTime * Server()->TickSpeed();
 	if (!m_AnotherPortal || (Server()->Tick() < readyTick))
 		AngleDelta *= 0.25;
 
@@ -295,7 +289,7 @@ void CPortal::TeleportCharacters()
 	{
 		return;
 	}
-	const int readyTick = m_ConnectedTick + g_Config.m_InfPortalConnectionTime * Server()->TickSpeed();
+	const int readyTick = m_ConnectedTick + Config()->m_InfPortalConnectionTime * Server()->TickSpeed();
 	if (Server()->Tick() < readyTick)
 	{
 		return;
@@ -346,7 +340,7 @@ float CPortal::GetSpeedMultiplier()
 	if (!m_AnotherPortal)
 		return c_InactivePortalAnimationSpeed;
 
-	const int PortalConnectionTime = g_Config.m_InfPortalConnectionTime;
+	const int PortalConnectionTime = Config()->m_InfPortalConnectionTime;
 	const int readyTick = m_ConnectedTick + PortalConnectionTime * Server()->TickSpeed();
 	if (Server()->Tick() >= readyTick)
 		return 1.0;
@@ -400,7 +394,7 @@ void CPortal::PrepareAntipingParticles(vec2 *ParticlePos)
 			break;
 	}
 
-	const int readyTick = m_ConnectedTick + g_Config.m_InfPortalConnectionTime * Server()->TickSpeed();
+	const int readyTick = m_ConnectedTick + Config()->m_InfPortalConnectionTime * Server()->TickSpeed();
 	if (!m_AnotherPortal || (Server()->Tick() < readyTick))
 	{
 		ParticlePos[5] = ParticlePos[0];
