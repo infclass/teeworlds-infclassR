@@ -76,6 +76,7 @@ public:
 	
 	/* Objects */
 	class CGameWorld *GameWorld() { return m_pGameWorld; }
+	class CConfig *Config() { return m_pGameWorld->Config(); }
 	class CGameContext *GameServer() { return GameWorld()->GameServer(); }
 	class IServer *Server() { return GameWorld()->Server(); }
 	

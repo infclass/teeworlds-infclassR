@@ -3,16 +3,20 @@
 #ifndef ENGINE_SHARED_CONFIG_H
 #define ENGINE_SHARED_CONFIG_H
 
-struct CConfiguration
+#include <base/detect.h>
+#include <engine/config.h>
+
+class CConfig
 {
-	#define MACRO_CONFIG_INT(Name,ScriptName,Def,Min,Max,Save,Desc) int m_##Name;
-	#define MACRO_CONFIG_STR(Name,ScriptName,Len,Def,Save,Desc) char m_##Name[Len]; // Flawfinder: ignore
-	#include "config_variables.h"
-	#undef MACRO_CONFIG_INT
-	#undef MACRO_CONFIG_STR
+public:
+#define MACRO_CONFIG_INT(Name, ScriptName, Def, Min, Max, Save, Desc) int m_##Name;
+#define MACRO_CONFIG_STR(Name, ScriptName, Len, Def, Save, Desc) char m_##Name[Len]; // Flawfinder: ignore
+#include "config_variables.h"
+#undef MACRO_CONFIG_INT
+#undef MACRO_CONFIG_STR
 };
 
-extern CConfiguration g_Config;
+extern CConfig g_Config;
 
 enum
 {

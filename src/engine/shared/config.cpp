@@ -4,9 +4,14 @@
 #include <engine/storage.h>
 #include <engine/shared/config.h>
 
-CConfiguration g_Config;
+CConfig g_Config;
 
-class CConfig : public IConfig
+void EscapeParam(char *pDst, const char *pSrc, int Size)
+{
+	str_escape(&pDst, pSrc, pDst + Size);
+}
+
+class CConfigManager : public IConfig
 {
 	IStorage *m_pStorage;
 	IOHANDLE m_ConfigFile;
@@ -25,20 +30,9 @@ class CConfig : public IConfig
 	CCallback m_aCallbacks[MAX_CALLBACKS];
 	int m_NumCallbacks;
 
-	void EscapeParam(char *pDst, const char *pSrc, int size)
-	{
-		for(int i = 0; *pSrc && i < size - 1; ++i)
-		{
-			if(*pSrc == '"' || *pSrc == '\\') // escape \ and "
-				*pDst++ = '\\';
-			*pDst++ = *pSrc++;
-		}
-		*pDst = 0;
-	}
-
 public:
 
-	CConfig()
+	CConfigManager()
 	{
 		m_ConfigFile = 0;
 		m_NumCallbacks = 0;
@@ -116,4 +110,4 @@ public:
 	}
 };
 
-IConfig *CreateConfig() { return new CConfig; }
+IConfig *CreateConfig() { return new CConfigManager; }

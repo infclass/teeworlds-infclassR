@@ -72,9 +72,12 @@ enum
 	BROADCAST_PRIORITY_INTERFACE,
 };
 
+class CConfig;
+
 class CGameContext : public IGameServer
 {
 	IServer *m_pServer;
+	CConfig *m_pConfig;
 	IStorage *m_pStorage;
 	class IConsole *m_pConsole;
 	CLayers m_Layers;
@@ -123,6 +126,7 @@ public:
 
 public:
 	IServer *Server() const { return m_pServer; }
+	CConfig *Config() { return m_pConfig; }
 	IStorage *Storage() const { return m_pStorage; }
 	class IConsole *Console() { return m_pConsole; }
 	CCollision *Collision() { return &m_Collision; }

@@ -39,6 +39,7 @@ void CGameContext::Construct(int Resetting)
 {
 	m_Resetting = 0;
 	m_pServer = 0;
+	m_pConfig = 0;
 
 	for(int i = 0; i < MAX_CLIENTS; i++)
 	{
@@ -4113,6 +4114,7 @@ bool CGameContext::ConAddFunRound(IConsole::IResult *pResult, void *pUserData)
 void CGameContext::OnConsoleInit()
 {
 	m_pServer = Kernel()->RequestInterface<IServer>();
+	m_pConfig = &g_Config;
 	m_pStorage = Kernel()->RequestInterface<IStorage>();
 	m_pConsole = Kernel()->RequestInterface<IConsole>();
 
@@ -4177,6 +4179,7 @@ void CGameContext::OnConsoleInit()
 void CGameContext::OnInit(/*class IKernel *pKernel*/)
 {
 	m_pServer = Kernel()->RequestInterface<IServer>();
+	m_pConfig = &g_Config;
 	m_pConsole = Kernel()->RequestInterface<IConsole>();
 	m_World.SetGameServer(this);
 	m_Events.SetGameServer(this);
