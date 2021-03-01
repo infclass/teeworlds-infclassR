@@ -111,6 +111,7 @@ public:
 	int GetHealthArmorSum();
 
 	bool GiveWeapon(int Weapon, int Ammo);
+	void SetActiveWeapon(int Weapon);
 
 	void SetEmote(int Emote, int Tick);
 
