@@ -18,6 +18,8 @@
 
 #include "entities/portal.h"
 
+#include "infclass/infcplayer.h"
+
 enum
 {
 	RESET,
@@ -1391,9 +1393,9 @@ void CGameContext::OnClientConnected(int ClientID)
 	const int StartTeam = g_Config.m_SvTournamentMode ? TEAM_SPECTATORS : m_pController->GetAutoTeam(ClientID);
 
 	if (IsSpectatorCID(ClientID))
-		m_apPlayers[ClientID] = new(ClientID) CPlayer(this, ClientID, TEAM_SPECTATORS);
+		m_apPlayers[ClientID] = new(ClientID) CInfClassPlayer(this, ClientID, TEAM_SPECTATORS);
 	else
-		m_apPlayers[ClientID] = new(ClientID) CPlayer(this, ClientID, StartTeam);
+		m_apPlayers[ClientID] = new(ClientID) CInfClassPlayer(this, ClientID, StartTeam);
 	
 	//Thanks to Stitch
 	if(m_pController->IsInfectionStarted())
