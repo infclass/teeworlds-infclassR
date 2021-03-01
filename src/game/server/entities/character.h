@@ -79,6 +79,16 @@ public:
 	void OnDirectInput(CNetObj_PlayerInput *pNewInput);
 	void ResetInput();
 	void FireWeapon();
+
+	virtual void OnWeaponFired(int Weapon, bool *pFireAccepted);
+
+	virtual void OnHammerFired(bool *pFireAccepted);
+	virtual void OnGunFired(bool *pFireAccepted);
+	virtual void OnShotgunFired(bool *pFireAccepted);
+	virtual void OnGrenadeFired(bool *pFireAccepted);
+	virtual void OnLaserFired(bool *pFireAccepted);
+	virtual void OnNinjaFired(bool *pFireAccepted);
+
 	void CheckSuperWeaponAccess();
 	void PlacePortal();
 	CPortal *FindPortalInTarget();
