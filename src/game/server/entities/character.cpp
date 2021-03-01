@@ -803,6 +803,33 @@ void CCharacter::OnHammerFired(bool *pFireAccepted)
 			}
 		}
 	}
+	else if(GetClass() == PLAYERCLASS_HERO)
+	{
+		if (g_Config.m_InfTurretEnable) {
+
+			if(m_TurretCount)
+			{
+				if (g_Config.m_InfTurretEnableLaser)
+				{
+					new CTurret(GameWorld(), m_Pos, m_pPlayer->GetCID(), Direction, GameServer()->Tuning()->m_LaserReach,INFAMMO_LASER);
+				}
+				else if (g_Config.m_InfTurretEnablePlasma)
+				{
+					new CTurret(GameWorld(), m_Pos, m_pPlayer->GetCID(), Direction, GameServer()->Tuning()->m_LaserReach,INFAMMO_PLASMA);
+				}
+
+				GameServer()->CreateSound(m_Pos, SOUND_GRENADE_FIRE);
+				m_TurretCount--;
+				char aBuf[256];
+				str_format(aBuf, sizeof(aBuf), "placed turret, %i left", m_TurretCount);
+				GameServer()->SendChatTarget_Localization(m_pPlayer->GetCID(), CHATCATEGORY_SCORE, aBuf, NULL);
+				if (m_TurretCount == 0)
+				{
+					m_aWeapons[WEAPON_HAMMER].m_Got = false;
+				}
+			}
+		}
+	}
 	else if(GetClass() == PLAYERCLASS_SOLDIER)
 	{
 		bool BombFound = false;
@@ -959,34 +986,6 @@ void CCharacter::OnHammerFired(bool *pFireAccepted)
 			{
 				m_IsInvisible = false;
 				m_InvisibleTick = Server()->Tick();
-			}
-
-			if(GetClass() == PLAYERCLASS_HERO)
-			{
-				if (g_Config.m_InfTurretEnable) {
-
-					if(m_TurretCount)
-					{
-						if (g_Config.m_InfTurretEnableLaser)
-						{
-							new CTurret(GameWorld(), m_Pos, m_pPlayer->GetCID(), Direction, GameServer()->Tuning()->m_LaserReach,INFAMMO_LASER);
-						}
-						else if (g_Config.m_InfTurretEnablePlasma)
-						{
-							new CTurret(GameWorld(), m_Pos, m_pPlayer->GetCID(), Direction, GameServer()->Tuning()->m_LaserReach,INFAMMO_PLASMA);
-						}
-
-						GameServer()->CreateSound(m_Pos, SOUND_GRENADE_FIRE);
-						m_TurretCount--;
-						char aBuf[256];
-						str_format(aBuf, sizeof(aBuf), "placed turret, %i left", m_TurretCount);
-						GameServer()->SendChatTarget_Localization(m_pPlayer->GetCID(), CHATCATEGORY_SCORE, aBuf, NULL);
-						if (m_TurretCount == 0)
-						{
-							m_aWeapons[WEAPON_HAMMER].m_Got = false;
-						}
-					}
-				}
 			}
 
 			CCharacter *apEnts[MAX_CLIENTS];
