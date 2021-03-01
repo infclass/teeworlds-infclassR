@@ -793,6 +793,8 @@ set_glob(GAME_SERVER GLOB_RECURSE src/game/server
   gamemodes/mod.h
   infclass/entities/infccharacter.cpp
   infclass/entities/infccharacter.h
+  infclass/entities/infcentity.cpp
+  infclass/entities/infcentity.h
   infclass/infcplayer.cpp
   infclass/infcplayer.h
   changelog.cpp
