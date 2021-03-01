@@ -1051,6 +1051,17 @@ void str_hex(char *dst, int dst_size, const void *data, int data_size);
 void str_timestamp(char *buffer, int buffer_size);
 void str_timestamp_ex(time_t time, char *buffer, int buffer_size, const char *format);
 
+/*
+	Function: str_escape
+		Escapes \ and " characters in a string.
+	Parameters:
+		dst - Destination array pointer, gets increased, will point to
+		      the terminating null.
+		src - Source array
+		end - End of destination array
+*/
+void str_escape(char **dst, const char *src, const char *end);
+
 /* Group: Filesystem */
 
 /*
