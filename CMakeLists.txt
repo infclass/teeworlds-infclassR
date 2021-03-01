@@ -791,6 +791,8 @@ set_glob(GAME_SERVER GLOB_RECURSE src/game/server
   entities/white-hole.h
   gamemodes/mod.cpp
   gamemodes/mod.h
+  infclass/entities/infccharacter.cpp
+  infclass/entities/infccharacter.h
   infclass/infcplayer.cpp
   infclass/infcplayer.h
   changelog.cpp

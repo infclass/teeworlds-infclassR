@@ -21,7 +21,7 @@ public:
 
 	void Init(int CID);
 
-	void TryRespawn();
+	virtual void TryRespawn();
 	void Respawn();
 	void SetTeam(int Team, bool DoChatMsg=true);
 	int GetTeam() const { return m_Team; };
@@ -103,7 +103,7 @@ public:
 		int m_Max;
 	} m_Latency;
 
-private:
+protected:
 	CCharacter *m_pCharacter;
 	CGameContext *m_pGameServer;
 

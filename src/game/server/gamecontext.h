@@ -129,6 +129,7 @@ public:
 	CConfig *Config() { return m_pConfig; }
 	IStorage *Storage() const { return m_pStorage; }
 	class IConsole *Console() { return m_pConsole; }
+	CGameWorld *GameWorld() { return &m_World; }
 	CCollision *Collision() { return &m_Collision; }
 	CTuningParams *Tuning() { return &m_Tuning; }
 	virtual class CLayers *Layers() { return &m_Layers; }
