@@ -739,52 +739,42 @@ set_glob(ENGINE_SERVER GLOB src/engine/server
 )
 
 set_glob(GAME_SERVER GLOB_RECURSE src/game/server
-  entities/biologist-laser.cpp
-  entities/biologist-laser.h
-  entities/biologist-mine.cpp
-  entities/biologist-mine.h
-  entities/bouncing-bullet.cpp
-  entities/bouncing-bullet.h
   entities/character.cpp
   entities/character.h
-  # entities/entity-timer.cpp
-  # entities/entity-timer.h
-  entities/flyingpoint.cpp
-  entities/flyingpoint.h
-  entities/hero-flag.cpp
-  entities/hero-flag.h
   entities/laser.cpp
   entities/laser.h
-  entities/laser-teleport.cpp
-  entities/laser-teleport.h
-  entities/looper-wall.cpp
-  entities/looper-wall.h
-  entities/plasma.cpp
-  entities/plasma.h
   entities/projectile.cpp
   entities/projectile.h
-  entities/slug-slime.cpp
-  entities/slug-slime.h
-  entities/soldier-bomb.cpp
-  entities/soldier-bomb.h
-  entities/superweapon-indicator.cpp
-  entities/superweapon-indicator.h
-  entities/turret.cpp
-  entities/turret.h
   gamemodes/mod.cpp
   gamemodes/mod.h
+  infclass/entities/biologist-laser.cpp
+  infclass/entities/biologist-laser.h
+  infclass/entities/biologist-mine.cpp
+  infclass/entities/biologist-mine.h
+  infclass/entities/bouncing-bullet.cpp
+  infclass/entities/bouncing-bullet.h
   infclass/entities/engineer-wall.cpp
   infclass/entities/engineer-wall.h
+  infclass/entities/flyingpoint.cpp
+  infclass/entities/flyingpoint.h
   infclass/entities/growingexplosion.cpp
   infclass/entities/growingexplosion.h
+  infclass/entities/hero-flag.cpp
+  infclass/entities/hero-flag.h
   infclass/entities/infccharacter.cpp
   infclass/entities/infccharacter.h
   infclass/entities/infcentity.cpp
   infclass/entities/infcentity.h
+  infclass/entities/laser-teleport.cpp
+  infclass/entities/laser-teleport.h
+  infclass/entities/looper-wall.cpp
+  infclass/entities/looper-wall.h
   infclass/entities/medic-grenade.cpp
   infclass/entities/medic-grenade.h
   infclass/entities/merc-bomb.cpp
   infclass/entities/merc-bomb.h
+  infclass/entities/plasma.cpp
+  infclass/entities/plasma.h
   infclass/entities/portal.cpp
   infclass/entities/portal.h
   infclass/entities/scatter-grenade.cpp
@@ -793,6 +783,14 @@ set_glob(GAME_SERVER GLOB_RECURSE src/game/server
   infclass/entities/scientist-laser.h
   infclass/entities/scientist-mine.cpp
   infclass/entities/scientist-mine.h
+  infclass/entities/slug-slime.cpp
+  infclass/entities/slug-slime.h
+  infclass/entities/soldier-bomb.cpp
+  infclass/entities/soldier-bomb.h
+  infclass/entities/superweapon-indicator.cpp
+  infclass/entities/superweapon-indicator.h
+  infclass/entities/turret.cpp
+  infclass/entities/turret.h
   infclass/entities/white-hole.cpp
   infclass/entities/white-hole.h
   infclass/infcplayer.cpp

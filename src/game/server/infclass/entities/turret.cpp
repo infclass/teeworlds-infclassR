@@ -7,7 +7,8 @@
 #include <engine/server/roundstatistics.h>
 #include "turret.h"
 #include "plasma.h"
-#include "laser.h"
+
+#include <game/server/entities/laser.h>
 
 CTurret::CTurret(CGameWorld *pGameWorld, vec2 Pos, int Owner, vec2 Direction, float StartEnergy, int Type)
 	: CEntity(pGameWorld, CGameWorld::ENTTYPE_TURRET)

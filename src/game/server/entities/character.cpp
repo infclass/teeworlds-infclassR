@@ -16,27 +16,25 @@
 #include "projectile.h"
 #include "laser.h"
 
+#include <game/server/infclass/entities/biologist-mine.h>
+#include <game/server/infclass/entities/bouncing-bullet.h>
 #include <game/server/infclass/entities/engineer-wall.h>
 #include <game/server/infclass/entities/growingexplosion.h>
+#include <game/server/infclass/entities/hero-flag.h>
+#include <game/server/infclass/entities/laser-teleport.h>
+#include <game/server/infclass/entities/looper-wall.h>
 #include <game/server/infclass/entities/medic-grenade.h>
 #include <game/server/infclass/entities/merc-bomb.h>
+#include <game/server/infclass/entities/plasma.h>
 #include <game/server/infclass/entities/portal.h>
 #include <game/server/infclass/entities/scatter-grenade.h>
 #include <game/server/infclass/entities/scientist-laser.h>
 #include <game/server/infclass/entities/scientist-mine.h>
+#include <game/server/infclass/entities/slug-slime.h>
+#include <game/server/infclass/entities/soldier-bomb.h>
+#include <game/server/infclass/entities/superweapon-indicator.h>
+#include <game/server/infclass/entities/turret.h>
 #include <game/server/infclass/entities/white-hole.h>
-
-#include "turret.h"
-#include "looper-wall.h"
-#include "soldier-bomb.h"
-#include "biologist-mine.h"
-#include "bouncing-bullet.h"
-
-#include "hero-flag.h"
-#include "slug-slime.h"
-#include "plasma.h"
-#include "superweapon-indicator.h"
-#include "laser-teleport.h"
 
 //input count
 struct CInputCount

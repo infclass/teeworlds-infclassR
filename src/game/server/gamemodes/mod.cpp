@@ -2,7 +2,7 @@
 /* If you are missing that file, acquire a complete release at teeworlds.com.				*/
 #include "mod.h"
 
-#include <game/server/entities/flyingpoint.h>
+#include <game/server/infclass/entities/flyingpoint.h>
 #include <game/server/player.h>
 #include <engine/shared/config.h>
 #include <engine/server/mapconverter.h>
