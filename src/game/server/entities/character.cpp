@@ -615,7 +615,7 @@ void CCharacter::FireWeapon()
 /* INFECTION MODIFICATION END *****************************************/
 
 	DoWeaponSwitch();
-	vec2 Direction = normalize(vec2(m_LatestInput.m_TargetX, m_LatestInput.m_TargetY));
+	vec2 Direction = GetDirection();
 
 	bool AutoFire = false;
 	bool FullAuto = false;
@@ -3707,6 +3707,11 @@ void CCharacter::Snap(int SnappingClient)
 }
 
 /* INFECTION MODIFICATION START ***************************************/
+vec2 CCharacter::GetDirection() const
+{
+	return normalize(vec2(m_LatestInput.m_TargetX, m_LatestInput.m_TargetY));
+}
+
 void CCharacter::OpenClassChooser()
 {
 	if(GameServer()->m_FunRound)

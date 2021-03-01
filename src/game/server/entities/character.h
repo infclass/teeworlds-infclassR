@@ -253,6 +253,7 @@ public:
 	void DestroyChildEntities();
 	void ClassSpawnAttributes();
 	void GiveArmorIfLonely();
+	vec2 GetDirection() const;
 	void OpenClassChooser();
 	int GetClass() const;
 
