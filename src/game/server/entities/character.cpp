@@ -225,7 +225,6 @@ bool CCharacter::Spawn(CPlayer *pPlayer, vec2 Pos)
   
 	ClassSpawnAttributes();
 	DestroyChildEntities();
-	GiveArmorIfLonely();
 	if(GetClass() == PLAYERCLASS_NONE)
 	{
 		OpenClassChooser();
@@ -3858,15 +3857,6 @@ void CCharacter::ClassSpawnAttributes()
 	}
 }
 
-void CCharacter::GiveArmorIfLonely() {
-	if (IsZombie()) {
-		if (GameServer()->GetZombieCount() <= 1) {
-			/* Lonely zombie */
-			IncreaseArmor(10);
-		}
-	}
-}
-
 void CCharacter::DestroyChildEntities()
 {
 	m_NinjaVelocityBuff = 0;
@@ -3971,7 +3961,6 @@ void CCharacter::SetClass(int ClassChoosed)
 {
 	ClassSpawnAttributes();
 	DestroyChildEntities();
-	GiveArmorIfLonely();
 	
 	m_QueuedWeapon = -1;
 	m_NeedFullHeal = false;

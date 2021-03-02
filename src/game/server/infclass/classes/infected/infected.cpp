@@ -17,6 +17,12 @@ void CInfClassInfected::GiveClassAttributes()
 	m_pCharacter->GiveWeapon(WEAPON_HAMMER, -1);
 	m_pCharacter->SetActiveWeapon(WEAPON_HAMMER);
 
+	if (GameServer()->GetZombieCount() <= 1)
+	{
+		/* Lonely zombie */
+		m_pCharacter->IncreaseArmor(10);
+	}
+
 	if(m_pCharacter->CanOpenPortals())
 	{
 		m_pCharacter->GiveWeapon(WEAPON_RIFLE, -1);
