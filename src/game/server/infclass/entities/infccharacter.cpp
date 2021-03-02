@@ -74,6 +74,21 @@ void CInfClassCharacter::Die(int Killer, int Weapon)
 			Killer = pKillerCharacter->GetPlayer()->GetCID();
 			Weapon = WEAPON_NINJA;
 		}
+
+		if(!pKillerCharacter && IsFrozen())
+		{
+			Killer = m_LastFreezer;
+			if(m_FreezeReason == FREEZEREASON_FLASH)
+			{
+				Weapon = WEAPON_GRENADE;
+			}
+			else
+			{
+				Weapon = WEAPON_NINJA;
+			}
+
+			pKillerCharacter = GameServer()->GetPlayerChar(Killer);
+		}
 	}
 
 	// we got to wait 0.5 secs before respawning
