@@ -10,7 +10,7 @@ class CInfClassInfected : public CInfClassPlayerClass
 	MACRO_ALLOC_POOL_ID()
 
 public:
-	CInfClassInfected();
+	CInfClassInfected(CInfClassPlayer *pPlayer);
 
 	bool IsHuman() const final { return false; }
 

@@ -6,8 +6,8 @@
 
 MACRO_ALLOC_POOL_ID_IMPL(CInfClassInfected, MAX_CLIENTS)
 
-CInfClassInfected::CInfClassInfected()
-	: CInfClassPlayerClass()
+CInfClassInfected::CInfClassInfected(CInfClassPlayer *pPlayer)
+	: CInfClassPlayerClass(pPlayer)
 {
 }
 

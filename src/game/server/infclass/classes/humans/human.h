@@ -10,7 +10,7 @@ class CInfClassHuman : public CInfClassPlayerClass
 	MACRO_ALLOC_POOL_ID()
 
 public:
-	explicit CInfClassHuman();
+	explicit CInfClassHuman(CInfClassPlayer *pPlayer);
 
 	bool IsHuman() const final { return true; }
 

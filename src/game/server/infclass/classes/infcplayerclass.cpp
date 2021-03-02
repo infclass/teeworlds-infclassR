@@ -5,7 +5,8 @@
 #include <game/server/infclass/entities/infccharacter.h>
 #include <game/server/infclass/infcplayer.h>
 
-CInfClassPlayerClass::CInfClassPlayerClass()
+CInfClassPlayerClass::CInfClassPlayerClass(CInfClassPlayer *pPlayer)
+	: m_pPlayer(pPlayer)
 {
 }
 

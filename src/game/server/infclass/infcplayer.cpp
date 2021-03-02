@@ -10,7 +10,7 @@ MACRO_ALLOC_POOL_ID_IMPL(CInfClassPlayer, MAX_CLIENTS)
 CInfClassPlayer::CInfClassPlayer(CGameContext *pGameServer, int ClientID, int Team)
 	: CPlayer(pGameServer, ClientID, Team)
 {
-	SetCharacterClass(new(m_ClientID) CInfClassHuman());
+	SetCharacterClass(new(m_ClientID) CInfClassHuman(this));
 }
 
 CInfClassPlayer::~CInfClassPlayer()
@@ -55,11 +55,11 @@ void CInfClassPlayer::onClassChanged()
 {
 	if(IsHuman() && !GetCharacterClass()->IsHuman())
 	{
-		SetCharacterClass(new(m_ClientID) CInfClassHuman());
+		SetCharacterClass(new(m_ClientID) CInfClassHuman(this));
 	}
 	else if (IsZombie() && !GetCharacterClass()->IsZombie())
 	{
-		SetCharacterClass(new(m_ClientID) CInfClassInfected());
+		SetCharacterClass(new(m_ClientID) CInfClassInfected(this));
 	}
 
 	GetCharacterClass()->OnPlayerClassChanged();

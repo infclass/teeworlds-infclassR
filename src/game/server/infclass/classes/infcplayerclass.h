@@ -15,7 +15,7 @@ class IServer;
 class CInfClassPlayerClass
 {
 public:
-	CInfClassPlayerClass();
+	CInfClassPlayerClass(CInfClassPlayer *pPlayer);
 	virtual ~CInfClassPlayerClass() = default;
 
 	void SetCharacter(CInfClassCharacter *character);
@@ -49,6 +49,7 @@ public:
 	float GetProximityRadius() const;
 
 protected:
+	CInfClassPlayer *m_pPlayer = nullptr;
 	CInfClassCharacter *m_pCharacter = nullptr;
 
 	int m_Poison = 0;
