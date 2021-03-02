@@ -99,6 +99,18 @@ bool CInfClassPlayerClass::IsZombie() const
 	return !IsHuman();
 }
 
+int CInfClassPlayerClass::PlayerClass() const
+{
+	if(m_pCharacter)
+		return m_pCharacter->CCharacter::GetClass();
+
+	return PLAYERCLASS_NONE;
+}
+
+void CInfClassPlayerClass::OnPlayerClassChanged()
+{
+}
+
 void CInfClassPlayerClass::Tick()
 {
 }

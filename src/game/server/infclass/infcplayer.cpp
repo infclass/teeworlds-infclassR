@@ -61,4 +61,6 @@ void CInfClassPlayer::onClassChanged()
 	{
 		SetCharacterClass(new(m_ClientID) CInfClassInfected());
 	}
+
+	GetCharacterClass()->OnPlayerClassChanged();
 }

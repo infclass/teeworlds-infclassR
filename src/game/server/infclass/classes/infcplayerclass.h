@@ -23,6 +23,10 @@ public:
 	virtual bool IsHuman() const = 0;
 	bool IsZombie() const;
 
+	// Temp stuff
+	int PlayerClass() const;
+	void OnPlayerClassChanged();
+
 	// Events
 	virtual void Tick();
 	virtual void OnCharacterSpawned();
