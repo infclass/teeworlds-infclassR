@@ -953,6 +953,12 @@ int CGameControllerMOD::OnCharacterDeath(class CCharacter *pVictim, class CPlaye
 				Server()->RoundStatistics()->OnScoreEvent(pKiller->GetCID(), SCOREEVENT_KILL_WITCH, pKiller->GetClass(), Server()->ClientName(pKiller->GetCID()), GameServer()->Console());
 				GameServer()->SendScoreSound(pKiller->GetCID());
 			}
+			else if(pVictim->GetClass() == PLAYERCLASS_UNDEAD)
+			{
+				GameServer()->SendChatTarget_Localization(pKiller->GetCID(), CHATCATEGORY_SCORE, _("You have killed an undead! +5 points"), NULL);
+				Server()->RoundStatistics()->OnScoreEvent(pKiller->GetCID(), SCOREEVENT_KILL_UNDEAD, pKiller->GetClass(), Server()->ClientName(pKiller->GetCID()), GameServer()->Console());
+				GameServer()->SendScoreSound(pKiller->GetCID());
+			}
 			else if(pVictim->IsZombie())
 			{
 				Server()->RoundStatistics()->OnScoreEvent(pKiller->GetCID(), SCOREEVENT_KILL_INFECTED, pKiller->GetClass(), Server()->ClientName(pKiller->GetCID()), GameServer()->Console());
