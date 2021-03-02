@@ -98,7 +98,7 @@ public:
 	bool CanOpenPortals() const;
 
 	bool CanDie() const;
-	void Die(int Killer, int Weapon);
+	virtual void Die(int Killer, int Weapon);
 	bool TakeDamage(vec2 Force, int Dmg, int From, int Weapon, int Mode);
 
 	bool Spawn(class CPlayer *pPlayer, vec2 Pos);
@@ -193,7 +193,7 @@ private:
 	CCharacterCore m_ReckoningCore; // the dead reckoning core
 
 /* INFECTION MODIFICATION START ***************************************/
-private:
+protected:
 	int m_AirJumpCounter;
 	bool m_FirstShot;
 	vec2 m_FirstShotCoord;

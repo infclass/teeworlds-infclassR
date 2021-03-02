@@ -14,6 +14,8 @@ public:
 
 	void Tick() override;
 
+	void Die(int Killer, int Weapon) override;
+
 	void SetActiveWeapon(int Weapon);
 	void SetLastWeapon(int Weapon);
 	void TakeAllWeapons();
