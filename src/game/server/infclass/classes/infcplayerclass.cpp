@@ -114,12 +114,42 @@ void CInfClassPlayerClass::OnPlayerClassChanged()
 	GiveClassAttributes();
 }
 
+void CInfClassPlayerClass::Poison(int Count, int From)
+{
+	if(m_Poison <= 0)
+	{
+		m_PoisonTick = 0;
+		m_Poison = Count;
+		m_PoisonFrom = From;
+	}
+}
+
 void CInfClassPlayerClass::Tick()
 {
+	if(m_Poison > 0)
+	{
+		if(m_PoisonTick == 0)
+		{
+			m_Poison--;
+			vec2 Force(0, 0);
+			static const int PoisonDamage = 1;
+			m_pCharacter->TakeDamage(Force, PoisonDamage, m_PoisonFrom, WEAPON_HAMMER, TAKEDAMAGEMODE_NOINFECTION);
+			if(m_Poison > 0)
+			{
+				m_PoisonTick = Server()->TickSpeed()/2;
+			}
+		}
+		else
+		{
+			m_PoisonTick--;
+		}
+	}
 }
 
 void CInfClassPlayerClass::OnCharacterSpawned()
 {
+	m_Poison = 0;
+
 	GiveClassAttributes();
 }
 

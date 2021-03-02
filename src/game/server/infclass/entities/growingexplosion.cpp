@@ -4,7 +4,9 @@
 #include "growingexplosion.h"
 
 #include <game/server/gamecontext.h>
+#include <game/server/infclass/classes/infcplayerclass.h>
 
+#include "infccharacter.h"
 #include "portal.h"
 
 CGrowingExplosion::CGrowingExplosion(CGameContext *pGameContext, vec2 Pos, vec2 Dir, int Owner, int Radius, int ExplosionEffect, int TakeDamageMode)
@@ -245,7 +247,7 @@ void CGrowingExplosion::Tick()
 	}
 	
 	// Find other players
-	for(CCharacter *p = (CCharacter*) GameWorld()->FindFirst(CGameWorld::ENTTYPE_CHARACTER); p; p = (CCharacter *)p->TypeNext())
+	for(CInfClassCharacter *p = (CInfClassCharacter*) GameWorld()->FindFirst(CGameWorld::ENTTYPE_CHARACTER); p; p = (CInfClassCharacter *)p->TypeNext())
 	{
 		int tileX = m_MaxGrowing + static_cast<int>(round(p->m_Pos.x))/32 - m_SeedX;
 		int tileY = m_MaxGrowing + static_cast<int>(round(p->m_Pos.y))/32 - m_SeedY;
@@ -288,7 +290,7 @@ void CGrowingExplosion::Tick()
 						m_Hit[p->GetPlayer()->GetCID()] = true;
 						break;
 					case GROWINGEXPLOSIONEFFECT_POISON_INFECTED:
-						p->Poison(Config()->m_InfPoisonDamage, m_Owner);
+						p->GetClass()->Poison(Config()->m_InfPoisonDamage, m_Owner);
 						GameServer()->SendEmoticon(p->GetPlayer()->GetCID(), EMOTICON_DROP);
 						m_Hit[p->GetPlayer()->GetCID()] = true;
 						break;

@@ -1,5 +1,6 @@
 #include "human.h"
 
+#include <engine/shared/config.h>
 #include <game/server/classes.h>
 #include <game/server/gamecontext.h>
 #include <game/server/infclass/entities/infccharacter.h>
@@ -89,4 +90,10 @@ void CInfClassHuman::GiveClassAttributes()
 			m_pCharacter->SetActiveWeapon(WEAPON_HAMMER);
 			break;
 	}
+}
+
+void CInfClassHuman::OnSlimeEffect(int Owner)
+{
+	int Count = Config()->m_InfSlimePoisonDuration;
+	Poison(Count, Owner);
 }

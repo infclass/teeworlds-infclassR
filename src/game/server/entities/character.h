@@ -242,10 +242,7 @@ public:
 	int m_LoveTick;
 	int m_HallucinationTick;
 	int m_SlipperyTick;
-	int m_PoisonTick;
-	int m_Poison;
 	int m_SlowMotionTick; //LooperClass changes here
-	int m_PoisonFrom;
 	int m_LastFreezer;
 	int m_HookMode;
 	int m_InWater;
@@ -276,7 +273,6 @@ public:
 	bool IsInSlowMotion() const; //LooperClass changes here
 	void SlowMotionEffect(float duration);	//LooperClass changes here
 	void Unfreeze();
-	void Poison(int Count, int From);
 	bool IsInLove() const;
 	void LoveEffect();
 	void HallucinationEffect();

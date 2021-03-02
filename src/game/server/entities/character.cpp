@@ -97,7 +97,6 @@ m_pConsole(pConsole)
 	m_PositionLockTick = -Server()->TickSpeed()*10;
 	m_PositionLocked = false;
 	m_PositionLockAvailable = false;
-	m_PoisonTick = 0;
 	m_HealTick = 0;
 	m_InfZoneTick = -1;
 	m_InAirTick = 0;
@@ -217,7 +216,6 @@ bool CCharacter::Spawn(CPlayer *pPlayer, vec2 Pos)
 	m_PositionLockTick = -Server()->TickSpeed()*10;
 	m_PositionLocked = false;
 	m_PositionLockAvailable = false;
-	m_Poison = 0;
   
 	m_VoodooAboutToDie = false;
 	m_VoodooTimeAlive = Server()->TickSpeed()*g_Config.m_InfVoodooAliveTime;
@@ -2182,24 +2180,6 @@ void CCharacter::Tick()
 			m_ProtectionTick = 0;
 		}
 	}
-
-	if(m_Poison > 0)
-	{
-		if(m_PoisonTick == 0)
-		{
-			m_Poison--;
-			TakeDamage(vec2(0.0f, 0.0f), 1, m_PoisonFrom, WEAPON_HAMMER, TAKEDAMAGEMODE_NOINFECTION);
-			if(m_Poison > 0)
-			{
-				m_PoisonTick = Server()->TickSpeed()/2;
-			}
-		}
-		else
-		{
-			m_PoisonTick--;
-		}
-	}
-	
 	
 	//NeedHeal
 	if(m_Armor >= 10)
@@ -4044,16 +4024,6 @@ void CCharacter::Unfreeze()
 	}
 	
 	GameServer()->CreatePlayerSpawn(m_Pos);
-}
-
-void CCharacter::Poison(int Count, int From)
-{
-	if(m_Poison <= 0)
-	{
-		m_PoisonTick = 0;
-		m_Poison = Count;
-		m_PoisonFrom = From;
-	}
 }
 
 bool CCharacter::IsFrozen() const

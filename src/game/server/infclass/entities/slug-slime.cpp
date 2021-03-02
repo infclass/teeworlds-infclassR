@@ -3,6 +3,9 @@
 #include <game/server/gamecontext.h>
 #include <engine/shared/config.h>
 
+#include <game/server/infclass/classes/infcplayerclass.h>
+
+#include "infccharacter.h"
 #include "slug-slime.h"
 
 CSlugSlime::CSlugSlime(CGameContext *pGameContext, vec2 Pos, int Owner)
@@ -24,27 +27,12 @@ void CSlugSlime::Tick()
 	}
 	
 	// Find other players
-	for(CCharacter *p = (CCharacter*) GameWorld()->FindFirst(CGameWorld::ENTTYPE_CHARACTER); p; p = (CCharacter *)p->TypeNext())
+	for(CInfClassCharacter *p = (CInfClassCharacter*) GameWorld()->FindFirst(CGameWorld::ENTTYPE_CHARACTER); p; p = (CInfClassCharacter *)p->TypeNext())
 	{
 		if(!GameServer()->Collision()->AreConnected(p->m_Pos, m_Pos, 84.0f))
 			continue; // not in reach
 		
-		if(p->IsZombie()) 
-		{
-			if(p->GetClass() != PLAYERCLASS_SLUG)
-			{
-				p->SetEmote(EMOTE_HAPPY, Server()->Tick());
-				if(Server()->Tick() >= m_HealTick + (Server()->TickSpeed()/Config()->m_InfSlimeHealRate))
-				{
-					m_HealTick = Server()->Tick();
-					p->IncreaseHealth(1);
-				}
-			}
-		} 
-		else // p->IsHuman()
-		{ 
-			p->Poison(Config()->m_InfSlimePoisonDuration, m_Owner); 
-		}
+		p->GetClass()->OnSlimeEffect(m_Owner);
 	}
 	
 	if(random_prob(0.2f))
