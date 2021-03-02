@@ -25,6 +25,8 @@ public:
 	void SetCharacterClass(CInfClassPlayerClass *pClass);
 
 protected:
+	void onClassChanged() override;
+
 	CInfClassCharacter *m_pInfcCharacter = nullptr;
 	CInfClassPlayerClass *m_pInfcPlayerClass = nullptr;
 };

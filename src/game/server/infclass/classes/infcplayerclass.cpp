@@ -5,8 +5,6 @@
 #include <game/server/infclass/entities/infccharacter.h>
 #include <game/server/infclass/infcplayer.h>
 
-MACRO_ALLOC_POOL_ID_IMPL(CInfClassPlayerClass, MAX_CLIENTS)
-
 CInfClassPlayerClass::CInfClassPlayerClass()
 {
 }
@@ -94,4 +92,9 @@ void CInfClassPlayerClass::SetCharacter(CInfClassCharacter *character)
 {
 	m_pCharacter = character;
 	m_pCharacter->SetClass(this);
+}
+
+bool CInfClassPlayerClass::IsZombie() const
+{
+	return !IsHuman();
 }

@@ -110,6 +110,8 @@ protected:
 	CGameContext *GameServer() const { return m_pGameServer; }
 	IServer *Server() const;
 
+	virtual void onClassChanged() = 0;
+
 	//
 	bool m_Spawning;
 	int m_ClientID;

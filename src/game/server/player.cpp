@@ -738,6 +738,8 @@ void CPlayer::SetClass(int newClass)
 	{
 		m_pCharacter->SetClass(newClass);
 	}
+
+	onClassChanged();
 }
 
 int CPlayer::GetOldClass() const

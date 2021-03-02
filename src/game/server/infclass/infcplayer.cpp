@@ -1,6 +1,8 @@
 #include "infcplayer.h"
 
+#include "classes/humans/human.h"
 #include "classes/infcplayerclass.h"
+#include "classes/infected/infected.h"
 #include "entities/infccharacter.h"
 
 MACRO_ALLOC_POOL_ID_IMPL(CInfClassPlayer, MAX_CLIENTS)
@@ -8,7 +10,7 @@ MACRO_ALLOC_POOL_ID_IMPL(CInfClassPlayer, MAX_CLIENTS)
 CInfClassPlayer::CInfClassPlayer(CGameContext *pGameServer, int ClientID, int Team)
 	: CPlayer(pGameServer, ClientID, Team)
 {
-	SetCharacterClass(new(m_ClientID) CInfClassPlayerClass());
+	SetCharacterClass(new(m_ClientID) CInfClassHuman());
 }
 
 CInfClassPlayer::~CInfClassPlayer()
@@ -45,5 +47,17 @@ void CInfClassPlayer::SetCharacterClass(CInfClassPlayerClass *pClass)
 	if (m_pInfcCharacter)
 	{
 		m_pInfcPlayerClass->SetCharacter(m_pInfcCharacter);
+	}
+}
+
+void CInfClassPlayer::onClassChanged()
+{
+	if(IsHuman() && !GetCharacterClass()->IsHuman())
+	{
+		SetCharacterClass(new(m_ClientID) CInfClassHuman());
+	}
+	else if (IsZombie() && !GetCharacterClass()->IsZombie())
+	{
+		SetCharacterClass(new(m_ClientID) CInfClassInfected());
 	}
 }

@@ -14,13 +14,14 @@ class IServer;
 
 class CInfClassPlayerClass
 {
-	MACRO_ALLOC_POOL_ID()
-
 public:
 	CInfClassPlayerClass();
 	virtual ~CInfClassPlayerClass() = default;
 
 	void SetCharacter(CInfClassCharacter *character);
+
+	virtual bool IsHuman() const = 0;
+	bool IsZombie() const;
 
 	CGameContext *GameContext() const;
 	CGameContext *GameServer() const;
