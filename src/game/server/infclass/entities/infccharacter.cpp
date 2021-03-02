@@ -11,3 +11,8 @@ CInfClassCharacter::CInfClassCharacter(CGameContext *pContext)
 	, m_pContext(pContext)
 {
 }
+
+void CInfClassCharacter::SetClass(CInfClassPlayerClass *pClass)
+{
+	m_pClass = pClass;
+}

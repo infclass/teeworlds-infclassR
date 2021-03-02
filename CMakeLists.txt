@@ -748,6 +748,8 @@ set_glob(GAME_SERVER GLOB_RECURSE src/game/server
   entities/projectile.h
   gamemodes/mod.cpp
   gamemodes/mod.h
+  infclass/classes/infcplayerclass.cpp
+  infclass/classes/infcplayerclass.h
   infclass/entities/biologist-laser.cpp
   infclass/entities/biologist-laser.h
   infclass/entities/biologist-mine.cpp

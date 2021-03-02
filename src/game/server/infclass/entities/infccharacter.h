@@ -4,6 +4,7 @@
 #include <game/server/entities/character.h>
 
 class CGameContext;
+class CInfClassPlayerClass;
 
 class CInfClassCharacter : public CCharacter
 {
@@ -11,10 +12,14 @@ class CInfClassCharacter : public CCharacter
 public:
 	CInfClassCharacter(CGameContext *pContext);
 
+	CInfClassPlayerClass *GetClass() { return m_pClass; }
+	void SetClass(CInfClassPlayerClass *pClass);
+
 	CGameContext *GameContext() const { return m_pContext; }
 
 protected:
 	CGameContext *m_pContext = nullptr;
+	CInfClassPlayerClass *m_pClass = nullptr;
 };
 
 #endif // GAME_SERVER_INFCLASS_ENTITIES_CHARACTER_H

@@ -5,6 +5,7 @@
 
 class CGameContext;
 class CInfClassCharacter;
+class CInfClassPlayerClass;
 
 // We actually have to include player.h after all this stuff above.
 #include <game/server/player.h>
@@ -15,11 +16,17 @@ class CInfClassPlayer : public CPlayer
 
 public:
 	CInfClassPlayer(CGameContext *pGameServer, int ClientID, int Team);
+	~CInfClassPlayer() override;
 
 	void TryRespawn() override;
 
+	CInfClassPlayerClass *GetCharacterClass() { return m_pInfcPlayerClass; }
+	const CInfClassPlayerClass *GetCharacterClass() const { return m_pInfcPlayerClass; }
+	void SetCharacterClass(CInfClassPlayerClass *pClass);
+
 protected:
 	CInfClassCharacter *m_pInfcCharacter = nullptr;
+	CInfClassPlayerClass *m_pInfcPlayerClass = nullptr;
 };
 
 #endif // GAME_SERVER_INFCLASS_PLAYER_H
