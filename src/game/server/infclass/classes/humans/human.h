@@ -13,6 +13,8 @@ public:
 	explicit CInfClassHuman();
 
 	bool IsHuman() const final { return true; }
+
+	void GiveClassAttributes() override;
 };
 
 #endif // GAME_SERVER_INFCLASS_CLASSES_HUMAN_H

@@ -120,7 +120,7 @@ public:
 	
 	void GiveNinjaBuf();
 
-private:
+protected:
 	// player controlling this character
 	class CPlayer *m_pPlayer;
 

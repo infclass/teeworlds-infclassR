@@ -31,6 +31,8 @@ public:
 	virtual void Tick();
 	virtual void OnCharacterSpawned();
 
+	virtual void GiveClassAttributes();
+
 	CGameContext *GameContext() const;
 	CGameContext *GameServer() const;
 	CGameWorld *GameWorld() const;

@@ -14,6 +14,10 @@ public:
 
 	void Tick() override;
 
+	void SetActiveWeapon(int Weapon);
+	void SetLastWeapon(int Weapon);
+	void TakeAllWeapons();
+
 	CInfClassPlayerClass *GetClass() { return m_pClass; }
 	void SetClass(CInfClassPlayerClass *pClass);
 

@@ -92,6 +92,8 @@ void CInfClassPlayerClass::SetCharacter(CInfClassCharacter *character)
 {
 	m_pCharacter = character;
 	m_pCharacter->SetClass(this);
+
+	GiveClassAttributes();
 }
 
 bool CInfClassPlayerClass::IsZombie() const
@@ -109,6 +111,7 @@ int CInfClassPlayerClass::PlayerClass() const
 
 void CInfClassPlayerClass::OnPlayerClassChanged()
 {
+	GiveClassAttributes();
 }
 
 void CInfClassPlayerClass::Tick()
@@ -117,4 +120,10 @@ void CInfClassPlayerClass::Tick()
 
 void CInfClassPlayerClass::OnCharacterSpawned()
 {
+	GiveClassAttributes();
+}
+
+void CInfClassPlayerClass::GiveClassAttributes()
+{
+	m_pCharacter->TakeAllWeapons();
 }

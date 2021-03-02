@@ -3826,7 +3826,6 @@ void CCharacter::GiveNinjaBuf()
 
 void CCharacter::ClassSpawnAttributes()
 {
-	RemoveAllGun();
 	m_Health = 10;
 
 	const int PlayerClass = GetClass();
@@ -3840,151 +3839,12 @@ void CCharacter::ClassSpawnAttributes()
 		m_Armor = 0;
 	}
 
-	switch(PlayerClass)
+	if(PlayerClass == PLAYERCLASS_HERO)
 	{
-		case PLAYERCLASS_ENGINEER:
-			m_aWeapons[WEAPON_HAMMER].m_Got = true;
-			GiveWeapon(WEAPON_HAMMER, -1);
-			GiveWeapon(WEAPON_GUN, -1);
-			GiveWeapon(WEAPON_RIFLE, -1);
-			SetActiveWeapon(WEAPON_RIFLE);
-			break;
-		case PLAYERCLASS_SOLDIER:
-			m_aWeapons[WEAPON_HAMMER].m_Got = true;
-			GiveWeapon(WEAPON_HAMMER, -1);
-			GiveWeapon(WEAPON_GUN, -1);
-			GiveWeapon(WEAPON_GRENADE, -1);
-			SetActiveWeapon(WEAPON_GRENADE);
-			break;
-		case PLAYERCLASS_MERCENARY:
-			m_aWeapons[WEAPON_HAMMER].m_Got = true;
-			GiveWeapon(WEAPON_HAMMER, -1);
-			GiveWeapon(WEAPON_GRENADE, -1);
-			GiveWeapon(WEAPON_GUN, -1);
-			if(!GameServer()->m_FunRound)
-				GiveWeapon(WEAPON_RIFLE, -1);
-			SetActiveWeapon(WEAPON_GUN);
-			break;
-		case PLAYERCLASS_SNIPER:
-			m_aWeapons[WEAPON_HAMMER].m_Got = true;
-			GiveWeapon(WEAPON_HAMMER, -1);
-			GiveWeapon(WEAPON_GUN, -1);
-			GiveWeapon(WEAPON_RIFLE, -1);
-			SetActiveWeapon(WEAPON_RIFLE);
-			break;
-		case PLAYERCLASS_SCIENTIST:
-			m_aWeapons[WEAPON_HAMMER].m_Got = true;
-			GiveWeapon(WEAPON_HAMMER, -1);
-			GiveWeapon(WEAPON_GUN, -1);
-			GiveWeapon(WEAPON_RIFLE, -1);
-			GiveWeapon(WEAPON_GRENADE, -1);
-			SetActiveWeapon(WEAPON_RIFLE);
-			break;
-		case PLAYERCLASS_BIOLOGIST:
-			m_aWeapons[WEAPON_HAMMER].m_Got = true;
-			GiveWeapon(WEAPON_HAMMER, -1);
-			GiveWeapon(WEAPON_GUN, -1);
-			GiveWeapon(WEAPON_RIFLE, -1);
-			GiveWeapon(WEAPON_SHOTGUN, -1);
-			SetActiveWeapon(WEAPON_SHOTGUN);
-			break;
-		case PLAYERCLASS_LOOPER:
-			m_aWeapons[WEAPON_HAMMER].m_Got = true;
-			GiveWeapon(WEAPON_HAMMER, -1);
-			GiveWeapon(WEAPON_RIFLE, -1);
-			GiveWeapon(WEAPON_GRENADE, -1);
-			SetActiveWeapon(WEAPON_RIFLE);
-			break;
-		case PLAYERCLASS_MEDIC:
-			m_aWeapons[WEAPON_HAMMER].m_Got = true;
-			GiveWeapon(WEAPON_HAMMER, -1);
-			GiveWeapon(WEAPON_GUN, -1);
-			GiveWeapon(WEAPON_SHOTGUN, -1);
-			GiveWeapon(WEAPON_GRENADE, -1);
-			GiveWeapon(WEAPON_RIFLE, -1);
-			SetActiveWeapon(WEAPON_SHOTGUN);
-			break;
-		case PLAYERCLASS_HERO:
-			m_aWeapons[WEAPON_HAMMER].m_Got = false;
-			GiveWeapon(WEAPON_GUN, -1);
-			GiveWeapon(WEAPON_SHOTGUN, -1);
-			GiveWeapon(WEAPON_RIFLE, -1);
-			GiveWeapon(WEAPON_GRENADE, -1);
-			m_pHeroFlag = nullptr;
-			SetActiveWeapon(WEAPON_GRENADE);
-			break;
-		case PLAYERCLASS_NINJA:
-			m_aWeapons[WEAPON_HAMMER].m_Got = true;
-			GiveWeapon(WEAPON_GUN, -1);
-			GiveWeapon(WEAPON_GRENADE, -1);
-			SetActiveWeapon(WEAPON_HAMMER);
-
-		case PLAYERCLASS_NONE:
-			m_aWeapons[WEAPON_HAMMER].m_Got = true;
-			GiveWeapon(WEAPON_HAMMER, -1);
-			SetActiveWeapon(WEAPON_HAMMER);
-			break;
-
-		case PLAYERCLASS_SMOKER:
-			m_aWeapons[WEAPON_HAMMER].m_Got = true;
-			GiveWeapon(WEAPON_HAMMER, -1);
-			SetActiveWeapon(WEAPON_HAMMER);
-			break;
-		case PLAYERCLASS_BOOMER:
-			m_aWeapons[WEAPON_HAMMER].m_Got = true;
-			GiveWeapon(WEAPON_HAMMER, -1);
-			SetActiveWeapon(WEAPON_HAMMER);
-			break;
-		case PLAYERCLASS_HUNTER:
-			m_aWeapons[WEAPON_HAMMER].m_Got = true;
-			GiveWeapon(WEAPON_HAMMER, -1);
-			SetActiveWeapon(WEAPON_HAMMER);
-			break;
-		case PLAYERCLASS_BAT:
-			m_aWeapons[WEAPON_HAMMER].m_Got = true;
-			GiveWeapon(WEAPON_HAMMER, -1);
-			SetActiveWeapon(WEAPON_HAMMER);
-			break;
-		case PLAYERCLASS_GHOST:
-			m_aWeapons[WEAPON_HAMMER].m_Got = true;
-			GiveWeapon(WEAPON_HAMMER, -1);
-			SetActiveWeapon(WEAPON_HAMMER);
-			break;
-		case PLAYERCLASS_SPIDER:
-			m_aWeapons[WEAPON_HAMMER].m_Got = true;
-			GiveWeapon(WEAPON_HAMMER, -1);
-			SetActiveWeapon(WEAPON_HAMMER);
-			break;
-		case PLAYERCLASS_VOODOO:
-			m_aWeapons[WEAPON_HAMMER].m_Got = true;
-			GiveWeapon(WEAPON_HAMMER, -1);
-			SetActiveWeapon(WEAPON_HAMMER);
-			break;
-		case PLAYERCLASS_GHOUL:
-			m_aWeapons[WEAPON_HAMMER].m_Got = true;
-			GiveWeapon(WEAPON_HAMMER, -1);
-			SetActiveWeapon(WEAPON_HAMMER);
-			break;
-		case PLAYERCLASS_SLUG:
-			m_aWeapons[WEAPON_HAMMER].m_Got = true;
-			GiveWeapon(WEAPON_HAMMER, -1);
-			SetActiveWeapon(WEAPON_HAMMER);
-			break;
-		case PLAYERCLASS_UNDEAD:
-			m_aWeapons[WEAPON_HAMMER].m_Got = true;
-			GiveWeapon(WEAPON_HAMMER, -1);
-			SetActiveWeapon(WEAPON_HAMMER);
-			break;
-		case PLAYERCLASS_WITCH:
-			m_aWeapons[WEAPON_HAMMER].m_Got = true;
-			GiveWeapon(WEAPON_HAMMER, -1);
-			m_canOpenPortals = GameServer()->m_pController->PortalsAvailableForCharacter(this);
-			if (CanOpenPortals())
-				GiveWeapon(WEAPON_RIFLE, -1);
-			SetActiveWeapon(WEAPON_HAMMER);
-			
-			break;
+		m_pHeroFlag = nullptr;
 	}
+
+	m_canOpenPortals = GameServer()->m_pController->PortalsAvailableForCharacter(this);
 
 	if (PlayerClass != PLAYERCLASS_NONE)
 	{

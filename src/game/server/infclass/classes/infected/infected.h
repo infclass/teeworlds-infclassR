@@ -13,6 +13,8 @@ public:
 	CInfClassInfected();
 
 	bool IsHuman() const final { return false; }
+
+	void GiveClassAttributes() override;
 };
 
 #endif // GAME_SERVER_INFCLASS_CLASSES_INFECTED_H
