@@ -98,3 +98,11 @@ bool CInfClassPlayerClass::IsZombie() const
 {
 	return !IsHuman();
 }
+
+void CInfClassPlayerClass::Tick()
+{
+}
+
+void CInfClassPlayerClass::OnCharacterSpawned()
+{
+}

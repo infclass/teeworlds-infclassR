@@ -12,6 +12,8 @@ class CInfClassCharacter : public CCharacter
 public:
 	CInfClassCharacter(CGameContext *pContext);
 
+	void Tick() override;
+
 	CInfClassPlayerClass *GetClass() { return m_pClass; }
 	void SetClass(CInfClassPlayerClass *pClass);
 

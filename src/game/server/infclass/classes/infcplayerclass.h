@@ -23,6 +23,10 @@ public:
 	virtual bool IsHuman() const = 0;
 	bool IsZombie() const;
 
+	// Events
+	virtual void Tick();
+	virtual void OnCharacterSpawned();
+
 	CGameContext *GameContext() const;
 	CGameContext *GameServer() const;
 	CGameWorld *GameWorld() const;

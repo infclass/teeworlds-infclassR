@@ -33,6 +33,7 @@ void CInfClassPlayer::TryRespawn()
 	m_pCharacter = m_pInfcCharacter;
 	m_pInfcPlayerClass->SetCharacter(m_pInfcCharacter);
 	m_pCharacter->Spawn(this, SpawnPos);
+	m_pInfcPlayerClass->OnCharacterSpawned();
 	if(GetClass() != PLAYERCLASS_NONE)
 		GameServer()->CreatePlayerSpawn(SpawnPos);
 }
