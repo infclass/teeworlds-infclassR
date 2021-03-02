@@ -74,9 +74,8 @@ void CTurret::Tick()
 
 	for(CCharacter *pChr = (CCharacter*) GameWorld()->FindFirst(CGameWorld::ENTTYPE_CHARACTER); pChr; pChr = (CCharacter *)pChr->TypeNext())
 	{
-		if(!pChr->IsZombie()) continue;
-		if(pChr->GetClass() == PLAYERCLASS_UNDEAD && pChr->IsFrozen()) continue;
-		if(pChr->GetClass() == PLAYERCLASS_VOODOO && pChr->m_VoodooAboutToDie) continue;
+		if(!pChr->IsZombie() || !pChr->CanDie())
+			continue;
 
 		float Len = distance(pChr->m_Pos, m_Pos);
 
