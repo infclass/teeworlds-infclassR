@@ -33,8 +33,6 @@ public:
 	virtual void Tick();
 	virtual void OnCharacterSpawned();
 
-	virtual void GiveClassAttributes();
-
 	virtual void OnSlimeEffect(int Owner) = 0;
 
 	CGameContext *GameContext() const;
@@ -49,6 +47,8 @@ public:
 	float GetProximityRadius() const;
 
 protected:
+	virtual void GiveClassAttributes();
+
 	CInfClassPlayer *m_pPlayer = nullptr;
 	CInfClassCharacter *m_pCharacter = nullptr;
 

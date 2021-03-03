@@ -14,9 +14,10 @@ public:
 
 	bool IsHuman() const final { return true; }
 
-	void GiveClassAttributes() override;
-
 	void OnSlimeEffect(int Owner) override;
+
+protected:
+	void GiveClassAttributes() override;
 };
 
 #endif // GAME_SERVER_INFCLASS_CLASSES_HUMAN_H

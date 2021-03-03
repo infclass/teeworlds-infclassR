@@ -15,11 +15,12 @@ public:
 	bool IsHuman() const final { return false; }
 
 	void OnCharacterSpawned() override;
-	void GiveClassAttributes() override;
 
 	void OnSlimeEffect(int Owner) override;
 
 protected:
+	void GiveClassAttributes() override;
+
 	int m_HealTick = 0;
 };
 
