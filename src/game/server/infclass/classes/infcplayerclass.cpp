@@ -92,9 +92,12 @@ float CInfClassPlayerClass::GetProximityRadius() const
 void CInfClassPlayerClass::SetCharacter(CInfClassCharacter *character)
 {
 	m_pCharacter = character;
-	m_pCharacter->SetClass(this);
 
-	GiveClassAttributes();
+	if(m_pCharacter)
+	{
+		m_pCharacter->SetClass(this);
+		GiveClassAttributes();
+	}
 }
 
 bool CInfClassPlayerClass::IsZombie() const
@@ -112,7 +115,10 @@ int CInfClassPlayerClass::PlayerClass() const
 
 void CInfClassPlayerClass::OnPlayerClassChanged()
 {
-	GiveClassAttributes();
+	if(m_pCharacter)
+	{
+		GiveClassAttributes();
+	}
 }
 
 void CInfClassPlayerClass::Poison(int Count, int From)
