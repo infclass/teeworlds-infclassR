@@ -78,13 +78,7 @@ void CGameControllerMOD::OnPlayerInfected(CPlayer *pPlayer, CPlayer *pInfectious
 		if (pPlayer->GetCharacter())
 		{
 			// Still send a kill message to notify other players about the infection
-			CNetMsg_Sv_KillMsg Msg;
-			Msg.m_Killer = pPlayer->GetCID();
-			Msg.m_Victim = pPlayer->GetCID();
-			Msg.m_Weapon = WEAPON_WORLD;
-			Msg.m_ModeSpecial = 0;
-			Server()->SendPackMsg(&Msg, MSGFLAG_VITAL, -1);
-
+			GameServer()->SendKillMessage(pPlayer->GetCID(), pPlayer->GetCID(), WEAPON_WORLD, 0);
 			GameServer()->CreateSound(pPlayer->GetCharacter()->m_Pos, SOUND_PLAYER_DIE);
 		}
 

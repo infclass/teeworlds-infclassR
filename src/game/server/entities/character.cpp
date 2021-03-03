@@ -3287,19 +3287,13 @@ bool CCharacter::TakeDamage(vec2 Force, int Dmg, int From, int Weapon, int Mode)
 	{
 		m_pPlayer->Infect(pKillerPlayer);
 		
-		
 		char aBuf[256];
 		str_format(aBuf, sizeof(aBuf), "kill killer='%s' victim='%s' weapon=%d",
 			Server()->ClientName(From),
 			Server()->ClientName(m_pPlayer->GetCID()), Weapon);
 		GameServer()->Console()->Print(IConsole::OUTPUT_LEVEL_DEBUG, "game", aBuf);
 
-		CNetMsg_Sv_KillMsg Msg;
-		Msg.m_Killer = From;
-		Msg.m_Victim = m_pPlayer->GetCID();
-		Msg.m_Weapon = WEAPON_HAMMER;
-		Msg.m_ModeSpecial = 0;
-		Server()->SendPackMsg(&Msg, MSGFLAG_VITAL, -1);
+		GameServer()->SendKillMessage(From, m_pPlayer->GetCID(), WEAPON_HAMMER, 0);
 	}
 /* INFECTION MODIFICATION END *****************************************/
 

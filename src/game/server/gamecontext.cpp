@@ -831,6 +831,16 @@ void CGameContext::SendWeaponPickup(int ClientID, int Weapon)
 	Server()->SendPackMsg(&Msg, MSGFLAG_VITAL, ClientID);
 }
 
+void CGameContext::SendKillMessage(int Killer, int Victim, int Weapon, int ModeSpecial)
+{
+	CNetMsg_Sv_KillMsg Msg;
+	Msg.m_Killer = Killer;
+	Msg.m_Victim = Victim;
+	Msg.m_Weapon = Weapon;
+	Msg.m_ModeSpecial = ModeSpecial;
+	Server()->SendPackMsg(&Msg, MSGFLAG_VITAL, -1);
+}
+
 //
 void CGameContext::StartVote(const char *pDesc, const char *pCommand, const char *pReason)
 {

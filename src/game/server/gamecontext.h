@@ -211,6 +211,7 @@ public:
 	void SendChat(int ClientID, int Team, const char *pText);
 	void SendEmoticon(int ClientID, int Emoticon);
 	void SendWeaponPickup(int ClientID, int Weapon);
+	void SendKillMessage(int Killer, int Victim, int Weapon, int ModeSpecial);
 
 	//
 	void CheckPureTuning();
