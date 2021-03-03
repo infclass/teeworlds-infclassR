@@ -4,7 +4,6 @@
 #include <game/gamecore.h>
 
 class CGameContext;
-class CInfClassCharacter;
 class CInfClassPlayerClass;
 
 // We actually have to include player.h after all this stuff above.
@@ -27,7 +26,6 @@ public:
 protected:
 	void onClassChanged() override;
 
-	CInfClassCharacter *m_pInfcCharacter = nullptr;
 	CInfClassPlayerClass *m_pInfcPlayerClass = nullptr;
 };
 

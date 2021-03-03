@@ -11,6 +11,7 @@ class CInfClassCharacter : public CCharacter
 	MACRO_ALLOC_POOL_ID()
 public:
 	CInfClassCharacter(CGameContext *pContext);
+	~CInfClassCharacter() override;
 
 	void Tick() override;
 

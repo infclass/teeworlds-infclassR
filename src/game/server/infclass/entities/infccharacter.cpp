@@ -13,6 +13,12 @@ CInfClassCharacter::CInfClassCharacter(CGameContext *pContext)
 {
 }
 
+CInfClassCharacter::~CInfClassCharacter()
+{
+	if(m_pClass)
+		m_pClass->SetCharacter(nullptr);
+}
+
 void CInfClassCharacter::Tick()
 {
 	CCharacter::Tick();
@@ -188,4 +194,5 @@ void CInfClassCharacter::TakeAllWeapons()
 void CInfClassCharacter::SetClass(CInfClassPlayerClass *pClass)
 {
 	m_pClass = pClass;
+	m_pClass->SetCharacter(this);
 }

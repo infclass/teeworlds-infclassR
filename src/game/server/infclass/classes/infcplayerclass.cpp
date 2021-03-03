@@ -95,7 +95,6 @@ void CInfClassPlayerClass::SetCharacter(CInfClassCharacter *character)
 
 	if(m_pCharacter)
 	{
-		m_pCharacter->SetClass(this);
 		GiveClassAttributes();
 	}
 }

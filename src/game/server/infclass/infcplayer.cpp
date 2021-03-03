@@ -17,6 +17,8 @@ CInfClassPlayer::~CInfClassPlayer()
 {
 	if(m_pInfcPlayerClass)
 		delete m_pInfcPlayerClass;
+
+	m_pInfcPlayerClass = nullptr;
 }
 
 void CInfClassPlayer::TryRespawn()
@@ -29,9 +31,10 @@ void CInfClassPlayer::TryRespawn()
 /* INFECTION MODIFICATION END *****************************************/
 
 	m_Spawning = false;
-	m_pInfcCharacter = new(m_ClientID) CInfClassCharacter(GameServer());
-	m_pCharacter = m_pInfcCharacter;
-	m_pInfcPlayerClass->SetCharacter(m_pInfcCharacter);
+	CInfClassCharacter *pCharacter = new(m_ClientID) CInfClassCharacter(GameServer());
+	pCharacter->SetClass(m_pInfcPlayerClass);
+
+	m_pCharacter = pCharacter;
 	m_pCharacter->Spawn(this, SpawnPos);
 	m_pInfcPlayerClass->OnCharacterSpawned();
 	if(GetClass() != PLAYERCLASS_NONE)
@@ -45,9 +48,10 @@ void CInfClassPlayer::SetCharacterClass(CInfClassPlayerClass *pClass)
 
 	m_pInfcPlayerClass = pClass;
 
-	if (m_pInfcCharacter)
+	if(m_pCharacter)
 	{
-		m_pInfcPlayerClass->SetCharacter(m_pInfcCharacter);
+		CInfClassCharacter *pCharacter = static_cast<CInfClassCharacter*>(m_pCharacter);
+		pCharacter->SetClass(m_pInfcPlayerClass);
 	}
 }
 
