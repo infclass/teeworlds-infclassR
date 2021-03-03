@@ -56,7 +56,8 @@ public:
 
 private:
 	CGameWorld *GameWorld();
-
+	
+	void RewardTheKiller(class CCharacter *pVictim, class CPlayer *pKiller, int Weapon);
 	bool IsSpawnable(vec2 Pos, int TeleZoneIndex);
 	void GetPlayerCounter(int ClientException, int& NumHumans, int& NumInfected, int& NumFirstInfected);
 

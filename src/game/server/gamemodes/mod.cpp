@@ -927,12 +927,12 @@ void CGameControllerMOD::Snap(int SnappingClient)
 	pGameDataObj->m_FlagCarrierBlue = FLAG_ATSTAND;
 }
 
-int CGameControllerMOD::OnCharacterDeath(class CCharacter *pVictim, class CPlayer *pKiller, int Weapon)
+void CGameControllerMOD::RewardTheKiller(CCharacter *pVictim, CPlayer *pKiller, int Weapon)
 {
 	// do scoreing
 	if(!pKiller || Weapon == WEAPON_GAME)
-		return 0;
-		
+		return;
+
 	if(pKiller->IsHuman())
 	{
 		if(pKiller == pVictim->GetPlayer())
@@ -975,12 +975,17 @@ int CGameControllerMOD::OnCharacterDeath(class CCharacter *pVictim, class CPlaye
 			}
 		}
 	}
-		
+}
+
+int CGameControllerMOD::OnCharacterDeath(class CCharacter *pVictim, class CPlayer *pKiller, int Weapon)
+{
+	RewardTheKiller(pVictim, pKiller, Weapon);
+
 	//Add bonus point for ninja
-	if(pVictim->IsZombie() && pVictim->IsFrozen() && pVictim->m_LastFreezer >= 0 && pVictim->m_LastFreezer != pKiller->GetCID())
+	if(pVictim->IsZombie() && pVictim->IsFrozen() && pVictim->m_LastFreezer >= 0 && pVictim->m_LastFreezer)
 	{
 		CPlayer* pFreezer = GameServer()->m_apPlayers[pVictim->m_LastFreezer];
-		if(pFreezer)
+		if(pFreezer && pFreezer != pKiller)
 		{
 			if (pFreezer->GetClass() == PLAYERCLASS_NINJA)
 			{
@@ -990,7 +995,7 @@ int CGameControllerMOD::OnCharacterDeath(class CCharacter *pVictim, class CPlaye
 				if(pVictim->GetPlayer()->GetCID() == GameServer()->GetTargetToKill())
 				{
 					GameServer()->SendChatTarget_Localization(pFreezer->GetCID(), CHATCATEGORY_SCORE, _("You have eliminated your target, +2 points"), NULL);
-					Server()->RoundStatistics()->OnScoreEvent(pFreezer->GetCID(), SCOREEVENT_KILL_TARGET, pKiller->GetClass(), Server()->ClientName(pFreezer->GetCID()), GameServer()->Console());
+					Server()->RoundStatistics()->OnScoreEvent(pFreezer->GetCID(), SCOREEVENT_KILL_TARGET, pFreezer->GetClass(), Server()->ClientName(pFreezer->GetCID()), GameServer()->Console());
 					GameServer()->TargetKilled();
 					
 					if(pFreezer->GetCharacter())
