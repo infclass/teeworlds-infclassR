@@ -2723,6 +2723,72 @@ void CServer::CreateTablesThread(void *pData)
 
 /* DDNET MODIFICATION END *********************************************/
 
+bool CServer::ConSetWeaponFireDelay(IConsole::IResult *pResult, void *pUserData)
+{
+	CServer *pSelf = (CServer *)pUserData;
+	if(pResult->NumArguments() != 2)
+		return false;
+
+	int WeaponID = pResult->GetInteger(0);
+	if((WeaponID < 0) || (WeaponID >= NB_INFWEAPON))
+	{
+		return false;
+	}
+	int Interval = pResult->GetInteger(1);
+	if(Interval < 0)
+	{
+		return false;
+	}
+
+	pSelf->SetFireDelay(WeaponID, Interval);
+
+	return true;
+}
+
+bool CServer::ConSetWeaponAmmoRegen(IConsole::IResult *pResult, void *pUserData)
+{
+	CServer *pSelf = (CServer *)pUserData;
+	if(pResult->NumArguments() != 2)
+		return false;
+
+	int WeaponID = pResult->GetInteger(0);
+	if((WeaponID < 0) || (WeaponID >= NB_INFWEAPON))
+	{
+		return false;
+	}
+	int Interval = pResult->GetInteger(1);
+	if(Interval < 0)
+	{
+		return false;
+	}
+
+	pSelf->SetAmmoRegenTime(WeaponID, Interval);
+
+	return true;
+}
+
+bool CServer::ConSetWeaponMaxAmmo(IConsole::IResult *pResult, void *pUserData)
+{
+	CServer *pSelf = (CServer *)pUserData;
+	if(pResult->NumArguments() != 2)
+		return false;
+
+	int WeaponID = pResult->GetInteger(0);
+	if((WeaponID < 0) || (WeaponID >= NB_INFWEAPON))
+	{
+		return false;
+	}
+	int Interval = pResult->GetInteger(1);
+	if(Interval < 0)
+	{
+		return false;
+	}
+
+	pSelf->SetMaxAmmo(WeaponID, Interval);
+
+	return true;
+}
+
 void CServer::RegisterCommands()
 {
 	m_pConsole = Kernel()->RequestInterface<IConsole>();
@@ -2759,6 +2825,13 @@ void CServer::RegisterCommands()
 	Console()->Register("inf_add_sqlserver", "ssssssi?i", CFGFLAG_SERVER, ConAddSqlServer, this, "add a sqlserver");
 	Console()->Register("inf_list_sqlservers", "s", CFGFLAG_SERVER, ConDumpSqlServers, this, "list all sqlservers readservers = r, writeservers = w");
 #endif
+
+	Console()->Register("inf_set_weapon_fire_delay", "i<weapon>i<msec>", CFGFLAG_SERVER, ConSetWeaponFireDelay, this,
+	                    "Set InfClass weapon fire delay");
+	Console()->Register("inf_set_weapon_ammo_regen", "i<weapon>i<msec>", CFGFLAG_SERVER, ConSetWeaponAmmoRegen, this,
+	                    "Set InfClass weapon ammo regen interval");
+	Console()->Register("inf_set_weapon_max_ammo", "i<weapon>i<ammo>", CFGFLAG_SERVER, ConSetWeaponMaxAmmo, this,
+	                    "Set InfClass weapon max ammo");
 /* INFECTION MODIFICATION END *****************************************/
 
 	// register console commands in sub parts

@@ -298,6 +298,10 @@ public:
 #endif
 /* DDNET MODIFICATION END *********************************************/
 	
+	static bool ConSetWeaponFireDelay(class IConsole::IResult *pResult, void *pUserData);
+	static bool ConSetWeaponAmmoRegen(class IConsole::IResult *pResult, void *pUserData);
+	static bool ConSetWeaponMaxAmmo(class IConsole::IResult *pResult, void *pUserData);
+
 	void RegisterCommands();
 
 
