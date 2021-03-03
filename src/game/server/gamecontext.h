@@ -185,7 +185,7 @@ public:
 
 	// helper functions
 	void CreateDamageInd(vec2 Pos, float AngleMod, int Amount);
-	void CreateExplosion(vec2 Pos, int Owner, int Weapon, bool NoDamage, TAKEDAMAGEMODE TakeDamageMode = TAKEDAMAGEMODE_NOINFECTION, float DamageFactor = 1.0f);
+	void CreateExplosion(vec2 Pos, int Owner, int Weapon, bool NoDamage, TAKEDAMAGEMODE TakeDamageMode = TAKEDAMAGEMODE_NOINFECTION, float DamageFactor = 1.0f, float ForceValue = 0);
 	void CreateExplosionDisk(vec2 Pos, float InnerRadius, float DamageRadius, int Damage, float Force, int Owner, int Weapon, TAKEDAMAGEMODE TakeDamageMode = TAKEDAMAGEMODE_NOINFECTION);
 	void CreateHammerHit(vec2 Pos);
 	void CreatePlayerSpawn(vec2 Pos);

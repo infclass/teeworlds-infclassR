@@ -142,6 +142,12 @@ MACRO_CONFIG_INT(FunRoundLimit, funround_limit, 1, 0, 100, CFGFLAG_SERVER, "Numb
 MACRO_CONFIG_INT(FunRoundDuration, funround_duration, 3, 0, 100, CFGFLAG_SERVER, "Fun round duration (min)")
 MACRO_CONFIG_INT(FunRoundGhoulStomachSize, funround_ghoul_stomach_size, 40, 0, 10000, CFGFLAG_SERVER, "Number of dead that the ghoul can eat")
 
+MACRO_CONFIG_INT(InfRocketMode, inf_rocket_mode, 0, 0, 3, CFGFLAG_SERVER, "Select rocket launcher mode (0=disabled)")
+MACRO_CONFIG_INT(InfRocketRadius, inf_rocket_radius, 10, 0, 300, CFGFLAG_SERVER, "The size of rocket grenade")
+MACRO_CONFIG_INT(InfRocketDamage, inf_rocket_damage, 24, 1, 10000, CFGFLAG_SERVER, "The size of rocket grenade")
+MACRO_CONFIG_INT(InfRocketSpeed, inf_rocket_speed, 18, 1, 10000, CFGFLAG_SERVER, "The speed of rocket grenade")
+MACRO_CONFIG_INT(InfRocketForce, inf_rocket_force, 24, 1, 10000, CFGFLAG_SERVER, "The force of rocket hit explosion")
+
 //Looper class config
 MACRO_CONFIG_INT(InfSlowMotionWallDuration, inf_slow_motion_wall_duration, 30, 0, 1024, CFGFLAG_SERVER, "How long looper wall slow motion effect will slow down zombies (in centiSec)")
 MACRO_CONFIG_INT(InfSlowMotionGunDuration, inf_slow_motion_gun_duration, 6, 0, 1024, CFGFLAG_SERVER, "How long looper gun slow motion effect will slow down zombies (in centiSec)")

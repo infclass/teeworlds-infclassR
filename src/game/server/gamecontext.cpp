@@ -277,7 +277,7 @@ void CGameContext::CreateLoveEvent(vec2 Pos)
 	m_LoveDots.add(State);
 }
 
-void CGameContext::CreateExplosion(vec2 Pos, int Owner, int Weapon, bool NoDamage, TAKEDAMAGEMODE TakeDamageMode, float DamageFactor)
+void CGameContext::CreateExplosion(vec2 Pos, int Owner, int Weapon, bool NoDamage, TAKEDAMAGEMODE TakeDamageMode, float DamageFactor, float ForceValue)
 {
 	// create the event
 	CNetEvent_Explosion *pEvent = (CNetEvent_Explosion *)m_Events.Create(NETEVENTTYPE_EXPLOSION, sizeof(CNetEvent_Explosion));
@@ -297,8 +297,14 @@ void CGameContext::CreateExplosion(vec2 Pos, int Owner, int Weapon, bool NoDamag
 		for(int i = 0; i < Num; i++)
 		{
 			if(!g_Config.m_InfShockwaveAffectHumans){
-				if(apEnts[i]->GetPlayer() && apEnts[i]->GetPlayer()->GetCID() == Owner) {} //owner selfharm
-				else if(apEnts[i]->IsHuman()) continue;// humans are not affected by force
+				if(apEnts[i]->GetPlayer() && apEnts[i]->GetPlayer()->GetCID() == Owner)
+				{
+					//owner selfharm
+				}
+				else if(apEnts[i]->IsHuman())
+				{
+					continue;// humans are not affected by force
+				}
 			}
 			vec2 Diff = apEnts[i]->m_Pos - Pos;
 			vec2 ForceDir(0,1);
@@ -307,8 +313,12 @@ void CGameContext::CreateExplosion(vec2 Pos, int Owner, int Weapon, bool NoDamag
 				ForceDir = normalize(Diff);
 			l = 1-clamp((l-InnerRadius)/(Radius-InnerRadius), 0.0f, 1.0f);
 			float Dmg = 6 * l * DamageFactor;
+			if(ForceValue == 0)
+			{
+				ForceValue = Dmg*2;
+			}
 			if((int)Dmg)
-				apEnts[i]->TakeDamage(ForceDir*Dmg*2, (int)Dmg, Owner, Weapon, TakeDamageMode);
+				apEnts[i]->TakeDamage(ForceDir * ForceValue, (int)Dmg, Owner, Weapon, TakeDamageMode);
 		}
 
 		for(CPortal* pPortal = (CPortal*) m_World.FindFirst(CGameWorld::ENTTYPE_PORTAL); pPortal; pPortal = (CPortal*) pPortal->TypeNext())

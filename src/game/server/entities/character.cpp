@@ -1696,6 +1696,34 @@ int CCharacter::GetInfWeaponID(int WID) const
 	}
 	else if(WID == WEAPON_GRENADE)
 	{
+		if(g_Config.m_InfRocketMode == 1)
+		{
+			switch(GetPlayerClass())
+			{
+			case PLAYERCLASS_MERCENARY:
+				return INFWEAPON_MERCENARY_GRENADE;
+			case PLAYERCLASS_MEDIC:
+				return INFWEAPON_MEDIC_GRENADE;
+			case PLAYERCLASS_NINJA:
+				return INFWEAPON_NINJA_GRENADE;
+			case PLAYERCLASS_SCIENTIST:
+				return INFWEAPON_SCIENTIST_GRENADE;
+			default:
+				return INFWEAPON_ROCKET;
+			}
+		}
+
+		if(g_Config.m_InfRocketMode == 2)
+		{
+			switch(GetPlayerClass())
+			{
+			case PLAYERCLASS_MERCENARY:
+				return INFWEAPON_ROCKET;
+			default:
+				break;
+			}
+		}
+
 		switch(GetPlayerClass())
 		{
 			case PLAYERCLASS_MERCENARY:

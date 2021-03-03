@@ -22,6 +22,7 @@
 #include <game/server/infclass/entities/merc-laser.h>
 #include <game/server/infclass/entities/plasma.h>
 #include <game/server/infclass/entities/portal.h>
+#include <game/server/infclass/entities/rocket.h>
 #include <game/server/infclass/entities/scatter-grenade.h>
 #include <game/server/infclass/entities/scientist-laser.h>
 #include <game/server/infclass/entities/scientist-mine.h>
@@ -1036,7 +1037,26 @@ void CInfClassCharacter::OnShotgunFired(WeaponFireContext *pFireContext)
 
 void CInfClassCharacter::OnGrenadeFired(WeaponFireContext *pFireContext)
 {
-	if(GetPlayerClass() == PLAYERCLASS_MERCENARY)
+	vec2 Direction = GetDirection();
+	vec2 ProjStartPos = GetPos()+Direction*GetProximityRadius()*0.75f;
+
+	if (GetInfWeaponID(m_ActiveWeapon) == INFWEAPON_ROCKET)
+	{
+		CRocket *pRocket = new CRocket(GameServer(), m_pPlayer->GetCID(), ProjStartPos, Direction);
+		// pack the Projectile and send it to the client Directly
+		CNetObj_Projectile p;
+		pRocket->FillInfo(&p);
+
+		CMsgPacker Msg(NETMSGTYPE_SV_EXTRAPROJECTILE);
+		Msg.AddInt(1);
+		for(unsigned i = 0; i < sizeof(CNetObj_Projectile)/sizeof(int); i++)
+			Msg.AddInt(((int *)&p)[i]);
+		Server()->SendMsg(&Msg, MSGFLAG_VITAL, m_pPlayer->GetCID());
+
+		GameServer()->CreateSound(m_Pos, SOUND_GRENADE_FIRE);
+		return;
+	}
+	else if(GetPlayerClass() == PLAYERCLASS_MERCENARY)
 	{
 		OnMercGrenadeFired(pFireContext);
 		return;
@@ -1052,9 +1072,6 @@ void CInfClassCharacter::OnGrenadeFired(WeaponFireContext *pFireContext)
 	{
 		return;
 	}
-
-	vec2 Direction = GetDirection();
-	vec2 ProjStartPos = GetPos()+Direction*GetProximityRadius()*0.75f;
 
 	if(GetPlayerClass() == PLAYERCLASS_SCIENTIST)
 	{
