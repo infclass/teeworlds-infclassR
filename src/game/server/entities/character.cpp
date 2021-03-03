@@ -806,16 +806,15 @@ void CCharacter::OnHammerFired(bool *pFireAccepted)
 	else if(GetClass() == PLAYERCLASS_HERO)
 	{
 		if (g_Config.m_InfTurretEnable) {
-
 			if(m_TurretCount)
 			{
 				if (g_Config.m_InfTurretEnableLaser)
 				{
-					new CTurret(GameServer(), m_Pos, m_pPlayer->GetCID(), Direction, GameServer()->Tuning()->m_LaserReach,INFAMMO_LASER);
+					new CTurret(GameServer(), m_Pos, m_pPlayer->GetCID(), Direction, CTurret::LASER);
 				}
 				else if (g_Config.m_InfTurretEnablePlasma)
 				{
-					new CTurret(GameServer(), m_Pos, m_pPlayer->GetCID(), Direction, GameServer()->Tuning()->m_LaserReach,INFAMMO_PLASMA);
+					new CTurret(GameServer(), m_Pos, m_pPlayer->GetCID(), Direction, CTurret::PLASMA);
 				}
 
 				GameServer()->CreateSound(m_Pos, SOUND_GRENADE_FIRE);

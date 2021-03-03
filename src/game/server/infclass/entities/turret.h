@@ -8,7 +8,13 @@
 class CTurret : public CInfCEntity
 {
 public:
-	CTurret(CGameContext *pGameContext, vec2 Pos, int Owner, vec2 Direction, float StartEnergy, int Type);
+	enum Type
+	{
+		LASER,
+		PLASMA,
+	};
+
+	CTurret(CGameContext *pGameContext, vec2 Pos, int Owner, vec2 Direction, Type Type);
 	virtual ~CTurret();
 
 	virtual void Tick();
@@ -16,16 +22,16 @@ public:
 
 protected:
 	void AttackTargets();
+	void Reload();
 
 private:
 	vec2 m_Vel;
 	vec2 m_Dir;
 	int m_StartTick;
-	float m_Energy;
 	int m_Bounces;
 	int m_Radius;
 	int m_EvalTick;
-	int m_Type;
+	Type m_Type;
 	const float m_RadiusGrowthRate = 4.0f;
 	int m_WarmUpCounter;
 	int m_ReloadCounter;

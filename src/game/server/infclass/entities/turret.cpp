@@ -13,10 +13,9 @@
 
 #include <game/server/entities/laser.h>
 
-CTurret::CTurret(CGameContext *pGameContext, vec2 Pos, int Owner, vec2 Direction, float StartEnergy, int Type)
+CTurret::CTurret(CGameContext *pGameContext, vec2 Pos, int Owner, vec2 Direction, CTurret::Type Type)
 	: CInfCEntity(pGameContext, CGameWorld::ENTTYPE_TURRET, Pos, Owner)
 {
-	m_Energy = StartEnergy;
 	m_Dir = Direction;
 	m_StartTick = Server()->Tick();
 	m_Bounces = 0;
@@ -32,25 +31,7 @@ CTurret::CTurret(CGameContext *pGameContext, vec2 Pos, int Owner, vec2 Direction
 	{
 		m_IDs[i] = Server()->SnapNewID();
 	}
-
-	if ( (Config()->m_InfTurretEnableLaser && Config()->m_InfTurretEnablePlasma) || (!Config()->m_InfTurretEnableLaser && !Config()->m_InfTurretEnablePlasma) )
-	{
-		char aBuf[256];
-		str_format(aBuf, sizeof(aBuf), "error: turrets have no correct ammo type, admin has to choose ammo type with \"inf_turret_enable_ammoType\"");
-		GameServer()->Console()->Print(IConsole::OUTPUT_LEVEL_DEBUG, "game", aBuf);
-
-		Reset();
-	}
-
-	if (Config()->m_InfTurretEnablePlasma)
-	{
-		m_ReloadCounter = Server()->TickSpeed()*Config()->m_InfTurretPlasmaReloadDuration;
-	}
-
-	if (Config()->m_InfTurretEnableLaser)
-	{
-		m_ReloadCounter = Server()->TickSpeed()*Config()->m_InfTurretLaserReloadDuration;
-	}
+	Reload();
 
 	GameWorld()->InsertEntity(this);
 }
@@ -159,12 +140,11 @@ void CTurret::AttackTargets()
 
 			switch(m_Type)
 			{
-				case INFAMMO_LASER:
+				case LASER:
 					new CLaser(GameWorld(), m_Pos, Direction, GameServer()->Tuning()->m_LaserReach, m_Owner, Config()->m_InfTurretDmgHealthLaser);
 					m_ammunition--;
 					break;
-
-				case INFAMMO_PLASMA:
+				case PLASMA:
 					new CPlasma(GameServer(), m_Pos, m_Owner, pChr->GetPlayer()->GetCID() , Direction, 0, 1);
 					m_ammunition--;
 					break;
@@ -178,19 +158,24 @@ void CTurret::AttackTargets()
 	if(!m_ammunition || m_foundTarget)
 	{
 		//Reload ammo
-		if (Config()->m_InfTurretEnablePlasma)
-		{
-			m_ReloadCounter = Server()->TickSpeed()*Config()->m_InfTurretPlasmaReloadDuration;
-		}
-
-		if (Config()->m_InfTurretEnableLaser)
-		{
-			m_ReloadCounter = Server()->TickSpeed()*Config()->m_InfTurretLaserReloadDuration;
-		}
+		Reload();
 
 		m_WarmUpCounter = Server()->TickSpeed()*Config()->m_InfTurretWarmUpDuration;
 		m_ammunition = Config()->m_InfTurretAmmunition;
 		m_foundTarget = false;
+	}
+}
+
+void CTurret::Reload()
+{
+	switch (m_Type)
+	{
+		case LASER:
+			m_ReloadCounter = Server()->TickSpeed()*Config()->m_InfTurretLaserReloadDuration;
+			break;
+		case PLASMA:
+			m_ReloadCounter = Server()->TickSpeed()*Config()->m_InfTurretPlasmaReloadDuration;
+			break;
 	}
 }
 
