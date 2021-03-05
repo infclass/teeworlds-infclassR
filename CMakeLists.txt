@@ -746,8 +746,6 @@ set_glob(GAME_SERVER GLOB_RECURSE src/game/server
   entities/laser.h
   entities/projectile.cpp
   entities/projectile.h
-  gamemodes/mod.cpp
-  gamemodes/mod.h
   infclass/classes/humans/human.cpp
   infclass/classes/humans/human.h
   infclass/classes/infcplayerclass.cpp
@@ -800,6 +798,8 @@ set_glob(GAME_SERVER GLOB_RECURSE src/game/server
   infclass/entities/turret.h
   infclass/entities/white-hole.cpp
   infclass/entities/white-hole.h
+  infclass/infcgamecontroller.cpp
+  infclass/infcgamecontroller.h
   infclass/infcplayer.cpp
   infclass/infcplayer.h
   changelog.cpp
@@ -813,7 +813,6 @@ set_glob(GAME_SERVER GLOB_RECURSE src/game/server
   gamecontext.h
   gamecontroller.cpp
   gamecontroller.h
-  gamemodes
   gameworld.cpp
   gameworld.h
   player.cpp

@@ -13,10 +13,10 @@
 #include <game/collision.h>
 #include <game/gamecore.h>
 #include <iostream>
-#include "gamemodes/mod.h"
 #include <algorithm>
 
 #include <game/server/infclass/entities/portal.h>
+#include <game/server/infclass/infcgamecontroller.h>
 
 #include "infclass/infcplayer.h"
 

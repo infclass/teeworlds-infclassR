@@ -8,7 +8,6 @@
 #include <engine/server/mapconverter.h>
 #include <engine/server/roundstatistics.h>
 #include <game/server/gamecontext.h>
-#include <game/server/gamemodes/mod.h>
 #include <game/mapitems.h>
 #include <iostream>
 
@@ -35,6 +34,7 @@
 #include <game/server/infclass/entities/superweapon-indicator.h>
 #include <game/server/infclass/entities/turret.h>
 #include <game/server/infclass/entities/white-hole.h>
+#include <game/server/infclass/infcgamecontroller.h>
 
 //input count
 struct CInputCount
