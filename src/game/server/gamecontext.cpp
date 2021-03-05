@@ -2699,7 +2699,7 @@ bool CGameContext::ConStartSpecialFunRound(IConsole::IResult *pResult, void *pUs
 	for (int argN = 0; argN < pResult->NumArguments(); ++argN)
 	{
 		const char *argument = pResult->GetString(argN);
-		const int PlayerClass = CGameControllerMOD::GetClassByName(argument);
+		const int PlayerClass = CInfClassGameController::GetClassByName(argument);
 		if ((PlayerClass > START_HUMANCLASS) && (PlayerClass < END_HUMANCLASS))
 		{
 			Configuration.HumanClass = PlayerClass;
@@ -2780,8 +2780,8 @@ bool CGameContext::StartFunRound(const FunRoundConfiguration &Configuration)
 
 	Server()->SetPlayerClassEnabled(Configuration.HumanClass, true);
 	Server()->SetPlayerClassProbability(Configuration.InfectedClass, 100);
-	const char *HumanClassText = CGameControllerMOD::GetClassPluralDisplayName(Configuration.HumanClass);
-	const char *InfectedClassText = CGameControllerMOD::GetClassPluralDisplayName(Configuration.InfectedClass);
+	const char *HumanClassText = CInfClassGameController::GetClassPluralDisplayName(Configuration.HumanClass);
+	const char *InfectedClassText = CInfClassGameController::GetClassPluralDisplayName(Configuration.InfectedClass);
 
 	str_format(aBuf, sizeof(aBuf), "%s! %s vs %s%s", title, InfectedClassText, HumanClassText, random_phrase);
 
@@ -4092,7 +4092,7 @@ bool CGameContext::ConAddFunRound(IConsole::IResult *pResult, void *pUserData)
 	for (int argN = 0; argN < pResult->NumArguments(); ++argN)
 	{
 		const char *argument = pResult->GetString(argN);
-		const int PlayerClass = CGameControllerMOD::GetClassByName(argument);
+		const int PlayerClass = CInfClassGameController::GetClassByName(argument);
 		if ((PlayerClass > START_HUMANCLASS) && (PlayerClass < END_HUMANCLASS))
 		{
 			Settings.HumanClass = PlayerClass;
@@ -4111,8 +4111,8 @@ bool CGameContext::ConAddFunRound(IConsole::IResult *pResult, void *pUserData)
 	else
 	{
 		char aBuf[256];
-		const char *HumanClassText = CGameControllerMOD::GetClassPluralDisplayName(Settings.HumanClass);
-		const char *InfectedClassText = CGameControllerMOD::GetClassPluralDisplayName(Settings.InfectedClass);
+		const char *HumanClassText = CInfClassGameController::GetClassPluralDisplayName(Settings.HumanClass);
+		const char *InfectedClassText = CInfClassGameController::GetClassPluralDisplayName(Settings.InfectedClass);
 		str_format(aBuf, sizeof(aBuf), "Added fun round: %s vs %s", InfectedClassText, HumanClassText);
 		pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "server", aBuf);
 	}
@@ -4228,7 +4228,7 @@ void CGameContext::OnInit(/*class IKernel *pKernel*/)
 	Console()->ExecuteFile(g_Config.m_SvResetFile);
 
 	// select gametype
-	m_pController = new CGameControllerMOD(this);
+	m_pController = new CInfClassGameController(this);
 
 	m_pController->RegisterChatCommands(Console());
 

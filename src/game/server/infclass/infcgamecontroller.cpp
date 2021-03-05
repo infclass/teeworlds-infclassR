@@ -15,7 +15,7 @@
 #include <iostream>
 #include <map>
 
-CGameControllerMOD::CGameControllerMOD(class CGameContext *pGameServer)
+CInfClassGameController::CInfClassGameController(class CGameContext *pGameServer)
 : IGameController(pGameServer)
 {
 	m_pGameType = "InfClassR";
@@ -46,12 +46,12 @@ CGameControllerMOD::CGameControllerMOD(class CGameContext *pGameServer)
 	}
 }
 
-CGameControllerMOD::~CGameControllerMOD()
+CInfClassGameController::~CInfClassGameController()
 {
 	if(m_GrowingMap) delete[] m_GrowingMap;
 }
 
-void CGameControllerMOD::OnClientDrop(int ClientID, int Type)
+void CInfClassGameController::OnClientDrop(int ClientID, int Type)
 {
 	if(Type == CLIENTDROPTYPE_BAN) return;
 	if(Type == CLIENTDROPTYPE_KICK) return;
@@ -72,7 +72,7 @@ void CGameControllerMOD::OnClientDrop(int ClientID, int Type)
     }
 }
 
-void CGameControllerMOD::OnPlayerInfected(CPlayer *pPlayer, CPlayer *pInfectiousPlayer)
+void CInfClassGameController::OnPlayerInfected(CPlayer *pPlayer, CPlayer *pInfectiousPlayer)
 {
 	if (!pInfectiousPlayer || pInfectiousPlayer->GetTeam() == TEAM_SPECTATORS || pPlayer->GetCID() == pInfectiousPlayer->GetCID()) {
 		if (pPlayer->GetCharacter())
@@ -105,7 +105,7 @@ void CGameControllerMOD::OnPlayerInfected(CPlayer *pPlayer, CPlayer *pInfectious
 	}
 }
 
-bool CGameControllerMOD::OnEntity(const char* pName, vec2 Pivot, vec2 P0, vec2 P1, vec2 P2, vec2 P3, int PosEnv)
+bool CInfClassGameController::OnEntity(const char* pName, vec2 Pivot, vec2 P0, vec2 P1, vec2 P2, vec2 P3, int PosEnv)
 {
 	bool res = IGameController::OnEntity(pName, Pivot, P0, P1, P2, P3, PosEnv);
 
@@ -130,7 +130,7 @@ bool CGameControllerMOD::OnEntity(const char* pName, vec2 Pivot, vec2 P0, vec2 P
 	return res;
 }
 
-void CGameControllerMOD::ResetFinalExplosion()
+void CInfClassGameController::ResetFinalExplosion()
 {
 	m_ExplosionStarted = false;
 	
@@ -146,7 +146,7 @@ void CGameControllerMOD::ResetFinalExplosion()
 	}
 }
 
-bool CGameControllerMOD::IsDefenderClass(int PlayerClass)
+bool CInfClassGameController::IsDefenderClass(int PlayerClass)
 {
 	switch (PlayerClass)
 	{
@@ -161,7 +161,7 @@ bool CGameControllerMOD::IsDefenderClass(int PlayerClass)
 	}
 }
 
-bool CGameControllerMOD::IsSupportClass(int PlayerClass)
+bool CInfClassGameController::IsSupportClass(int PlayerClass)
 {
 	switch (PlayerClass)
 	{
@@ -174,7 +174,7 @@ bool CGameControllerMOD::IsSupportClass(int PlayerClass)
 	}
 }
 
-int CGameControllerMOD::GetClassByName(const char *pClassName, bool *pOk)
+int CInfClassGameController::GetClassByName(const char *pClassName, bool *pOk)
 {
 	struct ExtraName
 	{
@@ -210,8 +210,8 @@ int CGameControllerMOD::GetClassByName(const char *pClassName, bool *pOk)
 
 	for (int PlayerClass = 0; PlayerClass < NB_PLAYERCLASS; ++PlayerClass)
 	{
-		const char *pSingularName = CGameControllerMOD::GetClassName(PlayerClass);
-		const char *pPluralName = CGameControllerMOD::GetClassPluralName(PlayerClass);
+		const char *pSingularName = CInfClassGameController::GetClassName(PlayerClass);
+		const char *pPluralName = CInfClassGameController::GetClassPluralName(PlayerClass);
 		if((str_comp(pClassName, pSingularName) == 0) || (str_comp(pClassName, pPluralName) == 0)) {
 			return PlayerClass;
 		}
@@ -224,7 +224,7 @@ int CGameControllerMOD::GetClassByName(const char *pClassName, bool *pOk)
 	return PLAYERCLASS_NONE;
 }
 
-const char *CGameControllerMOD::GetClassName(int PlayerClass)
+const char *CInfClassGameController::GetClassName(int PlayerClass)
 {
 	switch (PlayerClass)
 	{
@@ -280,7 +280,7 @@ const char *CGameControllerMOD::GetClassName(int PlayerClass)
 	}
 }
 
-const char *CGameControllerMOD::GetClassPluralName(int PlayerClass)
+const char *CInfClassGameController::GetClassPluralName(int PlayerClass)
 {
 	switch (PlayerClass)
 	{
@@ -333,7 +333,7 @@ const char *CGameControllerMOD::GetClassPluralName(int PlayerClass)
 	}
 }
 
-const char *CGameControllerMOD::GetClassDisplayName(int PlayerClass)
+const char *CInfClassGameController::GetClassDisplayName(int PlayerClass)
 {
 	switch (PlayerClass)
 	{
@@ -389,7 +389,7 @@ const char *CGameControllerMOD::GetClassDisplayName(int PlayerClass)
 	}
 }
 
-const char *CGameControllerMOD::GetClassPluralDisplayName(int PlayerClass)
+const char *CInfClassGameController::GetClassPluralDisplayName(int PlayerClass)
 {
 	switch (PlayerClass)
 	{
@@ -442,20 +442,20 @@ const char *CGameControllerMOD::GetClassPluralDisplayName(int PlayerClass)
 	}
 }
 
-void CGameControllerMOD::RegisterChatCommands(IConsole *pConsole)
+void CInfClassGameController::RegisterChatCommands(IConsole *pConsole)
 {
 	pConsole->Register("inf_set_class", "is", CFGFLAG_SERVER, ConSetClass, this, "Set the class of a player");
 
 	pConsole->Register("witch", "", CFGFLAG_CHAT|CFGFLAG_USER, ChatWitch, this, "Call Witch");
 }
 
-bool CGameControllerMOD::ConSetClass(IConsole::IResult *pResult, void *pUserData)
+bool CInfClassGameController::ConSetClass(IConsole::IResult *pResult, void *pUserData)
 {
-	CGameControllerMOD *pSelf = (CGameControllerMOD *)pUserData;
+	CInfClassGameController *pSelf = (CInfClassGameController *)pUserData;
 	return pSelf->ConSetClass(pResult);
 }
 
-bool CGameControllerMOD::ConSetClass(IConsole::IResult *pResult)
+bool CInfClassGameController::ConSetClass(IConsole::IResult *pResult)
 {
 	int PlayerID = pResult->GetInteger(0);
 	const char *pClassName = pResult->GetString(1);
@@ -482,13 +482,13 @@ bool CGameControllerMOD::ConSetClass(IConsole::IResult *pResult)
 	return true;
 }
 
-bool CGameControllerMOD::ChatWitch(IConsole::IResult *pResult, void *pUserData)
+bool CInfClassGameController::ChatWitch(IConsole::IResult *pResult, void *pUserData)
 {
-	CGameControllerMOD *pSelf = (CGameControllerMOD *)pUserData;
+	CInfClassGameController *pSelf = (CInfClassGameController *)pUserData;
 	return pSelf->ChatWitch(pResult);
 }
 
-bool CGameControllerMOD::ChatWitch(IConsole::IResult *pResult)
+bool CInfClassGameController::ChatWitch(IConsole::IResult *pResult)
 {
 	int ClientID = pResult->GetClientID();
 	int callers_count = m_WitchCallers.size();
@@ -547,19 +547,19 @@ bool CGameControllerMOD::ChatWitch(IConsole::IResult *pResult)
 	return true;
 }
 
-CGameWorld *CGameControllerMOD::GameWorld()
+CGameWorld *CInfClassGameController::GameWorld()
 {
 	return &GameServer()->m_World;
 }
 
-void CGameControllerMOD::EndRound()
+void CInfClassGameController::EndRound()
 {	
 	m_InfectedStarted = false;
 	ResetFinalExplosion();
 	IGameController::EndRound();
 }
 
-void CGameControllerMOD::GetPlayerCounter(int ClientException, int& NumHumans, int& NumInfected, int& NumFirstInfected)
+void CInfClassGameController::GetPlayerCounter(int ClientException, int& NumHumans, int& NumInfected, int& NumFirstInfected)
 {
 	NumHumans = 0;
 	NumInfected = 0;
@@ -594,7 +594,7 @@ void CGameControllerMOD::GetPlayerCounter(int ClientException, int& NumHumans, i
 	}
 }
 
-int CGameControllerMOD::RandomZombieToWitch() {
+int CInfClassGameController::RandomZombieToWitch() {
 	std::vector<int> zombies_id;
 
 	m_WitchCallers.clear();
@@ -626,7 +626,7 @@ int CGameControllerMOD::RandomZombieToWitch() {
 	return zombies_id[id];
 }
 
-void CGameControllerMOD::Tick()
+void CInfClassGameController::Tick()
 {
 	IGameController::Tick();
 	
@@ -790,12 +790,12 @@ void CGameControllerMOD::Tick()
 	}
 }
 
-bool CGameControllerMOD::IsInfectionStarted()
+bool CInfClassGameController::IsInfectionStarted()
 {
 	return (m_RoundStartTick + Server()->TickSpeed()*10 <= Server()->Tick());
 }
 
-bool CGameControllerMOD::PortalsAvailableForCharacter(class CCharacter *pCharacter)
+bool CInfClassGameController::PortalsAvailableForCharacter(class CCharacter *pCharacter)
 {
 	if (!g_Config.m_InfEnableWitchPortals)
 		return false;
@@ -822,7 +822,7 @@ bool CGameControllerMOD::PortalsAvailableForCharacter(class CCharacter *pCharact
 	return true;
 }
 
-void CGameControllerMOD::Snap(int SnappingClient)
+void CInfClassGameController::Snap(int SnappingClient)
 {
 	CNetObj_GameInfo *pGameInfoObj = (CNetObj_GameInfo *)Server()->SnapNewItem(NETOBJTYPE_GAMEINFO, 0, sizeof(CNetObj_GameInfo));
 	if(!pGameInfoObj)
@@ -930,7 +930,7 @@ void CGameControllerMOD::Snap(int SnappingClient)
 	pGameDataObj->m_FlagCarrierBlue = FLAG_ATSTAND;
 }
 
-void CGameControllerMOD::RewardTheKiller(CCharacter *pVictim, CPlayer *pKiller, int Weapon)
+void CInfClassGameController::RewardTheKiller(CCharacter *pVictim, CPlayer *pKiller, int Weapon)
 {
 	// do scoreing
 	if(!pKiller || Weapon == WEAPON_GAME)
@@ -980,7 +980,7 @@ void CGameControllerMOD::RewardTheKiller(CCharacter *pVictim, CPlayer *pKiller, 
 	}
 }
 
-int CGameControllerMOD::OnCharacterDeath(class CCharacter *pVictim, class CPlayer *pKiller, int Weapon)
+int CInfClassGameController::OnCharacterDeath(class CCharacter *pVictim, class CPlayer *pKiller, int Weapon)
 {
 	RewardTheKiller(pVictim, pKiller, Weapon);
 
@@ -1035,7 +1035,7 @@ int CGameControllerMOD::OnCharacterDeath(class CCharacter *pVictim, class CPlaye
 	return 0;
 }
 
-void CGameControllerMOD::OnCharacterSpawn(class CCharacter *pChr)
+void CInfClassGameController::OnCharacterSpawn(class CCharacter *pChr)
 {
 	// default health
 	pChr->IncreaseHealth(10);
@@ -1053,7 +1053,7 @@ void CGameControllerMOD::OnCharacterSpawn(class CCharacter *pChr)
 	}
 }
 
-void CGameControllerMOD::OnPlayerInfoChange(class CPlayer *pP)
+void CInfClassGameController::OnPlayerInfoChange(class CPlayer *pP)
 {
 	//~ std::cout << "SkinName : " << pP->m_TeeInfos.m_SkinName << std::endl;
 	//~ std::cout << "ColorBody : " << pP->m_TeeInfos.m_ColorBody << std::endl;
@@ -1061,7 +1061,7 @@ void CGameControllerMOD::OnPlayerInfoChange(class CPlayer *pP)
 	//~ pP->SetClassSkin(pP->GetClass());
 }
 
-void CGameControllerMOD::DoWincheck()
+void CInfClassGameController::DoWincheck()
 {
 	int NumHumans = 0;
 	int NumInfected = 0;
@@ -1207,7 +1207,7 @@ void CGameControllerMOD::DoWincheck()
 	}
 }
 
-bool CGameControllerMOD::IsSpawnable(vec2 Pos, int TeleZoneIndex)
+bool CInfClassGameController::IsSpawnable(vec2 Pos, int TeleZoneIndex)
 {
 	//First check if there is a tee too close
 	CCharacter *aEnts[MAX_CLIENTS];
@@ -1241,7 +1241,7 @@ bool CGameControllerMOD::IsSpawnable(vec2 Pos, int TeleZoneIndex)
 	return true;
 }
 
-bool CGameControllerMOD::PreSpawn(CPlayer* pPlayer, vec2 *pOutPos)
+bool CInfClassGameController::PreSpawn(CPlayer* pPlayer, vec2 *pOutPos)
 {
 	// spectators can't spawn
 	if(pPlayer->GetTeam() == TEAM_SPECTATORS)
@@ -1295,7 +1295,7 @@ bool CGameControllerMOD::PreSpawn(CPlayer* pPlayer, vec2 *pOutPos)
 	return false;
 }
 
-bool CGameControllerMOD::PickupAllowed(int Index)
+bool CInfClassGameController::PickupAllowed(int Index)
 {
 	if(Index == TILE_ENTITY_POWERUP_NINJA) return false;
 	else if(Index == TILE_ENTITY_WEAPON_SHOTGUN) return false;
@@ -1304,7 +1304,7 @@ bool CGameControllerMOD::PickupAllowed(int Index)
 	else return true;
 }
 
-int CGameControllerMOD::ChooseHumanClass(const CPlayer *pPlayer) const
+int CInfClassGameController::ChooseHumanClass(const CPlayer *pPlayer) const
 {
 	//Get information about existing humans
 	int nbSupport = 0;
@@ -1368,7 +1368,7 @@ int CGameControllerMOD::ChooseHumanClass(const CPlayer *pPlayer) const
 	return START_HUMANCLASS + 1 + random_distribution(Probability, Probability + NB_HUMANCLASS);
 }
 
-int CGameControllerMOD::ChooseInfectedClass(const CPlayer *pPlayer) const
+int CInfClassGameController::ChooseInfectedClass(const CPlayer *pPlayer) const
 {
 	//Get information about existing infected
 	int nbInfected = 0;
@@ -1422,7 +1422,7 @@ int CGameControllerMOD::ChooseInfectedClass(const CPlayer *pPlayer) const
 	return Class;
 }
 
-bool CGameControllerMOD::IsEnabledClass(int PlayerClass) {
+bool CInfClassGameController::IsEnabledClass(int PlayerClass) {
 	switch(PlayerClass)
 	{
 		case PLAYERCLASS_ENGINEER:
@@ -1450,7 +1450,7 @@ bool CGameControllerMOD::IsEnabledClass(int PlayerClass) {
 	}
 }
 
-bool CGameControllerMOD::IsChoosableClass(int PlayerClass)
+bool CInfClassGameController::IsChoosableClass(int PlayerClass)
 {
 	if (!IsEnabledClass(PlayerClass))
 		return false;
@@ -1491,7 +1491,7 @@ bool CGameControllerMOD::IsChoosableClass(int PlayerClass)
 	return true;
 }
 
-bool CGameControllerMOD::CanVote()
+bool CInfClassGameController::CanVote()
 {
 	return !m_InfectedStarted;
 }

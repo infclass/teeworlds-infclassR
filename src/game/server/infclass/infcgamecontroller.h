@@ -8,11 +8,11 @@
 #include <game/server/gamecontroller.h>
 #include <game/server/gameworld.h>
 
-class CGameControllerMOD : public IGameController
+class CInfClassGameController : public IGameController
 {
 public:
-	CGameControllerMOD(class CGameContext *pGameServer);
-	virtual ~CGameControllerMOD();
+	CInfClassGameController(class CGameContext *pGameServer);
+	virtual ~CInfClassGameController();
 	virtual void Tick();
 	virtual void Snap(int SnappingClient);
 	// add more virtual functions here if you wish
