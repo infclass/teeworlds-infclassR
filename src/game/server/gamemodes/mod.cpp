@@ -1274,6 +1274,12 @@ bool CGameControllerMOD::PreSpawn(CPlayer* pPlayer, vec2 *pOutPos)
 			
 	int Type = (pPlayer->IsZombie() ? 0 : 1);
 
+	if(m_SpawnPoints[Type].size() == 0)
+	{
+		GameServer()->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "Server", "The map has no spawn points");
+		return false;
+	}
+
 	// get spawn point
 	int RandomShift = random_int(0, m_SpawnPoints[Type].size()-1);
 	for(int i = 0; i < m_SpawnPoints[Type].size(); i++)
