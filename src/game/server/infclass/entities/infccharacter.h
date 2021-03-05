@@ -26,6 +26,9 @@ public:
 	CInfClassPlayerClass *GetClass() { return m_pClass; }
 	void SetClass(CInfClassPlayerClass *pClass);
 
+	CInputCount CountFireInput() const;
+	bool FireJustPressed() const;
+
 	CGameContext *GameContext() const { return m_pContext; }
 
 protected:

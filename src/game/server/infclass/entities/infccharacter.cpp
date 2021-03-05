@@ -362,3 +362,13 @@ void CInfClassCharacter::SetClass(CInfClassPlayerClass *pClass)
 	m_pClass = pClass;
 	m_pClass->SetCharacter(this);
 }
+
+CInputCount CInfClassCharacter::CountFireInput() const
+{
+	return CountInput(m_LatestPrevInput.m_Fire, m_LatestInput.m_Fire);
+}
+
+bool CInfClassCharacter::FireJustPressed() const
+{
+	return m_LatestInput.m_Fire & 1;
+}
