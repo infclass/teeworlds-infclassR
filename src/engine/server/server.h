@@ -3,9 +3,14 @@
 #ifndef ENGINE_SERVER_SERVER_H
 #define ENGINE_SERVER_SERVER_H
 
+#include <engine/masterserver.h>
 #include <engine/server.h>
 #include <engine/server/netsession.h>
+#include <engine/server/register.h>
 #include <engine/server/roundstatistics.h>
+#include <engine/shared/demo.h>
+#include <engine/shared/econ.h>
+#include <engine/shared/mapchecker.h>
 #include <engine/shared/netban.h>
 #include <engine/shared/network.h>
 #include <engine/shared/snapshot.h>

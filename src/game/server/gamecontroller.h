@@ -6,6 +6,8 @@
 #include <base/vmath.h>
 #include <base/tl/array.h>
 
+class CConfig;
+
 /*
 	Class: Game Controller
 		Controls the main game logic. Keeping track of team and player score,
@@ -18,6 +20,7 @@ class IGameController
 
 protected:
 	CGameContext *GameServer() const { return m_pGameServer; }
+	CConfig *Config() const;
 	IServer *Server() const { return m_pServer; }
 
 /* INFECTION MODIFICATION START ***************************************/

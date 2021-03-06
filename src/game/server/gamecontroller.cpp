@@ -8,6 +8,10 @@
 #include "gamecontroller.h"
 #include "gamecontext.h"
 
+CConfig *IGameController::Config() const
+{
+	return GameServer()->Config();
+}
 
 IGameController::IGameController(class CGameContext *pGameServer)
 {
