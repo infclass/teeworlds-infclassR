@@ -32,6 +32,14 @@ CGameWorld *CInfClassPlayerClass::GameWorld() const
 	return nullptr;
 }
 
+CInfClassGameController *CInfClassPlayerClass::GameController() const
+{
+	if(m_pPlayer)
+		return m_pPlayer->GameController();
+
+	return nullptr;
+}
+
 CConfig *CInfClassPlayerClass::Config()
 {
 	if(m_pCharacter)

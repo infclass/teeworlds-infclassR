@@ -1,5 +1,7 @@
 #include "infcplayer.h"
 
+#include <game/server/infclass/infcgamecontroller.h>
+
 #include "classes/humans/human.h"
 #include "classes/infcplayerclass.h"
 #include "classes/infected/infected.h"
@@ -19,6 +21,11 @@ CInfClassPlayer::~CInfClassPlayer()
 		delete m_pInfcPlayerClass;
 
 	m_pInfcPlayerClass = nullptr;
+}
+
+CInfClassGameController *CInfClassPlayer::GameController()
+{
+	return static_cast<CInfClassGameController*>(GameServer()->m_pController);
 }
 
 void CInfClassPlayer::TryRespawn()

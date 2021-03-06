@@ -4,6 +4,7 @@
 #include <game/gamecore.h>
 
 class CGameContext;
+class CInfClassGameController;
 class CInfClassPlayerClass;
 
 // We actually have to include player.h after all this stuff above.
@@ -16,6 +17,8 @@ class CInfClassPlayer : public CPlayer
 public:
 	CInfClassPlayer(CGameContext *pGameServer, int ClientID, int Team);
 	~CInfClassPlayer() override;
+
+	CInfClassGameController *GameController();
 
 	void TryRespawn() override;
 
