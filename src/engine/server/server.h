@@ -6,6 +6,9 @@
 #include <engine/server.h>
 #include <engine/server/netsession.h>
 #include <engine/server/roundstatistics.h>
+#include <engine/shared/netban.h>
+#include <engine/shared/network.h>
+#include <engine/shared/snapshot.h>
 #include <game/server/classes.h>
 #include <game/voting.h>
 
