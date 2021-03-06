@@ -15,6 +15,8 @@ public:
 
 	void Tick() override;
 
+	void HandleMapMenu() override;
+
 	void Die(int Killer, int Weapon) override;
 
 	void SetActiveWeapon(int Weapon);
