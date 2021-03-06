@@ -801,29 +801,26 @@ void CCharacter::OnHammerFired(bool *pFireAccepted)
 	}
 	else if(GetPlayerClass() == PLAYERCLASS_HERO)
 	{
-		if (g_Config.m_InfTurretEnable) {
-			if(m_TurretCount)
+		if(g_Config.m_InfTurretEnable && m_TurretCount)
+		{
+			if (g_Config.m_InfTurretEnableLaser)
 			{
-				if (g_Config.m_InfTurretEnableLaser)
-				{
-					new CTurret(GameServer(), m_Pos, m_pPlayer->GetCID(), Direction, CTurret::LASER);
-				}
-				else if (g_Config.m_InfTurretEnablePlasma)
-				{
-					new CTurret(GameServer(), m_Pos, m_pPlayer->GetCID(), Direction, CTurret::PLASMA);
-				}
-
-				GameServer()->CreateSound(m_Pos, SOUND_GRENADE_FIRE);
-				m_TurretCount--;
-				char aBuf[256];
-				str_format(aBuf, sizeof(aBuf), "placed turret, %i left", m_TurretCount);
-				GameServer()->SendChatTarget_Localization(m_pPlayer->GetCID(), CHATCATEGORY_SCORE, aBuf, NULL);
-				if (m_TurretCount == 0)
-				{
-					m_aWeapons[WEAPON_HAMMER].m_Got = false;
-					SetActiveWeapon(WEAPON_GRENADE);
-				}
+				new CTurret(GameServer(), m_Pos, m_pPlayer->GetCID(), Direction, CTurret::LASER);
 			}
+			else if (g_Config.m_InfTurretEnablePlasma)
+			{
+				new CTurret(GameServer(), m_Pos, m_pPlayer->GetCID(), Direction, CTurret::PLASMA);
+			}
+
+			GameServer()->CreateSound(m_Pos, SOUND_GRENADE_FIRE);
+			m_TurretCount--;
+			char aBuf[256];
+			str_format(aBuf, sizeof(aBuf), "placed turret, %i left", m_TurretCount);
+			GameServer()->SendChatTarget_Localization(m_pPlayer->GetCID(), CHATCATEGORY_SCORE, aBuf, NULL);
+		}
+		else
+		{
+			GameServer()->CreateSound(m_Pos, SOUND_WEAPON_NOAMMO);
 		}
 	}
 	else if(GetPlayerClass() == PLAYERCLASS_SOLDIER)
@@ -2709,8 +2706,38 @@ void CCharacter::Tick()
 
 		//Search for flag
 		int CoolDown = m_pHeroFlag->GetCoolDown();
-		
-		if(CoolDown > 0)
+
+		if(m_ActiveWeapon == WEAPON_HAMMER)
+		{
+			if(m_TurretCount > 0)
+			{
+				int MaxTurrets = Config()->m_InfTurretMaxPerPlayer;
+				if(MaxTurrets == 1)
+				{
+					GameServer()->SendBroadcast_Localization(GetPlayer()->GetCID(), BROADCAST_PRIORITY_WEAPONSTATE, BROADCAST_DURATION_REALTIME,
+						_("You have a turret. Use the hammer to place it."),
+						NULL
+					);
+				}
+				else
+				{
+					GameServer()->SendBroadcast_Localization_P(GetPlayer()->GetCID(), BROADCAST_PRIORITY_WEAPONSTATE, BROADCAST_DURATION_REALTIME, m_TurretCount,
+						_("You have {int:NumTurrets} of {int:MaxTurrets} turrets. Use the hammer to place one."),
+						"NumTurrets", &m_TurretCount,
+						"MaxTurrets", &MaxTurrets,
+						NULL
+					);
+				}
+			}
+			else
+			{
+				GameServer()->SendBroadcast_Localization(GetPlayer()->GetCID(), BROADCAST_PRIORITY_WEAPONSTATE, BROADCAST_DURATION_REALTIME,
+					_("You don't have a turret to place"),
+					NULL
+				);
+			}
+		}
+		else if(CoolDown > 0)
 		{
 			int Seconds = 1+CoolDown/Server()->TickSpeed();
 			GameServer()->SendBroadcast_Localization(GetPlayer()->GetCID(), BROADCAST_PRIORITY_WEAPONSTATE, BROADCAST_DURATION_REALTIME,

@@ -3,8 +3,10 @@
 #include "hero-flag.h"
 
 #include <game/server/gamecontext.h>
+#include <engine/server/server.h>
 #include <engine/server/roundstatistics.h>
 #include <engine/shared/config.h>
+#include <game/server/infclass/infcgamecontroller.h>
 
 CHeroFlag::CHeroFlag(CGameContext *pGameContext, int Owner)
 	: CInfCEntity(pGameContext, CGameWorld::ENTTYPE_HERO_FLAG, vec2(), Owner, ms_PhysSize)
@@ -28,10 +30,10 @@ CHeroFlag::~CHeroFlag()
 
 void CHeroFlag::FindPosition()
 {
-	int NbPos = GameServer()->m_pController->HeroFlagPositions().size();
+	int NbPos = GameController()->HeroFlagPositions().size();
 	int Index = random_int(0, NbPos-1);
 	
-	m_Pos = GameServer()->m_pController->HeroFlagPositions()[Index];
+	m_Pos = GameController()->HeroFlagPositions()[Index];
 }
 
 void CHeroFlag::SetCoolDown()
@@ -62,21 +64,18 @@ void CHeroFlag::GiveGift(CCharacter* pHero)
 	pHero->SetEmote(EMOTE_HAPPY, Server()->Tick() + Server()->TickSpeed());
 	GameServer()->SendEmoticon(pHero->GetPlayer()->GetCID(), EMOTICON_MUSIC);
 
-	if (Config()->m_InfTurretEnable)
+	if(GameController()->AreTurretsEnabled())
 	{
-		if(Server()->GetActivePlayerCount() >= Config()->m_InfMinPlayersForTurrets)
+		if(pHero->m_TurretCount < Config()->m_InfTurretMaxPerPlayer)
 		{
-			if(pHero->m_TurretCount < Config()->m_InfTurretMaxPerPlayer)
-			{
-				if (pHero->m_TurretCount == 0)
-				pHero->GiveWeapon(WEAPON_HAMMER, -1);
+			if (pHero->m_TurretCount == 0)
+			pHero->GiveWeapon(WEAPON_HAMMER, -1);
 
-				pHero->m_TurretCount += Config()->m_InfTurretGive;
+			pHero->m_TurretCount += Config()->m_InfTurretGive;
 
-				char aBuf[256];
-				str_format(aBuf, sizeof(aBuf), "you gained a turret (%i), place it with the hammer", pHero->m_TurretCount);
-				GameServer()->SendChatTarget_Localization(pHero->GetPlayer()->GetCID(), CHATCATEGORY_SCORE, aBuf, NULL);
-			}
+			char aBuf[256];
+			str_format(aBuf, sizeof(aBuf), "you gained a turret (%i), place it with the hammer", pHero->m_TurretCount);
+			GameServer()->SendChatTarget_Localization(pHero->GetPlayer()->GetCID(), CHATCATEGORY_SCORE, aBuf, NULL);
 		}
 	}
 		

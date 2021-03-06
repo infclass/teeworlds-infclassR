@@ -73,6 +73,7 @@ void CInfClassHuman::GiveClassAttributes()
 			m_pCharacter->SetActiveWeapon(WEAPON_SHOTGUN);
 			break;
 		case PLAYERCLASS_HERO:
+			m_pCharacter->GiveWeapon(WEAPON_HAMMER, -1);
 			m_pCharacter->GiveWeapon(WEAPON_GUN, -1);
 			m_pCharacter->GiveWeapon(WEAPON_SHOTGUN, -1);
 			m_pCharacter->GiveWeapon(WEAPON_RIFLE, -1);
