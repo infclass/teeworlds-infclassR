@@ -6,6 +6,7 @@
 #include <game/server/entity.h>
 
 class CGameContext;
+class CInfClassGameController;
 
 class CInfCEntity : public CEntity
 {
@@ -13,6 +14,7 @@ public:
 	CInfCEntity(CGameContext *pGameContext, int ObjectType, vec2 Pos = vec2(), int Owner = -1,
 	            int ProximityRadius=0);
 
+	CInfClassGameController *GameController();
 	int GetOwner() const { return m_Owner; }
 
 	void Reset() override;
