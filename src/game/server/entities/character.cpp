@@ -3090,12 +3090,6 @@ bool CCharacter::TakeDamage(vec2 Force, int Dmg, int From, int Weapon, int Mode)
 		}
 	}
 
-	// slow down zombies that get hit by looper rifle
-	if(pKillerPlayer && pKillerPlayer->GetClass() == PLAYERCLASS_LOOPER && Weapon == WEAPON_RIFLE && IsZombie()) { 
-		SlowMotionEffect(g_Config.m_InfSlowMotionGunDuration);
-		if (g_Config.m_InfSlowMotionGunDuration != 0) GameServer()->SendEmoticon(GetPlayer()->GetCID(), EMOTICON_EXCLAMATION);	
-	}
-	
 /* INFECTION MODIFICATION END *****************************************/
 
 	// m_pPlayer only inflicts half damage on self

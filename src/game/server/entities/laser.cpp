@@ -3,8 +3,11 @@
 #include <game/generated/protocol.h>
 #include <game/server/gamecontext.h>
 #include "laser.h"
+
+#include <engine/shared/config.h>
 #include <engine/server/roundstatistics.h>
 
+#include <game/server/infclass/entities/infccharacter.h>
 #include <game/server/infclass/entities/portal.h>
 
 CLaser::CLaser(CGameWorld *pGameWorld, vec2 Pos, vec2 Direction, float StartEnergy, int Owner, int Dmg, int ObjType)
@@ -32,7 +35,7 @@ bool CLaser::HitCharacter(vec2 From, vec2 To)
 {
 	vec2 At;
 	CCharacter *pOwnerChar = GameServer()->GetPlayerChar(m_Owner);
-	CCharacter *pHit = GameServer()->m_World.IntersectCharacter(m_Pos, To, 0.f, At, pOwnerChar);
+	CInfClassCharacter *pHit = static_cast<CInfClassCharacter*>(GameServer()->m_World.IntersectCharacter(m_Pos, To, 0.f, At, pOwnerChar));
 	vec2 PortalHitAt;
 	CEntity *pPortalEntity = GameServer()->m_World.IntersectEntity(m_Pos, To, 0, &PortalHitAt, CGameWorld::ENTTYPE_PORTAL);
 	vec2 MercenaryBombHitAt;
@@ -129,6 +132,13 @@ bool CLaser::HitCharacter(vec2 From, vec2 To)
 	else
 	{
 		pHit->TakeDamage(vec2(0.f, 0.f), m_Dmg, m_Owner, WEAPON_RIFLE, TAKEDAMAGEMODE_NOINFECTION);
+
+		if(pOwnerChar && pOwnerChar->GetPlayerClass() == PLAYERCLASS_LOOPER)
+		{
+			pHit->SlowMotionEffect(g_Config.m_InfSlowMotionGunDuration);
+			if(Config()->m_InfSlowMotionGunDuration != 0)
+				GameServer()->SendEmoticon(pHit->GetPlayer()->GetCID(), EMOTICON_EXCLAMATION);
+		}
 	}
 	return true;
 }
