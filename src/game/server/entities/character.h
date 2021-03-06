@@ -262,7 +262,7 @@ public:
 	void ClassSpawnAttributes();
 	vec2 GetDirection() const;
 	void OpenClassChooser();
-	int GetClass() const;
+	int GetPlayerClass() const;
 
 	void SetClass(int ClassChoosed);
 	bool IsZombie() const;

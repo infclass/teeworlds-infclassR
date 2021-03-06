@@ -52,7 +52,7 @@ bool CLaser::HitCharacter(vec2 From, vec2 To)
 		}
 	}
 
-	if (pOwnerChar && pOwnerChar->GetClass() == PLAYERCLASS_MERCENARY)
+	if (pOwnerChar && pOwnerChar->GetPlayerClass() == PLAYERCLASS_MERCENARY)
 	{
 		m_BouncesStop = true;
 		if(pMercenaryEntity)
@@ -75,7 +75,7 @@ bool CLaser::HitCharacter(vec2 From, vec2 To)
 	m_Pos = At;
 	m_Energy = -1;
 
-	if (pOwnerChar && pOwnerChar->GetClass() == PLAYERCLASS_MEDIC) { // Revive zombie
+	if (pOwnerChar && pOwnerChar->GetPlayerClass() == PLAYERCLASS_MEDIC) { // Revive zombie
 		CCharacter *medic = pOwnerChar;
 		CCharacter *zombie = pHit;
 		if (!zombie)
@@ -107,12 +107,12 @@ bool CLaser::HitCharacter(vec2 From, vec2 To)
 						Server()->ClientName(zombie->GetPlayer()->GetCID()));
 				GameServer()->SendChatTarget(-1, aBuf);
 				int ClientID = medic->GetPlayer()->GetCID();
-				Server()->RoundStatistics()->OnScoreEvent(ClientID, SCOREEVENT_MEDIC_REVIVE, medic->GetClass(), Server()->ClientName(ClientID), GameServer()->Console());
+				Server()->RoundStatistics()->OnScoreEvent(ClientID, SCOREEVENT_MEDIC_REVIVE, medic->GetPlayerClass(), Server()->ClientName(ClientID), GameServer()->Console());
 			}
 		}
 		return true;
 	}
-	else if (pOwnerChar && pOwnerChar->GetClass() == PLAYERCLASS_MERCENARY)
+	else if (pOwnerChar && pOwnerChar->GetPlayerClass() == PLAYERCLASS_MERCENARY)
 	{
 		if(pMercenaryEntity)
 		{

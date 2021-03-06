@@ -30,14 +30,14 @@ void CInfClassCharacter::Tick()
 void CInfClassCharacter::Die(int Killer, int Weapon)
 {
 /* INFECTION MODIFICATION START ***************************************/
-	if(GetClass()->PlayerClass() == PLAYERCLASS_UNDEAD && Killer != m_pPlayer->GetCID())
+	if(GetPlayerClass() == PLAYERCLASS_UNDEAD && Killer != m_pPlayer->GetCID())
 	{
 		Freeze(10.0, Killer, FREEZEREASON_UNDEAD);
 		return;
 	}
 
 	// Start counting down, delay killer message for later
-	if(GetClass()->PlayerClass() == PLAYERCLASS_VOODOO && !m_VoodooAboutToDie)
+	if(GetPlayerClass() == PLAYERCLASS_VOODOO && !m_VoodooAboutToDie)
 	{
 		m_VoodooAboutToDie = true;
 		m_VoodooKiller = Killer;
@@ -45,12 +45,12 @@ void CInfClassCharacter::Die(int Killer, int Weapon)
 		m_pPlayer->SetToSpirit(true);
 		return;
 	// If about to die, yet killed again, dont kill him either
-	} else if(GetClass()->PlayerClass() == PLAYERCLASS_VOODOO && m_VoodooAboutToDie && m_VoodooTimeAlive > 0)
+	} else if(GetPlayerClass() == PLAYERCLASS_VOODOO && m_VoodooAboutToDie && m_VoodooTimeAlive > 0)
 	{
 		return;
 	}
 
-	if(GetClass()->PlayerClass() == PLAYERCLASS_GHOUL)
+	if(GetPlayerClass() == PLAYERCLASS_GHOUL)
 	{
 		m_pPlayer->IncreaseGhoulLevel(-20);
 	}
@@ -127,19 +127,19 @@ void CInfClassCharacter::Die(int Killer, int Weapon)
 		pKillerPlayer = GameServer()->m_apPlayers[Killer];
 	}
 
-	if(GetClass()->PlayerClass() == PLAYERCLASS_BOOMER && !IsFrozen() && Weapon != WEAPON_GAME && !(IsInLove() && Weapon == WEAPON_SELF) )
+	if(GetPlayerClass() == PLAYERCLASS_BOOMER && !IsFrozen() && Weapon != WEAPON_GAME && !(IsInLove() && Weapon == WEAPON_SELF) )
 	{
 		GameServer()->CreateSound(m_Pos, SOUND_GRENADE_EXPLODE);
 		GameServer()->CreateExplosionDisk(m_Pos, 60.0f, 80.5f, 14, 52.0f, m_pPlayer->GetCID(), WEAPON_HAMMER, TAKEDAMAGEMODE_INFECTION);
 	}
 	
-	if(GetClass()->PlayerClass() == PLAYERCLASS_WITCH)
+	if(GetPlayerClass() == PLAYERCLASS_WITCH)
 	{
 		m_pPlayer->StartInfection(true);
 		GameServer()->SendBroadcast_Localization(-1, BROADCAST_PRIORITY_GAMEANNOUNCE, BROADCAST_DURATION_GAMEANNOUNCE, _("The witch is dead"), NULL);
 		GameServer()->CreateSoundGlobal(SOUND_CTF_RETURN);
 	}
-	else if(GetClass()->PlayerClass() == PLAYERCLASS_UNDEAD)
+	else if(GetPlayerClass() == PLAYERCLASS_UNDEAD)
 	{
 		m_pPlayer->StartInfection(true);
 		GameServer()->SendBroadcast_Localization(-1, BROADCAST_PRIORITY_GAMEANNOUNCE, BROADCAST_DURATION_GAMEANNOUNCE, _("The undead is finally dead"), NULL);

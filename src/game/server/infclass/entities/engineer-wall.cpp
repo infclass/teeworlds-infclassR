@@ -147,18 +147,18 @@ void CEngineerWall::OnZombieHit(CCharacter *pZombie)
 				)
 				{
 					int ClientID = pHook->GetPlayer()->GetCID();
-					Server()->RoundStatistics()->OnScoreEvent(ClientID, SCOREEVENT_HELP_HOOK_BARRIER, pHook->GetClass(), Server()->ClientName(ClientID), GameServer()->Console());
+					Server()->RoundStatistics()->OnScoreEvent(ClientID, SCOREEVENT_HELP_HOOK_BARRIER, pHook->GetPlayerClass(), Server()->ClientName(ClientID), GameServer()->Console());
 					GameServer()->SendScoreSound(pHook->GetPlayer()->GetCID());
 				}
 			}
 		}
 
-		if(pZombie->GetClass() != PLAYERCLASS_UNDEAD && pZombie->GetClass() != PLAYERCLASS_VOODOO)
+		if(pZombie->GetPlayerClass() != PLAYERCLASS_UNDEAD && pZombie->GetPlayerClass() != PLAYERCLASS_VOODOO)
 		{
 			int LifeSpanReducer = ((Server()->TickSpeed()*Config()->m_InfBarrierTimeReduce)/100);
 			m_WallFlashTicks = 10;
 
-			if(pZombie->GetClass() == PLAYERCLASS_GHOUL)
+			if(pZombie->GetPlayerClass() == PLAYERCLASS_GHOUL)
 			{
 				float Factor = pZombie->GetPlayer()->GetGhoulPercent();
 				LifeSpanReducer += Server()->TickSpeed() * 5.0f * Factor;

@@ -114,7 +114,7 @@ void CHeroFlag::Tick()
 		
 		for(CCharacter *p = (CCharacter*) GameWorld()->FindFirst(CGameWorld::ENTTYPE_CHARACTER); p; p = (CCharacter *)p->TypeNext())
 		{
-			if(p->GetClass() != PLAYERCLASS_HERO)
+			if(p->GetPlayerClass() != PLAYERCLASS_HERO)
 				continue;
 
 			if(p->GetPlayer()->GetCID() != m_Owner)
@@ -129,7 +129,7 @@ void CHeroFlag::Tick()
 				if(NbPlayer > 3)
 				{
 					int ClientID = p->GetPlayer()->GetCID();
-					Server()->RoundStatistics()->OnScoreEvent(ClientID, SCOREEVENT_HERO_FLAG, p->GetClass(), Server()->ClientName(ClientID), GameServer()->Console());
+					Server()->RoundStatistics()->OnScoreEvent(ClientID, SCOREEVENT_HERO_FLAG, p->GetPlayerClass(), Server()->ClientName(ClientID), GameServer()->Console());
 					GameServer()->SendScoreSound(p->GetPlayer()->GetCID());
 				}
 				break;

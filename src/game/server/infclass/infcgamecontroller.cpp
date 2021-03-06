@@ -99,7 +99,7 @@ void CInfClassGameController::OnPlayerInfected(CPlayer *pPlayer, CPlayer *pInfec
 			pHook->GetPlayer()->GetCID() != InfectedByCID
 		)
 		{
-			Server()->RoundStatistics()->OnScoreEvent(pHook->GetPlayer()->GetCID(), SCOREEVENT_HELP_HOOK_INFECTION, pHook->GetClass(), Server()->ClientName(pHook->GetPlayer()->GetCID()), GameServer()->Console());
+			Server()->RoundStatistics()->OnScoreEvent(pHook->GetPlayer()->GetCID(), SCOREEVENT_HELP_HOOK_INFECTION, pHook->GetPlayerClass(), Server()->ClientName(pHook->GetPlayer()->GetCID()), GameServer()->Console());
 			GameServer()->SendScoreSound(pHook->GetPlayer()->GetCID());
 		}
 	}
@@ -803,7 +803,7 @@ bool CInfClassGameController::PortalsAvailableForCharacter(class CCharacter *pCh
 	if (GameServer()->m_FunRound)
 		return false;
 
-	if (pCharacter->GetClass() != PLAYERCLASS_WITCH)
+	if (pCharacter->GetPlayerClass() != PLAYERCLASS_WITCH)
 		return false;
 
 	CPlayerIterator<PLAYERITER_INGAME> Iter(GameServer()->m_apPlayers);
@@ -944,13 +944,13 @@ void CInfClassGameController::RewardTheKiller(CCharacter *pVictim, CPlayer *pKil
 		}
 		else
 		{
-			if(pVictim->GetClass() == PLAYERCLASS_WITCH)
+			if(pVictim->GetPlayerClass() == PLAYERCLASS_WITCH)
 			{
 				GameServer()->SendChatTarget_Localization(pKiller->GetCID(), CHATCATEGORY_SCORE, _("You have killed a witch, +5 points"), NULL);
 				Server()->RoundStatistics()->OnScoreEvent(pKiller->GetCID(), SCOREEVENT_KILL_WITCH, pKiller->GetClass(), Server()->ClientName(pKiller->GetCID()), GameServer()->Console());
 				GameServer()->SendScoreSound(pKiller->GetCID());
 			}
-			else if(pVictim->GetClass() == PLAYERCLASS_UNDEAD)
+			else if(pVictim->GetPlayerClass() == PLAYERCLASS_UNDEAD)
 			{
 				GameServer()->SendChatTarget_Localization(pKiller->GetCID(), CHATCATEGORY_SCORE, _("You have killed an undead! +5 points"), NULL);
 				Server()->RoundStatistics()->OnScoreEvent(pKiller->GetCID(), SCOREEVENT_KILL_UNDEAD, pKiller->GetClass(), Server()->ClientName(pKiller->GetCID()), GameServer()->Console());
@@ -1016,7 +1016,7 @@ int CInfClassGameController::OnCharacterDeath(class CCharacter *pVictim, class C
 	{
 		for(CCharacter *p = (CCharacter*) GameWorld()->FindFirst(CGameWorld::ENTTYPE_CHARACTER); p; p = (CCharacter *)p->TypeNext())
 		{
-			if(p->GetClass() != PLAYERCLASS_GHOUL || p == pVictim) continue;
+			if(p->GetPlayerClass() != PLAYERCLASS_GHOUL || p == pVictim) continue;
 			if(p->GetPlayer() && p->GetPlayer()->GetGhoulPercent() >= 1.0f) continue;
 
 			float Len = distance(p->m_Pos, pVictim->m_Pos);
@@ -1043,7 +1043,7 @@ void CInfClassGameController::OnCharacterSpawn(class CCharacter *pChr)
 	// give default weapons
 	pChr->GiveWeapon(WEAPON_HAMMER, -1);
 
-	if(GameServer()->m_FunRound && !IsInfectionStarted() && pChr->GetClass() == PLAYERCLASS_NONE)
+	if(GameServer()->m_FunRound && !IsInfectionStarted() && pChr->GetPlayerClass() == PLAYERCLASS_NONE)
 	{
 		CPlayer *pPlayer = pChr->GetPlayer();
 		if(pPlayer)

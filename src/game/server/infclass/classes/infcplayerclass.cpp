@@ -107,7 +107,7 @@ bool CInfClassPlayerClass::IsZombie() const
 int CInfClassPlayerClass::PlayerClass() const
 {
 	if(m_pCharacter)
-		return m_pCharacter->CCharacter::GetClass();
+		return m_pCharacter->GetPlayerClass();
 
 	return PLAYERCLASS_NONE;
 }

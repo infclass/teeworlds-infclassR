@@ -80,7 +80,7 @@ void CLooperWall::Tick()
 					int LifeSpanReducer = ((Server()->TickSpeed()*Config()->m_InfLooperBarrierTimeReduce)/100);
 					if(!p->IsInSlowMotion()) 
 					{
-						if(p->GetClass() == PLAYERCLASS_GHOUL)
+						if(p->GetPlayerClass() == PLAYERCLASS_GHOUL)
 						{
 							float Factor = p->GetPlayer()->GetGhoulPercent();
 							LifeSpanReducer += Server()->TickSpeed() * 5.0f * Factor;
