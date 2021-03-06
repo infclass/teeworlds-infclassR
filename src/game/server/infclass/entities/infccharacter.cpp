@@ -32,7 +32,7 @@ void CInfClassCharacter::HandleMapMenu()
 {
 	if(GetPlayerClass() != PLAYERCLASS_NONE)
 	{
-		m_AntiFireTick = Server()->Tick();
+		SetAntiFire();
 		m_pPlayer->CloseMapMenu();
 	}
 	else
@@ -177,7 +177,7 @@ void CInfClassCharacter::HandleMapMenu()
 
 			if(NewClass >= 0 && GameServer()->m_pController->IsChoosableClass(NewClass))
 			{
-				m_AntiFireTick = Server()->Tick();
+				SetAntiFire();
 				m_pPlayer->m_MapMenuItem = 0;
 				m_pPlayer->SetClass(NewClass);
 				m_pPlayer->SetOldClass(NewClass);

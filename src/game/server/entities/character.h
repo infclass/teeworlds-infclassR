@@ -211,7 +211,7 @@ protected:
 	int m_BarrierHintID;
 	array<int> m_BarrierHintIDs;
 	int m_CursorID;
-	int m_AntiFireTick;
+	int m_AntiFireTime;
 	
 	bool m_IsFrozen;
 	int m_FrozenTime;
@@ -269,6 +269,7 @@ public:
 	bool IsZombie() const;
 	bool IsHuman() const;
 	void RemoveAllGun();
+	void SetAntiFire();
 	void Freeze(float Time, int Player, int Reason);
 	bool IsFrozen() const;
 	bool IsInSlowMotion() const; //LooperClass changes here

@@ -86,7 +86,7 @@ m_pConsole(pConsole)
 	{
 		m_BarrierHintIDs[i] = Server()->SnapNewID();
 	}
-	m_AntiFireTick = 0;
+	m_AntiFireTime = 0;
 	m_IsFrozen = false;
 	m_IsInSlowMotion = false;
 	m_FrozenTime = -1;
@@ -204,7 +204,7 @@ bool CCharacter::Spawn(CPlayer *pPlayer, vec2 Pos)
 	GameServer()->m_pController->OnCharacterSpawn(this);
 
 /* INFECTION MODIFICATION START ***************************************/
-	m_AntiFireTick = Server()->Tick();
+	SetAntiFire();
 	m_IsFrozen = false;
 	m_IsInSlowMotion = false;
 	m_FrozenTime = -1;
@@ -594,8 +594,7 @@ void CCharacter::UpdateTuningParam()
 void CCharacter::FireWeapon()
 {
 /* INFECTION MODIFICATION START ***************************************/
-	//Wait 1 second after spawning
-	if(Server()->Tick() - m_AntiFireTick < Server()->TickSpeed())
+	if(m_AntiFireTime > 0)
 		return;
 
 	if(IsFrozen())
@@ -1912,6 +1911,12 @@ void CCharacter::RemoveAllGun()
 	m_aWeapons[WEAPON_SHOTGUN].m_Got = false;
 	m_aWeapons[WEAPON_SHOTGUN].m_Ammo = 0;
 }
+
+void CCharacter::SetAntiFire()
+{
+	m_AntiFireTime = Server()->TickSpeed() * Config()->m_InfAntiFireTime / 1000;
+}
+
 /* INFECTION MODIFICATION END *****************************************/
 
 bool CCharacter::GiveWeapon(int Weapon, int Ammo)
@@ -2144,7 +2149,6 @@ void CCharacter::Tick()
 	}
 	
 	
-	
 	if(m_SlowMotionTick > 0)
 	{
 		--m_SlowMotionTick;
@@ -2160,6 +2164,8 @@ void CCharacter::Tick()
 		}
 	}
 	
+	if(m_AntiFireTime > 0)
+		--m_AntiFireTime;
 	
 	if(m_HallucinationTick > 0)
 		--m_HallucinationTick;
