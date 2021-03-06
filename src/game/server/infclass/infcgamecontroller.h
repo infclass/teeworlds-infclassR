@@ -34,6 +34,7 @@ public:
 	virtual void OnPlayerInfected(CPlayer* pPlayer, CPlayer* pInfectiousPlayer);
 	virtual bool IsInfectionStarted();
 	bool PortalsAvailableForCharacter(class CCharacter *pCharacter) override;
+	bool AreTurretsEnabled() const;
 	
 	void ResetFinalExplosion();
 	

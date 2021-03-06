@@ -822,6 +822,14 @@ bool CInfClassGameController::PortalsAvailableForCharacter(class CCharacter *pCh
 	return true;
 }
 
+bool CInfClassGameController::AreTurretsEnabled() const
+{
+	if(!Config()->m_InfTurretEnable)
+		return false;
+
+	 return Server()->GetActivePlayerCount() >= Config()->m_InfMinPlayersForTurrets;
+}
+
 void CInfClassGameController::Snap(int SnappingClient)
 {
 	CNetObj_GameInfo *pGameInfoObj = (CNetObj_GameInfo *)Server()->SnapNewItem(NETOBJTYPE_GAMEINFO, 0, sizeof(CNetObj_GameInfo));
