@@ -12,27 +12,28 @@ class CInfClassGameController : public IGameController
 {
 public:
 	CInfClassGameController(class CGameContext *pGameServer);
-	virtual ~CInfClassGameController();
-	virtual void Tick();
-	virtual void Snap(int SnappingClient);
+	~CInfClassGameController() override;
+
+	void Tick();
+	void Snap(int SnappingClient);
 	// add more virtual functions here if you wish
-	
-	virtual bool OnEntity(const char* pName, vec2 Pivot, vec2 P0, vec2 P1, vec2 P2, vec2 P3, int PosEnv);
-	virtual int OnCharacterDeath(class CCharacter *pVictim, class CPlayer *pKiller, int Weapon);
-	virtual void OnCharacterSpawn(class CCharacter *pChr);
-	virtual void OnPlayerInfoChange(class CPlayer *pP);
-	virtual void DoWincheck();
-	virtual void EndRound();
-	virtual bool PreSpawn(CPlayer* pPlayer, vec2 *pPos);
-	virtual bool PickupAllowed(int Index);
-	virtual int ChooseHumanClass(const CPlayer *pPlayer) const;
-	virtual int ChooseInfectedClass(const CPlayer *pPlayer) const;
-	virtual bool IsEnabledClass(int PlayerClass);
-	virtual bool IsChoosableClass(int PlayerClass);
-	virtual bool CanVote();
-	virtual void OnClientDrop(int ClientID, int Type);
-	virtual void OnPlayerInfected(CPlayer* pPlayer, CPlayer* pInfectiousPlayer);
-	virtual bool IsInfectionStarted();
+
+	bool OnEntity(const char* pName, vec2 Pivot, vec2 P0, vec2 P1, vec2 P2, vec2 P3, int PosEnv) override;
+	int OnCharacterDeath(class CCharacter *pVictim, class CPlayer *pKiller, int Weapon) override;
+	void OnCharacterSpawn(class CCharacter *pChr) override;
+	void OnPlayerInfoChange(class CPlayer *pP) override;
+	void DoWincheck() override;
+	void EndRound() override;
+	bool PreSpawn(CPlayer* pPlayer, vec2 *pPos) override;
+	bool PickupAllowed(int Index) ;
+	int ChooseHumanClass(const CPlayer *pPlayer) const override;
+	int ChooseInfectedClass(const CPlayer *pPlayer) const override;
+	bool IsEnabledClass(int PlayerClass);
+	bool IsChoosableClass(int PlayerClass) override;
+	bool CanVote() override;
+	void OnClientDrop(int ClientID, int Type) override;
+	void OnPlayerInfected(CPlayer* pPlayer, CPlayer* pInfectiousPlayer) override;
+	bool IsInfectionStarted() override;
 	bool PortalsAvailableForCharacter(class CCharacter *pCharacter) override;
 	bool AreTurretsEnabled() const;
 	
@@ -58,7 +59,7 @@ private:
 	CGameWorld *GameWorld();
 	
 	void RewardTheKiller(class CCharacter *pVictim, class CPlayer *pKiller, int Weapon);
-	bool IsSpawnable(vec2 Pos, int TeleZoneIndex);
+	bool IsSpawnable(vec2 Pos, int TeleZoneIndex) override;
 	void GetPlayerCounter(int ClientException, int& NumHumans, int& NumInfected, int& NumFirstInfected);
 
 	int RandomZombieToWitch();
