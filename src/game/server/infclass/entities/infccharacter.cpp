@@ -112,11 +112,14 @@ void CInfClassCharacter::FireWeapon()
 		NoAmmo();
 		return;
 	}
+	
+	WeaponFireContext FireContext;
+	FireContext.Weapon = m_ActiveWeapon;
+	FireContext.FireAccepted = true;
 
-	bool FireAccepted = true;
-	OnWeaponFired(m_ActiveWeapon, &FireAccepted);
+	OnWeaponFired(&FireContext);
 
-	if(!FireAccepted)
+	if(!FireContext.FireAccepted)
 	{
 		return;
 	}
@@ -132,34 +135,34 @@ void CInfClassCharacter::FireWeapon()
 	}
 }
 
-void CInfClassCharacter::OnWeaponFired(int Weapon, bool *pFireAccepted)
+void CInfClassCharacter::OnWeaponFired(WeaponFireContext *pFireContext)
 {
-	switch(Weapon)
+	switch(pFireContext->Weapon)
 	{
 		case WEAPON_HAMMER:
-			OnHammerFired(pFireAccepted);
+			OnHammerFired(pFireContext);
 			break;
 		case WEAPON_GUN:
-			OnGunFired(pFireAccepted);
+			OnGunFired(pFireContext);
 			break;
 		case WEAPON_SHOTGUN:
-			OnShotgunFired(pFireAccepted);
+			OnShotgunFired(pFireContext);
 			break;
 		case WEAPON_GRENADE:
-			OnGrenadeFired(pFireAccepted);
+			OnGrenadeFired(pFireContext);
 			break;
 		case WEAPON_RIFLE:
-			OnLaserFired(pFireAccepted);
+			OnLaserFired(pFireContext);
 			break;
 		case WEAPON_NINJA:
-			OnNinjaFired(pFireAccepted);
+			OnNinjaFired(pFireContext);
 			break;
 		default:
 			break;
 	}
 }
 
-void CInfClassCharacter::OnHammerFired(bool *pFireAccepted)
+void CInfClassCharacter::OnHammerFired(WeaponFireContext *pFireContext)
 {
 	vec2 Direction = GetDirection();
 	vec2 ProjStartPos = GetPos()+Direction*GetProximityRadius()*0.75f;
@@ -570,7 +573,7 @@ void CInfClassCharacter::OnHammerFired(bool *pFireAccepted)
 
 		if(!ShowAttackAnimation)
 		{
-			*pFireAccepted = false;
+			pFireContext->FireAccepted = false;
 			return;
 		}
 
@@ -578,7 +581,7 @@ void CInfClassCharacter::OnHammerFired(bool *pFireAccepted)
 	}
 }
 
-void CInfClassCharacter::OnGunFired(bool *pFireAccepted)
+void CInfClassCharacter::OnGunFired(WeaponFireContext *pFireContext)
 {
 	vec2 Direction = GetDirection();
 	vec2 ProjStartPos = GetPos()+Direction*GetProximityRadius()*0.75f;
@@ -633,7 +636,7 @@ void CInfClassCharacter::OnGunFired(bool *pFireAccepted)
 	}
 }
 
-void CInfClassCharacter::OnShotgunFired(bool *pFireAccepted)
+void CInfClassCharacter::OnShotgunFired(WeaponFireContext *pFireContext)
 {
 	vec2 Direction = GetDirection();
 	vec2 ProjStartPos = GetPos()+Direction*GetProximityRadius()*0.75f;
@@ -691,7 +694,7 @@ void CInfClassCharacter::OnShotgunFired(bool *pFireAccepted)
 	GameServer()->CreateSound(m_Pos, SOUND_SHOTGUN_FIRE);
 }
 
-void CInfClassCharacter::OnGrenadeFired(bool *pFireAccepted)
+void CInfClassCharacter::OnGrenadeFired(WeaponFireContext *pFireContext)
 {
 	vec2 Direction = GetDirection();
 	vec2 ProjStartPos = GetPos()+Direction*GetProximityRadius()*0.75f;
@@ -870,7 +873,7 @@ void CInfClassCharacter::OnGrenadeFired(bool *pFireAccepted)
 	}
 }
 
-void CInfClassCharacter::OnLaserFired(bool *pFireAccepted)
+void CInfClassCharacter::OnLaserFired(WeaponFireContext *pFireContext)
 {
 	vec2 Direction = GetDirection();
 
@@ -891,7 +894,7 @@ void CInfClassCharacter::OnLaserFired(bool *pFireAccepted)
 		}
 		else
 		{
-			*pFireAccepted = false;
+			pFireContext->FireAccepted = false;
 			return;
 		}
 	}
@@ -947,7 +950,7 @@ void CInfClassCharacter::OnLaserFired(bool *pFireAccepted)
 			if(!pCurrentBomb)
 			{
 				GameServer()->SendBroadcast_Localization(m_pPlayer->GetCID(), BROADCAST_PRIORITY_WEAPONSTATE, 60, "Bomb needed");
-				*pFireAccepted = false;
+				pFireContext->FireAccepted = false;
 				return;
 			}
 			else
@@ -969,7 +972,7 @@ void CInfClassCharacter::OnLaserFired(bool *pFireAccepted)
 	}
 }
 
-void CInfClassCharacter::OnNinjaFired(bool *pFireAccepted)
+void CInfClassCharacter::OnNinjaFired(WeaponFireContext *pFireContext)
 {
 	// The design of ninja supposes different implementation (not via FireWeapon)
 }

@@ -18,14 +18,20 @@ public:
 
 	void FireWeapon() override;
 
-	void OnWeaponFired(int Weapon, bool *pFireAccepted);
+	struct WeaponFireContext
+	{
+		int Weapon = 0;
+		bool FireAccepted = false;
+	};
 
-	void OnHammerFired(bool *pFireAccepted);
-	void OnGunFired(bool *pFireAccepted);
-	void OnShotgunFired(bool *pFireAccepted);
-	void OnGrenadeFired(bool *pFireAccepted);
-	void OnLaserFired(bool *pFireAccepted);
-	void OnNinjaFired(bool *pFireAccepted);
+	void OnWeaponFired(WeaponFireContext *pFireContext);
+
+	void OnHammerFired(WeaponFireContext *pFireContext);
+	void OnGunFired(WeaponFireContext *pFireContext);
+	void OnShotgunFired(WeaponFireContext *pFireContext);
+	void OnGrenadeFired(WeaponFireContext *pFireContext);
+	void OnLaserFired(WeaponFireContext *pFireContext);
+	void OnNinjaFired(WeaponFireContext *pFireContext);
 
 	void HandleMapMenu() override;
 
