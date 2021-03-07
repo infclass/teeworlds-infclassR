@@ -824,21 +824,7 @@ void CCharacter::OnHammerFired(bool *pFireAccepted)
 	}
 	else if(GetPlayerClass() == PLAYERCLASS_SOLDIER)
 	{
-		bool BombFound = false;
-		for(CSoldierBomb *pBomb = (CSoldierBomb*) GameWorld()->FindFirst(CGameWorld::ENTTYPE_SOLDIER_BOMB); pBomb; pBomb = (CSoldierBomb*) pBomb->TypeNext())
-		{
-			if(pBomb->GetOwner() == m_pPlayer->GetCID())
-			{
-				pBomb->Explode();
-				BombFound = true;
-			}
-		}
-
-		if(!BombFound)
-		{
-			new CSoldierBomb(GameServer(), ProjStartPos, m_pPlayer->GetCID());
-			GameServer()->CreateSound(m_Pos, SOUND_GRENADE_FIRE);
-		}
+		FireSoldierBomb();
 	}
 	else if(GetPlayerClass() == PLAYERCLASS_SNIPER)
 	{
@@ -1587,6 +1573,23 @@ void CCharacter::CheckSuperWeaponAccess()
 			} 
 		}
 	}
+}
+
+void CCharacter::FireSoldierBomb()
+{
+	vec2 ProjStartPos = GetPos()+GetDirection()*GetProximityRadius()*0.75f;
+
+	for(CSoldierBomb *pBomb = (CSoldierBomb*) GameWorld()->FindFirst(CGameWorld::ENTTYPE_SOLDIER_BOMB); pBomb; pBomb = (CSoldierBomb*) pBomb->TypeNext())
+	{
+		if(pBomb->GetOwner() == m_pPlayer->GetCID())
+		{
+			pBomb->Explode();
+			return;
+		}
+	}
+
+	new CSoldierBomb(GameServer(), ProjStartPos, m_pPlayer->GetCID());
+	GameServer()->CreateSound(m_Pos, SOUND_GRENADE_FIRE);
 }
 
 void CCharacter::PlacePortal()

@@ -91,6 +91,7 @@ public:
 	virtual void OnNinjaFired(bool *pFireAccepted);
 
 	void CheckSuperWeaponAccess();
+	void FireSoldierBomb();
 	void PlacePortal();
 	CPortal *FindPortalInTarget();
 	void OnPortalDestroy(CPortal *pPortal);
