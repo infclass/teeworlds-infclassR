@@ -552,11 +552,21 @@ CGameWorld *CInfClassGameController::GameWorld()
 	return &GameServer()->m_World;
 }
 
+void CInfClassGameController::StartRound()
+{
+	m_TurretsEnabled = AreTurretsEnabled();
+
+	m_RoundStarted = true;
+	IGameController::StartRound();
+}
+
 void CInfClassGameController::EndRound()
 {	
 	m_InfectedStarted = false;
 	ResetFinalExplosion();
 	IGameController::EndRound();
+
+	m_RoundStarted = false;
 }
 
 void CInfClassGameController::GetPlayerCounter(int ClientException, int& NumHumans, int& NumInfected, int& NumFirstInfected)
@@ -826,6 +836,9 @@ bool CInfClassGameController::AreTurretsEnabled() const
 {
 	if(!Config()->m_InfTurretEnable)
 		return false;
+
+	if(m_RoundStarted)
+		return m_TurretsEnabled;
 
 	 return Server()->GetActivePlayerCount() >= Config()->m_InfMinPlayersForTurrets;
 }

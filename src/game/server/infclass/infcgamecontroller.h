@@ -23,6 +23,7 @@ public:
 	void OnCharacterSpawn(class CCharacter *pChr) override;
 	void OnPlayerInfoChange(class CPlayer *pP) override;
 	void DoWincheck() override;
+	void StartRound() override;
 	void EndRound() override;
 	bool PreSpawn(CPlayer* pPlayer, vec2 *pPos) override;
 	bool PickupAllowed(int Index) ;
@@ -72,5 +73,7 @@ private:
 	bool m_ExplosionStarted;
 	
 	bool m_InfectedStarted;
+	bool m_RoundStarted = false;
+	bool m_TurretsEnabled = false;
 };
 #endif

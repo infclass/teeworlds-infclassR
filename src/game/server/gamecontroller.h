@@ -69,7 +69,7 @@ public:
 
 	void DoWarmup(int Seconds);
 
-	void StartRound();
+	virtual void StartRound();
 	virtual void EndRound();
 	void ChangeMap(const char *pToMap);
 	void QueueMap(const char *pToMap);
