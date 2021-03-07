@@ -79,16 +79,7 @@ public:
 	void OnPredictedInput(CNetObj_PlayerInput *pNewInput);
 	void OnDirectInput(CNetObj_PlayerInput *pNewInput);
 	void ResetInput();
-	void FireWeapon();
-
-	virtual void OnWeaponFired(int Weapon, bool *pFireAccepted);
-
-	virtual void OnHammerFired(bool *pFireAccepted);
-	virtual void OnGunFired(bool *pFireAccepted);
-	virtual void OnShotgunFired(bool *pFireAccepted);
-	virtual void OnGrenadeFired(bool *pFireAccepted);
-	virtual void OnLaserFired(bool *pFireAccepted);
-	virtual void OnNinjaFired(bool *pFireAccepted);
+	virtual void FireWeapon();
 
 	void CheckSuperWeaponAccess();
 	void FireSoldierBomb();
@@ -122,7 +113,7 @@ public:
 	
 	void GiveNinjaBuf();
 
-protected:
+public:
 	// player controlling this character
 	class CPlayer *m_pPlayer;
 

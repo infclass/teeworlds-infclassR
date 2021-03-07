@@ -15,6 +15,17 @@ public:
 
 	void Tick() override;
 
+	void FireWeapon() override;
+
+	void OnWeaponFired(int Weapon, bool *pFireAccepted);
+
+	void OnHammerFired(bool *pFireAccepted);
+	void OnGunFired(bool *pFireAccepted);
+	void OnShotgunFired(bool *pFireAccepted);
+	void OnGrenadeFired(bool *pFireAccepted);
+	void OnLaserFired(bool *pFireAccepted);
+	void OnNinjaFired(bool *pFireAccepted);
+
 	void HandleMapMenu() override;
 
 	void Die(int Killer, int Weapon) override;
