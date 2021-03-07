@@ -4,6 +4,7 @@
 #include <game/server/classes.h>
 #include <game/server/gamecontext.h>
 #include <game/server/infclass/entities/infccharacter.h>
+#include <game/server/infclass/infcgamecontroller.h>
 
 MACRO_ALLOC_POOL_ID_IMPL(CInfClassHuman, MAX_CLIENTS)
 
@@ -73,7 +74,8 @@ void CInfClassHuman::GiveClassAttributes()
 			m_pCharacter->SetActiveWeapon(WEAPON_SHOTGUN);
 			break;
 		case PLAYERCLASS_HERO:
-			m_pCharacter->GiveWeapon(WEAPON_HAMMER, -1);
+			if(GameController()->AreTurretsEnabled())
+				m_pCharacter->GiveWeapon(WEAPON_HAMMER, -1);
 			m_pCharacter->GiveWeapon(WEAPON_GUN, -1);
 			m_pCharacter->GiveWeapon(WEAPON_SHOTGUN, -1);
 			m_pCharacter->GiveWeapon(WEAPON_RIFLE, -1);
