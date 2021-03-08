@@ -713,88 +713,11 @@ void CInfClassCharacter::OnGrenadeFired(WeaponFireContext *pFireContext)
 	
 	if(GetPlayerClass() == PLAYERCLASS_MERCENARY)
 	{
-		//Find bomb
-		bool BombFound = false;
-		for(CScatterGrenade *pGrenade = (CScatterGrenade*) GameWorld()->FindFirst(CGameWorld::ENTTYPE_SCATTER_GRENADE); pGrenade; pGrenade = (CScatterGrenade*) pGrenade->TypeNext())
-		{
-			if(pGrenade->GetOwner() != m_pPlayer->GetCID()) continue;
-			pGrenade->Explode();
-			BombFound = true;
-		}
-
-		if(!BombFound && m_aWeapons[m_ActiveWeapon].m_Ammo)
-		{
-			int ShotSpread = 2;
-
-			CMsgPacker Msg(NETMSGTYPE_SV_EXTRAPROJECTILE);
-			Msg.AddInt(ShotSpread*2+1);
-
-			for(int i = -ShotSpread; i <= ShotSpread; ++i)
-			{
-				float a = GetAngle(Direction) + random_float()/3.0f;
-
-				CScatterGrenade *pProj = new CScatterGrenade(GameServer(), m_pPlayer->GetCID(), m_Pos, vec2(cosf(a), sinf(a)));
-
-				// pack the Projectile and send it to the client Directly
-				CNetObj_Projectile p;
-				pProj->FillInfo(&p);
-
-				for(unsigned i = 0; i < sizeof(CNetObj_Projectile)/sizeof(int); i++)
-					Msg.AddInt(((int *)&p)[i]);
-				Server()->SendMsg(&Msg, MSGFLAG_VITAL, m_pPlayer->GetCID());
-			}
-
-			GameServer()->CreateSound(m_Pos, SOUND_GRENADE_FIRE);
-
-			m_ReloadTimer = Server()->TickSpeed()/4;
-		}
-		else
-		{
-			m_aWeapons[m_ActiveWeapon].m_Ammo++;
-		}
+		OnMercGrenadeFired(pFireContext);
 	}
 	else if(GetPlayerClass() == PLAYERCLASS_MEDIC)
-	{
-		//Find bomb
-		bool BombFound = false;
-		for(CMedicGrenade *pGrenade = (CMedicGrenade*) GameWorld()->FindFirst(CGameWorld::ENTTYPE_MEDIC_GRENADE); pGrenade; pGrenade = (CMedicGrenade*) pGrenade->TypeNext())
-		{
-			if(pGrenade->GetOwner() != m_pPlayer->GetCID()) continue;
-			pGrenade->Explode();
-			BombFound = true;
-		}
 
-		if(!BombFound && m_aWeapons[m_ActiveWeapon].m_Ammo)
-		{
-			int ShotSpread = 0;
-
-			CMsgPacker Msg(NETMSGTYPE_SV_EXTRAPROJECTILE);
-			Msg.AddInt(ShotSpread*2+1);
-
-			for(int i = -ShotSpread; i <= ShotSpread; ++i)
-			{
-				float a = GetAngle(Direction) + random_float()/5.0f;
-
-				CMedicGrenade *pProj = new CMedicGrenade(GameServer(), m_pPlayer->GetCID(), m_Pos, vec2(cosf(a), sinf(a)));
-
-				// pack the Projectile and send it to the client Directly
-				CNetObj_Projectile p;
-				pProj->FillInfo(&p);
-				
-				for(unsigned i = 0; i < sizeof(CNetObj_Projectile)/sizeof(int); i++)
-					Msg.AddInt(((int *)&p)[i]);
-				Server()->SendMsg(&Msg, MSGFLAG_VITAL, m_pPlayer->GetCID());
-			}
-			
-			GameServer()->CreateSound(m_Pos, SOUND_GRENADE_FIRE);
-			
-			m_ReloadTimer = Server()->TickSpeed()/4;
-		}
-		else
-		{
-			m_aWeapons[m_ActiveWeapon].m_Ammo++;
-		}
-	}
+		OnMedicGrenadeFired(pFireContext);
 	else if(GetPlayerClass() == PLAYERCLASS_SCIENTIST)
 	{
 		vec2 PortalShift = vec2(m_Input.m_TargetX, m_Input.m_TargetY);
@@ -891,24 +814,7 @@ void CInfClassCharacter::OnLaserFired(WeaponFireContext *pFireContext)
 
 	if(GetPlayerClass() == PLAYERCLASS_BIOLOGIST)
 	{
-		for(CBiologistMine* pMine = (CBiologistMine*) GameWorld()->FindFirst(CGameWorld::ENTTYPE_BIOLOGIST_MINE); pMine; pMine = (CBiologistMine*) pMine->TypeNext())
-		{
-			if(pMine->GetOwner() != m_pPlayer->GetCID()) continue;
-				GameServer()->m_World.DestroyEntity(pMine);
-		}
-
-		vec2 To = m_Pos + Direction*400.0f;
-		if(GameServer()->Collision()->IntersectLine(m_Pos, To, 0x0, &To))
-		{
-			new CBiologistMine(GameServer(), m_Pos, To, m_pPlayer->GetCID());
-			GameServer()->CreateSound(m_Pos, SOUND_RIFLE_FIRE);
-			m_aWeapons[WEAPON_RIFLE].m_Ammo = 0;
-		}
-		else
-		{
-			pFireContext->FireAccepted = false;
-			return;
-		}
+		OnBiologistLaserFired(pFireContext);
 	}
 	else if(CanOpenPortals())
 	{
@@ -987,6 +893,119 @@ void CInfClassCharacter::OnLaserFired(WeaponFireContext *pFireContext)
 void CInfClassCharacter::OnNinjaFired(WeaponFireContext *pFireContext)
 {
 	// The design of ninja supposes different implementation (not via FireWeapon)
+}
+
+void CInfClassCharacter::OnMercGrenadeFired(CInfClassCharacter::WeaponFireContext *pFireContext)
+{
+	float BaseAngle = GetAngle(GetDirection());
+
+	//Find bomb
+	bool BombFound = false;
+	for(CScatterGrenade *pGrenade = (CScatterGrenade*) GameWorld()->FindFirst(CGameWorld::ENTTYPE_SCATTER_GRENADE); pGrenade; pGrenade = (CScatterGrenade*) pGrenade->TypeNext())
+	{
+		if(pGrenade->GetOwner() != m_pPlayer->GetCID()) continue;
+		pGrenade->Explode();
+		BombFound = true;
+	}
+
+	if(BombFound)
+	{
+		pFireContext->AmmoConsumed = 0;
+		pFireContext->NoAmmo = false;
+		return;
+	}
+
+	if(pFireContext->NoAmmo)
+		return;
+
+	int ShotSpread = 2;
+
+	CMsgPacker Msg(NETMSGTYPE_SV_EXTRAPROJECTILE);
+	Msg.AddInt(ShotSpread*2+1);
+
+	for(int i = -ShotSpread; i <= ShotSpread; ++i)
+	{
+		float a = BaseAngle + random_float()/3.0f;
+
+		CScatterGrenade *pProj = new CScatterGrenade(GameServer(), m_pPlayer->GetCID(), m_Pos, vec2(cosf(a), sinf(a)));
+
+		// pack the Projectile and send it to the client Directly
+		CNetObj_Projectile p;
+		pProj->FillInfo(&p);
+
+		for(unsigned i = 0; i < sizeof(CNetObj_Projectile)/sizeof(int); i++)
+			Msg.AddInt(((int *)&p)[i]);
+		Server()->SendMsg(&Msg, MSGFLAG_VITAL, m_pPlayer->GetCID());
+	}
+
+	GameServer()->CreateSound(m_Pos, SOUND_GRENADE_FIRE);
+
+	m_ReloadTimer = Server()->TickSpeed()/4;
+}
+
+void CInfClassCharacter::OnMedicGrenadeFired(CInfClassCharacter::WeaponFireContext *pFireContext)
+{
+	float BaseAngle = GetAngle(GetDirection());
+
+	//Find bomb
+	bool BombFound = false;
+	for(CMedicGrenade *pGrenade = (CMedicGrenade*) GameWorld()->FindFirst(CGameWorld::ENTTYPE_MEDIC_GRENADE); pGrenade; pGrenade = (CMedicGrenade*) pGrenade->TypeNext())
+	{
+		if(pGrenade->GetOwner() != m_pPlayer->GetCID()) continue;
+		pGrenade->Explode();
+		BombFound = true;
+	}
+
+	if(BombFound)
+	{
+		return;
+	}
+
+	int ShotSpread = 0;
+
+	CMsgPacker Msg(NETMSGTYPE_SV_EXTRAPROJECTILE);
+	Msg.AddInt(ShotSpread*2+1);
+
+	for(int i = -ShotSpread; i <= ShotSpread; ++i)
+	{
+		float a = BaseAngle + random_float()/5.0f;
+
+		CMedicGrenade *pProj = new CMedicGrenade(GameServer(), m_pPlayer->GetCID(), m_Pos, vec2(cosf(a), sinf(a)));
+
+		// pack the Projectile and send it to the client Directly
+		CNetObj_Projectile p;
+		pProj->FillInfo(&p);
+
+		for(unsigned i = 0; i < sizeof(CNetObj_Projectile)/sizeof(int); i++)
+			Msg.AddInt(((int *)&p)[i]);
+		Server()->SendMsg(&Msg, MSGFLAG_VITAL, m_pPlayer->GetCID());
+	}
+
+	GameServer()->CreateSound(m_Pos, SOUND_GRENADE_FIRE);
+
+	m_ReloadTimer = Server()->TickSpeed()/4;
+}
+
+void CInfClassCharacter::OnBiologistLaserFired(CInfClassCharacter::WeaponFireContext *pFireContext)
+{
+	for(CBiologistMine* pMine = (CBiologistMine*) GameWorld()->FindFirst(CGameWorld::ENTTYPE_BIOLOGIST_MINE); pMine; pMine = (CBiologistMine*) pMine->TypeNext())
+	{
+		if(pMine->GetOwner() != m_pPlayer->GetCID()) continue;
+			GameServer()->m_World.DestroyEntity(pMine);
+	}
+
+	const float BigLaserMaxLength = 400.0f;
+	vec2 To = m_Pos + GetDirection() * BigLaserMaxLength;
+	if(GameServer()->Collision()->IntersectLine(m_Pos, To, 0x0, &To))
+	{
+		new CBiologistMine(GameServer(), m_Pos, To, m_pPlayer->GetCID());
+		GameServer()->CreateSound(m_Pos, SOUND_RIFLE_FIRE);
+		m_aWeapons[WEAPON_RIFLE].m_Ammo = 0;
+	}
+	else
+	{
+		pFireContext->FireAccepted = false;
+	}
 }
 
 void CInfClassCharacter::HandleMapMenu()

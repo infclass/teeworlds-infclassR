@@ -36,6 +36,10 @@ public:
 	void OnLaserFired(WeaponFireContext *pFireContext);
 	void OnNinjaFired(WeaponFireContext *pFireContext);
 
+	void OnMercGrenadeFired(WeaponFireContext *pFireContext);
+	void OnMedicGrenadeFired(WeaponFireContext *pFireContext);
+	void OnBiologistLaserFired(WeaponFireContext *pFireContext);
+
 	void HandleMapMenu() override;
 
 	void Die(int Killer, int Weapon) override;
