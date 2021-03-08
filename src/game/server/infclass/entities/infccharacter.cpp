@@ -817,76 +817,75 @@ void CInfClassCharacter::OnLaserFired(WeaponFireContext *pFireContext)
 	if(CanOpenPortals())
 	{
 		PlacePortal(pFireContext);
+		return;
 	}
-	else
+
+	if(pFireContext->NoAmmo)
 	{
-		if(pFireContext->NoAmmo)
-		{
-			return;
-		}
+		return;
+	}
 
-		vec2 Direction = GetDirection();
-		int Damage = GameServer()->Tuning()->m_LaserDamage;
+	vec2 Direction = GetDirection();
+	int Damage = GameServer()->Tuning()->m_LaserDamage;
+
+	if(GetPlayerClass() == PLAYERCLASS_SNIPER)
+	{
+		if(m_PositionLocked)
+			Damage = 30;
+		else
+			Damage = random_int(10, 13);
+		new CLaser(GameWorld(), m_Pos, Direction, GameServer()->Tuning()->m_LaserReach, m_pPlayer->GetCID(), Damage);
+		GameServer()->CreateSound(m_Pos, SOUND_RIFLE_FIRE);
+	}
+	else if(GetPlayerClass() == PLAYERCLASS_SCIENTIST)
+	{
+		//white hole activation in scientist-laser
 		
-		if(GetPlayerClass() == PLAYERCLASS_SNIPER)
-		{
-			if(m_PositionLocked)
-				Damage = 30;
-			else
-				Damage = random_int(10, 13);
-			new CLaser(GameWorld(), m_Pos, Direction, GameServer()->Tuning()->m_LaserReach, m_pPlayer->GetCID(), Damage);
-			GameServer()->CreateSound(m_Pos, SOUND_RIFLE_FIRE);
-		}
-		else if(GetPlayerClass() == PLAYERCLASS_SCIENTIST)
-		{
-			//white hole activation in scientist-laser
-			
-			new CScientistLaser(GameServer(), m_Pos, Direction, GameServer()->Tuning()->m_LaserReach*0.6f, m_pPlayer->GetCID(), Damage);
-			GameServer()->CreateSound(m_Pos, SOUND_RIFLE_FIRE);
-		}
-		else if (GetPlayerClass() == PLAYERCLASS_LOOPER) 
-		{
-			Damage = 5;
-			new CLaser(GameWorld(), m_Pos, Direction, GameServer()->Tuning()->m_LaserReach*0.7f, m_pPlayer->GetCID(), Damage);
-			GameServer()->CreateSound(m_Pos, SOUND_RIFLE_FIRE);
-		}
-		else if(GetPlayerClass() == PLAYERCLASS_MERCENARY)
-		{
-			Damage = 0;
-			m_BombHit = false;
+		new CScientistLaser(GameServer(), m_Pos, Direction, GameServer()->Tuning()->m_LaserReach*0.6f, m_pPlayer->GetCID(), Damage);
+		GameServer()->CreateSound(m_Pos, SOUND_RIFLE_FIRE);
+	}
+	else if (GetPlayerClass() == PLAYERCLASS_LOOPER) 
+	{
+		Damage = 5;
+		new CLaser(GameWorld(), m_Pos, Direction, GameServer()->Tuning()->m_LaserReach*0.7f, m_pPlayer->GetCID(), Damage);
+		GameServer()->CreateSound(m_Pos, SOUND_RIFLE_FIRE);
+	}
+	else if(GetPlayerClass() == PLAYERCLASS_MERCENARY)
+	{
+		Damage = 0;
+		m_BombHit = false;
 
-			CMercenaryBomb* pCurrentBomb = NULL;
-			for(CMercenaryBomb *pBomb = (CMercenaryBomb*) GameWorld()->FindFirst(CGameWorld::ENTTYPE_MERCENARY_BOMB); pBomb; pBomb = (CMercenaryBomb*) pBomb->TypeNext())
+		CMercenaryBomb* pCurrentBomb = NULL;
+		for(CMercenaryBomb *pBomb = (CMercenaryBomb*) GameWorld()->FindFirst(CGameWorld::ENTTYPE_MERCENARY_BOMB); pBomb; pBomb = (CMercenaryBomb*) pBomb->TypeNext())
+		{
+			if(pBomb->GetOwner() == m_pPlayer->GetCID())
 			{
-				if(pBomb->GetOwner() == m_pPlayer->GetCID())
-				{
-					pCurrentBomb = pBomb;
-					break;
-				}
+				pCurrentBomb = pBomb;
+				break;
 			}
+		}
 
-			if(!pCurrentBomb)
-			{
-				GameServer()->SendBroadcast_Localization(m_pPlayer->GetCID(), BROADCAST_PRIORITY_WEAPONSTATE, 60, "Bomb needed");
-				pFireContext->FireAccepted = false;
-				return;
-			}
-			else
-			{
-				new CLaser(GameWorld(), m_Pos, Direction, GameServer()->Tuning()->m_LaserReach, m_pPlayer->GetCID(), Damage);
-				GameServer()->CreateSound(m_Pos, SOUND_RIFLE_FIRE);
-				if(m_BombHit && distance(pCurrentBomb->m_Pos, m_AtMercBomb) <= 80.0f)
-				{
-					pCurrentBomb->IncreaseDamage(WEAPON_RIFLE);
-					GameServer()->CreateSound(m_Pos, SOUND_PICKUP_ARMOR);
-				}
-			}
+		if(!pCurrentBomb)
+		{
+			GameServer()->SendBroadcast_Localization(m_pPlayer->GetCID(), BROADCAST_PRIORITY_WEAPONSTATE, 60, "Bomb needed");
+			pFireContext->FireAccepted = false;
+			return;
 		}
 		else
 		{
 			new CLaser(GameWorld(), m_Pos, Direction, GameServer()->Tuning()->m_LaserReach, m_pPlayer->GetCID(), Damage);
 			GameServer()->CreateSound(m_Pos, SOUND_RIFLE_FIRE);
+			if(m_BombHit && distance(pCurrentBomb->m_Pos, m_AtMercBomb) <= 80.0f)
+			{
+				pCurrentBomb->IncreaseDamage(WEAPON_RIFLE);
+				GameServer()->CreateSound(m_Pos, SOUND_PICKUP_ARMOR);
+			}
 		}
+	}
+	else
+	{
+		new CLaser(GameWorld(), m_Pos, Direction, GameServer()->Tuning()->m_LaserReach, m_pPlayer->GetCID(), Damage);
+		GameServer()->CreateSound(m_Pos, SOUND_RIFLE_FIRE);
 	}
 }
 
