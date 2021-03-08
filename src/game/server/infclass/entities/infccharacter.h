@@ -24,6 +24,7 @@ public:
 		bool FireAccepted = false;
 		int AmmoAvailable = 0;
 		int AmmoConsumed = 0;
+		bool NoAmmo = false;
 	};
 
 	void OnWeaponFired(WeaponFireContext *pFireContext);

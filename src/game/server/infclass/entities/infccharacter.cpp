@@ -118,8 +118,15 @@ void CInfClassCharacter::FireWeapon()
 	FireContext.FireAccepted = true;
 	FireContext.AmmoConsumed = 1;
 	FireContext.AmmoAvailable = m_aWeapons[m_ActiveWeapon].m_Ammo;
+	FireContext.NoAmmo = FireContext.AmmoAvailable == 0;
 
 	OnWeaponFired(&FireContext);
+
+	if(FireContext.NoAmmo)
+	{
+		NoAmmo();
+		return;
+	}
 
 	if(!FireContext.FireAccepted)
 	{
