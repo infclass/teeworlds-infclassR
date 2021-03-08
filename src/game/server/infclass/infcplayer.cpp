@@ -39,7 +39,7 @@ void CInfClassPlayer::TryRespawn()
 /* INFECTION MODIFICATION END *****************************************/
 
 	m_Spawning = false;
-	CInfClassCharacter *pCharacter = new(m_ClientID) CInfClassCharacter(GameServer());
+	CInfClassCharacter *pCharacter = new(m_ClientID) CInfClassCharacter(GameController());
 	pCharacter->SetClass(m_pInfcPlayerClass);
 
 	m_pCharacter = pCharacter;

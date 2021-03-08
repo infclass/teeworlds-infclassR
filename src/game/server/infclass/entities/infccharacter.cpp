@@ -33,9 +33,9 @@
 
 MACRO_ALLOC_POOL_ID_IMPL(CInfClassCharacter, MAX_CLIENTS)
 
-CInfClassCharacter::CInfClassCharacter(CGameContext *pContext)
-	: CCharacter(pContext->GameWorld(), pContext->Console())
-	, m_pContext(pContext)
+CInfClassCharacter::CInfClassCharacter(CInfClassGameController *pGameController)
+	: CCharacter(pGameController->GameWorld(), pGameController->Console())
+	, m_pGameController(pGameController)
 {
 }
 
@@ -1328,4 +1328,9 @@ CInputCount CInfClassCharacter::CountFireInput() const
 bool CInfClassCharacter::FireJustPressed() const
 {
 	return m_LatestInput.m_Fire & 1;
+}
+
+CGameContext *CInfClassCharacter::GameContext() const
+{
+	return m_pGameController->GameServer();
 }

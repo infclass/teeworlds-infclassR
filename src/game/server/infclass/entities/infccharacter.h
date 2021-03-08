@@ -4,13 +4,14 @@
 #include <game/server/entities/character.h>
 
 class CGameContext;
+class CInfClassGameController;
 class CInfClassPlayerClass;
 
 class CInfClassCharacter : public CCharacter
 {
 	MACRO_ALLOC_POOL_ID()
 public:
-	CInfClassCharacter(CGameContext *pContext);
+	CInfClassCharacter(CInfClassGameController *pGameController);
 	~CInfClassCharacter() override;
 
 	void Tick() override;
@@ -40,10 +41,11 @@ public:
 	CInputCount CountFireInput() const;
 	bool FireJustPressed() const;
 
-	CGameContext *GameContext() const { return m_pContext; }
+	CInfClassGameController *GameController() const { return m_pGameController; }
+	CGameContext *GameContext() const;
 
 protected:
-	CGameContext *m_pContext = nullptr;
+	CInfClassGameController *m_pGameController = nullptr;
 	CInfClassPlayerClass *m_pClass = nullptr;
 };
 
