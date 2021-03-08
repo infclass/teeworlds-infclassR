@@ -18,7 +18,7 @@
 #include <game/server/infclass/entities/portal.h>
 #include <game/server/infclass/infcgamecontroller.h>
 
-#include "infclass/infcplayer.h"
+#include <game/server/player.h>
 
 enum
 {
@@ -1399,13 +1399,7 @@ void CGameContext::OnClientEnter(int ClientID)
 
 void CGameContext::OnClientConnected(int ClientID)
 {
-	// Check which team the player should be on
-	const int StartTeam = g_Config.m_SvTournamentMode ? TEAM_SPECTATORS : m_pController->GetAutoTeam(ClientID);
-
-	if (IsSpectatorCID(ClientID))
-		m_apPlayers[ClientID] = new(ClientID) CInfClassPlayer(this, ClientID, TEAM_SPECTATORS);
-	else
-		m_apPlayers[ClientID] = new(ClientID) CInfClassPlayer(this, ClientID, StartTeam);
+	m_apPlayers[ClientID] = m_pController->CreatePlayer(ClientID);
 	
 	//Thanks to Stitch
 	if(m_pController->IsInfectionStarted())

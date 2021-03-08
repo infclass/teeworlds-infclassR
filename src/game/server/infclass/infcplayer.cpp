@@ -9,8 +9,9 @@
 
 MACRO_ALLOC_POOL_ID_IMPL(CInfClassPlayer, MAX_CLIENTS)
 
-CInfClassPlayer::CInfClassPlayer(CGameContext *pGameServer, int ClientID, int Team)
-	: CPlayer(pGameServer, ClientID, Team)
+CInfClassPlayer::CInfClassPlayer(CInfClassGameController *pGameController, int ClientID, int Team)
+	: CPlayer(pGameController->GameServer(), ClientID, Team)
+	, m_pGameController(pGameController)
 {
 	SetCharacterClass(new(m_ClientID) CInfClassHuman(this));
 }
@@ -25,7 +26,7 @@ CInfClassPlayer::~CInfClassPlayer()
 
 CInfClassGameController *CInfClassPlayer::GameController()
 {
-	return static_cast<CInfClassGameController*>(GameServer()->m_pController);
+	return m_pGameController;
 }
 
 void CInfClassPlayer::TryRespawn()

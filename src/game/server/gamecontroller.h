@@ -7,6 +7,7 @@
 #include <base/tl/array.h>
 
 class CConfig;
+class CPlayer;
 
 /*
 	Class: Game Controller
@@ -137,7 +138,7 @@ public:
 	*/
 	virtual int OnCharacterDeath(class CCharacter *pVictim, class CPlayer *pKiller, int Weapon);
 
-
+	virtual CPlayer *CreatePlayer(int ClientID) = 0;
 	virtual void OnPlayerInfoChange(class CPlayer *pP);
 
 	//

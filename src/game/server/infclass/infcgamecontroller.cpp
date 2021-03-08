@@ -3,7 +3,8 @@
 #include "infcgamecontroller.h"
 
 #include <game/server/infclass/entities/flyingpoint.h>
-#include <game/server/player.h>
+#include <game/server/infclass/infcplayer.h>
+
 #include <engine/shared/config.h>
 #include <engine/server/mapconverter.h>
 #include <engine/server/roundstatistics.h>
@@ -949,6 +950,22 @@ void CInfClassGameController::Snap(int SnappingClient)
 	}
 	
 	pGameDataObj->m_FlagCarrierBlue = FLAG_ATSTAND;
+}
+
+CPlayer *CInfClassGameController::CreatePlayer(int ClientID)
+{
+	CInfClassPlayer *pPlayer = nullptr;
+	if (GameServer()->IsSpectatorCID(ClientID))
+	{
+		pPlayer = new(ClientID) CInfClassPlayer(this, ClientID, TEAM_SPECTATORS);
+	}
+	else
+	{
+		const int StartTeam = Config()->m_SvTournamentMode ? TEAM_SPECTATORS : GetAutoTeam(ClientID);
+		pPlayer = new(ClientID) CInfClassPlayer(this, ClientID, StartTeam);
+	}
+
+	return pPlayer;
 }
 
 void CInfClassGameController::RewardTheKiller(CCharacter *pVictim, CPlayer *pKiller, int Weapon)

@@ -18,6 +18,8 @@ public:
 	void Snap(int SnappingClient);
 	// add more virtual functions here if you wish
 
+	CPlayer *CreatePlayer(int ClientID) override;
+
 	bool OnEntity(const char* pName, vec2 Pivot, vec2 P0, vec2 P1, vec2 P2, vec2 P3, int PosEnv) override;
 	int OnCharacterDeath(class CCharacter *pVictim, class CPlayer *pKiller, int Weapon) override;
 	void OnCharacterSpawn(class CCharacter *pChr) override;
@@ -55,6 +57,8 @@ public:
 
 	static bool ChatWitch(IConsole::IResult *pResult, void *pUserData);
 	bool ChatWitch(IConsole::IResult *pResult);
+
+	using IGameController::GameServer;
 
 private:
 	CGameWorld *GameWorld();

@@ -15,7 +15,7 @@ class CInfClassPlayer : public CPlayer
 	MACRO_ALLOC_POOL_ID()
 
 public:
-	CInfClassPlayer(CGameContext *pGameServer, int ClientID, int Team);
+	CInfClassPlayer(CInfClassGameController *pGameController, int ClientID, int Team);
 	~CInfClassPlayer() override;
 
 	CInfClassGameController *GameController();
@@ -29,6 +29,7 @@ public:
 protected:
 	void onClassChanged() override;
 
+	CInfClassGameController *m_pGameController = nullptr;
 	CInfClassPlayerClass *m_pInfcPlayerClass = nullptr;
 };
 
