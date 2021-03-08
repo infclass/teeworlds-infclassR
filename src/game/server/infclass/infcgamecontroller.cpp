@@ -3,6 +3,7 @@
 #include "infcgamecontroller.h"
 
 #include <game/server/infclass/entities/flyingpoint.h>
+#include <game/server/infclass/entities/infccharacter.h>
 #include <game/server/infclass/infcplayer.h>
 
 #include <engine/shared/config.h>
@@ -546,6 +547,24 @@ bool CInfClassGameController::ChatWitch(IConsole::IResult *pResult)
 
 	GameServer()->SendChatTarget(-1, aBuf);
 	return true;
+}
+
+IConsole *CInfClassGameController::Console()
+{
+	return GameServer()->Console();
+}
+
+CInfClassPlayer *CInfClassGameController::GetPlayer(int ClientID) const
+{
+	if(ClientID < 0 || ClientID >= MAX_CLIENTS)
+		return nullptr;
+
+	return static_cast<CInfClassPlayer*>(GameServer()->m_apPlayers[ClientID]);
+}
+
+CInfClassCharacter *CInfClassGameController::GetCharacter(int ClientID) const
+{
+	return static_cast<CInfClassCharacter*>(GameServer()->GetPlayerChar(ClientID));
 }
 
 CGameWorld *CInfClassGameController::GameWorld()

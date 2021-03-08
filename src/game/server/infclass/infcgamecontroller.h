@@ -8,6 +8,10 @@
 #include <game/server/gamecontroller.h>
 #include <game/server/gameworld.h>
 
+class CInfClassCharacter;
+class CInfClassPlayer;
+class IConsole;
+
 class CInfClassGameController : public IGameController
 {
 public:
@@ -59,10 +63,12 @@ public:
 	bool ChatWitch(IConsole::IResult *pResult);
 
 	using IGameController::GameServer;
+	CGameWorld *GameWorld();
+	IConsole *Console();
+	CInfClassPlayer *GetPlayer(int ClientID) const;
+	CInfClassCharacter *GetCharacter(int ClientID) const;
 
 private:
-	CGameWorld *GameWorld();
-	
 	void RewardTheKiller(class CCharacter *pVictim, class CPlayer *pKiller, int Weapon);
 	bool IsSpawnable(vec2 Pos, int TeleZoneIndex) override;
 	void GetPlayerCounter(int ClientException, int& NumHumans, int& NumInfected, int& NumFirstInfected);
