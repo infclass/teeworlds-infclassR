@@ -808,7 +808,6 @@ set_glob(GAME_SERVER GLOB_RECURSE src/game/server
   infclass/infcplayer.h
   changelog.cpp
   classes.h
-  entities
   entity.cpp
   entity.h
   eventhandler.cpp
