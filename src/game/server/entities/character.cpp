@@ -771,7 +771,7 @@ void CCharacter::NoAmmo()
 {
 	// 125ms is a magical limit of how fast a human can click
 	m_ReloadTimer = 125 * Server()->TickSpeed() / 1000;
-	if(m_LastNoAmmoSound+Server()->TickSpeed() <= Server()->Tick())
+	if(m_LastNoAmmoSound + Server()->TickSpeed() * 0.5 <= Server()->Tick())
 	{
 		GameServer()->CreateSound(m_Pos, SOUND_WEAPON_NOAMMO);
 		m_LastNoAmmoSound = Server()->Tick();
