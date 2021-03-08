@@ -95,12 +95,6 @@ void CInfClassCharacter::FireWeapon()
 	if(!WillFire || m_pPlayer->MapMenu() > 0)
 		return;
 
-	if (GetInfWeaponID(m_ActiveWeapon) == INFWEAPON_WITCH_PORTAL_RIFLE && FindPortalInTarget())
-	{
-		// Give the ammo in advance for portal taking
-		GiveWeapon(m_ActiveWeapon, m_aWeapons[m_ActiveWeapon].m_Ammo + 1);
-	}
-
 	WeaponFireContext FireContext;
 	FireContext.Weapon = m_ActiveWeapon;
 	FireContext.FireAccepted = true;
@@ -819,23 +813,19 @@ void CInfClassCharacter::OnLaserFired(WeaponFireContext *pFireContext)
 		OnBiologistLaserFired(pFireContext);
 		return;
 	}
-	if(pFireContext->NoAmmo)
-	{
-		return;
-	}
-
-	vec2 Direction = GetDirection();
 
 	if(CanOpenPortals())
 	{
-		if(!IsFrozen() && !IsInLove())
-		{
-			PlacePortal();
-			m_ReloadTimer = Server()->TickSpeed() / 4;
-		}
+		PlacePortal(pFireContext);
 	}
 	else
 	{
+		if(pFireContext->NoAmmo)
+		{
+			return;
+		}
+
+		vec2 Direction = GetDirection();
 		int Damage = GameServer()->Tuning()->m_LaserDamage;
 		
 		if(GetPlayerClass() == PLAYERCLASS_SNIPER)
@@ -1448,21 +1438,28 @@ void CInfClassCharacter::FireSoldierBomb()
 	GameServer()->CreateSound(m_Pos, SOUND_GRENADE_FIRE);
 }
 
-void CInfClassCharacter::PlacePortal()
+void CInfClassCharacter::PlacePortal(WeaponFireContext *pFireContext)
 {
+	if(IsFrozen() && IsInLove())
+		return;
+
 	vec2 TargetPos = m_Pos;
 
-	if (GetPlayerClass() == PLAYERCLASS_WITCH)
+	m_ReloadTimer = Server()->TickSpeed() / 4;
+
+	if(GetPlayerClass() == PLAYERCLASS_WITCH)
 	{
 		if(!FindWitchSpawnPosition(TargetPos))
 		{
 			// Witch can't place the portal here
+			pFireContext->FireAccepted = false;
 			return;
 		}
 	}
 
 	CPortal *PortalToTake = FindPortalInTarget();
-	if (PortalToTake)
+
+	if(PortalToTake)
 	{
 		PortalToTake->Disconnect();
 		GameServer()->m_World.DestroyEntity(PortalToTake);
@@ -1473,6 +1470,11 @@ void CInfClassCharacter::PlacePortal()
 			m_pPortalOut = nullptr;
 
 		GiveWeapon(WEAPON_RIFLE, m_aWeapons[WEAPON_RIFLE].m_Ammo + 1);
+		return;
+	}
+
+	if(pFireContext->NoAmmo)
+	{
 		return;
 	}
 
@@ -1487,7 +1489,7 @@ void CInfClassCharacter::PlacePortal()
 		return;
 	}
 
-	if (TargetPos.y < -20)
+	if(TargetPos.y < -20)
 	{
 		char aBuf[256];
 		str_format(aBuf, sizeof(aBuf), "Unable to open a portal at this height");
@@ -1502,7 +1504,7 @@ void CInfClassCharacter::PlacePortal()
 		m_pPortalOut = nullptr;
 	}
 
-	if (m_pPortalIn)
+	if(m_pPortalIn)
 	{
 		m_pPortalOut = new CPortal(GameServer(), TargetPos, OwnerCID, CPortal::PortalType::Out);
 		m_pPortalOut->ConnectPortal(m_pPortalIn);
