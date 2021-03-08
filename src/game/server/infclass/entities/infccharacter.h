@@ -60,6 +60,7 @@ public:
 	bool CanDie() const;
 
 	void CheckSuperWeaponAccess();
+	void MaybeGiveStunGrenades();
 	void FireSoldierBomb();
 	void PlacePortal(WeaponFireContext *pFireContext);
 	CPortal *FindPortalInTarget();

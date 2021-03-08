@@ -1401,22 +1401,30 @@ void CInfClassCharacter::CheckSuperWeaponAccess()
 		}
 	}
 	
-	//Only looper and soldier can receive stun grenades
-	if(GetPlayerClass() == PLAYERCLASS_LOOPER || GetPlayerClass() == PLAYERCLASS_SOLDIER)
+	if(GetPlayerClass() == PLAYERCLASS_LOOPER)
 	{
-		if (!m_HasStunGrenade)
+		MaybeGiveStunGrenades();
+	}
+	
+	if(GetPlayerClass() == PLAYERCLASS_SOLDIER)
+	{
+		MaybeGiveStunGrenades();
+	}
+}
+
+void CInfClassCharacter::MaybeGiveStunGrenades()
+{
+	if(m_HasStunGrenade)
+		return;
+
+	if(m_pPlayer->GetNumberKills() > Config()->m_InfStunGrenadeMinimalKills)
+	{
+		if(random_int(0,100) < Config()->m_InfStunGrenadeProbability)
 		{
-			// enable white hole probabilities
-			if (kills > g_Config.m_InfStunGrenadeMinimalKills) 
-			{
-				if (random_int(0,100) < g_Config.m_InfStunGrenadeProbability) 
-				{
-						//grenade launcher usage will make it unavailable and reset player kills
-					
-						m_HasStunGrenade = true;
-						GameServer()->SendChatTarget_Localization(m_pPlayer->GetCID(), CHATCATEGORY_SCORE, _("stun grenades found..."), NULL);
-				} 
-			} 
+				//grenade launcher usage will make it unavailable and reset player kills
+			
+				m_HasStunGrenade = true;
+				GameServer()->SendChatTarget_Localization(m_pPlayer->GetCID(), CHATCATEGORY_SCORE, _("stun grenades found..."), NULL);
 		}
 	}
 }
