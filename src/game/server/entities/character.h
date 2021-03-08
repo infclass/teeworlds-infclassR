@@ -99,6 +99,7 @@ public:
 	void SetActiveWeapon(int Weapon);
 
 	void SetEmote(int Emote, int Tick);
+	void NoAmmo();
 
 	bool IsAlive() const { return m_Alive; }
 	class CPlayer *GetPlayer() { return m_pPlayer; }
