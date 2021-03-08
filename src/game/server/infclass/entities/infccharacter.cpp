@@ -100,19 +100,7 @@ void CInfClassCharacter::FireWeapon()
 		// Give the ammo in advance for portal taking
 		GiveWeapon(m_ActiveWeapon, m_aWeapons[m_ActiveWeapon].m_Ammo + 1);
 	}
-	// check for ammo
-	if(!m_aWeapons[m_ActiveWeapon].m_Ammo && (GetInfWeaponID(m_ActiveWeapon) != INFWEAPON_MERCENARY_GRENADE)
-										  && (GetInfWeaponID(m_ActiveWeapon) != INFWEAPON_MEDIC_GRENADE))
-	{
-		NoAmmo();
-		return;
-	}
-	if(GetInfWeaponID(m_ActiveWeapon) == INFWEAPON_BIOLOGIST_RIFLE && m_aWeapons[m_ActiveWeapon].m_Ammo < 10)
-	{
-		NoAmmo();
-		return;
-	}
-	
+
 	WeaponFireContext FireContext;
 	FireContext.Weapon = m_ActiveWeapon;
 	FireContext.FireAccepted = true;
@@ -595,6 +583,9 @@ void CInfClassCharacter::OnHammerFired(WeaponFireContext *pFireContext)
 
 void CInfClassCharacter::OnGunFired(WeaponFireContext *pFireContext)
 {
+	if(pFireContext->NoAmmo)
+		return;
+
 	vec2 Direction = GetDirection();
 	vec2 ProjStartPos = GetPos()+Direction*GetProximityRadius()*0.75f;
 	
@@ -650,6 +641,9 @@ void CInfClassCharacter::OnGunFired(WeaponFireContext *pFireContext)
 
 void CInfClassCharacter::OnShotgunFired(WeaponFireContext *pFireContext)
 {
+	if(pFireContext->NoAmmo)
+		return;
+
 	vec2 Direction = GetDirection();
 	vec2 ProjStartPos = GetPos()+Direction*GetProximityRadius()*0.75f;
 
@@ -708,17 +702,27 @@ void CInfClassCharacter::OnShotgunFired(WeaponFireContext *pFireContext)
 
 void CInfClassCharacter::OnGrenadeFired(WeaponFireContext *pFireContext)
 {
-	vec2 Direction = GetDirection();
-	vec2 ProjStartPos = GetPos()+Direction*GetProximityRadius()*0.75f;
-	
 	if(GetPlayerClass() == PLAYERCLASS_MERCENARY)
 	{
 		OnMercGrenadeFired(pFireContext);
+		return;
 	}
-	else if(GetPlayerClass() == PLAYERCLASS_MEDIC)
 
+	if(GetPlayerClass() == PLAYERCLASS_MEDIC)
+	{
 		OnMedicGrenadeFired(pFireContext);
-	else if(GetPlayerClass() == PLAYERCLASS_SCIENTIST)
+		return;
+	}
+
+	if(pFireContext->NoAmmo)
+	{
+		return;
+	}
+
+	vec2 Direction = GetDirection();
+	vec2 ProjStartPos = GetPos()+Direction*GetProximityRadius()*0.75f;
+
+	if(GetPlayerClass() == PLAYERCLASS_SCIENTIST)
 	{
 		vec2 PortalShift = vec2(m_Input.m_TargetX, m_Input.m_TargetY);
 		vec2 PortalDir = normalize(PortalShift);
@@ -810,13 +814,19 @@ void CInfClassCharacter::OnGrenadeFired(WeaponFireContext *pFireContext)
 
 void CInfClassCharacter::OnLaserFired(WeaponFireContext *pFireContext)
 {
-	vec2 Direction = GetDirection();
-
 	if(GetPlayerClass() == PLAYERCLASS_BIOLOGIST)
 	{
 		OnBiologistLaserFired(pFireContext);
+		return;
 	}
-	else if(CanOpenPortals())
+	if(pFireContext->NoAmmo)
+	{
+		return;
+	}
+
+	vec2 Direction = GetDirection();
+
+	if(CanOpenPortals())
 	{
 		if(!IsFrozen() && !IsInLove())
 		{
@@ -958,8 +968,13 @@ void CInfClassCharacter::OnMedicGrenadeFired(CInfClassCharacter::WeaponFireConte
 
 	if(BombFound)
 	{
+		pFireContext->AmmoConsumed = 0;
+		pFireContext->NoAmmo = false;
 		return;
 	}
+
+	if(pFireContext->NoAmmo)
+		return;
 
 	int ShotSpread = 0;
 
@@ -988,6 +1003,13 @@ void CInfClassCharacter::OnMedicGrenadeFired(CInfClassCharacter::WeaponFireConte
 
 void CInfClassCharacter::OnBiologistLaserFired(CInfClassCharacter::WeaponFireContext *pFireContext)
 {
+	if(pFireContext->AmmoAvailable < 10)
+	{
+		pFireContext->NoAmmo = true;
+		pFireContext->AmmoConsumed = 0;
+		return;
+	}
+
 	for(CBiologistMine* pMine = (CBiologistMine*) GameWorld()->FindFirst(CGameWorld::ENTTYPE_BIOLOGIST_MINE); pMine; pMine = (CBiologistMine*) pMine->TypeNext())
 	{
 		if(pMine->GetOwner() != m_pPlayer->GetCID()) continue;
@@ -1000,7 +1022,7 @@ void CInfClassCharacter::OnBiologistLaserFired(CInfClassCharacter::WeaponFireCon
 	{
 		new CBiologistMine(GameServer(), m_Pos, To, m_pPlayer->GetCID());
 		GameServer()->CreateSound(m_Pos, SOUND_RIFLE_FIRE);
-		m_aWeapons[WEAPON_RIFLE].m_Ammo = 0;
+		pFireContext->AmmoConsumed = pFireContext->AmmoAvailable;
 	}
 	else
 	{
