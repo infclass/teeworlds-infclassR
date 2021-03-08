@@ -44,6 +44,14 @@ public:
 	CInfClassGameController *GameController() const { return m_pGameController; }
 	CGameContext *GameContext() const;
 
+	void CheckSuperWeaponAccess();
+	void FireSoldierBomb();
+	void PlacePortal();
+	CPortal *FindPortalInTarget();
+	void OnPortalDestroy(CPortal *pPortal);
+	bool ProcessCharacterOnPortal(CPortal *pPortal, CCharacter *pCharacter);
+	bool CanOpenPortals() const;
+
 protected:
 	CInfClassGameController *m_pGameController = nullptr;
 	CInfClassPlayerClass *m_pClass = nullptr;

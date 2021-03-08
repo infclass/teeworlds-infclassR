@@ -1326,3 +1326,216 @@ CGameContext *CInfClassCharacter::GameContext() const
 {
 	return m_pGameController->GameServer();
 }
+
+void CInfClassCharacter::CheckSuperWeaponAccess()
+{
+	// check kills of player
+	int kills = m_pPlayer->GetNumberKills();
+
+	//Only scientists can receive white holes
+	if(GetPlayerClass() == PLAYERCLASS_SCIENTIST)
+	{
+		if (!m_HasWhiteHole) // Can't receive a white hole while having one available
+		{
+			// enable white hole probabilities
+			if (kills > g_Config.m_InfWhiteHoleMinimalKills) 
+			{
+				if (random_int(0,100) < g_Config.m_InfWhiteHoleProbability) 
+				{
+					//Scientist-laser.cpp will make it unavailable after usage and reset player kills
+					
+					//create an indicator object
+					if (m_HasIndicator == false) {
+						m_HasIndicator = true;
+						GameServer()->SendChatTarget_Localization(m_pPlayer->GetCID(), CHATCATEGORY_SCORE, _("white hole found, adjusting scientific parameters..."), NULL);
+						new CSuperWeaponIndicator(GameServer(), m_Pos, m_pPlayer->GetCID());
+					}
+				} 
+			} 
+		}
+	}
+	
+	//Only looper and soldier can receive stun grenades
+	if(GetPlayerClass() == PLAYERCLASS_LOOPER || GetPlayerClass() == PLAYERCLASS_SOLDIER)
+	{
+		if (!m_HasStunGrenade)
+		{
+			// enable white hole probabilities
+			if (kills > g_Config.m_InfStunGrenadeMinimalKills) 
+			{
+				if (random_int(0,100) < g_Config.m_InfStunGrenadeProbability) 
+				{
+						//grenade launcher usage will make it unavailable and reset player kills
+					
+						m_HasStunGrenade = true;
+						GameServer()->SendChatTarget_Localization(m_pPlayer->GetCID(), CHATCATEGORY_SCORE, _("stun grenades found..."), NULL);
+				} 
+			} 
+		}
+	}
+}
+
+void CInfClassCharacter::FireSoldierBomb()
+{
+	vec2 ProjStartPos = GetPos()+GetDirection()*GetProximityRadius()*0.75f;
+
+	for(CSoldierBomb *pBomb = (CSoldierBomb*) GameWorld()->FindFirst(CGameWorld::ENTTYPE_SOLDIER_BOMB); pBomb; pBomb = (CSoldierBomb*) pBomb->TypeNext())
+	{
+		if(pBomb->GetOwner() == m_pPlayer->GetCID())
+		{
+			pBomb->Explode();
+			return;
+		}
+	}
+
+	new CSoldierBomb(GameServer(), ProjStartPos, m_pPlayer->GetCID());
+	GameServer()->CreateSound(m_Pos, SOUND_GRENADE_FIRE);
+}
+
+void CInfClassCharacter::PlacePortal()
+{
+	vec2 TargetPos = m_Pos;
+
+	if (GetPlayerClass() == PLAYERCLASS_WITCH)
+	{
+		if(!FindWitchSpawnPosition(TargetPos))
+		{
+			// Witch can't place the portal here
+			return;
+		}
+	}
+
+	CPortal *PortalToTake = FindPortalInTarget();
+	if (PortalToTake)
+	{
+		PortalToTake->Disconnect();
+		GameServer()->m_World.DestroyEntity(PortalToTake);
+
+		if (PortalToTake == m_pPortalIn)
+			m_pPortalIn = nullptr;
+		if (PortalToTake == m_pPortalOut)
+			m_pPortalOut = nullptr;
+
+		GiveWeapon(WEAPON_RIFLE, m_aWeapons[WEAPON_RIFLE].m_Ammo + 1);
+		return;
+	}
+
+	// Place new portal
+	int OwnerCID = GetPlayer() ? GetPlayer()->GetCID() : -1;
+	CPortal *existingPortal = m_pPortalIn ? m_pPortalIn : m_pPortalOut;
+	if(existingPortal && distance(existingPortal->m_Pos, TargetPos) < g_Config.m_InfMinPortalDistance)
+	{
+		char aBuf[256];
+		str_format(aBuf, sizeof(aBuf), "Unable to place portals that close to each other");
+		GameServer()->SendChatTarget(OwnerCID, aBuf);
+		return;
+	}
+
+	if (TargetPos.y < -20)
+	{
+		char aBuf[256];
+		str_format(aBuf, sizeof(aBuf), "Unable to open a portal at this height");
+		GameServer()->SendChatTarget(OwnerCID, aBuf);
+		return;
+	}
+
+	if(m_pPortalIn && m_pPortalOut)
+	{
+		m_pPortalOut->Disconnect();
+		GameServer()->m_World.DestroyEntity(m_pPortalOut);
+		m_pPortalOut = nullptr;
+	}
+
+	if (m_pPortalIn)
+	{
+		m_pPortalOut = new CPortal(GameServer(), TargetPos, OwnerCID, CPortal::PortalType::Out);
+		m_pPortalOut->ConnectPortal(m_pPortalIn);
+		GameServer()->CreateSound(m_pPortalOut->m_Pos, m_pPortalOut->GetNewEntitySound());
+	}
+	else
+	{
+		m_pPortalIn = new CPortal(GameServer(), TargetPos, OwnerCID, CPortal::PortalType::In);
+		m_pPortalIn->ConnectPortal(m_pPortalOut);
+		GameServer()->CreateSound(m_pPortalIn->m_Pos, m_pPortalIn->GetNewEntitySound());
+	}
+}
+
+CPortal *CInfClassCharacter::FindPortalInTarget()
+{
+	vec2 TargetPos = m_Pos;
+
+	if (GetPlayerClass() == PLAYERCLASS_WITCH)
+	{
+		if(!FindWitchSpawnPosition(TargetPos))
+		{
+			// Witch can't place the portal here
+			return nullptr;
+		}
+	}
+
+	// Check if unmount wanted
+	const int displacementExtraDistance = 20;
+	if(m_pPortalIn && (distance(m_pPortalIn->m_Pos, TargetPos) < m_ProximityRadius + m_pPortalIn->GetRadius() + displacementExtraDistance))
+	{
+		return m_pPortalIn;
+	}
+
+	if(m_pPortalOut && (distance(m_pPortalOut->m_Pos, TargetPos) < m_ProximityRadius + m_pPortalOut->GetRadius() + displacementExtraDistance))
+	{
+		return m_pPortalOut;
+	}
+
+	return nullptr;
+}
+
+void CInfClassCharacter::OnPortalDestroy(CPortal *pPortal)
+{
+	if (!pPortal)
+		return;
+
+	if (m_pPortalIn == pPortal)
+	{
+		m_pPortalIn->Disconnect();
+		m_pPortalIn = nullptr;
+	}
+	else if (m_pPortalOut == pPortal)
+	{
+		m_pPortalOut->Disconnect();
+		m_pPortalOut = nullptr;
+	}
+}
+
+bool CInfClassCharacter::ProcessCharacterOnPortal(CPortal *pPortal, CCharacter *pCharacter)
+{
+	switch (GetPlayerClass())
+	{
+		case PLAYERCLASS_WITCH:
+			if (pPortal->GetPortalType() != CPortal::PortalType::In)
+				return false;
+
+			if(!pCharacter->IsZombie())
+				return false;
+
+			if (pCharacter == this)
+				return false;
+
+			break;
+
+		default:
+			return false;
+	}
+
+	// The idea here is to have a point to catch all allowed teleportations
+	SetEmote(EMOTE_HAPPY, Server()->Tick() + Server()->TickSpeed());
+	GameServer()->SendEmoticon(GetPlayer()->GetCID(), EMOTICON_MUSIC);
+
+	Server()->RoundStatistics()->OnScoreEvent(m_pPlayer->GetCID(), SCOREEVENT_PORTAL_USED, GetPlayerClass(), Server()->ClientName(m_pPlayer->GetCID()), Console());
+	GameServer()->SendScoreSound(m_pPlayer->GetCID());
+
+	return true;
+}
+
+bool CInfClassCharacter::CanOpenPortals() const
+{
+	return m_canOpenPortals;
+}

@@ -8,6 +8,7 @@
 #include "growingexplosion.h"
 
 #include <engine/server/roundstatistics.h>
+#include <game/server/infclass/infcgamecontroller.h>
 
 static const float PortalRadius = 30.f;
 
@@ -98,7 +99,7 @@ void CPortal::TakeDamage(int Dmg, int From, int Weapon, int Mode)
 
 void CPortal::Explode(int DetonatedBy)
 {
-	CCharacter *pOwner = GameServer()->GetPlayerChar(GetOwner());
+	CInfClassCharacter *pOwner = GameController()->GetCharacter(GetOwner());
 	if (pOwner)
 	{
 		pOwner->OnPortalDestroy(this);
@@ -295,14 +296,14 @@ void CPortal::TeleportCharacters()
 		return;
 	}
 
-	CCharacter *pOwner = GameServer()->GetPlayerChar(GetOwner());
+	CInfClassCharacter *pOwner = GameController()->GetCharacter(GetOwner());
 	if (!pOwner)
 	{
 		return;
 	}
 
 	const vec2 TargetPos = m_AnotherPortal->m_Pos;
-	for(CCharacter *pCharacter = (CCharacter*) GameWorld()->FindFirst(CGameWorld::ENTTYPE_CHARACTER); pCharacter; pCharacter = (CCharacter *)pCharacter->TypeNext())
+	for(CInfClassCharacter *pCharacter = (CInfClassCharacter*) GameWorld()->FindFirst(CGameWorld::ENTTYPE_CHARACTER); pCharacter; pCharacter = (CInfClassCharacter *)pCharacter->TypeNext())
 	{
 		const float Distance = distance(pCharacter->m_Pos, m_Pos);
 		if(Distance > pCharacter->m_ProximityRadius + m_Radius)

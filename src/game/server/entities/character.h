@@ -81,14 +81,7 @@ public:
 	void ResetInput();
 	virtual void FireWeapon();
 
-	void CheckSuperWeaponAccess();
-	void FireSoldierBomb();
-	void PlacePortal();
-	CPortal *FindPortalInTarget();
-	void OnPortalDestroy(CPortal *pPortal);
-	bool ProcessCharacterOnPortal(CPortal *pPortal, CCharacter *pCharacter);
 	bool HasPortal();
-	bool CanOpenPortals() const;
 
 	bool CanDie() const;
 	virtual void Die(int Killer, int Weapon);
