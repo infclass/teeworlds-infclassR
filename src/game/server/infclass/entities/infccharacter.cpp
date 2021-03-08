@@ -1279,7 +1279,6 @@ void CInfClassCharacter::Die(int Killer, int Weapon)
 
 	if(pKillerPlayer && (pKillerPlayer != m_pPlayer))
 	{
-		pKillerPlayer->IncreaseNumberKills();
 		pKillerCharacter = pKillerPlayer->GetCharacter();
 		// set attacker's face to happy (taunt!)
 		if(pKillerCharacter)

@@ -993,6 +993,11 @@ void CInfClassGameController::RewardTheKiller(CCharacter *pVictim, CPlayer *pKil
 	if(!pKiller || Weapon == WEAPON_GAME)
 		return;
 
+	if(pKiller != pVictim->GetPlayer())
+	{
+		pKiller->IncreaseNumberKills();
+	}
+
 	if(pKiller->IsHuman())
 	{
 		if(pKiller == pVictim->GetPlayer())
