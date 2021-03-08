@@ -22,6 +22,8 @@ public:
 	{
 		int Weapon = 0;
 		bool FireAccepted = false;
+		int AmmoAvailable = 0;
+		int AmmoConsumed = 0;
 	};
 
 	void OnWeaponFired(WeaponFireContext *pFireContext);

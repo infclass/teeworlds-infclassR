@@ -116,6 +116,8 @@ void CInfClassCharacter::FireWeapon()
 	WeaponFireContext FireContext;
 	FireContext.Weapon = m_ActiveWeapon;
 	FireContext.FireAccepted = true;
+	FireContext.AmmoConsumed = 1;
+	FireContext.AmmoAvailable = m_aWeapons[m_ActiveWeapon].m_Ammo;
 
 	OnWeaponFired(&FireContext);
 
@@ -126,8 +128,11 @@ void CInfClassCharacter::FireWeapon()
 
 	m_AttackTick = Server()->Tick();
 
-	if(m_aWeapons[m_ActiveWeapon].m_Ammo > 0) // -1 == unlimited
-		m_aWeapons[m_ActiveWeapon].m_Ammo--;
+	int &Ammo = m_aWeapons[m_ActiveWeapon].m_Ammo;
+	if(Ammo > 0) // -1 == unlimited
+	{
+		Ammo = maximum(0, Ammo - FireContext.AmmoConsumed);
+	}
 
 	if(!m_ReloadTimer)
 	{
