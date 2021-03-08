@@ -53,7 +53,7 @@ void CTurret::Tick()
 	if(m_LifeSpan < 0)
 		Reset();
 
-	for(CCharacter *pChr = (CCharacter*) GameWorld()->FindFirst(CGameWorld::ENTTYPE_CHARACTER); pChr; pChr = (CCharacter *)pChr->TypeNext())
+	for(CInfClassCharacter *pChr = (CInfClassCharacter*) GameWorld()->FindFirst(CGameWorld::ENTTYPE_CHARACTER); pChr; pChr = (CInfClassCharacter *)pChr->TypeNext())
 	{
 		if(!pChr->IsZombie() || !pChr->CanDie())
 			continue;
@@ -118,7 +118,7 @@ void CTurret::Tick()
 void CTurret::AttackTargets()
 {
 	//warmup finished, ready to find target
-	for(CCharacter *pChr = (CCharacter*) GameWorld()->FindFirst(CGameWorld::ENTTYPE_CHARACTER); pChr; pChr = (CCharacter *)pChr->TypeNext())
+	for(CInfClassCharacter *pChr = (CInfClassCharacter*) GameWorld()->FindFirst(CGameWorld::ENTTYPE_CHARACTER); pChr; pChr = (CInfClassCharacter *)pChr->TypeNext())
 	{
 		if(!m_ammunition) break;
 

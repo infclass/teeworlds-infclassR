@@ -570,18 +570,6 @@ bool CCharacter::HasPortal()
 	return m_pPortalIn || m_pPortalOut;
 }
 
-bool CCharacter::CanDie() const
-{
-	if ((GetPlayerClass() == PLAYERCLASS_UNDEAD) && IsFrozen()) {
-		return false;
-	}
-	if ((GetPlayerClass() == PLAYERCLASS_VOODOO) && m_VoodooAboutToDie) {
-		return false;
-	}
-
-	return true;
-}
-
 void CCharacter::SaturateVelocity(vec2 Force, float MaxSpeed)
 {
 	if(length(Force) < 0.00001)

@@ -8,6 +8,7 @@
 #include <engine/shared/config.h>
 
 #include "engineer-wall.h"
+#include "infccharacter.h"
 
 const float g_BarrierMaxLength = 300.0;
 const float g_BarrierRadius = 0.0;
@@ -50,7 +51,7 @@ void CEngineerWall::Tick()
 	else
 	{
 		// Find other players
-		for(CCharacter *p = (CCharacter*) GameWorld()->FindFirst(CGameWorld::ENTTYPE_CHARACTER); p; p = (CCharacter *)p->TypeNext())
+		for(CInfClassCharacter *p = (CInfClassCharacter*) GameWorld()->FindFirst(CGameWorld::ENTTYPE_CHARACTER); p; p = (CInfClassCharacter *)p->TypeNext())
 		{
 			if(p->IsHuman()) continue;
 
@@ -130,13 +131,13 @@ void CEngineerWall::Snap(int SnappingClient)
 	}
 }
 
-void CEngineerWall::OnZombieHit(CCharacter *pZombie)
+void CEngineerWall::OnZombieHit(CInfClassCharacter *pZombie)
 {
 	if(pZombie->GetPlayer())
 	{
 		if(pZombie->CanDie())
 		{
-			for(CCharacter *pHook = (CCharacter*) GameWorld()->FindFirst(CGameWorld::ENTTYPE_CHARACTER); pHook; pHook = (CCharacter *)pHook->TypeNext())
+			for(CInfClassCharacter *pHook = (CInfClassCharacter*) GameWorld()->FindFirst(CGameWorld::ENTTYPE_CHARACTER); pHook; pHook = (CInfClassCharacter *)pHook->TypeNext())
 			{
 				if(
 					pHook->GetPlayer() &&

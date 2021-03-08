@@ -1327,6 +1327,18 @@ CGameContext *CInfClassCharacter::GameContext() const
 	return m_pGameController->GameServer();
 }
 
+bool CInfClassCharacter::CanDie() const
+{
+	if ((GetPlayerClass() == PLAYERCLASS_UNDEAD) && IsFrozen()) {
+		return false;
+	}
+	if ((GetPlayerClass() == PLAYERCLASS_VOODOO) && m_VoodooAboutToDie) {
+		return false;
+	}
+
+	return true;
+}
+
 void CInfClassCharacter::CheckSuperWeaponAccess()
 {
 	// check kills of player

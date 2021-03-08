@@ -5,6 +5,7 @@
 
 #include "scientist-mine.h"
 
+#include "infccharacter.h"
 #include "growingexplosion.h"
 
 CScientistMine::CScientistMine(CGameContext *pGameContext, vec2 Pos, int Owner)
@@ -103,7 +104,7 @@ void CScientistMine::Tick()
 	// Find other players
 	bool MustExplode = false;
 	int DetonatedBy;
-	for(CCharacter *p = (CCharacter*) GameWorld()->FindFirst(CGameWorld::ENTTYPE_CHARACTER); p; p = (CCharacter *)p->TypeNext())
+	for(CInfClassCharacter *p = (CInfClassCharacter*) GameWorld()->FindFirst(CGameWorld::ENTTYPE_CHARACTER); p; p = (CInfClassCharacter *)p->TypeNext())
 	{
 		if(p->IsHuman()) continue;
 		if(!p->CanDie()) continue;

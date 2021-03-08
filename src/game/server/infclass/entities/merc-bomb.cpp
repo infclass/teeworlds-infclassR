@@ -2,8 +2,11 @@
 /* If you are missing that file, acquire a complete release at teeworlds.com.                */
 #include <game/server/gamecontext.h>
 #include <engine/shared/config.h>
-#include "growingexplosion.h"
+
 #include "merc-bomb.h"
+
+#include "growingexplosion.h"
+#include "infccharacter.h"
 
 CMercenaryBomb::CMercenaryBomb(CGameContext *pGameContext, vec2 Pos, int Owner)
 	: CInfCEntity(pGameContext, CGameWorld::ENTTYPE_MERCENARY_BOMB, Pos, Owner)
@@ -42,7 +45,7 @@ void CMercenaryBomb::Tick()
 	
 	// Find other players
 	bool MustExplode = false;
-	for(CCharacter *p = (CCharacter*) GameWorld()->FindFirst(CGameWorld::ENTTYPE_CHARACTER); p; p = (CCharacter *)p->TypeNext())
+	for(CInfClassCharacter *p = (CInfClassCharacter*) GameWorld()->FindFirst(CGameWorld::ENTTYPE_CHARACTER); p; p = (CInfClassCharacter *)p->TypeNext())
 	{
 		if(p->IsHuman()) continue;
 		if(!p->CanDie()) continue;

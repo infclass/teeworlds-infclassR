@@ -5,6 +5,8 @@
 
 #include "infcentity.h"
 
+class CInfClassCharacter;
+
 class CEngineerWall : public CInfCEntity
 {
 public:
@@ -15,7 +17,7 @@ public:
 	virtual void TickPaused();
 	virtual void Snap(int SnappingClient);
 	int GetTick() { return m_LifeSpan; }
-	void OnZombieHit(CCharacter *pZombie);
+	void OnZombieHit(CInfClassCharacter *pZombie);
 
 private:
 	vec2 m_Pos2;

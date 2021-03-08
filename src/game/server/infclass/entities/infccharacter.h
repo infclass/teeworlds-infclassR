@@ -44,6 +44,8 @@ public:
 	CInfClassGameController *GameController() const { return m_pGameController; }
 	CGameContext *GameContext() const;
 
+	bool CanDie() const;
+
 	void CheckSuperWeaponAccess();
 	void FireSoldierBomb();
 	void PlacePortal();

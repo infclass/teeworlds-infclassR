@@ -5,6 +5,7 @@
 
 #include "biologist-mine.h"
 #include "biologist-laser.h"
+#include "infccharacter.h"
 
 CBiologistMine::CBiologistMine(CGameContext *pGameContext, vec2 Pos, vec2 EndPos, int Owner)
 	: CInfCEntity(pGameContext, CGameWorld::ENTTYPE_BIOLOGIST_MINE, Pos, Owner)
@@ -76,7 +77,7 @@ void CBiologistMine::Tick()
 	
 	
 	// Find other players
-	for(CCharacter *p = (CCharacter*) GameWorld()->FindFirst(CGameWorld::ENTTYPE_CHARACTER); p; p = (CCharacter *)p->TypeNext())
+	for(CInfClassCharacter *p = (CInfClassCharacter*) GameWorld()->FindFirst(CGameWorld::ENTTYPE_CHARACTER); p; p = (CInfClassCharacter *)p->TypeNext())
 	{
 		if(p->IsHuman()) continue;
 		if(!p->CanDie()) continue;
