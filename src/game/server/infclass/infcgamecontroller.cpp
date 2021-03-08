@@ -836,16 +836,14 @@ bool CInfClassGameController::PortalsAvailableForCharacter(class CCharacter *pCh
 	if (pCharacter->GetPlayerClass() != PLAYERCLASS_WITCH)
 		return false;
 
-	CPlayerIterator<PLAYERITER_INGAME> Iter(GameServer()->m_apPlayers);
-	while(Iter.Next())
+	for(int ClientID = 0; ClientID < MAX_CLIENTS; ++ClientID)
 	{
-		if (!Iter.Player()->GetCharacter())
+		CInfClassCharacter *pAnotherCharacter = GetCharacter(ClientID);
+		if(!pAnotherCharacter)
 			continue;
-
-		if (Iter.Player()->GetCharacter() == pCharacter)
+		if(pAnotherCharacter == pCharacter)
 			continue;
-
-		if (Iter.Player()->GetCharacter()->CanOpenPortals())
+		if(pAnotherCharacter->CanOpenPortals())
 			return false;
 	}
 
