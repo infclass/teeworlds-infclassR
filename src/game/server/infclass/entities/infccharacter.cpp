@@ -30,6 +30,7 @@
 #include <game/server/infclass/entities/turret.h>
 #include <game/server/infclass/entities/white-hole.h>
 #include <game/server/infclass/infcgamecontroller.h>
+#include <game/server/infclass/infcplayer.h>
 
 MACRO_ALLOC_POOL_ID_IMPL(CInfClassCharacter, MAX_CLIENTS)
 
@@ -1181,10 +1182,10 @@ void CInfClassCharacter::Die(int Killer, int Weapon)
 	DestroyChildEntities();
 /* INFECTION MODIFICATION END *****************************************/
 
-	CCharacter *pKillerCharacter = nullptr;
+	CInfClassCharacter *pKillerCharacter = nullptr;
 	if (Weapon == WEAPON_WORLD && Killer == m_pPlayer->GetCID()) {
 		//Search for the real killer (if somebody hooked this player)
-		for(CCharacter *pHooker = (CCharacter*) GameServer()->m_World.FindFirst(CGameWorld::ENTTYPE_CHARACTER); pHooker; pHooker = (CCharacter *)pHooker->TypeNext())
+		for(CInfClassCharacter *pHooker = (CInfClassCharacter*) GameServer()->m_World.FindFirst(CGameWorld::ENTTYPE_CHARACTER); pHooker; pHooker = (CInfClassCharacter *)pHooker->TypeNext())
 		{
 			if (pHooker->GetPlayer() && pHooker->m_Core.m_HookedPlayer == m_pPlayer->GetCID())
 			{
@@ -1215,14 +1216,15 @@ void CInfClassCharacter::Die(int Killer, int Weapon)
 			{
 				Weapon = WEAPON_NINJA;
 			}
-
-			pKillerCharacter = GameServer()->GetPlayerChar(Killer);
 		}
 	}
 
+	pKillerCharacter = GameController()->GetCharacter(Killer);
+
 	// we got to wait 0.5 secs before respawning
 	m_pPlayer->m_RespawnTick = Server()->Tick()+Server()->TickSpeed()/2;
-	int ModeSpecial = GameServer()->m_pController->OnCharacterDeath(this, GameServer()->m_apPlayers[Killer], Weapon);
+	CInfClassPlayer* pKillerPlayer = GameController()->GetPlayer(Killer);
+	int ModeSpecial = GameController()->OnCharacterDeath(this, pKillerPlayer, Weapon);
 
 	char aBuf[256];
 	str_format(aBuf, sizeof(aBuf), "kill killer='%s' victim='%s' weapon=%d",
@@ -1244,11 +1246,6 @@ void CInfClassCharacter::Die(int Killer, int Weapon)
 	GameServer()->CreateDeath(m_Pos, m_pPlayer->GetCID());
 
 /* INFECTION MODIFICATION START ***************************************/
-	CPlayer* pKillerPlayer = nullptr;
-	if(Killer >=0 && Killer < MAX_CLIENTS)
-	{
-		pKillerPlayer = GameServer()->m_apPlayers[Killer];
-	}
 
 	if(GetPlayerClass() == PLAYERCLASS_BOOMER && !IsFrozen() && Weapon != WEAPON_GAME && !(IsInLove() && Weapon == WEAPON_SELF) )
 	{
@@ -1277,19 +1274,15 @@ void CInfClassCharacter::Die(int Killer, int Weapon)
 	}
 /* INFECTION MODIFICATION END *****************************************/
 
-	if(pKillerPlayer && (pKillerPlayer != m_pPlayer))
+	if(pKillerCharacter && (pKillerCharacter != this))
 	{
-		pKillerCharacter = pKillerPlayer->GetCharacter();
 		// set attacker's face to happy (taunt!)
-		if(pKillerCharacter)
-		{
-			pKillerCharacter->SetEmote(EMOTE_HAPPY, Server()->Tick() + Server()->TickSpeed());
-			pKillerCharacter->CheckSuperWeaponAccess();
+		pKillerCharacter->SetEmote(EMOTE_HAPPY, Server()->Tick() + Server()->TickSpeed());
+		pKillerCharacter->CheckSuperWeaponAccess();
 
-			if(pKillerPlayer->GetClass() == PLAYERCLASS_MERCENARY)
-			{
-				pKillerCharacter->GiveWeapon(WEAPON_RIFLE, m_aWeapons[WEAPON_RIFLE].m_Ammo + 3);
-			}
+		if(pKillerCharacter->GetPlayerClass() == PLAYERCLASS_MERCENARY)
+		{
+			pKillerCharacter->GiveWeapon(WEAPON_RIFLE, m_aWeapons[WEAPON_RIFLE].m_Ammo + 3);
 		}
 	}
 }
