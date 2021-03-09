@@ -1314,6 +1314,7 @@ void CInfClassCharacter::Die(int Killer, int Weapon)
 		m_VoodooKiller = Killer;
 		m_VoodooWeapon = Weapon;
 		m_pPlayer->SetToSpirit(true);
+		GetClass()->UpdateSkin();
 		return;
 	// If about to die, yet killed again, dont kill him either
 	} else if(GetPlayerClass() == PLAYERCLASS_VOODOO && m_VoodooAboutToDie && m_VoodooTimeAlive > 0)
@@ -1324,6 +1325,7 @@ void CInfClassCharacter::Die(int Killer, int Weapon)
 	if(GetPlayerClass() == PLAYERCLASS_GHOUL)
 	{
 		m_pPlayer->IncreaseGhoulLevel(-20);
+		GetClass()->UpdateSkin();
 	}
 
 	DestroyChildEntities();

@@ -18,6 +18,7 @@ public:
 
 protected:
 	void GiveClassAttributes() override;
+	void SetupSkin(CTeeInfo *output) override;
 };
 
 #endif // GAME_SERVER_INFCLASS_CLASSES_HUMAN_H

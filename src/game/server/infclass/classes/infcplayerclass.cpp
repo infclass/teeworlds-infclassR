@@ -4,6 +4,7 @@
 #include <game/gamecore.h>
 #include <game/server/infclass/entities/infccharacter.h>
 #include <game/server/infclass/infcplayer.h>
+#include <game/server/teeinfo.h>
 
 CInfClassPlayerClass::CInfClassPlayerClass(CInfClassPlayer *pPlayer)
 	: m_pPlayer(pPlayer)
@@ -137,6 +138,8 @@ int CInfClassPlayerClass::PlayerClass() const
 
 void CInfClassPlayerClass::OnPlayerClassChanged()
 {
+	UpdateSkin();
+
 	if(m_pCharacter)
 	{
 		GiveClassAttributes();
@@ -179,6 +182,7 @@ void CInfClassPlayerClass::OnCharacterSpawned()
 {
 	m_Poison = 0;
 
+	UpdateSkin();
 	GiveClassAttributes();
 }
 
@@ -236,4 +240,15 @@ void CInfClassPlayerClass::OnNinjaFired(WeaponFireContext *pFireContext)
 void CInfClassPlayerClass::GiveClassAttributes()
 {
 	m_pCharacter->TakeAllWeapons();
+}
+
+void CInfClassPlayerClass::SetupSkin(CTeeInfo *output)
+{
+	output->m_UseCustomColor = 0;
+	output->SetSkinName("default");
+}
+
+void CInfClassPlayerClass::UpdateSkin()
+{
+	SetupSkin(&m_pPlayer->m_TeeInfos);
 }

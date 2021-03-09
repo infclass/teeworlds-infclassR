@@ -5,6 +5,7 @@
 #include <game/server/gamecontext.h>
 #include <game/server/infclass/entities/infccharacter.h>
 #include <game/server/infclass/infcgamecontroller.h>
+#include <game/server/teeinfo.h>
 
 MACRO_ALLOC_POOL_ID_IMPL(CInfClassHuman, MAX_CLIENTS)
 
@@ -91,6 +92,61 @@ void CInfClassHuman::GiveClassAttributes()
 		case PLAYERCLASS_NONE:
 			m_pCharacter->GiveWeapon(WEAPON_HAMMER, -1);
 			m_pCharacter->SetActiveWeapon(WEAPON_HAMMER);
+			break;
+	}
+}
+
+void CInfClassHuman::SetupSkin(CTeeInfo *output)
+{
+	switch(PlayerClass())
+	{
+		case PLAYERCLASS_ENGINEER:
+			output->m_UseCustomColor = 0;
+			output->SetSkinName("limekitty");
+			break;
+		case PLAYERCLASS_SOLDIER:
+			output->SetSkinName("brownbear");
+			output->m_UseCustomColor = 0;
+			break;
+		case PLAYERCLASS_SNIPER:
+			output->SetSkinName("warpaint");
+			output->m_UseCustomColor = 0;
+			break;
+		case PLAYERCLASS_MERCENARY:
+			output->SetSkinName("bluestripe");
+			output->m_UseCustomColor = 0;
+			break;
+		case PLAYERCLASS_SCIENTIST:
+			output->SetSkinName("toptri");
+			output->m_UseCustomColor = 0;
+			break;
+		case PLAYERCLASS_BIOLOGIST:
+			output->SetSkinName("twintri");
+			output->m_UseCustomColor = 0;
+			break;
+		case PLAYERCLASS_LOOPER:
+			output->SetSkinName("bluekitty");
+			output->m_UseCustomColor = 1;
+			output->m_ColorBody = 255;
+			output->m_ColorFeet = 0;
+			break;
+		case PLAYERCLASS_MEDIC:
+			output->SetSkinName("twinbop");
+			output->m_UseCustomColor = 0;
+			break;
+		case PLAYERCLASS_HERO:
+			output->SetSkinName("redstripe");
+			output->m_UseCustomColor = 0;
+			break;
+		case PLAYERCLASS_NINJA:
+			output->SetSkinName("default");
+			output->m_UseCustomColor = 1;
+			output->m_ColorBody = 255;
+			output->m_ColorFeet = 0;
+			break;
+		default:
+			output->SetSkinName("default");
+			output->m_UseCustomColor = 0;
 			break;
 	}
 }

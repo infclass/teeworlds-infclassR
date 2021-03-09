@@ -11,6 +11,7 @@ class CInfClassCharacter;
 class CInfClassGameContext;
 class CInfClassGameController;
 class CInfClassPlayer;
+class CTeeInfo;
 class IServer;
 
 struct WeaponFireContext;
@@ -29,6 +30,7 @@ public:
 	virtual float GetGhoulPercent() const;
 
 	// Temp stuff
+	void UpdateSkin();
 	int PlayerClass() const;
 	void OnPlayerClassChanged();
 
@@ -65,6 +67,7 @@ public:
 
 protected:
 	virtual void GiveClassAttributes();
+	virtual void SetupSkin(CTeeInfo *output);
 
 	CInfClassPlayer *m_pPlayer = nullptr;
 	CInfClassCharacter *m_pCharacter = nullptr;

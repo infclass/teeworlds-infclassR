@@ -24,6 +24,7 @@ public:
 
 protected:
 	void GiveClassAttributes() override;
+	void SetupSkin(CTeeInfo *output) override;
 
 	int m_HealTick = 0;
 };

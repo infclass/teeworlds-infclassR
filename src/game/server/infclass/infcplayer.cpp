@@ -76,20 +76,8 @@ void CInfClassPlayer::Tick()
 			{
 				m_GhoulLevelTick = (Server()->TickSpeed() * GameServer()->Config()->m_InfGhoulDigestion);
 				IncreaseGhoulLevel(-1);
+				GetCharacterClass()->UpdateSkin();
 			}
-		}
-
-		SetClassSkin(PLAYERCLASS_GHOUL, m_GhoulLevel);
-	}
-	else if (GetClass() == PLAYERCLASS_VOODOO)
-	{
-		if(m_VoodooIsSpirit)
-		{
-			SetClassSkin(PLAYERCLASS_VOODOO, 0); // 0 = spirit skin
-		}
-		else
-		{
-			SetClassSkin(PLAYERCLASS_VOODOO, 1); // 1 = normal skin
 		}
 	}
 
