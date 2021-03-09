@@ -894,7 +894,7 @@ void CInfClassCharacter::OnNinjaFired(WeaponFireContext *pFireContext)
 	// The design of ninja supposes different implementation (not via FireWeapon)
 }
 
-void CInfClassCharacter::OnMercGrenadeFired(CInfClassCharacter::WeaponFireContext *pFireContext)
+void CInfClassCharacter::OnMercGrenadeFired(WeaponFireContext *pFireContext)
 {
 	float BaseAngle = GetAngle(GetDirection());
 
@@ -943,7 +943,7 @@ void CInfClassCharacter::OnMercGrenadeFired(CInfClassCharacter::WeaponFireContex
 	m_ReloadTimer = Server()->TickSpeed()/4;
 }
 
-void CInfClassCharacter::OnMedicGrenadeFired(CInfClassCharacter::WeaponFireContext *pFireContext)
+void CInfClassCharacter::OnMedicGrenadeFired(WeaponFireContext *pFireContext)
 {
 	float BaseAngle = GetAngle(GetDirection());
 
@@ -991,7 +991,7 @@ void CInfClassCharacter::OnMedicGrenadeFired(CInfClassCharacter::WeaponFireConte
 	m_ReloadTimer = Server()->TickSpeed()/4;
 }
 
-void CInfClassCharacter::OnBiologistLaserFired(CInfClassCharacter::WeaponFireContext *pFireContext)
+void CInfClassCharacter::OnBiologistLaserFired(WeaponFireContext *pFireContext)
 {
 	if(pFireContext->AmmoAvailable < 10)
 	{
