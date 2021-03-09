@@ -5,7 +5,7 @@
 #ifndef GAME_RELEASE_VERSION
 #define GAME_RELEASE_VERSION "1.2.0"
 #endif
-#include "generated/nethash.cpp"
+#define GAME_NETVERSION_HASH "ecc3ccbeb9e57b75"
 #define GAME_VERSION "0.6.4, " GAME_RELEASE_VERSION
 #define GAME_NETVERSION "0.6 " GAME_NETVERSION_HASH
 #define GAME_NAME "InfclassR"
