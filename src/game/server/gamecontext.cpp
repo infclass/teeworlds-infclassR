@@ -2303,13 +2303,22 @@ bool CGameContext::ConAddMap(IConsole::IResult *pResult, void *pUserData)
 	}
 
 	{
-		const char *mapInTheList = str_find(g_Config.m_SvMaprotation, pMapName);
-		const char nextC = mapInTheList ? mapInTheList[str_length(pMapName)] : '\0';
-
-		if (mapInTheList && (!nextC || IGameController::IsWordSeparator(nextC)))
+		const char *pMapInList = pSelf->Config()->m_SvMaprotation;
+		const int Length = str_length(pMapName);
+		while(pMapInList)
 		{
-			pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "server", "The map is already in the rotation list");
-			return true;
+			pMapInList = str_find(pMapInList, pMapName);
+
+			if(pMapInList)
+			{
+				pMapInList += Length;
+				const char nextC = pMapInList[0];
+				if((nextC == 0) || IGameController::IsWordSeparator(nextC))
+				{
+					pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "server", "The map is already in the rotation list");
+					return true;
+				}
+			}
 		}
 	}
 
