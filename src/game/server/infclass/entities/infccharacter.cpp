@@ -170,7 +170,7 @@ void CInfClassCharacter::OnHammerFired(WeaponFireContext *pFireContext)
 	if(CountInput(m_LatestPrevInput.m_Fire, m_LatestInput.m_Fire).m_Presses)
 	{
 	}
-	else if(FullAuto && (m_LatestInput.m_Fire&1) && (m_aWeapons[m_ActiveWeapon].m_Ammo))
+	else if(FullAuto && (m_LatestInput.m_Fire&1) && (pFireContext->AmmoAvailable))
 	{
 		AutoFire = true;
 	}
@@ -180,21 +180,21 @@ void CInfClassCharacter::OnHammerFired(WeaponFireContext *pFireContext)
 		for(CEngineerWall *pWall = (CEngineerWall*) GameWorld()->FindFirst(CGameWorld::ENTTYPE_ENGINEER_WALL); pWall; pWall = (CEngineerWall*) pWall->TypeNext())
 		{
 			if(pWall->GetOwner() == m_pPlayer->GetCID())
-				GameServer()->m_World.DestroyEntity(pWall);
+				GameWorld()->DestroyEntity(pWall);
 		}
 
 		if(m_FirstShot)
 		{
 			m_FirstShot = false;
-			m_FirstShotCoord = m_Pos;
+			m_FirstShotCoord = GetPos();
 		}
-		else if(distance(m_FirstShotCoord, m_Pos) > 10.0)
+		else if(distance(m_FirstShotCoord, GetPos()) > 10.0)
 		{
 			//Check if the barrier is in toxic gases
 			bool isAccepted = true;
 			for(int i=0; i<15; i++)
 			{
-				vec2 TestPos = m_FirstShotCoord + (m_Pos - m_FirstShotCoord)*(static_cast<float>(i)/14.0f);
+				vec2 TestPos = m_FirstShotCoord + (GetPos() - m_FirstShotCoord)*(static_cast<float>(i)/14.0f);
 				if(GameServer()->Collision()->GetZoneValueAt(GameServer()->m_ZoneHandle_Damage, TestPos) == ZONE_DAMAGE_INFECTION)
 				{
 					isAccepted = false;
@@ -204,8 +204,8 @@ void CInfClassCharacter::OnHammerFired(WeaponFireContext *pFireContext)
 			if(isAccepted)
 			{
 				m_FirstShot = true;
-				new CEngineerWall(GameServer(), m_FirstShotCoord, m_Pos, m_pPlayer->GetCID());
-				GameServer()->CreateSound(m_Pos, SOUND_RIFLE_FIRE);
+				new CEngineerWall(GameServer(), m_FirstShotCoord, GetPos(), m_pPlayer->GetCID());
+				GameServer()->CreateSound(GetPos(), SOUND_RIFLE_FIRE);
 			}
 		}
 	}
@@ -215,21 +215,21 @@ void CInfClassCharacter::OnHammerFired(WeaponFireContext *pFireContext)
 		for(CLooperWall *pWall = (CLooperWall*) GameWorld()->FindFirst(CGameWorld::ENTTYPE_LOOPER_WALL); pWall; pWall = (CLooperWall*) pWall->TypeNext())
 		{
 			if(pWall->GetOwner() == m_pPlayer->GetCID())
-				GameServer()->m_World.DestroyEntity(pWall);
+				GameWorld()->DestroyEntity(pWall);
 		}
 
 		if(m_FirstShot)
 		{
 			m_FirstShot = false;
-			m_FirstShotCoord = m_Pos;
+			m_FirstShotCoord = GetPos();
 		}
-		else if(distance(m_FirstShotCoord, m_Pos) > 10.0)
+		else if(distance(m_FirstShotCoord, GetPos()) > 10.0)
 		{
 			//Check if the barrier is in toxic gases
 			bool isAccepted = true;
 			for(int i=0; i<15; i++)
 			{
-				vec2 TestPos = m_FirstShotCoord + (m_Pos - m_FirstShotCoord)*(static_cast<float>(i)/14.0f);
+				vec2 TestPos = m_FirstShotCoord + (GetPos() - m_FirstShotCoord)*(static_cast<float>(i)/14.0f);
 				if(GameServer()->Collision()->GetZoneValueAt(GameServer()->m_ZoneHandle_Damage, TestPos) == ZONE_DAMAGE_INFECTION)
 				{
 					isAccepted = false;
@@ -240,9 +240,9 @@ void CInfClassCharacter::OnHammerFired(WeaponFireContext *pFireContext)
 			{
 				m_FirstShot = true;
 				
-				new CLooperWall(GameServer(), m_FirstShotCoord, m_Pos, m_pPlayer->GetCID());
+				new CLooperWall(GameServer(), m_FirstShotCoord, GetPos(), m_pPlayer->GetCID());
 				
-				GameServer()->CreateSound(m_Pos, SOUND_RIFLE_FIRE);
+				GameServer()->CreateSound(GetPos(), SOUND_RIFLE_FIRE);
 			}
 		}
 	}
@@ -252,14 +252,14 @@ void CInfClassCharacter::OnHammerFired(WeaponFireContext *pFireContext)
 		{
 			if (g_Config.m_InfTurretEnableLaser)
 			{
-				new CTurret(GameServer(), m_Pos, m_pPlayer->GetCID(), Direction, CTurret::LASER);
+				new CTurret(GameServer(), GetPos(), m_pPlayer->GetCID(), Direction, CTurret::LASER);
 			}
 			else if (g_Config.m_InfTurretEnablePlasma)
 			{
-				new CTurret(GameServer(), m_Pos, m_pPlayer->GetCID(), Direction, CTurret::PLASMA);
+				new CTurret(GameServer(), GetPos(), m_pPlayer->GetCID(), Direction, CTurret::PLASMA);
 			}
 
-			GameServer()->CreateSound(m_Pos, SOUND_GRENADE_FIRE);
+			GameServer()->CreateSound(GetPos(), SOUND_GRENADE_FIRE);
 			m_TurretCount--;
 			char aBuf[256];
 			str_format(aBuf, sizeof(aBuf), "placed turret, %i left", m_TurretCount);
@@ -267,7 +267,7 @@ void CInfClassCharacter::OnHammerFired(WeaponFireContext *pFireContext)
 		}
 		else
 		{
-			GameServer()->CreateSound(m_Pos, SOUND_WEAPON_NOAMMO);
+			GameServer()->CreateSound(GetPos(), SOUND_WEAPON_NOAMMO);
 		}
 	}
 	else if(GetPlayerClass() == PLAYERCLASS_SOLDIER)
@@ -276,7 +276,7 @@ void CInfClassCharacter::OnHammerFired(WeaponFireContext *pFireContext)
 	}
 	else if(GetPlayerClass() == PLAYERCLASS_SNIPER)
 	{
-		if(m_Pos.y > -600.0)
+		if(GetPos().y > -600.0)
 		{
 			if(m_PositionLockTick <= 0 && m_PositionLockAvailable)
 			{
@@ -305,18 +305,18 @@ void CInfClassCharacter::OnHammerFired(WeaponFireContext *pFireContext)
 
 		if(pCurrentBomb)
 		{
-			if(pCurrentBomb->ReadyToExplode() || distance(pCurrentBomb->m_Pos, m_Pos) > 80.0f)
+			if(pCurrentBomb->ReadyToExplode() || distance(pCurrentBomb->GetPos(), GetPos()) > 80.0f)
 				pCurrentBomb->Explode();
 			else
 			{
 				pCurrentBomb->IncreaseDamage(WEAPON_HAMMER);
-				GameServer()->CreateSound(m_Pos, SOUND_PICKUP_ARMOR);
+				GameServer()->CreateSound(GetPos(), SOUND_PICKUP_ARMOR);
 			}
 		}
 		else
 		{
-			new CMercenaryBomb(GameServer(), m_Pos, m_pPlayer->GetCID());
-			GameServer()->CreateSound(m_Pos, SOUND_PICKUP_ARMOR);
+			new CMercenaryBomb(GameServer(), GetPos(), m_pPlayer->GetCID());
+			GameServer()->CreateSound(GetPos(), SOUND_PICKUP_ARMOR);
 		}
 
 		m_ReloadTimer = Server()->TickSpeed()/4;
@@ -333,7 +333,7 @@ void CInfClassCharacter::OnHammerFired(WeaponFireContext *pFireContext)
 		CScientistMine* p = (CScientistMine*) GameWorld()->FindFirst(CGameWorld::ENTTYPE_SCIENTIST_MINE);
 		while(p)
 		{
-			float d = distance(p->m_Pos, ProjStartPos);
+			float d = distance(p->GetPos(), ProjStartPos);
 			
 			if(p->GetOwner() == m_pPlayer->GetCID())
 			{
@@ -361,9 +361,9 @@ void CInfClassCharacter::OnHammerFired(WeaponFireContext *pFireContext)
 		if(FreeSpace)
 		{
 			if(pIntersectMine) //Move the mine
-				GameServer()->m_World.DestroyEntity(pIntersectMine);
+				GameWorld()->DestroyEntity(pIntersectMine);
 			else if(NbMine >= g_Config.m_InfMineLimit && pOlderMine)
-				GameServer()->m_World.DestroyEntity(pOlderMine);
+				GameWorld()->DestroyEntity(pOlderMine);
 			
 			new CScientistMine(GameServer(), ProjStartPos, m_pPlayer->GetCID());
 			
@@ -384,7 +384,7 @@ void CInfClassCharacter::OnHammerFired(WeaponFireContext *pFireContext)
 			m_DartLifeSpan = g_pData->m_Weapons.m_Ninja.m_Movetime * Server()->TickSpeed() / 1000;
 			m_DartOldVelAmount = length(m_Core.m_Vel);
 
-			GameServer()->CreateSound(m_Pos, SOUND_NINJA_HIT);
+			GameServer()->CreateSound(GetPos(), SOUND_NINJA_HIT);
 		}
 	}
 	else if(GetPlayerClass() == PLAYERCLASS_BOOMER)
@@ -415,19 +415,19 @@ void CInfClassCharacter::OnHammerFired(WeaponFireContext *pFireContext)
 			}
 
 			CCharacter *apEnts[MAX_CLIENTS];
-			int Num = GameServer()->m_World.FindEntities(ProjStartPos, m_ProximityRadius*0.5f, (CEntity**)apEnts,
+			int Num = GameWorld()->FindEntities(ProjStartPos, m_ProximityRadius*0.5f, (CEntity**)apEnts,
 														MAX_CLIENTS, CGameWorld::ENTTYPE_CHARACTER);
 
 			for (int i = 0; i < Num; ++i)
 			{
 				CCharacter *pTarget = apEnts[i];
 
-				if ((pTarget == this) || GameServer()->Collision()->IntersectLine(ProjStartPos, pTarget->m_Pos, NULL, NULL))
+				if ((pTarget == this) || GameServer()->Collision()->IntersectLine(ProjStartPos, pTarget->GetPos(), NULL, NULL))
 					continue;
 
 				vec2 Dir;
-				if (length(pTarget->m_Pos - m_Pos) > 0.0f)
-					Dir = normalize(pTarget->m_Pos - m_Pos);
+				if (length(pTarget->GetPos() - GetPos()) > 0.0f)
+					Dir = normalize(pTarget->GetPos() - GetPos());
 				else
 					Dir = vec2(0.f, -1.f);
 
@@ -504,8 +504,8 @@ void CInfClassCharacter::OnHammerFired(WeaponFireContext *pFireContext)
 				Hits++;
 
 				// set his velocity to fast upward (for now)
-				if(length(pTarget->m_Pos-ProjStartPos) > 0.0f)
-					GameServer()->CreateHammerHit(pTarget->m_Pos-normalize(pTarget->m_Pos-ProjStartPos)*m_ProximityRadius*0.5f);
+				if(length(pTarget->GetPos()-ProjStartPos) > 0.0f)
+					GameServer()->CreateHammerHit(pTarget->GetPos()-normalize(pTarget->GetPos()-ProjStartPos)*m_ProximityRadius*0.5f);
 				else
 					GameServer()->CreateHammerHit(ProjStartPos);
 			}
@@ -518,7 +518,7 @@ void CInfClassCharacter::OnHammerFired(WeaponFireContext *pFireContext)
 				if(pPortal->GetOwner() == m_pPlayer->GetCID())
 					continue;
 
-				if(distance(m_Pos, pPortal->m_Pos) > (pPortal->m_ProximityRadius + m_ProximityRadius*0.5f))
+				if(distance(GetPos(), pPortal->GetPos()) > (pPortal->m_ProximityRadius + m_ProximityRadius*0.5f))
 					continue;
 
 				pPortal->TakeDamage(g_pData->m_Weapons.m_Hammer.m_pBase->m_Damage, m_pPlayer->GetCID(), m_ActiveWeapon, TAKEDAMAGEMODE_NOINFECTION);
@@ -533,14 +533,14 @@ void CInfClassCharacter::OnHammerFired(WeaponFireContext *pFireContext)
 		}
 		else if(GetPlayerClass() == PLAYERCLASS_SLUG)
 		{
-			vec2 CheckPos = m_Pos + Direction * 64.0f;
-			if(GameServer()->Collision()->IntersectLine(m_Pos, CheckPos, 0x0, &CheckPos))
+			vec2 CheckPos = GetPos() + Direction * 64.0f;
+			if(GameServer()->Collision()->IntersectLine(GetPos(), CheckPos, 0x0, &CheckPos))
 			{
 				static const float MinDistance = 84.0f;
 				float DistanceToTheNearestSlime = MinDistance * 2;
 				for(CSlugSlime* pSlime = (CSlugSlime*) GameWorld()->FindFirst(CGameWorld::ENTTYPE_SLUG_SLIME); pSlime; pSlime = (CSlugSlime*) pSlime->TypeNext())
 				{
-					const float d = distance(pSlime->m_Pos, m_Pos);
+					const float d = distance(pSlime->GetPos(), GetPos());
 					if(d < DistanceToTheNearestSlime)
 					{
 						DistanceToTheNearestSlime = d;
@@ -571,7 +571,7 @@ void CInfClassCharacter::OnHammerFired(WeaponFireContext *pFireContext)
 			return;
 		}
 
-		GameServer()->CreateSound(m_Pos, SOUND_HAMMER_FIRE);
+		GameServer()->CreateSound(GetPos(), SOUND_HAMMER_FIRE);
 	}
 }
 
@@ -607,7 +607,7 @@ void CInfClassCharacter::OnGunFired(WeaponFireContext *pFireContext)
 		vec2 Recoil = Direction*(-MaxSpeed/5.0f);
 		SaturateVelocity(Recoil, MaxSpeed);
 
-		GameServer()->CreateSound(m_Pos, SOUND_HOOK_LOOP);
+		GameServer()->CreateSound(GetPos(), SOUND_HOOK_LOOP);
 	}
 	else
 	{
@@ -629,7 +629,7 @@ void CInfClassCharacter::OnGunFired(WeaponFireContext *pFireContext)
 
 		Server()->SendMsg(&Msg, MSGFLAG_VITAL, m_pPlayer->GetCID());
 
-		GameServer()->CreateSound(m_Pos, SOUND_GUN_FIRE);
+		GameServer()->CreateSound(GetPos(), SOUND_GUN_FIRE);
 	}
 }
 
@@ -656,11 +656,11 @@ void CInfClassCharacter::OnShotgunFired(WeaponFireContext *pFireContext)
 	{
 		float Spreading[] = {-0.21f, -0.14f, -0.070f, 0, 0.070f, 0.14f, 0.21f};
 		float a = GetAngle(Direction);
-		a += Spreading[i+3] * 2.0f*(0.25f + 0.75f*static_cast<float>(10-m_aWeapons[WEAPON_SHOTGUN].m_Ammo)/10.0f);
+		a += Spreading[i+3] * 2.0f*(0.25f + 0.75f*static_cast<float>(10 - pFireContext->AmmoAvailable)/10.0f);
 		float v = 1-(absolute(i)/(float)ShotSpread);
 		float Speed = mix((float)GameServer()->Tuning()->m_ShotgunSpeeddiff, 1.0f, v);
 
-		float LifeTime = GameServer()->Tuning()->m_ShotgunLifetime + 0.1f*static_cast<float>(m_aWeapons[WEAPON_SHOTGUN].m_Ammo)/10.0f;
+		float LifeTime = GameServer()->Tuning()->m_ShotgunLifetime + 0.1f*static_cast<float>(pFireContext->AmmoAvailable)/10.0f;
 
 		if(GetPlayerClass() == PLAYERCLASS_BIOLOGIST)
 		{
@@ -691,7 +691,7 @@ void CInfClassCharacter::OnShotgunFired(WeaponFireContext *pFireContext)
 
 	Server()->SendMsg(&Msg, MSGFLAG_VITAL, m_pPlayer->GetCID());
 
-	GameServer()->CreateSound(m_Pos, SOUND_SHOTGUN_FIRE);
+	GameServer()->CreateSound(GetPos(), SOUND_SHOTGUN_FIRE);
 }
 
 void CInfClassCharacter::OnGrenadeFired(WeaponFireContext *pFireContext)
@@ -724,7 +724,7 @@ void CInfClassCharacter::OnGrenadeFired(WeaponFireContext *pFireContext)
 			PortalShift = PortalDir * 500.0f;
 		vec2 PortalPos;
 
-		if(FindPortalPosition(m_Pos + PortalShift, PortalPos))
+		if(FindPortalPosition(GetPos() + PortalShift, PortalPos))
 		{
 			vec2 OldPos = m_Core.m_Pos;
 			m_Core.m_Pos = PortalPos;
@@ -754,7 +754,7 @@ void CInfClassCharacter::OnGrenadeFired(WeaponFireContext *pFireContext)
 			{
 				float a = GetAngle(Direction) + random_float()/3.0f;
 				
-				CScatterGrenade *pProj = new CScatterGrenade(GameServer(), m_pPlayer->GetCID(), m_Pos, vec2(cosf(a), sinf(a)));
+				CScatterGrenade *pProj = new CScatterGrenade(GameServer(), m_pPlayer->GetCID(), GetPos(), vec2(cosf(a), sinf(a)));
 				
 				if (m_HasStunGrenade)
 				{
@@ -771,7 +771,7 @@ void CInfClassCharacter::OnGrenadeFired(WeaponFireContext *pFireContext)
 				Server()->SendMsg(&Msg, MSGFLAG_VITAL, m_pPlayer->GetCID());
 			}
 			
-			GameServer()->CreateSound(m_Pos, SOUND_GRENADE_FIRE);
+			GameServer()->CreateSound(GetPos(), SOUND_GRENADE_FIRE);
 			
 			m_HasStunGrenade=false;
 			GetPlayer()->ResetNumberKills();
@@ -801,7 +801,7 @@ void CInfClassCharacter::OnGrenadeFired(WeaponFireContext *pFireContext)
 				Msg.AddInt(((int *)&p)[i]);
 			Server()->SendMsg(&Msg, MSGFLAG_VITAL, m_pPlayer->GetCID());
 
-			GameServer()->CreateSound(m_Pos, SOUND_GRENADE_FIRE);
+			GameServer()->CreateSound(GetPos(), SOUND_GRENADE_FIRE);
 		}
 	}
 }
@@ -834,21 +834,21 @@ void CInfClassCharacter::OnLaserFired(WeaponFireContext *pFireContext)
 			Damage = 30;
 		else
 			Damage = random_int(10, 13);
-		new CLaser(GameWorld(), m_Pos, Direction, GameServer()->Tuning()->m_LaserReach, m_pPlayer->GetCID(), Damage);
-		GameServer()->CreateSound(m_Pos, SOUND_RIFLE_FIRE);
+		new CLaser(GameWorld(), GetPos(), Direction, GameServer()->Tuning()->m_LaserReach, m_pPlayer->GetCID(), Damage);
+		GameServer()->CreateSound(GetPos(), SOUND_RIFLE_FIRE);
 	}
 	else if(GetPlayerClass() == PLAYERCLASS_SCIENTIST)
 	{
 		//white hole activation in scientist-laser
 		
-		new CScientistLaser(GameServer(), m_Pos, Direction, GameServer()->Tuning()->m_LaserReach*0.6f, m_pPlayer->GetCID(), Damage);
-		GameServer()->CreateSound(m_Pos, SOUND_RIFLE_FIRE);
+		new CScientistLaser(GameServer(), GetPos(), Direction, GameServer()->Tuning()->m_LaserReach*0.6f, m_pPlayer->GetCID(), Damage);
+		GameServer()->CreateSound(GetPos(), SOUND_RIFLE_FIRE);
 	}
 	else if (GetPlayerClass() == PLAYERCLASS_LOOPER) 
 	{
 		Damage = 5;
-		new CLaser(GameWorld(), m_Pos, Direction, GameServer()->Tuning()->m_LaserReach*0.7f, m_pPlayer->GetCID(), Damage);
-		GameServer()->CreateSound(m_Pos, SOUND_RIFLE_FIRE);
+		new CLaser(GameWorld(), GetPos(), Direction, GameServer()->Tuning()->m_LaserReach*0.7f, m_pPlayer->GetCID(), Damage);
+		GameServer()->CreateSound(GetPos(), SOUND_RIFLE_FIRE);
 	}
 	else if(GetPlayerClass() == PLAYERCLASS_MERCENARY)
 	{
@@ -873,19 +873,19 @@ void CInfClassCharacter::OnLaserFired(WeaponFireContext *pFireContext)
 		}
 		else
 		{
-			new CLaser(GameWorld(), m_Pos, Direction, GameServer()->Tuning()->m_LaserReach, m_pPlayer->GetCID(), Damage);
-			GameServer()->CreateSound(m_Pos, SOUND_RIFLE_FIRE);
-			if(m_BombHit && distance(pCurrentBomb->m_Pos, m_AtMercBomb) <= 80.0f)
+			new CLaser(GameWorld(), GetPos(), Direction, GameServer()->Tuning()->m_LaserReach, m_pPlayer->GetCID(), Damage);
+			GameServer()->CreateSound(GetPos(), SOUND_RIFLE_FIRE);
+			if(m_BombHit && distance(pCurrentBomb->GetPos(), m_AtMercBomb) <= 80.0f)
 			{
 				pCurrentBomb->IncreaseDamage(WEAPON_RIFLE);
-				GameServer()->CreateSound(m_Pos, SOUND_PICKUP_ARMOR);
+				GameServer()->CreateSound(GetPos(), SOUND_PICKUP_ARMOR);
 			}
 		}
 	}
 	else
 	{
-		new CLaser(GameWorld(), m_Pos, Direction, GameServer()->Tuning()->m_LaserReach, m_pPlayer->GetCID(), Damage);
-		GameServer()->CreateSound(m_Pos, SOUND_RIFLE_FIRE);
+		new CLaser(GameWorld(), GetPos(), Direction, GameServer()->Tuning()->m_LaserReach, m_pPlayer->GetCID(), Damage);
+		GameServer()->CreateSound(GetPos(), SOUND_RIFLE_FIRE);
 	}
 }
 
@@ -902,7 +902,8 @@ void CInfClassCharacter::OnMercGrenadeFired(CInfClassCharacter::WeaponFireContex
 	bool BombFound = false;
 	for(CScatterGrenade *pGrenade = (CScatterGrenade*) GameWorld()->FindFirst(CGameWorld::ENTTYPE_SCATTER_GRENADE); pGrenade; pGrenade = (CScatterGrenade*) pGrenade->TypeNext())
 	{
-		if(pGrenade->GetOwner() != m_pPlayer->GetCID()) continue;
+		if(pGrenade->GetOwner() != m_pPlayer->GetCID())
+			continue;
 		pGrenade->Explode();
 		BombFound = true;
 	}
@@ -926,7 +927,7 @@ void CInfClassCharacter::OnMercGrenadeFired(CInfClassCharacter::WeaponFireContex
 	{
 		float a = BaseAngle + random_float()/3.0f;
 
-		CScatterGrenade *pProj = new CScatterGrenade(GameServer(), m_pPlayer->GetCID(), m_Pos, vec2(cosf(a), sinf(a)));
+		CScatterGrenade *pProj = new CScatterGrenade(GameServer(), m_pPlayer->GetCID(), GetPos(), vec2(cosf(a), sinf(a)));
 
 		// pack the Projectile and send it to the client Directly
 		CNetObj_Projectile p;
@@ -937,7 +938,7 @@ void CInfClassCharacter::OnMercGrenadeFired(CInfClassCharacter::WeaponFireContex
 		Server()->SendMsg(&Msg, MSGFLAG_VITAL, m_pPlayer->GetCID());
 	}
 
-	GameServer()->CreateSound(m_Pos, SOUND_GRENADE_FIRE);
+	GameServer()->CreateSound(GetPos(), SOUND_GRENADE_FIRE);
 
 	m_ReloadTimer = Server()->TickSpeed()/4;
 }
@@ -974,7 +975,7 @@ void CInfClassCharacter::OnMedicGrenadeFired(CInfClassCharacter::WeaponFireConte
 	{
 		float a = BaseAngle + random_float()/5.0f;
 
-		CMedicGrenade *pProj = new CMedicGrenade(GameServer(), m_pPlayer->GetCID(), m_Pos, vec2(cosf(a), sinf(a)));
+		CMedicGrenade *pProj = new CMedicGrenade(GameServer(), m_pPlayer->GetCID(), GetPos(), vec2(cosf(a), sinf(a)));
 
 		// pack the Projectile and send it to the client Directly
 		CNetObj_Projectile p;
@@ -985,7 +986,7 @@ void CInfClassCharacter::OnMedicGrenadeFired(CInfClassCharacter::WeaponFireConte
 		Server()->SendMsg(&Msg, MSGFLAG_VITAL, m_pPlayer->GetCID());
 	}
 
-	GameServer()->CreateSound(m_Pos, SOUND_GRENADE_FIRE);
+	GameServer()->CreateSound(GetPos(), SOUND_GRENADE_FIRE);
 
 	m_ReloadTimer = Server()->TickSpeed()/4;
 }
@@ -1002,15 +1003,15 @@ void CInfClassCharacter::OnBiologistLaserFired(CInfClassCharacter::WeaponFireCon
 	for(CBiologistMine* pMine = (CBiologistMine*) GameWorld()->FindFirst(CGameWorld::ENTTYPE_BIOLOGIST_MINE); pMine; pMine = (CBiologistMine*) pMine->TypeNext())
 	{
 		if(pMine->GetOwner() != m_pPlayer->GetCID()) continue;
-			GameServer()->m_World.DestroyEntity(pMine);
+			GameWorld()->DestroyEntity(pMine);
 	}
 
 	const float BigLaserMaxLength = 400.0f;
-	vec2 To = m_Pos + GetDirection() * BigLaserMaxLength;
-	if(GameServer()->Collision()->IntersectLine(m_Pos, To, 0x0, &To))
+	vec2 To = GetPos() + GetDirection() * BigLaserMaxLength;
+	if(GameServer()->Collision()->IntersectLine(GetPos(), To, 0x0, &To))
 	{
-		new CBiologistMine(GameServer(), m_Pos, To, m_pPlayer->GetCID());
-		GameServer()->CreateSound(m_Pos, SOUND_RIFLE_FIRE);
+		new CBiologistMine(GameServer(), GetPos(), To, m_pPlayer->GetCID());
+		GameServer()->CreateSound(GetPos(), SOUND_RIFLE_FIRE);
 		pFireContext->AmmoConsumed = pFireContext->AmmoAvailable;
 	}
 	else
@@ -1218,7 +1219,7 @@ void CInfClassCharacter::Die(int Killer, int Weapon)
 	CInfClassCharacter *pKillerCharacter = nullptr;
 	if (Weapon == WEAPON_WORLD && Killer == m_pPlayer->GetCID()) {
 		//Search for the real killer (if somebody hooked this player)
-		for(CInfClassCharacter *pHooker = (CInfClassCharacter*) GameServer()->m_World.FindFirst(CGameWorld::ENTTYPE_CHARACTER); pHooker; pHooker = (CInfClassCharacter *)pHooker->TypeNext())
+		for(CInfClassCharacter *pHooker = (CInfClassCharacter*) GameWorld()->FindFirst(CGameWorld::ENTTYPE_CHARACTER); pHooker; pHooker = (CInfClassCharacter *)pHooker->TypeNext())
 		{
 			if (pHooker->GetPlayer() && pHooker->m_Core.m_HookedPlayer == m_pPlayer->GetCID())
 			{
@@ -1268,22 +1269,22 @@ void CInfClassCharacter::Die(int Killer, int Weapon)
 	GameServer()->SendKillMessage(Killer, m_pPlayer->GetCID(), Weapon, ModeSpecial);
 
 	// a nice sound
-	GameServer()->CreateSound(m_Pos, SOUND_PLAYER_DIE);
+	GameServer()->CreateSound(GetPos(), SOUND_PLAYER_DIE);
 
 	// this is for auto respawn after 3 secs
 	m_pPlayer->m_DieTick = Server()->Tick();
 
 	m_Alive = false;
-	GameServer()->m_World.RemoveEntity(this);
-	GameServer()->m_World.m_Core.m_apCharacters[m_pPlayer->GetCID()] = 0;
-	GameServer()->CreateDeath(m_Pos, m_pPlayer->GetCID());
+	GameWorld()->RemoveEntity(this);
+	GameWorld()->m_Core.m_apCharacters[m_pPlayer->GetCID()] = 0;
+	GameServer()->CreateDeath(GetPos(), m_pPlayer->GetCID());
 
 /* INFECTION MODIFICATION START ***************************************/
 
 	if(GetPlayerClass() == PLAYERCLASS_BOOMER && !IsFrozen() && Weapon != WEAPON_GAME && !(IsInLove() && Weapon == WEAPON_SELF) )
 	{
-		GameServer()->CreateSound(m_Pos, SOUND_GRENADE_EXPLODE);
-		GameServer()->CreateExplosionDisk(m_Pos, 60.0f, 80.5f, 14, 52.0f, m_pPlayer->GetCID(), WEAPON_HAMMER, TAKEDAMAGEMODE_INFECTION);
+		GameServer()->CreateSound(GetPos(), SOUND_GRENADE_EXPLODE);
+		GameServer()->CreateExplosionDisk(GetPos(), 60.0f, 80.5f, 14, 52.0f, m_pPlayer->GetCID(), WEAPON_HAMMER, TAKEDAMAGEMODE_INFECTION);
 	}
 	
 	if(GetPlayerClass() == PLAYERCLASS_WITCH)
@@ -1393,7 +1394,7 @@ void CInfClassCharacter::CheckSuperWeaponAccess()
 					if (m_HasIndicator == false) {
 						m_HasIndicator = true;
 						GameServer()->SendChatTarget_Localization(m_pPlayer->GetCID(), CHATCATEGORY_SCORE, _("white hole found, adjusting scientific parameters..."), NULL);
-						new CSuperWeaponIndicator(GameServer(), m_Pos, m_pPlayer->GetCID());
+						new CSuperWeaponIndicator(GameServer(), GetPos(), m_pPlayer->GetCID());
 					}
 				} 
 			} 
@@ -1434,7 +1435,7 @@ void CInfClassCharacter::FireSoldierBomb()
 	}
 
 	new CSoldierBomb(GameServer(), ProjStartPos, m_pPlayer->GetCID());
-	GameServer()->CreateSound(m_Pos, SOUND_GRENADE_FIRE);
+	GameServer()->CreateSound(GetPos(), SOUND_GRENADE_FIRE);
 }
 
 void CInfClassCharacter::PlacePortal(WeaponFireContext *pFireContext)
@@ -1442,7 +1443,7 @@ void CInfClassCharacter::PlacePortal(WeaponFireContext *pFireContext)
 	if(IsFrozen() && IsInLove())
 		return;
 
-	vec2 TargetPos = m_Pos;
+	vec2 TargetPos = GetPos();
 
 	m_ReloadTimer = Server()->TickSpeed() / 4;
 
@@ -1461,7 +1462,7 @@ void CInfClassCharacter::PlacePortal(WeaponFireContext *pFireContext)
 	if(PortalToTake)
 	{
 		PortalToTake->Disconnect();
-		GameServer()->m_World.DestroyEntity(PortalToTake);
+		GameWorld()->DestroyEntity(PortalToTake);
 
 		if (PortalToTake == m_pPortalIn)
 			m_pPortalIn = nullptr;
@@ -1480,7 +1481,7 @@ void CInfClassCharacter::PlacePortal(WeaponFireContext *pFireContext)
 	// Place new portal
 	int OwnerCID = GetPlayer() ? GetPlayer()->GetCID() : -1;
 	CPortal *existingPortal = m_pPortalIn ? m_pPortalIn : m_pPortalOut;
-	if(existingPortal && distance(existingPortal->m_Pos, TargetPos) < g_Config.m_InfMinPortalDistance)
+	if(existingPortal && distance(existingPortal->GetPos(), TargetPos) < g_Config.m_InfMinPortalDistance)
 	{
 		char aBuf[256];
 		str_format(aBuf, sizeof(aBuf), "Unable to place portals that close to each other");
@@ -1499,7 +1500,7 @@ void CInfClassCharacter::PlacePortal(WeaponFireContext *pFireContext)
 	if(m_pPortalIn && m_pPortalOut)
 	{
 		m_pPortalOut->Disconnect();
-		GameServer()->m_World.DestroyEntity(m_pPortalOut);
+		GameWorld()->DestroyEntity(m_pPortalOut);
 		m_pPortalOut = nullptr;
 	}
 
@@ -1507,19 +1508,19 @@ void CInfClassCharacter::PlacePortal(WeaponFireContext *pFireContext)
 	{
 		m_pPortalOut = new CPortal(GameServer(), TargetPos, OwnerCID, CPortal::PortalType::Out);
 		m_pPortalOut->ConnectPortal(m_pPortalIn);
-		GameServer()->CreateSound(m_pPortalOut->m_Pos, m_pPortalOut->GetNewEntitySound());
+		GameServer()->CreateSound(m_pPortalOut->GetPos(), m_pPortalOut->GetNewEntitySound());
 	}
 	else
 	{
 		m_pPortalIn = new CPortal(GameServer(), TargetPos, OwnerCID, CPortal::PortalType::In);
 		m_pPortalIn->ConnectPortal(m_pPortalOut);
-		GameServer()->CreateSound(m_pPortalIn->m_Pos, m_pPortalIn->GetNewEntitySound());
+		GameServer()->CreateSound(m_pPortalIn->GetPos(), m_pPortalIn->GetNewEntitySound());
 	}
 }
 
 CPortal *CInfClassCharacter::FindPortalInTarget()
 {
-	vec2 TargetPos = m_Pos;
+	vec2 TargetPos = GetPos();
 
 	if (GetPlayerClass() == PLAYERCLASS_WITCH)
 	{
@@ -1532,12 +1533,12 @@ CPortal *CInfClassCharacter::FindPortalInTarget()
 
 	// Check if unmount wanted
 	const int displacementExtraDistance = 20;
-	if(m_pPortalIn && (distance(m_pPortalIn->m_Pos, TargetPos) < m_ProximityRadius + m_pPortalIn->GetRadius() + displacementExtraDistance))
+	if(m_pPortalIn && (distance(m_pPortalIn->GetPos(), TargetPos) < m_ProximityRadius + m_pPortalIn->GetRadius() + displacementExtraDistance))
 	{
 		return m_pPortalIn;
 	}
 
-	if(m_pPortalOut && (distance(m_pPortalOut->m_Pos, TargetPos) < m_ProximityRadius + m_pPortalOut->GetRadius() + displacementExtraDistance))
+	if(m_pPortalOut && (distance(m_pPortalOut->GetPos(), TargetPos) < m_ProximityRadius + m_pPortalOut->GetRadius() + displacementExtraDistance))
 	{
 		return m_pPortalOut;
 	}
