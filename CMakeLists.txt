@@ -699,7 +699,10 @@ list(APPEND TARGETS_OWN engine-shared game-shared)
 #)
 #add_library(pnglite::pnglite ALIAS pnglite)
 
-include_directories(SYSTEM ${CMAKE_CURRENT_SOURCE_DIR}/src)
+include_directories(SYSTEM
+	${CMAKE_CURRENT_SOURCE_DIR}/src
+	${CMAKE_CURRENT_BINARY_DIR}/src
+)
 
 #set(PNGLITE_INCLUDE_DIRS "${CMAKE_CURRENT_SOURCE_DIR}/src/engine/external/pnglite")
 #message(STATUS "PNGLITE_INCLUDE_DIRS: ${PNGLITE_INCLUDE_DIRS}")
