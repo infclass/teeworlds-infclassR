@@ -167,6 +167,57 @@ void CInfClassPlayerClass::OnCharacterSpawned()
 	GiveClassAttributes();
 }
 
+void CInfClassPlayerClass::OnWeaponFired(WeaponFireContext *pFireContext)
+{
+	switch(pFireContext->Weapon)
+	{
+		case WEAPON_HAMMER:
+			OnHammerFired(pFireContext);
+			break;
+		case WEAPON_GUN:
+			OnGunFired(pFireContext);
+			break;
+		case WEAPON_SHOTGUN:
+			OnShotgunFired(pFireContext);
+			break;
+		case WEAPON_GRENADE:
+			OnGrenadeFired(pFireContext);
+			break;
+		case WEAPON_LASER:
+			OnLaserFired(pFireContext);
+			break;
+		case WEAPON_NINJA:
+			OnNinjaFired(pFireContext);
+			break;
+		default:
+			break;
+	}
+}
+
+void CInfClassPlayerClass::OnHammerFired(WeaponFireContext *pFireContext)
+{
+}
+
+void CInfClassPlayerClass::OnGunFired(WeaponFireContext *pFireContext)
+{
+}
+
+void CInfClassPlayerClass::OnShotgunFired(WeaponFireContext *pFireContext)
+{
+}
+
+void CInfClassPlayerClass::OnGrenadeFired(WeaponFireContext *pFireContext)
+{
+}
+
+void CInfClassPlayerClass::OnLaserFired(WeaponFireContext *pFireContext)
+{
+}
+
+void CInfClassPlayerClass::OnNinjaFired(WeaponFireContext *pFireContext)
+{
+}
+
 void CInfClassPlayerClass::GiveClassAttributes()
 {
 	m_pCharacter->TakeAllWeapons();

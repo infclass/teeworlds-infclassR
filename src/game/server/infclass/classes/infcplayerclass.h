@@ -13,6 +13,8 @@ class CInfClassGameController;
 class CInfClassPlayer;
 class IServer;
 
+struct WeaponFireContext;
+
 class CInfClassPlayerClass
 {
 public:
@@ -33,6 +35,15 @@ public:
 	// Events
 	virtual void Tick();
 	virtual void OnCharacterSpawned();
+
+	virtual void OnWeaponFired(WeaponFireContext *pFireContext);
+
+	virtual void OnHammerFired(WeaponFireContext *pFireContext);
+	virtual void OnGunFired(WeaponFireContext *pFireContext);
+	virtual void OnShotgunFired(WeaponFireContext *pFireContext);
+	virtual void OnGrenadeFired(WeaponFireContext *pFireContext);
+	virtual void OnLaserFired(WeaponFireContext *pFireContext);
+	virtual void OnNinjaFired(WeaponFireContext *pFireContext);
 
 	virtual void OnSlimeEffect(int Owner) = 0;
 

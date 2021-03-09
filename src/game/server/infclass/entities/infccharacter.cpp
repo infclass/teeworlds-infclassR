@@ -242,6 +242,8 @@ void CInfClassCharacter::FireWeapon()
 
 void CInfClassCharacter::OnWeaponFired(WeaponFireContext *pFireContext)
 {
+	GetClass()->OnWeaponFired(pFireContext);
+
 	switch(pFireContext->Weapon)
 	{
 		case WEAPON_HAMMER:
