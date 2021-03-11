@@ -120,9 +120,9 @@ class CGameContext : public IGameServer
 	bool m_Resetting;
 
 public:
-	int m_ZoneHandle_Damage;
-	int m_ZoneHandle_Teleport;
-	int m_ZoneHandle_Bonus;
+	int m_ZoneHandle_icDamage;
+	int m_ZoneHandle_icTeleport;
+	int m_ZoneHandle_icBonus;
 
 public:
 	IServer *Server() const { return m_pServer; }

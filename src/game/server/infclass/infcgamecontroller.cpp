@@ -1278,7 +1278,7 @@ bool CInfClassGameController::IsSpawnable(vec2 Pos, int TeleZoneIndex)
 	}
 	
 	//Check the center
-	int TeleIndex = GameServer()->Collision()->GetZoneValueAt(GameServer()->m_ZoneHandle_Teleport, Pos);
+	int TeleIndex = GameServer()->Collision()->GetZoneValueAt(GameServer()->m_ZoneHandle_icTeleport, Pos);
 	if(GameServer()->Collision()->CheckPoint(Pos))
 		return false;
 	if(TeleZoneIndex && TeleIndex == TeleZoneIndex)
@@ -1289,7 +1289,7 @@ bool CInfClassGameController::IsSpawnable(vec2 Pos, int TeleZoneIndex)
 	{
 		float Angle = i * (2.0f * pi / 16.0f);
 		vec2 CheckPos = Pos + vec2(cos(Angle), sin(Angle)) * 30.0f;
-		TeleIndex = GameServer()->Collision()->GetZoneValueAt(GameServer()->m_ZoneHandle_Teleport, CheckPos);
+		TeleIndex = GameServer()->Collision()->GetZoneValueAt(GameServer()->m_ZoneHandle_icTeleport, CheckPos);
 		if(GameServer()->Collision()->CheckPoint(CheckPos))
 			return false;
 		if(TeleZoneIndex && TeleIndex == TeleZoneIndex)

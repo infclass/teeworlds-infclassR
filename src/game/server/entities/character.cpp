@@ -869,7 +869,7 @@ void CCharacter::Tick()
 	
 	if(IsHuman() && IsAlive() && GameServer()->m_pController->IsInfectionStarted())
 	{
-		int Index = GameServer()->Collision()->GetZoneValueAt(GameServer()->m_ZoneHandle_Bonus, m_Pos.x, m_Pos.y);
+		int Index = GameServer()->Collision()->GetZoneValueAt(GameServer()->m_ZoneHandle_icBonus, m_Pos.x, m_Pos.y);
 		if(Index == ZONE_BONUS_BONUS)
 		{
 			m_BonusTick++;
@@ -891,7 +891,7 @@ void CCharacter::Tick()
 		m_BonusTick = 0;
 	
 	{
-		int Index0 = GameServer()->Collision()->GetZoneValueAt(GameServer()->m_ZoneHandle_Damage, m_Pos.x+m_ProximityRadius/3.f, m_Pos.y-m_ProximityRadius/3.f);
+		int Index0 = GameServer()->Collision()->GetZoneValueAt(GameServer()->m_ZoneHandle_icDamage, m_Pos.x+m_ProximityRadius/3.f, m_Pos.y-m_ProximityRadius/3.f);
 		
 		if(Index0 == ZONE_DAMAGE_DEATH)
 		{

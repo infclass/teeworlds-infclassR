@@ -195,7 +195,7 @@ void CInfClassCharacter::OnHammerFired(WeaponFireContext *pFireContext)
 			for(int i=0; i<15; i++)
 			{
 				vec2 TestPos = m_FirstShotCoord + (GetPos() - m_FirstShotCoord)*(static_cast<float>(i)/14.0f);
-				if(GameServer()->Collision()->GetZoneValueAt(GameServer()->m_ZoneHandle_Damage, TestPos) == ZONE_DAMAGE_INFECTION)
+				if(GameServer()->Collision()->GetZoneValueAt(GameServer()->m_ZoneHandle_icDamage, TestPos) == ZONE_DAMAGE_INFECTION)
 				{
 					isAccepted = false;
 				}
@@ -230,7 +230,7 @@ void CInfClassCharacter::OnHammerFired(WeaponFireContext *pFireContext)
 			for(int i=0; i<15; i++)
 			{
 				vec2 TestPos = m_FirstShotCoord + (GetPos() - m_FirstShotCoord)*(static_cast<float>(i)/14.0f);
-				if(GameServer()->Collision()->GetZoneValueAt(GameServer()->m_ZoneHandle_Damage, TestPos) == ZONE_DAMAGE_INFECTION)
+				if(GameServer()->Collision()->GetZoneValueAt(GameServer()->m_ZoneHandle_icDamage, TestPos) == ZONE_DAMAGE_INFECTION)
 				{
 					isAccepted = false;
 				}
