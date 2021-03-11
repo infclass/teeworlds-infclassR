@@ -682,82 +682,15 @@ void CGameContext::SendBroadcast_Localization_P(int To, int Priority, int LifeSp
 
 void CGameContext::SendBroadcast_ClassIntro(int ClientID, int Class)
 {
-	const char* pClassName = 0;
-	
-	switch(Class)
-	{
-		case PLAYERCLASS_ENGINEER:
-			pClassName = Server()->Localization()->Localize(m_apPlayers[ClientID]->GetLanguage(), _("Engineer"));
-			break;
-		case PLAYERCLASS_SOLDIER:
-			pClassName = Server()->Localization()->Localize(m_apPlayers[ClientID]->GetLanguage(), _("Soldier"));
-			break;
-		case PLAYERCLASS_MEDIC:
-			pClassName = Server()->Localization()->Localize(m_apPlayers[ClientID]->GetLanguage(), _("Medic"));
-			break;
-		case PLAYERCLASS_HERO:
-			pClassName = Server()->Localization()->Localize(m_apPlayers[ClientID]->GetLanguage(), _("Hero"));
-			break;
-		case PLAYERCLASS_NINJA:
-			pClassName = Server()->Localization()->Localize(m_apPlayers[ClientID]->GetLanguage(), _("Ninja"));
-			break;
-		case PLAYERCLASS_MERCENARY:
-			pClassName = Server()->Localization()->Localize(m_apPlayers[ClientID]->GetLanguage(), _("Mercenary"));
-			break;
-		case PLAYERCLASS_SNIPER:
-			pClassName = Server()->Localization()->Localize(m_apPlayers[ClientID]->GetLanguage(), _("Sniper"));
-			break;
-		case PLAYERCLASS_SCIENTIST:
-			pClassName = Server()->Localization()->Localize(m_apPlayers[ClientID]->GetLanguage(), _("Scientist"));
-			break;
-		case PLAYERCLASS_BIOLOGIST:
-			pClassName = Server()->Localization()->Localize(m_apPlayers[ClientID]->GetLanguage(), _("Biologist"));
-			break;
-		case PLAYERCLASS_LOOPER:
-			pClassName = Server()->Localization()->Localize(m_apPlayers[ClientID]->GetLanguage(), _("Looper"));
-			break;
-		case PLAYERCLASS_SMOKER:
-			pClassName = Server()->Localization()->Localize(m_apPlayers[ClientID]->GetLanguage(), _("Smoker"));
-			break;
-		case PLAYERCLASS_HUNTER:
-			pClassName = Server()->Localization()->Localize(m_apPlayers[ClientID]->GetLanguage(), _("Hunter"));
-			break;
-		case PLAYERCLASS_BAT:
-			pClassName = Server()->Localization()->Localize(m_apPlayers[ClientID]->GetLanguage(), _("Bat"));
-			break;
-		case PLAYERCLASS_BOOMER:
-			pClassName = Server()->Localization()->Localize(m_apPlayers[ClientID]->GetLanguage(), _("Boomer"));
-			break;
-		case PLAYERCLASS_GHOST:
-			pClassName = Server()->Localization()->Localize(m_apPlayers[ClientID]->GetLanguage(), _("Ghost"));
-			break;
-		case PLAYERCLASS_SPIDER:
-			pClassName = Server()->Localization()->Localize(m_apPlayers[ClientID]->GetLanguage(), _("Spider"));
-			break;
-		case PLAYERCLASS_GHOUL:
-			pClassName = Server()->Localization()->Localize(m_apPlayers[ClientID]->GetLanguage(), _("Ghoul"));
-			break;
-		case PLAYERCLASS_VOODOO:
-			pClassName = Server()->Localization()->Localize(m_apPlayers[ClientID]->GetLanguage(), _("Voodoo"));
-			break;
-		case PLAYERCLASS_SLUG:
-			pClassName = Server()->Localization()->Localize(m_apPlayers[ClientID]->GetLanguage(), _("Slug"));
-			break;
-		case PLAYERCLASS_WITCH:
-			pClassName = Server()->Localization()->Localize(m_apPlayers[ClientID]->GetLanguage(), _("Witch"));
-			break;
-		case PLAYERCLASS_UNDEAD:
-			pClassName = Server()->Localization()->Localize(m_apPlayers[ClientID]->GetLanguage(), _("Undead"));
-			break;
-		default:
-			pClassName = Server()->Localization()->Localize(m_apPlayers[ClientID]->GetLanguage(), _("Unknown class"));
-			break;
-	}
+	const char *pClassName = CInfClassGameController::GetClassDisplayName(Class);
+	const char *pTranslated = Server()->Localization()->Localize(m_apPlayers[ClientID]->GetLanguage(), pClassName);
 	
 	if(Class < END_HUMANCLASS)
-		SendBroadcast_Localization(ClientID, BROADCAST_PRIORITY_GAMEANNOUNCE, BROADCAST_DURATION_GAMEANNOUNCE, _("You are a human: {str:ClassName}"), "ClassName", pClassName, NULL);
+		SendBroadcast_Localization(ClientID, BROADCAST_PRIORITY_GAMEANNOUNCE, BROADCAST_DURATION_GAMEANNOUNCE,
+			_("You are a human: {str:ClassName}"), "ClassName", pTranslated, NULL);
 	else
-		SendBroadcast_Localization(ClientID, BROADCAST_PRIORITY_GAMEANNOUNCE, BROADCAST_DURATION_GAMEANNOUNCE, _("You are an infected: {str:ClassName}"), "ClassName", pClassName, NULL);
+		SendBroadcast_Localization(ClientID, BROADCAST_PRIORITY_GAMEANNOUNCE, BROADCAST_DURATION_GAMEANNOUNCE,
+			_("You are an infected: {str:ClassName}"), "ClassName", pTranslated, NULL);
 }
 
 /* INFECTION MODIFICATION END *****************************************/
