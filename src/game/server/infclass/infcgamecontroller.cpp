@@ -339,55 +339,53 @@ const char *CInfClassGameController::GetClassDisplayName(int PlayerClass)
 {
 	switch (PlayerClass)
 	{
-		case PLAYERCLASS_NONE:
-			return "None";
-
 		case PLAYERCLASS_MERCENARY:
-			return "Mercenary";
+			return _("Mercenary");
 		case PLAYERCLASS_MEDIC:
-			return "Medic";
+			return _("Medic");
 		case PLAYERCLASS_HERO:
-			return "Hero";
+			return _("Hero");
 		case PLAYERCLASS_ENGINEER:
-			return "Engineer";
+			return _("Engineer");
 		case PLAYERCLASS_SOLDIER:
-			return "Soldier";
+			return _("Soldier");
 		case PLAYERCLASS_NINJA:
-			return "Ninja";
+			return _("Ninja");
 		case PLAYERCLASS_SNIPER:
-			return "Sniper";
+			return _("Sniper");
 		case PLAYERCLASS_SCIENTIST:
-			return "Scientist";
+			return _("Scientist");
 		case PLAYERCLASS_BIOLOGIST:
-			return "Biologist";
+			return _("Biologist");
 		case PLAYERCLASS_LOOPER:
-			return "Looper";
+			return _("Looper");
 
 		case PLAYERCLASS_SMOKER:
-			return "Smoker";
+			return _("Smoker");
 		case PLAYERCLASS_BOOMER:
-			return "Boomer";
+			return _("Boomer");
 		case PLAYERCLASS_HUNTER:
-			return "Hunter";
+			return _("Hunter");
 		case PLAYERCLASS_BAT:
-			return "Bat";
+			return _("Bat");
 		case PLAYERCLASS_GHOST:
-			return "Ghost";
+			return _("Ghost");
 		case PLAYERCLASS_SPIDER:
-			return "Spider";
+			return _("Spider");
 		case PLAYERCLASS_GHOUL:
-			return "Ghoul";
+			return _("Ghoul");
 		case PLAYERCLASS_SLUG:
-			return "Slug";
+			return _("Slug");
 		case PLAYERCLASS_VOODOO:
-			return "Voodoo";
+			return _("Voodoo");
 		case PLAYERCLASS_WITCH:
-			return "Witch";
+			return _("Witch");
 		case PLAYERCLASS_UNDEAD:
-			return "Undead";
+			return _("Undead");
 
+		case PLAYERCLASS_NONE:
 		default:
-			return "unknown";
+			return _("Unknown class");
 	}
 }
 
@@ -396,51 +394,51 @@ const char *CInfClassGameController::GetClassPluralDisplayName(int PlayerClass)
 	switch (PlayerClass)
 	{
 		case PLAYERCLASS_MERCENARY:
-			return "Mercenaries";
+			return _("Mercenaries");
 		case PLAYERCLASS_MEDIC:
-			return "Medics";
+			return _("Medics");
 		case PLAYERCLASS_HERO:
-			return "Heroes";
+			return _("Heroes");
 		case PLAYERCLASS_ENGINEER:
-			return "Engineers";
+			return _("Engineers");
 		case PLAYERCLASS_SOLDIER:
-			return "Soldiers";
+			return _("Soldiers");
 		case PLAYERCLASS_NINJA:
-			return "Ninjas";
+			return _("Ninjas");
 		case PLAYERCLASS_SNIPER:
-			return "Snipers";
+			return _("Snipers");
 		case PLAYERCLASS_SCIENTIST:
-			return "Scientists";
+			return _("Scientists");
 		case PLAYERCLASS_BIOLOGIST:
-			return "Biologists";
+			return _("Biologists");
 		case PLAYERCLASS_LOOPER:
-			return "Loopers";
+			return _("Loopers");
 
 		case PLAYERCLASS_SMOKER:
-			return "Smokers";
+			return _("Smokers");
 		case PLAYERCLASS_BOOMER:
-			return "Boomers";
+			return _("Boomers");
 		case PLAYERCLASS_HUNTER:
-			return "Hunters";
+			return _("Hunters");
 		case PLAYERCLASS_BAT:
-			return "Bats";
+			return _("Bats");
 		case PLAYERCLASS_GHOST:
-			return "Ghosts";
+			return _("Ghosts");
 		case PLAYERCLASS_SPIDER:
-			return "Spiders";
+			return _("Spiders");
 		case PLAYERCLASS_GHOUL:
-			return "Ghouls";
+			return _("Ghouls");
 		case PLAYERCLASS_SLUG:
-			return "Slugs";
+			return _("Slugs");
 		case PLAYERCLASS_VOODOO:
-			return "Voodoos";
+			return _("Voodoos");
 		case PLAYERCLASS_WITCH:
-			return "Witches";
+			return _("Witches");
 		case PLAYERCLASS_UNDEAD:
-			return "Undeads";
+			return _("Undeads");
 
 		default:
-			return "unknown";
+			return _("Unknowns");
 	}
 }
 
