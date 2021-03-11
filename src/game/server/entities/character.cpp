@@ -638,16 +638,25 @@ void CCharacter::HandleWeapons()
 	if(m_ReloadTimer)
 	{
 		m_ReloadTimer--;
-		return;
 	}
-
-	// fire Weapon, if wanted
-	FireWeapon();
+	else
+	{
+		// fire Weapon, if wanted
+		FireWeapon();
+	}
 
 	// ammo regen
 /* INFECTION MODIFICATION START ***************************************/
 	for(int i=WEAPON_GUN; i<=WEAPON_RIFLE; i++)
 	{
+		if(m_ReloadTimer)
+		{
+			if(i == m_ActiveWeapon)
+			{
+				continue;
+			}
+		}
+
 		int InfWID = GetInfWeaponID(i);
 		int AmmoRegenTime = Server()->GetAmmoRegenTime(InfWID);
 		int MaxAmmo = Server()->GetMaxAmmo(GetInfWeaponID(i));
@@ -665,17 +674,14 @@ void CCharacter::HandleWeapons()
 		
 		if(AmmoRegenTime)
 		{
-			if(m_ReloadTimer <= 0)
-			{
-				if (m_aWeapons[i].m_AmmoRegenStart < 0)
-					m_aWeapons[i].m_AmmoRegenStart = Server()->Tick();
+			if (m_aWeapons[i].m_AmmoRegenStart < 0)
+				m_aWeapons[i].m_AmmoRegenStart = Server()->Tick();
 
-				if ((Server()->Tick() - m_aWeapons[i].m_AmmoRegenStart) >= AmmoRegenTime * Server()->TickSpeed() / 1000)
-				{
-					// Add some ammo
-					m_aWeapons[i].m_Ammo = minimum(m_aWeapons[i].m_Ammo + 1, MaxAmmo);
-					m_aWeapons[i].m_AmmoRegenStart = -1;
-				}
+			if ((Server()->Tick() - m_aWeapons[i].m_AmmoRegenStart) >= AmmoRegenTime * Server()->TickSpeed() / 1000)
+			{
+				// Add some ammo
+				m_aWeapons[i].m_Ammo = minimum(m_aWeapons[i].m_Ammo + 1, MaxAmmo);
+				m_aWeapons[i].m_AmmoRegenStart = -1;
 			}
 		}
 	}
@@ -711,8 +717,6 @@ void CCharacter::HandleWeapons()
 		}
 	}
 /* INFECTION MODIFICATION END *****************************************/
-
-	return;
 }
 
 /* INFECTION MODIFICATION START ***************************************/
