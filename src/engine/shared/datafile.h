@@ -8,6 +8,8 @@ class CDataFileReader
 {
 	struct CDatafile *m_pDataFile;
 	void *GetDataImpl(int Index, int Swap);
+	int GetFileDataSize(int Index);
+
 public:
 	CDataFileReader() : m_pDataFile(0) {}
 	~CDataFileReader() { Close(); }

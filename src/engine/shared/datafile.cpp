@@ -254,14 +254,28 @@ int CDataFileReader::NumData()
 	return m_pDataFile->m_Header.m_NumRawData;
 }
 
-// always returns the size in the file
-int CDataFileReader::GetDataSize(int Index)
+// returns the size in the file
+int CDataFileReader::GetFileDataSize(int Index)
 {
 	if(!m_pDataFile) { return 0; }
 
 	if(Index == m_pDataFile->m_Header.m_NumRawData-1)
 		return m_pDataFile->m_Header.m_DataSize-m_pDataFile->m_Info.m_pDataOffsets[Index];
 	return m_pDataFile->m_Info.m_pDataOffsets[Index+1]-m_pDataFile->m_Info.m_pDataOffsets[Index];
+}
+
+// returns the size of the resulting data
+int CDataFileReader::GetDataSize(int Index)
+{
+	if(!m_pDataFile)
+	{
+		return 0;
+	}
+
+	if(m_pDataFile->m_Header.m_Version == 4)
+		return m_pDataFile->m_Info.m_pDataSizes[Index];
+	else
+		return GetFileDataSize(Index);
 }
 
 void *CDataFileReader::GetDataImpl(int Index, int Swap)
