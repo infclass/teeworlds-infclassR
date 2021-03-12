@@ -60,6 +60,37 @@ void CCollision::Init(class CLayers *pLayers)
 			break;
 		}
 	}
+
+	InitTeleports();
+}
+
+void CCollision::InitTeleports()
+{
+	if(!m_pLayers->TeleLayer())
+		return;
+
+	// Init tele tiles
+	unsigned int Size = m_pLayers->Map()->GetDataSize(m_pLayers->TeleLayer()->m_Tele);
+	if(Size >= (size_t)m_Width * m_Height * sizeof(CTeleTile))
+		m_pTele = static_cast<CTeleTile *>(m_pLayers->Map()->GetData(m_pLayers->TeleLayer()->m_Tele));
+
+	// Init tele outs
+	for(int i = 0; i < m_Width * m_Height; i++)
+	{
+		int Number = TeleLayer()[i].m_Number;
+		int Type = TeleLayer()[i].m_Type;
+		if(Number > 0)
+		{
+			int x = i % m_Width;
+			int y = i / m_Width;
+
+			if(Type == TILE_TELEOUT)
+			{
+				m_TeleOuts[Number].push_back(
+					vec2(i % m_Width * 32 + 16, i / m_Width * 32 + 16));
+			}
+		}
+	}
 }
 
 int CCollision::GetTile(int x, int y) const

@@ -6,6 +6,9 @@
 #include <base/vmath.h>
 #include <base/tl/array.h>
 
+#include <map>
+#include <vector>
+
 class CCollision
 {
 	int *m_pTiles;
@@ -36,6 +39,8 @@ public:
 	CCollision();
 	~CCollision();
 	void Init(class CLayers *pLayers);
+	void InitTeleports();
+
 	bool CheckPoint(float x, float y) const { return IsTileSolid(round(x), round(y)); }
 	bool CheckPoint(vec2 Pos) const { return CheckPoint(Pos.x, Pos.y); }
 	int GetCollisionAt(float x, float y) const { return GetTile(round(x), round(y)); }
@@ -45,7 +50,7 @@ public:
 	void MovePoint(vec2 *pInoutPos, vec2 *pInoutVel, float Elasticity, int *pBounces) const;
 	void MoveBox(vec2 *pInoutPos, vec2 *pInoutVel, vec2 Size, float Elasticity) const;
 	bool TestBox(vec2 Pos, vec2 Size) const;
-	
+
 	void SetTime(double Time) { m_Time = Time; }
 	
 	//This function return an Handle to access all zone layers with the name "pName"
@@ -61,6 +66,15 @@ public:
 
 	int GetPureMapIndex(float x, float y);
 	int GetPureMapIndex(vec2 Pos) { return GetPureMapIndex(Pos.x, Pos.y); }
+
+	class CTeleTile *TeleLayer() { return m_pTele; }
+	class CLayers *Layers() { return m_pLayers; }
+
+	const std::map<int, std::vector<vec2>> &GetTeleOuts() const { return m_TeleOuts; }
+
+private:
+	class CTeleTile *m_pTele;
+	std::map<int, std::vector<vec2>> m_TeleOuts;
 };
 
 #endif
