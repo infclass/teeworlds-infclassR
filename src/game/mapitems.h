@@ -79,6 +79,15 @@ enum
 	ENTITY_OFFSET=255-16*4,
 };
 
+enum DD_TILE_TELE
+{
+	TILE_TELEINEVIL = 10,
+	TILE_TELEINWEAPON = 14,
+	TILE_TELEINHOOK = 15,
+	TILE_TELEIN = 26,
+	TILE_TELEOUT = 27,
+};
+
 struct CPoint
 {
 	int x, y; // 22.10 fixed point
@@ -180,6 +189,10 @@ struct CMapItemLayerTilemap
 	int m_Data;
 
 	int m_aName[3];
+
+	// DDRace
+
+	int m_Tele;
 } ;
 
 struct CMapItemLayerQuads
@@ -293,6 +306,15 @@ struct CMapItemSound
 	int m_SoundName;
 	int m_SoundData;
 	int m_SoundDataSize;
+};
+
+// DDRace
+
+class CTeleTile
+{
+public:
+	unsigned char m_Number;
+	unsigned char m_Type;
 };
 
 #endif
