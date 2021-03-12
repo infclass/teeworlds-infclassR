@@ -454,3 +454,10 @@ bool CCollision::AreConnected(vec2 Pos1, vec2 Pos2, float Radius)
 	delete[] pMap;
 	return false;
 }
+
+int CCollision::GetPureMapIndex(float x, float y)
+{
+	int Nx = clamp(round_to_int(x) / 32, 0, m_Width - 1);
+	int Ny = clamp(round_to_int(y) / 32, 0, m_Height - 1);
+	return Ny * m_Width + Nx;
+}

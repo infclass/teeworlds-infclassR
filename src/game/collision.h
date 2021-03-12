@@ -59,6 +59,9 @@ public:
 	
 	bool AreConnected(vec2 Pos1, vec2 Pos2, float Radius);
 /* INFECTION MODIFICATION END *****************************************/
+
+	int GetPureMapIndex(float x, float y);
+	int GetPureMapIndex(vec2 Pos) { return GetPureMapIndex(Pos.x, Pos.y); }
 };
 
 #endif
