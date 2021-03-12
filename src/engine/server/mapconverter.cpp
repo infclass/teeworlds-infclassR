@@ -6,7 +6,7 @@ CMapConverter::CMapConverter(IStorage *pStorage, IEngineMap *pMap, IConsole* pCo
 	m_pConsole(pConsole),
 	m_pTiles(0)
 {
-	
+	m_DataFile.Init();
 }
 
 CMapConverter::~CMapConverter()
