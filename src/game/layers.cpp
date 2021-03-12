@@ -28,11 +28,14 @@ void CLayers::Init(IMap *pMap)
 	m_pMap->GetType(MAPITEMTYPE_GROUP, &m_GroupsStart, &m_GroupsNum);
 	m_pMap->GetType(MAPITEMTYPE_LAYER, &m_LayersStart, &m_LayersNum);
 
+	m_pTeleLayer = nullptr;
+
 	for(int g = 0; g < NumGroups(); g++)
 	{
 		CMapItemGroup *pGroup = GetGroup(g);
 		
 		char aGroupName[12];
+		char aLayerName[12];
 		IntsToStr(pGroup->m_aName, sizeof(aGroupName)/sizeof(int), aGroupName);
 		
 		if(str_comp(aGroupName, "#Zones") == 0)
@@ -48,6 +51,14 @@ void CLayers::Init(IMap *pMap)
 				if(pLayer->m_Type == LAYERTYPE_TILES)
 				{
 					CMapItemLayerTilemap *pTilemap = reinterpret_cast<CMapItemLayerTilemap *>(pLayer);
+					aLayerName[0] = 0;
+					IntsToStr(pTilemap->m_aName, sizeof(aLayerName)/sizeof(int), aLayerName);
+
+					if((str_comp(aGroupName, "Game") == 0) && str_comp(aLayerName, "Tele") == 0)
+					{
+						m_pTeleLayer = pTilemap;
+					}
+
 					if(pTilemap->m_Flags&TILESLAYERFLAG_PHYSICS)
 					{
 						m_pPhysicsLayer = pTilemap;

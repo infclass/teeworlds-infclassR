@@ -30,6 +30,11 @@ public:
 	CMapItemLayerTilemap *PhysicsLayer() const { return m_pPhysicsLayer; };
 	CMapItemGroup *GetGroup(int Index) const;
 	CMapItemLayer *GetLayer(int Index) const;
+
+	CMapItemLayerTilemap *TeleLayer() const { return m_pTeleLayer; }
+
+private:
+	CMapItemLayerTilemap *m_pTeleLayer = nullptr;
 };
 
 #endif
