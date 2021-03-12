@@ -276,6 +276,8 @@ public:
 	int GetInfZoneTick();
 	void EnableJump();
 /* INFECTION MODIFICATION END *****************************************/
+
+	CCharacterCore *Core() { return &m_Core; }
 };
 
 #endif
