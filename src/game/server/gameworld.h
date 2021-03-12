@@ -168,6 +168,8 @@ public:
 
 	*/
 	void Tick();
+
+	void ReleaseHooked(int ClientID);
 };
 
 #endif
