@@ -67,6 +67,7 @@ bool CMapChecker::ReadAndValidateMap(IStorage *pStorage, const char *pFilename, 
 {
 	bool LoadedMapInfo = false;
 	bool StandardMap = false;
+#if 0
 	unsigned MapCrc = 0;
 	unsigned MapSize = 0;
 
@@ -103,5 +104,6 @@ bool CMapChecker::ReadAndValidateMap(IStorage *pStorage, const char *pFilename, 
 				return true;
 		}
 	}
+#endif
 	return StandardMap?false:true;
 }
