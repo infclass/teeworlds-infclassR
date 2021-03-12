@@ -5,6 +5,8 @@
 #include <engine/server/roundstatistics.h>
 #include <engine/shared/config.h>
 
+#include <game/collision.h>
+
 #include <game/server/gamecontext.h>
 #include <game/server/infclass/classes/infcplayerclass.h>
 
@@ -2263,6 +2265,23 @@ void CInfClassCharacter::HandleHookDraining()
 	}
 }
 
+void CInfClassCharacter::HandleTeleports()
+{
+	int Index = GameServer()->Collision()->GetPureMapIndex(m_Pos);
+
+	CTeleTile *pTeleLayer = GameServer()->Collision()->TeleLayer();
+	if(!pTeleLayer)
+		return;
+
+	int TeleNumber = pTeleLayer[Index].m_Number;
+	int TeleType = pTeleLayer[Index].m_Type;
+	if((TeleNumber > 0) && (TeleType != TILE_TELEOUT))
+	{
+		dbg_msg("InfClass", "Character TeleNumber: %d, TeleType: %d", TeleNumber, TeleType);
+		TeleToId(TeleNumber, TeleType);
+	}
+}
+
 void CInfClassCharacter::HandleIndirectKillerCleanup()
 {
 	bool CharacterControlsItsPosition = IsGrounded() || m_Core.m_HookState == HOOK_GRABBED || m_Core.m_IsPassenger;
@@ -2818,6 +2837,7 @@ void CInfClassCharacter::PostCoreTick()
 	HandleWeaponsRegen();
 	HandleHookDraining();
 	HandleIndirectKillerCleanup();
+	HandleTeleports();
 }
 
 void CInfClassCharacter::ClassSpawnAttributes()
@@ -2945,4 +2965,44 @@ void CInfClassCharacter::UpdateTuningParam()
 		pTuningParams->m_HookDragAccel = pTuningParams->m_HookDragAccel * (1.0f + 0.35f * Factor);
 		pTuningParams->m_HookDragSpeed = pTuningParams->m_HookDragSpeed * (1.0f + 0.35f * Factor);
 	}
+}
+
+void CInfClassCharacter::TeleToId(int TeleNumber, int TeleType)
+{
+	const std::map<int, std::vector<vec2>> &AllTeleOuts = GameServer()->Collision()->GetTeleOuts();
+	if(AllTeleOuts.find(TeleNumber) == AllTeleOuts.cend())
+	{
+		dbg_msg("InfClass", "No tele out for tele number: %d", TeleNumber);
+		return;
+	}
+	const std::vector<vec2> Outs = AllTeleOuts.at(TeleNumber);
+	if(Outs.empty())
+	{
+		dbg_msg("InfClass", "No tele out for tele number: %d", TeleNumber);
+		return;
+	}
+
+	switch(TeleType)
+	{
+		case TILE_TELEINEVIL:
+		case TILE_TELEIN:
+			break;
+		default:
+			dbg_msg("InfClass", "Unsupported tele type: %d", TeleType);
+			return;
+	}
+
+	int DestTeleNumber = random_int(0, Outs.size() - 1);
+	vec2 DestPosition = Outs.at(DestTeleNumber);
+	m_Core.m_Pos = DestPosition;
+	if(TeleType == TILE_TELEINEVIL)
+	{
+		m_Core.m_Vel = vec2(0, 0);
+		GameWorld()->ReleaseHooked(GetPlayer()->GetCID());
+	}
+
+	m_Core.m_HookedPlayer = -1;
+	m_Core.m_HookState = HOOK_RETRACTED;
+	m_Core.m_TriggeredEvents |= COREEVENT_HOOK_RETRACT;
+	m_Core.m_HookPos = m_Core.m_Pos;
 }
