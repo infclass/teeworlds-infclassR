@@ -1245,6 +1245,8 @@ void CCharacter::Tick()
 	HandleWaterJump();
 	HandleWeapons();
 
+	PostCoreTick();
+
 	if(GetPlayerClass() == PLAYERCLASS_HUNTER || GetPlayerClass() == PLAYERCLASS_SNIPER ||GetPlayerClass() == PLAYERCLASS_LOOPER)
 	{
 		if(IsGrounded()) m_AirJumpCounter = 0;

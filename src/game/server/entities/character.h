@@ -278,6 +278,7 @@ public:
 /* INFECTION MODIFICATION END *****************************************/
 
 	CCharacterCore *Core() { return &m_Core; }
+	virtual void PostCoreTick() { }
 };
 
 #endif
