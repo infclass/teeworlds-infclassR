@@ -1188,6 +1188,15 @@ void CInfClassCharacter::HandleMapMenu()
 void CInfClassCharacter::Die(int Killer, int Weapon)
 {
 /* INFECTION MODIFICATION START ***************************************/
+	
+	
+	// log the context of a human-type death (purpose: death heatmap analysis)
+	// dev note: this method has to run before the human is infected!
+	if(g_Config.m_InfLogDeathContext&& m_pPlayer->IsHuman() && GameServer()->m_pController->IsRoundStarted())
+	{
+		GameServer()->logDeathContext(m_pPlayer->GetCID());
+	}
+
 	if(GetPlayerClass() == PLAYERCLASS_UNDEAD && Killer != m_pPlayer->GetCID())
 	{
 		Freeze(10.0, Killer, FREEZEREASON_UNDEAD);
@@ -1268,8 +1277,6 @@ void CInfClassCharacter::Die(int Killer, int Weapon)
 	
 	GameServer()->SendKillMessage(Killer, m_pPlayer->GetCID(), Weapon, ModeSpecial);
 	
-	logDeathContext();
-
 	// a nice sound
 	GameServer()->CreateSound(GetPos(), SOUND_PLAYER_DIE);
 
@@ -1606,21 +1613,4 @@ bool CInfClassCharacter::ProcessCharacterOnPortal(CPortal *pPortal, CCharacter *
 bool CInfClassCharacter::CanOpenPortals() const
 {
 	return m_canOpenPortals;
-}
-
-void CInfClassCharacter::logDeathContext()
-{
-	char aBuf[256];
-	// log the context of a human-type death (purpose: death heatmap analysis)
-	// dev note: this method has to run before the human is infected!
-	if(g_Config.m_InfLogDeathContext&& m_pPlayer->IsHuman() && GameServer()->m_pController->IsRoundStarted())
-	{
-		int aliveTime = GetPlayer()->m_HumanTime / ((float)Server()->TickSpeed());
-		
-		str_format(aBuf, sizeof(aBuf), "deathContext: mapName=%s aliveTime=%d position=%d,%d",
-			Server()->GetMapName(),	aliveTime, 
-			static_cast<int>(m_Pos.x), static_cast<int>(m_Pos.y)
-		);
-		GameServer()->Console()->Print(IConsole::OUTPUT_LEVEL_DEBUG, "game", aBuf);
-	}
 }

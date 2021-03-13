@@ -1982,7 +1982,13 @@ bool CCharacter::TakeDamage(vec2 Force, int Dmg, int From, int Weapon, int Mode)
 /* INFECTION MODIFICATION START ***************************************/
 	if(Mode == TAKEDAMAGEMODE_INFECTION)
 	{
-		logDeathContext();
+		
+		// log the context of a human-type death (purpose: death heatmap analysis)
+		// dev note: this method has to run before the human is infected!
+		if(g_Config.m_InfLogDeathContext&& m_pPlayer->IsHuman() && GameServer()->m_pController->IsRoundStarted())
+		{
+			GameServer()->logDeathContext(m_pPlayer->GetCID());
+		}
 		m_pPlayer->Infect(pKillerPlayer);
 		
 		char aBuf[256];

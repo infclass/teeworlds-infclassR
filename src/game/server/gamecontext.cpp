@@ -618,6 +618,19 @@ void CGameContext::SetClientLanguage(int ClientID, const char *pLanguage)
 	}
 }
 
+void CGameContext::logDeathContext(int ClientID)
+{
+	int aliveTime = m_apPlayers[ClientID]->m_HumanTime / ((float)Server()->TickSpeed());
+	vec2 pos = m_apPlayers[ClientID]->GetCharacter()->m_Pos;
+	
+	char aBuf[256];
+	str_format(aBuf, sizeof(aBuf), "deathContext: mapName=%s lifetime=%d pos_x=%d pos_y=%d",
+		Server()->GetMapName(),	aliveTime, 
+		static_cast<int>(pos.x), static_cast<int>(pos.y)
+	);
+	Console()->Print(IConsole::OUTPUT_LEVEL_DEBUG, "game", aBuf);
+}
+
 void CGameContext::SendBroadcast(int To, const char *pText, int Priority, int LifeSpan)
 {
 	int Start = (To < 0 ? 0 : To);
