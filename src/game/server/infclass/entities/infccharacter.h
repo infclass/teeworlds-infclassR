@@ -67,6 +67,7 @@ public:
 	void OnPortalDestroy(CPortal *pPortal);
 	bool ProcessCharacterOnPortal(CPortal *pPortal, CCharacter *pCharacter);
 	bool CanOpenPortals() const;
+	void logDeathContext();
 
 protected:
 	CInfClassGameController *m_pGameController = nullptr;

@@ -1982,6 +1982,7 @@ bool CCharacter::TakeDamage(vec2 Force, int Dmg, int From, int Weapon, int Mode)
 /* INFECTION MODIFICATION START ***************************************/
 	if(Mode == TAKEDAMAGEMODE_INFECTION)
 	{
+		logDeathContext();
 		m_pPlayer->Infect(pKillerPlayer);
 		
 		char aBuf[256];
@@ -2708,4 +2709,5 @@ void CCharacter::EnableJump()
 {
 	m_Core.EnableJump();
 }
+
 /* INFECTION MODIFICATION END *****************************************/

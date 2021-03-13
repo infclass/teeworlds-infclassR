@@ -29,6 +29,7 @@ public:
 	void OnCharacterSpawn(class CCharacter *pChr) override;
 	void OnPlayerInfoChange(class CPlayer *pP) override;
 	void DoWincheck() override;
+	bool IsRoundStarted() override;
 	void StartRound() override;
 	void EndRound() override;
 	bool PreSpawn(CPlayer* pPlayer, vec2 *pPos) override;

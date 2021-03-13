@@ -572,6 +572,11 @@ CGameWorld *CInfClassGameController::GameWorld()
 	return &GameServer()->m_World;
 }
 
+bool CInfClassGameController::IsRoundStarted()
+{
+	return m_RoundStarted;
+}
+
 void CInfClassGameController::StartRound()
 {
 	m_TurretsEnabled = AreTurretsEnabled();

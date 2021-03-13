@@ -273,7 +273,6 @@ public:
 
 	void PumpNetwork();
 
-	char *GetMapName();
 	int LoadMap(const char *pMapName);
 
 	void InitRegister(CNetServer *pNetServer, IEngineMasterServer *pMasterServer, IConsole *pConsole);
@@ -435,6 +434,7 @@ public:
 	virtual void RemoveMapVotesForID(int ClientID);
 	virtual void ResetMapVotes();
 	virtual IServer::CMapVote* GetMapVote();
+	virtual char *GetMapName();
 	virtual int GetMinPlayersForMap(const char* pMapName);
 
 	virtual int GetActivePlayerCount();
