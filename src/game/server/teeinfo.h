@@ -15,5 +15,7 @@ public:
 	CTeeInfo() = default;
 
 	CTeeInfo(const char *pSkinName, int UseCustomColor, int ColorBody, int ColorFeet);
+
+	void SetSkinName(const char *pSkinName);
 };
 #endif //GAME_SERVER_TEEINFO_H
