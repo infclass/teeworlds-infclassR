@@ -882,73 +882,7 @@ void CInfClassGameController::Snap(int SnappingClient)
 	pGameInfoObj->m_RoundNum = (str_length(g_Config.m_SvMaprotation) && g_Config.m_SvRoundsPerMap) ? g_Config.m_SvRoundsPerMap : 0;
 	pGameInfoObj->m_RoundCurrent = m_RoundCount+1;
 
-	//Generate class mask
-	int ClassMask = 0;
-	{
-		int Defender = 0;
-		int Medic = 0;
-		int Hero = 0;
-		int Support = 0;
-		
-		CPlayerIterator<PLAYERITER_INGAME> Iter(GameServer()->m_apPlayers);
-		while(Iter.Next())
-		{
-			switch(Iter.Player()->GetClass())
-			{
-				case PLAYERCLASS_NINJA:
-				case PLAYERCLASS_MERCENARY:
-				case PLAYERCLASS_SNIPER:
-					Support++;
-					break;
-				case PLAYERCLASS_ENGINEER:
-				case PLAYERCLASS_SOLDIER:
-				case PLAYERCLASS_SCIENTIST:
-				case PLAYERCLASS_BIOLOGIST:
-					Defender++;
-					break;
-				case PLAYERCLASS_MEDIC:
-					Medic++;
-					break;
-				case PLAYERCLASS_HERO:
-					Hero++;
-					break;
-				case PLAYERCLASS_LOOPER:
-					Defender++;
-					break;
-					
-			}
-		}
-		
-		if(Defender < g_Config.m_InfDefenderLimit)
-			ClassMask |= CMapConverter::MASK_DEFENDER;
-		if(Medic < g_Config.m_InfMedicLimit)
-			ClassMask |= CMapConverter::MASK_MEDIC;
-		if(Hero < g_Config.m_InfHeroLimit)
-			ClassMask |= CMapConverter::MASK_HERO;
-		if(Support < g_Config.m_InfSupportLimit)
-			ClassMask |= CMapConverter::MASK_SUPPORT;
-	}
-	
-	if(GameServer()->m_apPlayers[SnappingClient])
-	{
-		int Page = -1;
-		
-		if(GameServer()->m_apPlayers[SnappingClient]->MapMenu() == 1)
-		{
-			int Item = GameServer()->m_apPlayers[SnappingClient]->m_MapMenuItem;
-			Page = CMapConverter::TIMESHIFT_MENUCLASS + 3*((Item+1) + ClassMask*CMapConverter::TIMESHIFT_MENUCLASS_MASK) + 1;
-		}
-		
-		if(Page >= 0)
-		{
-			double PageShift = static_cast<double>(Page * Server()->GetTimeShiftUnit())/1000.0f;
-			double CycleShift = fmod(static_cast<double>(Server()->Tick() - pGameInfoObj->m_RoundStartTick)/Server()->TickSpeed(), Server()->GetTimeShiftUnit()/1000.0);
-			int TimeShift = (PageShift + CycleShift)*Server()->TickSpeed();
-			
-			pGameInfoObj->m_RoundStartTick = Server()->Tick() - TimeShift;
-			pGameInfoObj->m_TimeLimit += (TimeShift/Server()->TickSpeed())/60;
-		}
-	}
+	SnapMapMenu(SnappingClient, pGameInfoObj);
 
 	CNetObj_GameData *pGameDataObj = (CNetObj_GameData *)Server()->SnapNewItem(NETOBJTYPE_GAMEDATA, 0, sizeof(CNetObj_GameData));
 	if(!pGameDataObj)
@@ -981,6 +915,72 @@ CPlayer *CInfClassGameController::CreatePlayer(int ClientID)
 	}
 
 	return pPlayer;
+}
+
+void CInfClassGameController::SnapMapMenu(int SnappingClient, CNetObj_GameInfo *pGameInfoObj)
+{
+	if(!GameServer()->m_apPlayers[SnappingClient])
+		return;
+
+	if(GameServer()->m_apPlayers[SnappingClient]->MapMenu() != 1)
+		return;
+
+	//Generate class mask
+	int ClassMask = 0;
+	{
+		int Defender = 0;
+		int Medic = 0;
+		int Hero = 0;
+		int Support = 0;
+
+		CPlayerIterator<PLAYERITER_INGAME> Iter(GameServer()->m_apPlayers);
+		while(Iter.Next())
+		{
+			switch(Iter.Player()->GetClass())
+			{
+				case PLAYERCLASS_NINJA:
+				case PLAYERCLASS_MERCENARY:
+				case PLAYERCLASS_SNIPER:
+					Support++;
+					break;
+				case PLAYERCLASS_ENGINEER:
+				case PLAYERCLASS_SOLDIER:
+				case PLAYERCLASS_SCIENTIST:
+				case PLAYERCLASS_BIOLOGIST:
+					Defender++;
+					break;
+				case PLAYERCLASS_MEDIC:
+					Medic++;
+					break;
+				case PLAYERCLASS_HERO:
+					Hero++;
+					break;
+				case PLAYERCLASS_LOOPER:
+					Defender++;
+					break;
+					
+			}
+		}
+
+		if(Defender < Config()->m_InfDefenderLimit)
+			ClassMask |= CMapConverter::MASK_DEFENDER;
+		if(Medic < Config()->m_InfMedicLimit)
+			ClassMask |= CMapConverter::MASK_MEDIC;
+		if(Hero < Config()->m_InfHeroLimit)
+			ClassMask |= CMapConverter::MASK_HERO;
+		if(Support < Config()->m_InfSupportLimit)
+			ClassMask |= CMapConverter::MASK_SUPPORT;
+	}
+
+	int Item = GameServer()->m_apPlayers[SnappingClient]->m_MapMenuItem;
+	int Page = CMapConverter::TIMESHIFT_MENUCLASS + 3*((Item+1) + ClassMask*CMapConverter::TIMESHIFT_MENUCLASS_MASK) + 1;
+
+	double PageShift = static_cast<double>(Page * Server()->GetTimeShiftUnit())/1000.0f;
+	double CycleShift = fmod(static_cast<double>(Server()->Tick() - pGameInfoObj->m_RoundStartTick)/Server()->TickSpeed(), Server()->GetTimeShiftUnit()/1000.0);
+	int TimeShift = (PageShift + CycleShift)*Server()->TickSpeed();
+
+	pGameInfoObj->m_RoundStartTick = Server()->Tick() - TimeShift;
+	pGameInfoObj->m_TimeLimit += (TimeShift/Server()->TickSpeed())/60;
 }
 
 void CInfClassGameController::RewardTheKiller(CCharacter *pVictim, CPlayer *pKiller, int Weapon)

@@ -69,6 +69,7 @@ public:
 	CInfClassCharacter *GetCharacter(int ClientID) const;
 
 private:
+	void SnapMapMenu(int SnappingClient, CNetObj_GameInfo *pGameInfoObj);
 	void RewardTheKiller(class CCharacter *pVictim, class CPlayer *pKiller, int Weapon);
 	bool IsSpawnable(vec2 Pos, int TeleZoneIndex) override;
 	void GetPlayerCounter(int ClientException, int& NumHumans, int& NumInfected, int& NumFirstInfected);
