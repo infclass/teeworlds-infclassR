@@ -80,6 +80,7 @@ protected:
 	void CreateCircle(array<CQuad>* pQuads, vec2 Pos, float Size, vec4 Color, int Env=-1, int EnvTO=0);
 	
 	void InitState();
+	void QuantizeAnimation(int Quant);
 	
 	void CopyVersion();
 	void CopyMapInfo();

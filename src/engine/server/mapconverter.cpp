@@ -356,6 +356,9 @@ bool CMapConverter::Load()
 	long long TimeShiftUnit = 0;
 	if(pEnvPoints)
 	{
+		static const int Quant = 100;
+		QuantizeAnimation(Quant);
+
 		int Start, Num;
 		Map()->GetType(MAPITEMTYPE_ENVELOPE, &Start, &Num);
 		for(int i = 0; i < Num; i++)
@@ -634,6 +637,46 @@ void CMapConverter::InitState()
 	m_NumSounds = 0;
 	m_NumEnvs = 0;
 	m_lEnvPoints.clear();
+}
+
+void CMapConverter::QuantizeAnimation(int Quant)
+{
+	//Get the animation cycle
+	CEnvPoint* pEnvPoints = NULL;
+	{
+		int Start, Num;
+		Map()->GetType(MAPITEMTYPE_ENVPOINTS, &Start, &Num);
+		pEnvPoints = (CEnvPoint *)Map()->GetItem(Start, 0, 0);
+	}
+
+	if(!pEnvPoints)
+		return;
+
+	int Start, Num;
+	Map()->GetType(MAPITEMTYPE_ENVELOPE, &Start, &Num);
+	for(int i = 0; i < Num; i++)
+	{
+		CMapItemEnvelope *pItem = (CMapItemEnvelope *)Map()->GetItem(Start+i, 0, 0);
+		if(pItem->m_NumPoints > 0)
+		{
+			// Quant the points:
+			for(int p = 0; p < pItem->m_NumPoints; ++p)
+			{
+				int PointOffest = pItem->m_StartPoint + p;
+				int Time = pEnvPoints[PointOffest].m_Time;
+				int S = Time / Quant;
+				if((Time % Quant) >= Quant / 2)
+				{
+					++S;
+				}
+				int QuantedTime = S * Quant;
+				if(Time != QuantedTime)
+				{
+					pEnvPoints[PointOffest].m_Time = QuantedTime;
+				}
+			}
+		}
+	}
 }
 
 void CMapConverter::CopyVersion()
