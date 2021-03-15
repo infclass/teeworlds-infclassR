@@ -259,9 +259,9 @@ bool CMapConverter::Load()
 				int Duration = pEnvPoints[pItem->m_StartPoint + pItem->m_NumPoints - 1].m_Time - pEnvPoints[pItem->m_StartPoint].m_Time;
 				if(Duration)
 				{
-					dbg_msg("DEBUG", "Duration found: %d", m_AnimationCycle);
+					dbg_msg("DEBUG", "Duration found: %d", Duration);
 					m_AnimationCycle *= Duration;
-					dbg_msg("DEBUG", "Duration found: %d", m_AnimationCycle);
+					dbg_msg("DEBUG", "New AnimationCycle: %d", m_AnimationCycle);
 				}
 			}
 		}
