@@ -137,6 +137,13 @@ void CGameContext::Clear()
 	}
 }
 
+CPlayer *CGameContext::GetPlayer(int ClientID) const
+{
+	if(ClientID < 0 || ClientID >= MAX_CLIENTS)
+		return nullptr;
+
+	return m_apPlayers[ClientID];
+}
 
 class CCharacter *CGameContext::GetPlayerChar(int ClientID)
 {

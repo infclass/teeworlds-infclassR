@@ -146,6 +146,7 @@ public:
 	CGameWorld m_World;
 
 	// helper functions
+	CPlayer *GetPlayer(int ClientID) const;
 	class CCharacter *GetPlayerChar(int ClientID);
 	// InfClassR
 	int GetActivePlayerCount() const;
