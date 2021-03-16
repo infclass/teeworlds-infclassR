@@ -919,6 +919,9 @@ CPlayer *CInfClassGameController::CreatePlayer(int ClientID)
 
 void CInfClassGameController::SnapMapMenu(int SnappingClient, CNetObj_GameInfo *pGameInfoObj)
 {
+	if(SnappingClient < 0)
+		return;
+
 	if(!GameServer()->m_apPlayers[SnappingClient])
 		return;
 
