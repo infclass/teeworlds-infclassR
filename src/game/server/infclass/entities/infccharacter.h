@@ -24,6 +24,7 @@ public:
 	~CInfClassCharacter() override;
 
 	void Tick() override;
+	void SpecialSnapForClient(int SnappingClient, bool *pDoSnap) override;
 
 	void FireWeapon() override;
 

@@ -2011,121 +2011,26 @@ bool CCharacter::TakeDamage(vec2 Force, int Dmg, int From, int Weapon, int Mode)
 	return true;
 }
 
+void CCharacter::SpecialSnapForClient(int SnappingClient, bool *pDoSnap)
+{
+}
+
 void CCharacter::Snap(int SnappingClient)
 {
-	int id = m_pPlayer->GetCID();
+	int ID = m_pPlayer->GetCID();
 
-	if (!Server()->Translate(id, SnappingClient))
+	if(!Server()->Translate(ID, SnappingClient))
 		return;
 
 	if(NetworkClipped(SnappingClient))
 		return;
-	
-	CPlayer* pClient = GameServer()->m_apPlayers[SnappingClient];
-	
-/* INFECTION MODIFICATION START ***************************************/
-	if(GetPlayerClass() == PLAYERCLASS_GHOST)
-	{
-		if(!pClient->IsZombie() && m_IsInvisible) return;
-	}
-	else if(GetPlayerClass() == PLAYERCLASS_WITCH)
-	{
-		CNetObj_Flag *pFlag = (CNetObj_Flag *)Server()->SnapNewItem(NETOBJTYPE_FLAG, m_FlagID, sizeof(CNetObj_Flag));
-		if(!pFlag)
-			return;
 
-		pFlag->m_X = (int)m_Pos.x;
-		pFlag->m_Y = (int)m_Pos.y;
-		pFlag->m_Team = TEAM_RED;
-	}
-	
-	if(m_Armor < 10 && SnappingClient != m_pPlayer->GetCID() && IsHuman() && GetPlayerClass() != PLAYERCLASS_HERO)
-	{
-		if(pClient && pClient->GetClass() == PLAYERCLASS_MEDIC)
-		{
-			CNetObj_Pickup *pP = static_cast<CNetObj_Pickup *>(Server()->SnapNewItem(NETOBJTYPE_PICKUP, m_HeartID, sizeof(CNetObj_Pickup)));
-			if(!pP)
-				return;
+	bool DoSnap = true;
+	SpecialSnapForClient(SnappingClient, &DoSnap);
 
-			pP->m_X = (int)m_Pos.x;
-			pP->m_Y = (int)m_Pos.y - 60.0;
-			if(m_Health < 10 && m_Armor == 0)
-				pP->m_Type = POWERUP_HEALTH;
-			else
-				pP->m_Type = POWERUP_ARMOR;
-			pP->m_Subtype = 0;
-		}
-	}
-	else if((m_Armor + m_Health) < 10 && SnappingClient != m_pPlayer->GetCID() && IsZombie() && pClient->IsZombie())
-	{
-		CNetObj_Pickup *pP = static_cast<CNetObj_Pickup *>(Server()->SnapNewItem(NETOBJTYPE_PICKUP, m_HeartID, sizeof(CNetObj_Pickup)));
-		if(!pP)
-			return;
+	if(!DoSnap)
+		return;
 
-		pP->m_X = (int)m_Pos.x;
-		pP->m_Y = (int)m_Pos.y - 60.0;
-		pP->m_Type = POWERUP_HEALTH;
-		pP->m_Subtype = 0;
-	}
-	
-	if(pClient && pClient->IsHuman() && GetPlayerClass() == PLAYERCLASS_ENGINEER && !m_FirstShot)
-	{
-		CEngineerWall* pCurrentWall = NULL;
-		for(CEngineerWall *pWall = (CEngineerWall*) GameWorld()->FindFirst(CGameWorld::ENTTYPE_ENGINEER_WALL); pWall; pWall = (CEngineerWall*) pWall->TypeNext())
-		{
-			if(pWall->GetOwner() == m_pPlayer->GetCID())
-			{
-				pCurrentWall = pWall;
-				break;
-			}
-		}
-		
-		if(!pCurrentWall)
-		{
-			CNetObj_Laser *pObj = static_cast<CNetObj_Laser *>(Server()->SnapNewItem(NETOBJTYPE_LASER, m_BarrierHintID, sizeof(CNetObj_Laser)));
-			if(!pObj)
-				return;
-
-			pObj->m_X = (int)m_FirstShotCoord.x;
-			pObj->m_Y = (int)m_FirstShotCoord.y;
-			pObj->m_FromX = (int)m_FirstShotCoord.x;
-			pObj->m_FromY = (int)m_FirstShotCoord.y;
-			pObj->m_StartTick = Server()->Tick();
-			
-		}
-	}
-	if(pClient && pClient->IsHuman() && GetPlayerClass() == PLAYERCLASS_LOOPER && !m_FirstShot)
-	{
-		CLooperWall* pCurrentWall = NULL;
-		for(CLooperWall *pWall = (CLooperWall*) GameWorld()->FindFirst(CGameWorld::ENTTYPE_LOOPER_WALL); pWall; pWall = (CLooperWall*) pWall->TypeNext())
-		{
-			if(pWall->GetOwner() == m_pPlayer->GetCID())
-			{
-				pCurrentWall = pWall;
-				break;
-			}
-		}
-		
-		if(!pCurrentWall)
-		{
-			for(int i=0; i<2; i++) 
-			{
-				
-				CNetObj_Laser *pObj = static_cast<CNetObj_Laser *>(Server()->SnapNewItem(NETOBJTYPE_LASER, m_BarrierHintIDs[i], sizeof(CNetObj_Laser)));
-				
-				if(!pObj)
-					return;
-				
-				pObj->m_X = (int)m_FirstShotCoord.x-CLooperWall::THICKNESS*i+(CLooperWall::THICKNESS*0.5);
-				pObj->m_Y = (int)m_FirstShotCoord.y;
-				pObj->m_FromX = (int)m_FirstShotCoord.x-CLooperWall::THICKNESS*i+(CLooperWall::THICKNESS*0.5);
-				pObj->m_FromY = (int)m_FirstShotCoord.y;
-				pObj->m_StartTick = Server()->Tick();
-			}
-
-		}
-	}
-	
 	if(SnappingClient == m_pPlayer->GetCID())
 	{
 		if(GetPlayerClass() == PLAYERCLASS_SCIENTIST && m_ActiveWeapon == WEAPON_GRENADE)
@@ -2216,7 +2121,7 @@ void CCharacter::Snap(int SnappingClient)
 	}
 /* INFECTION MODIFICATION END ***************************************/
 
-	CNetObj_Character *pCharacter = static_cast<CNetObj_Character *>(Server()->SnapNewItem(NETOBJTYPE_CHARACTER, id, sizeof(CNetObj_Character)));
+	CNetObj_Character *pCharacter = static_cast<CNetObj_Character *>(Server()->SnapNewItem(NETOBJTYPE_CHARACTER, ID, sizeof(CNetObj_Character)));
 	if(!pCharacter)
 		return;
 	int EmoteNormal = EMOTE_NORMAL;
