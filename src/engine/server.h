@@ -90,6 +90,8 @@ enum
 	CHATCATEGORY_ACCUSATION,
 };
 
+static const int DemoClientID = -1;
+
 /* INFECTION MODIFICATION END *****************************************/
 
 class IServer : public IInterface
