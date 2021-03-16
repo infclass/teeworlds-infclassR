@@ -58,26 +58,23 @@ void CInfClassCharacter::SpecialSnapForClient(int SnappingClient, bool *pDoSnap)
 {
 	CInfClassPlayer* pDestClient = GameController()->GetPlayer(SnappingClient);
 
-	if(pDestClient)
+	if(GetPlayerClass() == PLAYERCLASS_GHOST)
 	{
-		if(GetPlayerClass() == PLAYERCLASS_GHOST)
+		if(pDestClient && !pDestClient->IsZombie() && m_IsInvisible)
 		{
-			if(!pDestClient->IsZombie() && m_IsInvisible)
-			{
-				*pDoSnap = false;
-				return;
-			}
+			*pDoSnap = false;
+			return;
 		}
-		else if(GetPlayerClass() == PLAYERCLASS_WITCH)
-		{
-			CNetObj_Flag *pFlag = (CNetObj_Flag *)Server()->SnapNewItem(NETOBJTYPE_FLAG, m_FlagID, sizeof(CNetObj_Flag));
-			if(!pFlag)
-				return;
+	}
+	if(GetPlayerClass() == PLAYERCLASS_WITCH)
+	{
+		CNetObj_Flag *pFlag = (CNetObj_Flag *)Server()->SnapNewItem(NETOBJTYPE_FLAG, m_FlagID, sizeof(CNetObj_Flag));
+		if(!pFlag)
+			return;
 	
-			pFlag->m_X = (int)m_Pos.x;
-			pFlag->m_Y = (int)m_Pos.y;
-			pFlag->m_Team = TEAM_RED;
-		}
+		pFlag->m_X = (int)m_Pos.x;
+		pFlag->m_Y = (int)m_Pos.y;
+		pFlag->m_Team = TEAM_RED;
 	}
 
 	if(m_Armor < 10 && SnappingClient != m_pPlayer->GetCID() && IsHuman() && GetPlayerClass() != PLAYERCLASS_HERO)
@@ -97,7 +94,7 @@ void CInfClassCharacter::SpecialSnapForClient(int SnappingClient, bool *pDoSnap)
 			pP->m_Subtype = 0;
 		}
 	}
-	else if((m_Armor + m_Health) < 10 && SnappingClient != m_pPlayer->GetCID() && IsZombie() && pDestClient->IsZombie())
+	else if((m_Armor + m_Health) < 10 && SnappingClient != m_pPlayer->GetCID() && IsZombie() && pDestClient && pDestClient->IsZombie())
 	{
 		CNetObj_Pickup *pP = static_cast<CNetObj_Pickup *>(Server()->SnapNewItem(NETOBJTYPE_PICKUP, m_HeartID, sizeof(CNetObj_Pickup)));
 		if(!pP)
@@ -109,7 +106,8 @@ void CInfClassCharacter::SpecialSnapForClient(int SnappingClient, bool *pDoSnap)
 		pP->m_Subtype = 0;
 	}
 
-	if(pDestClient && pDestClient->IsHuman() && GetPlayerClass() == PLAYERCLASS_ENGINEER && !m_FirstShot)
+	bool ShowFirstShot = (SnappingClient == -1) || (pDestClient && pDestClient->IsHuman());
+	if(ShowFirstShot && GetPlayerClass() == PLAYERCLASS_ENGINEER && !m_FirstShot)
 	{
 		CEngineerWall* pCurrentWall = NULL;
 		for(CEngineerWall *pWall = (CEngineerWall*) GameWorld()->FindFirst(CGameWorld::ENTTYPE_ENGINEER_WALL); pWall; pWall = (CEngineerWall*) pWall->TypeNext())
@@ -135,7 +133,7 @@ void CInfClassCharacter::SpecialSnapForClient(int SnappingClient, bool *pDoSnap)
 			
 		}
 	}
-	if(pDestClient && pDestClient->IsHuman() && GetPlayerClass() == PLAYERCLASS_LOOPER && !m_FirstShot)
+	if(ShowFirstShot && GetPlayerClass() == PLAYERCLASS_LOOPER && !m_FirstShot)
 	{
 		CLooperWall* pCurrentWall = NULL;
 		for(CLooperWall *pWall = (CLooperWall*) GameWorld()->FindFirst(CGameWorld::ENTTYPE_LOOPER_WALL); pWall; pWall = (CLooperWall*) pWall->TypeNext())
