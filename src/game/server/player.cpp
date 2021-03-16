@@ -232,7 +232,8 @@ void CPlayer::Snap(int SnappingClient)
 		return;
 
 	int id = m_ClientID;
-	if (!Server()->Translate(id, SnappingClient)) return;
+	if(SnappingClient > -1 && !Server()->Translate(id, SnappingClient))
+		return;
 
 	CNetObj_ClientInfo *pClientInfo = static_cast<CNetObj_ClientInfo *>(Server()->SnapNewItem(NETOBJTYPE_CLIENTINFO, id, sizeof(CNetObj_ClientInfo)));
 
