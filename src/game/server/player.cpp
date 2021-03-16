@@ -232,7 +232,7 @@ void CPlayer::Snap(int SnappingClient)
 		return;
 
 	int id = m_ClientID;
-	if(SnappingClient > -1 && !Server()->Translate(id, SnappingClient))
+	if(SnappingClient != DemoClientID && !Server()->Translate(id, SnappingClient))
 		return;
 
 	CNetObj_ClientInfo *pClientInfo = static_cast<CNetObj_ClientInfo *>(Server()->SnapNewItem(NETOBJTYPE_CLIENTINFO, id, sizeof(CNetObj_ClientInfo)));
@@ -243,7 +243,7 @@ void CPlayer::Snap(int SnappingClient)
 	StrToInts(&pClientInfo->m_Name0, 4, Server()->ClientName(m_ClientID));
 	
 	int SnapScoreMode = PLAYERSCOREMODE_SCORE;
-	if(GameServer()->m_apPlayers[SnappingClient])
+	if(GameServer()->GetPlayer(SnappingClient))
 	{
 		SnapScoreMode = GameServer()->m_apPlayers[SnappingClient]->GetScoreMode();
 	}
@@ -350,7 +350,7 @@ void CPlayer::Snap(int SnappingClient)
 	pClientInfo->m_Country = Server()->ClientCountry(m_ClientID);
 
 	if(
-		GameServer()->m_apPlayers[SnappingClient] && IsHuman() &&
+		GameServer()->GetPlayer(SnappingClient) && IsHuman() &&
 		(
 			(Server()->GetClientCustomSkin(SnappingClient) == 1 && SnappingClient == GetCID()) ||
 			(Server()->GetClientCustomSkin(SnappingClient) == 2)
@@ -370,7 +370,7 @@ void CPlayer::Snap(int SnappingClient)
 	if(!pPlayerInfo)
 		return;
 
-	pPlayerInfo->m_Latency = SnappingClient == -1 ? m_Latency.m_Min : GameServer()->m_apPlayers[SnappingClient]->m_aActLatency[m_ClientID];
+	pPlayerInfo->m_Latency = SnappingClient == DemoClientID ? m_Latency.m_Min : GameServer()->m_apPlayers[SnappingClient]->m_aActLatency[m_ClientID];
 	pPlayerInfo->m_Local = 0;
 	pPlayerInfo->m_ClientID = id;
 /* INFECTION MODIFICATION START ***************************************/
