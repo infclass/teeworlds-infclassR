@@ -7,6 +7,7 @@
 #include <engine/server/roundstatistics.h>
 #include <engine/shared/config.h>
 #include <game/server/infclass/infcgamecontroller.h>
+#include <game/server/infclass/infcplayer.h>
 
 CHeroFlag::CHeroFlag(CGameContext *pGameContext, int Owner)
 	: CInfCEntity(pGameContext, CGameWorld::ENTTYPE_HERO_FLAG, vec2(), Owner, ms_PhysSize)
@@ -148,11 +149,11 @@ void CHeroFlag::Snap(int SnappingClient)
 	if(NetworkClipped(SnappingClient))
 		return;
 	
-	if(SnappingClient != m_Owner)
+	if(SnappingClient != DemoClientID && SnappingClient != m_Owner)
 		return;
 	
-	CPlayer* pClient = GameServer()->m_apPlayers[SnappingClient];
-	if(pClient->GetClass() != PLAYERCLASS_HERO)
+	CInfClassPlayer* pOwnerPlayer = GameController()->GetPlayer(m_Owner);
+	if(pOwnerPlayer->GetClass() != PLAYERCLASS_HERO)
 		return;
 
 	if (GameServer()->GetHeroGiftCoolDown() <= 0)
