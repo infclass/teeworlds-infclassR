@@ -1631,7 +1631,32 @@ void CServer::SendServerInfo(const NETADDR *pAddr, int Token, bool Extended, boo
 		memcpy(aBuf, g_Config.m_SvName, sizeof(aBuf));
 #endif
 	}
-	
+
+	const char *pMapName = GetMapName();
+	if(g_Config.m_SvHideInfo)
+	{
+		if(g_Config.m_SvHideInfo == 2)
+		{
+			// Full hide
+			PlayerCount = 0;
+			ClientCount = 0;
+			SendClients = false;
+			pMapName = "";
+		}
+		else
+		{
+			// Limit players
+			static const int SoftLimit = 8;
+			static const int HardLimit = 12;
+			if(PlayerCount > SoftLimit)
+			{
+				PlayerCount = SoftLimit + (PlayerCount - SoftLimit) / 3;
+			}
+			PlayerCount = minimum(PlayerCount, HardLimit);
+			ClientCount = minimum(ClientCount, PlayerCount);
+		}
+	}
+
 	if (Extended)
 	{
 			p.AddString(aBuf, 256);
@@ -1647,7 +1672,8 @@ void CServer::SendServerInfo(const NETADDR *pAddr, int Token, bool Extended, boo
 		   p.AddString(bBuf, 64);
 		}
 	}
-	p.AddString(GetMapName(), 32);
+
+	p.AddString(pMapName, 32);
 
 	// gametype
 	p.AddString(GameServer()->GameType(), 16);
@@ -1692,6 +1718,14 @@ void CServer::SendServerInfo(const NETADDR *pAddr, int Token, bool Extended, boo
 		{
 			if(m_aClients[i].m_State != CClient::STATE_EMPTY)
 			{
+				if(g_Config.m_SvHideInfo)
+				{
+					if(PlayerCount == 0)
+						break;
+
+					--PlayerCount;
+				}
+
 				if (Skip-- > 0)
 					continue;
 				if (--Take < 0)
