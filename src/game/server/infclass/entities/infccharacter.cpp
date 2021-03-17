@@ -1313,7 +1313,6 @@ void CInfClassCharacter::Die(int Killer, int Weapon)
 		m_VoodooAboutToDie = true;
 		m_VoodooKiller = Killer;
 		m_VoodooWeapon = Weapon;
-		m_pPlayer->SetToSpirit(true);
 		GetClass()->UpdateSkin();
 		return;
 	// If about to die, yet killed again, dont kill him either

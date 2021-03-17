@@ -133,8 +133,6 @@ protected:
 	
 	int m_NumberKills;
 
-	bool m_VoodooIsSpirit;
-
 public:
 	int m_Authed;
 	int m_ScoreRound;
@@ -187,7 +185,6 @@ public:
 	
 	int m_LastHumanClasses[2];
 
-	void SetToSpirit(bool IsSpirit);
 /* INFECTION MODIFICATION END *****************************************/
 };
 

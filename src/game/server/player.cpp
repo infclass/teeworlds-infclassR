@@ -62,7 +62,6 @@ CPlayer::CPlayer(CGameContext *pGameServer, int ClientID, int Team)
 	for(unsigned int i=0; i<sizeof(m_LastHumanClasses)/sizeof(int); i++)
 		m_LastHumanClasses[i] = -1;
 
-	m_VoodooIsSpirit = false;
 /* INFECTION MODIFICATION END *****************************************/
 }
 
@@ -705,11 +704,6 @@ void CPlayer::IncreaseGhoulLevel(int Diff)
 		NewGhoulLevel = g_Config.m_InfGhoulStomachSize;
 	
 	m_GhoulLevel = NewGhoulLevel;
-}
-
-void CPlayer::SetToSpirit(bool IsSpirit)
-{
-	m_VoodooIsSpirit = IsSpirit;
 }
 
 /* INFECTION MODIFICATION END *****************************************/
