@@ -182,7 +182,7 @@ public:
 	void CloseMapMenu();
 	bool MapMenuClickable();
 	
-	float GetGhoulPercent();
+	float GetGhoulPercent() const;
 	void IncreaseGhoulLevel(int Diff);
 	inline int GetGhoulLevel() const { return m_GhoulLevel; }
 	

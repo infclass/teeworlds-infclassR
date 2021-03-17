@@ -858,7 +858,7 @@ bool CPlayer::MapMenuClickable()
 	return (m_MapMenu > 0 && (m_MapMenuTick > Server()->TickSpeed()/2));
 }
 
-float CPlayer::GetGhoulPercent()
+float CPlayer::GetGhoulPercent() const
 {
 	return clamp(m_GhoulLevel/static_cast<float>(g_Config.m_InfGhoulStomachSize), 0.0f, 1.0f);
 }
