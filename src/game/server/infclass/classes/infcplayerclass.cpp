@@ -48,6 +48,14 @@ CConfig *CInfClassPlayerClass::Config()
 	return nullptr;
 }
 
+const CConfig *CInfClassPlayerClass::Config() const
+{
+	if(m_pCharacter)
+		return m_pCharacter->Config();
+
+	return nullptr;
+}
+
 IServer *CInfClassPlayerClass::Server()
 {
 	if(m_pCharacter)
@@ -58,10 +66,12 @@ IServer *CInfClassPlayerClass::Server()
 
 CInfClassPlayer *CInfClassPlayerClass::GetPlayer()
 {
-	if(m_pCharacter)
-		return static_cast<CInfClassPlayer*>(m_pCharacter->GetPlayer());
+	return m_pPlayer;
+}
 
-	return nullptr;
+const CInfClassPlayer *CInfClassPlayerClass::GetPlayer() const
+{
+	return m_pPlayer;
 }
 
 int CInfClassPlayerClass::GetCID()

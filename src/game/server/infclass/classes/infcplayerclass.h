@@ -52,8 +52,10 @@ public:
 	CGameWorld *GameWorld() const;
 	CInfClassGameController *GameController() const;
 	CConfig *Config();
+	const CConfig *Config() const;
 	IServer *Server();
 	CInfClassPlayer *GetPlayer();
+	const CInfClassPlayer *GetPlayer() const;
 	int GetCID();
 	vec2 GetPos() const;
 	vec2 GetDirection() const;
