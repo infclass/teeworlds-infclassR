@@ -4,6 +4,7 @@
 #include <base/vmath.h>
 #include <game/generated/protocol.h>
 #include <game/server/gamecontext.h>
+#include <game/server/infclass/classes/infcplayerclass.h>
 #include <engine/server/roundstatistics.h>
 #include <engine/shared/config.h>
 
@@ -161,7 +162,7 @@ void CEngineerWall::OnZombieHit(CInfClassCharacter *pZombie)
 
 			if(pZombie->GetPlayerClass() == PLAYERCLASS_GHOUL)
 			{
-				float Factor = pZombie->GetPlayer()->GetGhoulPercent();
+				float Factor = pZombie->GetClass()->GetGhoulPercent();
 				LifeSpanReducer += Server()->TickSpeed() * 5.0f * Factor;
 			}
 
