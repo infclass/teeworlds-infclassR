@@ -3,6 +3,7 @@
 #include <engine/shared/config.h>
 #include <game/server/gamecontext.h>
 #include <game/server/infclass/entities/infccharacter.h>
+#include <game/server/infclass/infcplayer.h>
 
 MACRO_ALLOC_POOL_ID_IMPL(CInfClassInfected, MAX_CLIENTS)
 
@@ -48,4 +49,19 @@ void CInfClassInfected::OnSlimeEffect(int Owner)
 		m_HealTick = Server()->Tick();
 		m_pCharacter->IncreaseHealth(1);
 	}
+}
+
+float CInfClassInfected::GetGhoulPercent() const
+{
+	return GetPlayer()->GetGhoulPercent();
+}
+
+void CInfClassInfected::IncreaseGhoulLevel(int Diff)
+{
+	GetPlayer()->IncreaseGhoulLevel(Diff);
+}
+
+int CInfClassInfected::GetGhoulLevel() const
+{
+	return GetPlayer()->GetGhoulLevel();
 }

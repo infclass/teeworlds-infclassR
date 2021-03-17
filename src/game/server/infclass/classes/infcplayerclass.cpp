@@ -122,6 +122,11 @@ bool CInfClassPlayerClass::IsZombie() const
 	return !IsHuman();
 }
 
+float CInfClassPlayerClass::GetGhoulPercent() const
+{
+	return 0;
+}
+
 int CInfClassPlayerClass::PlayerClass() const
 {
 	if(m_pCharacter)

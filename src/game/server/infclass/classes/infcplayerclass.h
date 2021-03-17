@@ -26,6 +26,8 @@ public:
 	virtual bool IsHuman() const = 0;
 	bool IsZombie() const;
 
+	virtual float GetGhoulPercent() const;
+
 	// Temp stuff
 	int PlayerClass() const;
 	void OnPlayerClassChanged();

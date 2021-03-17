@@ -18,6 +18,10 @@ public:
 
 	void OnSlimeEffect(int Owner) override;
 
+	float GetGhoulPercent() const override;
+	void IncreaseGhoulLevel(int Diff);
+	int GetGhoulLevel() const;
+
 protected:
 	void GiveClassAttributes() override;
 
