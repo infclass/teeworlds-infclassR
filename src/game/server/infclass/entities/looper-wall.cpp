@@ -3,9 +3,11 @@
 #include <base/vmath.h>
 #include <game/generated/protocol.h>
 #include <game/server/gamecontext.h>
+#include <game/server/infclass/classes/infcplayerclass.h>
 #include <engine/server/roundstatistics.h>
 #include <engine/shared/config.h>
 #include "looper-wall.h"
+#include "infccharacter.h"
 
 CLooperWall::CLooperWall(CGameContext *pGameContext, vec2 Pos1, vec2 Pos2, int Owner)
 	: CInfCEntity(pGameContext, CGameWorld::ENTTYPE_LOOPER_WALL, Pos1, Owner)
@@ -67,7 +69,7 @@ void CLooperWall::Tick()
 	else
 	{
 		// Find other players
-		for(CCharacter *p = (CCharacter*) GameWorld()->FindFirst(CGameWorld::ENTTYPE_CHARACTER); p; p = (CCharacter *)p->TypeNext())
+		for(CInfClassCharacter *p = (CInfClassCharacter*) GameWorld()->FindFirst(CGameWorld::ENTTYPE_CHARACTER); p; p = (CInfClassCharacter *)p->TypeNext())
 		{
 			if(p->IsHuman()) continue;
 
@@ -82,7 +84,7 @@ void CLooperWall::Tick()
 					{
 						if(p->GetPlayerClass() == PLAYERCLASS_GHOUL)
 						{
-							float Factor = p->GetPlayer()->GetGhoulPercent();
+							float Factor = p->GetClass()->GetGhoulPercent();
 							LifeSpanReducer += Server()->TickSpeed() * 5.0f * Factor;
 						}
 							
