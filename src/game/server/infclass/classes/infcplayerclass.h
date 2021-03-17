@@ -37,7 +37,7 @@ public:
 	void Poison(int Count, int From);
 
 	// Events
-	virtual void Tick();
+	virtual void OnCharacterTick();
 	virtual void OnCharacterSpawned();
 
 	virtual void OnWeaponFired(WeaponFireContext *pFireContext);

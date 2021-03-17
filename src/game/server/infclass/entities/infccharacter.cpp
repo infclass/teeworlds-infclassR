@@ -51,7 +51,7 @@ void CInfClassCharacter::Tick()
 	CCharacter::Tick();
 
 	if(m_pClass)
-		m_pClass->Tick();
+		m_pClass->OnCharacterTick();
 }
 
 void CInfClassCharacter::SpecialSnapForClient(int SnappingClient, bool *pDoSnap)

@@ -156,7 +156,7 @@ void CInfClassPlayerClass::Poison(int Count, int From)
 	}
 }
 
-void CInfClassPlayerClass::Tick()
+void CInfClassPlayerClass::OnCharacterTick()
 {
 	if(m_Poison > 0)
 	{
