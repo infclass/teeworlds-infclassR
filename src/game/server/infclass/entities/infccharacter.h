@@ -70,6 +70,10 @@ public:
 	bool CanOpenPortals() const;
 
 protected:
+	void PreCoreTick() override;
+	void UpdateTuningParam();
+
+protected:
 	CInfClassGameController *m_pGameController = nullptr;
 	CInfClassPlayerClass *m_pClass = nullptr;
 };

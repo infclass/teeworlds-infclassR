@@ -267,7 +267,6 @@ public:
 	void SlipperyEffect();
 	void GrantSpawnProtection();
 	int GetInfWeaponID(int WID);
-	void UpdateTuningParam();
 	bool FindPortalPosition(vec2 Pos, vec2& Res);
 	bool FindWitchSpawnPosition(vec2& Res);
 	void SaturateVelocity(vec2 Force, float MaxSpeed);
@@ -279,6 +278,7 @@ public:
 /* INFECTION MODIFICATION END *****************************************/
 
 	CCharacterCore *Core() { return &m_Core; }
+	virtual void PreCoreTick() { }
 	virtual void PostCoreTick() { }
 };
 

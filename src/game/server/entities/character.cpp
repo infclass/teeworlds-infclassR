@@ -469,98 +469,6 @@ void CCharacter::HandleWeaponSwitch()
 	}
 }
 
-void CCharacter::UpdateTuningParam()
-{
-	CTuningParams* pTuningParams = &m_pPlayer->m_NextTuningParams;
-	
-	bool NoActions = false;
-	bool FixedPosition = false;
-	
-	if(m_PositionLocked)
-	{
-		NoActions = true;
-		FixedPosition = true;
-	}
-	if(m_IsFrozen)
-	{
-		NoActions = true;
-	}
-	
-	if(m_SlowMotionTick > 0)
-	{
-		float Factor = 1.0f - ((float)g_Config.m_InfSlowMotionPercent / 100);
-		float FactorSpeed = 1.0f - ((float)g_Config.m_InfSlowMotionHookSpeed / 100);
-		float FactorAccel = 1.0f - ((float)g_Config.m_InfSlowMotionHookAccel / 100);
-		pTuningParams->m_GroundControlSpeed = pTuningParams->m_GroundControlSpeed * Factor;
-		pTuningParams->m_HookFireSpeed = pTuningParams->m_HookFireSpeed * FactorSpeed;
-		//pTuningParams->m_GroundJumpImpulse = pTuningParams->m_GroundJumpImpulse * Factor;
-		//pTuningParams->m_AirJumpImpulse = pTuningParams->m_AirJumpImpulse * Factor;
-		pTuningParams->m_AirControlSpeed = pTuningParams->m_AirControlSpeed * Factor;
-		pTuningParams->m_HookDragAccel = pTuningParams->m_HookDragAccel * FactorAccel;
-		pTuningParams->m_HookDragSpeed = pTuningParams->m_HookDragSpeed * FactorSpeed;
-		pTuningParams->m_Gravity = g_Config.m_InfSlowMotionGravity * 0.01f;
-
-		if (g_Config.m_InfSlowMotionMaxSpeed > 0) 
-		{
-			float MaxSpeed = g_Config.m_InfSlowMotionMaxSpeed * 0.1f;
-			float diff = MaxSpeed / length(m_Core.m_Vel);
-			if (diff < 1.0f) m_Core.m_Vel *= diff;
-		}
-	}
-	
-	if(m_HookMode == 1)
-	{
-		pTuningParams->m_HookDragSpeed = 0.0f;
-		pTuningParams->m_HookDragAccel = 1.0f;
-	}
-	if(m_InWater == 1)
-	{
-		pTuningParams->m_Gravity = -0.05f;
-		pTuningParams->m_GroundFriction = 0.95f;
-		pTuningParams->m_GroundControlSpeed = 250.0f / Server()->TickSpeed();
-		pTuningParams->m_GroundControlAccel = 1.5f;
-		pTuningParams->m_GroundJumpImpulse = 0.0f;
-		pTuningParams->m_AirFriction = 0.95f;
-		pTuningParams->m_AirControlSpeed = 250.0f / Server()->TickSpeed();
-		pTuningParams->m_AirControlAccel = 1.5f;
-		pTuningParams->m_AirJumpImpulse = 0.0f;
-	}
-	if(m_SlipperyTick > 0)
-	{
-		pTuningParams->m_GroundFriction = 1.0f;
-	}
-	
-	if(NoActions)
-	{
-		pTuningParams->m_GroundControlAccel = 0.0f;
-		pTuningParams->m_GroundJumpImpulse = 0.0f;
-		pTuningParams->m_AirJumpImpulse = 0.0f;
-		pTuningParams->m_AirControlAccel = 0.0f;
-		pTuningParams->m_HookLength = 0.0f;
-	}
-	if(FixedPosition || m_Core.m_IsPassenger)
-	{
-		pTuningParams->m_Gravity = 0.0f;
-	}
-	if(GetPlayer()->HookProtectionEnabled())
-	{
-		pTuningParams->m_PlayerHooking = 0;
-	}
-	
-	if(GetPlayerClass() == PLAYERCLASS_GHOUL)
-	{
-		float Factor = m_pPlayer->GetGhoulPercent();
-		pTuningParams->m_GroundControlSpeed = pTuningParams->m_GroundControlSpeed * (1.0f + 0.5f*Factor);
-		pTuningParams->m_GroundControlAccel = pTuningParams->m_GroundControlAccel * (1.0f + 0.5f*Factor);
-		pTuningParams->m_GroundJumpImpulse = pTuningParams->m_GroundJumpImpulse * (1.0f + 0.35f*Factor);
-		pTuningParams->m_AirJumpImpulse = pTuningParams->m_AirJumpImpulse * (1.0f + 0.35f*Factor);
-		pTuningParams->m_AirControlSpeed = pTuningParams->m_AirControlSpeed * (1.0f + 0.5f*Factor);
-		pTuningParams->m_AirControlAccel = pTuningParams->m_AirControlAccel * (1.0f + 0.5f*Factor);
-		pTuningParams->m_HookDragAccel = pTuningParams->m_HookDragAccel * (1.0f + 0.5f*Factor);
-		pTuningParams->m_HookDragSpeed = pTuningParams->m_HookDragSpeed * (1.0f + 0.5f*Factor);
-	}
-}
-
 void CCharacter::FireWeapon()
 {
 }
@@ -1201,8 +1109,8 @@ void CCharacter::Tick()
 		m_Input.m_Direction = 0;
 		m_Input.m_Hook = 0;
 	}
-	
-	UpdateTuningParam();
+
+	PreCoreTick();
 
 	m_Core.m_Input = m_Input;
 	
