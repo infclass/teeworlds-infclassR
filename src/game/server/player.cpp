@@ -123,8 +123,6 @@ void CPlayer::Tick()
 		}
 		else if(m_Spawning && m_RespawnTick <= Server()->Tick())
 			TryRespawn();
-		
-		if(IsHuman()) m_HumanTime++;
 	}
 	else
 	{
@@ -135,38 +133,6 @@ void CPlayer::Tick()
 		++m_LastActionMoveTick;
 		++m_TeamChangeTick;
  	}
-
-	if(m_MapMenu > 0)
-		m_MapMenuTick++;
- 	
-	if(GetClass() == PLAYERCLASS_GHOUL)
-	{
-		if(m_GhoulLevel > 0)
-		{
-			m_GhoulLevelTick--;
-			
-			if(m_GhoulLevelTick <= 0)
-			{
-				m_GhoulLevelTick = (Server()->TickSpeed()*g_Config.m_InfGhoulDigestion);
-				IncreaseGhoulLevel(-1);
-			}
-		}
-		
-		SetClassSkin(PLAYERCLASS_GHOUL, m_GhoulLevel);
-	}
-	else if (GetClass() == PLAYERCLASS_VOODOO)
-	{
-		if(m_VoodooIsSpirit)
-		{
-			SetClassSkin(PLAYERCLASS_VOODOO, 0); // 0 = spirit skin
-		}
-		else
-		{
-			SetClassSkin(PLAYERCLASS_VOODOO, 1); // 1 = normal skin
-		}
-	}
-	
- 	HandleTuningParams();
 }
 
 void CPlayer::PostTick()

@@ -22,6 +22,8 @@ public:
 
 	void TryRespawn() override;
 
+	void Tick() override;
+
 	CInfClassPlayerClass *GetCharacterClass() { return m_pInfcPlayerClass; }
 	const CInfClassPlayerClass *GetCharacterClass() const { return m_pInfcPlayerClass; }
 	void SetCharacterClass(CInfClassPlayerClass *pClass);

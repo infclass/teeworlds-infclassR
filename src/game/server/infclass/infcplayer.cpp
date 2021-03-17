@@ -1,5 +1,6 @@
 #include "infcplayer.h"
 
+#include <engine/shared/config.h>
 #include <game/server/infclass/infcgamecontroller.h>
 
 #include "classes/humans/human.h"
@@ -47,6 +48,52 @@ void CInfClassPlayer::TryRespawn()
 	m_pInfcPlayerClass->OnCharacterSpawned();
 	if(GetClass() != PLAYERCLASS_NONE)
 		GameServer()->CreatePlayerSpawn(SpawnPos);
+}
+
+void CInfClassPlayer::Tick()
+{
+	CPlayer::Tick();
+
+	if(!Server()->ClientIngame(m_ClientID))
+		return;
+
+	if(!GameServer()->m_World.m_Paused)
+	{
+		if(IsHuman())
+			m_HumanTime++;
+	}
+
+	if(m_MapMenu > 0)
+		m_MapMenuTick++;
+
+	if(GetClass() == PLAYERCLASS_GHOUL)
+	{
+		if(m_GhoulLevel > 0)
+		{
+			m_GhoulLevelTick--;
+
+			if(m_GhoulLevelTick <= 0)
+			{
+				m_GhoulLevelTick = (Server()->TickSpeed() * GameServer()->Config()->m_InfGhoulDigestion);
+				IncreaseGhoulLevel(-1);
+			}
+		}
+
+		SetClassSkin(PLAYERCLASS_GHOUL, m_GhoulLevel);
+	}
+	else if (GetClass() == PLAYERCLASS_VOODOO)
+	{
+		if(m_VoodooIsSpirit)
+		{
+			SetClassSkin(PLAYERCLASS_VOODOO, 0); // 0 = spirit skin
+		}
+		else
+		{
+			SetClassSkin(PLAYERCLASS_VOODOO, 1); // 1 = normal skin
+		}
+	}
+
+	HandleTuningParams();
 }
 
 void CInfClassPlayer::SetCharacterClass(CInfClassPlayerClass *pClass)

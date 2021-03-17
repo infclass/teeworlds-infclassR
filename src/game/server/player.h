@@ -27,7 +27,7 @@ public:
 	int GetTeam() const { return m_Team; };
 	int GetCID() const { return m_ClientID; };
 
-	void Tick();
+	virtual void Tick();
 	void PostTick();
 	void Snap(int SnappingClient);
 
@@ -118,7 +118,7 @@ protected:
 	int m_Team;
 
 /* INFECTION MODIFICATION START ***************************************/
-private:
+protected:
 	int m_class;
 	int m_classOld;
 	int m_ScoreMode;
