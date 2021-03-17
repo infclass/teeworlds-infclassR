@@ -138,6 +138,15 @@ void CInfClassInfected::OnSlimeEffect(int Owner)
 	}
 }
 
+void CInfClassInfected::OnFloatingPointCollected(int Points)
+{
+	if(PlayerClass() != PLAYERCLASS_GHOUL)
+		return;
+
+	m_pCharacter->IncreaseOverallHp(4);
+	IncreaseGhoulLevel(Points);
+}
+
 float CInfClassInfected::GetGhoulPercent() const
 {
 	return GetPlayer()->GetGhoulPercent();

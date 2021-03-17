@@ -17,6 +17,7 @@ public:
 	void OnCharacterSpawned() override;
 
 	void OnSlimeEffect(int Owner) override;
+	void OnFloatingPointCollected(int Points) override;
 
 	float GetGhoulPercent() const override;
 	void IncreaseGhoulLevel(int Diff);

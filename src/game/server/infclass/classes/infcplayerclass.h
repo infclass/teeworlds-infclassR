@@ -50,6 +50,7 @@ public:
 	virtual void OnNinjaFired(WeaponFireContext *pFireContext);
 
 	virtual void OnSlimeEffect(int Owner) = 0;
+	virtual void OnFloatingPointCollected(int Points);
 
 	CGameContext *GameContext() const;
 	CGameContext *GameServer() const;

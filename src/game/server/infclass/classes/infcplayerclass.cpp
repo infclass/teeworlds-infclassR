@@ -237,6 +237,10 @@ void CInfClassPlayerClass::OnNinjaFired(WeaponFireContext *pFireContext)
 {
 }
 
+void CInfClassPlayerClass::OnFloatingPointCollected(int Points)
+{
+}
+
 void CInfClassPlayerClass::GiveClassAttributes()
 {
 	m_pCharacter->TakeAllWeapons();
