@@ -1805,7 +1805,7 @@ void CInfClassCharacter::UpdateTuningParam()
 	
 	if(GetPlayerClass() == PLAYERCLASS_GHOUL)
 	{
-		float Factor = m_pPlayer->GetGhoulPercent();
+		float Factor = GetClass()->GetGhoulPercent();
 		pTuningParams->m_GroundControlSpeed = pTuningParams->m_GroundControlSpeed * (1.0f + 0.5f*Factor);
 		pTuningParams->m_GroundControlAccel = pTuningParams->m_GroundControlAccel * (1.0f + 0.5f*Factor);
 		pTuningParams->m_GroundJumpImpulse = pTuningParams->m_GroundJumpImpulse * (1.0f + 0.35f*Factor);
