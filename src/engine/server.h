@@ -223,6 +223,9 @@ public:
 
 	bool Translate(int& target, int client)
 	{
+		if(client == DemoClientID)
+			return true;
+
 		CClientInfo info;
 		GetClientInfo(client, &info);
 		if (info.m_CustClt)
