@@ -367,6 +367,8 @@ CServer::CServer() : m_DemoRecorder(&m_SnapshotDelta)
 	m_CurrentGameTick = 0;
 	m_RunServer = 1;
 
+	str_copy(m_aShutdownReason, "Server shutdown", sizeof(m_aShutdownReason));
+
 	m_pCurrentMapData = 0;
 	m_CurrentMapSize = 0;
 
@@ -2245,7 +2247,7 @@ int CServer::Run()
 	for(int i = 0; i < MAX_CLIENTS; ++i)
 	{
 		if(m_aClients[i].m_State != CClient::STATE_EMPTY)
-			m_NetServer.Drop(i, CLIENTDROPTYPE_SHUTDOWN, "Server shutdown");
+			m_NetServer.Drop(i, CLIENTDROPTYPE_SHUTDOWN, m_aShutdownReason);
 
 		m_Econ.Shutdown();
 	}
@@ -2494,8 +2496,14 @@ bool CServer::ConStatus(IConsole::IResult *pResult, void *pUser)
 
 bool CServer::ConShutdown(IConsole::IResult *pResult, void *pUser)
 {
-	((CServer *)pUser)->m_RunServer = 0;
-	
+	CServer* pThis = static_cast<CServer *>(pUser);
+	pThis->m_RunServer = 0;
+	const char *pReason = pResult->GetString(0);
+	if(pReason[0])
+	{
+		str_copy(pThis->m_aShutdownReason, pReason, sizeof(pThis->m_aShutdownReason));
+	}
+
 	return true;
 }
 
@@ -2801,7 +2809,7 @@ void CServer::RegisterCommands()
 	Console()->Register("status", "", CFGFLAG_SERVER, ConStatus, this, "List players");
 	Console()->Register("status_extended", "", CFGFLAG_SERVER, ConStatusExtended, this, "List players");
 	Console()->Register("option_status", "", CFGFLAG_SERVER, ConOptionStatus, this, "List player options");
-	Console()->Register("shutdown", "", CFGFLAG_SERVER, ConShutdown, this, "Shut down");
+	Console()->Register("shutdown", "?r", CFGFLAG_SERVER, ConShutdown, this, "Shut down");
 	Console()->Register("logout", "", CFGFLAG_SERVER, ConLogout, this, "Logout of rcon");
 
 	Console()->Register("record", "?s", CFGFLAG_SERVER|CFGFLAG_STORE, ConRecord, this, "Record to a file");

@@ -201,6 +201,7 @@ public:
 	
 	char m_aPreviousMap[64];
 	char m_aCurrentMap[64];
+	char m_aShutdownReason[128];
 	
 	unsigned m_CurrentMapCrc;
 	unsigned char *m_pCurrentMapData;
