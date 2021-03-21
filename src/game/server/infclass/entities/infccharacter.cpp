@@ -1133,6 +1133,27 @@ void CInfClassCharacter::OnBiologistLaserFired(WeaponFireContext *pFireContext)
 	}
 }
 
+void CInfClassCharacter::OpenClassChooser()
+{
+	if(GameServer()->m_FunRound)
+	{
+		IncreaseArmor(10);
+		m_pPlayer->CloseMapMenu();
+		return;
+	}
+
+	if(!Server()->IsClassChooserEnabled() || Server()->GetClientAlwaysRandom(m_pPlayer->GetCID()))
+	{
+		m_pPlayer->SetClass(GameServer()->m_pController->ChooseHumanClass(m_pPlayer));
+		if(Server()->IsClassChooserEnabled())
+			IncreaseArmor(10);
+	}
+	else
+	{
+		m_pPlayer->OpenMapMenu(1);
+	}
+}
+
 void CInfClassCharacter::HandleMapMenu()
 {
 	if(GetPlayerClass() != PLAYERCLASS_NONE)

@@ -2127,27 +2127,6 @@ vec2 CCharacter::GetDirection() const
 	return normalize(vec2(m_LatestInput.m_TargetX, m_LatestInput.m_TargetY));
 }
 
-void CCharacter::OpenClassChooser()
-{
-	if(GameServer()->m_FunRound)
-	{
-		IncreaseArmor(10);
-		m_pPlayer->CloseMapMenu();
-		return;
-	}
-
-	if(!Server()->IsClassChooserEnabled() || Server()->GetClientAlwaysRandom(m_pPlayer->GetCID()))
-	{
-		m_pPlayer->SetClass(GameServer()->m_pController->ChooseHumanClass(m_pPlayer));
-		if(Server()->IsClassChooserEnabled())
-			IncreaseArmor(10);
-	}
-	else
-	{
-		m_pPlayer->OpenMapMenu(1);
-	}
-}
-
 int CCharacter::GetPlayerClass() const
 {
 	if(!m_pPlayer)

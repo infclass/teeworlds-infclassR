@@ -248,7 +248,7 @@ public:
 	void DestroyChildEntities();
 	void ClassSpawnAttributes();
 	vec2 GetDirection() const;
-	void OpenClassChooser();
+	virtual void OpenClassChooser() { }
 	int GetPlayerClass() const;
 
 	void SetClass(int ClassChoosed);
