@@ -10,6 +10,11 @@ CTeeInfo::CTeeInfo(const char *pSkinName, int UseCustomColor, int ColorBody, int
 	m_ColorFeet = ColorFeet;
 }
 
+const char *CTeeInfo::SkinName() const
+{
+	return m_SkinName;
+}
+
 void CTeeInfo::SetSkinName(const char *pSkinName)
 {
 	str_copy(m_SkinName, pSkinName, sizeof(m_SkinName));
