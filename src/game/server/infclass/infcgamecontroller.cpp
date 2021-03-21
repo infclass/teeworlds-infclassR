@@ -442,6 +442,49 @@ const char *CInfClassGameController::GetClassPluralDisplayName(int PlayerClass)
 	}
 }
 
+int CInfClassGameController::MenuClassToPlayerClass(int MenuClass)
+{
+	int PlayerClass = PLAYERCLASS_INVALID;
+	switch(MenuClass)
+	{
+		case CMapConverter::MENUCLASS_MEDIC:
+			PlayerClass = PLAYERCLASS_MEDIC;
+			break;
+		case CMapConverter::MENUCLASS_HERO:
+			PlayerClass = PLAYERCLASS_HERO;
+			break;
+		case CMapConverter::MENUCLASS_NINJA:
+			PlayerClass = PLAYERCLASS_NINJA;
+			break;
+		case CMapConverter::MENUCLASS_MERCENARY:
+			PlayerClass = PLAYERCLASS_MERCENARY;
+			break;
+		case CMapConverter::MENUCLASS_SNIPER:
+			PlayerClass = PLAYERCLASS_SNIPER;
+			break;
+		case CMapConverter::MENUCLASS_RANDOM:
+			PlayerClass = PLAYERCLASS_NONE;
+			break;
+		case CMapConverter::MENUCLASS_ENGINEER:
+			PlayerClass = PLAYERCLASS_ENGINEER;
+			break;
+		case CMapConverter::MENUCLASS_SOLDIER:
+			PlayerClass = PLAYERCLASS_SOLDIER;
+			break;
+		case CMapConverter::MENUCLASS_SCIENTIST:
+			PlayerClass = PLAYERCLASS_SCIENTIST;
+			break;
+		case CMapConverter::MENUCLASS_BIOLOGIST:
+			PlayerClass = PLAYERCLASS_BIOLOGIST;
+			break;
+		case CMapConverter::MENUCLASS_LOOPER:
+			PlayerClass = PLAYERCLASS_LOOPER;
+			break;
+	}
+
+	return PlayerClass;
+}
+
 void CInfClassGameController::RegisterChatCommands(IConsole *pConsole)
 {
 	pConsole->Register("inf_set_class", "is", CFGFLAG_SERVER, ConSetClass, this, "Set the class of a player");

@@ -1172,136 +1172,52 @@ void CInfClassCharacter::HandleMapMenu()
 			float Angle = 2.0f*pi+atan2(CursorPos.x, -CursorPos.y);
 			float AngleStep = 2.0f*pi/static_cast<float>(CMapConverter::NUM_MENUCLASS);
 			m_pPlayer->m_MapMenuItem = ((int)((Angle+AngleStep/2.0f)/AngleStep))%CMapConverter::NUM_MENUCLASS;
-
-			switch(m_pPlayer->m_MapMenuItem)
+			if(m_pPlayer->m_MapMenuItem == CMapConverter::MENUCLASS_RANDOM)
 			{
-				case CMapConverter::MENUCLASS_RANDOM:
-					GameServer()->SendBroadcast_Localization(m_pPlayer->GetCID(), BROADCAST_PRIORITY_INTERFACE, BROADCAST_DURATION_REALTIME, _("Random choice"), NULL);
+				GameServer()->SendBroadcast_Localization(m_pPlayer->GetCID(),
+					BROADCAST_PRIORITY_INTERFACE, BROADCAST_DURATION_REALTIME, _("Random choice"), NULL);
+				Broadcast = true;
+			}
+			else
+			{
+				int MenuClass = m_pPlayer->m_MapMenuItem;
+				int NewClass = CInfClassGameController::MenuClassToPlayerClass(MenuClass);
+				if(GameController()->IsChoosableClass(NewClass))
+				{
+					const char *pClassName = CInfClassGameController::GetClassDisplayName(NewClass);
+					GameServer()->SendBroadcast_Localization(m_pPlayer->GetCID(),
+						BROADCAST_PRIORITY_INTERFACE, BROADCAST_DURATION_REALTIME, pClassName, NULL);
 					Broadcast = true;
-					break;
-				case CMapConverter::MENUCLASS_ENGINEER:
-					if(GameController()->IsChoosableClass(PLAYERCLASS_ENGINEER))
-					{
-						GameServer()->SendBroadcast_Localization(m_pPlayer->GetCID(), BROADCAST_PRIORITY_INTERFACE, BROADCAST_DURATION_REALTIME, _("Engineer"), NULL);
-						Broadcast = true;
-					}
-					break;
-				case CMapConverter::MENUCLASS_SOLDIER:
-					if(GameController()->IsChoosableClass(PLAYERCLASS_SOLDIER))
-					{
-						GameServer()->SendBroadcast_Localization(m_pPlayer->GetCID(), BROADCAST_PRIORITY_INTERFACE, BROADCAST_DURATION_REALTIME, _("Soldier"), NULL);
-						Broadcast = true;
-					}
-					break;
-				case CMapConverter::MENUCLASS_SCIENTIST:
-					if(GameController()->IsChoosableClass(PLAYERCLASS_SCIENTIST))
-					{
-						GameServer()->SendBroadcast_Localization(m_pPlayer->GetCID(), BROADCAST_PRIORITY_INTERFACE, BROADCAST_DURATION_REALTIME, _("Scientist"), NULL);
-						Broadcast = true;
-					}
-					break;
-				case CMapConverter::MENUCLASS_BIOLOGIST:
-					if(GameController()->IsChoosableClass(PLAYERCLASS_BIOLOGIST))
-					{
-						GameServer()->SendBroadcast_Localization(m_pPlayer->GetCID(), BROADCAST_PRIORITY_INTERFACE, BROADCAST_DURATION_REALTIME, _("Biologist"), NULL);
-						Broadcast = true;
-					}
-					break;
-				case CMapConverter::MENUCLASS_LOOPER:
-					if(GameController()->IsChoosableClass(PLAYERCLASS_LOOPER))
-					{
-						GameServer()->SendBroadcast_Localization(m_pPlayer->GetCID(), BROADCAST_PRIORITY_INTERFACE, BROADCAST_DURATION_REALTIME, _("Looper"), NULL);
-						Broadcast = true;
-					}
-					break;
-				case CMapConverter::MENUCLASS_MEDIC:
-					if(GameController()->IsChoosableClass(PLAYERCLASS_MEDIC))
-					{
-						GameServer()->SendBroadcast_Localization(m_pPlayer->GetCID(), BROADCAST_PRIORITY_INTERFACE, BROADCAST_DURATION_REALTIME, _("Medic"), NULL);
-						Broadcast = true;
-					}
-					break;
-				case CMapConverter::MENUCLASS_HERO:
-					if(GameController()->IsChoosableClass(PLAYERCLASS_HERO))
-					{
-						GameServer()->SendBroadcast_Localization(m_pPlayer->GetCID(), BROADCAST_PRIORITY_INTERFACE, BROADCAST_DURATION_REALTIME, _("Hero"), NULL);
-						Broadcast = true;
-					}
-					break;
-				case CMapConverter::MENUCLASS_NINJA:
-					if(GameController()->IsChoosableClass(PLAYERCLASS_NINJA))
-					{
-						GameServer()->SendBroadcast_Localization(m_pPlayer->GetCID(), BROADCAST_PRIORITY_INTERFACE, BROADCAST_DURATION_REALTIME, _("Ninja"), NULL);
-						Broadcast = true;
-					}
-					break;
-				case CMapConverter::MENUCLASS_MERCENARY:
-					if(GameController()->IsChoosableClass(PLAYERCLASS_MERCENARY))
-					{
-						GameServer()->SendBroadcast_Localization(m_pPlayer->GetCID(), BROADCAST_PRIORITY_INTERFACE, BROADCAST_DURATION_REALTIME, _("Mercenary"), NULL);
-						Broadcast = true;
-					}
-					break;
-				case CMapConverter::MENUCLASS_SNIPER:
-					if(GameController()->IsChoosableClass(PLAYERCLASS_SNIPER))
-					{
-						GameServer()->SendBroadcast_Localization(m_pPlayer->GetCID(), BROADCAST_PRIORITY_INTERFACE, BROADCAST_DURATION_REALTIME, _("Sniper"), NULL);
-						Broadcast = true;
-					}
-					break;
+				}
 			}
 		}
 
 		if(!Broadcast)
 		{
 			m_pPlayer->m_MapMenuItem = -1;
-			GameServer()->SendBroadcast_Localization(m_pPlayer->GetCID(), BROADCAST_PRIORITY_INTERFACE, BROADCAST_DURATION_REALTIME, _("Choose your class"), NULL);
+			GameServer()->SendBroadcast_Localization(m_pPlayer->GetCID(),
+				BROADCAST_PRIORITY_INTERFACE, BROADCAST_DURATION_REALTIME, _("Choose your class"), NULL);
+
+			return;
 		}
 
-		if(m_pPlayer->MapMenuClickable() && m_Input.m_Fire&1 && m_pPlayer->m_MapMenuItem >= 0)
+		if(m_pPlayer->MapMenuClickable() && m_Input.m_Fire&1)
 		{
 			bool Bonus = false;
 
-			int NewClass = -1;
-			switch(m_pPlayer->m_MapMenuItem)
+			int MenuClass = m_pPlayer->m_MapMenuItem;
+			int NewClass = CInfClassGameController::MenuClassToPlayerClass(MenuClass);
+			if(NewClass == PLAYERCLASS_NONE)
 			{
-				case CMapConverter::MENUCLASS_MEDIC:
-					NewClass = PLAYERCLASS_MEDIC;
-					break;
-				case CMapConverter::MENUCLASS_HERO:
-					NewClass = PLAYERCLASS_HERO;
-					break;
-				case CMapConverter::MENUCLASS_NINJA:
-					NewClass = PLAYERCLASS_NINJA;
-					break;
-				case CMapConverter::MENUCLASS_MERCENARY:
-					NewClass = PLAYERCLASS_MERCENARY;
-					break;
-				case CMapConverter::MENUCLASS_SNIPER:
-					NewClass = PLAYERCLASS_SNIPER;
-					break;
-				case CMapConverter::MENUCLASS_RANDOM:
-					NewClass = GameController()->ChooseHumanClass(m_pPlayer);
-					Bonus = true;
-					break;
-				case CMapConverter::MENUCLASS_ENGINEER:
-					NewClass = PLAYERCLASS_ENGINEER;
-					break;
-				case CMapConverter::MENUCLASS_SOLDIER:
-					NewClass = PLAYERCLASS_SOLDIER;
-					break;
-				case CMapConverter::MENUCLASS_SCIENTIST:
-					NewClass = PLAYERCLASS_SCIENTIST;
-					break;
-				case CMapConverter::MENUCLASS_BIOLOGIST:
-					NewClass = PLAYERCLASS_BIOLOGIST;
-					break;
-				case CMapConverter::MENUCLASS_LOOPER:
-					NewClass = PLAYERCLASS_LOOPER;
-					break;
+				NewClass = GameController()->ChooseHumanClass(m_pPlayer);
+				Bonus = true;
+			}
+			if(NewClass == PLAYERCLASS_INVALID)
+			{
+				return;
 			}
 
-			if(NewClass >= 0 && GameController()->IsChoosableClass(NewClass))
+			if(GameController()->IsChoosableClass(NewClass))
 			{
 				SetAntiFire();
 				m_pPlayer->m_MapMenuItem = 0;
@@ -1309,7 +1225,8 @@ void CInfClassCharacter::HandleMapMenu()
 				m_pPlayer->SetOldClass(NewClass);
 				
 				char aBuf[256];
-				str_format(aBuf, sizeof(aBuf), "choose_class player='%s' class='%d' random='%d'", Server()->ClientName(m_pPlayer->GetCID()), NewClass, Bonus);
+				str_format(aBuf, sizeof(aBuf), "choose_class player='%s' class='%d' random='%d'",
+					Server()->ClientName(m_pPlayer->GetCID()), NewClass, Bonus);
 				GameServer()->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "game", aBuf);
 
 				if(Bonus)
