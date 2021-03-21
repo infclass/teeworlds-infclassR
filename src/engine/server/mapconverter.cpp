@@ -1,5 +1,10 @@
 #include <engine/server/mapconverter.h>
 
+#include <game/server/classes.h>
+#include <game/server/infclass/classes/humans/human.h>
+#include <game/server/infclass/infcgamecontroller.h>
+#include <game/server/teeinfo.h>
+
 CMapConverter::CMapConverter(IStorage *pStorage, IEngineMap *pMap, IConsole* pConsole) :
 	m_pStorage(pStorage),
 	m_pMap(pMap),
@@ -556,17 +561,32 @@ int CMapConverter::AddExternalImage(const char* pImageName, int Width, int Heigh
 
 void CMapConverter::Finalize()
 {
-	int EngineerImageID = AddExternalImage("../skins/limekitty", 256, 128);
-	int SoldierImageID = AddExternalImage("../skins/brownbear", 256, 128);
-	int ScientistImageID = AddExternalImage("../skins/toptri", 256, 128);
-	int BiologistImageID = AddExternalImage("../skins/twintri", 256, 128);
-	int LooperImageID = AddExternalImage("../skins/bluekitty", 256, 128);
-	int MedicImageID = AddExternalImage("../skins/twinbop", 256, 128);
-	int HeroImageID = AddExternalImage("../skins/redstripe", 256, 128);
-	int NinjaImageID = AddExternalImage("../skins/x_ninja", 256, 128);
-	int MercenaryImageID = AddExternalImage("../skins/bluestripe", 256, 128);
-	int SniperImageID = AddExternalImage("../skins/warpaint", 256, 128);
-	
+	int ClassImageID[NUM_MENUCLASS];
+	for(int ClassIndex = 0; ClassIndex < NUM_MENUCLASS; ++ClassIndex)
+	{
+		CTeeInfo ClassTeeInfo;
+		if(ClassIndex == MENUCLASS_RANDOM)
+		{
+			ClassTeeInfo.SetSkinName("warpaint");
+		}
+		else if(ClassIndex == MENUCLASS_NINJA)
+		{
+			// Special case
+			ClassTeeInfo.SetSkinName("x_ninja");
+		}
+		else
+		{
+			int PlayerClass = CInfClassGameController::MenuClassToPlayerClass(ClassIndex);
+			CInfClassHuman::SetupSkin(PlayerClass, &ClassTeeInfo);
+		}
+
+		char SkinPath[96];
+		str_format(SkinPath, sizeof(SkinPath), "../skins/%s", ClassTeeInfo.SkinName());
+
+		int ImageID = AddExternalImage(SkinPath, 256, 128);
+		ClassImageID[ClassIndex] = ImageID;
+	}
+
 	//Menu
 	
 	const float MenuRadius = 196.0f;
@@ -783,41 +803,15 @@ void CMapConverter::Finalize()
 					else
 					{
 						vec2 Pos = m_MenuPosition+rotate(vec2(MenuRadius, 0.0f), MenuAngleStart+MenuAngleStep*i);
-						switch(i)
+						if(i == MENUCLASS_RANDOM)
 						{
-							case MENUCLASS_RANDOM:
-								AddTeeLayer("Random", SniperImageID, Pos, 64.0f, m_NumEnvs-1, true);
-								break;
-							case MENUCLASS_ENGINEER:
-								AddTeeLayer("Engineer", EngineerImageID, Pos, 64.0f, m_NumEnvs-1);
-								break;
-							case MENUCLASS_SOLDIER:
-								AddTeeLayer("Soldier", SoldierImageID, Pos, 64.0f, m_NumEnvs-1);
-								break;
-							case MENUCLASS_SCIENTIST:
-								AddTeeLayer("Scientist", ScientistImageID, Pos, 64.0f, m_NumEnvs-1);
-								break;
-							case MENUCLASS_BIOLOGIST:
-								AddTeeLayer("Biologist", BiologistImageID, Pos, 64.0f, m_NumEnvs-1);
-								break;
-							case MENUCLASS_LOOPER:
-								AddTeeLayer("Looper", LooperImageID, Pos, 64.0f, m_NumEnvs-1);
-								break;
-							case MENUCLASS_MEDIC:
-								AddTeeLayer("Medic", MedicImageID, Pos, 64.0f, m_NumEnvs-1);
-								break;
-							case MENUCLASS_HERO:
-								AddTeeLayer("Hero", HeroImageID, Pos, 64.0f, m_NumEnvs-1);
-								break;
-							case MENUCLASS_NINJA:
-								AddTeeLayer("Ninja", NinjaImageID, Pos, 64.0f, m_NumEnvs-1);
-								break;
-							case MENUCLASS_MERCENARY:
-								AddTeeLayer("Mercenary", MercenaryImageID, Pos, 64.0f, m_NumEnvs-1);
-								break;
-							case MENUCLASS_SNIPER:
-								AddTeeLayer("Sniper", SniperImageID, Pos, 64.0f, m_NumEnvs-1);
-								break;
+							AddTeeLayer("Random", ClassImageID[i], Pos, 64.0f, m_NumEnvs-1, true);
+						}
+						else
+						{
+							int PlayerClass = CInfClassGameController::MenuClassToPlayerClass(i);
+							const char *pClassName = CInfClassGameController::GetClassDisplayName(PlayerClass);
+							AddTeeLayer(pClassName, ClassImageID[i], Pos, 64.0f, m_NumEnvs-1);
 						}
 					}
 				}
