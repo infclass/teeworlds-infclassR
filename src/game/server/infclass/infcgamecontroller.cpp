@@ -329,6 +329,7 @@ bool CInfClassGameController::IsDefenderClass(int PlayerClass)
 	switch (PlayerClass)
 	{
 		case PLAYERCLASS_ENGINEER:
+		case PLAYERCLASS_ELECTRICIAN:
 		case PLAYERCLASS_SOLDIER:
 		case PLAYERCLASS_SCIENTIST:
 		case PLAYERCLASS_BIOLOGIST:
@@ -418,6 +419,8 @@ const char *CInfClassGameController::GetClassName(int PlayerClass)
 			return "hero";
 		case PLAYERCLASS_ENGINEER:
 			return "engineer";
+		case PLAYERCLASS_ELECTRICIAN:
+			return "electrician";
 		case PLAYERCLASS_SOLDIER:
 			return "soldier";
 		case PLAYERCLASS_NINJA:
@@ -471,6 +474,8 @@ const char *CInfClassGameController::GetClassPluralName(int PlayerClass)
 			return "heroes";
 		case PLAYERCLASS_ENGINEER:
 			return "engineers";
+		case PLAYERCLASS_ELECTRICIAN:
+			return "electricians";
 		case PLAYERCLASS_SOLDIER:
 			return "soldiers";
 		case PLAYERCLASS_NINJA:
@@ -524,6 +529,8 @@ const char *CInfClassGameController::GetClassDisplayName(int PlayerClass, const 
 			return _("Hero");
 		case PLAYERCLASS_ENGINEER:
 			return _("Engineer");
+		case PLAYERCLASS_ELECTRICIAN:
+			return _("Electrician");
 		case PLAYERCLASS_SOLDIER:
 			return _("Soldier");
 		case PLAYERCLASS_NINJA:
@@ -587,6 +594,8 @@ const char *CInfClassGameController::GetClassPluralDisplayName(int PlayerClass)
 			return _("Heroes");
 		case PLAYERCLASS_ENGINEER:
 			return _("Engineers");
+		case PLAYERCLASS_ELECTRICIAN:
+			return _("Electricians");
 		case PLAYERCLASS_SOLDIER:
 			return _("Soldiers");
 		case PLAYERCLASS_NINJA:
@@ -653,6 +662,9 @@ int CInfClassGameController::MenuClassToPlayerClass(int MenuClass)
 			break;
 		case CMapConverter::MENUCLASS_ENGINEER:
 			PlayerClass = PLAYERCLASS_ENGINEER;
+			break;
+		case CMapConverter::MENUCLASS_ELECTRICIAN:
+			PlayerClass = PLAYERCLASS_ELECTRICIAN;
 			break;
 		case CMapConverter::MENUCLASS_SOLDIER:
 			PlayerClass = PLAYERCLASS_SOLDIER;
@@ -1989,6 +2001,8 @@ bool CInfClassGameController::GetPlayerClassEnabled(int PlayerClass) const
 	{
 		case PLAYERCLASS_ENGINEER:
 			return g_Config.m_InfEnableEngineer;
+		case PLAYERCLASS_ELECTRICIAN:
+			return g_Config.m_InfEnableElectrician;
 		case PLAYERCLASS_SOLDIER:
 			return g_Config.m_InfEnableSoldier;
 		case PLAYERCLASS_SCIENTIST:

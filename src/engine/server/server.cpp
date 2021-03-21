@@ -651,6 +651,7 @@ int CServer::Init()
 	SetMaxAmmo(INFWEAPON_WITCH_PORTAL_LASER, 2);
 	
 	SetClassAvailability(PLAYERCLASS_ENGINEER, 2);
+	SetClassAvailability(PLAYERCLASS_ELECTRICIAN, 2);
 	SetClassAvailability(PLAYERCLASS_SOLDIER, 2);
 	SetClassAvailability(PLAYERCLASS_MERCENARY, 2);
 	SetClassAvailability(PLAYERCLASS_SNIPER, 2);
@@ -3282,6 +3283,9 @@ void CServer::SetPlayerClassEnabled(int PlayerClass, bool Enabled)
 			g_Config.m_InfEnableHero = Value;
 			break;
 		case PLAYERCLASS_ENGINEER:
+			g_Config.m_InfEnableEngineer = Value;
+			break;
+		case PLAYERCLASS_ELECTRICIAN:
 			g_Config.m_InfEnableEngineer = Value;
 			break;
 		case PLAYERCLASS_SOLDIER:

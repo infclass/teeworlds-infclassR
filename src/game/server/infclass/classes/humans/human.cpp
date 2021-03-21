@@ -138,6 +138,12 @@ void CInfClassHuman::GiveClassAttributes()
 			m_pCharacter->GiveWeapon(WEAPON_LASER, -1);
 			m_pCharacter->SetActiveWeapon(WEAPON_LASER);
 			break;
+		case PLAYERCLASS_ELECTRICIAN:
+			m_pCharacter->GiveWeapon(WEAPON_HAMMER, -1);
+			m_pCharacter->GiveWeapon(WEAPON_GUN, -1);
+			m_pCharacter->GiveWeapon(WEAPON_LASER, -1);
+			m_pCharacter->SetActiveWeapon(WEAPON_HAMMER);
+			break;
 		case PLAYERCLASS_SOLDIER:
 			m_pCharacter->GiveWeapon(WEAPON_HAMMER, -1);
 			m_pCharacter->GiveWeapon(WEAPON_GUN, -1);
@@ -215,6 +221,12 @@ bool CInfClassHuman::SetupSkin(int PlayerClass, CTeeInfo *output)
 		case PLAYERCLASS_ENGINEER:
 			output->m_UseCustomColor = 0;
 			output->SetSkinName("limekitty");
+			break;
+		case PLAYERCLASS_ELECTRICIAN:
+			output->SetSkinName("cammo");
+			output->m_UseCustomColor = 1;
+			output->m_ColorBody = 8716159;
+			output->m_ColorFeet = 0;
 			break;
 		case PLAYERCLASS_SOLDIER:
 			output->SetSkinName("brownbear");
