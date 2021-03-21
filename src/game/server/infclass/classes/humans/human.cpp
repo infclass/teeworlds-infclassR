@@ -96,9 +96,9 @@ void CInfClassHuman::GiveClassAttributes()
 	}
 }
 
-void CInfClassHuman::SetupSkin(CTeeInfo *output)
+bool CInfClassHuman::SetupSkin(int PlayerClass, CTeeInfo *output)
 {
-	switch(PlayerClass())
+	switch(PlayerClass)
 	{
 		case PLAYERCLASS_ENGINEER:
 			output->m_UseCustomColor = 0;
@@ -147,8 +147,15 @@ void CInfClassHuman::SetupSkin(CTeeInfo *output)
 		default:
 			output->SetSkinName("default");
 			output->m_UseCustomColor = 0;
-			break;
+			return false;
 	}
+
+	return true;
+}
+
+void CInfClassHuman::SetupSkin(CTeeInfo *output)
+{
+	SetupSkin(PlayerClass(), output);
 }
 
 void CInfClassHuman::OnSlimeEffect(int Owner)

@@ -16,6 +16,8 @@ public:
 
 	void OnSlimeEffect(int Owner) override;
 
+	static bool SetupSkin(int PlayerClass, CTeeInfo *output);
+
 protected:
 	void GiveClassAttributes() override;
 	void SetupSkin(CTeeInfo *output) override;
