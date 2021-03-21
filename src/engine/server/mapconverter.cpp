@@ -1,5 +1,6 @@
 #include <engine/server/mapconverter.h>
 
+#include <base/color.h>
 #include <game/server/classes.h>
 #include <game/server/infclass/classes/humans/human.h>
 #include <game/server/infclass/infcgamecontroller.h>
@@ -141,6 +142,20 @@ void MakeGrayScale(CImageInfo *pImg)
 			d[y * Pitch + x * 4 + 2] = v;
 		}
 	}
+}
+
+void SetQuadColor(CQuad *Quad, int Color)
+{
+	ColorRGBA BodyColor = color_cast<ColorRGBA>(ColorHSLA(Color).UnclampLighting());
+	CColor TypedColor;
+	TypedColor.r = BodyColor.r * 255;
+	TypedColor.g = BodyColor.g * 255;
+	TypedColor.b = BodyColor.b * 255;
+	TypedColor.a = BodyColor.a * 255;
+	Quad->m_aColors[0] = TypedColor;
+	Quad->m_aColors[1] = TypedColor;
+	Quad->m_aColors[2] = TypedColor;
+	Quad->m_aColors[3] = TypedColor;
 }
 
 CMapConverter::CMapConverter(IStorage *pStorage, IEngineMap *pMap, IConsole* pConsole) :
@@ -377,7 +392,7 @@ void CMapConverter::AddImageQuad(const char* pName, int ImageID, int GridX, int 
 	m_DataFile.AddItem(MAPITEMTYPE_LAYER, m_NumLayers++, sizeof(Item), &Item);
 }
 
-void CMapConverter::AddTeeLayer(const char* pName, int ImageID, vec2 Pos, float Size, int Env, bool Black)
+void CMapConverter::AddTeeLayer(const char* pName, int ImageID, vec2 Pos, float Size, int Env, bool Black, const CTeeInfo *pTeeInfo)
 {
 	array<CQuad> aQuads;
 	CQuad Quad;
@@ -427,6 +442,10 @@ void CMapConverter::AddTeeLayer(const char* pName, int ImageID, vec2 Pos, float 
 		Quad.m_aTexcoords[1].x = Quad.m_aTexcoords[3].x = 1024.0f*96.0f/256.0f;
 		Quad.m_aTexcoords[0].y = Quad.m_aTexcoords[1].y = 0;
 		Quad.m_aTexcoords[2].y = Quad.m_aTexcoords[3].y = 1024.0f*96.0f/128.0f;
+		if(pTeeInfo && pTeeInfo->m_UseCustomColor)
+		{
+			SetQuadColor(&Quad, pTeeInfo->m_ColorBody);
+		}
 		aQuads.add(Quad);
 		
 		//FrontFeet, Color
@@ -436,6 +455,10 @@ void CMapConverter::AddTeeLayer(const char* pName, int ImageID, vec2 Pos, float 
 		Quad.m_aTexcoords[1].x = Quad.m_aTexcoords[3].x = 1024.0f;
 		Quad.m_aTexcoords[0].y = Quad.m_aTexcoords[1].y = 1024.0f*32.0f/128.0f;
 		Quad.m_aTexcoords[2].y = Quad.m_aTexcoords[3].y = 1024.0f*64.0f/128.0f;
+		if(pTeeInfo && pTeeInfo->m_UseCustomColor)
+		{
+			SetQuadColor(&Quad, pTeeInfo->m_ColorFeet);
+		}
 		aQuads.add(Quad);
 		
 		//Eyes
@@ -773,7 +796,16 @@ void CMapConverter::Finalize()
 		char SkinPath[96];
 		str_format(SkinPath, sizeof(SkinPath), "../skins/%s", ClassTeeInfo.SkinName());
 
-		int ImageID = AddExternalImage(SkinPath, 256, 128);
+		int ImageID = 0;
+		if(ClassTeeInfo.m_UseCustomColor)
+		{
+			bool GrayScale = true;
+			ImageID = AddEmbeddedImage(SkinPath, 256, 128, GrayScale);
+		}
+		else
+		{
+			ImageID = AddExternalImage(SkinPath, 256, 128);
+		}
 		ClassImageID[ClassIndex] = ImageID;
 	}
 
@@ -992,7 +1024,10 @@ void CMapConverter::Finalize()
 						{
 							int PlayerClass = CInfClassGameController::MenuClassToPlayerClass(i);
 							const char *pClassName = CInfClassGameController::GetClassDisplayName(PlayerClass);
-							AddTeeLayer(pClassName, ClassImageID[i], Pos, 64.0f, m_NumEnvs-1);
+							CTeeInfo TeeInfo;
+							CInfClassHuman::SetupSkin(PlayerClass, &TeeInfo);
+							bool Black = false;
+							AddTeeLayer(pClassName, ClassImageID[i], Pos, 64.0f, m_NumEnvs-1, Black, &TeeInfo);
 						}
 					}
 				}
