@@ -2,6 +2,7 @@
 /* If you are missing that file, acquire a complete release at teeworlds.com.				*/
 #include "infcgamecontroller.h"
 
+#include <game/server/infclass/classes/infcplayerclass.h>
 #include <game/server/infclass/entities/flyingpoint.h>
 #include <game/server/infclass/entities/infccharacter.h>
 #include <game/server/infclass/infcplayer.h>
@@ -1091,7 +1092,7 @@ int CInfClassGameController::OnCharacterDeath(class CCharacter *pVictim, class C
 	//Add bonus point for ninja
 	if(pVictim->IsZombie() && pVictim->IsFrozen() && pVictim->m_LastFreezer >= 0 && pVictim->m_LastFreezer)
 	{
-		CPlayer* pFreezer = GameServer()->m_apPlayers[pVictim->m_LastFreezer];
+		CInfClassPlayer *pFreezer = GetPlayer(pVictim->m_LastFreezer);
 		if(pFreezer && pFreezer != pKiller)
 		{
 			if (pFreezer->GetClass() == PLAYERCLASS_NINJA)
@@ -1118,10 +1119,10 @@ int CInfClassGameController::OnCharacterDeath(class CCharacter *pVictim, class C
 	
 	//Find the nearest ghoul
 	{
-		for(CCharacter *p = (CCharacter*) GameWorld()->FindFirst(CGameWorld::ENTTYPE_CHARACTER); p; p = (CCharacter *)p->TypeNext())
+		for(CInfClassCharacter *p = (CInfClassCharacter*) GameWorld()->FindFirst(CGameWorld::ENTTYPE_CHARACTER); p; p = (CInfClassCharacter *)p->TypeNext())
 		{
 			if(p->GetPlayerClass() != PLAYERCLASS_GHOUL || p == pVictim) continue;
-			if(p->GetPlayer() && p->GetPlayer()->GetGhoulPercent() >= 1.0f) continue;
+			if(p->GetPlayer() && p->GetClass()->GetGhoulPercent() >= 1.0f) continue;
 
 			float Len = distance(p->m_Pos, pVictim->m_Pos);
 			
