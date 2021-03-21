@@ -6,32 +6,31 @@
 #include <stdlib.h>
 #include <random>
 
-template <typename T>
-inline T clamp(T val, T min, T max)
+template<typename T>
+constexpr inline T clamp(T val, T min, T max)
 {
-	if(val < min)
-		return min;
-	if(val > max)
-		return max;
-	return val;
+	return val < min ? min : (val > max ? max : val);
 }
 
-inline float sign(float f)
+constexpr inline float sign(float f)
 {
-	return f<0.0f?-1.0f:1.0f;
+	return f < 0.0f ? -1.0f : 1.0f;
 }
 
-inline int round_to_int(float f)
+constexpr inline int round_to_int(float f)
 {
-	if(f > 0)
-		return (int)(f+0.5f);
-	return (int)(f-0.5f);
+	return f > 0 ? (int)(f + 0.5f) : (int)(f - 0.5f);
+}
+
+constexpr inline int round_truncate(float f)
+{
+	return (int)f;
 }
 
 template<typename T, typename TB>
-inline T mix(const T a, const T b, TB amount)
+constexpr inline T mix(const T a, const T b, TB amount)
 {
-	return a + (b-a)*amount;
+	return a + (b - a) * amount;
 }
 
 float random_float();
@@ -90,9 +89,21 @@ constexpr inline T minimum(T a, T b)
 }
 
 template<typename T>
+constexpr inline T minimum(T a, T b, T c)
+{
+	return minimum(minimum(a, b), c);
+}
+
+template<typename T>
 constexpr inline T maximum(T a, T b)
 {
 	return a > b ? a : b;
+}
+
+template<typename T>
+constexpr inline T maximum(T a, T b, T c)
+{
+	return maximum(maximum(a, b), c);
 }
 
 template<typename T>
