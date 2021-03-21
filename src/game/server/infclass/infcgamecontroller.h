@@ -4,7 +4,6 @@
 #define GAME_SERVER_INFCLASS_GAMECONTROLLER_H
 
 #include <engine/console.h>
-#include <game/server/classes.h>
 #include <game/server/gamecontroller.h>
 #include <game/server/gameworld.h>
 
