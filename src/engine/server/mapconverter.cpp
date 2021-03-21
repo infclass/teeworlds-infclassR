@@ -659,27 +659,18 @@ void CMapConverter::Finalize()
 				{
 					int ClassMask = 0;
 					
-					switch(i)
-					{
-						case MENUCLASS_ENGINEER:
-						case MENUCLASS_SOLDIER:
-						case MENUCLASS_SCIENTIST:
-						case MENUCLASS_BIOLOGIST:
-							ClassMask = MASK_DEFENDER;
-							break;
-						case MENUCLASS_LOOPER:
-							ClassMask = MASK_DEFENDER;
-							break;
-						case MENUCLASS_MEDIC:
-							ClassMask = MASK_MEDIC;
-							break;
-						case MENUCLASS_HERO:
-							ClassMask = MASK_HERO;
-							break;
-						default:
-							ClassMask = MASK_SUPPORT;
-					}
-					
+					int PlayerClass = CInfClassGameController::MenuClassToPlayerClass(i);
+					if(CInfClassGameController::IsDefenderClass(PlayerClass))
+						ClassMask = MASK_DEFENDER;
+					else if(CInfClassGameController::IsSupportClass(PlayerClass))
+						ClassMask = MASK_SUPPORT;
+					else if(PlayerClass == PLAYERCLASS_MEDIC)
+						ClassMask = MASK_MEDIC;
+					else if(PlayerClass == PLAYERCLASS_HERO)
+						ClassMask = MASK_HERO;
+					else
+						ClassMask = MASK_DEFENDER; // For some reason the random class is also defender
+
 					//Create Animation for enable/disable simulation
 					{
 						int StartPoint = m_lEnvPoints.size();
