@@ -70,6 +70,8 @@ public:
 	bool ProcessCharacterOnPortal(CPortal *pPortal, CCharacter *pCharacter);
 	bool CanOpenPortals() const;
 
+	void GiveRandomClassSelectionBonus();
+
 protected:
 	void PreCoreTick() override;
 	void UpdateTuningParam();

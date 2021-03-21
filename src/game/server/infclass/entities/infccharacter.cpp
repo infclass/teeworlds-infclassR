@@ -1146,7 +1146,7 @@ void CInfClassCharacter::OpenClassChooser()
 	{
 		m_pPlayer->SetClass(GameController()->ChooseHumanClass(m_pPlayer));
 		if(Server()->IsClassChooserEnabled())
-			IncreaseArmor(10);
+			GiveRandomClassSelectionBonus();
 	}
 	else
 	{
@@ -1230,7 +1230,7 @@ void CInfClassCharacter::HandleMapMenu()
 				GameServer()->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "game", aBuf);
 
 				if(Bonus)
-					IncreaseArmor(10);
+					GiveRandomClassSelectionBonus();
 			}
 		}
 	}
@@ -1656,6 +1656,11 @@ bool CInfClassCharacter::ProcessCharacterOnPortal(CPortal *pPortal, CCharacter *
 bool CInfClassCharacter::CanOpenPortals() const
 {
 	return m_canOpenPortals;
+}
+
+void CInfClassCharacter::GiveRandomClassSelectionBonus()
+{
+	IncreaseArmor(10);
 }
 
 void CInfClassCharacter::PreCoreTick()
