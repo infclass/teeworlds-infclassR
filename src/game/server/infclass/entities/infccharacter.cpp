@@ -1144,7 +1144,7 @@ void CInfClassCharacter::OpenClassChooser()
 
 	if(!Server()->IsClassChooserEnabled() || Server()->GetClientAlwaysRandom(m_pPlayer->GetCID()))
 	{
-		m_pPlayer->SetClass(GameServer()->m_pController->ChooseHumanClass(m_pPlayer));
+		m_pPlayer->SetClass(GameController()->ChooseHumanClass(m_pPlayer));
 		if(Server()->IsClassChooserEnabled())
 			IncreaseArmor(10);
 	}
@@ -1180,70 +1180,70 @@ void CInfClassCharacter::HandleMapMenu()
 					Broadcast = true;
 					break;
 				case CMapConverter::MENUCLASS_ENGINEER:
-					if(GameServer()->m_pController->IsChoosableClass(PLAYERCLASS_ENGINEER))
+					if(GameController()->IsChoosableClass(PLAYERCLASS_ENGINEER))
 					{
 						GameServer()->SendBroadcast_Localization(m_pPlayer->GetCID(), BROADCAST_PRIORITY_INTERFACE, BROADCAST_DURATION_REALTIME, _("Engineer"), NULL);
 						Broadcast = true;
 					}
 					break;
 				case CMapConverter::MENUCLASS_SOLDIER:
-					if(GameServer()->m_pController->IsChoosableClass(PLAYERCLASS_SOLDIER))
+					if(GameController()->IsChoosableClass(PLAYERCLASS_SOLDIER))
 					{
 						GameServer()->SendBroadcast_Localization(m_pPlayer->GetCID(), BROADCAST_PRIORITY_INTERFACE, BROADCAST_DURATION_REALTIME, _("Soldier"), NULL);
 						Broadcast = true;
 					}
 					break;
 				case CMapConverter::MENUCLASS_SCIENTIST:
-					if(GameServer()->m_pController->IsChoosableClass(PLAYERCLASS_SCIENTIST))
+					if(GameController()->IsChoosableClass(PLAYERCLASS_SCIENTIST))
 					{
 						GameServer()->SendBroadcast_Localization(m_pPlayer->GetCID(), BROADCAST_PRIORITY_INTERFACE, BROADCAST_DURATION_REALTIME, _("Scientist"), NULL);
 						Broadcast = true;
 					}
 					break;
 				case CMapConverter::MENUCLASS_BIOLOGIST:
-					if(GameServer()->m_pController->IsChoosableClass(PLAYERCLASS_BIOLOGIST))
+					if(GameController()->IsChoosableClass(PLAYERCLASS_BIOLOGIST))
 					{
 						GameServer()->SendBroadcast_Localization(m_pPlayer->GetCID(), BROADCAST_PRIORITY_INTERFACE, BROADCAST_DURATION_REALTIME, _("Biologist"), NULL);
 						Broadcast = true;
 					}
 					break;
 				case CMapConverter::MENUCLASS_LOOPER:
-					if(GameServer()->m_pController->IsChoosableClass(PLAYERCLASS_LOOPER))
+					if(GameController()->IsChoosableClass(PLAYERCLASS_LOOPER))
 					{
 						GameServer()->SendBroadcast_Localization(m_pPlayer->GetCID(), BROADCAST_PRIORITY_INTERFACE, BROADCAST_DURATION_REALTIME, _("Looper"), NULL);
 						Broadcast = true;
 					}
 					break;
 				case CMapConverter::MENUCLASS_MEDIC:
-					if(GameServer()->m_pController->IsChoosableClass(PLAYERCLASS_MEDIC))
+					if(GameController()->IsChoosableClass(PLAYERCLASS_MEDIC))
 					{
 						GameServer()->SendBroadcast_Localization(m_pPlayer->GetCID(), BROADCAST_PRIORITY_INTERFACE, BROADCAST_DURATION_REALTIME, _("Medic"), NULL);
 						Broadcast = true;
 					}
 					break;
 				case CMapConverter::MENUCLASS_HERO:
-					if(GameServer()->m_pController->IsChoosableClass(PLAYERCLASS_HERO))
+					if(GameController()->IsChoosableClass(PLAYERCLASS_HERO))
 					{
 						GameServer()->SendBroadcast_Localization(m_pPlayer->GetCID(), BROADCAST_PRIORITY_INTERFACE, BROADCAST_DURATION_REALTIME, _("Hero"), NULL);
 						Broadcast = true;
 					}
 					break;
 				case CMapConverter::MENUCLASS_NINJA:
-					if(GameServer()->m_pController->IsChoosableClass(PLAYERCLASS_NINJA))
+					if(GameController()->IsChoosableClass(PLAYERCLASS_NINJA))
 					{
 						GameServer()->SendBroadcast_Localization(m_pPlayer->GetCID(), BROADCAST_PRIORITY_INTERFACE, BROADCAST_DURATION_REALTIME, _("Ninja"), NULL);
 						Broadcast = true;
 					}
 					break;
 				case CMapConverter::MENUCLASS_MERCENARY:
-					if(GameServer()->m_pController->IsChoosableClass(PLAYERCLASS_MERCENARY))
+					if(GameController()->IsChoosableClass(PLAYERCLASS_MERCENARY))
 					{
 						GameServer()->SendBroadcast_Localization(m_pPlayer->GetCID(), BROADCAST_PRIORITY_INTERFACE, BROADCAST_DURATION_REALTIME, _("Mercenary"), NULL);
 						Broadcast = true;
 					}
 					break;
 				case CMapConverter::MENUCLASS_SNIPER:
-					if(GameServer()->m_pController->IsChoosableClass(PLAYERCLASS_SNIPER))
+					if(GameController()->IsChoosableClass(PLAYERCLASS_SNIPER))
 					{
 						GameServer()->SendBroadcast_Localization(m_pPlayer->GetCID(), BROADCAST_PRIORITY_INTERFACE, BROADCAST_DURATION_REALTIME, _("Sniper"), NULL);
 						Broadcast = true;
@@ -1281,7 +1281,7 @@ void CInfClassCharacter::HandleMapMenu()
 					NewClass = PLAYERCLASS_SNIPER;
 					break;
 				case CMapConverter::MENUCLASS_RANDOM:
-					NewClass = GameServer()->m_pController->ChooseHumanClass(m_pPlayer);
+					NewClass = GameController()->ChooseHumanClass(m_pPlayer);
 					Bonus = true;
 					break;
 				case CMapConverter::MENUCLASS_ENGINEER:
@@ -1301,7 +1301,7 @@ void CInfClassCharacter::HandleMapMenu()
 					break;
 			}
 
-			if(NewClass >= 0 && GameServer()->m_pController->IsChoosableClass(NewClass))
+			if(NewClass >= 0 && GameController()->IsChoosableClass(NewClass))
 			{
 				SetAntiFire();
 				m_pPlayer->m_MapMenuItem = 0;

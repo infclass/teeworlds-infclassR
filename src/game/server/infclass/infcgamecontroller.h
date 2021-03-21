@@ -33,10 +33,10 @@ public:
 	void EndRound() override;
 	bool PreSpawn(CPlayer* pPlayer, vec2 *pPos) override;
 	bool PickupAllowed(int Index) ;
-	int ChooseHumanClass(const CPlayer *pPlayer) const override;
+	int ChooseHumanClass(const CPlayer *pPlayer) const;
 	int ChooseInfectedClass(const CPlayer *pPlayer) const override;
 	bool IsEnabledClass(int PlayerClass);
-	bool IsChoosableClass(int PlayerClass) override;
+	bool IsChoosableClass(int PlayerClass);
 	bool CanVote() override;
 	void OnClientDrop(int ClientID, int Type) override;
 	void OnPlayerInfected(CPlayer* pPlayer, CPlayer* pInfectiousPlayer) override;
