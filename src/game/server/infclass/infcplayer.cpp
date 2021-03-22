@@ -111,3 +111,102 @@ void CInfClassPlayer::onClassChanged()
 
 	GetCharacterClass()->OnPlayerClassChanged();
 }
+
+const char *CInfClassPlayer::GetClan(int SnappingClient) const
+{
+	if(GetTeam() == TEAM_SPECTATORS)
+	{
+		return Server()->ClientClan(m_ClientID);
+	}
+
+	int SnapScoreMode = PLAYERSCOREMODE_SCORE;
+	if(GameServer()->GetPlayer(SnappingClient))
+	{
+		SnapScoreMode = GameServer()->m_apPlayers[SnappingClient]->GetScoreMode();
+	}
+	
+	static char aBuf[32];
+
+	if(SnapScoreMode == PLAYERSCOREMODE_TIME)
+	{
+		float RoundDuration = static_cast<float>(m_HumanTime/((float)Server()->TickSpeed()))/60.0f;
+		int Minutes = static_cast<int>(RoundDuration);
+		int Seconds = static_cast<int>((RoundDuration - Minutes)*60.0f);
+		
+		str_format(aBuf, sizeof(aBuf), "%i:%s%i min", Minutes,((Seconds < 10) ? "0" : ""), Seconds);
+	}
+	else
+	{
+		switch(GetClass())
+		{
+			case PLAYERCLASS_ENGINEER:
+				str_format(aBuf, sizeof(aBuf), "%sEngineer", Server()->IsClientLogged(GetCID()) ? "@" : " ");
+				break;
+			case PLAYERCLASS_SOLDIER:
+				str_format(aBuf, sizeof(aBuf), "%sSoldier", Server()->IsClientLogged(GetCID()) ? "@" : " ");
+				break;
+			case PLAYERCLASS_MERCENARY:
+				str_format(aBuf, sizeof(aBuf), "%sMercenary", Server()->IsClientLogged(GetCID()) ? "@" : " ");
+				break;
+			case PLAYERCLASS_SNIPER:
+				str_format(aBuf, sizeof(aBuf), "%sSniper", Server()->IsClientLogged(GetCID()) ? "@" : " ");
+				break;
+			case PLAYERCLASS_SCIENTIST:
+				str_format(aBuf, sizeof(aBuf), "%sScientist", Server()->IsClientLogged(GetCID()) ? "@" : " ");
+				break;
+			case PLAYERCLASS_BIOLOGIST:
+				str_format(aBuf, sizeof(aBuf), "%sBiologist", Server()->IsClientLogged(GetCID()) ? "@" : " ");
+				break;
+			case PLAYERCLASS_LOOPER:
+				str_format(aBuf, sizeof(aBuf), "%sLooper", Server()->IsClientLogged(GetCID()) ? "@" : " ");
+				break;
+			case PLAYERCLASS_MEDIC:
+				str_format(aBuf, sizeof(aBuf), "%sMedic", Server()->IsClientLogged(GetCID()) ? "@" : " ");
+				break;
+			case PLAYERCLASS_HERO:
+				str_format(aBuf, sizeof(aBuf), "%sHero", Server()->IsClientLogged(GetCID()) ? "@" : " ");
+				break;
+			case PLAYERCLASS_NINJA:
+				str_format(aBuf, sizeof(aBuf), "%sNinja", Server()->IsClientLogged(GetCID()) ? "@" : " ");
+				break;
+			case PLAYERCLASS_SMOKER:
+				str_format(aBuf, sizeof(aBuf), "%sSmoker", Server()->IsClientLogged(GetCID()) ? "@" : " ");
+				break;
+			case PLAYERCLASS_BOOMER:
+				str_format(aBuf, sizeof(aBuf), "%sBoomer", Server()->IsClientLogged(GetCID()) ? "@" : " ");
+				break;
+			case PLAYERCLASS_HUNTER:
+				str_format(aBuf, sizeof(aBuf), "%sHunter", Server()->IsClientLogged(GetCID()) ? "@" : " ");
+				break;
+			case PLAYERCLASS_BAT:
+				str_format(aBuf, sizeof(aBuf), "%sBat", Server()->IsClientLogged(GetCID()) ? "@" : " ");
+				break;
+			case PLAYERCLASS_GHOST:
+				str_format(aBuf, sizeof(aBuf), "%sGhost", Server()->IsClientLogged(GetCID()) ? "@" : " ");
+				break;
+			case PLAYERCLASS_SPIDER:
+				str_format(aBuf, sizeof(aBuf), "%sSpider", Server()->IsClientLogged(GetCID()) ? "@" : " ");
+				break;
+			case PLAYERCLASS_GHOUL:
+				str_format(aBuf, sizeof(aBuf), "%sGhoul", Server()->IsClientLogged(GetCID()) ? "@" : " ");
+				break;
+			case PLAYERCLASS_SLUG:
+				str_format(aBuf, sizeof(aBuf), "%sSlug", Server()->IsClientLogged(GetCID()) ? "@" : " ");
+				break;
+			case PLAYERCLASS_VOODOO:
+				str_format(aBuf, sizeof(aBuf), "%sVoodoo", Server()->IsClientLogged(GetCID()) ? "@" : " ");
+				break;
+			case PLAYERCLASS_UNDEAD:
+				str_format(aBuf, sizeof(aBuf), "%sUndead", Server()->IsClientLogged(GetCID()) ? "@" : " ");
+				break;
+			case PLAYERCLASS_WITCH:
+				str_format(aBuf, sizeof(aBuf), "%sWitch", Server()->IsClientLogged(GetCID()) ? "@" : " ");
+				break;
+			default:
+				str_format(aBuf, sizeof(aBuf), "%s?????", Server()->IsClientLogged(GetCID()) ? "@" : " ");
+		}
+	}
+
+	// This is not thread-safe but we don't have threads.
+	return aBuf;
+}

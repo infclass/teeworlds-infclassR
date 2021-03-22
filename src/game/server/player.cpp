@@ -216,98 +216,18 @@ void CPlayer::Snap(int SnappingClient)
 /* INFECTION MODIFICATION STRAT ***************************************/
 	int PlayerInfoScore = 0;
 	
+	StrToInts(&pClientInfo->m_Clan0, 3, GetClan(SnappingClient));
 	if(GetTeam() == TEAM_SPECTATORS)
 	{
-		StrToInts(&pClientInfo->m_Clan0, 3, Server()->ClientClan(m_ClientID));
 	}
 	else
 	{
 		if(SnapScoreMode == PLAYERSCOREMODE_TIME)
 		{
-			float RoundDuration = static_cast<float>(m_HumanTime/((float)Server()->TickSpeed()))/60.0f;
-			int Minutes = static_cast<int>(RoundDuration);
-			int Seconds = static_cast<int>((RoundDuration - Minutes)*60.0f);
-			
-			char aBuf[512];
-			str_format(aBuf, sizeof(aBuf), "%i:%s%i min", Minutes,((Seconds < 10) ? "0" : ""), Seconds);
-			StrToInts(&pClientInfo->m_Clan0, 3, aBuf);
-			
 			PlayerInfoScore = m_HumanTime/Server()->TickSpeed();
 		}
 		else
 		{
-			char aClanName[12];
-			switch(GetClass())
-			{
-				case PLAYERCLASS_ENGINEER:
-					str_format(aClanName, sizeof(aClanName), "%sEngineer", Server()->IsClientLogged(GetCID()) ? "@" : " ");
-					break;
-				case PLAYERCLASS_SOLDIER:
-					str_format(aClanName, sizeof(aClanName), "%sSoldier", Server()->IsClientLogged(GetCID()) ? "@" : " ");
-					break;
-				case PLAYERCLASS_MERCENARY:
-					str_format(aClanName, sizeof(aClanName), "%sMercenary", Server()->IsClientLogged(GetCID()) ? "@" : " ");
-					break;
-				case PLAYERCLASS_SNIPER:
-					str_format(aClanName, sizeof(aClanName), "%sSniper", Server()->IsClientLogged(GetCID()) ? "@" : " ");
-					break;
-				case PLAYERCLASS_SCIENTIST:
-					str_format(aClanName, sizeof(aClanName), "%sScientist", Server()->IsClientLogged(GetCID()) ? "@" : " ");
-					break;
-				case PLAYERCLASS_BIOLOGIST:
-					str_format(aClanName, sizeof(aClanName), "%sBiologist", Server()->IsClientLogged(GetCID()) ? "@" : " ");
-					break;
-				case PLAYERCLASS_LOOPER:
-					str_format(aClanName, sizeof(aClanName), "%sLooper", Server()->IsClientLogged(GetCID()) ? "@" : " ");
-					break;
-				case PLAYERCLASS_MEDIC:
-					str_format(aClanName, sizeof(aClanName), "%sMedic", Server()->IsClientLogged(GetCID()) ? "@" : " ");
-					break;
-				case PLAYERCLASS_HERO:
-					str_format(aClanName, sizeof(aClanName), "%sHero", Server()->IsClientLogged(GetCID()) ? "@" : " ");
-					break;
-				case PLAYERCLASS_NINJA:
-					str_format(aClanName, sizeof(aClanName), "%sNinja", Server()->IsClientLogged(GetCID()) ? "@" : " ");
-					break;
-				case PLAYERCLASS_SMOKER:
-					str_format(aClanName, sizeof(aClanName), "%sSmoker", Server()->IsClientLogged(GetCID()) ? "@" : " ");
-					break;
-				case PLAYERCLASS_BOOMER:
-					str_format(aClanName, sizeof(aClanName), "%sBoomer", Server()->IsClientLogged(GetCID()) ? "@" : " ");
-					break;
-				case PLAYERCLASS_HUNTER:
-					str_format(aClanName, sizeof(aClanName), "%sHunter", Server()->IsClientLogged(GetCID()) ? "@" : " ");
-					break;
-				case PLAYERCLASS_BAT:
-					str_format(aClanName, sizeof(aClanName), "%sBat", Server()->IsClientLogged(GetCID()) ? "@" : " ");
-					break;
-				case PLAYERCLASS_GHOST:
-					str_format(aClanName, sizeof(aClanName), "%sGhost", Server()->IsClientLogged(GetCID()) ? "@" : " ");
-					break;
-				case PLAYERCLASS_SPIDER:
-					str_format(aClanName, sizeof(aClanName), "%sSpider", Server()->IsClientLogged(GetCID()) ? "@" : " ");
-					break;
-				case PLAYERCLASS_GHOUL:
-					str_format(aClanName, sizeof(aClanName), "%sGhoul", Server()->IsClientLogged(GetCID()) ? "@" : " ");
-					break;
-				case PLAYERCLASS_SLUG:
-					str_format(aClanName, sizeof(aClanName), "%sSlug", Server()->IsClientLogged(GetCID()) ? "@" : " ");
-					break;
-				case PLAYERCLASS_VOODOO:
-					str_format(aClanName, sizeof(aClanName), "%sVoodoo", Server()->IsClientLogged(GetCID()) ? "@" : " ");
-					break;
-				case PLAYERCLASS_UNDEAD:
-					str_format(aClanName, sizeof(aClanName), "%sUndead", Server()->IsClientLogged(GetCID()) ? "@" : " ");
-					break;
-				case PLAYERCLASS_WITCH:
-					str_format(aClanName, sizeof(aClanName), "%sWitch", Server()->IsClientLogged(GetCID()) ? "@" : " ");
-					break;
-				default:
-					str_format(aClanName, sizeof(aClanName), "%s?????", Server()->IsClientLogged(GetCID()) ? "@" : " ");
-			}
-			
-			StrToInts(&pClientInfo->m_Clan0, 3, aClanName);
-			
 			PlayerInfoScore = Server()->RoundStatistics()->PlayerScore(m_ClientID);
 		}
 	}
@@ -663,6 +583,10 @@ void CPlayer::ResetNumberKills()
 	m_NumberKills = 0;
 }
 
+const char *CPlayer::GetClan(int SnappingClient) const
+{
+	return Server()->ClientClan(m_ClientID);
+}
 
 const char* CPlayer::GetLanguage()
 {

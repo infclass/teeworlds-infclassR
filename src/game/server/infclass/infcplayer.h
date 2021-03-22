@@ -30,6 +30,7 @@ public:
 
 protected:
 	void onClassChanged() override;
+	const char *GetClan(int SnappingClient = -1) const override;
 
 	CInfClassGameController *m_pGameController = nullptr;
 	CInfClassPlayerClass *m_pInfcPlayerClass = nullptr;

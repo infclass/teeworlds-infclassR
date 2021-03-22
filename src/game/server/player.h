@@ -111,6 +111,7 @@ protected:
 	IServer *Server() const;
 
 	virtual void onClassChanged() = 0;
+	virtual const char *GetClan(int SnappingClient = -1) const;
 
 	//
 	bool m_Spawning;
