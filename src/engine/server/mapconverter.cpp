@@ -697,7 +697,7 @@ int CMapConverter::AddExternalImage(const char* pImageName, int Width, int Heigh
 	return m_NumImages-1;
 }
 
-int CMapConverter::AddEmbeddedImage(const char *pImageName, int Width, int Height)
+int CMapConverter::AddEmbeddedImage(const char *pImageName, int Width, int Height, bool GrayScale)
 {
 	CImageInfo img;
 	CImageInfo *pImg = &img;
@@ -707,6 +707,11 @@ int CMapConverter::AddEmbeddedImage(const char *pImageName, int Width, int Heigh
 
 	if (!LoadPNG(pImg, aBuf)) {
 		return 0;
+	}
+
+	if(GrayScale)
+	{
+		MakeGrayScale(pImg);
 	}
 
 	CMapItemImage Item;
