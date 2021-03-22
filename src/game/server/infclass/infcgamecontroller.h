@@ -50,7 +50,7 @@ public:
 	static int GetClassByName(const char *pClassName, bool *pOk = nullptr);
 	static const char *GetClassName(int PlayerClass);
 	static const char *GetClassPluralName(int PlayerClass);
-	static const char *GetClassDisplayName(int PlayerClass);
+	static const char *GetClassDisplayName(int PlayerClass, const char *pDefaultText = nullptr);
 	static const char *GetClassPluralDisplayName(int PlayerClass);
 	static int MenuClassToPlayerClass(int MenuClass);
 

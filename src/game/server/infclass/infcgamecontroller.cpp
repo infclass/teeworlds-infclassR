@@ -336,7 +336,7 @@ const char *CInfClassGameController::GetClassPluralName(int PlayerClass)
 	}
 }
 
-const char *CInfClassGameController::GetClassDisplayName(int PlayerClass)
+const char *CInfClassGameController::GetClassDisplayName(int PlayerClass, const char *pDefaultText)
 {
 	switch (PlayerClass)
 	{
@@ -386,7 +386,7 @@ const char *CInfClassGameController::GetClassDisplayName(int PlayerClass)
 
 		case PLAYERCLASS_NONE:
 		default:
-			return _("Unknown class");
+			return pDefaultText ? pDefaultText : _("Unknown class");
 	}
 }
 
