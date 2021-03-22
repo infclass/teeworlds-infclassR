@@ -25,6 +25,7 @@ public:
 
 protected:
 	void GiveClassAttributes() override;
+	void DestroyChildEntities() override;
 	void SetupSkin(CTeeInfo *output) override;
 	void BroadcastWeaponState() override;
 };

@@ -29,6 +29,7 @@
 #include <game/server/infclass/entities/soldier-bomb.h>
 #include <game/server/infclass/entities/superweapon-indicator.h>
 #include <game/server/infclass/entities/turret.h>
+#include <game/server/infclass/entities/voltage-box.h>
 #include <game/server/infclass/entities/white-hole.h>
 #include <game/server/infclass/infcgamecontroller.h>
 #include <game/server/infclass/infcplayer.h>
@@ -842,6 +843,10 @@ void CInfClassCharacter::OnHammerFired(WeaponFireContext *pFireContext)
 				GameServer()->CreateSound(GetPos(), SOUND_LASER_FIRE);
 			}
 		}
+	}
+	else if(GetPlayerClass() == PLAYERCLASS_ELECTRICIAN)
+	{
+		FireElectricianBox();
 	}
 	else if(GetPlayerClass() == PLAYERCLASS_LOOPER)
 	{
@@ -2134,6 +2139,19 @@ void CInfClassCharacter::CheckSuperWeaponAccess()
 	}
 }
 
+void CInfClassCharacter::FireElectricianBox()
+{
+	CVoltageBox *pOwnedBox = GetVoltageBox();
+	if(pOwnedBox)
+	{
+		pOwnedBox->ScheduleDischarge();
+	}
+	else
+	{
+		new CVoltageBox(GameServer(), GetPos(), m_pPlayer->GetCID());
+	}
+}
+
 void CInfClassCharacter::FireSoldierBomb()
 {
 	vec2 ProjStartPos = GetPos()+GetDirection()*GetProximityRadius()*0.75f;
@@ -2254,6 +2272,19 @@ CPortal *CInfClassCharacter::FindPortalInTarget()
 	if(m_pPortalOut && (distance(m_pPortalOut->GetPos(), TargetPos) < m_ProximityRadius + m_pPortalOut->GetRadius() + displacementExtraDistance))
 	{
 		return m_pPortalOut;
+	}
+
+	return nullptr;
+}
+
+CVoltageBox *CInfClassCharacter::GetVoltageBox()
+{
+	for(CVoltageBox *pBox = (CVoltageBox*) GameWorld()->FindFirst(CGameWorld::ENTTYPE_VOLTAGE_BOX); pBox; pBox = (CVoltageBox*) pBox->TypeNext())
+	{
+		if((pBox->GetOwner() == GetCID()) && !pBox->IsMarkedForDestroy())
+		{
+			return pBox;
+		}
 	}
 
 	return nullptr;

@@ -10,6 +10,7 @@
 #include <game/server/infclass/entities/merc-bomb.h>
 #include <game/server/infclass/entities/scientist-mine.h>
 #include <game/server/infclass/entities/soldier-bomb.h>
+#include <game/server/infclass/entities/voltage-box.h>
 #include <game/server/infclass/entities/white-hole.h>
 #include <game/server/infclass/infcgamecontroller.h>
 #include <game/server/infclass/infcplayer.h>
@@ -211,6 +212,18 @@ void CInfClassHuman::GiveClassAttributes()
 			m_pCharacter->GiveWeapon(WEAPON_HAMMER, -1);
 			m_pCharacter->SetActiveWeapon(WEAPON_HAMMER);
 			break;
+	}
+}
+
+void CInfClassHuman::DestroyChildEntities()
+{
+	if(GetPlayerClass() == PLAYERCLASS_ELECTRICIAN)
+	{
+		CVoltageBox *pBox = m_pCharacter->GetVoltageBox();
+		if(pBox)
+		{
+			pBox->Reset();
+		}
 	}
 }
 

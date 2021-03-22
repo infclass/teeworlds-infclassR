@@ -6,6 +6,7 @@
 class CGameContext;
 class CInfClassGameController;
 class CInfClassPlayerClass;
+class CVoltageBox;
 class CWhiteHole;
 
 enum
@@ -129,9 +130,11 @@ public:
 	float WebHookLength() const;
 
 	void CheckSuperWeaponAccess();
+	void FireElectricianBox();
 	void FireSoldierBomb();
 	void PlacePortal(WeaponFireContext *pFireContext);
 	CPortal *FindPortalInTarget();
+	CVoltageBox *GetVoltageBox();
 	void OnPortalDestroy(CPortal *pPortal);
 	bool ProcessCharacterOnPortal(CPortal *pPortal, CCharacter *pCharacter);
 	bool CanOpenPortals() const;
