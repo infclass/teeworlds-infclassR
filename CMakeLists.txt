@@ -637,6 +637,8 @@ set_glob(GAME_SERVER GLOB_RECURSE src/game/server
   infclass/entities/superweapon-indicator.h
   infclass/entities/turret.cpp
   infclass/entities/turret.h
+  infclass/entities/voltage-box.cpp
+  infclass/entities/voltage-box.h
   infclass/entities/white-hole.cpp
   infclass/entities/white-hole.h
   infclass/infc_config_variables.h
