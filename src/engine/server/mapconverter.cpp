@@ -82,6 +82,67 @@ int LoadPNG(CImageInfo *pImg, const char *pFilename)
 	return 1;
 }
 
+void MakeGrayScale(CImageInfo *pImg)
+{
+	static const int BodySize = 96;
+	// From CSkins::LoadSkin()
+	// game/client/components/skins.cpp:216
+	unsigned char *d = (unsigned char *)pImg->m_pData;
+	int Pitch = pImg->m_Width * 4;
+
+	// create colorless version
+	int Step = pImg->m_Format == CImageInfo::FORMAT_RGBA ? 4 : 3;
+
+	// make the texture gray scale
+	for(int i = 0; i < pImg->m_Width * pImg->m_Height; i++)
+	{
+		int v = (d[i * Step] + d[i * Step + 1] + d[i * Step + 2]) / 3;
+		d[i * Step] = v;
+		d[i * Step + 1] = v;
+		d[i * Step + 2] = v;
+	}
+
+	int Freq[256] = {0};
+	int OrgWeight = 0;
+	int NewWeight = 192;
+
+	// find most common frequence
+	for(int y = 0; y < BodySize; y++)
+		for(int x = 0; x < BodySize; x++)
+		{
+			if(d[y * Pitch + x * 4 + 3] > 128)
+				Freq[d[y * Pitch + x * 4]]++;
+		}
+
+	for(int i = 1; i < 256; i++)
+	{
+		if(Freq[OrgWeight] < Freq[i])
+			OrgWeight = i;
+	}
+
+	// reorder
+	int InvOrgWeight = 255 - OrgWeight;
+	int InvNewWeight = 255 - NewWeight;
+	for(int y = 0; y < BodySize; y++)
+	{
+		for(int x = 0; x < BodySize; x++)
+		{
+			int v = d[y * Pitch + x * 4];
+			if(v <= OrgWeight && OrgWeight == 0)
+				v = 0;
+			else if(v <= OrgWeight)
+				v = (int)(((v / (float)OrgWeight) * NewWeight));
+			else if(InvOrgWeight == 0)
+				v = NewWeight;
+			else
+				v = (int)(((v - OrgWeight) / (float)InvOrgWeight) * InvNewWeight + NewWeight);
+			d[y * Pitch + x * 4] = v;
+			d[y * Pitch + x * 4 + 1] = v;
+			d[y * Pitch + x * 4 + 2] = v;
+		}
+	}
+}
+
 CMapConverter::CMapConverter(IStorage *pStorage, IEngineMap *pMap, IConsole* pConsole) :
 	m_pStorage(pStorage),
 	m_pMap(pMap),
