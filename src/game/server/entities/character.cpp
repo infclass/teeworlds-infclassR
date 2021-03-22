@@ -58,12 +58,14 @@ m_pConsole(pConsole)
 		m_BarrierHintIDs[i] = Server()->SnapNewID();
 	}
 	m_AntiFireTime = 0;
+	m_Leaping = false;
 	m_IsFrozen = false;
 	m_IsInSlowMotion = false;
 	m_FrozenTime = -1;
 	m_DartLifeSpan = -1;
 	m_IsInvisible = false;
 	m_InvisibleTick = 0;
+	m_NextDryingTick = 0;
 	m_PositionLockTick = -1;
 	m_PositionLocked = false;
 	m_PositionLockAvailable = false;

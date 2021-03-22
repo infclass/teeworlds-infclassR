@@ -31,6 +31,9 @@ int CInfClassInfected::GetDefaultEmote() const
 
 bool CInfClassInfected::CanDie() const
 {
+	if ((GetPlayerClass() == PLAYERCLASS_JOCKEY) && m_pCharacter->m_Core.m_IsPassenger) {
+		return false;
+	}
 	if ((GetPlayerClass() == PLAYERCLASS_UNDEAD) && m_pCharacter->IsFrozen()) {
 		return false;
 	}
