@@ -339,7 +339,7 @@ if(TARGET_OS AND TARGET_OS STREQUAL "mac")
   find_program(HDIUTIL hdiutil)
 endif()
 
-message(STATUS "******** DDNet ********")
+message(STATUS "******** ${CMAKE_PROJECT_NAME} ********")
 message(STATUS "Target OS: ${TARGET_OS} ${TARGET_BITS}bit")
 message(STATUS "Compiler: ${CMAKE_CXX_COMPILER}")
 message(STATUS "Build type: ${CMAKE_BUILD_TYPE}")
