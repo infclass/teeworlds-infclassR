@@ -70,22 +70,13 @@ else()
 endif()
 
 set(AUTO_DEPENDENCIES_DEFAULT OFF)
-set(AUTOUPDATE_DEFAULT OFF)
 if(TARGET_OS STREQUAL "windows")
   set(AUTO_DEPENDENCIES_DEFAULT ON)
-  set(AUTOUPDATE_DEFAULT ON)
-elseif(TARGET_OS STREQUAL "linux")
-  set(AUTOUPDATE_DEFAULT ON)
 endif()
 
-option(WEBSOCKETS "Enable websockets support" OFF)
 option(MYSQL "Enable mysql support" OFF)
-option(AUTOUPDATE "Enable the autoupdater" ${AUTOUPDATE_DEFAULT})
-option(DOWNLOAD_GTEST "Download and compile GTest" ${AUTO_DEPENDENCIES_DEFAULT})
 option(PREFER_BUNDLED_LIBS "Prefer bundled libraries over system libraries" ${AUTO_DEPENDENCIES_DEFAULT})
 option(DEV "Don't generate stuff necessary for packaging" OFF)
-
-set(OpenGL_GL_PREFERENCE LEGACY)
 
 # Set the default build type to Release
 if(NOT(CMAKE_BUILD_TYPE))
@@ -298,33 +289,13 @@ if(NOT CMAKE_CROSSCOMPILING)
   find_package(PkgConfig)
 endif()
 find_package(ZLIB)
-find_package(Crypto)
-#find_package(Curl)
-find_package(OwnFreetype)
-if(DOWNLOAD_GTEST)
-  find_package(Git)
-endif()
-find_package(GLEW)
-find_package(GTest)
 if(MYSQL)
   find_package(MySQL)
 else()
   set(MYSQL_LIBRARIES)
 endif()
-find_package(Ogg)
-#find_package(Opus)
-#find_package(Opusfile)
-find_package(Pnglite)
 find_package(PythonInterp)
-find_package(SDL2)
 find_package(Threads)
-if(WEBSOCKETS)
-  find_package(Websockets)
-else()
-  set(WEBSOCKETS_LIBRARIES)
-  set(WEBSOCKETS_INCLUDE_DIRS)
-endif()
-
 
 if(TARGET_OS AND TARGET_OS STREQUAL "mac")
   find_program(DMG dmg)
@@ -357,113 +328,31 @@ function(show_dependency_status OUTPUT_NAME NAME)
   endif()
 endfunction()
 
-show_dependency_status("Curl" CURL)
 if(TARGET_OS AND TARGET_OS STREQUAL "mac")
   show_dependency_status("Dmg tools" DMGTOOLS)
 endif()
-show_dependency_status("Freetype" FREETYPE)
-if(DOWNLOAD_GTEST)
-  show_dependency_status("Git" GIT)
-endif()
-show_dependency_status("Glew" GLEW)
-show_dependency_status("GTest" GTEST)
 if(TARGET_OS AND TARGET_OS STREQUAL "mac")
   show_dependency_status("Hdiutil" HDIUTIL)
 endif()
 if(MYSQL)
   show_dependency_status("MySQL" MYSQL)
 endif()
-show_dependency_status("Ogg" OGG)
-show_dependency_status("OpenSSL Crypto" CRYPTO)
-show_dependency_status("Opus" OPUS)
-show_dependency_status("Opusfile" OPUSFILE)
-show_dependency_status("Pnglite" PNGLITE)
 show_dependency_status("PythonInterp" PYTHONINTERP)
-show_dependency_status("SDL2" SDL2)
 show_dependency_status("Zlib" ZLIB)
-if(WEBSOCKETS)
-  show_dependency_status("Websockets" WEBSOCKETS)
-endif()
 
 if(TARGET_OS STREQUAL "windows")
-  set(PLATFORM_CLIENT)
-  set(PLATFORM_CLIENT_LIBS opengl32 glu32 winmm)
   set(PLATFORM_LIBS ws2_32) # Windows sockets
 elseif(TARGET_OS STREQUAL "mac")
   find_library(CARBON Carbon)
   find_library(COCOA Cocoa)
-  find_library(OPENGL OpenGL)
   find_library(SECURITY Security)
-  set(PLATFORM_CLIENT
-    src/osx/notification.h
-    src/osx/notification.mm
-    src/osxlaunch/client.h
-    src/osxlaunch/client.m
-  )
-  set(PLATFORM_CLIENT_LIBS ${COCOA} ${OPENGL})
   set(PLATFORM_LIBS ${CARBON} ${SECURITY})
 else()
-  set(PLATFORM_CLIENT)
-  find_package(OpenGL)
   find_package(X11)
-  set(PLATFORM_CLIENT_LIBS ${OPENGL_gl_LIBRARY} ${OPENGL_glu_LIBRARY} ${X11_X11_LIB})
-  set(PLATFORM_CLIENT_INCLUDE_DIRS ${OPENGL_INCLUDE_DIR} ${X11_X11_INCLUDE_PATH})
   if(TARGET_OS STREQUAL "linux")
     set(PLATFORM_LIBS rt) # clock_gettime for glibc < 2.17
   else()
     set(PLATFORM_LIBS)
-  endif()
-endif()
-
-########################################################################
-# DOWNLOAD GTEST
-########################################################################
-
-if(NOT(GTEST_FOUND) AND DOWNLOAD_GTEST)
-  # Change to the 1.9.0 release tag once that works.
-  set(DDNET_GTEST_VERSION 7b6561c56e353100aca8458d7bc49c4e0119bae8)
-  configure_file(cmake/Download_GTest_CMakeLists.txt.in googletest-download/CMakeLists.txt)
-  execute_process(COMMAND ${CMAKE_COMMAND} -G "${CMAKE_GENERATOR}" .
-    RESULT_VARIABLE result
-    WORKING_DIRECTORY ${PROJECT_BINARY_DIR}/googletest-download
-  )
-  if(result)
-    message(WARNING "CMake step for googletest failed: ${result}")
-    set(DOWNLOAD_GTEST OFF)
-  else()
-    execute_process(COMMAND ${CMAKE_COMMAND} --build .
-      RESULT_VARIABLE result
-      WORKING_DIRECTORY ${PROJECT_BINARY_DIR}/googletest-download
-    )
-    if(result)
-      message(WARNING "Build step for googletest failed: ${result}")
-      set(DOWNLOAD_GTEST OFF)
-    else()
-      # Prevent overriding the parent project's compiler/linker settings on Windows
-      set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
-
-      # Add googletest directly to our build. This defines the gtest target.
-      add_subdirectory(
-        ${PROJECT_BINARY_DIR}/googletest-src
-        ${PROJECT_BINARY_DIR}/googletest-build
-        EXCLUDE_FROM_ALL
-      )
-
-      if(MSVC)
-        foreach(target gtest)
-          # `/w` disables all warnings. This is needed because `gtest` enables
-          # `/WX` (equivalent of `-Werror`) for some reason, breaking builds
-          # when MSVS adds new warnings.
-          target_compile_options(${target} PRIVATE $<$<NOT:${DBG}>:/MT> $<${DBG}:/MTd> /w)
-        endforeach()
-      endif()
-
-      set(GTEST_LIBRARIES gtest)
-      set(GTEST_INCLUDE_DIRS)
-      if(CMAKE_VERSION VERSION_LESS 2.8.11)
-        set(GTEST_INCLUDE_DIRS "${gtest_SOURCE_DIR}/include")
-      endif()
-    endif()
   endif()
 endif()
 
@@ -480,23 +369,13 @@ add_library(md5 EXCLUDE_FROM_ALL OBJECT ${DEP_MD5_SRC})
 
 list(APPEND TARGETS_DEP json md5)
 set(DEP_JSON $<TARGET_OBJECTS:json>)
-set(DEP_MD5)
-if(NOT CRYPTO_FOUND)
-  set(DEP_MD5 $<TARGET_OBJECTS:md5>)
-endif()
+set(DEP_MD5 $<TARGET_OBJECTS:md5>)
 
 ########################################################################
 # COPY DATA AND DLLS
 ########################################################################
 
 file(COPY data DESTINATION .)
-set(COPY_FILES
-  ${CURL_COPY_FILES}
-  ${FREETYPE_COPY_FILES}
-  ${OPUSFILE_COPY_FILES}
-  ${SDL2_COPY_FILES}
-)
-file(COPY ${COPY_FILES} DESTINATION .)
 
 ########################################################################
 # CODE GENERATION
@@ -674,8 +553,6 @@ find_package(ICU REQUIRED COMPONENTS uc i18n)
 
 # Libraries
 set(LIBS
-  ${CRYPTO_LIBRARIES}
-  ${WEBSOCKETS_LIBRARIES}
   ${ZLIB_LIBRARIES}
   ${PLATFORM_LIBS}
   # Add pthreads (on non-Windows) at the end, so that other libraries can depend
@@ -707,11 +584,6 @@ include_directories(SYSTEM
 target_link_libraries(engine-shared PUBLIC
   pnglite::pnglite
 )
-
-#target_include_directories(src PUBLIC
-#    ${CMAKE_CURRENT_SOURCE_DIR}
-#    ${CMAKE_CURRENT_SOURCE_DIR}/Crypto
-#)
 
 ########################################################################
 # SERVER
