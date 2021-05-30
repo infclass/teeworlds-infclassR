@@ -50,6 +50,8 @@ public:
 	void SetLastWeapon(int Weapon);
 	void TakeAllWeapons();
 
+	int GetCID() const;
+
 	CInfClassPlayerClass *GetClass() { return m_pClass; }
 	void SetClass(CInfClassPlayerClass *pClass);
 

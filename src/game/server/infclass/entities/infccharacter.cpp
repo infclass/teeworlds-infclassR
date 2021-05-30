@@ -1392,6 +1392,16 @@ void CInfClassCharacter::TakeAllWeapons()
 	}
 }
 
+int CInfClassCharacter::GetCID() const
+{
+	if(m_pPlayer)
+	{
+		return m_pPlayer->GetCID();
+	}
+
+	return -1;
+}
+
 void CInfClassCharacter::SetClass(CInfClassPlayerClass *pClass)
 {
 	m_pClass = pClass;
