@@ -1244,16 +1244,9 @@ void CInfClassCharacter::Die(int Killer, int Weapon)
 		return;
 	}
 
-	// Start counting down, delay killer message for later
-	if(GetPlayerClass() == PLAYERCLASS_VOODOO && !m_VoodooAboutToDie)
-	{
-		m_VoodooAboutToDie = true;
-		m_VoodooKiller = Killer;
-		m_VoodooWeapon = Weapon;
-		GetClass()->UpdateSkin();
-		return;
-	// If about to die, yet killed again, dont kill him either
-	} else if(GetPlayerClass() == PLAYERCLASS_VOODOO && m_VoodooAboutToDie && m_VoodooTimeAlive > 0)
+	bool RefusedToDie = false;
+	GetClass()->PrepareToDie(Killer, Weapon, &RefusedToDie);
+	if (RefusedToDie)
 	{
 		return;
 	}
@@ -1424,14 +1417,7 @@ CGameContext *CInfClassCharacter::GameContext() const
 
 bool CInfClassCharacter::CanDie() const
 {
-	if ((GetPlayerClass() == PLAYERCLASS_UNDEAD) && IsFrozen()) {
-		return false;
-	}
-	if ((GetPlayerClass() == PLAYERCLASS_VOODOO) && m_VoodooAboutToDie) {
-		return false;
-	}
-
-	return true;
+	return m_pClass && m_pClass->CanDie();
 }
 
 void CInfClassCharacter::CheckSuperWeaponAccess()

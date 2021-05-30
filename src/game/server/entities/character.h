@@ -209,10 +209,6 @@ protected:
 	
 	vec2 m_SpawnPosition;
 
-	int m_VoodooTimeAlive;
-	int m_VoodooKiller; // Save killer + weapon for delayed kill message
-	int m_VoodooWeapon;
-
 	CHeroFlag* m_pHeroFlag;
 	bool m_canOpenPortals = false;
 	CPortal *m_pPortalIn = nullptr;
@@ -237,7 +233,6 @@ public:
 	int m_NinjaStrengthBuff;
 	int m_NinjaAmmoBuff;
 	int m_RefreshTime;
-	bool m_VoodooAboutToDie;
 	//Mercenary
 	bool m_BombHit;
 	vec2 m_AtMercBomb;

@@ -123,6 +123,11 @@ bool CInfClassPlayerClass::IsZombie() const
 	return !IsHuman();
 }
 
+bool CInfClassPlayerClass::CanDie() const
+{
+	return true;
+}
+
 float CInfClassPlayerClass::GetGhoulPercent() const
 {
 	return 0;
@@ -144,6 +149,10 @@ void CInfClassPlayerClass::OnPlayerClassChanged()
 	{
 		GiveClassAttributes();
 	}
+}
+
+void CInfClassPlayerClass::PrepareToDie(int Killer, int Weapon, bool *pRefusedToDie)
+{
 }
 
 void CInfClassPlayerClass::Poison(int Count, int From)

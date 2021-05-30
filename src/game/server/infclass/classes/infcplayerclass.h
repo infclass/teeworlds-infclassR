@@ -27,6 +27,7 @@ public:
 	virtual bool IsHuman() const = 0;
 	bool IsZombie() const;
 
+	virtual bool CanDie() const;
 	virtual float GetGhoulPercent() const;
 
 	// Temp stuff
@@ -34,6 +35,7 @@ public:
 	int PlayerClass() const;
 	void OnPlayerClassChanged();
 
+	virtual void PrepareToDie(int Killer, int Weapon, bool *pRefusedToDie);
 	void Poison(int Count, int From);
 
 	// Events

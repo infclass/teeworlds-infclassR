@@ -80,8 +80,6 @@ m_pConsole(pConsole)
 	m_HasIndicator = false;
 	m_TurretCount = 0;
 	m_HasStunGrenade = false;
-	m_VoodooTimeAlive = Server()->TickSpeed()*g_Config.m_InfVoodooAliveTime;
-	m_VoodooAboutToDie = false;
 	m_BroadcastWhiteHoleReady = -100;
 	m_pHeroFlag = nullptr;
 	m_ResetKillsTime = 0;
@@ -185,10 +183,7 @@ bool CCharacter::Spawn(CPlayer *pPlayer, vec2 Pos)
 	m_PositionLockTick = -Server()->TickSpeed()*10;
 	m_PositionLocked = false;
 	m_PositionLockAvailable = false;
-  
-	m_VoodooAboutToDie = false;
-	m_VoodooTimeAlive = Server()->TickSpeed()*g_Config.m_InfVoodooAliveTime;
-  
+
 	ClassSpawnAttributes();
 	DestroyChildEntities();
 	if(GetPlayerClass() == PLAYERCLASS_NONE)
@@ -748,23 +743,6 @@ void CCharacter::Tick()
 	//~ }
 	//~ else
 		//~ m_InWater = 0;
-
-	if(GetPlayerClass() == PLAYERCLASS_VOODOO && m_VoodooAboutToDie)
-	{
-        // Delayed Death
-		if (m_VoodooTimeAlive > 0)
-			m_VoodooTimeAlive-=1000;
-		else
-			Die(m_VoodooKiller, m_VoodooWeapon);
-
-		// Display time left to live
-		int Time = m_VoodooTimeAlive/Server()->TickSpeed();
-		GameServer()->SendBroadcast_Localization(GetPlayer()->GetCID(), BROADCAST_PRIORITY_WEAPONSTATE, BROADCAST_DURATION_REALTIME,
-			_("Staying alive for: {int:RemainingTime}"),
-			"RemainingTime", &Time,
-			NULL
-		);
-	}
 
 	if(GetPlayerClass() == PLAYERCLASS_SNIPER && m_PositionLocked)
 	{

@@ -13,6 +13,40 @@ CInfClassInfected::CInfClassInfected(CInfClassPlayer *pPlayer)
 {
 }
 
+bool CInfClassInfected::CanDie() const
+{
+	if ((PlayerClass() == PLAYERCLASS_UNDEAD) && m_pCharacter->IsFrozen()) {
+		return false;
+	}
+	if ((PlayerClass() == PLAYERCLASS_VOODOO) && m_VoodooAboutToDie) {
+		return false;
+	}
+
+	return true;
+}
+
+void CInfClassInfected::OnCharacterTick()
+{
+	CInfClassPlayerClass::OnCharacterTick();
+
+	if(PlayerClass() == PLAYERCLASS_VOODOO && m_VoodooAboutToDie)
+	{
+		// Delayed Death
+		if (m_VoodooTimeAlive > 0)
+			m_VoodooTimeAlive-=1000;
+		else
+			m_pCharacter->Die(m_VoodooKiller, m_VoodooWeapon);
+
+		// Display time left to live
+		int Time = m_VoodooTimeAlive/Server()->TickSpeed();
+		GameServer()->SendBroadcast_Localization(GetPlayer()->GetCID(), BROADCAST_PRIORITY_WEAPONSTATE, BROADCAST_DURATION_REALTIME,
+			_("Staying alive for: {int:RemainingTime}"),
+			"RemainingTime", &Time,
+			NULL
+		);
+	}
+}
+
 void CInfClassInfected::OnCharacterSpawned()
 {
 	CInfClassPlayerClass::OnCharacterSpawned();
@@ -37,6 +71,9 @@ void CInfClassInfected::GiveClassAttributes()
 	{
 		m_pCharacter->GiveWeapon(WEAPON_LASER, -1);
 	}
+
+	m_VoodooAboutToDie = false;
+	m_VoodooTimeAlive = Server()->TickSpeed()*Config()->m_InfVoodooAliveTime;
 }
 
 void CInfClassInfected::SetupSkin(CTeeInfo *output)
@@ -97,7 +134,7 @@ void CInfClassInfected::SetupSkin(CTeeInfo *output)
 		case PLAYERCLASS_VOODOO:
 			output->SetSkinName("bluestripe");
 			output->m_UseCustomColor = 1;
-			if(m_pCharacter && !m_pCharacter->m_VoodooAboutToDie)
+			if(!m_VoodooAboutToDie)
 			{
 				output->m_ColorBody = 3866368;
 			}
@@ -160,4 +197,26 @@ void CInfClassInfected::IncreaseGhoulLevel(int Diff)
 int CInfClassInfected::GetGhoulLevel() const
 {
 	return GetPlayer()->GetGhoulLevel();
+}
+
+void CInfClassInfected::PrepareToDie(int Killer, int Weapon, bool *pRefusedToDie)
+{
+	// Start counting down, delay killer message for later
+	if(PlayerClass() == PLAYERCLASS_VOODOO)
+	{
+		if(!m_VoodooAboutToDie)
+		{
+			m_VoodooAboutToDie = true;
+			m_VoodooKiller = Killer;
+			m_VoodooWeapon = Weapon;
+			UpdateSkin();
+
+			*pRefusedToDie = true;
+			// If about to die, yet killed again, dont kill him either
+		}
+		else if(m_VoodooAboutToDie && m_VoodooTimeAlive > 0)
+		{
+			*pRefusedToDie = true;
+		}
+	}
 }
