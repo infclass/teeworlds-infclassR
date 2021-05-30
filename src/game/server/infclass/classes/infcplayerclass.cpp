@@ -230,6 +230,11 @@ void CInfClassPlayerClass::OnCharacterSpawned(const SpawnContext &Context)
 
 void CInfClassPlayerClass::OnCharacterDeath(int Weapon)
 {
+	if(m_pCharacter->m_Core.m_Passenger)
+	{
+		m_pCharacter->m_Core.SetPassenger(nullptr);
+	}
+
 	DestroyChildEntities();
 }
 

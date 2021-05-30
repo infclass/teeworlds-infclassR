@@ -1727,11 +1727,6 @@ int CInfClassGameController::OnCharacterDeath(class CCharacter *pAbstractVictim,
 	}
 	pVictim->GetPlayer()->StartInfection(ForceInfection, pKiller);
 
-	if(pVictim->m_Core.m_Passenger)
-	{
-		pVictim->m_Core.SetPassenger(nullptr);
-	}
-
 	return 0;
 }
 
