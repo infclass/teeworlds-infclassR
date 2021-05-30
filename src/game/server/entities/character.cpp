@@ -730,14 +730,6 @@ void CCharacter::Tick()
 	//~ else
 		//~ m_InWater = 0;
 
-	if(GetPlayerClass() == PLAYERCLASS_SNIPER && m_PositionLocked)
-	{
-		if(m_Input.m_Jump && !m_PrevInput.m_Jump)
-		{
-			m_PositionLocked = false;
-		}
-	}
-	
 	if(IsHuman() && IsAlive() && GameServer()->m_pController->IsInfectionStarted())
 	{
 		int Index = GameServer()->Collision()->GetZoneValueAt(GameServer()->m_ZoneHandle_icBonus, m_Pos.x, m_Pos.y);

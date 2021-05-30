@@ -14,6 +14,17 @@ CInfClassHuman::CInfClassHuman(CInfClassPlayer *pPlayer)
 {
 }
 
+void CInfClassHuman::OnCharacterPreCoreTick()
+{
+	if(PlayerClass() == PLAYERCLASS_SNIPER && m_pCharacter->m_PositionLocked)
+	{
+		if(m_pCharacter->m_Input.m_Jump && !m_pCharacter->m_PrevInput.m_Jump)
+		{
+			m_pCharacter->m_PositionLocked = false;
+		}
+	}
+}
+
 void CInfClassHuman::GiveClassAttributes()
 {
 	CInfClassPlayerClass::GiveClassAttributes();
