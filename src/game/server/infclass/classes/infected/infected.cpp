@@ -67,7 +67,7 @@ void CInfClassInfected::OnCharacterSpawned()
 {
 	CInfClassPlayerClass::OnCharacterSpawned();
 
-	m_HealTick = 0;
+	m_SlimeHealTick = 0;
 }
 
 void CInfClassInfected::GiveClassAttributes()
@@ -184,9 +184,9 @@ void CInfClassInfected::OnSlimeEffect(int Owner)
 		return;
 
 	m_pCharacter->SetEmote(EMOTE_HAPPY, Server()->Tick());
-	if(Server()->Tick() >= m_HealTick + (Server()->TickSpeed() / Config()->m_InfSlimeHealRate))
+	if(Server()->Tick() >= m_SlimeHealTick + (Server()->TickSpeed() / Config()->m_InfSlimeHealRate))
 	{
-		m_HealTick = Server()->Tick();
+		m_SlimeHealTick = Server()->Tick();
 		m_pCharacter->IncreaseHealth(1);
 	}
 }

@@ -32,7 +32,7 @@ protected:
 	void GiveClassAttributes() override;
 	void SetupSkin(CTeeInfo *output) override;
 
-	int m_HealTick = 0;
+	int m_SlimeHealTick = 0;
 
 	int m_VoodooTimeAlive = 0;
 	int m_VoodooKiller; // Save killer + weapon for delayed kill message
