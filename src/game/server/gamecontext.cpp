@@ -454,6 +454,27 @@ void CGameContext::CreateSoundGlobal(int Sound, int Target)
 	}
 }
 
+void CGameContext::CallVote(int ClientID, const char *pDesc, const char *pCmd, const char *pReason, const char *pChatmsg)
+{
+	// check if a vote is already running
+	if(m_VoteCloseTime)
+		return;
+
+	int64 Now = Server()->Tick();
+	CPlayer *pPlayer = m_apPlayers[ClientID];
+
+	if(!pPlayer)
+		return;
+
+	SendChat(-1, CGameContext::CHAT_ALL, pChatmsg);
+
+	m_VoteCreator = ClientID;
+	StartVote(pDesc, pCmd, pReason);
+	pPlayer->m_Vote = 1;
+	pPlayer->m_VotePos = m_VotePos = 1;
+	pPlayer->m_LastVoteCall = Now;
+}
+
 void CGameContext::SendChatTarget(int To, const char *pText)
 {
 	CNetMsg_Sv_Chat Msg;
@@ -1660,12 +1681,7 @@ void CGameContext::OnCallVote(void *pRawMsg, int ClientID)
 		// Start a vote
 		if(aCmd[0])
 		{
-			SendChat(-1, CGameContext::CHAT_ALL, aChatmsg);
-			StartVote(aDesc, aCmd, pReason);
-			pPlayer->m_Vote = 1;
-			pPlayer->m_VotePos = m_VotePos = 1;
-			m_VoteCreator = ClientID;
-			pPlayer->m_LastVoteCall = Now;
+			CallVote(ClientID, aDesc, aCmd, pReason, aChatmsg);
 		}
 	}
 }
