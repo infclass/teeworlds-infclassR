@@ -291,6 +291,8 @@ private:
 		SV_MAP = 1,
 		CHANGE_MAP = 2,
 		SKIP_MAP = 3,
+		PLAY_MORE_VOTE_TYPE = 4,
+
 		MAP_VOTE_BITS = SV_MAP | CHANGE_MAP | SKIP_MAP, // Yeah, this is just '3'
 	};
 	
