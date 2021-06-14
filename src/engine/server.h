@@ -280,7 +280,9 @@ public:
 
 	virtual void DemoRecorder_HandleAutoStart() = 0;
 	virtual bool DemoRecorder_IsRecording() = 0;
-	
+
+	virtual void GetClientAddr(int ClientID, NETADDR *pAddr) = 0;
+
 /* INFECTION MODIFICATION START ***************************************/
 	virtual int IsClientInfectedBefore(int ClientID) = 0;
 	virtual void InfecteClient(int ClientID) = 0;
