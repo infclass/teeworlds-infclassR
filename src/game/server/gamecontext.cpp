@@ -1310,7 +1310,7 @@ void CGameContext::OnTick()
 				Server()->SetRconCID(IServer::RCON_CID_SERV);
 				EndVote();
 				SendChat(-1, CGameContext::CHAT_ALL, "Vote passed");
-				if (IsMapVote(m_aVoteCommand) > 0) 
+				if(GetOptionVoteType(m_aVoteCommand) & MAP_VOTE_BITS)
 					Server()->ResetMapVotes();
 
 				if(m_apPlayers[m_VoteCreator])
@@ -1320,7 +1320,7 @@ void CGameContext::OnTick()
 			{
 				EndVote();
 				SendChat(-1, CGameContext::CHAT_ALL, "Vote failed");
-				if (IsMapVote(m_aVoteCommand) > 0) 
+				if(GetOptionVoteType(m_aVoteCommand) & MAP_VOTE_BITS)
 					Server()->ResetMapVotes();
 				
 				//Remove accusation if needed
@@ -1479,7 +1479,7 @@ void CGameContext::OnClientDrop(int ClientID, int Type, const char *pReason)
 	}
 }
 
-int CGameContext::IsMapVote(const char *pVoteCommand)
+CGameContext::OPTION_VOTE_TYPE CGameContext::GetOptionVoteType(const char *pVoteCommand)
 {
 	char command[512] = {0};
 	int i = 0;
@@ -1493,7 +1493,7 @@ int CGameContext::IsMapVote(const char *pVoteCommand)
 	if(str_comp_nocase(command, "sv_map") == 0) return SV_MAP;
 	if(str_comp_nocase(command, "change_map") == 0) return CHANGE_MAP;
 	if(str_comp_nocase(command, "skip_map") == 0) return SKIP_MAP;
-	return 0;
+	return OTHER_OPTION_VOTE_TYPE;
 }
 
 // copies the map name inside pCommand into pMapName
@@ -1576,10 +1576,10 @@ void CGameContext::OnCallVote(void *pRawMsg, int ClientID)
 			{
 				if(str_comp_nocase(pMsg->m_Value, pOption->m_aDescription) == 0) // found out which vote it is
 				{
-					int MapVoteType = IsMapVote(pOption->m_aCommand);
-					if (MapVoteType > 0) // this is a map vote
+					OPTION_VOTE_TYPE OptionVoteType = GetOptionVoteType(pOption->m_aCommand);
+					if (OptionVoteType & MAP_VOTE_BITS) // this is a map vote
 					{
-						if (MapVoteType == SV_MAP || MapVoteType == CHANGE_MAP)
+						if (OptionVoteType == SV_MAP || OptionVoteType == CHANGE_MAP)
 						{
 							// check if we are already playing on the map the user wants to vote
 							char MapName[VOTE_CMD_LENGTH] = {0};
@@ -1604,7 +1604,7 @@ void CGameContext::OnCallVote(void *pRawMsg, int ClientID)
 							return;
 						}
 					}
-					if (g_Config.m_InfMinPlayerNumberForMapVote <= 1 || MapVoteType == 0) 
+					if (g_Config.m_InfMinPlayerNumberForMapVote <= 1 || OptionVoteType == OTHER_OPTION_VOTE_TYPE)
 					{
 						// (this is not a map vote) or ("InfMinPlayerNumberForMapVote <= 1" and we keep default behaviour)
 						if(!m_pController->CanVote())

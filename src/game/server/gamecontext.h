@@ -285,17 +285,19 @@ private:
 	void Converse(int ClientID, const char* pStr, int team);
 	void MutePlayer(const char* pStr, int ClientID);
 	
-	void OnCallVote(void *pRawMsg, int ClientID);
-	int IsMapVote(const char *pVoteCommand);
-	void GetMapNameFromCommand(char* pMapName, const char *pCommand);
-
-	enum
+	enum OPTION_VOTE_TYPE
 	{
+		OTHER_OPTION_VOTE_TYPE = 0,
 		SV_MAP = 1,
 		CHANGE_MAP = 2,
-		SKIP_MAP = 3
+		SKIP_MAP = 3,
+		MAP_VOTE_BITS = SV_MAP | CHANGE_MAP | SKIP_MAP, // Yeah, this is just '3'
 	};
 	
+	void OnCallVote(void *pRawMsg, int ClientID);
+	static OPTION_VOTE_TYPE GetOptionVoteType(const char *pVoteCommand);
+	void GetMapNameFromCommand(char* pMapName, const char *pCommand);
+
 public:
 	virtual void OnSetAuthed(int ClientID,int Level);
 	
