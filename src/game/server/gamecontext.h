@@ -246,6 +246,8 @@ public:
 	virtual const char *NetVersion();
 	int GetClientVersion(int ClientID);
 
+	bool RateLimitPlayerVote(int ClientID);
+
 /* INFECTION MODIFICATION START ***************************************/
 public:
 	int m_ChatResponseTargetID;

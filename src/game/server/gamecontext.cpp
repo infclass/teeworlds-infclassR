@@ -1525,12 +1525,9 @@ void CGameContext::OnCallVote(void *pRawMsg, int ClientID)
 	if (!pPlayer)
 		return;
 
-	if(g_Config.m_SvSpamprotection && pPlayer->m_LastVoteTry && pPlayer->m_LastVoteTry+Server()->TickSpeed()*3 > Server()->Tick())
+	if(RateLimitPlayerVote(ClientID))
 		return;
-				
-	int64 Now = Server()->Tick();
-	pPlayer->m_LastVoteTry = Now;
-			
+
 	CNetMsg_Cl_CallVote *pMsg = (CNetMsg_Cl_CallVote *)pRawMsg;
 	const char *pReason = pMsg->m_Reason[0] ? pMsg->m_Reason : "No reason given";
 
@@ -1563,21 +1560,6 @@ void CGameContext::OnCallVote(void *pRawMsg, int ClientID)
 		if(pPlayer->GetTeam() == TEAM_SPECTATORS)
 		{
 			SendChatTarget(ClientID, "Spectators aren't allowed to start a vote.");
-			return;
-		}
-
-		if(m_VoteCloseTime)
-		{
-			SendChatTarget(ClientID, "Wait for current vote to end before calling a new one.");
-			return;
-		}
-
-		int Timeleft = pPlayer->m_LastVoteCall + Server()->TickSpeed()*60 - Now;
-		if(pPlayer->m_LastVoteCall && Timeleft > 0)
-		{
-			char aChatmsg[512] = {0};
-			str_format(aChatmsg, sizeof(aChatmsg), "You must wait %d seconds before making another vote", (Timeleft/Server()->TickSpeed())+1);
-			SendChatTarget(ClientID, aChatmsg);
 			return;
 		}
 
@@ -4496,6 +4478,35 @@ bool CGameContext::IsVersionBanned(int Version)
 int CGameContext::GetClientVersion(int ClientID)
 {
 	return m_apPlayers[ClientID]->m_ClientVersion;
+}
+
+
+bool CGameContext::RateLimitPlayerVote(int ClientID)
+{
+	int64 Now = Server()->Tick();
+	int64 TickSpeed = Server()->TickSpeed();
+	CPlayer *pPlayer = m_apPlayers[ClientID];
+
+	if(g_Config.m_SvSpamprotection && pPlayer->m_LastVoteTry && pPlayer->m_LastVoteTry + TickSpeed * 3 > Now)
+		return true;
+
+	pPlayer->m_LastVoteTry = Now;
+	if(m_VoteCloseTime)
+	{
+		SendChatTarget(ClientID, "Wait for current vote to end before calling a new one.");
+		return true;
+	}
+
+	int TimeLeft = pPlayer->m_LastVoteCall + TickSpeed * g_Config.m_SvVoteDelay - Now;
+	if(pPlayer->m_LastVoteCall && TimeLeft > 0)
+	{
+		char aChatmsg[64];
+		str_format(aChatmsg, sizeof(aChatmsg), "You must wait %d seconds before making another vote.", (int)(TimeLeft / TickSpeed) + 1);
+		SendChatTarget(ClientID, aChatmsg);
+		return true;
+	}
+
+	return false;
 }
 
 void CGameContext::Converse(int ClientID, const char* pStr, int team)
