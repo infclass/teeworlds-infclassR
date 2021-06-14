@@ -1620,9 +1620,15 @@ void CGameContext::OnCallVote(void *pRawMsg, int ClientID)
 						str_format(aCmd, sizeof(aCmd), "%s", pOption->m_aCommand);
 						break;
 					}
-					// this vote is a map vote
-					Server()->AddMapVote(ClientID, pOption->m_aCommand, pReason, pOption->m_aDescription);
-					return;
+
+					if(OptionVoteType & MAP_VOTE_BITS)
+					{
+						// this vote is a map vote
+						Server()->AddMapVote(ClientID, pOption->m_aCommand, pReason, pOption->m_aDescription);
+						return;
+					}
+
+					break;
 				}
 
 				pOption = pOption->m_pNext;
