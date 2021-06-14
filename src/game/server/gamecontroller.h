@@ -72,6 +72,7 @@ public:
 
 	virtual void StartRound();
 	virtual void EndRound();
+	virtual void IncreaseCurrentRoundCounter();
 	void ChangeMap(const char *pToMap);
 	void QueueMap(const char *pToMap);
 	int GetRoundCount();

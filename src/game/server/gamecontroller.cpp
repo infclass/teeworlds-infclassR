@@ -97,6 +97,11 @@ void IGameController::EndRound()
 		GameServer()->EndFunRound();
 }
 
+void IGameController::IncreaseCurrentRoundCounter()
+{
+	m_RoundCount++;
+}
+
 void IGameController::ResetGame()
 {
 	GameServer()->m_World.m_ResetRequested = true;
@@ -462,7 +467,7 @@ void IGameController::Tick()
 			
 			CycleMap();
 			StartRound();
-			m_RoundCount++;
+			IncreaseCurrentRoundCounter();
 		}
 		else
 		{
