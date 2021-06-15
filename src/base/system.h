@@ -28,7 +28,7 @@
 #include <sys/socket.h>
 #endif
 
-#ifdef __cplusplus
+#if defined(__cplusplus)
 extern "C" {
 #endif
 
@@ -2297,7 +2297,7 @@ int secure_rand();
 */
 int secure_rand_below(int below);
 
-#ifdef __cplusplus
+#if defined(__cplusplus)
 }
 #endif
 

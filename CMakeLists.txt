@@ -451,15 +451,15 @@ generate_source("src/game/generated/server_data.h" "server_content_header")
 # Sources
 set(BASE
   src/base/detect.h
-  src/base/hash.c
+  src/base/hash.cpp
   src/base/hash.h
-  src/base/hash_bundled.c
+  src/base/hash_bundled.cpp
   src/base/hash_ctxt.h
-  src/base/hash_libtomcrypt.c
-  src/base/hash_openssl.c
+  src/base/hash_libtomcrypt.cpp
+  src/base/hash_openssl.cpp
   src/base/math.cpp
   src/base/math.h
-  src/base/system.c
+  src/base/system.cpp
   src/base/system.h
   src/base/tl/algorithm.h
   src/base/tl/allocator.h
@@ -470,9 +470,9 @@ set(BASE
   src/base/tl/sorted_array.h
   src/base/tl/string.h
   src/base/tl/threading.h
-  src/base/unicode/confusables.c
+  src/base/unicode/confusables.cpp
   src/base/unicode/confusables_data.h
-  src/base/unicode/tolower.c
+  src/base/unicode/tolower.cpp
   src/base/unicode/tolower_data.h
   src/base/vmath.h
 )
