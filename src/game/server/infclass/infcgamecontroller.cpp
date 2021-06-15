@@ -54,6 +54,15 @@ CInfClassGameController::~CInfClassGameController()
 	if(m_GrowingMap) delete[] m_GrowingMap;
 }
 
+void CInfClassGameController::IncreaseCurrentRoundCounter()
+{
+	IGameController::IncreaseCurrentRoundCounter();
+
+	m_MoreRoundsSuggested = false;
+
+	MaybeSuggestMoreRounds();
+}
+
 void CInfClassGameController::OnClientDrop(int ClientID, int Type)
 {
 	if(Type == CLIENTDROPTYPE_BAN) return;
@@ -609,6 +618,20 @@ CInfClassCharacter *CInfClassGameController::GetCharacter(int ClientID) const
 	return static_cast<CInfClassCharacter*>(GameServer()->GetPlayerChar(ClientID));
 }
 
+void CInfClassGameController::MaybeSuggestMoreRounds()
+{
+	if(m_MoreRoundsSuggested)
+		return;
+
+	if(Config()->m_SvSuggestMoreRounds == 0)
+		return;
+
+	if(m_RoundCount != Config()->m_SvRoundsPerMap-1)
+		return;
+
+	m_SuggestMoreRounds = true;
+}
+
 CGameWorld *CInfClassGameController::GameWorld()
 {
 	return &GameServer()->m_World;
@@ -749,6 +772,10 @@ void CInfClassGameController::Tick()
 		{
 			bool StartInfectionTrigger = (m_RoundStartTick + Server()->TickSpeed()*10 == Server()->Tick());
 			
+			if(StartInfectionTrigger)
+			{
+				MaybeSuggestMoreRounds();
+			}
 			GameServer()->EnableTargetToKill();
 			
 			m_InfectedStarted = true;
@@ -859,6 +886,19 @@ void CInfClassGameController::Tick()
 		GameServer()->DisableTargetToKill();
 		
 		m_RoundStartTick = Server()->Tick();
+	}
+
+	if(m_SuggestMoreRounds && !GameServer()->HasActiveVote())
+	{
+		const char pDescription[] = _("Play more on this map");
+		char aCommandBuffer[256];
+		str_format(aCommandBuffer, sizeof(aCommandBuffer), "adjust sv_rounds_per_map +%d", Config()->m_SvSuggestMoreRounds);
+		const char pReason[] = _("The last round");
+
+		GameServer()->StartVote(pDescription, aCommandBuffer, pReason);
+
+		m_SuggestMoreRounds = false;
+		m_MoreRoundsSuggested = true;
 	}
 }
 

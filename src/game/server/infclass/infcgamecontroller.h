@@ -17,6 +17,8 @@ public:
 	CInfClassGameController(class CGameContext *pGameServer);
 	~CInfClassGameController() override;
 
+	void IncreaseCurrentRoundCounter() override;
+
 	void Tick();
 	void Snap(int SnappingClient);
 	// add more virtual functions here if you wish
@@ -69,6 +71,7 @@ public:
 	CInfClassCharacter *GetCharacter(int ClientID) const;
 
 private:
+	void MaybeSuggestMoreRounds();
 	void SnapMapMenu(int SnappingClient, CNetObj_GameInfo *pGameInfoObj);
 	void RewardTheKiller(class CCharacter *pVictim, class CPlayer *pKiller, int Weapon);
 	bool IsSpawnable(vec2 Pos, int TeleZoneIndex) override;
@@ -86,5 +89,7 @@ private:
 	bool m_InfectedStarted;
 	bool m_RoundStarted = false;
 	bool m_TurretsEnabled = false;
+	bool m_SuggestMoreRounds = false;
+	bool m_MoreRoundsSuggested = false;
 };
 #endif
