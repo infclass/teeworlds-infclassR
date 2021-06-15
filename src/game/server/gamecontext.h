@@ -170,6 +170,8 @@ public:
 	void SendVoteStatus(int ClientID, int Total, int Yes, int No);
 	void AbortVoteKickOnDisconnect(int ClientID);
 
+	bool HasActiveVote() const;
+
 	int m_VoteCreator;
 	int64 m_VoteCloseTime;
 	bool m_VoteUpdate;

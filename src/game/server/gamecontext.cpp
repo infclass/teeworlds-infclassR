@@ -912,6 +912,10 @@ void CGameContext::AbortVoteKickOnDisconnect(int ClientID)
 	}
 }
 
+bool CGameContext::HasActiveVote() const
+{
+	return m_VoteCloseTime;
+}
 
 void CGameContext::CheckPureTuning()
 {
