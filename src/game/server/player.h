@@ -121,7 +121,7 @@ protected:
 /* INFECTION MODIFICATION START ***************************************/
 protected:
 	int m_class;
-	int m_classOld;
+	int m_LastHumanClass;
 	int m_ScoreMode;
 	int m_DefaultScoreMode;
 	char m_aLanguage[16];
@@ -150,8 +150,7 @@ public:
 	
 	int GetClass() const;
 	void SetClass(int newClass);
-	int GetOldClass() const;
-	void SetOldClass(int oldClass);
+	int LastHumanClass() const;
 	bool IsZombie() const;
 	bool IsActuallyZombie() const;
 	bool IsHuman() const;

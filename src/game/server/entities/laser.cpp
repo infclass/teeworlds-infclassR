@@ -88,7 +88,7 @@ bool CLaser::HitCharacter(vec2 From, vec2 To)
 		}
 		const int MIN_ZOMBIES = 4;
 		const int DAMAGE_ON_REVIVE = 17;
-		int old_class = pHit->GetPlayer()->GetOldClass();
+		int LastHumanClass = pHit->GetPlayer()->LastHumanClass();
 
 		char aBuf[256];
 		if (medic->GetPlayer()->GetCharacter() && medic->GetPlayer()->GetCharacter()->GetHealthArmorSum() <= DAMAGE_ON_REVIVE) {
@@ -100,7 +100,7 @@ bool CLaser::HitCharacter(vec2 From, vec2 To)
 			GameServer()->SendBroadcast(m_Owner, aBuf, BROADCAST_PRIORITY_GAMEANNOUNCE, BROADCAST_DURATION_GAMEANNOUNCE);
 		}
 		else {
-			zombie->GetPlayer()->SetClass(old_class);
+			zombie->GetPlayer()->SetClass(LastHumanClass);
 			if (zombie->GetPlayer()->GetCharacter()) {
 				zombie->GetPlayer()->GetCharacter()->SetHealthArmor(1, 0);
 				zombie->Unfreeze();

@@ -33,7 +33,7 @@ CPlayer::CPlayer(CGameContext *pGameServer, int ClientID, int Team)
 	m_ScoreMode = PLAYERSCOREMODE_SCORE;
 	m_WinAsHuman = 0;
 	m_class = PLAYERCLASS_NONE;
-	m_classOld = PLAYERCLASS_NONE;
+	m_LastHumanClass = PLAYERCLASS_NONE;
 	m_InfectionTick = -1;
 	m_NumberKills = 0;
 	SetLanguage(Server()->GetClientLanguage(ClientID));
@@ -474,6 +474,11 @@ void CPlayer::SetClass(int newClass)
 			m_LastHumanClasses[sizeof(m_LastHumanClasses)/sizeof(int)-1] = newClass;
 		}
 	}
+
+	if(newClass < END_HUMANCLASS)
+	{
+		m_LastHumanClass = newClass;
+	}
 	
 	m_GhoulLevel = 0;
 	m_GhoulLevelTick = 0;
@@ -493,19 +498,14 @@ void CPlayer::SetClass(int newClass)
 	onClassChanged();
 }
 
-int CPlayer::GetOldClass() const
+int CPlayer::LastHumanClass() const
 {
-	if(m_classOld == PLAYERCLASS_NONE)
+	if(m_LastHumanClass == PLAYERCLASS_NONE)
 	{
 		return PLAYERCLASS_MEDIC; // if old class was not set, it defaults to medic
 	}
 
-	return m_classOld;
-}
-
-void CPlayer::SetOldClass(int oldClass)
-{
-	m_classOld = oldClass;
+	return m_LastHumanClass;
 }
 
 void CPlayer::Infect(CPlayer *pInfectiousPlayer)

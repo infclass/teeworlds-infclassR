@@ -1222,7 +1222,6 @@ void CInfClassCharacter::HandleMapMenu()
 				SetAntiFire();
 				m_pPlayer->m_MapMenuItem = 0;
 				m_pPlayer->SetClass(NewClass);
-				m_pPlayer->SetOldClass(NewClass);
 				
 				char aBuf[256];
 				str_format(aBuf, sizeof(aBuf), "choose_class player='%s' class='%d' random='%d'",
