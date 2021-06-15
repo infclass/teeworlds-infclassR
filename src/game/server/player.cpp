@@ -60,7 +60,7 @@ CPlayer::CPlayer(CGameContext *pGameServer, int ClientID, int Team)
 	m_IsInGame = false;
 	
 	for(unsigned int i=0; i<sizeof(m_LastHumanClasses)/sizeof(int); i++)
-		m_LastHumanClasses[i] = -1;
+		m_LastHumanClasses[i] = PLAYERCLASS_INVALID;
 
 /* INFECTION MODIFICATION END *****************************************/
 }
