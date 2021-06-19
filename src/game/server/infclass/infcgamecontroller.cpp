@@ -1031,10 +1031,11 @@ void CInfClassGameController::SnapMapMenu(int SnappingClient, CNetObj_GameInfo *
 	if(SnappingClient < 0)
 		return;
 
-	if(!GameServer()->m_apPlayers[SnappingClient])
+	CInfClassPlayer *pPlayer = GetPlayer(SnappingClient);
+	if(!pPlayer)
 		return;
 
-	if(GameServer()->m_apPlayers[SnappingClient]->MapMenu() != 1)
+	if(pPlayer->MapMenu() != 1)
 		return;
 
 	//Generate class mask
@@ -1084,7 +1085,7 @@ void CInfClassGameController::SnapMapMenu(int SnappingClient, CNetObj_GameInfo *
 			ClassMask |= CMapConverter::MASK_SUPPORT;
 	}
 
-	int Item = GameServer()->m_apPlayers[SnappingClient]->m_MapMenuItem;
+	int Item = pPlayer->m_MapMenuItem;
 	int Page = CMapConverter::TIMESHIFT_MENUCLASS + 3*((Item+1) + ClassMask*CMapConverter::TIMESHIFT_MENUCLASS_MASK) + 1;
 
 	double PageShift = static_cast<double>(Page * Server()->GetTimeShiftUnit())/1000.0f;
