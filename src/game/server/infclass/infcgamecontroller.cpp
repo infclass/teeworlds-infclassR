@@ -651,6 +651,12 @@ void CInfClassGameController::EndRound()
 	ResetFinalExplosion();
 	IGameController::EndRound();
 
+	MaybeSendStatistics();
+	Server()->OnRoundIsOver();
+
+	if (GameServer()->m_FunRound)
+		GameServer()->EndFunRound();
+
 	m_RoundStarted = false;
 }
 
