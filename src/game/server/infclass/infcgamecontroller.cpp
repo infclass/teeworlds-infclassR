@@ -163,6 +163,11 @@ void CInfClassGameController::SaveRoundRules()
 	m_TurretsEnabled = AreTurretsEnabled();
 }
 
+bool CInfClassGameController::IsZombieClass(int PlayerClass)
+{
+	return (PlayerClass > START_INFECTEDCLASS) && (PlayerClass < END_INFECTEDCLASS);
+}
+
 bool CInfClassGameController::IsDefenderClass(int PlayerClass)
 {
 	switch (PlayerClass)

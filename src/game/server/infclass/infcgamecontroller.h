@@ -48,6 +48,7 @@ public:
 	void ResetFinalExplosion();
 	void SaveRoundRules();
 	
+	static bool IsZombieClass(int PlayerClass);
 	static bool IsDefenderClass(int PlayerClass);
 	static bool IsSupportClass(int PlayerClass);
 	static int GetClassByName(const char *pClassName, bool *pOk = nullptr);
