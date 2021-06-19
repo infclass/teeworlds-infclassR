@@ -319,6 +319,24 @@ CEntity *CGameWorld::IntersectEntity(vec2 Pos0, vec2 Pos1, float Radius, vec2 *N
 	return pClosest;
 }
 
+CEntity *CGameWorld::GetClosestEntity(const vec2 From, CEntity *pEntity1, CEntity *pEntity2)
+{
+	if(pEntity1 && pEntity2)
+	{
+		if(distance(From, pEntity1->GetPos()) < distance(From, pEntity2->GetPos()))
+			return pEntity1;
+
+		return pEntity2;
+	}
+
+	return pEntity1 ? pEntity1 : pEntity2;
+}
+
+CEntity *CGameWorld::GetClosestEntity(const vec2 From, CEntity *pEntity1, CEntity *pEntity2, CEntity *pEntity3)
+{
+	CEntity *pIntermediate = GetClosestEntity(From, pEntity1, pEntity2);
+	return GetClosestEntity(From, pIntermediate, pEntity3);
+}
 
 CCharacter *CGameWorld::ClosestCharacter(vec2 Pos, float Radius, CEntity *pNotThis)
 {

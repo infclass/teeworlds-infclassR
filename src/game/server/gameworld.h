@@ -108,6 +108,8 @@ public:
 	*/
 	class CCharacter *IntersectCharacter(vec2 Pos0, vec2 Pos1, float Radius, vec2 &NewPos, class CEntity *pNotThis = 0);
 	CEntity *IntersectEntity(vec2 Pos0, vec2 Pos1, float Radius, vec2 *NewPos, int EntityType);
+	CEntity *GetClosestEntity(const vec2 From, CEntity *pEntity1, CEntity *pEntity2);
+	CEntity *GetClosestEntity(const vec2 From, CEntity *pEntity1, CEntity *pEntity2, CEntity *pEntity3);
 
 	/*
 		Function: closest_CCharacter
