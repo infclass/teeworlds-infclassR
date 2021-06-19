@@ -75,7 +75,6 @@ public:
 	void HandleWeapons();
 	void HandleNinja();
 	void HandleWaterJump();
-	virtual void HandleMapMenu() { }
 
 	void OnPredictedInput(CNetObj_PlayerInput *pNewInput);
 	void OnDirectInput(CNetObj_PlayerInput *pNewInput);

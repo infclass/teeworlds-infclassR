@@ -42,7 +42,7 @@ public:
 	void OnBiologistLaserFired(WeaponFireContext *pFireContext);
 
 	void OpenClassChooser() override;
-	void HandleMapMenu() override;
+	void HandleMapMenu();
 
 	void Die(int Killer, int Weapon) override;
 
@@ -79,6 +79,8 @@ public:
 
 protected:
 	void PreCoreTick() override;
+	void PostCoreTick() override;
+
 	void UpdateTuningParam();
 
 protected:
