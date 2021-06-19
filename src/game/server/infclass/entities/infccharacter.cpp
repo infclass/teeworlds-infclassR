@@ -19,6 +19,7 @@
 #include <game/server/infclass/entities/looper-wall.h>
 #include <game/server/infclass/entities/medic-grenade.h>
 #include <game/server/infclass/entities/merc-bomb.h>
+#include <game/server/infclass/entities/merc-laser.h>
 #include <game/server/infclass/entities/plasma.h>
 #include <game/server/infclass/entities/portal.h>
 #include <game/server/infclass/entities/scatter-grenade.h>
@@ -986,7 +987,7 @@ void CInfClassCharacter::OnLaserFired(WeaponFireContext *pFireContext)
 		}
 		else
 		{
-			new CInfClassLaser(GameServer(), GetPos(), Direction, GameServer()->Tuning()->m_LaserReach, m_pPlayer->GetCID(), Damage);
+			new CMercenaryLaser(GameServer(), GetPos(), Direction, GameServer()->Tuning()->m_LaserReach, GetCID());
 			GameServer()->CreateSound(GetPos(), SOUND_LASER_FIRE);
 			if(m_BombHit && distance(pCurrentBomb->GetPos(), m_AtMercBomb) <= 80.0f)
 			{

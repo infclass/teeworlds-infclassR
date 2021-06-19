@@ -628,6 +628,8 @@ set_glob(GAME_SERVER GLOB_RECURSE src/game/server
   infclass/entities/medic-grenade.h
   infclass/entities/merc-bomb.cpp
   infclass/entities/merc-bomb.h
+  infclass/entities/merc-laser.cpp
+  infclass/entities/merc-laser.h
   infclass/entities/plasma.cpp
   infclass/entities/plasma.h
   infclass/entities/portal.cpp

@@ -34,8 +34,6 @@ bool CInfClassLaser::HitCharacter(vec2 From, vec2 To)
 	CInfClassCharacter *pHit = static_cast<CInfClassCharacter*>(GameWorld()->IntersectCharacter(m_Pos, To, 0.f, At, pOwnerChar));
 	vec2 PortalHitAt;
 	CEntity *pPortalEntity = GameWorld()->IntersectEntity(m_Pos, To, 0, &PortalHitAt, CGameWorld::ENTTYPE_PORTAL);
-	vec2 MercenaryBombHitAt;
-	CEntity *pMercenaryEntity = GameWorld()->IntersectEntity(m_Pos, To, 80.0f, &MercenaryBombHitAt, CGameWorld::ENTTYPE_MERCENARY_BOMB);
 
 	if (pHit && pPortalEntity)
 	{
@@ -51,24 +49,8 @@ bool CInfClassLaser::HitCharacter(vec2 From, vec2 To)
 		}
 	}
 
-	if (pOwnerChar && pOwnerChar->GetPlayerClass() == PLAYERCLASS_MERCENARY)
-	{
-		m_BouncesStop = true;
-		if(pMercenaryEntity)
-		{
-			At = MercenaryBombHitAt;
-			pOwnerChar->m_AtMercBomb = MercenaryBombHitAt;
-		}
-		else
-		{
-			pOwnerChar->m_AtMercBomb = MercenaryBombHitAt;
-			return false;
-		}
-	}
-	else if (!pHit && !pPortalEntity)
-	{
+	if(!pHit && !pPortalEntity)
 		return false;
-	}
 
 	m_From = From;
 	m_Pos = At;
@@ -110,14 +92,6 @@ bool CInfClassLaser::HitCharacter(vec2 From, vec2 To)
 			}
 		}
 		return true;
-	}
-	else if (pOwnerChar && pOwnerChar->GetPlayerClass() == PLAYERCLASS_MERCENARY)
-	{
-		if(pMercenaryEntity)
-		{
-			pOwnerChar->m_BombHit = true;
-			return true;
-		}
 	}
 
 	if (pPortalEntity)
