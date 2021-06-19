@@ -8,10 +8,9 @@
 #include <game/server/gamecontext.h>
 #include <engine/server/roundstatistics.h>
 
+#include "infc-laser.h"
 #include "infccharacter.h"
 #include "plasma.h"
-
-#include <game/server/entities/laser.h>
 
 CTurret::CTurret(CGameContext *pGameContext, vec2 Pos, int Owner, vec2 Direction, CTurret::Type Type)
 	: CInfCEntity(pGameContext, CGameWorld::ENTTYPE_TURRET, Pos, Owner)
@@ -141,7 +140,7 @@ void CTurret::AttackTargets()
 			switch(m_Type)
 			{
 				case LASER:
-					new CLaser(GameWorld(), m_Pos, Direction, GameServer()->Tuning()->m_LaserReach, m_Owner, Config()->m_InfTurretDmgHealthLaser);
+					new CInfClassLaser(GameWorld(), m_Pos, Direction, GameServer()->Tuning()->m_LaserReach, m_Owner, Config()->m_InfTurretDmgHealthLaser);
 					m_ammunition--;
 					break;
 				case PLASMA:

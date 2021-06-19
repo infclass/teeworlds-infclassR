@@ -592,8 +592,6 @@ set_glob(GAME_SERVER GLOB_RECURSE src/game/server
   alloc.h
   entities/character.cpp
   entities/character.h
-  entities/laser.cpp
-  entities/laser.h
   entities/projectile.cpp
   entities/projectile.h
   infclass/classes/humans/human.cpp
@@ -616,6 +614,8 @@ set_glob(GAME_SERVER GLOB_RECURSE src/game/server
   infclass/entities/growingexplosion.h
   infclass/entities/hero-flag.cpp
   infclass/entities/hero-flag.h
+  infclass/entities/infc-laser.cpp
+  infclass/entities/infc-laser.h
   infclass/entities/infccharacter.cpp
   infclass/entities/infccharacter.h
   infclass/entities/infcentity.cpp

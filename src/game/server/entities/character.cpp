@@ -12,12 +12,12 @@
 
 #include "character.h"
 #include "projectile.h"
-#include "laser.h"
 
 #include <game/server/infclass/entities/biologist-mine.h>
 #include <game/server/infclass/entities/engineer-wall.h>
 #include <game/server/infclass/entities/growingexplosion.h>
 #include <game/server/infclass/entities/hero-flag.h>
+#include <game/server/infclass/entities/infc-laser.h>
 #include <game/server/infclass/entities/looper-wall.h>
 #include <game/server/infclass/entities/medic-grenade.h>
 #include <game/server/infclass/entities/merc-bomb.h>

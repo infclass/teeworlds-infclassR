@@ -5,10 +5,10 @@
 
 #include <game/server/entity.h>
 
-class CLaser : public CEntity
+class CInfClassLaser : public CEntity
 {
 public:
-	CLaser(CGameWorld *pGameWorld, vec2 Pos, vec2 Direction, float StartEnergy, int Owner, int Dmg);
+	CInfClassLaser(CGameWorld *pGameWorld, vec2 Pos, vec2 Direction, float StartEnergy, int Owner, int Dmg);
 
 	virtual void Reset();
 	virtual void Tick();
@@ -16,7 +16,7 @@ public:
 	virtual void Snap(int SnappingClient);
 	
 protected:
-	CLaser(CGameWorld *pGameWorld, vec2 Pos, vec2 Direction, float StartEnergy, int Owner, int Dmg, int ObjType);
+	CInfClassLaser(CGameWorld *pGameWorld, vec2 Pos, vec2 Direction, float StartEnergy, int Owner, int Dmg, int ObjType);
 
 	virtual bool HitCharacter(vec2 From, vec2 To);
 	virtual void DoBounce();

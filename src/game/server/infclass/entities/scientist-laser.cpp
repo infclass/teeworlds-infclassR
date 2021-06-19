@@ -10,7 +10,7 @@
 #include "portal.h"
 
 CScientistLaser::CScientistLaser(CGameContext *pGameContext, vec2 Pos, vec2 Direction, float StartEnergy, int Owner, int Dmg)
-	: CLaser(pGameContext->GameWorld(), Pos, Direction, StartEnergy, Owner, Dmg, CGameWorld::ENTTYPE_LASER)
+	: CInfClassLaser(pGameContext->GameWorld(), Pos, Direction, StartEnergy, Owner, Dmg, CGameWorld::ENTTYPE_LASER)
 {
 	GameWorld()->InsertEntity(this);
 	DoBounce();

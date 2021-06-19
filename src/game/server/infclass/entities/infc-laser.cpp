@@ -1,8 +1,9 @@
 /* (c) Magnus Auvinen. See licence.txt in the root of the distribution for more information. */
 /* If you are missing that file, acquire a complete release at teeworlds.com.                */
+#include "infc-laser.h"
+
 #include <game/generated/protocol.h>
 #include <game/server/gamecontext.h>
-#include "laser.h"
 
 #include <engine/shared/config.h>
 #include <engine/server/roundstatistics.h>
@@ -10,7 +11,7 @@
 #include <game/server/infclass/entities/infccharacter.h>
 #include <game/server/infclass/entities/portal.h>
 
-CLaser::CLaser(CGameWorld *pGameWorld, vec2 Pos, vec2 Direction, float StartEnergy, int Owner, int Dmg, int ObjType)
+CInfClassLaser::CInfClassLaser(CGameWorld *pGameWorld, vec2 Pos, vec2 Direction, float StartEnergy, int Owner, int Dmg, int ObjType)
 : CEntity(pGameWorld, ObjType)
 {
 	m_Dmg = Dmg;
@@ -23,15 +24,15 @@ CLaser::CLaser(CGameWorld *pGameWorld, vec2 Pos, vec2 Direction, float StartEner
 	m_BouncesStop = false;
 }
 
-CLaser::CLaser(CGameWorld *pGameWorld, vec2 Pos, vec2 Direction, float StartEnergy, int Owner, int Dmg)
-: CLaser(pGameWorld, Pos, Direction, StartEnergy, Owner, Dmg, CGameWorld::ENTTYPE_LASER)
+CInfClassLaser::CInfClassLaser(CGameWorld *pGameWorld, vec2 Pos, vec2 Direction, float StartEnergy, int Owner, int Dmg)
+: CInfClassLaser(pGameWorld, Pos, Direction, StartEnergy, Owner, Dmg, CGameWorld::ENTTYPE_LASER)
 {
 	GameWorld()->InsertEntity(this);
 	DoBounce();
 }
 
 
-bool CLaser::HitCharacter(vec2 From, vec2 To)
+bool CInfClassLaser::HitCharacter(vec2 From, vec2 To)
 {
 	vec2 At;
 	CCharacter *pOwnerChar = GameServer()->GetPlayerChar(m_Owner);
@@ -143,7 +144,7 @@ bool CLaser::HitCharacter(vec2 From, vec2 To)
 	return true;
 }
 
-void CLaser::DoBounce()
+void CInfClassLaser::DoBounce()
 {
 	m_EvalTick = Server()->Tick();
 
@@ -190,23 +191,23 @@ void CLaser::DoBounce()
 	}
 }
 
-void CLaser::Reset()
+void CInfClassLaser::Reset()
 {
 	GameServer()->m_World.DestroyEntity(this);
 }
 
-void CLaser::Tick()
+void CInfClassLaser::Tick()
 {
 	if(Server()->Tick() > m_EvalTick+(Server()->TickSpeed()*GameServer()->Tuning()->m_LaserBounceDelay)/1000.0f)
 		DoBounce();
 }
 
-void CLaser::TickPaused()
+void CInfClassLaser::TickPaused()
 {
 	++m_EvalTick;
 }
 
-void CLaser::Snap(int SnappingClient)
+void CInfClassLaser::Snap(int SnappingClient)
 {
 	if(NetworkClipped(SnappingClient))
 		return;
