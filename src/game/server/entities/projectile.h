@@ -34,7 +34,7 @@ private:
 /* INFECTION MODIFICATION START ***************************************/
 	bool m_IsFlashGrenade;
 	vec2 m_StartPos;
-	bool m_TakeDamageMode;
+	int m_TakeDamageMode;
 	
 public:
 	void FlashGrenade();

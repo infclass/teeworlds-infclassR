@@ -30,6 +30,7 @@ CProjectile::CProjectile(CGameWorld *pGameWorld, int Type, int Owner, vec2 Pos, 
 /* INFECTION MODIFICATION START ***************************************/
 	m_IsFlashGrenade = false;
 	m_StartPos = Pos;
+	m_TakeDamageMode = TakeDamageMode;
 /* INFECTION MODIFICATION END *****************************************/
 }
 
