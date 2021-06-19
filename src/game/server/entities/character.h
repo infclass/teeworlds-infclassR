@@ -20,7 +20,7 @@ enum
 };
 
 /* INFECTION MODIFICATION START ***************************************/
-enum
+enum FREEZEREASON
 {
 	FREEZEREASON_FLASH = 0,
 	FREEZEREASON_UNDEAD = 1,
@@ -202,7 +202,7 @@ protected:
 	bool m_IsFrozen;
 	int m_FrozenTime;
 	bool m_IsInSlowMotion; //LooperClass changes here
-	int m_FreezeReason;
+	FREEZEREASON m_FreezeReason;
 	int m_InAirTick;
 	
 	char m_GhostSearchMap[GHOST_SEARCHMAP_SIZE*GHOST_SEARCHMAP_SIZE];
@@ -251,7 +251,7 @@ public:
 	bool IsHuman() const;
 	void RemoveAllGun();
 	void SetAntiFire();
-	void Freeze(float Time, int Player, int Reason);
+	void Freeze(float Time, int Player, FREEZEREASON Reason);
 	bool IsFrozen() const;
 	bool IsInSlowMotion() const; //LooperClass changes here
 	void SlowMotionEffect(float duration);	//LooperClass changes here

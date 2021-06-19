@@ -2334,7 +2334,7 @@ void CCharacter::GrantSpawnProtection()
   }
 }
 
-void CCharacter::Freeze(float Time, int Player, int Reason)
+void CCharacter::Freeze(float Time, int Player, FREEZEREASON Reason)
 {
 	if(m_IsFrozen && m_FreezeReason == FREEZEREASON_UNDEAD)
 		return;
