@@ -171,27 +171,6 @@ bool CCharacter::Spawn(CPlayer *pPlayer, vec2 Pos)
 
 	GameServer()->m_pController->OnCharacterSpawn(this);
 
-/* INFECTION MODIFICATION START ***************************************/
-	SetAntiFire();
-	m_IsFrozen = false;
-	m_IsInSlowMotion = false;
-	m_FrozenTime = -1;
-	m_LoveTick = -1;
-	m_SlowMotionTick = -1;
-	m_HallucinationTick = -1;
-	m_SlipperyTick = -1;
-	m_PositionLockTick = -Server()->TickSpeed()*10;
-	m_PositionLocked = false;
-	m_PositionLockAvailable = false;
-
-	ClassSpawnAttributes();
-	DestroyChildEntities();
-	if(GetPlayerClass() == PLAYERCLASS_NONE)
-	{
-		OpenClassChooser();
-	}
-/* INFECTION MODIFICATION END *****************************************/
-
 	return true;
 }
 
