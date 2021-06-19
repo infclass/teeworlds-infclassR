@@ -45,7 +45,7 @@ void CInfClassPlayer::TryRespawn()
 
 	m_pCharacter = pCharacter;
 	m_pCharacter->Spawn(this, SpawnPos);
-	m_pInfcPlayerClass->OnCharacterSpawned();
+	pCharacter->OnCharacterSpawned();
 	if(GetClass() != PLAYERCLASS_NONE)
 		GameServer()->CreatePlayerSpawn(SpawnPos);
 }

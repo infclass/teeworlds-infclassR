@@ -47,6 +47,12 @@ CInfClassCharacter::~CInfClassCharacter()
 		m_pClass->SetCharacter(nullptr);
 }
 
+void CInfClassCharacter::OnCharacterSpawned()
+{
+	if(m_pClass)
+		m_pClass->OnCharacterSpawned();
+}
+
 void CInfClassCharacter::Tick()
 {
 	CCharacter::Tick();

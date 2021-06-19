@@ -23,6 +23,8 @@ public:
 	CInfClassCharacter(CInfClassGameController *pGameController);
 	~CInfClassCharacter() override;
 
+	void OnCharacterSpawned();
+
 	void Tick() override;
 	void SpecialSnapForClient(int SnappingClient, bool *pDoSnap) override;
 
