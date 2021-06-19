@@ -30,7 +30,7 @@ enum
 #define GHOST_RADIUS 11
 #define GHOST_SEARCHMAP_SIZE (2*GHOST_RADIUS+1)
 
-enum
+enum TAKEDAMAGEMODE
 {
 	TAKEDAMAGEMODE_NOINFECTION=0,
 	TAKEDAMAGEMODE_INFECTION,
@@ -85,7 +85,7 @@ public:
 	bool HasPortal();
 
 	virtual void Die(int Killer, int Weapon);
-	bool TakeDamage(vec2 Force, int Dmg, int From, int Weapon, int Mode);
+	bool TakeDamage(vec2 Force, int Dmg, int From, int Weapon, TAKEDAMAGEMODE Mode);
 
 	bool Spawn(class CPlayer *pPlayer, vec2 Pos);
 	bool Remove();

@@ -1726,7 +1726,7 @@ void CCharacter::Die(int Killer, int Weapon)
 {
 }
 
-bool CCharacter::TakeDamage(vec2 Force, int Dmg, int From, int Weapon, int Mode)
+bool CCharacter::TakeDamage(vec2 Force, int Dmg, int From, int Weapon, TAKEDAMAGEMODE Mode)
 {
 /* INFECTION MODIFICATION START ***************************************/
 

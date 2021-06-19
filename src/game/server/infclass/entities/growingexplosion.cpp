@@ -9,7 +9,7 @@
 #include "infccharacter.h"
 #include "portal.h"
 
-CGrowingExplosion::CGrowingExplosion(CGameContext *pGameContext, vec2 Pos, vec2 Dir, int Owner, int Radius, int ExplosionEffect, int TakeDamageMode)
+CGrowingExplosion::CGrowingExplosion(CGameContext *pGameContext, vec2 Pos, vec2 Dir, int Owner, int Radius, int ExplosionEffect, TAKEDAMAGEMODE TakeDamageMode)
 		: CInfCEntity(pGameContext, CGameWorld::ENTTYPE_GROWINGEXPLOSION, Pos, Owner),
 		m_TakeDamageMode(TakeDamageMode),
 		m_pGrowingMap(NULL),

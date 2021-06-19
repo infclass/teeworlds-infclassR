@@ -23,7 +23,7 @@ enum
 class CGrowingExplosion : public CInfCEntity
 {
 public:
-	CGrowingExplosion(CGameContext *pGameContext, vec2 Pos, vec2 Dir, int Owner, int Radius, int ExplosionEffect, int TakeDamageMode = TAKEDAMAGEMODE_NOINFECTION);
+	CGrowingExplosion(CGameContext *pGameContext, vec2 Pos, vec2 Dir, int Owner, int Radius, int ExplosionEffect, TAKEDAMAGEMODE TakeDamageMode = TAKEDAMAGEMODE_NOINFECTION);
 	virtual ~CGrowingExplosion();
 
 	virtual void Tick();
@@ -35,7 +35,7 @@ private:
 	int m_MaxGrowing;
 	int m_GrowingMap_Length;
 	int m_GrowingMap_Size;
-	int m_TakeDamageMode;
+	TAKEDAMAGEMODE m_TakeDamageMode;
 	
 	vec2 m_SeedPos;
 	int m_SeedX;
