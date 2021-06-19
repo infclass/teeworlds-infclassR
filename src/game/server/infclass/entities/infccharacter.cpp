@@ -947,7 +947,7 @@ void CInfClassCharacter::OnLaserFired(WeaponFireContext *pFireContext)
 			Damage = 30;
 		else
 			Damage = random_int(10, 13);
-		new CInfClassLaser(GameWorld(), GetPos(), Direction, GameServer()->Tuning()->m_LaserReach, m_pPlayer->GetCID(), Damage);
+		new CInfClassLaser(GameServer(), GetPos(), Direction, GameServer()->Tuning()->m_LaserReach, m_pPlayer->GetCID(), Damage);
 		GameServer()->CreateSound(GetPos(), SOUND_LASER_FIRE);
 	}
 	else if(GetPlayerClass() == PLAYERCLASS_SCIENTIST)
@@ -960,7 +960,7 @@ void CInfClassCharacter::OnLaserFired(WeaponFireContext *pFireContext)
 	else if (GetPlayerClass() == PLAYERCLASS_LOOPER) 
 	{
 		Damage = 5;
-		new CInfClassLaser(GameWorld(), GetPos(), Direction, GameServer()->Tuning()->m_LaserReach*0.7f, m_pPlayer->GetCID(), Damage);
+		new CInfClassLaser(GameServer(), GetPos(), Direction, GameServer()->Tuning()->m_LaserReach*0.7f, m_pPlayer->GetCID(), Damage);
 		GameServer()->CreateSound(GetPos(), SOUND_LASER_FIRE);
 	}
 	else if(GetPlayerClass() == PLAYERCLASS_MERCENARY)
@@ -986,7 +986,7 @@ void CInfClassCharacter::OnLaserFired(WeaponFireContext *pFireContext)
 		}
 		else
 		{
-			new CInfClassLaser(GameWorld(), GetPos(), Direction, GameServer()->Tuning()->m_LaserReach, m_pPlayer->GetCID(), Damage);
+			new CInfClassLaser(GameServer(), GetPos(), Direction, GameServer()->Tuning()->m_LaserReach, m_pPlayer->GetCID(), Damage);
 			GameServer()->CreateSound(GetPos(), SOUND_LASER_FIRE);
 			if(m_BombHit && distance(pCurrentBomb->GetPos(), m_AtMercBomb) <= 80.0f)
 			{
@@ -997,7 +997,7 @@ void CInfClassCharacter::OnLaserFired(WeaponFireContext *pFireContext)
 	}
 	else
 	{
-		new CInfClassLaser(GameWorld(), GetPos(), Direction, GameServer()->Tuning()->m_LaserReach, m_pPlayer->GetCID(), Damage);
+		new CInfClassLaser(GameServer(), GetPos(), Direction, GameServer()->Tuning()->m_LaserReach, m_pPlayer->GetCID(), Damage);
 		GameServer()->CreateSound(GetPos(), SOUND_LASER_FIRE);
 	}
 }

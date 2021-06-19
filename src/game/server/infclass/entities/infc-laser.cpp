@@ -10,37 +10,32 @@
 
 #include <game/server/infclass/entities/infccharacter.h>
 #include <game/server/infclass/entities/portal.h>
+#include <game/server/infclass/infcgamecontroller.h>
 
-CInfClassLaser::CInfClassLaser(CGameWorld *pGameWorld, vec2 Pos, vec2 Direction, float StartEnergy, int Owner, int Dmg, int ObjType)
-: CEntity(pGameWorld, ObjType)
+CInfClassLaser::CInfClassLaser(CGameContext *pGameContext, vec2 Pos, vec2 Direction, float StartEnergy, int Owner, int Dmg, int ObjType)
+	: CInfCEntity(pGameContext, ObjType, Pos, Owner)
 {
 	m_Dmg = Dmg;
-	m_Pos = Pos;
-	m_Owner = Owner;
 	m_Energy = StartEnergy;
 	m_Dir = Direction;
-	m_Bounces = 0;
-	m_EvalTick = 0;
-	m_BouncesStop = false;
 }
 
-CInfClassLaser::CInfClassLaser(CGameWorld *pGameWorld, vec2 Pos, vec2 Direction, float StartEnergy, int Owner, int Dmg)
-: CInfClassLaser(pGameWorld, Pos, Direction, StartEnergy, Owner, Dmg, CGameWorld::ENTTYPE_LASER)
+CInfClassLaser::CInfClassLaser(CGameContext *pGameContext, vec2 Pos, vec2 Direction, float StartEnergy, int Owner, int Dmg)
+	: CInfClassLaser(pGameContext, Pos, Direction, StartEnergy, Owner, Dmg, CGameWorld::ENTTYPE_LASER)
 {
 	GameWorld()->InsertEntity(this);
 	DoBounce();
 }
 
-
 bool CInfClassLaser::HitCharacter(vec2 From, vec2 To)
 {
 	vec2 At;
-	CCharacter *pOwnerChar = GameServer()->GetPlayerChar(m_Owner);
-	CInfClassCharacter *pHit = static_cast<CInfClassCharacter*>(GameServer()->m_World.IntersectCharacter(m_Pos, To, 0.f, At, pOwnerChar));
+	CInfClassCharacter *pOwnerChar = GameController()->GetCharacter(GetOwner());
+	CInfClassCharacter *pHit = static_cast<CInfClassCharacter*>(GameWorld()->IntersectCharacter(m_Pos, To, 0.f, At, pOwnerChar));
 	vec2 PortalHitAt;
-	CEntity *pPortalEntity = GameServer()->m_World.IntersectEntity(m_Pos, To, 0, &PortalHitAt, CGameWorld::ENTTYPE_PORTAL);
+	CEntity *pPortalEntity = GameWorld()->IntersectEntity(m_Pos, To, 0, &PortalHitAt, CGameWorld::ENTTYPE_PORTAL);
 	vec2 MercenaryBombHitAt;
-	CEntity *pMercenaryEntity = GameServer()->m_World.IntersectEntity(m_Pos, To, 80.0f, &MercenaryBombHitAt, CGameWorld::ENTTYPE_MERCENARY_BOMB);
+	CEntity *pMercenaryEntity = GameWorld()->IntersectEntity(m_Pos, To, 80.0f, &MercenaryBombHitAt, CGameWorld::ENTTYPE_MERCENARY_BOMB);
 
 	if (pHit && pPortalEntity)
 	{
@@ -80,8 +75,8 @@ bool CInfClassLaser::HitCharacter(vec2 From, vec2 To)
 	m_Energy = -1;
 
 	if (pOwnerChar && pOwnerChar->GetPlayerClass() == PLAYERCLASS_MEDIC) { // Revive zombie
-		CCharacter *medic = pOwnerChar;
-		CCharacter *zombie = pHit;
+		CInfClassCharacter *medic = pOwnerChar;
+		CInfClassCharacter *zombie = pHit;
 		if (!zombie)
 		{
 			// Medic hits something else (not a zombie)
@@ -150,7 +145,7 @@ void CInfClassLaser::DoBounce()
 
 	if(m_Energy < 0 || m_BouncesStop)
 	{
-		GameServer()->m_World.DestroyEntity(this);
+		GameWorld()->DestroyEntity(this);
 		return;
 	}
 
@@ -189,11 +184,6 @@ void CInfClassLaser::DoBounce()
 			m_Energy = -1;
 		}
 	}
-}
-
-void CInfClassLaser::Reset()
-{
-	GameServer()->m_World.DestroyEntity(this);
 }
 
 void CInfClassLaser::Tick()
