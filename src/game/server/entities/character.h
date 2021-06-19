@@ -233,8 +233,6 @@ public:
 	int m_NinjaAmmoBuff;
 	int m_RefreshTime;
 	//Mercenary
-	bool m_BombHit;
-	vec2 m_AtMercBomb;
 	int m_TurretCount;
 	int m_ResetKillsTime;
 

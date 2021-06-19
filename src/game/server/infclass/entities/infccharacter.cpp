@@ -966,10 +966,7 @@ void CInfClassCharacter::OnLaserFired(WeaponFireContext *pFireContext)
 	}
 	else if(GetPlayerClass() == PLAYERCLASS_MERCENARY)
 	{
-		Damage = 0;
-		m_BombHit = false;
-
-		CMercenaryBomb* pCurrentBomb = NULL;
+		CMercenaryBomb* pCurrentBomb = nullptr;
 		for(CMercenaryBomb *pBomb = (CMercenaryBomb*) GameWorld()->FindFirst(CGameWorld::ENTTYPE_MERCENARY_BOMB); pBomb; pBomb = (CMercenaryBomb*) pBomb->TypeNext())
 		{
 			if(pBomb->GetOwner() == m_pPlayer->GetCID())
@@ -983,17 +980,11 @@ void CInfClassCharacter::OnLaserFired(WeaponFireContext *pFireContext)
 		{
 			GameServer()->SendBroadcast_Localization(m_pPlayer->GetCID(), BROADCAST_PRIORITY_WEAPONSTATE, 60, "Bomb needed");
 			pFireContext->FireAccepted = false;
-			return;
 		}
 		else
 		{
 			new CMercenaryLaser(GameServer(), GetPos(), Direction, GameServer()->Tuning()->m_LaserReach, GetCID());
 			GameServer()->CreateSound(GetPos(), SOUND_LASER_FIRE);
-			if(m_BombHit && distance(pCurrentBomb->GetPos(), m_AtMercBomb) <= 80.0f)
-			{
-				pCurrentBomb->IncreaseDamage(WEAPON_LASER);
-				GameServer()->CreateSound(GetPos(), SOUND_PICKUP_ARMOR);
-			}
 		}
 	}
 	else

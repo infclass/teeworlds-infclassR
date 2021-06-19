@@ -117,7 +117,7 @@ void CInfClassLaser::DoBounce()
 {
 	m_EvalTick = Server()->Tick();
 
-	if(m_Energy < 0 || m_BouncesStop)
+	if(m_Energy < 0)
 	{
 		GameWorld()->DestroyEntity(this);
 		return;

@@ -27,7 +27,6 @@ protected:
 	int m_Bounces = 0;
 	int m_EvalTick = 0;
 	int m_Dmg = 0;
-	bool m_BouncesStop = false;
 };
 
 #endif // GAME_SERVER_INFCLASS_ENTITIES_LASER_H
