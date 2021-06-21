@@ -63,6 +63,9 @@ public:
 
 	bool CanDie() const;
 
+	bool IsInvisible() const;
+	bool HasHallucination() const;
+
 	void CheckSuperWeaponAccess();
 	void MaybeGiveStunGrenades();
 	void FireSoldierBomb();

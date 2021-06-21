@@ -1420,6 +1420,16 @@ bool CInfClassCharacter::CanDie() const
 	return m_pClass && m_pClass->CanDie();
 }
 
+bool CInfClassCharacter::IsInvisible() const
+{
+	return m_IsInvisible;
+}
+
+bool CInfClassCharacter::HasHallucination() const
+{
+	return m_HallucinationTick > 0;
+}
+
 void CInfClassCharacter::CheckSuperWeaponAccess()
 {
 	// check kills of player
