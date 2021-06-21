@@ -84,6 +84,14 @@ void CInfClassPlayer::Tick()
 	HandleTuningParams();
 }
 
+int CInfClassPlayer::GetDefaultEmote() const
+{
+	if(m_pInfcPlayerClass)
+		return m_pInfcPlayerClass->GetDefaultEmote();
+
+	return CPlayer::GetDefaultEmote();
+}
+
 void CInfClassPlayer::SetCharacterClass(CInfClassPlayerClass *pClass)
 {
 	if(m_pInfcPlayerClass)

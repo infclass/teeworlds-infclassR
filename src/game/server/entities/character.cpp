@@ -731,6 +731,13 @@ void CCharacter::ResetInput()
 
 void CCharacter::Tick()
 {
+	// set emote
+	if (m_EmoteStop < Server()->Tick())
+	{
+		m_EmoteType = m_pPlayer->GetDefaultEmote();
+		m_EmoteStop = -1;
+	}
+
 /* INFECTION MODIFICATION START ***************************************/
 	//~ if(GameServer()->Collision()->CheckPhysicsFlag(m_Core.m_Pos, CCollision::COLFLAG_WATER))
 	//~ {
@@ -1890,8 +1897,7 @@ bool CCharacter::TakeDamage(vec2 Force, int Dmg, int From, int Weapon, TAKEDAMAG
 	else
 		GameServer()->CreateSound(m_Pos, SOUND_PLAYER_PAIN_SHORT);
 
-	m_EmoteType = EMOTE_PAIN;
-	m_EmoteStop = Server()->Tick() + Server()->TickSpeed() / 2;
+	SetEmote(EMOTE_PAIN, Server()->Tick() + 500 * Server()->TickSpeed() / 1000);
 
 	return true;
 }
@@ -2009,11 +2015,7 @@ void CCharacter::Snap(int SnappingClient)
 	CNetObj_Character *pCharacter = static_cast<CNetObj_Character *>(Server()->SnapNewItem(NETOBJTYPE_CHARACTER, ID, sizeof(CNetObj_Character)));
 	if(!pCharacter)
 		return;
-	int EmoteNormal = EMOTE_NORMAL;
-	if(IsZombie()) EmoteNormal = EMOTE_ANGRY;
-	if(m_IsInvisible) EmoteNormal = EMOTE_BLINK;
-	if(m_LoveTick > 0 || m_HallucinationTick > 0 || m_SlowMotionTick > 0) EmoteNormal = EMOTE_SURPRISE;
-	if(IsFrozen()) EmoteNormal = EMOTE_PAIN;
+	int EmoteNormal = m_pPlayer->GetDefaultEmote();;
 	
 	// write down the m_Core
 	if(!m_ReckoningTick || GameServer()->m_World.m_Paused)
@@ -2027,13 +2029,6 @@ void CCharacter::Snap(int SnappingClient)
 	{
 		pCharacter->m_Tick = m_ReckoningTick;
 		m_SendCore.Write(pCharacter);
-	}
-
-	// set emote
-	if (m_EmoteStop < Server()->Tick())
-	{
-		m_EmoteType = EmoteNormal;
-		m_EmoteStop = -1;
 	}
 
 	if (pCharacter->m_HookedPlayer != -1)

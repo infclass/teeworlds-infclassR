@@ -13,6 +13,7 @@ public:
 	CInfClassInfected(CInfClassPlayer *pPlayer);
 
 	bool IsHuman() const final { return false; }
+	int GetDefaultEmote() const override;
 	bool CanDie() const override;
 
 	void OnCharacterTick() override;

@@ -23,6 +23,7 @@ public:
 	void TryRespawn() override;
 
 	void Tick() override;
+	int GetDefaultEmote() const override;
 
 	CInfClassPlayerClass *GetCharacterClass() { return m_pInfcPlayerClass; }
 	const CInfClassPlayerClass *GetCharacterClass() const { return m_pInfcPlayerClass; }

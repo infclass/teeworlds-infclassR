@@ -13,6 +13,22 @@ CInfClassInfected::CInfClassInfected(CInfClassPlayer *pPlayer)
 {
 }
 
+int CInfClassInfected::GetDefaultEmote() const
+{
+	int EmoteNormal = EMOTE_ANGRY;
+
+	if(m_pCharacter->IsInvisible())
+		EmoteNormal = EMOTE_BLINK;
+
+	if(m_pCharacter->IsInLove() || m_pCharacter->IsInSlowMotion() || m_pCharacter->HasHallucination())
+		EmoteNormal = EMOTE_SURPRISE;
+
+	if(m_pCharacter->IsFrozen())
+		EmoteNormal = EMOTE_PAIN;
+
+	return EmoteNormal;
+}
+
 bool CInfClassInfected::CanDie() const
 {
 	if ((PlayerClass() == PLAYERCLASS_UNDEAD) && m_pCharacter->IsFrozen()) {

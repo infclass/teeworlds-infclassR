@@ -120,6 +120,19 @@ protected:
 	int m_ClientID;
 	int m_Team;
 
+/* IMPORT FROM DDNET */
+protected:
+	int m_DefEmote;
+	int m_OverrideEmote;
+	int m_OverrideEmoteReset;
+
+	int64 m_LastEyeEmote;
+
+public:
+	virtual int GetDefaultEmote() const;
+	void OverrideDefaultEmote(int Emote, int Tick);
+	bool CanOverrideDefaultEmote() const;
+
 /* INFECTION MODIFICATION START ***************************************/
 protected:
 	int m_class;

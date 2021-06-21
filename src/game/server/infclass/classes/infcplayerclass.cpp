@@ -123,6 +123,11 @@ bool CInfClassPlayerClass::IsZombie() const
 	return !IsHuman();
 }
 
+int CInfClassPlayerClass::GetDefaultEmote() const
+{
+	return EMOTE_NORMAL;
+}
+
 bool CInfClassPlayerClass::CanDie() const
 {
 	return true;

@@ -38,6 +38,12 @@ void CPlayer::Reset()
 	m_TeamChangeTick = Server()->Tick();
 	m_ClientVersion = 0;
 	m_LastWhisperId = -1;
+
+	m_LastEyeEmote = 0;
+	m_DefEmote = EMOTE_NORMAL;
+	m_OverrideEmote = 0;
+	m_OverrideEmoteReset = -1;
+
 /* INFECTION MODIFICATION START ***************************************/
 	m_Authed = IServer::AUTHED_NO;
 	m_ScoreRound = 0;
@@ -448,6 +454,26 @@ void CPlayer::TryRespawn()
 	m_pCharacter->Spawn(this, SpawnPos);
 	if(GetClass() != PLAYERCLASS_NONE)
 		GameServer()->CreatePlayerSpawn(SpawnPos);
+}
+
+int CPlayer::GetDefaultEmote() const
+{
+	if(m_OverrideEmoteReset >= 0)
+		return m_OverrideEmote;
+
+	return m_DefEmote;
+}
+
+void CPlayer::OverrideDefaultEmote(int Emote, int Tick)
+{
+	m_OverrideEmote = Emote;
+	m_OverrideEmoteReset = Tick;
+	m_LastEyeEmote = Server()->Tick();
+}
+
+bool CPlayer::CanOverrideDefaultEmote() const
+{
+	return true;
 }
 
 /* INFECTION MODIFICATION START ***************************************/

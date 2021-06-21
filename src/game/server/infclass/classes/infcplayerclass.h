@@ -27,6 +27,8 @@ public:
 	virtual bool IsHuman() const = 0;
 	bool IsZombie() const;
 
+	virtual int GetDefaultEmote() const;
+
 	virtual bool CanDie() const;
 	virtual float GetGhoulPercent() const;
 
