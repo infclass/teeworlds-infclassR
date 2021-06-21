@@ -270,6 +270,8 @@ public:
 	void GiveGift(int GiftType);
 	int GetInfZoneTick();
 	void EnableJump();
+
+	float WebHookLength() const;
 /* INFECTION MODIFICATION END *****************************************/
 
 	CCharacterCore *Core() { return &m_Core; }
