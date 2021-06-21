@@ -2160,6 +2160,7 @@ void CCharacter::GiveNinjaBuf()
 void CCharacter::ClassSpawnAttributes()
 {
 	m_Health = 10;
+	m_IsInvisible = false;
 
 	const int PlayerClass = GetPlayerClass();
 	const bool isHuman = PlayerClass < END_HUMANCLASS; // PLAYERCLASS_NONE is also a human (not infected) class
