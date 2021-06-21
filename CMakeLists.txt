@@ -544,8 +544,8 @@ foreach(s ${GAME_SHARED})
 endforeach()
 list(REMOVE_ITEM GAME_SHARED ${ENGINE_UUID_SHARED})
 set(GAME_GENERATED_SHARED
-  src/game/generated/git_revision.cpp
-  src/game/generated/protocol.h
+  ${CMAKE_CURRENT_BINARY_DIR}/src/game/generated/git_revision.cpp
+  ${CMAKE_CURRENT_BINARY_DIR}/src/game/generated/protocol.h
 )
 
 set(DEPS ${DEP_JSON} ${DEP_MD5} ${ZLIB_DEP})
