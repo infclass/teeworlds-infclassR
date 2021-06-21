@@ -811,6 +811,13 @@ void CGameContext::SendWeaponPickup(int ClientID, int Weapon)
 	Server()->SendPackMsg(&Msg, MSGFLAG_VITAL, ClientID);
 }
 
+void CGameContext::SendMotd(int ClientID)
+{
+	CNetMsg_Sv_Motd Msg;
+	Msg.m_pMessage = Config()->m_SvMotd;
+	Server()->SendPackMsg(&Msg, MSGFLAG_VITAL, ClientID);
+}
+
 void CGameContext::SendKillMessage(int Killer, int Victim, int Weapon, int ModeSpecial)
 {
 	CNetMsg_Sv_KillMsg Msg;
@@ -1412,13 +1419,10 @@ void CGameContext::OnClientConnected(int ClientID)
 	// send motd
 	if(!Server()->GetClientMemory(ClientID, CLIENTMEMORY_MOTD))
 	{
-		CNetMsg_Sv_Motd Msg;
-		Msg.m_pMessage = g_Config.m_SvMotd;
-		Server()->SendPackMsg(&Msg, MSGFLAG_VITAL, ClientID);
-		
+		SendMotd(ClientID);
 		Server()->SetClientMemory(ClientID, CLIENTMEMORY_MOTD, true);
 	}
-	
+
 	m_BroadcastStates[ClientID].m_NoChangeTick = 0;
 	m_BroadcastStates[ClientID].m_LifeSpanTick = 0;
 	m_BroadcastStates[ClientID].m_Priority = BROADCAST_PRIORITY_LOWEST;
