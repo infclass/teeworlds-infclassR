@@ -2,6 +2,8 @@
 /* If you are missing that file, acquire a complete release at teeworlds.com.                */
 #include "gamecore.h"
 
+#include <engine/shared/config.h>
+
 const char *CTuningParams::ms_apNames[] =
 {
 	#define MACRO_TUNING_PARAM(Name,ScriptName,Value) #ScriptName,
@@ -334,7 +336,7 @@ void CCharacterCore::Tick(bool UseInput, CParams* pParams)
 			m_HookPos = m_Pos;
 		}
 		
-		if(pParams->m_HookMode == 1 && distance(m_HookPos, m_Pos) > 600.0f)
+		if(pParams->m_HookMode == 1 && distance(m_HookPos, m_Pos) > g_Config.m_InfSpiderWebHookLength)
 		{
 			// release hook
 			m_HookedPlayer = -1;
