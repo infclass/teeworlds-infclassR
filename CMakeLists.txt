@@ -489,8 +489,6 @@ set_glob(ENGINE_SHARED GLOB src/engine/shared
   linereader.cpp
   linereader.h
   map.cpp
-  mapchecker.cpp
-  mapchecker.h
   masterserver.cpp
   memheap.cpp
   memheap.h

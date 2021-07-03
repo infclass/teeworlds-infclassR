@@ -10,7 +10,6 @@
 #include <engine/server/roundstatistics.h>
 #include <engine/shared/demo.h>
 #include <engine/shared/econ.h>
-#include <engine/shared/mapchecker.h>
 #include <engine/shared/netban.h>
 #include <engine/shared/network.h>
 #include <engine/shared/snapshot.h>
@@ -213,7 +212,6 @@ public:
 
 	CDemoRecorder m_DemoRecorder;
 	CRegister m_Register;
-	CMapChecker m_MapChecker;
 
 	CServer();
 	virtual ~CServer();
