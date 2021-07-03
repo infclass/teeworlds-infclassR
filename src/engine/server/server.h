@@ -382,6 +382,7 @@ public:
 	virtual void Ban(int ClientID, int Seconds, const char* pReason);
 private:
 	bool InitCaptcha();
+	bool GenerateClientMap(const char *pMapFilePath, const char *pMapName);
 	
 public:
 	class CGameServerCmd
