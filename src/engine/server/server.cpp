@@ -1223,8 +1223,11 @@ bool CServer::GenerateClientMap(const char *pMapFilePath, const char *pMapName)
 	unsigned ServerMapCrc = dfServerMap.Crc();
 	dfServerMap.Close();
 
+	char aClientMapDir[256];
 	char aClientMapName[256];
-	str_format(aClientMapName, sizeof(aClientMapName), "clientmaps/%s_%08x/tw06-highres.map", pMapName, ServerMapCrc);
+	static const char *pConverterId = CMapConverter::GetConverterVersionId();
+	str_format(aClientMapDir, sizeof(aClientMapDir), "clientmaps/%s", pConverterId);
+	str_format(aClientMapName, sizeof(aClientMapName), "%s/%s_%08x.map", aClientMapDir, pMapName, ServerMapCrc);
 
 	CMapConverter MapConverter(Storage(), m_pMap, Console());
 	if(!MapConverter.Load())
@@ -1242,9 +1245,6 @@ bool CServer::GenerateClientMap(const char *pMapFilePath, const char *pMapName)
 	//The map must be converted
 	else
 	{
-		char aClientMapDir[256];
-		str_format(aClientMapDir, sizeof(aClientMapDir), "clientmaps/%s_%08x", pMapName, ServerMapCrc);
-
 		char aFullPath[512];
 		Storage()->GetCompletePath(IStorage::TYPE_SAVE, aClientMapDir, aFullPath, sizeof(aFullPath));
 		if(fs_makedir(aFullPath) != 0)

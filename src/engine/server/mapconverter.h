@@ -45,6 +45,8 @@ public:
 		TIMESHIFT_MENUCLASS_MASK = NUM_MENUCLASS+1,
 	};
 
+	static const char *GetConverterVersionId();
+
 protected:
 	IStorage *m_pStorage;
 	IEngineMap *m_pMap;
