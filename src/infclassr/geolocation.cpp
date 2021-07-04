@@ -1,4 +1,6 @@
-#include <infclassr/geolocation.h>
+#include "geolocation.h"
+
+#include <iostream>
 
 Geolocation::Geolocation(const char* path_to_mmdb) {
 	db = new GeoLite2PP::DB(path_to_mmdb);
