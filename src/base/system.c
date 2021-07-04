@@ -1348,13 +1348,13 @@ int fs_listdir(const char *dir, FS_LISTDIR_CALLBACK cb, int type, void *user)
 #if defined(CONF_FAMILY_WINDOWS)
 	WIN32_FIND_DATA finddata;
 	HANDLE handle;
-	char buffer[1024*2];
+	char buffer[1024 * 2];
 	int length;
 	str_format(buffer, sizeof(buffer), "%s/*", dir);
 
 	handle = FindFirstFileA(buffer, &finddata);
 
-	if (handle == INVALID_HANDLE_VALUE)
+	if(handle == INVALID_HANDLE_VALUE)
 		return 0;
 
 	str_format(buffer, sizeof(buffer), "%s/", dir);
@@ -1363,17 +1363,16 @@ int fs_listdir(const char *dir, FS_LISTDIR_CALLBACK cb, int type, void *user)
 	/* add all the entries */
 	do
 	{
-		str_copy(buffer+length, finddata.cFileName, (int)sizeof(buffer)-length);
+		str_copy(buffer + length, finddata.cFileName, (int)sizeof(buffer) - length);
 		if(cb(finddata.cFileName, fs_is_dir(buffer), type, user))
 			break;
-	}
-	while (FindNextFileA(handle, &finddata));
+	} while(FindNextFileA(handle, &finddata));
 
 	FindClose(handle);
 	return 0;
 #else
 	struct dirent *entry;
-	char buffer[1024*2];
+	char buffer[1024 * 2];
 	int length;
 	DIR *d = opendir(dir);
 
@@ -1385,7 +1384,7 @@ int fs_listdir(const char *dir, FS_LISTDIR_CALLBACK cb, int type, void *user)
 
 	while((entry = readdir(d)) != NULL)
 	{
-		str_copy(buffer+length, entry->d_name, (int)sizeof(buffer)-length);
+		str_copy(buffer + length, entry->d_name, (int)sizeof(buffer) - length);
 		if(cb(entry->d_name, fs_is_dir(buffer), type, user))
 			break;
 	}
