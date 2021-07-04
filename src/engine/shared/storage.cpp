@@ -583,6 +583,12 @@ public:
 		return pBuffer;
 	}
 
+	const char *GetDataPath(const char *pFilename, char *pBuffer, unsigned BufferSize)
+	{
+		str_format(pBuffer, BufferSize, "%s%s%s", m_aDatadir, !m_aDatadir[0] ? "" : "/", pFilename);
+		return pBuffer;
+	}
+
 	static IStorage *Create(const char *pApplicationName, int StorageType, int NumArgs, const char **ppArguments)
 	{
 		CStorage *p = new CStorage();
