@@ -78,6 +78,7 @@ if(TARGET_OS STREQUAL "windows")
   set(AUTO_DEPENDENCIES_DEFAULT ON)
 endif()
 
+option(GEOLOCATION "Enable geolocation support" ON)
 option(MYSQL "Enable mysql support" OFF)
 option(PREFER_BUNDLED_LIBS "Prefer bundled libraries over system libraries" ${AUTO_DEPENDENCIES_DEFAULT})
 option(DEV "Don't generate stuff necessary for packaging" OFF)
@@ -300,6 +301,10 @@ else()
 endif()
 find_package(PythonInterp)
 find_package(Threads)
+
+if(GEOLOCATION)
+  find_package(MaxMindDB REQUIRED)
+endif()
 
 if(TARGET_OS AND TARGET_OS STREQUAL "mac")
   find_program(DMG dmg)
@@ -727,6 +732,32 @@ add_executable(${TARGET_SERVER}
   $<TARGET_OBJECTS:engine-shared>
   $<TARGET_OBJECTS:game-shared>
 )
+
+if(GEOLOCATION)
+  add_library(GeoLite2PP STATIC
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/infclassr/GeoLite2PP/GeoLite2PP.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/infclassr/GeoLite2PP/GeoLite2PP.hpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/infclassr/GeoLite2PP/GeoLite2PP_error_category.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/infclassr/GeoLite2PP/GeoLite2PP_error_category.hpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/infclassr/GeoLite2PP/GeoLite2PP_version.hpp
+  )
+  target_include_directories(GeoLite2PP PUBLIC
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/infclassr
+  )
+  add_library(GeoLite2PP::GeoLite2PP ALIAS GeoLite2PP)
+
+  target_sources(${TARGET_SERVER} PRIVATE
+    "src/infclassr/geolocation.cpp"
+    "src/infclassr/geolocation.h"
+  )
+
+  target_compile_definitions(${TARGET_SERVER} PRIVATE CONF_GEOLOCATION)
+  target_link_libraries(${TARGET_SERVER}
+    GeoLite2PP::GeoLite2PP
+    MaxMindDB::MaxMindDB
+  )
+endif()
+
 target_link_libraries(${TARGET_SERVER} ${LIBS_SERVER})
 list(APPEND TARGETS_OWN ${TARGET_SERVER})
 list(APPEND TARGETS_LINK ${TARGET_SERVER})
