@@ -20,6 +20,10 @@
 
 #include <game/server/player.h>
 
+#ifdef CONF_GEOLOCATION
+#include <infclassr/geolocation.h>
+#endif
+
 enum
 {
 	RESET,
@@ -72,10 +76,6 @@ void CGameContext::Construct(int Resetting)
 	
 	m_FunRound = false;
 	m_FunRoundsPassed = 0;
-	
-#ifdef CONF_GEOLOCATION
-	m_pGeolocation = new Geolocation("GeoLite2-Country.mmdb");
-#endif
 }
 
 CGameContext::CGameContext(int Resetting)
@@ -103,8 +103,10 @@ CGameContext::~CGameContext()
 		delete m_pVoteOptionHeap;
 	
 #ifdef CONF_GEOLOCATION
-	delete m_pGeolocation;
-	m_pGeolocation = nullptr;
+	if(!m_Resetting)
+	{
+		Geolocation::Shutdown();
+	}
 #endif
 }
 
@@ -2025,7 +2027,7 @@ void CGameContext::OnMessage(int MsgID, CUnpacker *pUnpacker, int ClientID)
 
 #ifdef CONF_GEOLOCATION
 			std::string ip = Server()->GetClientIP(ClientID);
-			int LocatedCountry = m_pGeolocation->get_country_iso_numeric_code(ip);
+			int LocatedCountry = Geolocation::get_country_iso_numeric_code(ip);
 #ifdef CONF_FORCE_COUNTRY_BY_IP
 			Server()->SetClientCountry(ClientID, LocatedCountry);
 #endif // CONF_FORCE_COUNTRY_BY_IP
@@ -3217,6 +3219,13 @@ void CGameContext::MutePlayer(const char* pStr, int ClientID)
 	}
 }
 
+void CGameContext::InitGeolocation()
+{
+#ifdef CONF_GEOLOCATION
+	Geolocation::Initialize("GeoLite2-Country.mmdb");
+#endif
+}
+
 #ifdef CONF_SQL
 
 bool CGameContext::ConRegister(IConsole::IResult *pResult, void *pUserData)
@@ -4171,6 +4180,8 @@ void CGameContext::OnConsoleInit()
 /* INFECTION MODIFICATION END *****************************************/
 
 	Console()->Chain("sv_motd", ConchainSpecialMotdupdate, this);
+
+	InitGeolocation();
 }
 
 void CGameContext::OnInit(/*class IKernel *pKernel*/)

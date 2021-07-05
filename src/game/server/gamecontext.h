@@ -19,9 +19,6 @@
 #include "gameworld.h"
 #include "player.h"
 
-#ifdef CONF_GEOLOCATION
-#include <infclassr/geolocation.h>
-#endif
 #include <fstream>
 
 /*
@@ -87,10 +84,6 @@ class CGameContext : public IGameServer
 	int m_TargetToKill;
 	int m_TargetToKillCoolDown;
 	int m_HeroGiftCooldown;
-
-#ifdef CONF_GEOLOCATION
-	Geolocation* m_pGeolocation;
-#endif
 
 	static bool ConTuneParam(IConsole::IResult *pResult, void *pUserData);
 	static bool ConTuneReset(IConsole::IResult *pResult, void *pUserData);
@@ -286,7 +279,9 @@ private:
 	bool PrivateMessage(const char* pStr, int ClientID, bool TeamChat);
 	void Converse(int ClientID, const char* pStr, int team);
 	void MutePlayer(const char* pStr, int ClientID);
-	
+
+	void InitGeolocation();
+
 	enum OPTION_VOTE_TYPE
 	{
 		OTHER_OPTION_VOTE_TYPE = 0,

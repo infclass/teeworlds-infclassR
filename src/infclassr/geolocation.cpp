@@ -2,6 +2,8 @@
 
 #include <iostream>
 
+static Geolocation *Instance = nullptr;
+
 Geolocation::Geolocation(const char* path_to_mmdb) {
 	db = new GeoLite2PP::DB(path_to_mmdb);
 }
@@ -11,13 +13,46 @@ Geolocation::~Geolocation() {
 	db = nullptr;
 }
 
-int Geolocation::get_country_iso_numeric_code(std::string& ip) {
-	try {
-		GeoLite2PP::MStr map_str = db->get_all_fields(ip);
-		return get_iso_numeric_code(map_str);
+bool Geolocation::Initialize(const char *pPathToDB)
+{
+	if(Instance)
+		return true;
+
+	try
+	{
+		Instance = new Geolocation(pPathToDB);
+		return true;
 	}
-	catch (std::length_error) {
+	catch (std::system_error e)
+	{
+		std::cout << "Geolocation::Initialize() failed: " << e.what() << std::endl;
+		return false;
+	}
+}
+
+void Geolocation::Shutdown()
+{
+	delete Instance;
+	Instance = nullptr;
+}
+
+int Geolocation::get_country_iso_numeric_code(std::string& ip) {
+	if(!Instance)
+	{
+		return -1;
+	}
+
+	try {
+		GeoLite2PP::MStr map_str = Instance->db->get_all_fields(ip);
+		return Instance->get_iso_numeric_code(map_str);
+	} catch (std::invalid_argument) {
+		std::cout << "This ip is not valid! " << ip << std::endl;
+		return -1;
+	} catch (std::length_error) {
 		std::cout << "This ip was not found in database: " << ip << std::endl;
+		return -1;
+	} catch (...) {
+		std::cout << "Geolocation: Something went wrong." << ip << std::endl;
 		return -1;
 	}
 }
