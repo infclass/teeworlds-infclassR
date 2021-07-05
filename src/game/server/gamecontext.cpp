@@ -3222,7 +3222,18 @@ void CGameContext::MutePlayer(const char* pStr, int ClientID)
 void CGameContext::InitGeolocation()
 {
 #ifdef CONF_GEOLOCATION
-	Geolocation::Initialize("GeoLite2-Country.mmdb");
+	const char aGeoDBFileName[] = "geo/GeoLite2-Country.mmdb";
+	char aBuf[512];
+	Storage()->GetDataPath(aGeoDBFileName, aBuf, sizeof(aBuf));
+	if(aBuf[0])
+	{
+		Geolocation::Initialize(aBuf);
+	}
+	else
+	{
+		str_format(aBuf, sizeof(aBuf), "Unable to find geolocation data file %s", aGeoDBFileName);
+		Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "server", aBuf);
+	}
 #endif
 }
 
