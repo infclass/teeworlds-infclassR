@@ -1610,7 +1610,7 @@ void CServer::SendServerInfoConnless(const NETADDR *pAddr, int Token, bool Exten
 		char aBuf[256];
 		char aAddrStr[256];
 		net_addr_str(pAddr, aAddrStr, sizeof(aAddrStr), true);
-		str_format(aBuf, sizeof(aBuf), "Too many info requests from %s: %d > %d (Now = %d, mSIFR = %d)",
+		str_format(aBuf, sizeof(aBuf), "Too many info requests from %s: %d > %d (Now = %lld, mSIFR = %lld)",
 				aAddrStr, m_ServerInfoNumRequests, MaxRequests, Now, m_ServerInfoFirstRequest);
 		Console()->Print(IConsole::OUTPUT_LEVEL_DEBUG, "inforequests", aBuf);
 	} else {
