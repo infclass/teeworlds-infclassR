@@ -363,6 +363,8 @@ debug_settings.config_ext = "_d"
 debug_settings.debug = 1
 debug_settings.optimize = 0
 debug_settings.cc.defines:Add("CONF_DEBUG")
+debug_settings.cc.flags:Add("-rdynamic")
+debug_settings.link.flags:Add("-rdynamic")
 
 debug_sql_settings = NewSettings()
 debug_sql_settings.config_name = "sql_debug"
