@@ -648,6 +648,20 @@ void CInfClassGameController::StartRound()
 
 	m_RoundStarted = true;
 	IGameController::StartRound();
+
+	Server()->ResetStatistics();
+	GameServer()->OnStartRound();
+
+	for(int i = 0; i < MAX_CLIENTS; i++)
+	{
+		if(GameServer()->m_apPlayers[i])
+		{
+			Server()->SetClientMemory(i, CLIENTMEMORY_ROUNDSTART_OR_MAPCHANGE, true);
+			GameServer()->m_apPlayers[i]->SetClass(PLAYERCLASS_NONE);
+			GameServer()->m_apPlayers[i]->m_ScoreRound = 0;
+			GameServer()->m_apPlayers[i]->m_HumanTime = 0;
+		}
+	}
 }
 
 void CInfClassGameController::EndRound()
