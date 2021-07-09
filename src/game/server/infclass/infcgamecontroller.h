@@ -46,6 +46,7 @@ public:
 	bool AreTurretsEnabled() const;
 	
 	void ResetFinalExplosion();
+	void SaveRoundRules();
 	
 	static bool IsDefenderClass(int PlayerClass);
 	static bool IsSupportClass(int PlayerClass);

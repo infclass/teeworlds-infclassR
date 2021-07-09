@@ -158,6 +158,11 @@ void CInfClassGameController::ResetFinalExplosion()
 	}
 }
 
+void CInfClassGameController::SaveRoundRules()
+{
+	m_TurretsEnabled = AreTurretsEnabled();
+}
+
 bool CInfClassGameController::IsDefenderClass(int PlayerClass)
 {
 	switch (PlayerClass)
@@ -639,7 +644,7 @@ CGameWorld *CInfClassGameController::GameWorld()
 
 void CInfClassGameController::StartRound()
 {
-	m_TurretsEnabled = AreTurretsEnabled();
+	SaveRoundRules();
 
 	m_RoundStarted = true;
 	IGameController::StartRound();
