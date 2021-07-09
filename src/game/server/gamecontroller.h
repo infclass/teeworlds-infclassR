@@ -24,6 +24,8 @@ protected:
 	CConfig *Config() const;
 	IServer *Server() const { return m_pServer; }
 
+	void DoActivityCheck();
+
 /* INFECTION MODIFICATION START ***************************************/
 	array<vec2> m_HeroFlagPositions;
 	array<vec2> m_SpawnPoints[2];
