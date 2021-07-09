@@ -411,11 +411,6 @@ void IGameController::OnPlayerInfoChange(class CPlayer *pP)
 
 int IGameController::OnCharacterDeath(class CCharacter *pVictim, class CPlayer *pKiller, int Weapon)
 {
-	// do scoreing
-	if(!pKiller || Weapon == WEAPON_GAME)
-		return 0;
-	if(Weapon == WEAPON_SELF)
-		pVictim->GetPlayer()->m_RespawnTick = Server()->Tick()+Server()->TickSpeed()*3.0f;
 	return 0;
 }
 
@@ -426,7 +421,7 @@ void IGameController::OnCharacterSpawn(class CCharacter *pChr)
 
 	// give default weapons
 	pChr->GiveWeapon(WEAPON_HAMMER, -1);
-	pChr->GiveWeapon(WEAPON_GUN, -1);
+	pChr->GiveWeapon(WEAPON_GUN, 10);
 }
 
 void IGameController::DoWarmup(int Seconds)
@@ -434,35 +429,12 @@ void IGameController::DoWarmup(int Seconds)
 	if(Seconds < 0)
 		m_Warmup = 0;
 	else
-		m_Warmup = Seconds*Server()->TickSpeed();
-}
-
-bool IGameController::IsFriendlyFire(int ClientID1, int ClientID2)
-{
-	if(ClientID1 == ClientID2)
-		return false;
-
-	if(IsTeamplay())
-	{
-		if(!GameServer()->m_apPlayers[ClientID1] || !GameServer()->m_apPlayers[ClientID2])
-			return false;
-
-		if(GameServer()->m_apPlayers[ClientID1]->GetTeam() == GameServer()->m_apPlayers[ClientID2]->GetTeam())
-			return true;
-	}
-
-	return false;
+		m_Warmup = Seconds * Server()->TickSpeed();
 }
 
 bool IGameController::IsForceBalanced()
 {
-	if(m_ForceBalanced)
-	{
-		m_ForceBalanced = false;
-		return true;
-	}
-	else
-		return false;
+	return false;
 }
 
 bool IGameController::CanBeMovedOnBalance(int ClientID)
@@ -616,11 +588,13 @@ void IGameController::Snap(int SnappingClient)
 
 int IGameController::GetAutoTeam(int NotThisID)
 {
-	// this will force the auto balancer to work overtime aswell
+	// this will force the auto balancer to work overtime as well
+#ifdef CONF_DEBUG
 	if(g_Config.m_DbgStress)
 		return 0;
+#endif
 
-	int aNumplayers[2] = {0,0};
+	int aNumplayers[2] = {0, 0};
 	for(int i = 0; i < MAX_CLIENTS; i++)
 	{
 		if(GameServer()->m_apPlayers[i] && i != NotThisID)
@@ -631,8 +605,6 @@ int IGameController::GetAutoTeam(int NotThisID)
 	}
 
 	int Team = 0;
-	if(IsTeamplay())
-		Team = aNumplayers[TEAM_RED] > aNumplayers[TEAM_BLUE] ? TEAM_BLUE : TEAM_RED;
 
 	if(CanJoinTeam(Team, NotThisID))
 		return Team;
@@ -644,7 +616,7 @@ bool IGameController::CanJoinTeam(int Team, int NotThisID)
 	if(Team == TEAM_SPECTATORS || (GameServer()->m_apPlayers[NotThisID] && GameServer()->m_apPlayers[NotThisID]->GetTeam() != TEAM_SPECTATORS))
 		return true;
 
-	int aNumplayers[2] = {0,0};
+	int aNumplayers[2] = {0, 0};
 	for(int i = 0; i < MAX_CLIENTS; i++)
 	{
 		if(GameServer()->m_apPlayers[i] && i != NotThisID)
@@ -759,7 +731,5 @@ int IGameController::ClampTeam(int Team)
 {
 	if(Team < 0)
 		return TEAM_SPECTATORS;
-	if(IsTeamplay())
-		return Team&1;
 	return 0;
 }

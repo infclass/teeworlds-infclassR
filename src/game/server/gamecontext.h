@@ -142,7 +142,6 @@ public:
 	CPlayer *GetPlayer(int ClientID) const;
 	class CCharacter *GetPlayerChar(int ClientID);
 	// InfClassR
-	int GetActivePlayerCount() const;
 	int GetZombieCount();
 	int GetZombieCount(int zombie_class);
 

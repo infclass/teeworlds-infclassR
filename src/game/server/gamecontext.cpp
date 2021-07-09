@@ -154,22 +154,6 @@ class CCharacter *CGameContext::GetPlayerChar(int ClientID)
 	return m_apPlayers[ClientID]->GetCharacter();
 }
 
-int CGameContext::GetActivePlayerCount() const
-{
-	int PlayerCount = 0;
-	for(int i=0; i<MAX_CLIENTS; i++)
-	{
-		if(Server()->ClientIngame(i))
-		{
-			if(m_apPlayers[i] && !m_apPlayers[i]->IsSpectator())
-			{
-				PlayerCount++;
-			}
-		}
-	}
-	return PlayerCount;
-}
-
 int CGameContext::GetZombieCount() {
 	int count = 0;
 	for(int i = 0; i < MAX_CLIENTS; i++)

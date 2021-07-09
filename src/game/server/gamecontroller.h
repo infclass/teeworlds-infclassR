@@ -80,8 +80,6 @@ public:
 	int GetRoundCount();
 	bool IsRoundEndTime();
 
-	bool IsFriendlyFire(int ClientID1, int ClientID2);
-
 	bool IsForceBalanced();
 
 	struct CMapRotationInfo
