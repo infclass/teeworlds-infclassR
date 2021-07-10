@@ -110,6 +110,16 @@ float CInfClassPlayerClass::GetProximityRadius() const
 
 void CInfClassPlayerClass::SetCharacter(CInfClassCharacter *character)
 {
+	if(m_pCharacter == character)
+	{
+		return;
+	}
+
+	if(m_pCharacter)
+	{
+		DestroyChildEntities();
+	}
+
 	m_pCharacter = character;
 
 	if(m_pCharacter)
@@ -210,6 +220,7 @@ void CInfClassPlayerClass::OnCharacterSpawned()
 
 void CInfClassPlayerClass::OnCharacterDeath(int Weapon)
 {
+	DestroyChildEntities();
 }
 
 void CInfClassPlayerClass::OnWeaponFired(WeaponFireContext *pFireContext)
@@ -270,6 +281,10 @@ void CInfClassPlayerClass::OnFloatingPointCollected(int Points)
 void CInfClassPlayerClass::GiveClassAttributes()
 {
 	m_pCharacter->TakeAllWeapons();
+}
+
+void CInfClassPlayerClass::DestroyChildEntities()
+{
 }
 
 void CInfClassPlayerClass::SetupSkin(CTeeInfo *output)
