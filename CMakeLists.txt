@@ -1,42 +1,10 @@
 # DDNet-based CMakeLists for InfclassR
 
 cmake_minimum_required(VERSION 3.3)
-
-file(STRINGS src/game/version.h VERSION_LINE
-  LIMIT_COUNT 1
-  REGEX "^#define GAME_RELEASE_VERSION "
+project(InfclassR
+    VERSION 1.3.0
 )
-
-if(VERSION_LINE MATCHES "\"([0-9]+)\\.([0-9]+)\\.([0-9]+)\"")
-  set(VERSION_MAJOR ${CMAKE_MATCH_1})
-  set(VERSION_MINOR ${CMAKE_MATCH_2})
-  set(VERSION_PATCH ${CMAKE_MATCH_3})
-elseif(VERSION_LINE MATCHES "\"([0-9]+)\\.([0-9]+)\"")
-  set(VERSION_MAJOR ${CMAKE_MATCH_1})
-  set(VERSION_MINOR ${CMAKE_MATCH_2})
-  set(VERSION_PATCH "0")
-else()
-  message(FATAL_ERROR "Couldn't parse version from src/game/version.h")
-endif()
-
-if(POLICY CMP0048)
-  cmake_policy(SET CMP0048 NEW)
-  if(VERSION_PATCH STREQUAL "0")
-    project(InfclassR VERSION ${VERSION_MAJOR}.${VERSION_MINOR})
-  else()
-    project(InfclassR VERSION ${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH})
-  endif()
-else()
-  project(DDNet)
-  set(PROJECT_VERSION_MAJOR ${VERSION_MAJOR})
-  set(PROJECT_VERSION_MINOR ${VERSION_MINOR})
-  set(PROJECT_VERSION_PATCH ${VERSION_PATCH})
-  if(VERSION_PATCH STREQUAL "0")
-    set(PROJECT_VERSION ${VERSION_MAJOR}.${VERSION_MINOR})
-  else()
-    set(PROJECT_VERSION ${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH})
-  endif()
-endif()
+set(VERSION_SUFFIX "_pre1")
 
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -98,9 +66,7 @@ endif()
 
 set(DBG $<OR:$<CONFIG:Debug>,$<CONFIG:RelWithDebInfo>>)
 
-set_property(DIRECTORY APPEND PROPERTY CMAKE_CONFIGURE_DEPENDS
-  src/game/version.h
-)
+configure_file(src/game/version.h.in ${PROJECT_BINARY_DIR}/src/game/version.h @ONLY)
 
 set(SERVER_EXECUTABLE Infclass-Server CACHE STRING "Name of the built server executable")
 

@@ -2,13 +2,12 @@
 /* If you are missing that file, acquire a complete release at teeworlds.com.                */
 #ifndef GAME_VERSION_H
 #define GAME_VERSION_H
-#ifndef GAME_RELEASE_VERSION
-#define GAME_RELEASE_VERSION "1.3.0"
-#endif
+
+#define GAME_RELEASE_VERSION "@InfclassR_VERSION@" "@VERSION_SUFFIX@"
 #define GAME_NETVERSION_HASH "ecc3ccbeb9e57b75"
 #define GAME_VERSION "0.6.4, " GAME_RELEASE_VERSION
 #define GAME_NETVERSION "0.6 " GAME_NETVERSION_HASH
-#define GAME_NAME "InfclassR"
+
 #define LAST_COMPILE_DATE __DATE__
 extern const char *GIT_SHORTREV_HASH;
 #endif
