@@ -482,52 +482,6 @@ int CPlayer::GetClass() const
 	return m_class;
 }
 
-void CPlayer::SetClass(int newClass)
-{	
-	if(m_class == newClass)
-		return;
-	
-	if(newClass > START_HUMANCLASS && newClass < END_HUMANCLASS)
-	{
-		bool ClassFound = false;
-		for(unsigned int i=0; i<sizeof(m_LastHumanClasses)/sizeof(int); i++)
-		{
-			if(m_LastHumanClasses[i] == newClass)
-				ClassFound = true;
-		}
-		if(!ClassFound)
-		{
-			for(unsigned int i=0; i<sizeof(m_LastHumanClasses)/sizeof(int)-1; i++)
-			{
-				m_LastHumanClasses[i] = m_LastHumanClasses[i+1];
-			}
-			m_LastHumanClasses[sizeof(m_LastHumanClasses)/sizeof(int)-1] = newClass;
-		}
-	}
-
-	if(newClass < END_HUMANCLASS)
-	{
-		m_LastHumanClass = newClass;
-	}
-	
-	m_GhoulLevel = 0;
-	m_GhoulLevelTick = 0;
-	
-	m_class = newClass;
-	
-	if(m_class < END_HUMANCLASS)
-		HookProtection(true);
-	else
-		HookProtection(true); // true = hook protection for zombies by default
-	
-	if(m_pCharacter)
-	{
-		m_pCharacter->SetClass(newClass);
-	}
-
-	onClassChanged();
-}
-
 int CPlayer::LastHumanClass() const
 {
 	if(m_LastHumanClass == PLAYERCLASS_NONE)

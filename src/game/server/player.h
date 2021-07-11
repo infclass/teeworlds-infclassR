@@ -113,7 +113,6 @@ protected:
 	CGameContext *GameServer() const { return m_pGameServer; }
 	IServer *Server() const;
 
-	virtual void onClassChanged() = 0;
 	virtual const char *GetClan(int SnappingClient = -1) const;
 
 	//
@@ -165,7 +164,7 @@ public:
 	void ResetNumberKills();
 	
 	int GetClass() const;
-	void SetClass(int newClass);
+	virtual void SetClass(int newClass) = 0;
 	int LastHumanClass() const;
 	bool IsZombie() const;
 	bool IsActuallyZombie() const;
