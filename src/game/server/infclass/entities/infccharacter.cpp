@@ -1687,6 +1687,19 @@ void CInfClassCharacter::GiveRandomClassSelectionBonus()
 
 void CInfClassCharacter::PreCoreTick()
 {
+	if(m_IsFrozen)
+	{
+		m_Input.m_Jump = 0;
+		m_Input.m_Direction = 0;
+		m_Input.m_Hook = 0;
+	}
+	else if(GetPlayerClass() == PLAYERCLASS_SNIPER && m_PositionLocked)
+	{
+		m_Input.m_Jump = 0;
+		m_Input.m_Direction = 0;
+		m_Input.m_Hook = 0;
+	}
+
 	UpdateTuningParam();
 }
 
