@@ -165,6 +165,11 @@ void CInfClassPlayer::SetClass(int newClass)
 	m_GhoulLevel = 0;
 	m_GhoulLevelTick = 0;
 
+	if(m_pInfcPlayerClass)
+	{
+		m_pInfcPlayerClass->SetCharacter(nullptr);
+	}
+
 	m_class = newClass;
 
 	if(m_class < END_HUMANCLASS)
