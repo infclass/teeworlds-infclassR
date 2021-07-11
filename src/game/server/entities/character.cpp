@@ -922,7 +922,8 @@ void CCharacter::Tick()
 			}
 			
 			if(HumanFound)
-			{				
+			{
+				// TODO: Move the code and use CInfClassCharacter::MakeVisible()
 				if(m_IsInvisible)
 				{
 					GameServer()->CreatePlayerSpawn(GetPos());

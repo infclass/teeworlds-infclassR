@@ -94,6 +94,7 @@ public:
 	bool CanOpenPortals() const;
 
 	void GiveRandomClassSelectionBonus();
+	void MakeVisible();
 
 	void LockPosition();
 	void UnlockPosition();
