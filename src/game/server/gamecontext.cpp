@@ -3492,7 +3492,7 @@ bool CGameContext::ConHelp(IConsole::IResult *pResult, void *pUserData)
 			Buffer.append("\n\n");
 			pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("All players start as human."), NULL);
 			Buffer.append("\n\n");
-			pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("10 seconds later, two players become infected."), NULL);
+			pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("10 seconds later, a few players become infected."), NULL);
 			Buffer.append("\n\n");
 			pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("The goal for humans is to survive until the army clean the map."), NULL);
 			Buffer.append("\n\n");
