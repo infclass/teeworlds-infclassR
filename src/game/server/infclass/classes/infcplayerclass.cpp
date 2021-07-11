@@ -170,6 +170,10 @@ void CInfClassPlayerClass::Poison(int Count, int From)
 	}
 }
 
+void CInfClassPlayerClass::OnCharacterPreCoreTick()
+{
+}
+
 void CInfClassPlayerClass::OnCharacterTick()
 {
 	if(m_Poison > 0)

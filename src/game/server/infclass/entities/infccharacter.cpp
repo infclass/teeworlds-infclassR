@@ -1687,6 +1687,9 @@ void CInfClassCharacter::GiveRandomClassSelectionBonus()
 
 void CInfClassCharacter::PreCoreTick()
 {
+	if(m_pClass)
+		m_pClass->OnCharacterPreCoreTick();
+
 	if(m_IsFrozen)
 	{
 		m_Input.m_Jump = 0;

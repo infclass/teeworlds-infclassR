@@ -41,6 +41,7 @@ public:
 	void Poison(int Count, int From);
 
 	// Events
+	virtual void OnCharacterPreCoreTick();
 	virtual void OnCharacterTick();
 	virtual void OnCharacterSpawned();
 
