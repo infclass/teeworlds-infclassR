@@ -125,6 +125,16 @@ void CInfClassCharacter::OnCharacterOutOfInfectionZone()
 	m_InfZoneTick = -1;// Reset Tick when zombie is not in infection zone
 }
 
+void CInfClassCharacter::Destroy()
+{
+	if(m_pClass)
+		m_pClass->SetCharacter(nullptr);
+
+	m_pClass = nullptr;
+
+	CCharacter::Destroy();
+}
+
 void CInfClassCharacter::Tick()
 {
 	CCharacter::Tick();
