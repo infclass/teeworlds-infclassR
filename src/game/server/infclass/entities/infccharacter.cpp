@@ -1532,6 +1532,26 @@ void CInfClassCharacter::SetClass(CInfClassPlayerClass *pClass)
 {
 	m_pClass = pClass;
 	m_pClass->SetCharacter(this);
+
+	// ex SetClass(int):
+	ClassSpawnAttributes();
+	DestroyChildEntities();
+
+	m_QueuedWeapon = -1;
+	m_NeedFullHeal = false;
+
+	GameServer()->CreatePlayerSpawn(GetPos());
+
+	if(GetPlayerClass() == PLAYERCLASS_BAT) {
+		if(m_AirJumpCounter < g_Config.m_InfBatAirjumpLimit) {
+			EnableJump();
+			m_AirJumpCounter++;
+		}
+	}
+	if(GetPlayerClass() == PLAYERCLASS_NONE)
+	{
+		OpenClassChooser();
+	}
 }
 
 CInputCount CInfClassCharacter::CountFireInput() const
