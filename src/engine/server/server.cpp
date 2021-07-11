@@ -4430,6 +4430,29 @@ void CServer::ShowStats(int ClientID, int UserId)
 
 #endif
 
+void CServer::Register(int ClientID, const char* pUsername, const char* pPassword, const char* pEmail)
+{
+	char aBuf[512];
+	str_format(aBuf, sizeof(aBuf), "register request=%d login='%s' password='%s'", m_LastRegistrationRequestId, pUsername, pPassword);
+	++m_LastRegistrationRequestId;
+
+	Console()->Print(IConsole::OUTPUT_LEVEL_DEBUG, "registration", aBuf);
+}
+
+void CServer::Login(int ClientID, const char *pUsername, const char *pPassword)
+{
+	char aBuf[512];
+	str_format(aBuf, sizeof(aBuf), "login request=%d login='%s' password='%s'", m_LastRegistrationRequestId, pUsername, pPassword);
+	++m_LastRegistrationRequestId;
+
+	Console()->Print(IConsole::OUTPUT_LEVEL_DEBUG, "registration", aBuf);
+}
+
+void CServer::Logout(int ClientID)
+{
+	Console()->Print(IConsole::OUTPUT_LEVEL_DEBUG, "registration", "logout");
+}
+
 void CServer::Ban(int ClientID, int Seconds, const char* pReason)
 {
 	m_ServerBan.BanAddr(m_NetServer.ClientAddr(ClientID), Seconds, pReason);

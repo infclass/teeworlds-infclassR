@@ -378,6 +378,10 @@ public:
 	virtual void ShowStats(int ClientID, int UserId);
 	virtual void RefreshChallenge();
 	virtual int GetUserLevel(int ClientID);
+#else
+	virtual void Register(int ClientID, const char* pUsername, const char* pPassword, const char* pEmail);
+	virtual void Login(int ClientID, const char* pUsername, const char* pPassword);
+	virtual void Logout(int ClientID);
 #endif
 	virtual void Ban(int ClientID, int Seconds, const char* pReason);
 private:
@@ -409,6 +413,7 @@ public:
 	int64 m_ChallengeRefreshTick;
 	int m_ChallengeType;
 #endif
+	int m_LastRegistrationRequestId = 0;
 
 	int m_TimeShiftUnit;
 

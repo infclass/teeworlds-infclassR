@@ -254,10 +254,10 @@ private:
 	static bool ConCredits(IConsole::IResult *pResult, void *pUserData);
 	static bool ConInfo(IConsole::IResult *pResult, void *pUserData);
 	static bool ConVersion(IConsole::IResult *pResult, void *pUserData);
-#ifdef CONF_SQL
 	static bool ConRegister(IConsole::IResult *pResult, void *pUserData);
 	static bool ConLogin(IConsole::IResult *pResult, void *pUserData);
 	static bool ConLogout(IConsole::IResult *pResult, void *pUserData);
+#ifdef CONF_SQL
 	static bool ConSetEmail(IConsole::IResult *pResult, void *pUserData);
 	static bool ConTop10(IConsole::IResult *pResult, void *pUserData);
 	static bool ConChallenge(IConsole::IResult *pResult, void *pUserData);

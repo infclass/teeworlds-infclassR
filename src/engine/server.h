@@ -337,6 +337,10 @@ public:
 	virtual void ShowGoal(int ClientID, int ScoreType) = 0;
 	virtual void ShowStats(int ClientID, int UserId) = 0;
 	virtual int GetUserLevel(int ClientID) = 0;
+#else
+	virtual void Register(int ClientID, const char* pUsername, const char* pPassword, const char* pEmail) = 0;
+	virtual void Login(int ClientID, const char* pUsername, const char* pPassword) = 0;
+	virtual void Logout(int ClientID) = 0;
 #endif
 	virtual void Ban(int i, int Seconds, const char* pReason) = 0;
 

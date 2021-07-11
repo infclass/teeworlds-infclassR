@@ -3225,8 +3225,6 @@ void CGameContext::InitGeolocation()
 #endif
 }
 
-#ifdef CONF_SQL
-
 bool CGameContext::ConRegister(IConsole::IResult *pResult, void *pUserData)
 {
 	CGameContext *pSelf = (CGameContext *)pUserData;
@@ -3265,6 +3263,8 @@ bool CGameContext::ConLogout(IConsole::IResult *pResult, void *pUserData)
 	
 	return true;
 }
+
+#ifdef CONF_SQL
 
 bool CGameContext::ConSetEmail(IConsole::IResult *pResult, void *pUserData)
 {
@@ -4157,10 +4157,10 @@ void CGameContext::OnConsoleInit()
 
 	Console()->Register("credits", "", CFGFLAG_CHAT | CFGFLAG_USER, ConCredits, this, "Shows the credits of the mod");
 	Console()->Register("info", "", CFGFLAG_CHAT|CFGFLAG_USER, ConInfo, this, "Display information about the mod");
-#ifdef CONF_SQL
 	Console()->Register("register", "s<username> s<password> ?s<email>", CFGFLAG_CHAT|CFGFLAG_USER, ConRegister, this, "Create an account");
 	Console()->Register("login", "s<username> s<password>", CFGFLAG_CHAT|CFGFLAG_USER, ConLogin, this, "Login to an account");
 	Console()->Register("logout", "", CFGFLAG_CHAT|CFGFLAG_USER, ConLogout, this, "Logout");
+#ifdef CONF_SQL
 	Console()->Register("setemail", "s<email>", CFGFLAG_CHAT|CFGFLAG_USER, ConSetEmail, this, "Change your email");
 	
 	Console()->Register("top10", "?s<classname>", CFGFLAG_CHAT|CFGFLAG_USER, ConTop10, this, "Show the top 10 on the current map");
