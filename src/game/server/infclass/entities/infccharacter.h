@@ -30,6 +30,7 @@ public:
 	void OnCharacterInInfectionZone();
 	void OnCharacterOutOfInfectionZone();
 
+	void Destroy() override;
 	void Tick() override;
 	void SpecialSnapForClient(int SnappingClient, bool *pDoSnap) override;
 
