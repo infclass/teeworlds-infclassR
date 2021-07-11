@@ -5,6 +5,8 @@
 
 #include <math.h>
 
+#include "math.h"
+
 // ------------------------------------
 
 template<typename T>
