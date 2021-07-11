@@ -20,8 +20,7 @@ void CInfClassHuman::OnCharacterPreCoreTick()
 	{
 		if(m_pCharacter->m_Input.m_Jump && !m_pCharacter->m_PrevInput.m_Jump)
 		{
-			m_pCharacter->m_PositionLocked = false;
-			m_pCharacter->m_PositionLockTick = 0;
+			m_pCharacter->UnlockPosition();
 		}
 	}
 }

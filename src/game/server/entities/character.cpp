@@ -63,7 +63,7 @@ m_pConsole(pConsole)
 	m_DartLifeSpan = -1;
 	m_IsInvisible = false;
 	m_InvisibleTick = 0;
-	m_PositionLockTick = -Server()->TickSpeed()*10;
+	m_PositionLockTick = -1;
 	m_PositionLocked = false;
 	m_PositionLockAvailable = false;
 	m_HealTick = 0;

@@ -57,7 +57,7 @@ void CInfClassCharacter::OnCharacterSpawned()
 	m_SlowMotionTick = -1;
 	m_HallucinationTick = -1;
 	m_SlipperyTick = -1;
-	m_PositionLockTick = -Server()->TickSpeed()*10;
+	m_PositionLockTick = -1;
 	m_PositionLocked = false;
 	m_PositionLockAvailable = false;
 
@@ -295,6 +295,19 @@ void CInfClassCharacter::OnWeaponFired(WeaponFireContext *pFireContext)
 	}
 }
 
+void CInfClassCharacter::LockPosition()
+{
+	m_PositionLockTick = Server()->TickSpeed()*15;
+	m_PositionLocked = true;
+	m_PositionLockAvailable = false;
+}
+
+void CInfClassCharacter::UnlockPosition()
+{
+	m_PositionLockTick = 0;
+	m_PositionLocked = false;
+}
+
 void CInfClassCharacter::OnHammerFired(WeaponFireContext *pFireContext)
 {
 	vec2 Direction = GetDirection();
@@ -419,14 +432,11 @@ void CInfClassCharacter::OnHammerFired(WeaponFireContext *pFireContext)
 		{
 			if(m_PositionLockTick <= 0 && m_PositionLockAvailable)
 			{
-				m_PositionLockTick = Server()->TickSpeed()*15;
-				m_PositionLocked = true;
-				m_PositionLockAvailable = false;
+				LockPosition();
 			}
 			else
 			{
-				m_PositionLockTick = 0;
-				m_PositionLocked = false;
+				UnlockPosition();
 			}
 		}
 	}

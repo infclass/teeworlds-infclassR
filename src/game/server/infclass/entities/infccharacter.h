@@ -79,6 +79,9 @@ public:
 
 	void GiveRandomClassSelectionBonus();
 
+	void LockPosition();
+	void UnlockPosition();
+
 protected:
 	void PreCoreTick() override;
 	void PostCoreTick() override;
