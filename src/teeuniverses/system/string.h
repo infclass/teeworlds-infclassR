@@ -20,6 +20,7 @@
 /* BEGIN EDIT *********************************************************/
 #include <base/math.h>
 /* END EDIT ***********************************************************/
+#include <base/system.h>
 
 //String contained in a fixed length array
 template<int SIZE>
