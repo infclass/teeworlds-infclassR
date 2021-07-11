@@ -1446,6 +1446,7 @@ void CInfClassCharacter::Die(int Killer, int Weapon)
 	GameWorld()->m_Core.m_apCharacters[m_pPlayer->GetCID()] = 0;
 	GameServer()->CreateDeath(GetPos(), m_pPlayer->GetCID());
 
+	GetClass()->OnCharacterDeath(Weapon);
 /* INFECTION MODIFICATION START ***************************************/
 
 	if(GetPlayerClass() == PLAYERCLASS_BOOMER && !IsFrozen() && Weapon != WEAPON_GAME && !(IsInLove() && Weapon == WEAPON_SELF) )
