@@ -1247,7 +1247,7 @@ bool CServer::GenerateClientMap(const char *pMapFilePath, const char *pMapName)
 	{
 		char aFullPath[512];
 		Storage()->GetCompletePath(IStorage::TYPE_SAVE, aClientMapDir, aFullPath, sizeof(aFullPath));
-		if(fs_makedir(aFullPath) != 0)
+		if(fs_makedir_rec_for(aFullPath) != 0 || fs_makedir(aFullPath) != 0)
 		{
 			dbg_msg("infclass", "Can't create the directory '%s'", aClientMapDir);
 		}
