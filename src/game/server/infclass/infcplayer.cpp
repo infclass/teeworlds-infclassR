@@ -92,6 +92,11 @@ int CInfClassPlayer::GetDefaultEmote() const
 	return CPlayer::GetDefaultEmote();
 }
 
+CInfClassCharacter *CInfClassPlayer::GetCharacter()
+{
+	return static_cast<CInfClassCharacter*>(m_pCharacter);
+}
+
 void CInfClassPlayer::SetCharacterClass(CInfClassPlayerClass *pClass)
 {
 	if(m_pInfcPlayerClass)

@@ -4,6 +4,7 @@
 #include <game/gamecore.h>
 
 class CGameContext;
+class CInfClassCharacter;
 class CInfClassGameController;
 class CInfClassPlayerClass;
 
@@ -25,6 +26,7 @@ public:
 	void Tick() override;
 	int GetDefaultEmote() const override;
 
+	CInfClassCharacter *GetCharacter();
 	CInfClassPlayerClass *GetCharacterClass() { return m_pInfcPlayerClass; }
 	const CInfClassPlayerClass *GetCharacterClass() const { return m_pInfcPlayerClass; }
 	void SetCharacterClass(CInfClassPlayerClass *pClass);
