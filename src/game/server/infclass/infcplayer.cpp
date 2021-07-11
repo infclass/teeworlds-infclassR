@@ -149,11 +149,6 @@ void CInfClassPlayer::SetClass(int newClass)
 	else
 		HookProtection(true); // true = hook protection for zombies by default
 
-	if(m_pCharacter)
-	{
-		m_pCharacter->SetClass(newClass);
-	}
-
 	if(IsHuman() && !GetCharacterClass()->IsHuman())
 	{
 		SetCharacterClass(new(m_ClientID) CInfClassHuman(this));
@@ -161,6 +156,10 @@ void CInfClassPlayer::SetClass(int newClass)
 	else if (IsZombie() && !GetCharacterClass()->IsZombie())
 	{
 		SetCharacterClass(new(m_ClientID) CInfClassInfected(this));
+	}
+	else if(m_pCharacter)
+	{
+		GetCharacter()->SetClass(m_pInfcPlayerClass);
 	}
 
 	GetCharacterClass()->OnPlayerClassChanged();

@@ -246,7 +246,6 @@ public:
 	virtual void OpenClassChooser() { }
 	int GetPlayerClass() const;
 
-	void SetClass(int ClassChoosed);
 	bool IsZombie() const;
 	bool IsHuman() const;
 	void RemoveAllGun();

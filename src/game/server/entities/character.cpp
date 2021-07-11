@@ -2104,28 +2104,6 @@ void CCharacter::DestroyChildEntities()
 	m_PositionLockAvailable = false;
 }
 
-void CCharacter::SetClass(int ClassChoosed)
-{
-	ClassSpawnAttributes();
-	DestroyChildEntities();
-	
-	m_QueuedWeapon = -1;
-	m_NeedFullHeal = false;
-	
-	GameServer()->CreatePlayerSpawn(GetPos());
-
-	if(GetPlayerClass() == PLAYERCLASS_BAT) {
-		if(m_AirJumpCounter < g_Config.m_InfBatAirjumpLimit) {
-			EnableJump();
-			m_AirJumpCounter++;
-		}
-	}
-	if(GetPlayerClass() == PLAYERCLASS_NONE)
-	{
-		OpenClassChooser();
-	}
-}
-
 bool CCharacter::IsZombie() const
 {
 	return m_pPlayer->IsZombie();
