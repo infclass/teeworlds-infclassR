@@ -31,8 +31,9 @@ public:
 	const CInfClassPlayerClass *GetCharacterClass() const { return m_pInfcPlayerClass; }
 	void SetCharacterClass(CInfClassPlayerClass *pClass);
 
+	void SetClass(int newClass) override;
+
 protected:
-	void onClassChanged() override;
 	const char *GetClan(int SnappingClient = -1) const override;
 
 	CInfClassGameController *m_pGameController = nullptr;

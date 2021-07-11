@@ -111,8 +111,49 @@ void CInfClassPlayer::SetCharacterClass(CInfClassPlayerClass *pClass)
 	}
 }
 
-void CInfClassPlayer::onClassChanged()
+void CInfClassPlayer::SetClass(int newClass)
 {
+	if(m_class == newClass)
+		return;
+
+	if(newClass > START_HUMANCLASS && newClass < END_HUMANCLASS)
+	{
+		bool ClassFound = false;
+		for(unsigned int i=0; i<sizeof(m_LastHumanClasses)/sizeof(int); i++)
+		{
+			if(m_LastHumanClasses[i] == newClass)
+				ClassFound = true;
+		}
+		if(!ClassFound)
+		{
+			for(unsigned int i=0; i<sizeof(m_LastHumanClasses)/sizeof(int)-1; i++)
+			{
+				m_LastHumanClasses[i] = m_LastHumanClasses[i+1];
+			}
+			m_LastHumanClasses[sizeof(m_LastHumanClasses)/sizeof(int)-1] = newClass;
+		}
+	}
+
+	if(newClass < END_HUMANCLASS)
+	{
+		m_LastHumanClass = newClass;
+	}
+
+	m_GhoulLevel = 0;
+	m_GhoulLevelTick = 0;
+
+	m_class = newClass;
+
+	if(m_class < END_HUMANCLASS)
+		HookProtection(true);
+	else
+		HookProtection(true); // true = hook protection for zombies by default
+
+	if(m_pCharacter)
+	{
+		m_pCharacter->SetClass(newClass);
+	}
+
 	if(IsHuman() && !GetCharacterClass()->IsHuman())
 	{
 		SetCharacterClass(new(m_ClientID) CInfClassHuman(this));
