@@ -49,26 +49,15 @@ endif()
 option(GEOLOCATION "Enable geolocation support" ON)
 option(MYSQL "Enable mysql support" OFF)
 option(PREFER_BUNDLED_LIBS "Prefer bundled libraries over system libraries" ${AUTO_DEPENDENCIES_DEFAULT})
-option(DEV "Don't generate stuff necessary for packaging" OFF)
 
 # Set the default build type to Release
 if(NOT(CMAKE_BUILD_TYPE))
-  if(NOT(DEV))
-    set(CMAKE_BUILD_TYPE Release)
-  else()
-    set(CMAKE_BUILD_TYPE Debug)
-  endif()
+  set(CMAKE_BUILD_TYPE Release)
 endif()
-
-if(NOT(CMAKE_BUILD_TYPE MATCHES "^(Release|Debug|RelWithDebInfo|MinSizeRel)$"))
-  message(WARNING "Unknown CMAKE_BUILD_TYPE, should be one of Release, Debug, RelWithDebInfo or MinSizeRel")
-endif()
-
-set(DBG $<OR:$<CONFIG:Debug>,$<CONFIG:RelWithDebInfo>>)
 
 configure_file(src/game/version.h.in ${PROJECT_BINARY_DIR}/src/game/version.h @ONLY)
 
-set(SERVER_EXECUTABLE Infclass-Server CACHE STRING "Name of the built server executable")
+set(SERVER_EXECUTABLE "Infclass-Server" CACHE STRING "Name of the built server executable")
 
 ########################################################################
 # Compiler flags
@@ -423,8 +412,8 @@ set(BASE
 )
 
 set(teeuniverses_SOURCES
-    src/teeuniverses/components/localization.cpp
-    src/teeuniverses/components/localization.h
+  src/teeuniverses/components/localization.cpp
+  src/teeuniverses/components/localization.h
 )
 
 set_glob(ENGINE_INTERFACE GLOB src/engine
@@ -551,8 +540,8 @@ target_include_directories(pnglite PUBLIC
 add_library(pnglite::pnglite ALIAS pnglite)
 
 include_directories(SYSTEM
-	${CMAKE_CURRENT_SOURCE_DIR}/src
-	${CMAKE_CURRENT_BINARY_DIR}/src
+  ${CMAKE_CURRENT_SOURCE_DIR}/src
+  ${CMAKE_CURRENT_BINARY_DIR}/src
 )
 
 target_link_libraries(engine-shared PUBLIC
@@ -747,16 +736,6 @@ if(TARGET_OS AND TARGET_OS STREQUAL "mac")
   list(APPEND TARGETS_OWN ${TARGET_SERVER_LAUNCHER})
   list(APPEND TARGETS_LINK ${TARGET_SERVER_LAUNCHER})
 endif()
-
-########################################################################
-# VARIOUS TARGETS
-########################################################################
-
-set_glob(MASTERSRV_SRC GLOB src/mastersrv mastersrv.cpp mastersrv.h)
-
-set(TARGET_MASTERSRV mastersrv)
-
-add_executable(${TARGET_MASTERSRV} EXCLUDE_FROM_ALL ${MASTERSRV_SRC} $<TARGET_OBJECTS:engine-shared> ${DEPS})
 
 ########################################################################
 # INSTALLATION
