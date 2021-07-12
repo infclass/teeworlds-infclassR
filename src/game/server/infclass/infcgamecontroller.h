@@ -3,13 +3,14 @@
 #ifndef GAME_SERVER_INFCLASS_GAMECONTROLLER_H
 #define GAME_SERVER_INFCLASS_GAMECONTROLLER_H
 
-#include <engine/console.h>
 #include <game/server/gamecontroller.h>
-#include <game/server/gameworld.h>
 
+#include <engine/console.h>
+
+class CGameWorld;
 class CInfClassCharacter;
 class CInfClassPlayer;
-class IConsole;
+struct CNetObj_GameInfo;
 
 class CInfClassGameController : public IGameController
 {
@@ -19,9 +20,8 @@ public:
 
 	void IncreaseCurrentRoundCounter() override;
 
-	void Tick();
-	void Snap(int SnappingClient);
-	// add more virtual functions here if you wish
+	void Tick() override;
+	void Snap(int SnappingClient) override;
 
 	CPlayer *CreatePlayer(int ClientID) override;
 
@@ -44,10 +44,10 @@ public:
 	bool IsInfectionStarted() override;
 	bool PortalsAvailableForCharacter(class CCharacter *pCharacter) override;
 	bool AreTurretsEnabled() const;
-	
+
 	void ResetFinalExplosion();
 	void SaveRoundRules();
-	
+
 	static bool IsZombieClass(int PlayerClass);
 	static bool IsDefenderClass(int PlayerClass);
 	static bool IsSupportClass(int PlayerClass);
@@ -81,8 +81,8 @@ private:
 
 	int RandomZombieToWitch();
 	std::vector<int> m_WitchCallers;
-	
-private:	
+
+private:
 	int m_MapWidth;
 	int m_MapHeight;
 	int* m_GrowingMap;
