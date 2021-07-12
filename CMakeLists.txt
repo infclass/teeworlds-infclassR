@@ -724,13 +724,16 @@ set(LIBS_SERVER
 )
 
 # Target
-set(TARGET_SERVER ${SERVER_EXECUTABLE})
-add_executable(${TARGET_SERVER}
+add_executable(Server
   ${DEPS}
   ${SERVER_SRC}
   ${SERVER_ICON}
   $<TARGET_OBJECTS:engine-shared>
   $<TARGET_OBJECTS:game-shared>
+)
+
+set_property(TARGET Server
+    PROPERTY OUTPUT_NAME ${SERVER_EXECUTABLE}
 )
 
 if(GEOLOCATION)
@@ -746,31 +749,31 @@ if(GEOLOCATION)
   )
   add_library(GeoLite2PP::GeoLite2PP ALIAS GeoLite2PP)
 
-  target_sources(${TARGET_SERVER} PRIVATE
+  target_sources(Server PRIVATE
     "src/infclassr/geolocation.cpp"
     "src/infclassr/geolocation.h"
   )
 
-  target_compile_definitions(${TARGET_SERVER} PRIVATE CONF_GEOLOCATION)
-  target_link_libraries(${TARGET_SERVER}
+  target_compile_definitions(Server PRIVATE CONF_GEOLOCATION)
+  target_link_libraries(Server
     GeoLite2PP::GeoLite2PP
     MaxMindDB::MaxMindDB
   )
 endif()
 
-target_link_libraries(${TARGET_SERVER} ${LIBS_SERVER})
-list(APPEND TARGETS_OWN ${TARGET_SERVER})
-list(APPEND TARGETS_LINK ${TARGET_SERVER})
+target_link_libraries(Server ${LIBS_SERVER})
+list(APPEND TARGETS_OWN Server)
+list(APPEND TARGETS_LINK Server)
 
-target_link_libraries(${TARGET_SERVER} md5)
-target_link_libraries(${TARGET_SERVER} engine-shared)
-target_link_libraries(${TARGET_SERVER} game-shared)
-target_link_libraries(${TARGET_SERVER} ICU::i18n)
-target_link_libraries(${TARGET_SERVER} ICU::uc)
+target_link_libraries(Server md5)
+target_link_libraries(Server engine-shared)
+target_link_libraries(Server game-shared)
+target_link_libraries(Server ICU::i18n)
+target_link_libraries(Server ICU::uc)
 
 if(TARGET_OS AND TARGET_OS STREQUAL "mac")
   set(SERVER_LAUNCHER_SRC src/osxlaunch/server.mm)
-  set(TARGET_SERVER_LAUNCHER ${TARGET_SERVER}-Launcher)
+  set(TARGET_SERVER_LAUNCHER Server-Launcher)
   add_executable(${TARGET_SERVER_LAUNCHER} ${SERVER_LAUNCHER_SRC})
   target_link_libraries(${TARGET_SERVER_LAUNCHER} ${COCOA})
   list(APPEND TARGETS_OWN ${TARGET_SERVER_LAUNCHER})
