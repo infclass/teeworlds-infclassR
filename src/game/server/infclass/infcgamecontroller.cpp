@@ -577,6 +577,8 @@ const char *CInfClassGameController::GetClanForClass(int PlayerClass, const char
 {
 	switch (PlayerClass)
 	{
+		case PLAYERCLASS_ELECTRICIAN:
+			return _("Electric");
 		default:
 			return GetClassDisplayName(PlayerClass, pDefaultText);
 	}
