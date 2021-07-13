@@ -150,7 +150,7 @@ const char *CInfClassPlayer::GetClan(int SnappingClient) const
 	}
 	else
 	{
-		const char *ClassName = CInfClassGameController::GetClassDisplayName(GetClass(), "?????");
+		const char *ClassName = CInfClassGameController::GetClanForClass(GetClass(), "?????");
 		str_format(aBuf, sizeof(aBuf), "%s%s", Server()->IsClientLogged(GetCID()) ? "@" : " ", ClassName);
 	}
 
