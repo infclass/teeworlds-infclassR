@@ -3,19 +3,15 @@
 #ifndef BASE_TL_BASE_H
 #define BASE_TL_BASE_H
 
+#include <algorithm>
 #include <base/system.h>
+#include <utility>
+
+using std::swap;
 
 inline void tl_assert(bool statement)
 {
 	dbg_assert(statement, "assert!");
-}
-
-template<class T>
-inline void swap(T &a, T &b)
-{
-	T c = b;
-	b = a;
-	a = c;
 }
 
 #endif
