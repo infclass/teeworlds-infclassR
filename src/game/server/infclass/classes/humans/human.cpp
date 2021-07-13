@@ -142,6 +142,7 @@ void CInfClassHuman::GiveClassAttributes()
 		case PLAYERCLASS_ELECTRICIAN:
 			m_pCharacter->GiveWeapon(WEAPON_HAMMER, -1);
 			m_pCharacter->GiveWeapon(WEAPON_GUN, -1);
+			m_pCharacter->GiveWeapon(WEAPON_SHOTGUN, -1);
 			m_pCharacter->GiveWeapon(WEAPON_LASER, -1);
 			m_pCharacter->SetActiveWeapon(WEAPON_HAMMER);
 			break;

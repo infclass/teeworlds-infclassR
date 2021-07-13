@@ -11,6 +11,7 @@
 
 #include <game/server/infclass/entities/biologist-mine.h>
 #include <game/server/infclass/entities/bouncing-bullet.h>
+#include <game/server/infclass/entities/chaining-laser.h>
 #include <game/server/infclass/entities/electrician-laser.h>
 #include <game/server/infclass/entities/engineer-wall.h>
 #include <game/server/infclass/entities/growingexplosion.h>
@@ -1289,6 +1290,14 @@ void CInfClassCharacter::OnShotgunFired(WeaponFireContext *pFireContext)
 		return;
 
 	vec2 Direction = GetDirection();
+
+	if(GetPlayerClass() == PLAYERCLASS_ELECTRICIAN)
+	{
+		new CChainingLaser(GameServer(), GetPos(), Direction, GameServer()->Tuning()->m_LaserReach, GetCID());
+		GameServer()->CreateSound(GetPos(), SOUND_LASER_FIRE);
+		return;
+	}
+
 	vec2 ProjStartPos = GetPos()+Direction*GetProximityRadius()*0.75f;
 
 	int ShotSpread = 3;
