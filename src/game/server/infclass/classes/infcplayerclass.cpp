@@ -166,6 +166,11 @@ int CInfClassPlayerClass::GetPlayerClass() const
 	return PLAYERCLASS_NONE;
 }
 
+bool CInfClassPlayerClass::CanBeLinked() const
+{
+	return false;
+}
+
 void CInfClassPlayerClass::OnPlayerClassChanged()
 {
 	UpdateSkin();

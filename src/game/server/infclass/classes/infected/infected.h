@@ -25,6 +25,7 @@ public:
 	void OnFloatingPointCollected(int Points) override;
 
 	float GetGhoulPercent() const override;
+	bool CanBeLinked() const override;
 	void IncreaseGhoulLevel(int Diff);
 	int GetGhoulLevel() const;
 
