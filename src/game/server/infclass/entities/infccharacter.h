@@ -23,6 +23,9 @@ public:
 	CInfClassCharacter(CInfClassGameController *pGameController);
 	~CInfClassCharacter() override;
 
+	static const CInfClassCharacter *fromCharacter(const CCharacter *pCharacter);
+	static CInfClassCharacter *fromCharacter(CCharacter *pCharacter);
+
 	void OnCharacterSpawned();
 
 	void Tick() override;
@@ -92,5 +95,15 @@ protected:
 	CInfClassGameController *m_pGameController = nullptr;
 	CInfClassPlayerClass *m_pClass = nullptr;
 };
+
+inline const CInfClassCharacter *CInfClassCharacter::fromCharacter(const CCharacter *pCharacter)
+{
+	return static_cast<const CInfClassCharacter *>(pCharacter);
+}
+
+inline CInfClassCharacter *CInfClassCharacter::fromCharacter(CCharacter *pCharacter)
+{
+	return static_cast<CInfClassCharacter *>(pCharacter);
+}
 
 #endif // GAME_SERVER_INFCLASS_ENTITIES_CHARACTER_H
