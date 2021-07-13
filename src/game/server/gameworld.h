@@ -107,6 +107,8 @@ public:
 		Returns:
 			Returns a pointer to the closest hit or NULL of there is no intersection.
 	*/
+	using CharacterFilter = bool (*)(const CCharacter *);
+	class CCharacter *IntersectCharacter(vec2 Pos0, vec2 Pos1, float Radius, vec2 &NewPos, CharacterFilter FilterFunction);
 	class CCharacter *IntersectCharacter(vec2 Pos0, vec2 Pos1, float Radius, vec2 &NewPos, class CEntity *pNotThis = 0);
 	CEntity *IntersectEntity(vec2 Pos0, vec2 Pos1, float Radius, vec2 *NewPos, int EntityType);
 	CEntity *GetClosestEntity(const vec2 From, CEntity *pEntity1, CEntity *pEntity2);
