@@ -57,6 +57,7 @@ public:
 
 	int GetCID() const;
 
+	const CInfClassPlayerClass *GetClass() const { return m_pClass; }
 	CInfClassPlayerClass *GetClass() { return m_pClass; }
 	void SetClass(CInfClassPlayerClass *pClass);
 
