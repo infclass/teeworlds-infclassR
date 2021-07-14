@@ -80,6 +80,7 @@ public:
 	int GetInAirTick() const { return m_InAirTick; }
 
 	bool IsInvisible() const;
+	bool IsInvincible() const; // Invincible here means "ignores all damage"
 	bool HasHallucination() const;
 
 	float WebHookLength() const;

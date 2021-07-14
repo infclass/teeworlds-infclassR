@@ -1541,6 +1541,11 @@ bool CInfClassCharacter::IsInvisible() const
 	return m_IsInvisible;
 }
 
+bool CInfClassCharacter::IsInvincible() const
+{
+	return m_ProtectionTick > 0;
+}
+
 bool CInfClassCharacter::HasHallucination() const
 {
 	return m_HallucinationTick > 0;
