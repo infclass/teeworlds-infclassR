@@ -112,6 +112,9 @@ MACRO_CONFIG_INT(InfSlowMotionGravity, inf_slow_motion_gravity, 5, -100, 100, CF
 MACRO_CONFIG_INT(InfVoltageBoxCharges, inf_voltage_box_charges, 2, 0, 100, CFGFLAG_SERVER, "The number of voltage box charges")
 MACRO_CONFIG_INT(InfVoltageBoxRange, inf_voltage_box_range, 800, 0, 10000, CFGFLAG_SERVER, "The maximum length of a voltage box link")
 
+MACRO_CONFIG_INT(InfChainingLaserBaseDamage, inf_chaining_laser_base_damage, 5, 0, 10000, CFGFLAG_SERVER, "The base damage of the chaining laser")
+MACRO_CONFIG_INT(InfChainingLaserBounceMaxDistance, inf_chaining_laser_bounce_max_distance, 32 * 10, 0, 10000, CFGFLAG_SERVER, "The max bounce distance for the chaining laser")
+
 //Turret
 MACRO_CONFIG_INT(InfMinPlayersForTurrets, inf_min_players_for_turrets, 3, 0, 100, CFGFLAG_SERVER, "Minimum number of players that are needed to enable turrets")
 MACRO_CONFIG_INT(InfTurretEnable, inf_turret_enable, 1, 0, 1, CFGFLAG_SERVER, "If turrets are available")
