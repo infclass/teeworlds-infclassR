@@ -21,6 +21,7 @@ class CLayers
 public:
 	CLayers();
 	void Init(class IKernel *pKernel);
+	void Init(class IMap *pMap);
 	int NumGroups() const { return m_GroupsNum; };
 	class IMap *Map() const { return m_pMap; };
 	CMapItemGroup *GameGroup() const { return m_pGameGroup; };
