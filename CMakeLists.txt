@@ -403,6 +403,7 @@ set(BASE
   src/base/tl/algorithm.h
   src/base/tl/allocator.h
   src/base/tl/array.h
+  src/base/tl/array_on_stack.h
   src/base/tl/base.h
   src/base/tl/range.h
   src/base/tl/sorted_array.h
