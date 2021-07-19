@@ -124,6 +124,7 @@ protected:
 	CGameContext *GameServer() const { return m_pGameServer; }
 	IServer *Server() const;
 
+	virtual const char *GetName(int SnappingClient = -1) const;
 	virtual const char *GetClan(int SnappingClient = -1) const;
 
 	//
