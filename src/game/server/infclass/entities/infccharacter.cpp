@@ -1692,6 +1692,18 @@ bool CInfClassCharacter::CanDie() const
 	return m_pClass && m_pClass->CanDie();
 }
 
+bool CInfClassCharacter::CanJump() const
+{
+	// 1 bit = to keep track if a jump has been made on this input
+	if(m_Core.m_Jumped & 1)
+		return false;
+	// 2 bit = to keep track if an air-jump has been made
+	if(m_Core.m_Jumped & 2)
+		return false;
+
+	return true;
+}
+
 bool CInfClassCharacter::IsInvisible() const
 {
 	return m_IsInvisible;

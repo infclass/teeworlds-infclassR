@@ -83,6 +83,7 @@ public:
 
 	bool CanDie() const;
 
+	bool CanJump() const;
 	int GetInAirTick() const { return m_InAirTick; }
 
 	bool IsInvisible() const;
