@@ -19,7 +19,7 @@ public:
 
 	void Reset() override;
 
-	void SetPosition(const vec2 &Position);
+	void SetPos(const vec2 &Position);
 
 protected:
 	int m_Owner = 0;
