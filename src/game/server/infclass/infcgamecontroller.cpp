@@ -7,6 +7,7 @@
 #include <game/server/infclass/entities/infccharacter.h>
 #include <game/server/infclass/infcplayer.h>
 
+#include <base/tl/array_on_stack.h>
 #include <engine/shared/config.h>
 #include <engine/server/mapconverter.h>
 #include <engine/server/roundstatistics.h>
@@ -146,24 +147,33 @@ void CInfClassGameController::HandleCharacterTiles(CCharacter *pChr)
 {
 	CInfClassCharacter *pCharacter = CInfClassCharacter::fromCharacter(pChr);
 	int Index0 = GetDamageZoneValueAt(vec2(pChr->GetPos().x + pChr->GetProximityRadius() / 3.f, pChr->GetPos().y - pChr->GetProximityRadius() / 3.f));
+	int Index1 = GetDamageZoneValueAt(vec2(pChr->GetPos().x + pChr->GetProximityRadius() / 3.f, pChr->GetPos().y + pChr->GetProximityRadius() / 3.f));
+	int Index2 = GetDamageZoneValueAt(vec2(pChr->GetPos().x - pChr->GetProximityRadius() / 3.f, pChr->GetPos().y - pChr->GetProximityRadius() / 3.f));
+	int Index3 = GetDamageZoneValueAt(vec2(pChr->GetPos().x - pChr->GetProximityRadius() / 3.f, pChr->GetPos().y + pChr->GetProximityRadius() / 3.f));
 
-	if(Index0 == ZONE_DAMAGE_DEATH)
+	array_on_stack<int, 4> Indices;
+	Indices.Add(Index0);
+	Indices.Add(Index1);
+	Indices.Add(Index2);
+	Indices.Add(Index3);
+
+	if(Indices.Contains(ZONE_DAMAGE_DEATH))
 	{
 		pCharacter->Die(pCharacter->GetCID(), WEAPON_WORLD);
 	}
-	else if(pCharacter->GetPlayerClass() != PLAYERCLASS_UNDEAD && (Index0 == ZONE_DAMAGE_DEATH_NOUNDEAD))
+	else if(pCharacter->GetPlayerClass() != PLAYERCLASS_UNDEAD && Indices.Contains(ZONE_DAMAGE_DEATH_NOUNDEAD))
 	{
 		pCharacter->Die(pCharacter->GetCID(), WEAPON_WORLD);
 	}
-	else if(pCharacter->IsZombie() && (Index0 == ZONE_DAMAGE_DEATH_INFECTED))
+	else if(pCharacter->IsZombie() && Indices.Contains(ZONE_DAMAGE_DEATH_INFECTED))
 	{
 		pCharacter->Die(pCharacter->GetCID(), WEAPON_WORLD);
 	}
-	else if(pCharacter->IsAlive() && (Index0 == ZONE_DAMAGE_INFECTION))
+	else if(pCharacter->IsAlive() && Indices.Contains(ZONE_DAMAGE_INFECTION))
 	{
 		pCharacter->OnCharacterInInfectionZone();
 	}
-	if(pCharacter->IsAlive() && (Index0 != ZONE_DAMAGE_INFECTION))
+	if(pCharacter->IsAlive() && !Indices.Contains(ZONE_DAMAGE_INFECTION))
 	{
 		pCharacter->OnCharacterOutOfInfectionZone();
 	}
