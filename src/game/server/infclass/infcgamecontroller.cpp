@@ -142,6 +142,43 @@ bool CInfClassGameController::OnEntity(const char* pName, vec2 Pivot, vec2 P0, v
 	return res;
 }
 
+void CInfClassGameController::HandleCharacterTiles(CCharacter *pChr)
+{
+	CInfClassCharacter *pCharacter = CInfClassCharacter::fromCharacter(pChr);
+	int Index0 = GetDamageZoneValueAt(vec2(pChr->GetPos().x + pChr->GetProximityRadius() / 3.f, pChr->GetPos().y - pChr->GetProximityRadius() / 3.f));
+
+	if(Index0 == ZONE_DAMAGE_DEATH)
+	{
+		pCharacter->Die(pCharacter->GetCID(), WEAPON_WORLD);
+	}
+	else if(pCharacter->GetPlayerClass() != PLAYERCLASS_UNDEAD && (Index0 == ZONE_DAMAGE_DEATH_NOUNDEAD))
+	{
+		pCharacter->Die(pCharacter->GetCID(), WEAPON_WORLD);
+	}
+	else if(pCharacter->IsZombie() && (Index0 == ZONE_DAMAGE_DEATH_INFECTED))
+	{
+		pCharacter->Die(pCharacter->GetCID(), WEAPON_WORLD);
+	}
+	else if(pCharacter->IsAlive() && (Index0 == ZONE_DAMAGE_INFECTION))
+	{
+		pCharacter->OnCharacterInInfectionZone();
+	}
+	if(pCharacter->IsAlive() && (Index0 != ZONE_DAMAGE_INFECTION))
+	{
+		pCharacter->OnCharacterOutOfInfectionZone();
+	}
+}
+
+int CInfClassGameController::GetZoneValueAt(int ZoneHandle, const vec2 &Pos) const
+{
+	return GameServer()->Collision()->GetZoneValueAt(ZoneHandle, Pos);
+}
+
+int CInfClassGameController::GetDamageZoneValueAt(const vec2 &Pos) const
+{
+	return GetZoneValueAt(GameServer()->m_ZoneHandle_icDamage, Pos);
+}
+
 void CInfClassGameController::ResetFinalExplosion()
 {
 	m_ExplosionStarted = false;

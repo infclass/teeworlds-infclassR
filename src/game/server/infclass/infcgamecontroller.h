@@ -26,6 +26,11 @@ public:
 	CPlayer *CreatePlayer(int ClientID) override;
 
 	bool OnEntity(const char* pName, vec2 Pivot, vec2 P0, vec2 P1, vec2 P2, vec2 P3, int PosEnv) override;
+	void HandleCharacterTiles(class CCharacter *pChr) override;
+
+	int GetZoneValueAt(int ZoneHandle, const vec2 &Pos) const;
+	int GetDamageZoneValueAt(const vec2 &Pos) const;
+
 	int OnCharacterDeath(class CCharacter *pVictim, class CPlayer *pKiller, int Weapon) override;
 	void OnCharacterSpawn(class CCharacter *pChr) override;
 	void OnPlayerInfoChange(class CPlayer *pP) override;

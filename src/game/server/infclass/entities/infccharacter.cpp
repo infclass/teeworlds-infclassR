@@ -72,6 +72,59 @@ void CInfClassCharacter::OnCharacterSpawned()
 		m_pClass->OnCharacterSpawned();
 }
 
+void CInfClassCharacter::OnCharacterInInfectionZone()
+{
+	if(IsZombie())
+	{
+		if(Server()->Tick() >= m_HealTick + (Server()->TickSpeed()/g_Config.m_InfInfzoneHealRate))
+		{
+			m_HealTick = Server()->Tick();
+			if(GameServer()->GetZombieCount() == 1)
+			{
+				// See also: Character::GiveArmorIfLonely()
+				IncreaseOverallHp(1);
+			}
+			else
+			{
+				IncreaseHealth(1);
+			}
+		}
+		if (m_InfZoneTick < 0) {
+			m_InfZoneTick = Server()->Tick(); // Save Tick when zombie enters infection zone
+			GrantSpawnProtection();
+		}
+	}
+	else
+	{
+		CPlayer *pKiller = nullptr;
+		for(CCharacter *pHooker = (CCharacter*) GameServer()->m_World.FindFirst(CGameWorld::ENTTYPE_CHARACTER); pHooker; pHooker = (CCharacter *)pHooker->TypeNext())
+		{
+			if (pHooker->GetPlayer() && pHooker->m_Core.m_HookedPlayer == GetCID())
+			{
+				if (pKiller) {
+					// More than one player hooked this victim
+					// We don't support cooperative killing
+					pKiller = nullptr;
+					break;
+				}
+				pKiller = pHooker->GetPlayer();
+			}
+		}
+
+		GetPlayer()->Infect(pKiller);
+
+		if (g_Config.m_InfInfzoneFreezeDuration > 0)
+		{
+			Freeze(g_Config.m_InfInfzoneFreezeDuration, GetCID(), FREEZEREASON_INFECTION);
+		}
+	}
+}
+
+void CInfClassCharacter::OnCharacterOutOfInfectionZone()
+{
+	m_InfZoneTick = -1;// Reset Tick when zombie is not in infection zone
+}
+
 void CInfClassCharacter::Tick()
 {
 	CCharacter::Tick();

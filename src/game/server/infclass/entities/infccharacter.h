@@ -27,6 +27,8 @@ public:
 	static CInfClassCharacter *fromCharacter(CCharacter *pCharacter);
 
 	void OnCharacterSpawned();
+	void OnCharacterInInfectionZone();
+	void OnCharacterOutOfInfectionZone();
 
 	void Tick() override;
 	void SpecialSnapForClient(int SnappingClient, bool *pDoSnap) override;
