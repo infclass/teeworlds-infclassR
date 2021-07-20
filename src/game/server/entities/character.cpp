@@ -752,7 +752,9 @@ void CCharacter::Tick()
 	}
 	else
 		m_BonusTick = 0;
-	
+
+	GameServer()->m_pController->HandleCharacterTiles(this);
+
 	{
 		int Index0 = GameServer()->Collision()->GetZoneValueAt(GameServer()->m_ZoneHandle_icDamage, m_Pos.x+m_ProximityRadius/3.f, m_Pos.y-m_ProximityRadius/3.f);
 		
