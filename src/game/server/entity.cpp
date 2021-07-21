@@ -4,6 +4,7 @@
 #include "entity.h"
 #include "gamecontext.h"
 
+#include <engine/shared/config.h>
 #include <game/animation.h>
 #include <game/server/player.h>
 
@@ -42,6 +43,11 @@ int CEntity::NetworkClipped(int SnappingClient, vec2 CheckPos) const
 {
 	if(SnappingClient == -1)
 		return 0;
+
+	if(!m_pGameWorld->Config()->m_DbgNetworkClipEnabled)
+	{
+		return 0;
+	}
 
 	const CPlayer *pClient = m_pGameWorld->GameServer()->m_apPlayers[SnappingClient];
 	float dx = pClient->m_ViewPos.x-CheckPos.x;
