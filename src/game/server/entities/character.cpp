@@ -100,13 +100,13 @@ bool CCharacter::FindWitchSpawnPosition(vec2& Pos)
 		float TestAngle;
 		
 		TestAngle = Angle + i * (pi / 32.0f);
-		Pos = m_Pos + vec2(cos(TestAngle), sin(TestAngle)) * 84.0f;
+		Pos = GetPos() + vec2(cos(TestAngle), sin(TestAngle)) * 84.0f;
 		
 		if(GameServer()->m_pController->IsSpawnable(Pos, ZONE_TELE_NOWITCH))
 			return true;
 		
 		TestAngle = Angle - i * (pi / 32.0f);
-		Pos = m_Pos + vec2(cos(TestAngle), sin(TestAngle)) * 84.0f;
+		Pos = GetPos() + vec2(cos(TestAngle), sin(TestAngle)) * 84.0f;
 		
 		if(GameServer()->m_pController->IsSpawnable(Pos, ZONE_TELE_NOWITCH))
 			return true;
@@ -117,7 +117,7 @@ bool CCharacter::FindWitchSpawnPosition(vec2& Pos)
 
 bool CCharacter::FindPortalPosition(vec2 Pos, vec2& Res)
 {
-	vec2 PortalShift = Pos - m_Pos;
+	vec2 PortalShift = Pos - GetPos();
 	vec2 PortalDir = normalize(PortalShift);
 	if(length(PortalShift) > 500.0f)
 		PortalShift = PortalDir * 500.0f;
@@ -126,7 +126,7 @@ bool CCharacter::FindPortalPosition(vec2 Pos, vec2& Res)
 	while(Iterator > 0.0f)
 	{
 		PortalShift = PortalDir * Iterator;
-		vec2 PortalPos = m_Pos + PortalShift;
+		vec2 PortalPos = GetPos() + PortalShift;
 	
 		if(GameServer()->m_pController->IsSpawnable(PortalPos, ZONE_TELE_NOSCIENTIST))
 		{
@@ -159,7 +159,7 @@ bool CCharacter::Spawn(CPlayer *pPlayer, vec2 Pos)
 
 	m_Core.Reset();
 	m_Core.Init(&GameServer()->m_World.m_Core, GameServer()->Collision());
-	m_Core.m_Pos = m_Pos;
+	m_Core.m_Pos = GetPos();
 	GameServer()->m_World.m_Core.m_apCharacters[m_pPlayer->GetCID()] = &m_Core;
 
 	m_ReckoningTick = 0;
@@ -229,7 +229,7 @@ void CCharacter::SetWeapon(int W)
 	m_LastWeapon = m_ActiveWeapon;
 	m_QueuedWeapon = -1;
 	SetActiveWeapon(W);
-	GameServer()->CreateSound(m_Pos, SOUND_WEAPON_SWITCH);
+	GameServer()->CreateSound(GetPos(), SOUND_WEAPON_SWITCH);
 
 	if(m_ActiveWeapon < 0 || m_ActiveWeapon >= NUM_WEAPONS)
 		SetActiveWeapon(0);
@@ -237,9 +237,9 @@ void CCharacter::SetWeapon(int W)
 
 bool CCharacter::IsGrounded()
 {
-	if(GameServer()->Collision()->CheckPoint(m_Pos.x+m_ProximityRadius/2, m_Pos.y+m_ProximityRadius/2+5))
+	if(GameServer()->Collision()->CheckPoint(GetPos().x+m_ProximityRadius/2, GetPos().y+m_ProximityRadius/2+5))
 		return true;
-	if(GameServer()->Collision()->CheckPoint(m_Pos.x-m_ProximityRadius/2, m_Pos.y+m_ProximityRadius/2+5))
+	if(GameServer()->Collision()->CheckPoint(GetPos().x-m_ProximityRadius/2, GetPos().y+m_ProximityRadius/2+5))
 		return true;
 	return false;
 }
@@ -302,7 +302,7 @@ void CCharacter::HandleNinja()
 		// Set velocity
 		float VelocityBuff = 1.0f + static_cast<float>(m_NinjaVelocityBuff)/2.0f;
 		m_Core.m_Vel = m_DartDir * g_pData->m_Weapons.m_Ninja.m_Velocity * VelocityBuff;
-		vec2 OldPos = m_Pos;
+		vec2 OldPos = GetPos();
 		GameServer()->Collision()->MoveBox(&m_Core.m_Pos, &m_Core.m_Vel, vec2(m_ProximityRadius, m_ProximityRadius), 0.f);
 
 		// reset velocity so the client doesn't predict stuff
@@ -311,7 +311,7 @@ void CCharacter::HandleNinja()
 		// check if we Hit anything along the way
 		{
 			CCharacter *aEnts[MAX_CLIENTS];
-			vec2 Dir = m_Pos - OldPos;
+			vec2 Dir = GetPos() - OldPos;
 			float Radius = m_ProximityRadius * 2.0f;
 			vec2 Center = OldPos + Dir * 0.5f;
 			int Num = GameServer()->m_World.FindEntities(Center, Radius, (CEntity**)aEnts, MAX_CLIENTS, CGameWorld::ENTTYPE_CHARACTER);
@@ -332,11 +332,11 @@ void CCharacter::HandleNinja()
 					continue;
 
 				// check so we are sufficiently close
-				if (distance(aEnts[i]->m_Pos, m_Pos) > (m_ProximityRadius * 2.0f))
+				if (distance(aEnts[i]->GetPos(), GetPos()) > (m_ProximityRadius * 2.0f))
 					continue;
 
 				// Hit a player, give him damage and stuffs...
-				GameServer()->CreateSound(aEnts[i]->m_Pos, SOUND_NINJA_HIT);
+				GameServer()->CreateSound(aEnts[i]->GetPos(), SOUND_NINJA_HIT);
 				// set his velocity to fast upward (for now)
 				if(m_NumObjectsHit < 10)
 					m_apHitObjects[m_NumObjectsHit++] = aEnts[i];
@@ -348,7 +348,7 @@ void CCharacter::HandleNinja()
 			for(CPortal* pPortal = (CPortal*) GameServer()->m_World.FindFirst(CGameWorld::ENTTYPE_PORTAL); pPortal; pPortal = (CPortal*) pPortal->TypeNext())
 			{
 				// check so we are sufficiently close
-				if (distance(pPortal->m_Pos, m_Pos) > (m_ProximityRadius * 2.0f))
+				if (distance(pPortal->GetPos(), GetPos()) > (m_ProximityRadius * 2.0f))
 					continue;
 
 				pPortal->TakeDamage(Damage, m_pPlayer->GetCID(), WEAPON_NINJA, TAKEDAMAGEMODE_NOINFECTION);
@@ -658,7 +658,7 @@ void CCharacter::NoAmmo()
 	m_ReloadTimer = 125 * Server()->TickSpeed() / 1000;
 	if(m_LastNoAmmoSound + Server()->TickSpeed() * 0.5 <= Server()->Tick())
 	{
-		GameServer()->CreateSound(m_Pos, SOUND_WEAPON_NOAMMO);
+		GameServer()->CreateSound(GetPos(), SOUND_WEAPON_NOAMMO);
 		m_LastNoAmmoSound = Server()->Tick();
 	}
 }
@@ -732,7 +732,7 @@ void CCharacter::Tick()
 
 	if(IsHuman() && IsAlive() && GameServer()->m_pController->IsInfectionStarted())
 	{
-		int Index = GameServer()->Collision()->GetZoneValueAt(GameServer()->m_ZoneHandle_icBonus, m_Pos.x, m_Pos.y);
+		int Index = GameServer()->Collision()->GetZoneValueAt(GameServer()->m_ZoneHandle_icBonus, GetPos().x, GetPos().y);
 		if(Index == ZONE_BONUS_BONUS)
 		{
 			m_BonusTick++;
@@ -838,12 +838,12 @@ void CCharacter::Tick()
 		else
 		{
 			//Search nearest human
-			int cellGhostX = static_cast<int>(round(m_Pos.x))/32;
-			int cellGhostY = static_cast<int>(round(m_Pos.y))/32;
+			int cellGhostX = static_cast<int>(round(GetPos().x))/32;
+			int cellGhostY = static_cast<int>(round(GetPos().y))/32;
 			
 			vec2 SeedPos = vec2(16.0f, 16.0f) + vec2(
-				static_cast<float>(static_cast<int>(round(m_Pos.x))/32)*32.0,
-				static_cast<float>(static_cast<int>(round(m_Pos.y))/32)*32.0);
+				static_cast<float>(static_cast<int>(round(GetPos().x))/32)*32.0,
+				static_cast<float>(static_cast<int>(round(GetPos().y))/32)*32.0);
 			
 			for(int y=0; y<GHOST_SEARCHMAP_SIZE; y++)
 			{
@@ -864,8 +864,8 @@ void CCharacter::Tick()
 			{
 				if(p->IsZombie()) continue;
 				
-				int cellHumanX = static_cast<int>(round(p->m_Pos.x))/32;
-				int cellHumanY = static_cast<int>(round(p->m_Pos.y))/32;
+				int cellHumanX = static_cast<int>(round(p->GetPos().x))/32;
+				int cellHumanY = static_cast<int>(round(p->GetPos().y))/32;
 				
 				int cellX = cellHumanX - cellGhostX + GHOST_RADIUS;
 				int cellY = cellHumanY - cellGhostY + GHOST_RADIUS;
@@ -934,7 +934,7 @@ void CCharacter::Tick()
 			{				
 				if(m_IsInvisible)
 				{
-					GameServer()->CreatePlayerSpawn(m_Pos);
+					GameServer()->CreatePlayerSpawn(GetPos());
 					m_IsInvisible = false;
 				}
 				
@@ -956,12 +956,12 @@ void CCharacter::Tick()
 			{
 				if(p->IsZombie()) continue;
 
-				vec2 IntersectPos = closest_point_on_line(m_Core.m_Pos, m_Core.m_HookPos, p->m_Pos);
-				float Len = distance(p->m_Pos, IntersectPos);
+				vec2 IntersectPos = closest_point_on_line(m_Core.m_Pos, m_Core.m_HookPos, p->GetPos());
+				float Len = distance(p->GetPos(), IntersectPos);
 				if(Len < p->m_ProximityRadius)
 				{				
 					m_Core.m_HookState = HOOK_GRABBED;
-					m_Core.m_HookPos = p->m_Pos;
+					m_Core.m_HookPos = p->GetPos();
 					m_Core.m_HookedPlayer = p->m_pPlayer->GetCID();
 					m_Core.m_HookTick = 0;
 					m_HookMode = 0;
@@ -1016,7 +1016,7 @@ void CCharacter::Tick()
 			{
 				m_Core.m_HookedPlayer = -1;
 				m_Core.m_HookState = HOOK_RETRACTED;
-				m_Core.m_HookPos = m_Pos;
+				m_Core.m_HookPos = GetPos();
 			}
 		}
 	}
@@ -1515,12 +1515,12 @@ void CCharacter::TickDefered()
 	int Mask = CmaskAllExceptOne(m_pPlayer->GetCID());
 
 
-	if(Events&COREEVENT_HOOK_ATTACH_PLAYER) GameServer()->CreateSound(m_Pos, SOUND_HOOK_ATTACH_PLAYER, CmaskAll());
+	if(Events&COREEVENT_HOOK_ATTACH_PLAYER) GameServer()->CreateSound(GetPos(), SOUND_HOOK_ATTACH_PLAYER, CmaskAll());
 	if(GetPlayerClass() != PLAYERCLASS_GHOST || !m_IsInvisible)
 	{
-		if(Events&COREEVENT_GROUND_JUMP) GameServer()->CreateSound(m_Pos, SOUND_PLAYER_JUMP, Mask);
-		if(Events&COREEVENT_HOOK_ATTACH_GROUND) GameServer()->CreateSound(m_Pos, SOUND_HOOK_ATTACH_GROUND, Mask);
-		if(Events&COREEVENT_HOOK_HIT_NOHOOK) GameServer()->CreateSound(m_Pos, SOUND_HOOK_NOATTACH, Mask);
+		if(Events&COREEVENT_GROUND_JUMP) GameServer()->CreateSound(GetPos(), SOUND_PLAYER_JUMP, Mask);
+		if(Events&COREEVENT_HOOK_ATTACH_GROUND) GameServer()->CreateSound(GetPos(), SOUND_HOOK_ATTACH_GROUND, Mask);
+		if(Events&COREEVENT_HOOK_HIT_NOHOOK) GameServer()->CreateSound(GetPos(), SOUND_HOOK_NOATTACH, Mask);
 	}
 
 
@@ -1714,12 +1714,12 @@ bool CCharacter::TakeDamage(vec2 Force, int Dmg, int From, int Weapon, TAKEDAMAG
 	if(Server()->Tick() < m_DamageTakenTick+25)
 	{
 		// make sure that the damage indicators doesn't group together
-		GameServer()->CreateDamageInd(m_Pos, m_DamageTaken*0.25f, Dmg);
+		GameServer()->CreateDamageInd(GetPos(), m_DamageTaken*0.25f, Dmg);
 	}
 	else
 	{
 		m_DamageTaken = 0;
-		GameServer()->CreateDamageInd(m_Pos, 0, Dmg);
+		GameServer()->CreateDamageInd(GetPos(), 0, Dmg);
 	}
 
 /* INFECTION MODIFICATION START ***************************************/
@@ -1775,9 +1775,9 @@ bool CCharacter::TakeDamage(vec2 Force, int Dmg, int From, int Weapon, TAKEDAMAG
 /* INFECTION MODIFICATION END *****************************************/
 
 	if (Dmg > 2)
-		GameServer()->CreateSound(m_Pos, SOUND_PLAYER_PAIN_LONG);
+		GameServer()->CreateSound(GetPos(), SOUND_PLAYER_PAIN_LONG);
 	else
-		GameServer()->CreateSound(m_Pos, SOUND_PLAYER_PAIN_SHORT);
+		GameServer()->CreateSound(GetPos(), SOUND_PLAYER_PAIN_SHORT);
 
 	SetEmote(EMOTE_PAIN, Server()->Tick() + 500 * Server()->TickSpeed() / 1000);
 
@@ -1814,7 +1814,7 @@ void CCharacter::Snap(int SnappingClient)
 				PortalShift = PortalDir * 500.0f;
 			vec2 PortalPos;
 			
-			if(FindPortalPosition(m_Pos + PortalShift, PortalPos))
+			if(FindPortalPosition(GetPos() + PortalShift, PortalPos))
 			{
 				CNetObj_Projectile *pObj = static_cast<CNetObj_Projectile *>(Server()->SnapNewItem(NETOBJTYPE_PROJECTILE, m_CursorID, sizeof(CNetObj_Projectile)));
 				if(!pObj)
@@ -1858,10 +1858,10 @@ void CCharacter::Snap(int SnappingClient)
 				if(!pObj)
 					return;
 
-				float Angle = atan2f(pFlag->m_Pos.y-m_Pos.y, pFlag->m_Pos.x-m_Pos.x);
+				float Angle = atan2f(pFlag->GetPos().y-GetPos().y, pFlag->GetPos().x-GetPos().x);
 				vec2 vecDir = vec2(cos(Angle), sin(Angle));
-				vec2 Indicator = m_Pos + vecDir * 84.0f; 
-				vec2 IndicatorM = m_Pos - vecDir * 84.0f; 
+				vec2 Indicator = GetPos() + vecDir * 84.0f;
+				vec2 IndicatorM = GetPos() - vecDir * 84.0f;
 
 				// display laser beam for 0.5 seconds
 				int tickShowBeamTime = Server()->TickSpeed()*0.5;
@@ -2155,7 +2155,7 @@ void CCharacter::SetClass(int ClassChoosed)
 	m_QueuedWeapon = -1;
 	m_NeedFullHeal = false;
 	
-	GameServer()->CreatePlayerSpawn(m_Pos);
+	GameServer()->CreatePlayerSpawn(GetPos());
 
 	if(GetPlayerClass() == PLAYERCLASS_BAT) {
 		if(m_AirJumpCounter < g_Config.m_InfBatAirjumpLimit) {
@@ -2233,7 +2233,7 @@ void CCharacter::Unfreeze()
 		m_Health = 10.0;
 	}
 	
-	GameServer()->CreatePlayerSpawn(m_Pos);
+	GameServer()->CreatePlayerSpawn(GetPos());
 }
 
 bool CCharacter::IsFrozen() const
