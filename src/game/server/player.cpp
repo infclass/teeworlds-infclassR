@@ -396,26 +396,6 @@ void CPlayer::Respawn()
 
 void CPlayer::SetTeam(int Team, bool DoChatMsg)
 {
-	// clamp the team
-	Team = GameServer()->m_pController->ClampTeam(Team);
-	if(m_Team == Team)
-		return;
-
-	char aBuf[512];
-	if(DoChatMsg)
-	{
-		if(Team == TEAM_SPECTATORS)
-		{
-			GameServer()->SendChatTarget_Localization(-1, CHATCATEGORY_PLAYER, _("{str:PlayerName} joined the spectators"), "PlayerName", Server()->ClientName(m_ClientID), NULL);
-			GameServer()->AddSpectatorCID(m_ClientID);
-			Server()->InfecteClient(m_ClientID);
-		}
-		else
-		{
-			GameServer()->SendChatTarget_Localization(-1, CHATCATEGORY_PLAYER, _("{str:PlayerName} joined the game"), "PlayerName", Server()->ClientName(m_ClientID), NULL);
-		}
-	}
-
 	KillCharacter();
 
 	m_Team = Team;
@@ -424,10 +404,6 @@ void CPlayer::SetTeam(int Team, bool DoChatMsg)
 	m_SpectatorID = SPEC_FREEVIEW;
 	// we got to wait 0.5 secs before respawning
 	m_RespawnTick = Server()->Tick()+Server()->TickSpeed()/2;
-	str_format(aBuf, sizeof(aBuf), "team_join player='%d:%s' m_Team=%d", m_ClientID, Server()->ClientName(m_ClientID), m_Team);
-	GameServer()->Console()->Print(IConsole::OUTPUT_LEVEL_DEBUG, "game", aBuf);
-
-	GameServer()->m_pController->OnPlayerInfoChange(GameServer()->m_apPlayers[m_ClientID]);
 
 	if(Team == TEAM_SPECTATORS)
 	{
