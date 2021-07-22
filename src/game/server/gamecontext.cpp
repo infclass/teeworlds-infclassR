@@ -1912,7 +1912,7 @@ void CGameContext::OnMessage(int MsgID, CUnpacker *pUnpacker, int ClientID)
 					pPlayer->m_LastSetTeam = Server()->Tick();
 					if(pPlayer->GetTeam() == TEAM_SPECTATORS || pMsg->m_Team == TEAM_SPECTATORS)
 						m_VoteUpdate = true;
-					pPlayer->SetTeam(pMsg->m_Team);
+					m_pController->DoTeamChange(pPlayer, pMsg->m_Team);
 					if (pPlayer->GetTeam() == TEAM_SPECTATORS) {
 						AddSpectatorCID(ClientID);
 					} else {
@@ -2376,7 +2376,7 @@ bool CGameContext::ConSetTeam(IConsole::IResult *pResult, void *pUserData)
 	pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "server", aBuf);
 
 	pSelf->m_apPlayers[ClientID]->m_TeamChangeTick = pSelf->Server()->Tick()+pSelf->Server()->TickSpeed()*Delay*60;
-	pSelf->m_apPlayers[ClientID]->SetTeam(Team);
+	pSelf->m_pController->DoTeamChange(pSelf->m_apPlayers[ClientID], Team);
 	(void)pSelf->m_pController->CheckTeamBalance();
 	
 	return true;
@@ -2393,8 +2393,9 @@ bool CGameContext::ConSetTeamAll(IConsole::IResult *pResult, void *pUserData)
 
 	for(int i = 0; i < MAX_CLIENTS; ++i)
 		if(pSelf->m_apPlayers[i])
-			pSelf->m_apPlayers[i]->SetTeam(Team, false);
+			pSelf->m_pController->DoTeamChange(pSelf->m_apPlayers[i], Team, false);
 
+	// TODO: Remove
 	(void)pSelf->m_pController->CheckTeamBalance();
 	
 	return true;

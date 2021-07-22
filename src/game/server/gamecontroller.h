@@ -157,6 +157,7 @@ public:
 	int GetRoundId() { return m_RoundId; }
 /* INFECTION MODIFICATION END *****************************************/
 
+	void DoTeamChange(class CPlayer *pPlayer, int Team, bool DoChatMsg = true);
 	/*
 
 	*/

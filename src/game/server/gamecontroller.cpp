@@ -65,7 +65,7 @@ void IGameController::DoActivityCheck()
 				case 0:
 				{
 					// move player to spectator
-					GameServer()->m_apPlayers[i]->SetTeam(TEAM_SPECTATORS);
+					DoTeamChange(GameServer()->m_apPlayers[i], TEAM_SPECTATORS);
 				}
 				break;
 				case 1:
@@ -78,7 +78,7 @@ void IGameController::DoActivityCheck()
 					if(Spectators >= g_Config.m_SvSpectatorSlots)
 						Server()->Kick(i, "Kicked for inactivity");
 					else
-						GameServer()->m_apPlayers[i]->SetTeam(TEAM_SPECTATORS);
+						DoTeamChange(GameServer()->m_apPlayers[i], TEAM_SPECTATORS);
 				}
 				break;
 				case 2:
@@ -153,6 +153,38 @@ void IGameController::IncreaseCurrentRoundCounter()
 void IGameController::ResetGame()
 {
 	GameServer()->m_World.m_ResetRequested = true;
+}
+
+void IGameController::DoTeamChange(CPlayer *pPlayer, int Team, bool DoChatMsg)
+{
+	Team = ClampTeam(Team);
+	if(Team == pPlayer->GetTeam())
+		return;
+
+	int OldTeam = pPlayer->GetTeam();
+	pPlayer->SetTeam(Team);
+
+	int ClientID = pPlayer->GetCID();
+
+	if(DoChatMsg)
+	{
+		if(Team == TEAM_SPECTATORS)
+		{
+			GameServer()->SendChatTarget_Localization(-1, CHATCATEGORY_PLAYER, _("{str:PlayerName} joined the spectators"), "PlayerName", Server()->ClientName(ClientID), NULL);
+			GameServer()->AddSpectatorCID(ClientID);
+			Server()->InfecteClient(ClientID);
+		}
+		else
+		{
+			GameServer()->SendChatTarget_Localization(-1, CHATCATEGORY_PLAYER, _("{str:PlayerName} joined the game"), "PlayerName", Server()->ClientName(ClientID), NULL);
+		}
+	}
+
+	char aBuf[128];
+	str_format(aBuf, sizeof(aBuf), "team_join player='%d:%s' team=%d->%d", ClientID, Server()->ClientName(ClientID), OldTeam, Team);
+	GameServer()->Console()->Print(IConsole::OUTPUT_LEVEL_DEBUG, "game", aBuf);
+
+	OnPlayerInfoChange(GameServer()->m_apPlayers[ClientID]);
 }
 
 const char *IGameController::GetTeamName(int Team)
@@ -537,7 +569,7 @@ void IGameController::Tick()
 
 				// move the player to the other team
 				int Temp = pP->m_LastActionTick;
-				pP->SetTeam(M^1);
+				DoTeamChange(pP, M^1);
 				pP->m_LastActionTick = Temp;
 
 				pP->Respawn();
