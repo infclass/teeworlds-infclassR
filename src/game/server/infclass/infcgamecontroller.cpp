@@ -675,6 +675,54 @@ CInfClassCharacter *CInfClassGameController::GetCharacter(int ClientID) const
 	return static_cast<CInfClassCharacter*>(GameServer()->GetPlayerChar(ClientID));
 }
 
+void CInfClassGameController::GetSortedTargetsInRange(const vec2 &Center, const float Radius, const ClientsArray &SkipList, ClientsArray *pOutput)
+{
+	struct DistanceItem
+	{
+		DistanceItem() = default;
+		DistanceItem(int C, float D)
+			: ClientID(C)
+			, Distance(D)
+		{
+		}
+
+		int ClientID;
+		float Distance;
+
+		bool operator<(const DistanceItem &AnotherDistanceItem) const
+		{
+			return Distance < AnotherDistanceItem.Distance;
+		}
+	};
+
+	array_on_stack<DistanceItem, MAX_CLIENTS> Distances;
+
+	for(int ClientID = 0; ClientID < MAX_CLIENTS; ++ClientID)
+	{
+		if(SkipList.Contains(ClientID))
+			continue;
+
+		const CCharacter *pChar = GetCharacter(ClientID);
+		if(!pChar)
+			continue;
+
+		const vec2 &CharPos = pChar->GetPos();
+		const float Distance = distance(CharPos, Center);
+		if(Distance > Radius)
+			continue;
+
+		Distances.Add(DistanceItem(ClientID, Distance));
+
+		std::sort(Distances.begin(), Distances.end());
+	}
+
+	pOutput->Clear();
+	for(const DistanceItem &DistanceItem : Distances)
+	{
+		pOutput->Add(DistanceItem.ClientID);
+	}
+}
+
 void CInfClassGameController::MaybeSuggestMoreRounds()
 {
 	if(m_MoreRoundsSuggested)

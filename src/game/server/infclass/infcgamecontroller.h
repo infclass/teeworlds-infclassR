@@ -5,12 +5,15 @@
 
 #include <game/server/gamecontroller.h>
 
+#include <base/tl/array_on_stack.h>
 #include <engine/console.h>
 
 class CGameWorld;
 class CInfClassCharacter;
 class CInfClassPlayer;
 struct CNetObj_GameInfo;
+
+using ClientsArray = array_on_stack<int, 64>; // MAX_CLIENTS
 
 class CInfClassGameController : public IGameController
 {
@@ -76,6 +79,8 @@ public:
 	IConsole *Console();
 	CInfClassPlayer *GetPlayer(int ClientID) const;
 	CInfClassCharacter *GetCharacter(int ClientID) const;
+
+	void GetSortedTargetsInRange(const vec2 &Center, const float Radius, const ClientsArray &SkipList, ClientsArray *pOutput);
 
 private:
 	void MaybeSuggestMoreRounds();
