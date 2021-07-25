@@ -967,10 +967,6 @@ void CCharacter::Tick()
 	{
 		m_DartLeft = g_Config.m_InfNinjaJump;
 	}
-	if(GetPlayerClass() == PLAYERCLASS_SNIPER && m_InAirTick <= Server()->TickSpeed())
-	{
-		m_PositionLockAvailable = true;
-	}
 
 	PreCoreTick();
 

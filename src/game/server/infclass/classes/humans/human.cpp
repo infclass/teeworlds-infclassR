@@ -28,6 +28,16 @@ void CInfClassHuman::OnCharacterPreCoreTick()
 				{
 					m_pCharacter->UnlockPosition();
 				}
+				else
+				{
+					m_pCharacter->ResetMovementsInput();
+				}
+			}
+
+			if(m_pCharacter->GetInAirTick() <= Server()->TickSpeed())
+			{
+				// Allow to re-lock in during the first second
+				m_pCharacter->m_PositionLockAvailable = true;
 			}
 		}
 			break;
