@@ -818,16 +818,7 @@ void CCharacter::Tick()
 	//NeedHeal
 	if(m_Armor >= 10)
 		m_NeedFullHeal = false;
-	
-	if(!m_InWater && !IsGrounded() && (m_Core.m_HookState != HOOK_GRABBED || m_Core.m_HookedPlayer != -1))
-	{
-		m_InAirTick++;
-	}
-	else
-	{
-		m_InAirTick = 0;
-	}
-	
+
 	//Ghost
 	if(GetPlayerClass() == PLAYERCLASS_GHOST)
 	{

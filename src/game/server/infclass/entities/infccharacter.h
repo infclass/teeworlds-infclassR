@@ -71,6 +71,8 @@ public:
 
 	bool CanDie() const;
 
+	int GetInAirTick() const { return m_InAirTick; }
+
 	bool IsInvisible() const;
 	bool HasHallucination() const;
 

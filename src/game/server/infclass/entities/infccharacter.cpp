@@ -1750,6 +1750,15 @@ void CInfClassCharacter::GiveRandomClassSelectionBonus()
 
 void CInfClassCharacter::PreCoreTick()
 {
+	if(!m_InWater && !IsGrounded() && (m_Core.m_HookState != HOOK_GRABBED || m_Core.m_HookedPlayer != -1))
+	{
+		m_InAirTick++;
+	}
+	else
+	{
+		m_InAirTick = 0;
+	}
+
 	if(m_pClass)
 		m_pClass->OnCharacterPreCoreTick();
 
