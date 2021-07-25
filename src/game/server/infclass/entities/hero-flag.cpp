@@ -6,6 +6,8 @@
 #include <engine/server/server.h>
 #include <engine/server/roundstatistics.h>
 #include <engine/shared/config.h>
+
+#include <game/server/infclass/entities/infccharacter.h>
 #include <game/server/infclass/infcgamecontroller.h>
 #include <game/server/infclass/infcplayer.h>
 
@@ -53,7 +55,7 @@ void CHeroFlag::SetCoolDown()
 	m_CoolDownTick = Server()->TickSpeed() * (15+(120*t));
 }
 
-void CHeroFlag::GiveGift(CCharacter* pHero)
+void CHeroFlag::GiveGift(CInfClassCharacter* pHero)
 {
 	pHero->IncreaseHealth(10);
 	pHero->IncreaseArmor(10);
@@ -63,7 +65,7 @@ void CHeroFlag::GiveGift(CCharacter* pHero)
 	SetCoolDown();
 
 	pHero->SetEmote(EMOTE_HAPPY, Server()->Tick() + Server()->TickSpeed());
-	GameServer()->SendEmoticon(pHero->GetPlayer()->GetCID(), EMOTICON_MUSIC);
+	GameServer()->SendEmoticon(pHero->GetCID(), EMOTICON_MUSIC);
 
 	if(GameController()->AreTurretsEnabled())
 	{
@@ -76,7 +78,7 @@ void CHeroFlag::GiveGift(CCharacter* pHero)
 
 			char aBuf[256];
 			str_format(aBuf, sizeof(aBuf), "you gained a turret (%i), place it with the hammer", pHero->m_TurretCount);
-			GameServer()->SendChatTarget_Localization(pHero->GetPlayer()->GetCID(), CHATCATEGORY_SCORE, aBuf, NULL);
+			GameServer()->SendChatTarget_Localization(pHero->GetCID(), CHATCATEGORY_SCORE, aBuf, NULL);
 		}
 	}
 		
@@ -89,13 +91,13 @@ void CHeroFlag::GiveGift(CCharacter* pHero)
 	GameServer()->CreateSoundGlobal(SOUND_CTF_CAPTURE);
 	GameServer()->FlagCollected();
 
-	for(CCharacter *p = (CCharacter*) GameWorld()->FindFirst(CGameWorld::ENTTYPE_CHARACTER); p; p = (CCharacter *)p->TypeNext())
+	for(CInfClassCharacter *p = (CInfClassCharacter*) GameWorld()->FindFirst(CGameWorld::ENTTYPE_CHARACTER); p; p = (CInfClassCharacter *)p->TypeNext())
 	{
 		if(p->IsZombie() || p == pHero)
 			continue;
 
 		p->SetEmote(EMOTE_HAPPY, Server()->Tick() + Server()->TickSpeed());
-		GameServer()->SendEmoticon(p->GetPlayer()->GetCID(), EMOTICON_MUSIC);
+		GameServer()->SendEmoticon(p->GetCID(), EMOTICON_MUSIC);
 		
 		p->GiveGift(GIFT_HEROFLAG);
 	}
@@ -107,17 +109,17 @@ void CHeroFlag::Tick()
 	{
 		// Find other players
 		int NbPlayer = 0;
-		for(CCharacter *p = (CCharacter*) GameWorld()->FindFirst(CGameWorld::ENTTYPE_CHARACTER); p; p = (CCharacter *)p->TypeNext())
+		for(CInfClassCharacter *p = (CInfClassCharacter*) GameWorld()->FindFirst(CGameWorld::ENTTYPE_CHARACTER); p; p = (CInfClassCharacter *)p->TypeNext())
 		{
 			NbPlayer++;
 		}
 		
-		for(CCharacter *p = (CCharacter*) GameWorld()->FindFirst(CGameWorld::ENTTYPE_CHARACTER); p; p = (CCharacter *)p->TypeNext())
+		for(CInfClassCharacter *p = (CInfClassCharacter*) GameWorld()->FindFirst(CGameWorld::ENTTYPE_CHARACTER); p; p = (CInfClassCharacter *)p->TypeNext())
 		{
 			if(p->GetPlayerClass() != PLAYERCLASS_HERO)
 				continue;
 
-			if(p->GetPlayer()->GetCID() != m_Owner)
+			if(p->GetCID() != m_Owner)
 				continue;
 
 			float Len = distance(p->m_Pos, m_Pos);
@@ -128,9 +130,9 @@ void CHeroFlag::Tick()
 				
 				if(NbPlayer > 3)
 				{
-					int ClientID = p->GetPlayer()->GetCID();
+					int ClientID = p->GetCID();
 					Server()->RoundStatistics()->OnScoreEvent(ClientID, SCOREEVENT_HERO_FLAG, p->GetPlayerClass(), Server()->ClientName(ClientID), GameServer()->Console());
-					GameServer()->SendScoreSound(p->GetPlayer()->GetCID());
+					GameServer()->SendScoreSound(p->GetCID());
 				}
 				break;
 			}

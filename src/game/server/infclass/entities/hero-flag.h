@@ -5,6 +5,8 @@
 
 #include "infcentity.h"
 
+class CInfClassCharacter;
+
 class CHeroFlag : public CInfCEntity
 {
 public:
@@ -30,7 +32,7 @@ public:
 	virtual void Tick();
 	virtual void FindPosition();
 	virtual void Snap(int SnappingClient);
-	void GiveGift(CCharacter* pHero);
+	void GiveGift(CInfClassCharacter *pHero);
 
 private:
 	void SetCoolDown();
