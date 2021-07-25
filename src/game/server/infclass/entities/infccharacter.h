@@ -66,6 +66,10 @@ public:
 	CInputCount CountFireInput() const;
 	bool FireJustPressed() const;
 
+	vec2 GetHookPos() const;
+	int GetHookedPlayer() const;
+	void SetHookedPlayer(int ClientID);
+
 	CInfClassGameController *GameController() const { return m_pGameController; }
 	CGameContext *GameContext() const;
 

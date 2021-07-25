@@ -1497,6 +1497,35 @@ bool CInfClassCharacter::FireJustPressed() const
 	return m_LatestInput.m_Fire & 1;
 }
 
+vec2 CInfClassCharacter::GetHookPos() const
+{
+	return m_Core.m_HookPos;
+}
+
+int CInfClassCharacter::GetHookedPlayer() const
+{
+	return m_Core.m_HookedPlayer;
+}
+
+void CInfClassCharacter::SetHookedPlayer(int ClientID)
+{
+	m_Core.m_HookedPlayer = ClientID;
+
+	if(ClientID > 0)
+	{
+		m_Core.m_HookTick = 0;
+		m_Core.m_TriggeredEvents |= COREEVENT_HOOK_ATTACH_PLAYER;
+		m_Core.m_HookState = HOOK_GRABBED;
+
+		const CInfClassCharacter *pCharacter = GameController()->GetCharacter(ClientID);
+		const CCharacterCore *pCharCore = pCharacter ? &pCharacter->m_Core : nullptr;
+		if(pCharCore)
+		{
+			m_Core.m_HookPos = pCharCore->m_Pos;
+		}
+	}
+}
+
 CGameContext *CInfClassCharacter::GameContext() const
 {
 	return m_pGameController->GameServer();
