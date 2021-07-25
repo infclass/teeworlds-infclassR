@@ -47,6 +47,29 @@ void CInfClassInfected::OnCharacterPreCoreTick()
 
 	switch(PlayerClass())
 	{
+		case PLAYERCLASS_SPIDER:
+		{
+			if(m_pCharacter->WebHookLength() > 48.0f && m_pCharacter->GetHookedPlayer() < 0)
+			{
+				// Find other players
+				for(CInfClassCharacter *p = (CInfClassCharacter*) GameWorld()->FindFirst(CGameWorld::ENTTYPE_CHARACTER); p; p = (CInfClassCharacter *)p->TypeNext())
+				{
+					if(p->IsZombie())
+						continue;
+
+					vec2 IntersectPos = closest_point_on_line(GetPos(), m_pCharacter->GetHookPos(), p->GetPos());
+					float Len = distance(p->GetPos(), IntersectPos);
+					if(Len < p->GetProximityRadius())
+					{
+						m_pCharacter->SetHookedPlayer(p->GetCID());
+						m_pCharacter->m_HookMode = 0;
+
+						break;
+					}
+				}
+			}
+		}
+			break;
 		default:
 			break;
 	}

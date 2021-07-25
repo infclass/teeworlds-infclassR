@@ -937,31 +937,6 @@ void CCharacter::Tick()
 			}
 		}
 	}
-	
-	if(GetPlayerClass() == PLAYERCLASS_SPIDER)
-	{
-		if(WebHookLength() > 48.0f && m_Core.m_HookedPlayer < 0)
-		{
-			// Find other players
-			for(CCharacter *p = (CCharacter*) GameWorld()->FindFirst(CGameWorld::ENTTYPE_CHARACTER); p; p = (CCharacter *)p->TypeNext())
-			{
-				if(p->IsZombie()) continue;
-
-				vec2 IntersectPos = closest_point_on_line(m_Core.m_Pos, m_Core.m_HookPos, p->GetPos());
-				float Len = distance(p->GetPos(), IntersectPos);
-				if(Len < p->m_ProximityRadius)
-				{				
-					m_Core.m_HookState = HOOK_GRABBED;
-					m_Core.m_HookPos = p->GetPos();
-					m_Core.m_HookedPlayer = p->m_pPlayer->GetCID();
-					m_Core.m_HookTick = 0;
-					m_HookMode = 0;
-					
-					break;
-				}
-			}
-		}
-	}
 
 	PreCoreTick();
 
