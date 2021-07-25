@@ -90,6 +90,8 @@ public:
 	void LockPosition();
 	void UnlockPosition();
 
+	void ResetMovementsInput();
+
 protected:
 	void PreCoreTick() override;
 	void PostCoreTick() override;

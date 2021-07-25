@@ -361,6 +361,13 @@ void CInfClassCharacter::UnlockPosition()
 	m_PositionLocked = false;
 }
 
+void CInfClassCharacter::ResetMovementsInput()
+{
+	m_Input.m_Jump = 0;
+	m_Input.m_Direction = 0;
+	m_Input.m_Hook = 0;
+}
+
 void CInfClassCharacter::OnHammerFired(WeaponFireContext *pFireContext)
 {
 	vec2 Direction = GetDirection();
