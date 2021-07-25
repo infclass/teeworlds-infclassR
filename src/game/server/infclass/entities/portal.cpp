@@ -313,7 +313,7 @@ void CPortal::TeleportCharacters()
 			continue;
 
 		// Teleport the character
-		const int CharacterClientID = pCharacter->GetPlayer() ? pCharacter->GetPlayer()->GetCID() : -1;
+		const int CharacterClientID = pCharacter->GetCID();
 		pCharacter->m_Core.m_Pos = TargetPos;
 		pCharacter->m_Core.m_Vel *= 0;
 		pCharacter->m_Core.m_HookedPlayer = -1;

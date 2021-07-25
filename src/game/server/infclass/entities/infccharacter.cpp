@@ -641,7 +641,7 @@ void CInfClassCharacter::OnHammerFired(WeaponFireContext *pFireContext)
 						if(pTarget->IsFrozen())
 						{
 							pTarget->Unfreeze();
-							GameServer()->ClearBroadcast(pTarget->GetPlayer()->GetCID(), BROADCAST_PRIORITY_EFFECTSTATE);
+							GameServer()->ClearBroadcast(pTarget->GetCID(), BROADCAST_PRIORITY_EFFECTSTATE);
 						}
 						else
 						{
@@ -688,8 +688,8 @@ void CInfClassCharacter::OnHammerFired(WeaponFireContext *pFireContext)
 							pTarget->IncreaseArmor(4);
 							if(pTarget->m_Armor == 10 && pTarget->m_NeedFullHeal)
 							{
-								Server()->RoundStatistics()->OnScoreEvent(GetPlayer()->GetCID(), SCOREEVENT_HUMAN_HEALING, GetPlayerClass(), Server()->ClientName(GetPlayer()->GetCID()), Console());
-								GameServer()->SendScoreSound(GetPlayer()->GetCID());
+								Server()->RoundStatistics()->OnScoreEvent(GetCID(), SCOREEVENT_HUMAN_HEALING, GetPlayerClass(), Server()->ClientName(GetCID()), Console());
+								GameServer()->SendScoreSound(GetCID());
 								pTarget->m_NeedFullHeal = false;
 								m_aWeapons[WEAPON_GRENADE].m_Ammo++;
 							}
@@ -935,10 +935,10 @@ void CInfClassCharacter::OnGrenadeFired(WeaponFireContext *pFireContext)
 			m_Core.m_HookPos = m_Core.m_Pos;
 			if(g_Config.m_InfScientistTpSelfharm > 0) {
 				auto pScientist = GetPlayer()->GetCharacter();
-				pScientist->TakeDamage(vec2(0.0f, 0.0f), g_Config.m_InfScientistTpSelfharm * 2, GetPlayer()->GetCID(), WEAPON_HAMMER, TAKEDAMAGEMODE_SELFHARM);
+				pScientist->TakeDamage(vec2(0.0f, 0.0f), g_Config.m_InfScientistTpSelfharm * 2, GetCID(), WEAPON_HAMMER, TAKEDAMAGEMODE_SELFHARM);
 			}
-			GameServer()->CreateDeath(OldPos, GetPlayer()->GetCID());
-			GameServer()->CreateDeath(PortalPos, GetPlayer()->GetCID());
+			GameServer()->CreateDeath(OldPos, GetCID());
+			GameServer()->CreateDeath(PortalPos, GetCID());
 			GameServer()->CreateSound(PortalPos, SOUND_CTF_RETURN);
 			new CLaserTeleport(GameServer(), PortalPos, OldPos);
 		}
@@ -1359,7 +1359,7 @@ void CInfClassCharacter::Die(int Killer, int Weapon)
 
 		if (pKillerCharacter && pKillerCharacter->GetPlayer())
 		{
-			Killer = pKillerCharacter->GetPlayer()->GetCID();
+			Killer = pKillerCharacter->GetCID();
 			Weapon = WEAPON_NINJA;
 		}
 
@@ -1624,7 +1624,7 @@ void CInfClassCharacter::PlacePortal(WeaponFireContext *pFireContext)
 	}
 
 	// Place new portal
-	int OwnerCID = GetPlayer() ? GetPlayer()->GetCID() : -1;
+	int OwnerCID = GetPlayer() ? GetCID() : -1;
 	CPortal *existingPortal = m_pPortalIn ? m_pPortalIn : m_pPortalOut;
 	if(existingPortal && distance(existingPortal->GetPos(), TargetPos) < g_Config.m_InfMinPortalDistance)
 	{
@@ -1730,7 +1730,7 @@ bool CInfClassCharacter::ProcessCharacterOnPortal(CPortal *pPortal, CCharacter *
 
 	// The idea here is to have a point to catch all allowed teleportations
 	SetEmote(EMOTE_HAPPY, Server()->Tick() + Server()->TickSpeed());
-	GameServer()->SendEmoticon(GetPlayer()->GetCID(), EMOTICON_MUSIC);
+	GameServer()->SendEmoticon(GetCID(), EMOTICON_MUSIC);
 
 	Server()->RoundStatistics()->OnScoreEvent(m_pPlayer->GetCID(), SCOREEVENT_PORTAL_USED, GetPlayerClass(), Server()->ClientName(m_pPlayer->GetCID()), Console());
 	GameServer()->SendScoreSound(m_pPlayer->GetCID());

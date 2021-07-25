@@ -109,11 +109,11 @@ void CInfClassGameController::OnPlayerInfected(CPlayer *pPlayer, CPlayer *pInfec
 		if(
 			pHook->GetPlayer() &&
 			pHook->m_Core.m_HookedPlayer == pPlayer->GetCID() &&
-			pHook->GetPlayer()->GetCID() != InfectedByCID
+			pHook->GetCID() != InfectedByCID
 		)
 		{
-			Server()->RoundStatistics()->OnScoreEvent(pHook->GetPlayer()->GetCID(), SCOREEVENT_HELP_HOOK_INFECTION, pHook->GetPlayerClass(), Server()->ClientName(pHook->GetPlayer()->GetCID()), GameServer()->Console());
-			GameServer()->SendScoreSound(pHook->GetPlayer()->GetCID());
+			Server()->RoundStatistics()->OnScoreEvent(pHook->GetCID(), SCOREEVENT_HELP_HOOK_INFECTION, pHook->GetPlayerClass(), Server()->ClientName(pHook->GetCID()), GameServer()->Console());
+			GameServer()->SendScoreSound(pHook->GetCID());
 		}
 	}
 }
@@ -1233,7 +1233,7 @@ void CInfClassGameController::RewardTheKiller(CInfClassCharacter *pVictim, CInfC
 				GameServer()->SendScoreSound(pKiller->GetCID());
 			}
 		
-			if(pKiller->GetClass() == PLAYERCLASS_NINJA && pVictim->GetPlayer()->GetCID() == GameServer()->GetTargetToKill())
+			if(pKiller->GetClass() == PLAYERCLASS_NINJA && pVictim->GetCID() == GameServer()->GetTargetToKill())
 			{
 				GameServer()->SendChatTarget_Localization(pKiller->GetCID(), CHATCATEGORY_SCORE, _("You have eliminated your target, +2 points"), NULL);
 				Server()->RoundStatistics()->OnScoreEvent(pKiller->GetCID(), SCOREEVENT_KILL_TARGET, pKiller->GetClass(), Server()->ClientName(pKiller->GetCID()), GameServer()->Console());
@@ -1268,7 +1268,7 @@ int CInfClassGameController::OnCharacterDeath(class CCharacter *pAbstractVictim,
 				Server()->RoundStatistics()->OnScoreEvent(pFreezer->GetCID(), SCOREEVENT_HELP_FREEZE, pFreezer->GetClass(), Server()->ClientName(pFreezer->GetCID()), GameServer()->Console());
 				GameServer()->SendScoreSound(pFreezer->GetCID());
 				
-				if(pVictim->GetPlayer()->GetCID() == GameServer()->GetTargetToKill())
+				if(pVictim->GetCID() == GameServer()->GetTargetToKill())
 				{
 					GameServer()->SendChatTarget_Localization(pFreezer->GetCID(), CHATCATEGORY_SCORE, _("You have eliminated your target, +2 points"), NULL);
 					Server()->RoundStatistics()->OnScoreEvent(pFreezer->GetCID(), SCOREEVENT_KILL_TARGET, pFreezer->GetClass(), Server()->ClientName(pFreezer->GetCID()), GameServer()->Console());
@@ -1297,7 +1297,7 @@ int CInfClassGameController::OnCharacterDeath(class CCharacter *pAbstractVictim,
 			if(p && Len < 800.0f)
 			{
 				int Points = (pVictim->IsZombie() ? 8 : 14);
-				new CFlyingPoint(GameServer(), pVictim->m_Pos, p->GetPlayer()->GetCID(), Points, pVictim->m_Core.m_Vel);
+				new CFlyingPoint(GameServer(), pVictim->m_Pos, p->GetCID(), Points, pVictim->m_Core.m_Vel);
 			}
 		}
 	}
@@ -1371,11 +1371,11 @@ void CInfClassGameController::DoWincheck()
 		{
 			if(p->IsZombie())
 			{
-				GameServer()->SendEmoticon(p->GetPlayer()->GetCID(), EMOTICON_GHOST);
+				GameServer()->SendEmoticon(p->GetCID(), EMOTICON_GHOST);
 			}
 			else
 			{
-				GameServer()->SendEmoticon(p->GetPlayer()->GetCID(), EMOTICON_EYES);
+				GameServer()->SendEmoticon(p->GetCID(), EMOTICON_EYES);
 			}
 		}
 		m_ExplosionStarted = true;
@@ -1437,7 +1437,7 @@ void CInfClassGameController::DoWincheck()
 
 			if(m_GrowingMap[tileY*m_MapWidth+tileX] & 2 && p->GetPlayer())
 			{
-				p->Die(p->GetPlayer()->GetCID(), WEAPON_GAME);
+				p->Die(p->GetCID(), WEAPON_GAME);
 			}
 		}
 

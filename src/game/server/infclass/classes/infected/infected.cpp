@@ -55,7 +55,7 @@ void CInfClassInfected::OnCharacterTick()
 
 		// Display time left to live
 		int Time = m_VoodooTimeAlive/Server()->TickSpeed();
-		GameServer()->SendBroadcast_Localization(GetPlayer()->GetCID(), BROADCAST_PRIORITY_WEAPONSTATE, BROADCAST_DURATION_REALTIME,
+		GameServer()->SendBroadcast_Localization(GetCID(), BROADCAST_PRIORITY_WEAPONSTATE, BROADCAST_DURATION_REALTIME,
 			_("Staying alive for: {int:RemainingTime}"),
 			"RemainingTime", &Time,
 			NULL

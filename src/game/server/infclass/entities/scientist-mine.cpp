@@ -113,11 +113,11 @@ void CScientistMine::Tick()
 		if(Len < p->GetProximityRadius()+Config()->m_InfMineRadius)
 		{
 			MustExplode = true;
-			CPlayer *pDetonatedBy = p->GetPlayer();
-			if (pDetonatedBy)
-				DetonatedBy = pDetonatedBy->GetCID();
-			else
+			DetonatedBy = p->GetCID();
+			if(DetonatedBy < 0)
+			{
 				DetonatedBy = m_Owner;
+			}
 			break;
 		}
 	}

@@ -143,14 +143,14 @@ void CEngineerWall::OnZombieHit(CInfClassCharacter *pZombie)
 				if(
 					pHook->GetPlayer() &&
 					pHook->IsHuman() &&
-					pHook->m_Core.m_HookedPlayer == pZombie->GetPlayer()->GetCID() &&
-					pHook->GetPlayer()->GetCID() != m_Owner && //The engineer will get the point when the infected dies
-					pZombie->m_LastFreezer != pHook->GetPlayer()->GetCID() //The ninja will get the point when the infected dies
+					pHook->m_Core.m_HookedPlayer == pZombie->GetCID() &&
+					pHook->GetCID() != m_Owner && //The engineer will get the point when the infected dies
+					pZombie->m_LastFreezer != pHook->GetCID() //The ninja will get the point when the infected dies
 				)
 				{
-					int ClientID = pHook->GetPlayer()->GetCID();
+					int ClientID = pHook->GetCID();
 					Server()->RoundStatistics()->OnScoreEvent(ClientID, SCOREEVENT_HELP_HOOK_BARRIER, pHook->GetPlayerClass(), Server()->ClientName(ClientID), GameServer()->Console());
-					GameServer()->SendScoreSound(pHook->GetPlayer()->GetCID());
+					GameServer()->SendScoreSound(pHook->GetCID());
 				}
 			}
 		}

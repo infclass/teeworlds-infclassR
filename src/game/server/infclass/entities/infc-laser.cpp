@@ -84,10 +84,10 @@ bool CInfClassLaser::HitCharacter(vec2 From, vec2 To)
 				zombie->Unfreeze();
 				medic->TakeDamage(vec2(0.f, 0.f), DAMAGE_ON_REVIVE * 2, m_Owner, WEAPON_LASER, TAKEDAMAGEMODE_SELFHARM);
 				str_format(aBuf, sizeof(aBuf), "Medic %s revived %s",
-						Server()->ClientName(medic->GetPlayer()->GetCID()),
-						Server()->ClientName(zombie->GetPlayer()->GetCID()));
+						Server()->ClientName(medic->GetCID()),
+						Server()->ClientName(zombie->GetCID()));
 				GameServer()->SendChatTarget(-1, aBuf);
-				int ClientID = medic->GetPlayer()->GetCID();
+				int ClientID = medic->GetCID();
 				Server()->RoundStatistics()->OnScoreEvent(ClientID, SCOREEVENT_MEDIC_REVIVE, medic->GetPlayerClass(), Server()->ClientName(ClientID), GameServer()->Console());
 			}
 		}
@@ -107,7 +107,7 @@ bool CInfClassLaser::HitCharacter(vec2 From, vec2 To)
 		{
 			pHit->SlowMotionEffect(g_Config.m_InfSlowMotionGunDuration);
 			if(Config()->m_InfSlowMotionGunDuration != 0)
-				GameServer()->SendEmoticon(pHit->GetPlayer()->GetCID(), EMOTICON_EXCLAMATION);
+				GameServer()->SendEmoticon(pHit->GetCID(), EMOTICON_EXCLAMATION);
 		}
 	}
 	return true;

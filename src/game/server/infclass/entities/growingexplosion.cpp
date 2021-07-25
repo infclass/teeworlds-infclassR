@@ -255,7 +255,7 @@ void CGrowingExplosion::Tick()
 		if(tileX < 0 || tileX >= m_GrowingMap_Length || tileY < 0 || tileY >= m_GrowingMap_Length)
 			continue;
 		
-		if(m_Hit[p->GetPlayer()->GetCID()])
+		if(m_Hit[p->GetCID()])
 			continue;
 		
 		int k = tileY*m_GrowingMap_Length+tileX;
@@ -269,9 +269,9 @@ void CGrowingExplosion::Tick()
 					case GROWINGEXPLOSIONEFFECT_HEAL_HUMANS:
 						if(p->IncreaseArmor(1))
 						{
-							GameServer()->SendEmoticon(p->GetPlayer()->GetCID(), EMOTICON_EYES);
+							GameServer()->SendEmoticon(p->GetCID(), EMOTICON_EYES);
 						}
-						m_Hit[p->GetPlayer()->GetCID()] = true;
+						m_Hit[p->GetCID()] = true;
 						break;
 				}
 			}
@@ -288,34 +288,34 @@ void CGrowingExplosion::Tick()
 				{
 					case GROWINGEXPLOSIONEFFECT_FREEZE_INFECTED:
 						p->Freeze(3.0f, m_Owner, FREEZEREASON_FLASH);
-						GameServer()->SendEmoticon(p->GetPlayer()->GetCID(), EMOTICON_QUESTION);
-						m_Hit[p->GetPlayer()->GetCID()] = true;
+						GameServer()->SendEmoticon(p->GetCID(), EMOTICON_QUESTION);
+						m_Hit[p->GetCID()] = true;
 						break;
 					case GROWINGEXPLOSIONEFFECT_POISON_INFECTED:
 						p->GetClass()->Poison(Config()->m_InfPoisonDamage, m_Owner);
-						GameServer()->SendEmoticon(p->GetPlayer()->GetCID(), EMOTICON_DROP);
-						m_Hit[p->GetPlayer()->GetCID()] = true;
+						GameServer()->SendEmoticon(p->GetCID(), EMOTICON_DROP);
+						m_Hit[p->GetCID()] = true;
 						break;
 					case GROWINGEXPLOSIONEFFECT_HEAL_HUMANS:
 						// empty
 						break;
 					case GROWINGEXPLOSIONEFFECT_BOOM_INFECTED:
 					{
-						// m_Hit[p->GetPlayer()->GetCID()] = true;
+						// m_Hit[p->GetCID()] = true;
 						break;
 					}
 					case GROWINGEXPLOSIONEFFECT_LOVE_INFECTED:
 					{
 						p->LoveEffect();
-						GameServer()->SendEmoticon(p->GetPlayer()->GetCID(), EMOTICON_HEARTS);
-						m_Hit[p->GetPlayer()->GetCID()] = true;
+						GameServer()->SendEmoticon(p->GetCID(), EMOTICON_HEARTS);
+						m_Hit[p->GetCID()] = true;
 						break;
 					}
 					case GROWINGEXPLOSIONEFFECT_ELECTRIC_INFECTED:
 					{
 						int Damage = 5+20*((float)(m_MaxGrowing - minimum(tick - m_StartTick, (int)m_MaxGrowing)))/(m_MaxGrowing);
 						p->TakeDamage(normalize(p->m_Pos - m_SeedPos)*10.0f, Damage, m_Owner, WEAPON_HAMMER, m_TakeDamageMode);
-						m_Hit[p->GetPlayer()->GetCID()] = true;
+						m_Hit[p->GetCID()] = true;
 						break;
 					}
 				}

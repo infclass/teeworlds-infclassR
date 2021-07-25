@@ -64,7 +64,7 @@ void CTurret::Tick()
 		{
 			pChr->TakeDamage(vec2(0.f, 0.f), Config()->m_InfTurretSelfDestructDmg, m_Owner, WEAPON_LASER, TAKEDAMAGEMODE_NOINFECTION);
 			GameServer()->CreateSound(m_Pos, SOUND_LASER_FIRE);
-			int ClientID = pChr->GetPlayer()->GetCID();
+			int ClientID = pChr->GetCID();
 			char aBuf[64];
 			str_format(aBuf, sizeof(aBuf), "You destroyed %s's turret!", Server()->ClientName(m_Owner));
 			GameServer()->SendChatTarget(ClientID, aBuf);
@@ -72,7 +72,7 @@ void CTurret::Tick()
 
 			//increase score
 			Server()->RoundStatistics()->OnScoreEvent(ClientID, SCOREEVENT_DESTROY_PORTAL, pChr->GetPlayerClass(), Server()->ClientName(ClientID), GameServer()->Console());
-			GameServer()->SendScoreSound(pChr->GetPlayer()->GetCID());
+			GameServer()->SendScoreSound(pChr->GetCID());
 			Reset();
 		}
 	}
@@ -144,7 +144,7 @@ void CTurret::AttackTargets()
 					m_ammunition--;
 					break;
 				case PLASMA:
-					new CPlasma(GameServer(), m_Pos, m_Owner, pChr->GetPlayer()->GetCID() , Direction, 0, 1);
+					new CPlasma(GameServer(), m_Pos, m_Owner, pChr->GetCID() , Direction, 0, 1);
 					m_ammunition--;
 					break;
 			}
