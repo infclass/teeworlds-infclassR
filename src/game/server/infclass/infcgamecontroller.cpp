@@ -104,7 +104,7 @@ void CInfClassGameController::OnPlayerInfected(CPlayer *pPlayer, CPlayer *pInfec
 	GameServer()->SendScoreSound(InfectedByCID);
 
 	//Search for hook
-	for(CCharacter *pHook = (CCharacter*) GameServer()->m_World.FindFirst(CGameWorld::ENTTYPE_CHARACTER); pHook; pHook = (CCharacter *)pHook->TypeNext())
+	for(CInfClassCharacter *pHook = (CInfClassCharacter*) GameServer()->m_World.FindFirst(CGameWorld::ENTTYPE_CHARACTER); pHook; pHook = (CInfClassCharacter *)pHook->TypeNext())
 	{
 		if(
 			pHook->GetPlayer() &&
@@ -1196,7 +1196,7 @@ void CInfClassGameController::SnapMapMenu(int SnappingClient, CNetObj_GameInfo *
 	pGameInfoObj->m_TimeLimit += (TimeShift/Server()->TickSpeed())/60;
 }
 
-void CInfClassGameController::RewardTheKiller(CCharacter *pVictim, CPlayer *pKiller, int Weapon)
+void CInfClassGameController::RewardTheKiller(CInfClassCharacter *pVictim, CInfClassPlayer *pKiller, int Weapon)
 {
 	// do scoreing
 	if(!pKiller || Weapon == WEAPON_GAME)
@@ -1251,8 +1251,10 @@ void CInfClassGameController::RewardTheKiller(CCharacter *pVictim, CPlayer *pKil
 	}
 }
 
-int CInfClassGameController::OnCharacterDeath(class CCharacter *pVictim, class CPlayer *pKiller, int Weapon)
+int CInfClassGameController::OnCharacterDeath(class CCharacter *pAbstractVictim, class CPlayer *pAbstractKiller, int Weapon)
 {
+	CInfClassCharacter *pVictim = CInfClassCharacter::fromCharacter(pAbstractVictim);
+	CInfClassPlayer *pKiller = static_cast<CInfClassPlayer *>(pAbstractKiller);
 	RewardTheKiller(pVictim, pKiller, Weapon);
 
 	//Add bonus point for ninja
@@ -1365,7 +1367,7 @@ void CInfClassGameController::DoWincheck()
 	//Start the final explosion if the time is over
 	if(m_InfectedStarted && !m_ExplosionStarted && g_Config.m_SvTimelimit > 0 && Seconds >= g_Config.m_SvTimelimit*60)
 	{
-		for(CCharacter *p = (CCharacter*) GameServer()->m_World.FindFirst(CGameWorld::ENTTYPE_CHARACTER); p; p = (CCharacter *)p->TypeNext())
+		for(CInfClassCharacter *p = (CInfClassCharacter*) GameServer()->m_World.FindFirst(CGameWorld::ENTTYPE_CHARACTER); p; p = (CInfClassCharacter *)p->TypeNext())
 		{
 			if(p->IsZombie())
 			{
@@ -1420,7 +1422,7 @@ void CInfClassGameController::DoWincheck()
 			}
 		}
 
-		for(CCharacter *p = (CCharacter*) GameServer()->m_World.FindFirst(CGameWorld::ENTTYPE_CHARACTER); p; p = (CCharacter *)p->TypeNext())
+		for(CInfClassCharacter *p = (CInfClassCharacter*) GameServer()->m_World.FindFirst(CGameWorld::ENTTYPE_CHARACTER); p; p = (CInfClassCharacter *)p->TypeNext())
 		{
 			if(p->IsHuman())
 				continue;

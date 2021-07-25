@@ -616,13 +616,13 @@ void CInfClassCharacter::OnHammerFired(WeaponFireContext *pFireContext)
 				m_InvisibleTick = Server()->Tick();
 			}
 
-			CCharacter *apEnts[MAX_CLIENTS];
+			CInfClassCharacter *apEnts[MAX_CLIENTS];
 			int Num = GameWorld()->FindEntities(ProjStartPos, m_ProximityRadius*0.5f, (CEntity**)apEnts,
 														MAX_CLIENTS, CGameWorld::ENTTYPE_CHARACTER);
 
 			for (int i = 0; i < Num; ++i)
 			{
-				CCharacter *pTarget = apEnts[i];
+				CInfClassCharacter *pTarget = apEnts[i];
 
 				if ((pTarget == this) || GameServer()->Collision()->IntersectLine(ProjStartPos, pTarget->GetPos(), NULL, NULL))
 					continue;
