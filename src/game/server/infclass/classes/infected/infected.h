@@ -16,6 +16,7 @@ public:
 	int GetDefaultEmote() const override;
 	bool CanDie() const override;
 
+	void OnCharacterPreCoreTick() override;
 	void OnCharacterTick() override;
 	void OnCharacterSpawned() override;
 

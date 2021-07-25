@@ -41,6 +41,17 @@ bool CInfClassInfected::CanDie() const
 	return true;
 }
 
+void CInfClassInfected::OnCharacterPreCoreTick()
+{
+	CInfClassPlayerClass::OnCharacterPreCoreTick();
+
+	switch(PlayerClass())
+	{
+		default:
+			break;
+	}
+}
+
 void CInfClassInfected::OnCharacterTick()
 {
 	CInfClassPlayerClass::OnCharacterTick();
