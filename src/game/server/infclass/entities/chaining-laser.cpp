@@ -155,7 +155,7 @@ bool CChainingLaser::GenerateThePath()
 	// Add the exact hit point to Links for the correct gfx
 	m_Links.Add(Link(LastLinkedPoint, Tick));
 	LinkedClientIDs.Add(pHit->GetCID());
-	pHit->TakeDamage(DamageForce, Damage, GetOwner(), WEAPON_SHOTGUN, TAKEDAMAGEMODE_NOINFECTION);
+	DealDamage(pHit, Damage);
 	Damage -= 1;
 
 	while(Damage > 0)
@@ -197,7 +197,7 @@ bool CChainingLaser::GenerateThePath()
 			pHit = pCharacterNearby;
 			m_Links.Add(Link(TargetPosition, Tick));
 			LinkedClientIDs.Add(pHit->GetCID());
-			pHit->TakeDamage(DamageForce, Damage, GetOwner(), WEAPON_SHOTGUN, TAKEDAMAGEMODE_NOINFECTION);
+			DealDamage(pHit, Damage);
 			Damage -= 1;
 			break;
 		}
@@ -219,4 +219,14 @@ void CChainingLaser::UpdateThePath()
 			m_Links.Clear();
 		}
 	}
+}
+
+void CChainingLaser::DealDamage(CInfClassCharacter *pTarget, int Damage)
+{
+	int Multiplier = 1;
+	if(pTarget->IsElectricallyShocked())
+	{
+		Multiplier = 2;
+	}
+	pTarget->TakeDamage(DamageForce, Damage * Multiplier, GetOwner(), WEAPON_SHOTGUN, TAKEDAMAGEMODE_NOINFECTION);
 }

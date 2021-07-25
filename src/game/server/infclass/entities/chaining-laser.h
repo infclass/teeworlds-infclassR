@@ -5,6 +5,8 @@
 
 #include "base/tl/array_on_stack.h"
 
+class CInfClassCharacter;
+
 class CChainingLaser : public CInfCEntity
 {
 public:
@@ -23,6 +25,8 @@ protected:
 
 	bool GenerateThePath();
 	void UpdateThePath();
+
+	void DealDamage(CInfClassCharacter *pTarget, int Damage);
 
 	struct LaserSnapItem
 	{
