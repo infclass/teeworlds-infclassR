@@ -80,6 +80,8 @@ public:
 	bool IsInvisible() const;
 	bool HasHallucination() const;
 
+	float WebHookLength() const;
+
 	void CheckSuperWeaponAccess();
 	void MaybeGiveStunGrenades();
 	void FireSoldierBomb();

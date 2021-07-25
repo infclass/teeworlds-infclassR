@@ -2318,14 +2318,4 @@ void CCharacter::EnableJump()
 	m_Core.EnableJump();
 }
 
-float CCharacter::WebHookLength() const
-{
-	if((m_HookMode != 1) && !g_Config.m_InfSpiderCatchHumans)
-		return 0;
-
-	if(m_Core.m_HookState != HOOK_GRABBED)
-		return 0;
-
-	return distance(m_Core.m_Pos, m_Core.m_HookPos);
-}
 /* INFECTION MODIFICATION END *****************************************/
