@@ -1566,15 +1566,6 @@ bool CInfClassGameController::PreSpawn(CPlayer* pPlayer, vec2 *pOutPos)
 	return false;
 }
 
-bool CInfClassGameController::PickupAllowed(int Index)
-{
-	if(Index == TILE_ENTITY_POWERUP_NINJA) return false;
-	else if(Index == TILE_ENTITY_WEAPON_SHOTGUN) return false;
-	else if(Index == TILE_ENTITY_WEAPON_GRENADE) return false;
-	else if(Index == TILE_ENTITY_WEAPON_LASER) return false;
-	else return true;
-}
-
 int CInfClassGameController::ChooseHumanClass(const CPlayer *pPlayer) const
 {
 	//Get information about existing humans

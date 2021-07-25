@@ -41,7 +41,6 @@ public:
 	void StartRound() override;
 	void EndRound() override;
 	bool PreSpawn(CPlayer* pPlayer, vec2 *pPos) override;
-	bool PickupAllowed(int Index) ;
 	int ChooseHumanClass(const CPlayer *pPlayer) const;
 	int ChooseInfectedClass(const CPlayer *pPlayer) const override;
 	bool IsEnabledClass(int PlayerClass);
