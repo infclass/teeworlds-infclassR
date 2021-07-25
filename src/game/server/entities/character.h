@@ -106,7 +106,7 @@ public:
 	
 	void GiveNinjaBuf();
 
-public:
+protected:
 	// player controlling this character
 	class CPlayer *m_pPlayer;
 
@@ -142,6 +142,7 @@ public:
 	int m_LastAction;
 	int m_LastNoAmmoSound;
 
+public:
 	// these are non-heldback inputs
 	CNetObj_PlayerInput m_LatestPrevInput;
 	CNetObj_PlayerInput m_LatestInput;
@@ -149,6 +150,8 @@ public:
 	// input
 	CNetObj_PlayerInput m_PrevInput;
 	CNetObj_PlayerInput m_Input;
+
+protected:
 	int m_NumInputs;
 	int m_Jumped;
 
@@ -159,6 +162,7 @@ public:
 
 /* INFECTION MODIFICATION START ***************************************/
 	//Dart
+public:
 	int m_DartLifeSpan;
 	vec2 m_DartDir;
 	int m_DartLeft;
@@ -167,7 +171,6 @@ public:
 	int m_WaterJumpLifeSpan;
 
 	// the player core for the physics
-public:
 	CCharacterCore m_Core;
 	
 private:
