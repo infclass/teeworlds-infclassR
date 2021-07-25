@@ -1769,11 +1769,9 @@ void CInfClassCharacter::PreCoreTick()
 	if(m_pClass)
 		m_pClass->OnCharacterPreCoreTick();
 
-	if(m_IsFrozen)
+	if(IsFrozen())
 	{
-		m_Input.m_Jump = 0;
-		m_Input.m_Direction = 0;
-		m_Input.m_Hook = 0;
+		ResetMovementsInput();
 	}
 
 	UpdateTuningParam();

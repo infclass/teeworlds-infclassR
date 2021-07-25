@@ -962,11 +962,6 @@ void CCharacter::Tick()
 			}
 		}
 	}
-	
-	if(GetPlayerClass() == PLAYERCLASS_NINJA && IsGrounded() && m_DartLifeSpan <= 0)
-	{
-		m_DartLeft = g_Config.m_InfNinjaJump;
-	}
 
 	PreCoreTick();
 
@@ -1670,9 +1665,8 @@ bool CCharacter::TakeDamage(vec2 Force, int Dmg, int From, int Weapon, TAKEDAMAG
 					IncreaseOverallHp(8+random_int(0, 10));
 					if(IsFrozen())
 						Unfreeze();
-						
-					m_EmoteType = EMOTE_HAPPY;
-					m_EmoteStop = Server()->Tick() + Server()->TickSpeed();
+
+					SetEmote(EMOTE_HAPPY, Server()->Tick() + Server()->TickSpeed());
 				}
 				return false;
 			}

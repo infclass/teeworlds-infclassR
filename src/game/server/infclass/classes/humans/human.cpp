@@ -41,6 +41,14 @@ void CInfClassHuman::OnCharacterPreCoreTick()
 			}
 		}
 			break;
+		case PLAYERCLASS_NINJA:
+		{
+			if(m_pCharacter->IsGrounded() && m_pCharacter->m_DartLifeSpan <= 0)
+			{
+				m_pCharacter->m_DartLeft = Config()->m_InfNinjaJump;
+			}
+		}
+			break;
 		default:
 			break;
 	}
