@@ -2259,7 +2259,7 @@ void CCharacter::SlowMotionEffect(float duration)
 	}
 }
 
-int CCharacter::GetInfWeaponID(int WID)
+int CCharacter::GetInfWeaponID(int WID) const
 {
 	if(WID == WEAPON_HAMMER)
 	{
