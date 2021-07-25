@@ -10,7 +10,7 @@
 #include <vector>
 
 /* INFECTION MODIFICATION START ***************************************/
-enum
+enum INFWEAPON
 {
 	INFWEAPON_NONE,
 	INFWEAPON_HAMMER,
