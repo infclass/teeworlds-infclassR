@@ -19,6 +19,7 @@ public:
 	const T &At(int Index) const { return m_Data[Index]; }
 	T &operator[](int Index) { return m_Data[Index]; }
 
+	const T &First() const { return m_Data[0]; }
 	const T &Last() const { return m_Data[m_Size - 1]; }
 
 	T *begin() { return &m_Data[0]; }
