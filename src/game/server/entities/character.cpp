@@ -1753,29 +1753,7 @@ void CCharacter::Snap(int SnappingClient)
 
 	if(SnappingClient == m_pPlayer->GetCID())
 	{
-		if(GetPlayerClass() == PLAYERCLASS_SCIENTIST && m_ActiveWeapon == WEAPON_GRENADE)
-		{
-			vec2 PortalShift = vec2(m_Input.m_TargetX, m_Input.m_TargetY);
-			vec2 PortalDir = normalize(PortalShift);
-			if(length(PortalShift) > 500.0f)
-				PortalShift = PortalDir * 500.0f;
-			vec2 PortalPos;
-			
-			if(FindPortalPosition(GetPos() + PortalShift, PortalPos))
-			{
-				CNetObj_Projectile *pObj = static_cast<CNetObj_Projectile *>(Server()->SnapNewItem(NETOBJTYPE_PROJECTILE, m_CursorID, sizeof(CNetObj_Projectile)));
-				if(!pObj)
-					return;
-
-				pObj->m_X = (int)PortalPos.x;
-				pObj->m_Y = (int)PortalPos.y;
-				pObj->m_VelX = 0;
-				pObj->m_VelY = 0;
-				pObj->m_StartTick = Server()->Tick();
-				pObj->m_Type = WEAPON_HAMMER;
-			}
-		}
-		else if((GetPlayerClass() == PLAYERCLASS_WITCH) && ((m_ActiveWeapon == WEAPON_LASER) || ((m_ActiveWeapon == WEAPON_HAMMER) && !HasPortal())))
+		if((GetPlayerClass() == PLAYERCLASS_WITCH) && ((m_ActiveWeapon == WEAPON_LASER) || ((m_ActiveWeapon == WEAPON_HAMMER) && !HasPortal())))
 		{
 			vec2 SpawnPos;
 			if(FindWitchSpawnPosition(SpawnPos))

@@ -16,6 +16,7 @@ public:
 
 	void OnCharacterPreCoreTick() override;
 	void OnCharacterTick() override;
+	void OnCharacterSnap(int SnappingClient) override;
 	void OnSlimeEffect(int Owner) override;
 
 	static bool SetupSkin(int PlayerClass, CTeeInfo *output);
