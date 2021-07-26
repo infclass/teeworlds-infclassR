@@ -32,7 +32,8 @@ public:
 
 	void Destroy() override;
 	void Tick() override;
-	void SpecialSnapForClient(int SnappingClient, bool *pDoSnap) override;
+	void Snap(int SnappingClient) override;
+	void SpecialSnapForClient(int SnappingClient, bool *pDoSnap);
 
 	void FireWeapon() override;
 

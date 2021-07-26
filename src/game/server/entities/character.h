@@ -64,7 +64,6 @@ public:
 	virtual void TickDefered();
 	virtual void TickPaused();
 	virtual void Snap(int SnappingClient);
-	virtual void SpecialSnapForClient(int SnappingClient, bool *pDoSnap);
 
 	bool IsGrounded();
 
