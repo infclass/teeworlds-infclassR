@@ -33,6 +33,9 @@ public:
 
 	void SetClass(int newClass) override;
 
+	CGameContext *GameServer() const { return m_pGameServer; }
+	IServer *Server() const { return CPlayer::Server(); };
+
 protected:
 	const char *GetClan(int SnappingClient = -1) const override;
 
