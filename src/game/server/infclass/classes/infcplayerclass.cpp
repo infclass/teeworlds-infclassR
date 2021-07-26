@@ -13,8 +13,8 @@ CInfClassPlayerClass::CInfClassPlayerClass(CInfClassPlayer *pPlayer)
 
 CGameContext *CInfClassPlayerClass::GameContext() const
 {
-	if(m_pCharacter)
-		return m_pCharacter->GameContext();
+	if(m_pPlayer)
+		return m_pPlayer->GameServer();
 
 	return nullptr;
 }
@@ -27,8 +27,8 @@ CGameContext *CInfClassPlayerClass::GameServer() const
 
 CGameWorld *CInfClassPlayerClass::GameWorld() const
 {
-	if(m_pCharacter)
-		return m_pCharacter->GameWorld();
+	if(m_pPlayer)
+		return m_pPlayer->GameServer()->GameWorld();
 
 	return nullptr;
 }
@@ -43,24 +43,24 @@ CInfClassGameController *CInfClassPlayerClass::GameController() const
 
 CConfig *CInfClassPlayerClass::Config()
 {
-	if(m_pCharacter)
-		return m_pCharacter->Config();
+	if(m_pPlayer)
+		return m_pPlayer->GameServer()->Config();
 
 	return nullptr;
 }
 
 const CConfig *CInfClassPlayerClass::Config() const
 {
-	if(m_pCharacter)
-		return m_pCharacter->Config();
+	if(m_pPlayer)
+		return m_pPlayer->GameServer()->Config();
 
 	return nullptr;
 }
 
 IServer *CInfClassPlayerClass::Server()
 {
-	if(m_pCharacter)
-		return m_pCharacter->Server();
+	if(m_pPlayer)
+		return m_pPlayer->Server();
 
 	return nullptr;
 }
