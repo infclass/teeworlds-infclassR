@@ -66,6 +66,8 @@ public:
 	CInputCount CountFireInput() const;
 	bool FireJustPressed() const;
 
+	int GetActiveWeapon() const { return m_ActiveWeapon; }
+
 	vec2 GetHookPos() const;
 	int GetHookedPlayer() const;
 	void SetHookedPlayer(int ClientID);
