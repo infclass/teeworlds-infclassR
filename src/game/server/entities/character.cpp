@@ -1741,10 +1741,6 @@ bool CCharacter::TakeDamage(vec2 Force, int Dmg, int From, int Weapon, TAKEDAMAG
 	return true;
 }
 
-void CCharacter::SpecialSnapForClient(int SnappingClient, bool *pDoSnap)
-{
-}
-
 void CCharacter::Snap(int SnappingClient)
 {
 	int ID = m_pPlayer->GetCID();
@@ -1753,12 +1749,6 @@ void CCharacter::Snap(int SnappingClient)
 		return;
 
 	if(NetworkClipped(SnappingClient))
-		return;
-
-	bool DoSnap = true;
-	SpecialSnapForClient(SnappingClient, &DoSnap);
-
-	if(!DoSnap)
 		return;
 
 	if(SnappingClient == m_pPlayer->GetCID())

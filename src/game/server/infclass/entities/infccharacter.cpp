@@ -143,6 +143,25 @@ void CInfClassCharacter::Tick()
 		m_pClass->OnCharacterTick();
 }
 
+void CInfClassCharacter::Snap(int SnappingClient)
+{
+	int ID = m_pPlayer->GetCID();
+
+	if(!Server()->Translate(ID, SnappingClient))
+		return;
+
+	if(NetworkClipped(SnappingClient))
+		return;
+
+	bool DoSnap = true;
+	SpecialSnapForClient(SnappingClient, &DoSnap);
+
+	if(!DoSnap)
+		return;
+
+	CCharacter::Snap(SnappingClient);
+}
+
 void CInfClassCharacter::SpecialSnapForClient(int SnappingClient, bool *pDoSnap)
 {
 	CInfClassPlayer* pDestClient = GameController()->GetPlayer(SnappingClient);
