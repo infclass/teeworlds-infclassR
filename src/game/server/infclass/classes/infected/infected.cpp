@@ -31,10 +31,10 @@ int CInfClassInfected::GetDefaultEmote() const
 
 bool CInfClassInfected::CanDie() const
 {
-	if ((PlayerClass() == PLAYERCLASS_UNDEAD) && m_pCharacter->IsFrozen()) {
+	if ((GetPlayerClass() == PLAYERCLASS_UNDEAD) && m_pCharacter->IsFrozen()) {
 		return false;
 	}
-	if ((PlayerClass() == PLAYERCLASS_VOODOO) && m_VoodooAboutToDie) {
+	if ((GetPlayerClass() == PLAYERCLASS_VOODOO) && m_VoodooAboutToDie) {
 		return false;
 	}
 
@@ -45,7 +45,7 @@ void CInfClassInfected::OnCharacterPreCoreTick()
 {
 	CInfClassPlayerClass::OnCharacterPreCoreTick();
 
-	switch(PlayerClass())
+	switch(GetPlayerClass())
 	{
 		case PLAYERCLASS_SPIDER:
 		{
@@ -79,7 +79,7 @@ void CInfClassInfected::OnCharacterTick()
 {
 	CInfClassPlayerClass::OnCharacterTick();
 
-	if(PlayerClass() == PLAYERCLASS_VOODOO && m_VoodooAboutToDie)
+	if(GetPlayerClass() == PLAYERCLASS_VOODOO && m_VoodooAboutToDie)
 	{
 		// Delayed Death
 		if (m_VoodooTimeAlive > 0)
@@ -95,7 +95,7 @@ void CInfClassInfected::OnCharacterTick()
 			NULL
 		);
 	}
-	if(PlayerClass() == PLAYERCLASS_SPIDER)
+	if(GetPlayerClass() == PLAYERCLASS_SPIDER)
 	{
 		const bool HookIsOnTheLimit = m_pCharacter->WebHookLength() > Config()->m_InfSpiderWebHookLength - 48.0f;
 		SetHookOnLimit(HookIsOnTheLimit);
@@ -133,7 +133,7 @@ void CInfClassInfected::GiveClassAttributes()
 
 void CInfClassInfected::SetupSkin(CTeeInfo *output)
 {
-	switch(PlayerClass())
+	switch(GetPlayerClass())
 	{
 		case PLAYERCLASS_SMOKER:
 			output->m_UseCustomColor = 1;
@@ -235,7 +235,7 @@ void CInfClassInfected::SetHookOnLimit(bool OnLimit)
 
 void CInfClassInfected::OnSlimeEffect(int Owner)
 {
-	if(PlayerClass() == PLAYERCLASS_SLUG)
+	if(GetPlayerClass() == PLAYERCLASS_SLUG)
 		return;
 
 	m_pCharacter->SetEmote(EMOTE_HAPPY, Server()->Tick());
@@ -248,7 +248,7 @@ void CInfClassInfected::OnSlimeEffect(int Owner)
 
 void CInfClassInfected::OnFloatingPointCollected(int Points)
 {
-	if(PlayerClass() != PLAYERCLASS_GHOUL)
+	if(GetPlayerClass() != PLAYERCLASS_GHOUL)
 		return;
 
 	m_pCharacter->IncreaseOverallHp(4);
@@ -273,7 +273,7 @@ int CInfClassInfected::GetGhoulLevel() const
 void CInfClassInfected::PrepareToDie(int Killer, int Weapon, bool *pRefusedToDie)
 {
 	// Start counting down, delay killer message for later
-	if(PlayerClass() == PLAYERCLASS_VOODOO)
+	if(GetPlayerClass() == PLAYERCLASS_VOODOO)
 	{
 		if(!m_VoodooAboutToDie)
 		{

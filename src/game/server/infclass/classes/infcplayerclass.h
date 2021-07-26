@@ -34,7 +34,7 @@ public:
 
 	// Temp stuff
 	void UpdateSkin();
-	int PlayerClass() const;
+	int GetPlayerClass() const;
 	void OnPlayerClassChanged();
 
 	virtual void PrepareToDie(int Killer, int Weapon, bool *pRefusedToDie);

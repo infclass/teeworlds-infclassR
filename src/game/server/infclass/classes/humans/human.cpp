@@ -18,7 +18,7 @@ void CInfClassHuman::OnCharacterPreCoreTick()
 {
 	CInfClassPlayerClass::OnCharacterPreCoreTick();
 
-	switch (PlayerClass())
+	switch (GetPlayerClass())
 	{
 		case PLAYERCLASS_SNIPER:
 		{
@@ -58,7 +58,7 @@ void CInfClassHuman::GiveClassAttributes()
 {
 	CInfClassPlayerClass::GiveClassAttributes();
 
-	switch(PlayerClass())
+	switch(GetPlayerClass())
 	{
 		case PLAYERCLASS_ENGINEER:
 			m_pCharacter->GiveWeapon(WEAPON_HAMMER, -1);
@@ -195,7 +195,7 @@ bool CInfClassHuman::SetupSkin(int PlayerClass, CTeeInfo *output)
 
 void CInfClassHuman::SetupSkin(CTeeInfo *output)
 {
-	SetupSkin(PlayerClass(), output);
+	SetupSkin(GetPlayerClass(), output);
 }
 
 void CInfClassHuman::OnSlimeEffect(int Owner)

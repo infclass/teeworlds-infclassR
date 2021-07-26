@@ -138,7 +138,7 @@ float CInfClassPlayerClass::GetGhoulPercent() const
 	return 0;
 }
 
-int CInfClassPlayerClass::PlayerClass() const
+int CInfClassPlayerClass::GetPlayerClass() const
 {
 	if(m_pPlayer)
 		return m_pPlayer->GetClass();
