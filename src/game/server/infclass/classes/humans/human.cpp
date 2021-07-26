@@ -5,6 +5,7 @@
 #include <game/server/gamecontext.h>
 #include <game/server/infclass/entities/infccharacter.h>
 #include <game/server/infclass/infcgamecontroller.h>
+#include <game/server/infclass/infcplayer.h>
 #include <game/server/teeinfo.h>
 
 MACRO_ALLOC_POOL_ID_IMPL(CInfClassHuman, MAX_CLIENTS)
@@ -57,6 +58,45 @@ void CInfClassHuman::OnCharacterPreCoreTick()
 void CInfClassHuman::OnCharacterTick()
 {
 	CInfClassPlayerClass::OnCharacterTick();
+}
+
+void CInfClassHuman::OnCharacterSnap(int SnappingClient)
+{
+	if(SnappingClient == m_pPlayer->GetCID())
+	{
+		switch(GetPlayerClass())
+		{
+			case PLAYERCLASS_SCIENTIST:
+			{
+				if(m_pCharacter->GetActiveWeapon() == WEAPON_GRENADE)
+				{
+					vec2 PortalShift = vec2(m_pCharacter->m_Input.m_TargetX, m_pCharacter->m_Input.m_TargetY);
+					vec2 PortalDir = normalize(PortalShift);
+					if(length(PortalShift) > 500.0f)
+						PortalShift = PortalDir * 500.0f;
+					vec2 PortalPos;
+
+					if(m_pCharacter->FindPortalPosition(GetPos() + PortalShift, PortalPos))
+					{
+						const int CursorID = GameController()->GetPlayerOwnCursorID(GetCID());
+						CNetObj_Projectile *pObj = static_cast<CNetObj_Projectile *>(Server()->SnapNewItem(NETOBJTYPE_PROJECTILE, CursorID, sizeof(CNetObj_Projectile)));
+						if(!pObj)
+							return;
+
+						pObj->m_X = (int)PortalPos.x;
+						pObj->m_Y = (int)PortalPos.y;
+						pObj->m_VelX = 0;
+						pObj->m_VelY = 0;
+						pObj->m_StartTick = Server()->Tick();
+						pObj->m_Type = WEAPON_HAMMER;
+					}
+				}
+			}
+				break;
+			default:
+				break;
+		}
+	}
 }
 
 void CInfClassHuman::GiveClassAttributes()
