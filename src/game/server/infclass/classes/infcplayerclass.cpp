@@ -196,6 +196,10 @@ void CInfClassPlayerClass::OnCharacterTick()
 	}
 }
 
+void CInfClassPlayerClass::OnCharacterSnap(int SnappingClient)
+{
+}
+
 void CInfClassPlayerClass::OnCharacterSpawned()
 {
 	m_Poison = 0;
