@@ -73,6 +73,9 @@ void CInfClassCharacter::OnCharacterSpawned(const SpawnContext &Context)
 	m_PositionLocked = false;
 	m_PositionLockAvailable = false;
 
+	m_ElectrifiedTicks = 0;
+	m_ElectricallyShockedBy = -1;
+
 	ClassSpawnAttributes();
 	DestroyChildEntities();
 	if(GetPlayerClass() == PLAYERCLASS_NONE)
@@ -185,6 +188,23 @@ void CInfClassCharacter::Destroy()
 void CInfClassCharacter::Tick()
 {
 	CCharacter::Tick();
+
+	if(m_ElectrifiedTicks > 0)
+	{
+		--m_ElectrifiedTicks;
+
+		if(m_ElectrifiedTicks > 0)
+		{
+			int ShockSec = 1+(m_ElectrifiedTicks/Server()->TickSpeed());
+			GameServer()->SendBroadcast_Localization(m_pPlayer->GetCID(), BROADCAST_PRIORITY_EFFECTSTATE, BROADCAST_DURATION_REALTIME,
+				_("You are shocked: {sec:EffectDuration}"), "EffectDuration", &ShockSec, NULL);
+		}
+		else
+		{
+			// Same as unfreeze
+			GameServer()->CreatePlayerSpawn(GetPos());
+		}
+	}
 
 	if(m_pClass)
 		m_pClass->OnCharacterTick();
@@ -372,7 +392,7 @@ void CInfClassCharacter::FireWeapon()
 	if(m_AntiFireTime > 0)
 		return;
 
-	if(IsFrozen())
+	if(IsFrozen() || IsElectricallyShocked())
 		return;
 /* INFECTION MODIFICATION END *****************************************/
 	
@@ -1027,7 +1047,7 @@ void CInfClassCharacter::OnHammerFired(WeaponFireContext *pFireContext)
 	}
 	else if(GetPlayerClass() == PLAYERCLASS_BOOMER)
 	{
-		if(!IsFrozen() && !IsInLove())
+		if(!IsFrozen() && !IsElectricallyShocked() && !IsInLove())
 		{
 			Die(m_pPlayer->GetCID(), WEAPON_SELF);
 		}
@@ -2120,6 +2140,19 @@ bool CInfClassCharacter::HasHallucination() const
 	return m_HallucinationTick > 0;
 }
 
+bool CInfClassCharacter::IsElectricallyShocked() const
+{
+	return m_ElectrifiedTicks > 0;
+}
+
+void CInfClassCharacter::ElectricShock(float Duration, int From)
+{
+	m_ElectrifiedTicks = Server()->TickSpeed() * Duration;
+	m_ElectricallyShockedBy = From;
+
+	GameServer()->SendEmoticon(GetCID(), EMOTICON_EXCLAMATION);
+}
+
 float CInfClassCharacter::WebHookLength() const
 {
 	if((m_HookMode != 1) && !g_Config.m_InfSpiderCatchHumans)
@@ -2195,7 +2228,7 @@ void CInfClassCharacter::FireSoldierBomb()
 
 void CInfClassCharacter::PlacePortal(WeaponFireContext *pFireContext)
 {
-	if(IsFrozen() && IsInLove())
+	if(IsFrozen() || IsElectricallyShocked() || IsInLove())
 		return;
 
 	vec2 TargetPos = GetPos();
@@ -2471,7 +2504,7 @@ void CInfClassCharacter::PreCoreTick()
 	if(m_pClass)
 		m_pClass->OnCharacterPreCoreTick();
 
-	if(IsFrozen())
+	if(IsFrozen() || IsElectricallyShocked())
 	{
 		if(m_FrozenTime % Server()->TickSpeed() == Server()->TickSpeed() - 1)
 		{

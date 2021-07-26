@@ -127,6 +127,9 @@ public:
 	bool HasHallucination() const;
 	FREEZEREASON GetFreezeReason() const { return m_FreezeReason; }
 
+	bool IsElectricallyShocked() const;
+	void ElectricShock(float Duration, int From);
+
 	float WebHookLength() const;
 
 	void CheckSuperWeaponAccess();
@@ -174,6 +177,9 @@ protected:
 protected:
 	CInfClassGameController *m_pGameController = nullptr;
 	CInfClassPlayerClass *m_pClass = nullptr;
+
+	int m_ElectrifiedTicks = 0;
+	int m_ElectricallyShockedBy = -1;
 };
 
 inline const CInfClassCharacter *CInfClassCharacter::fromCharacter(const CCharacter *pCharacter)
