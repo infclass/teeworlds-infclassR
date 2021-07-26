@@ -159,6 +159,11 @@ void CInfClassCharacter::Snap(int SnappingClient)
 	if(!DoSnap)
 		return;
 
+	if(m_pClass)
+	{
+		m_pClass->OnCharacterSnap(SnappingClient);
+	}
+
 	CCharacter::Snap(SnappingClient);
 }
 

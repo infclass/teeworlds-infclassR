@@ -43,6 +43,7 @@ public:
 	// Events
 	virtual void OnCharacterPreCoreTick();
 	virtual void OnCharacterTick();
+	virtual void OnCharacterSnap(int SnappingClient);
 	virtual void OnCharacterSpawned();
 	virtual void OnCharacterDeath(int Weapon);
 
