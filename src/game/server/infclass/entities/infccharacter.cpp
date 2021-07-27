@@ -2410,6 +2410,10 @@ void CInfClassCharacter::GiveGift(int GiftType)
 			GiveWeapon(WEAPON_LASER, -1);
 			GiveWeapon(WEAPON_GUN, -1);
 			break;
+		case PLAYERCLASS_ELECTRICIAN:
+			GiveWeapon(WEAPON_SHOTGUN, -1);
+			GiveWeapon(WEAPON_LASER, -1);
+			break;
 		case PLAYERCLASS_SOLDIER:
 			GiveWeapon(WEAPON_GUN, -1);
 			GiveWeapon(WEAPON_GRENADE, -1);
