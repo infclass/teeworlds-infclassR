@@ -29,6 +29,9 @@ public:
 	virtual void Tick();
 	virtual void TickPaused();
 
+	void SetDamage(int Damage);
+	int GetActualDamage();
+
 private:
 	void DamagePortals();
 
@@ -45,6 +48,7 @@ private:
 	vec2* m_pGrowingMapVec;
 	int m_ExplosionEffect;
 	bool m_Hit[MAX_CLIENTS];
+	int m_Damage = -1;
 };
 
 #endif // GAME_SERVER_ENTITIES_GROWINGEXPLOSION_H
