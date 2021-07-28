@@ -11,6 +11,7 @@
 
 #include <game/server/infclass/entities/biologist-mine.h>
 #include <game/server/infclass/entities/bouncing-bullet.h>
+#include <game/server/infclass/entities/electrician-laser.h>
 #include <game/server/infclass/entities/engineer-wall.h>
 #include <game/server/infclass/entities/growingexplosion.h>
 #include <game/server/infclass/entities/hero-flag.h>
@@ -1488,6 +1489,20 @@ void CInfClassCharacter::OnLaserFired(WeaponFireContext *pFireContext)
 		{
 			new CMercenaryLaser(GameServer(), GetPos(), Direction, GameServer()->Tuning()->m_LaserReach, GetCID());
 			GameServer()->CreateSound(GetPos(), SOUND_LASER_FIRE);
+		}
+	}
+	else if(GetPlayerClass() == PLAYERCLASS_ELECTRICIAN)
+	{
+		CVoltageBox *pOwnedBox = GetVoltageBox();
+
+		if(pOwnedBox)
+		{
+			new CElectricianLaser(GameServer(), GetPos(), Direction, GameServer()->Tuning()->m_LaserReach, GetCID());
+			GameServer()->CreateSound(GetPos(), SOUND_LASER_FIRE);
+		}
+		else
+		{
+			pFireContext->FireAccepted = false;
 		}
 	}
 	else
