@@ -82,13 +82,17 @@ void dbg_assert_imp(const char *filename, int line, int test, const char *msg)
 	if(!test)
 	{
 		dbg_msg("assert", "%s(%d): %s", filename, line, msg);
-		dbg_break();
+		dbg_break_imp();
 	}
 }
 
-void dbg_break()
+void dbg_break_imp(void)
 {
-	*((volatile unsigned*)0) = 0x0;
+#ifdef __GNUC__
+	__builtin_trap();
+#else
+	*((volatile unsigned *)0) = 0x0;
+#endif
 }
 
 void dbg_msg(const char *sys, const char *fmt, ...)
