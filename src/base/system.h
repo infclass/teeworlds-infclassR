@@ -27,7 +27,7 @@ extern "C" {
 		msg - Message that should be printed if the test fails.
 
 	Remarks:
-		Does nothing in release version of the library.
+		Does nothing in release version
 
 	See Also:
 		<dbg_break>
@@ -36,11 +36,10 @@ void dbg_assert(int test, const char *msg);
 #define dbg_assert(test,msg) dbg_assert_imp(__FILE__, __LINE__, test, msg)
 void dbg_assert_imp(const char *filename, int line, int test, const char *msg);
 
-
 #ifdef __clang_analyzer__
 #include <assert.h>
 #undef dbg_assert
-#define dbg_assert(test,msg) assert(test)
+#define dbg_assert(test, msg) assert(test)
 #endif
 
 /*
@@ -48,7 +47,7 @@ void dbg_assert_imp(const char *filename, int line, int test, const char *msg);
 		Breaks into the debugger.
 
 	Remarks:
-		Does nothing in release version of the library.
+		Does nothing in release version
 
 	See Also:
 		<dbg_assert>
@@ -65,7 +64,7 @@ void dbg_break();
 		fmt - A printf styled format string.
 
 	Remarks:
-		Does nothing in release version of the library.
+		Also works in release version
 
 	See Also:
 		<dbg_assert>
@@ -130,14 +129,15 @@ void mem_zero(void *block, unsigned size);
 		size - Size of the data to compare
 
 	Returns:
-		<0 - Block a is lesser then block b
+		<0 - Block a is less than block b
 		0 - Block a is equal to block b
-		>0 - Block a is greater then block b
+		>0 - Block a is greater than block b
 */
 int mem_comp(const void *a, const void *b, int size);
 
 /* Group: File IO */
-enum {
+enum
+{
 	IOFLAG_READ = 1,
 	IOFLAG_WRITE = 2,
 	IOFLAG_RANDOM = 4,
@@ -169,7 +169,7 @@ IOHANDLE io_open(const char *filename, int flags);
 
 	Parameters:
 		io - Handle to the file to read data from.
-		buffer - Pointer to the buffer that will recive the data.
+		buffer - Pointer to the buffer that will receive the data.
 		size - Number of bytes to read from the file.
 
 	Returns:
@@ -239,7 +239,7 @@ int io_seek(IOHANDLE io, int offset, int origin);
 		io - Handle to the file.
 
 	Returns:
-		Returns the current position. -1L if an error occured.
+		Returns the current position. -1L if an error occurred.
 */
 long int io_tell(IOHANDLE io);
 
@@ -251,7 +251,7 @@ long int io_tell(IOHANDLE io);
 		io - Handle to the file.
 
 	Returns:
-		Returns the total size. -1L if an error occured.
+		Returns the total size. -1L if an error occurred.
 */
 long int io_length(IOHANDLE io);
 
@@ -564,7 +564,7 @@ typedef struct
 
 enum
 {
-	NETADDR_MAXSTRSIZE = 1+(8*4+7)+1+1+5+1, // [XXXX:XXXX:XXXX:XXXX:XXXX:XXXX:XXXX:XXXX]:XXXXX
+	NETADDR_MAXSTRSIZE = 1 + (8 * 4 + 7) + 1 + 1 + 5 + 1, // [XXXX:XXXX:XXXX:XXXX:XXXX:XXXX:XXXX:XXXX]:XXXXX
 
 	NETTYPE_INVALID = 0,
 	NETTYPE_IPV4 = 1,
@@ -582,7 +582,7 @@ typedef struct
 
 /*
 	Function: net_init
-		Initiates network functionallity.
+		Initiates network functionality.
 
 	Returns:
 		Returns 0 on success,
@@ -596,7 +596,7 @@ int net_init();
 /*
 	Function: net_host_lookup
 		Does a hostname lookup by name and fills out the passed
-		NETADDR struct with the recieved details.
+		NETADDR struct with the received details.
 
 	Returns:
 		0 on success.
@@ -612,9 +612,9 @@ int net_host_lookup(const char *hostname, NETADDR *addr, int types);
 		b - Address to compare to.
 
 	Returns:
-		<0 - Address a is lesser then address b
+		<0 - Address a is less than address b
 		0 - Address a is equal to address b
-		>0 - Address a is greater then address b
+		>0 - Address a is greater than address b
 */
 int net_addr_comp(const NETADDR *a, const NETADDR *b);
 
@@ -635,7 +635,7 @@ int net_addr_comp_noport(const NETADDR *a, const NETADDR *b);
 
 /*
 	Function: net_addr_str
-		Turns a network address into a representive string.
+		Turns a network address into a representative string.
 
 	Parameters:
 		addr - Address to turn into a string.
@@ -695,16 +695,16 @@ int net_udp_send(NETSOCKET sock, const NETADDR *addr, const void *data, int size
 
 /*
 	Function: net_udp_recv
-		Recives a packet over an UDP socket.
+		Receives a packet over an UDP socket.
 
 	Parameters:
 		sock - Socket to use.
-		addr - Pointer to an NETADDR that will recive the address.
-		data - Pointer to a buffer that will recive the data.
-		maxsize - Maximum size to recive.
+		addr - Pointer to an NETADDR that will receive the address.
+		data - Pointer to a buffer that will receive the data.
+		maxsize - Maximum size to receive.
 
 	Returns:
-		On success it returns the number of bytes recived. Returns -1
+		On success it returns the number of bytes received. Returns -1
 		on error.
 */
 int net_udp_recv(NETSOCKET sock, NETADDR *addr, void *data, int maxsize);
@@ -720,7 +720,6 @@ int net_udp_recv(NETSOCKET sock, NETADDR *addr, void *data, int maxsize);
 		Returns 0 on success. -1 on error.
 */
 int net_udp_close(NETSOCKET sock);
-
 
 /* Group: Network TCP */
 
@@ -742,7 +741,7 @@ NETSOCKET net_tcp_create(NETADDR bindaddr);
 
 	Parameters:
 		sock - Socket to start listen to.
-		backlog - Size of the queue of incomming connections to keep.
+		backlog - Size of the queue of incoming connections to keep.
 
 	Returns:
 		Returns 0 on success.
@@ -831,8 +830,8 @@ int net_tcp_close(NETSOCKET sock);
 		dst_size - Size of the buffer of the dst string.
 
 	Remarks:
-		- The strings are treated as zero-termineted strings.
-		- Garantees that dst string will contain zero-termination.
+		- The strings are treated as zero-terminated strings.
+		- Guarantees that dst string will contain zero-termination.
 */
 void str_append(char *dst, const char *src, int dst_size);
 
@@ -872,13 +871,13 @@ void str_append_num(char *dst, const char *src, int dst_size, int num);
 		Copies a string to another.
 
 	Parameters:
-		dst - Pointer to a buffer that shall recive the string.
+		dst - Pointer to a buffer that shall receive the string.
 		src - String to be copied.
 		dst_size - Size of the buffer dst.
 
 	Remarks:
-		- The strings are treated as zero-termineted strings.
-		- Garantees that dst string will contain zero-termination.
+		- The strings are treated as zero-terminated strings.
+		- Guarantees that dst string will contain zero-termination.
 */
 void str_copy(char *dst, const char *src, int dst_size);
 
@@ -896,18 +895,18 @@ int str_length(const char *str);
 
 /*
 	Function: str_format
-		Performs printf formating into a buffer.
+		Performs printf formatting into a buffer.
 
 	Parameters:
-		buffer - Pointer to the buffer to recive the formated string.
+		buffer - Pointer to the buffer to receive the formatted string.
 		buffer_size - Size of the buffer.
-		format - printf formating string.
-		... - Parameters for the formating.
+		format - printf formatting string.
+		... - Parameters for the formatting.
 
 	Remarks:
-		- See the C manual for syntax for the printf formating string.
-		- The strings are treated as zero-termineted strings.
-		- Garantees that dst string will contain zero-termination.
+		- See the C manual for syntax for the printf formatting string.
+		- The strings are treated as zero-terminated strings.
+		- Guarantees that dst string will contain zero-termination.
 */
 void str_format(char *buffer, int buffer_size, const char *format, ...);
 
@@ -931,7 +930,7 @@ void str_sanitize_strong(char *str);
 		str - String to sanitize.
 
 	Remarks:
-		- The strings are treated as zero-termineted strings.
+		- The strings are treated as zero-terminated strings.
 */
 void str_sanitize_cc(char *str);
 
@@ -944,7 +943,7 @@ void str_sanitize_cc(char *str);
 		str - String to sanitize.
 
 	Remarks:
-		- The strings are treated as zero-termineted strings.
+		- The strings are treated as zero-terminated strings.
 */
 void str_sanitize(char *str);
 
@@ -960,7 +959,7 @@ void str_sanitize(char *str);
 		within the string.
 
 	Remarks:
-		- The strings are treated as zero-termineted strings.
+		- The strings are treated as zero-terminated strings.
 */
 char *str_skip_to_whitespace(char *str);
 
@@ -976,32 +975,32 @@ char *str_skip_to_whitespace(char *str);
 		within the string.
 
 	Remarks:
-		- The strings are treated as zero-termineted strings.
+		- The strings are treated as zero-terminated strings.
 */
 char *str_skip_whitespaces(char *str);
 
 /*
 	Function: str_comp_nocase
-		Compares to strings case insensitive.
+		Compares to strings case insensitively.
 
 	Parameters:
 		a - String to compare.
 		b - String to compare.
 
 	Returns:
-		<0 - String a is lesser then string b
+		<0 - String a is less than string b
 		0 - String a is equal to string b
-		>0 - String a is greater then string b
+		>0 - String a is greater than string b
 
 	Remarks:
-		- Only garanted to work with a-z/A-Z.
-		- The strings are treated as zero-termineted strings.
+		- Only guaranteed to work with a-z/A-Z.
+		- The strings are treated as zero-terminated strings.
 */
 int str_comp_nocase(const char *a, const char *b);
 
 /*
 	Function: str_comp_nocase_num
-		Compares up to num characters of two strings case insensitive.
+		Compares up to num characters of two strings case insensitively.
 
 	Parameters:
 		a - String to compare.
@@ -1009,31 +1008,32 @@ int str_comp_nocase(const char *a, const char *b);
 		num - Maximum characters to compare
 
 	Returns:
-		<0 - String a is lesser than string b
+		<0 - String a is less than string b
 		0 - String a is equal to string b
 		>0 - String a is greater than string b
 
 	Remarks:
-		- Only garanted to work with a-z/A-Z.
-		- The strings are treated as zero-termineted strings.
+		- Only guaranteed to work with a-z/A-Z.
+		  (use str_utf8_comp_nocase_num for unicode support)
+		- The strings are treated as zero-terminated strings.
 */
 int str_comp_nocase_num(const char *a, const char *b, const int num);
 
 /*
 	Function: str_comp
-		Compares to strings case sensitive.
+		Compares two strings case sensitive.
 
 	Parameters:
 		a - String to compare.
 		b - String to compare.
 
 	Returns:
-		<0 - String a is lesser then string b
+		<0 - String a is less than string b
 		0 - String a is equal to string b
-		>0 - String a is greater then string b
+		>0 - String a is greater than string b
 
 	Remarks:
-		- The strings are treated as zero-termineted strings.
+		- The strings are treated as zero-terminated strings.
 */
 int str_comp(const char *a, const char *b);
 
@@ -1047,12 +1047,12 @@ int str_comp(const char *a, const char *b);
 		num - Maximum characters to compare
 
 	Returns:
-		<0 - String a is lesser then string b
+		<0 - String a is less than string b
 		0 - String a is equal to string b
-		>0 - String a is greater then string b
+		>0 - String a is greater than string b
 
 	Remarks:
-		- The strings are treated as zero-termineted strings.
+		- The strings are treated as zero-terminated strings.
 */
 int str_comp_num(const char *a, const char *b, const int num);
 
@@ -1065,12 +1065,12 @@ int str_comp_num(const char *a, const char *b, const int num);
 		b - String to compare.
 
 	Returns:
-		<0 - String a is lesser then string b
+		<0 - String a is less than string b
 		0 - String a is equal to string b
-		>0 - String a is greater then string b
+		>0 - String a is greater than string b
 
 	Remarks:
-		- The strings are treated as zero-termineted strings.
+		- The strings are treated as zero-terminated strings.
 */
 int str_comp_filenames(const char *a, const char *b);
 
@@ -1110,7 +1110,7 @@ const char *str_endswith(const char *str, const char *suffix);
 
 /*
 	Function: str_find_nocase
-		Finds a string inside another string case insensitive.
+		Finds a string inside another string case insensitively.
 
 	Parameters:
 		haystack - String to search in
@@ -1118,11 +1118,12 @@ const char *str_endswith(const char *str, const char *suffix);
 
 	Returns:
 		A pointer into haystack where the needle was found.
-		Returns NULL of needle could not be found.
+		Returns NULL if needle could not be found.
 
 	Remarks:
-		- Only garanted to work with a-z/A-Z.
-		- The strings are treated as zero-termineted strings.
+		- Only guaranteed to work with a-z/A-Z.
+		  (use str_utf8_find_nocase for unicode support)
+		- The strings are treated as zero-terminated strings.
 */
 const char *str_find_nocase(const char *haystack, const char *needle);
 
@@ -1136,16 +1137,17 @@ const char *str_find_nocase(const char *haystack, const char *needle);
 
 	Returns:
 		A pointer into haystack where the needle was found.
-		Returns NULL of needle could not be found.
+		Returns NULL if needle could not be found.
 
 	Remarks:
-		- The strings are treated as zero-termineted strings.
+		- The strings are treated as zero-terminated strings.
 */
 const char *str_find(const char *haystack, const char *needle);
 
 /*
 	Function: str_hex
-		Takes a datablock and generates a hexstring of it.
+		Takes a datablock and generates a hex string of it, with spaces
+		between bytes.
 
 	Parameters:
 		dst - Buffer to fill with hex data
@@ -1255,7 +1257,7 @@ int fs_makedir_rec_for(const char *path);
 
 	Remarks:
 		- Returns ~/.appname on UNIX based systems
-		- Returns ~/Library/Applications Support/appname on Mac OS X
+		- Returns ~/Library/Applications Support/appname on macOS
 		- Returns %APPDATA%/Appname on Windows based systems
 */
 int fs_storage_path(const char *appname, char *path, int max);
@@ -1304,7 +1306,7 @@ char *fs_getcwd(char *buffer, int buffer_size);
 		Returns 0 on success, 1 on failure.
 
 	Remarks:
-		- The string is treated as zero-termineted string.
+		- The string is treated as zero-terminated string.
 */
 int fs_parent_dir(char *path);
 
@@ -1342,7 +1344,6 @@ int fs_rename(const char *oldname, const char *newname);
 /*
 	Group: Undocumented
 */
-
 
 /*
 	Function: net_tcp_connect_non_blocking
@@ -1399,7 +1400,6 @@ typedef struct
 	int recv_bytes;
 } NETSTATS;
 
-
 void net_stats(NETSTATS *stats);
 
 int str_toint(const char *str);
@@ -1420,6 +1420,20 @@ void gui_messagebox(const char *title, const char *message);
 
 int str_utf8_isstart(char c);
 
+/*
+	Function: str_utf8_skip_whitespaces
+		Skips leading characters that render as spaces.
+
+	Parameters:
+		str - Pointer to the string.
+
+	Returns:
+		Pointer to the first non-whitespace character found
+		within the string.
+
+	Remarks:
+		- The strings are treated as zero-terminated strings.
+*/
 const char *str_utf8_skip_whitespaces(const char *str);
 
 /*
@@ -1456,16 +1470,17 @@ int str_utf8_forward(const char *str, int cursor);
 
 /*
 	Function: str_utf8_decode
-		Decodes an utf8 character
+		Decodes a utf8 codepoint
 
 	Parameters:
-		ptr - pointer to an utf8 string. this pointer will be moved forward
+		ptr - Pointer to a utf8 string. This pointer will be moved forward.
 
 	Returns:
-		Unicode value for the character. -1 for invalid characters and 0 for end of string.
+		The Unicode codepoint. -1 for invalid input and 0 for end of string.
 
 	Remarks:
 		- This function will also move the pointer forward.
+		- You may call this function again after an error occurred.
 */
 int str_utf8_decode(const char **ptr);
 
@@ -1474,7 +1489,7 @@ int str_utf8_decode(const char **ptr);
 		Encode an utf8 character
 
 	Parameters:
-		ptr - Pointer to a buffer that should recive the data. Should be able to hold at least 4 bytes.
+		ptr - Pointer to a buffer that should receive the data. Should be able to hold at least 4 bytes.
 
 	Returns:
 		Number of bytes put into the buffer.

@@ -1,64 +1,67 @@
 /* (c) Magnus Auvinen. See licence.txt in the root of the distribution for more information. */
 /* If you are missing that file, acquire a complete release at teeworlds.com.                */
-/* (c) Boris Bobrov, 2019 */
-/* (c) DDNet developers, ddnet.tw */
-
-#include <stdlib.h>
-#include <stdio.h>
-#include <stdarg.h>
-#include <string.h>
 #include <ctype.h>
+#include <stdarg.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 #include <time.h>
 
 #include "system.h"
 
+#include <sys/stat.h>
+#include <sys/types.h>
+
 #if defined(CONF_FAMILY_UNIX)
-	#include <sys/time.h>
-	#include <unistd.h>
+#include <signal.h>
+#include <sys/time.h>
+#include <sys/wait.h>
+#include <unistd.h>
 
-	/* unix net includes */
-	#include <sys/stat.h>
-	#include <sys/types.h>
-	#include <sys/socket.h>
-	#include <sys/ioctl.h>
-	#include <errno.h>
-	#include <netdb.h>
-	#include <netinet/in.h>
-	#include <fcntl.h>
-	#include <pthread.h>
-	#include <arpa/inet.h>
+/* unix net includes */
+#include <arpa/inet.h>
+#include <errno.h>
+#include <fcntl.h>
+#include <netdb.h>
+#include <netinet/in.h>
+#include <pthread.h>
+#include <sys/ioctl.h>
+#include <sys/socket.h>
 
-	#include <dirent.h>
+#include <dirent.h>
 
-	#if defined(CONF_PLATFORM_MACOSX)
-		#include <Carbon/Carbon.h>
-	#endif
+#if defined(CONF_PLATFORM_MACOS)
+#include <Carbon/Carbon.h>
+#endif
 
 #elif defined(CONF_FAMILY_WINDOWS)
-	#define WIN32_LEAN_AND_MEAN
-	#define _WIN32_WINNT 0x0501 /* required for mingw to get getaddrinfo to work */
-	#include <windows.h>
-	#include <winsock2.h>
-	#include <ws2tcpip.h>
-	#include <fcntl.h>
-	#include <direct.h>
-	#include <errno.h>
+#define WIN32_LEAN_AND_MEAN
+#undef _WIN32_WINNT
+#define _WIN32_WINNT 0x0501 /* required for mingw to get getaddrinfo to work */
+#include <windows.h>
+#include <winsock2.h>
+#include <ws2tcpip.h>
 
-	//for crypto stuff:
-	#include <wincrypt.h>
+#include <direct.h>
+#include <errno.h>
+#include <fcntl.h>
+#include <wincrypt.h>
 #else
-	#error NOT IMPLEMENTED
+#error NOT IMPLEMENTED
 #endif
 
 #if defined(CONF_PLATFORM_SOLARIS)
-	#include <sys/filio.h>
+#include <sys/filio.h>
 #endif
 
 #if defined(__cplusplus)
 extern "C" {
 #endif
 
-IOHANDLE io_stdin() { return (IOHANDLE)stdin; }
+IOHANDLE io_stdin()
+{
+	return (IOHANDLE)stdin;
+}
 IOHANDLE io_stdout() { return (IOHANDLE)stdout; }
 IOHANDLE io_stderr() { return (IOHANDLE)stderr; }
 
@@ -101,9 +104,9 @@ void dbg_msg(const char *sys, const char *fmt, ...)
 
 	va_start(args, fmt);
 #if defined(CONF_FAMILY_WINDOWS)
-	_vsnprintf(msg, sizeof(str)-len, fmt, args);
+	_vsnprintf(msg, sizeof(str) - len, fmt, args);
 #else
-	vsnprintf(msg, sizeof(str)-len, fmt, args);
+	vsnprintf(msg, sizeof(str) - len, fmt, args);
 #endif
 	va_end(args);
 
@@ -143,7 +146,6 @@ void dbg_logger_file(const char *filename)
 		dbg_logger(logger_file);
 	else
 		dbg_msg("dbg/logger", "failed to open '%s' for logging", filename);
-
 }
 /* */
 
@@ -157,7 +159,7 @@ void mem_move(void *dest, const void *source, unsigned size)
 	memmove(dest, source, size);
 }
 
-void mem_zero(void *block,unsigned size)
+void mem_zero(void *block, unsigned size)
 {
 	memset(block, 0, size);
 }
@@ -194,12 +196,12 @@ IOHANDLE io_open(const char *filename, int flags)
 
 unsigned io_read(IOHANDLE io, void *buffer, unsigned size)
 {
-	return fread(buffer, 1, size, (FILE*)io);
+	return fread(buffer, 1, size, (FILE *)io);
 }
 
 unsigned io_skip(IOHANDLE io, int size)
 {
-	fseek((FILE*)io, size, SEEK_CUR);
+	fseek((FILE *)io, size, SEEK_CUR);
 	return size;
 }
 
@@ -222,12 +224,12 @@ int io_seek(IOHANDLE io, int offset, int origin)
 		return -1;
 	}
 
-	return fseek((FILE*)io, offset, real_origin);
+	return fseek((FILE *)io, offset, real_origin);
 }
 
 long int io_tell(IOHANDLE io)
 {
-	return ftell((FILE*)io);
+	return ftell((FILE *)io);
 }
 
 long int io_length(IOHANDLE io)
@@ -241,15 +243,15 @@ long int io_length(IOHANDLE io)
 
 unsigned io_write(IOHANDLE io, const void *buffer, unsigned size)
 {
-	return fwrite(buffer, 1, size, (FILE*)io);
+	return fwrite(buffer, 1, size, (FILE *)io);
 }
 
 unsigned io_write_newline(IOHANDLE io)
 {
 #if defined(CONF_FAMILY_WINDOWS)
-	return fwrite("\r\n", 1, 2, (FILE*)io);
+	return fwrite("\r\n", 1, 2, (FILE *)io);
 #else
-	return fwrite("\n", 1, 1, (FILE*)io);
+	return fwrite("\n", 1, 1, (FILE *)io);
 #endif
 }
 
@@ -632,15 +634,15 @@ static void sockaddr_to_netaddr(const struct sockaddr *src, NETADDR *dst)
 	{
 		mem_zero(dst, sizeof(NETADDR));
 		dst->type = NETTYPE_IPV4;
-		dst->port = htons(((struct sockaddr_in*)src)->sin_port);
-		mem_copy(dst->ip, &((struct sockaddr_in*)src)->sin_addr.s_addr, 4);
+		dst->port = htons(((struct sockaddr_in *)src)->sin_port);
+		mem_copy(dst->ip, &((struct sockaddr_in *)src)->sin_addr.s_addr, 4);
 	}
 	else if(src->sa_family == AF_INET6)
 	{
 		mem_zero(dst, sizeof(NETADDR));
 		dst->type = NETTYPE_IPV6;
-		dst->port = htons(((struct sockaddr_in6*)src)->sin6_port);
-		mem_copy(dst->ip, &((struct sockaddr_in6*)src)->sin6_addr.s6_addr, 16);
+		dst->port = htons(((struct sockaddr_in6 *)src)->sin6_port);
+		mem_copy(dst->ip, &((struct sockaddr_in6 *)src)->sin6_addr.s6_addr, 16);
 	}
 	else
 	{
@@ -698,24 +700,24 @@ static int priv_net_extract(const char *hostname, char *host, int max_host, int 
 	{
 		// ipv6 mode
 		for(i = 1; i < max_host && hostname[i] && hostname[i] != ']'; i++)
-			host[i-1] = hostname[i];
-		host[i-1] = 0;
+			host[i - 1] = hostname[i];
+		host[i - 1] = 0;
 		if(hostname[i] != ']') // malformatted
 			return -1;
 
 		i++;
 		if(hostname[i] == ':')
-			*port = atol(hostname+i+1);
+			*port = atol(hostname + i + 1);
 	}
 	else
 	{
 		// generic mode (ipv4, hostname etc)
-		for(i = 0; i < max_host-1 && hostname[i] && hostname[i] != ':'; i++)
+		for(i = 0; i < max_host - 1 && hostname[i] && hostname[i] != ':'; i++)
 			host[i] = hostname[i];
 		host[i] = 0;
 
 		if(hostname[i] == ':')
-			*port = atol(hostname+i+1);
+			*port = atol(hostname + i + 1);
 	}
 
 	return 0;
@@ -772,7 +774,7 @@ static int parse_int(int *out, const char **str)
 			return 0;
 		}
 
-		i = (i*10) + (**str - '0');
+		i = (i * 10) + (**str - '0');
 		(*str)++;
 	}
 
@@ -781,7 +783,8 @@ static int parse_int(int *out, const char **str)
 
 static int parse_char(char c, const char **str)
 {
-	if(**str != c) return -1;
+	if(**str != c)
+		return -1;
 	(*str)++;
 	return 0;
 }
@@ -789,8 +792,10 @@ static int parse_char(char c, const char **str)
 static int parse_uint8(unsigned char *out, const char **str)
 {
 	int i;
-	if(parse_int(&i, str) != 0) return -1;
-	if(i < 0 || i > 0xff) return -1;
+	if(parse_int(&i, str) != 0)
+		return -1;
+	if(i < 0 || i > 0xff)
+		return -1;
 	*out = i;
 	return 0;
 }
@@ -798,8 +803,10 @@ static int parse_uint8(unsigned char *out, const char **str)
 static int parse_uint16(unsigned short *out, const char **str)
 {
 	int i;
-	if(parse_int(&i, str) != 0) return -1;
-	if(i < 0 || i > 0xffff) return -1;
+	if(parse_int(&i, str) != 0)
+		return -1;
+	if(i < 0 || i > 0xffff)
+		return -1;
 	*out = i;
 	return 0;
 }
@@ -852,17 +859,25 @@ int net_addr_from_str(NETADDR *addr, const char *string)
 	else
 	{
 		/* ipv4 */
-		if(parse_uint8(&addr->ip[0], &str)) return -1;
-		if(parse_char('.', &str)) return -1;
-		if(parse_uint8(&addr->ip[1], &str)) return -1;
-		if(parse_char('.', &str)) return -1;
-		if(parse_uint8(&addr->ip[2], &str)) return -1;
-		if(parse_char('.', &str)) return -1;
-		if(parse_uint8(&addr->ip[3], &str)) return -1;
+		if(parse_uint8(&addr->ip[0], &str))
+			return -1;
+		if(parse_char('.', &str))
+			return -1;
+		if(parse_uint8(&addr->ip[1], &str))
+			return -1;
+		if(parse_char('.', &str))
+			return -1;
+		if(parse_uint8(&addr->ip[2], &str))
+			return -1;
+		if(parse_char('.', &str))
+			return -1;
+		if(parse_uint8(&addr->ip[3], &str))
+			return -1;
 		if(*str == ':')
 		{
 			str++;
-			if(parse_uint16(&addr->port, &str)) return -1;
+			if(parse_uint16(&addr->port, &str))
+				return -1;
 		}
 
 		addr->type = NETTYPE_IPV4;
@@ -911,7 +926,7 @@ static int priv_net_create_socket(int domain, int type, struct sockaddr *addr, i
 #if defined(CONF_FAMILY_WINDOWS)
 		char buf[128];
 		int error = WSAGetLastError();
-		if(FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM|FORMAT_MESSAGE_IGNORE_INSERTS, 0, error, 0, buf, sizeof(buf), 0) == 0)
+		if(FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS, 0, error, 0, buf, sizeof(buf), 0) == 0)
 			buf[0] = 0;
 		dbg_msg("net", "failed to create socket with domain %d and type %d (%d '%s')", domain, type, error, buf);
 #else
@@ -944,7 +959,7 @@ static int priv_net_create_socket(int domain, int type, struct sockaddr *addr, i
 #if defined(CONF_FAMILY_WINDOWS)
 		char buf[128];
 		int error = WSAGetLastError();
-		if(FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM|FORMAT_MESSAGE_IGNORE_INSERTS, 0, error, 0, buf, sizeof(buf), 0) == 0)
+		if(FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS, 0, error, 0, buf, sizeof(buf), 0) == 0)
 			buf[0] = 0;
 		dbg_msg("net", "failed to bind socket with domain %d and type %d (%d '%s')", domain, type, error, buf);
 #else
@@ -965,7 +980,7 @@ NETSOCKET net_udp_create(NETADDR bindaddr)
 	int broadcast = 1;
 	int recvsize = 65536;
 
-	if(bindaddr.type&NETTYPE_IPV4)
+	if(bindaddr.type & NETTYPE_IPV4)
 	{
 		struct sockaddr_in addr;
 		int socket = -1;
@@ -1020,12 +1035,12 @@ int net_udp_send(NETSOCKET sock, const NETADDR *addr, const void *data, int size
 {
 	int d = -1;
 
-	if(addr->type&NETTYPE_IPV4)
+	if(addr->type & NETTYPE_IPV4)
 	{
 		if(sock.ipv4sock >= 0)
 		{
 			struct sockaddr_in sa;
-			if(addr->type&NETTYPE_LINK_BROADCAST)
+			if(addr->type & NETTYPE_LINK_BROADCAST)
 			{
 				mem_zero(&sa, sizeof(sa));
 				sa.sin_port = htons(addr->port);
@@ -1035,18 +1050,18 @@ int net_udp_send(NETSOCKET sock, const NETADDR *addr, const void *data, int size
 			else
 				netaddr_to_sockaddr_in(addr, &sa);
 
-			d = sendto((int)sock.ipv4sock, (const char*)data, size, 0, (struct sockaddr *)&sa, sizeof(sa));
+			d = sendto((int)sock.ipv4sock, (const char *)data, size, 0, (struct sockaddr *)&sa, sizeof(sa));
 		}
 		else
-			dbg_msg("net", "can't sent ipv4 traffic to this socket");
+			dbg_msg("net", "can't send ipv4 traffic to this socket");
 	}
 
-	if(addr->type&NETTYPE_IPV6)
+	if(addr->type & NETTYPE_IPV6)
 	{
 		if(sock.ipv6sock >= 0)
 		{
 			struct sockaddr_in6 sa;
-			if(addr->type&NETTYPE_LINK_BROADCAST)
+			if(addr->type & NETTYPE_LINK_BROADCAST)
 			{
 				mem_zero(&sa, sizeof(sa));
 				sa.sin6_port = htons(addr->port);
@@ -1058,14 +1073,14 @@ int net_udp_send(NETSOCKET sock, const NETADDR *addr, const void *data, int size
 			else
 				netaddr_to_sockaddr_in6(addr, &sa);
 
-			d = sendto((int)sock.ipv6sock, (const char*)data, size, 0, (struct sockaddr *)&sa, sizeof(sa));
+			d = sendto((int)sock.ipv6sock, (const char *)data, size, 0, (struct sockaddr *)&sa, sizeof(sa));
 		}
 		else
-			dbg_msg("net", "can't sent ipv6 traffic to this socket");
+			dbg_msg("net", "can't send ipv6 traffic to this socket");
 	}
 	/*
 	else
-		dbg_msg("net", "can't sent to network of type %d", addr->type);
+		dbg_msg("net", "can't send to network of type %d", addr->type);
 		*/
 
 	/*if(d < 0)
@@ -1124,7 +1139,7 @@ NETSOCKET net_tcp_create(NETADDR bindaddr)
 	NETSOCKET sock = invalid_socket;
 	NETADDR tmpbindaddr = bindaddr;
 
-	if(bindaddr.type&NETTYPE_IPV4)
+	if(bindaddr.type & NETTYPE_IPV4)
 	{
 		struct sockaddr_in addr;
 		int socket = -1;
@@ -1140,7 +1155,7 @@ NETSOCKET net_tcp_create(NETADDR bindaddr)
 		}
 	}
 
-	if(bindaddr.type&NETTYPE_IPV6)
+	if(bindaddr.type & NETTYPE_IPV6)
 	{
 		struct sockaddr_in6 addr;
 		int socket = -1;
@@ -1232,7 +1247,7 @@ int net_tcp_accept(NETSOCKET sock, NETSOCKET *new_sock, NETADDR *a)
 
 		s = accept(sock.ipv4sock, (struct sockaddr *)&addr, &sockaddr_len);
 
-		if (s != -1)
+		if(s != -1)
 		{
 			sockaddr_to_netaddr((const struct sockaddr *)&addr, a);
 			new_sock->type = NETTYPE_IPV4;
@@ -1248,7 +1263,7 @@ int net_tcp_accept(NETSOCKET sock, NETSOCKET *new_sock, NETADDR *a)
 
 		s = accept(sock.ipv6sock, (struct sockaddr *)&addr, &sockaddr_len);
 
-		if (s != -1)
+		if(s != -1)
 		{
 			sockaddr_to_netaddr((const struct sockaddr *)&addr, a);
 			new_sock->type = NETTYPE_IPV6;
@@ -1262,14 +1277,14 @@ int net_tcp_accept(NETSOCKET sock, NETSOCKET *new_sock, NETADDR *a)
 
 int net_tcp_connect(NETSOCKET sock, const NETADDR *a)
 {
-	if(a->type&NETTYPE_IPV4)
+	if(a->type & NETTYPE_IPV4)
 	{
 		struct sockaddr_in addr;
 		netaddr_to_sockaddr_in(a, &addr);
 		return connect(sock.ipv4sock, (struct sockaddr *)&addr, sizeof(addr));
 	}
 
-	if(a->type&NETTYPE_IPV6)
+	if(a->type & NETTYPE_IPV6)
 	{
 		struct sockaddr_in6 addr;
 		netaddr_to_sockaddr_in6(a, &addr);
@@ -1295,9 +1310,9 @@ int net_tcp_send(NETSOCKET sock, const void *data, int size)
 	int bytes = -1;
 
 	if(sock.ipv4sock >= 0)
-		bytes = send((int)sock.ipv4sock, (const char*)data, size, 0);
+		bytes = send((int)sock.ipv4sock, (const char *)data, size, 0);
 	if(sock.ipv6sock >= 0)
-		bytes = send((int)sock.ipv6sock, (const char*)data, size, 0);
+		bytes = send((int)sock.ipv6sock, (const char *)data, size, 0);
 
 	return bytes;
 }
@@ -1307,9 +1322,9 @@ int net_tcp_recv(NETSOCKET sock, void *data, int maxsize)
 	int bytes = -1;
 
 	if(sock.ipv4sock >= 0)
-		bytes = recv((int)sock.ipv4sock, (char*)data, maxsize, 0);
+		bytes = recv((int)sock.ipv4sock, (char *)data, maxsize, 0);
 	if(sock.ipv6sock >= 0)
-		bytes = recv((int)sock.ipv6sock, (char*)data, maxsize, 0);
+		bytes = recv((int)sock.ipv6sock, (char *)data, maxsize, 0);
 
 	return bytes;
 }
@@ -1343,7 +1358,7 @@ int net_init()
 	WSADATA wsaData;
 	int err = WSAStartup(MAKEWORD(1, 1), &wsaData);
 	dbg_assert(err == 0, "network initialization failed.");
-	return err==0?0:1;
+	return err == 0 ? 0 : 1;
 #endif
 
 	return 0;
@@ -1473,8 +1488,8 @@ int fs_storage_path(const char *appname, char *path, int max)
 	snprintf(path, max, "%s/Library/Application Support/%s", home, appname);
 #else
 	snprintf(path, max, "%s/.%s", home, appname);
-	for(i = strlen(home)+2; path[i]; i++)
-		path[i] = tolower(path[i]);
+	for(i = str_length(home) + 2; path[i]; i++)
+		path[i] = tolower((unsigned char)path[i]);
 #endif
 
 	return 0;
@@ -1503,7 +1518,7 @@ int fs_makedir(const char *path)
 {
 #if defined(CONF_FAMILY_WINDOWS)
 	if(_mkdir(path) == 0)
-			return 0;
+		return 0;
 	if(errno == EEXIST)
 		return 0;
 	return -1;
@@ -1535,20 +1550,20 @@ int fs_is_dir(const char *path)
 	/* TODO: do this smarter */
 	WIN32_FIND_DATA finddata;
 	HANDLE handle;
-	char buffer[1024*2];
+	char buffer[1024 * 2];
 	str_format(buffer, sizeof(buffer), "%s/*", path);
 
-	if ((handle = FindFirstFileA(buffer, &finddata)) == INVALID_HANDLE_VALUE)
+	if((handle = FindFirstFileA(buffer, &finddata)) == INVALID_HANDLE_VALUE)
 		return 0;
 
 	FindClose(handle);
 	return 1;
 #else
 	struct stat sb;
-	if (stat(path, &sb) == -1)
+	if(stat(path, &sb) == -1)
 		return 0;
 
-	if (S_ISDIR(sb.st_mode))
+	if(S_ISDIR(sb.st_mode))
 		return 1;
 	else
 		return 0;
@@ -1621,12 +1636,12 @@ int fs_rename(const char *oldname, const char *newname)
 
 void swap_endian(void *data, unsigned elem_size, unsigned num)
 {
-	char *src = (char*) data;
+	char *src = (char *)data;
 	char *dst = src + (elem_size - 1);
 
 	while(num)
 	{
-		unsigned n = elem_size>>1;
+		unsigned n = elem_size >> 1;
 		char tmp;
 		while(n)
 		{
@@ -1639,7 +1654,7 @@ void swap_endian(void *data, unsigned elem_size, unsigned num)
 			n--;
 		}
 
-		src = src + (elem_size>>1);
+		src = src + (elem_size >> 1);
 		dst = src + (elem_size - 1);
 		num--;
 	}
@@ -1670,9 +1685,9 @@ int net_socket_read_wait(NETSOCKET sock, int time)
 
 	/* don't care about writefds and exceptfds */
 	if(time < 0)
-		select(sockid+1, &readfds, NULL, NULL, NULL);
+		select(sockid + 1, &readfds, NULL, NULL, NULL);
 	else
-		select(sockid+1, &readfds, NULL, NULL, &tv);
+		select(sockid + 1, &readfds, NULL, NULL, &tv);
 
 	if(sock.ipv4sock >= 0 && FD_ISSET(sock.ipv4sock, &readfds))
 		return 1;
@@ -1739,12 +1754,12 @@ void str_append_num(char *dst, const char *src, int dst_size, int num)
 	int i = 0;
 	while(s < dst_size)
 	{
-		if(i>=num)
+		if(i >= num)
 		{
 			dst[s] = 0;
 			return;
 		}
-		
+
 		dst[s] = src[i];
 		if(!src[i]) /* check for null termination */
 			return;
@@ -1752,13 +1767,13 @@ void str_append_num(char *dst, const char *src, int dst_size, int num)
 		i++;
 	}
 
-	dst[dst_size-1] = 0; /* assure null termination */
+	dst[dst_size - 1] = 0; /* assure null termination */
 }
 
 void str_copy(char *dst, const char *src, int dst_size)
 {
-	strncpy(dst, src, dst_size);
-	dst[dst_size-1] = 0; /* assure null termination */
+	strncpy(dst, src, dst_size - 1);
+	dst[dst_size - 1] = 0; /* assure null termination */
 }
 
 int str_length(const char *str)
@@ -1778,6 +1793,8 @@ void str_format(char *buffer, int buffer_size, const char *format, ...)
 	va_start(ap, format);
 	vsnprintf(buffer, buffer_size, format, ap);
 	va_end(ap);
+
+	/* null termination is assured by definition of vsnprintf */
 #endif
 
 	buffer[buffer_size-1] = 0; /* assure null termination */
@@ -1840,9 +1857,9 @@ char *str_skip_whitespaces(char *str)
 int str_comp_nocase(const char *a, const char *b)
 {
 #if defined(CONF_FAMILY_WINDOWS)
-	return _stricmp(a,b);
+	return _stricmp(a, b);
 #else
-	return strcasecmp(a,b);
+	return strcasecmp(a, b);
 #endif
 }
 
@@ -1878,9 +1895,9 @@ int str_comp_filenames(const char *a, const char *b)
 			{
 				if(!result)
 					result = *a - *b;
-				++a; ++b;
-			}
-			while(*a >= '0' && *a <= '9' && *b >= '0' && *b <= '9');
+				++a;
+				++b;
+			} while(*a >= '0' && *a <= '9' && *b >= '0' && *b <= '9');
 
 			if(*a >= '0' && *a <= '9')
 				return 1;
@@ -1948,7 +1965,6 @@ const char *str_find_nocase(const char *haystack, const char *needle)
 	return 0;
 }
 
-
 const char *str_find(const char *haystack, const char *needle)
 {
 	while(*haystack) /* native implementation */
@@ -1973,12 +1989,12 @@ void str_hex(char *dst, int dst_size, const void *data, int data_size)
 	static const char hex[] = "0123456789ABCDEF";
 	int b;
 
-	for(b = 0; b < data_size && b < dst_size/4-4; b++)
+	for(b = 0; b < data_size && b < dst_size / 4 - 4; b++)
 	{
-		dst[b*3] = hex[((const unsigned char *)data)[b]>>4];
-		dst[b*3+1] = hex[((const unsigned char *)data)[b]&0xf];
-		dst[b*3+2] = ' ';
-		dst[b*3+3] = 0;
+		dst[b * 3] = hex[((const unsigned char *)data)[b] >> 4];
+		dst[b * 3 + 1] = hex[((const unsigned char *)data)[b] & 0xf];
+		dst[b * 3 + 2] = ' ';
+		dst[b * 3 + 3] = 0;
 	}
 }
 
@@ -1986,10 +2002,9 @@ void str_hex(char *dst, int dst_size, const void *data, int data_size)
 void str_timestamp_ex(time_t time_data, char *buffer, int buffer_size, const char *format)
 {
 	struct tm *time_info;
-
 	time_info = localtime(&time_data);
 	strftime(buffer, buffer_size, format, time_info);
-	buffer[buffer_size-1] = 0;	/* assure null termination */
+	buffer[buffer_size - 1] = 0; /* assure null termination */
 }
 
 void str_timestamp(char *buffer, int buffer_size)
@@ -1998,7 +2013,6 @@ void str_timestamp(char *buffer, int buffer_size)
 	time(&time_data);
 	str_timestamp_ex(time_data, buffer, buffer_size, "%Y-%m-%d_%H-%M-%S");
 }
-/* DDNET MODIFICATION END *********************************************/
 
 void str_escape(char **dst, const char *src, const char *end)
 {
@@ -2012,7 +2026,7 @@ void str_escape(char **dst, const char *src, const char *end)
 
 int mem_comp(const void *a, const void *b, int size)
 {
-	return memcmp(a,b,size);
+	return memcmp(a, b, size);
 }
 
 void net_stats(NETSTATS *stats_inout)
@@ -2067,7 +2081,7 @@ int str_isspace(char c) { return c == ' ' || c == '\n' || c == '\t'; }
 char str_uppercase(char c)
 {
 	if(c >= 'a' && c <= 'z')
-		return 'A' + (c-'a');
+		return 'A' + (c - 'a');
 	return c;
 }
 
@@ -2098,7 +2112,7 @@ const char *str_utf8_skip_whitespaces(const char *str)
 
 int str_utf8_isstart(char c)
 {
-	if((c&0xC0) == 0x80) /* 10xxxxxx */
+	if((c & 0xC0) == 0x80) /* 10xxxxxx */
 		return 0;
 	return 1;
 }
@@ -2120,29 +2134,35 @@ int str_utf8_forward(const char *str, int cursor)
 	if(!buf[0])
 		return cursor;
 
-	if((*buf&0x80) == 0x0)  /* 0xxxxxxx */
-		return cursor+1;
-	else if((*buf&0xE0) == 0xC0) /* 110xxxxx */
+	if((*buf & 0x80) == 0x0) /* 0xxxxxxx */
+		return cursor + 1;
+	else if((*buf & 0xE0) == 0xC0) /* 110xxxxx */
 	{
-		if(!buf[1]) return cursor+1;
-		return cursor+2;
+		if(!buf[1])
+			return cursor + 1;
+		return cursor + 2;
 	}
-	else  if((*buf & 0xF0) == 0xE0)	/* 1110xxxx */
+	else if((*buf & 0xF0) == 0xE0) /* 1110xxxx */
 	{
-		if(!buf[1]) return cursor+1;
-		if(!buf[2]) return cursor+2;
-		return cursor+3;
+		if(!buf[1])
+			return cursor + 1;
+		if(!buf[2])
+			return cursor + 2;
+		return cursor + 3;
 	}
-	else if((*buf & 0xF8) == 0xF0)	/* 11110xxx */
+	else if((*buf & 0xF8) == 0xF0) /* 11110xxx */
 	{
-		if(!buf[1]) return cursor+1;
-		if(!buf[2]) return cursor+2;
-		if(!buf[3]) return cursor+3;
-		return cursor+4;
+		if(!buf[1])
+			return cursor + 1;
+		if(!buf[2])
+			return cursor + 2;
+		if(!buf[3])
+			return cursor + 3;
+		return cursor + 4;
 	}
 
 	/* invalid */
-	return cursor+1;
+	return cursor + 1;
 }
 
 int str_utf8_encode(char *ptr, int chr)
@@ -2155,23 +2175,23 @@ int str_utf8_encode(char *ptr, int chr)
 	}
 	else if(chr <= 0x7FF)
 	{
-		ptr[0] = 0xC0|((chr>>6)&0x1F);
-		ptr[1] = 0x80|(chr&0x3F);
+		ptr[0] = 0xC0 | ((chr >> 6) & 0x1F);
+		ptr[1] = 0x80 | (chr & 0x3F);
 		return 2;
 	}
 	else if(chr <= 0xFFFF)
 	{
-		ptr[0] = 0xE0|((chr>>12)&0x0F);
-		ptr[1] = 0x80|((chr>>6)&0x3F);
-		ptr[2] = 0x80|(chr&0x3F);
+		ptr[0] = 0xE0 | ((chr >> 12) & 0x0F);
+		ptr[1] = 0x80 | ((chr >> 6) & 0x3F);
+		ptr[2] = 0x80 | (chr & 0x3F);
 		return 3;
 	}
 	else if(chr <= 0x10FFFF)
 	{
-		ptr[0] = 0xF0|((chr>>18)&0x07);
-		ptr[1] = 0x80|((chr>>12)&0x3F);
-		ptr[2] = 0x80|((chr>>6)&0x3F);
-		ptr[3] = 0x80|(chr&0x3F);
+		ptr[0] = 0xF0 | ((chr >> 18) & 0x07);
+		ptr[1] = 0x80 | ((chr >> 12) & 0x3F);
+		ptr[2] = 0x80 | ((chr >> 6) & 0x3F);
+		ptr[3] = 0x80 | (chr & 0x3F);
 		return 4;
 	}
 
@@ -2265,7 +2285,7 @@ struct SECURE_RANDOM_DATA
 #endif
 };
 
-static struct SECURE_RANDOM_DATA secure_random_data = { 0 };
+static struct SECURE_RANDOM_DATA secure_random_data = {0};
 
 int secure_random_init()
 {
