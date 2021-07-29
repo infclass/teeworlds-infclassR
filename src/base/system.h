@@ -923,12 +923,15 @@ int str_length(const char *str);
 		format - printf formatting string.
 		... - Parameters for the formatting.
 
+	Returns:
+		Length of written string, even if it has been truncated
+
 	Remarks:
 		- See the C manual for syntax for the printf formatting string.
 		- The strings are treated as zero-terminated strings.
 		- Guarantees that dst string will contain zero-termination.
 */
-void str_format(char *buffer, int buffer_size, const char *format, ...)
+int str_format(char *buffer, int buffer_size, const char *format, ...)
 	GNUC_ATTRIBUTE((format(printf, 3, 4)));
 
 /*

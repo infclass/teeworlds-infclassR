@@ -1785,23 +1785,35 @@ int str_length(const char *str)
 	return (int)strlen(str);
 }
 
-void str_format(char *buffer, int buffer_size, const char *format, ...)
+int str_format(char *buffer, int buffer_size, const char *format, ...)
 {
+	int ret;
 #if defined(CONF_FAMILY_WINDOWS)
 	va_list ap;
 	va_start(ap, format);
-	_vsnprintf(buffer, buffer_size, format, ap);
+	ret = _vsnprintf(buffer, buffer_size, format, ap);
 	va_end(ap);
+
+	buffer[buffer_size - 1] = 0; /* assure null termination */
+
+	/* _vsnprintf is documented to return negative values on truncation, but
+	 * in practice we didn't see that. let's handle it anyway just in case. */
+	if(ret < 0)
+		ret = buffer_size - 1;
 #else
 	va_list ap;
 	va_start(ap, format);
-	vsnprintf(buffer, buffer_size, format, ap);
+	ret = vsnprintf(buffer, buffer_size, format, ap);
 	va_end(ap);
 
 	/* null termination is assured by definition of vsnprintf */
 #endif
 
-	buffer[buffer_size-1] = 0; /* assure null termination */
+	/* a return value of buffer_size or more indicates truncated output */
+	if(ret >= buffer_size)
+		ret = buffer_size - 1;
+
+	return ret;
 }
 
 
