@@ -520,35 +520,80 @@ void set_new_tick(void)
 }
 
 /* -----  time ----- */
-int64 time_get()
+int64 time_get_impl(void)
 {
-#if defined(CONF_FAMILY_UNIX)
-	struct timeval val;
-	gettimeofday(&val, NULL);
-	return (int64)val.tv_sec*(int64)1000000+(int64)val.tv_usec;
-#elif defined(CONF_FAMILY_WINDOWS)
 	static int64 last = 0;
-	int64 t;
-	QueryPerformanceCounter((PLARGE_INTEGER)&t);
-	if(t<last) /* for some reason, QPC can return values in the past */
+	{
+#if defined(CONF_PLATFORM_MACOS)
+		static int got_timebase = 0;
+		mach_timebase_info_data_t timebase;
+		uint64 time;
+		uint64 q;
+		uint64 r;
+		if(!got_timebase)
+		{
+			mach_timebase_info(&timebase);
+		}
+		time = mach_absolute_time();
+		q = time / timebase.denom;
+		r = time % timebase.denom;
+		last = q * timebase.numer + r * timebase.numer / timebase.denom;
 		return last;
-	last = t;
-	return t;
+#elif defined(CONF_FAMILY_UNIX)
+		struct timespec spec;
+		if(clock_gettime(CLOCK_MONOTONIC, &spec) != 0)
+		{
+			dbg_msg("clock", "gettime failed: %d", errno);
+			return 0;
+		}
+		last = (int64)spec.tv_sec * (int64)1000000 + (int64)spec.tv_nsec / 1000;
+		return last;
+#elif defined(CONF_FAMILY_WINDOWS)
+		int64 t;
+		QueryPerformanceCounter((PLARGE_INTEGER)&t);
+		if(t < last) /* for some reason, QPC can return values in the past */
+			return last;
+		last = t;
+		return t;
 #else
-	#error not implemented
+#error not implemented
 #endif
+	}
 }
 
-int64 time_freq()
+int64 time_get(void)
 {
-#if defined(CONF_FAMILY_UNIX)
+	static int64 last = 0;
+	if(new_tick == 0)
+		return last;
+	if(new_tick != -1)
+		new_tick = 0;
+
+	last = time_get_impl();
+	return last;
+}
+
+int64 time_freq(void)
+{
+#if defined(CONF_PLATFORM_MACOS)
+	return 1000000000;
+#elif defined(CONF_FAMILY_UNIX)
 	return 1000000;
 #elif defined(CONF_FAMILY_WINDOWS)
 	int64 t;
 	QueryPerformanceFrequency((PLARGE_INTEGER)&t);
 	return t;
 #else
-	#error not implemented
+#error not implemented
+#endif
+}
+
+int64 time_get_microseconds(void)
+{
+#if defined(CONF_FAMILY_WINDOWS)
+	return (time_get_impl() * (int64)1000000) / time_freq();
+#else
+	return time_get_impl() / (time_freq() / 1000 / 1000);
 #endif
 }
 
