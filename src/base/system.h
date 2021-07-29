@@ -18,6 +18,15 @@
 #include <stdlib.h>
 #include <time.h>
 
+#ifdef CONF_FAMILY_UNIX
+#include <sys/un.h>
+#endif
+
+#ifdef CONF_PLATFORM_LINUX
+#include <netinet/in.h>
+#include <sys/socket.h>
+#endif
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -161,6 +170,7 @@ enum
 	IOFLAG_READ = 1,
 	IOFLAG_WRITE = 2,
 	IOFLAG_RANDOM = 4,
+	IOFLAG_APPEND = 8,
 
 	IOSEEK_START = 0,
 	IOSEEK_CUR = 1,
@@ -175,7 +185,7 @@ typedef struct IOINTERNAL *IOHANDLE;
 
 	Parameters:
 		filename - File to open.
-		flags - A set of flags. IOFLAG_READ, IOFLAG_WRITE, IOFLAG_RANDOM.
+		flags - A set of flags. IOFLAG_READ, IOFLAG_WRITE, IOFLAG_RANDOM, IOFLAG_APPEND.
 
 	Returns:
 		Returns a handle to the file on success and 0 on failure.
@@ -729,7 +739,7 @@ enum
 	NETTYPE_IPV4 = 1,
 	NETTYPE_IPV6 = 2,
 	NETTYPE_LINK_BROADCAST = 4,
-	NETTYPE_ALL = NETTYPE_IPV4|NETTYPE_IPV6
+	NETTYPE_ALL = NETTYPE_IPV4 | NETTYPE_IPV6
 };
 
 typedef struct
@@ -739,6 +749,10 @@ typedef struct
 	unsigned short port;
 } NETADDR;
 
+#ifdef CONF_FAMILY_UNIX
+typedef int UNIXSOCKET;
+typedef struct sockaddr_un UNIXSOCKETADDR;
+#endif
 /*
 	Function: net_init
 		Initiates network functionality.
@@ -977,6 +991,54 @@ int net_tcp_recv(NETSOCKET sock, void *data, int maxsize);
 */
 int net_tcp_close(NETSOCKET sock);
 
+#if defined(CONF_FAMILY_UNIX)
+/* Group: Network Unix Sockets */
+
+/*
+	Function: net_unix_create_unnamed
+		Creates an unnamed unix datagram socket.
+
+	Returns:
+		On success it returns a handle to the socket. On failure it returns -1.
+*/
+UNIXSOCKET net_unix_create_unnamed(void);
+
+/*
+	Function: net_unix_send
+		Sends data to a Unix socket.
+
+	Parameters:
+		sock - Socket to use.
+		addr - Where to send the packet.
+		data - Pointer to the packet data to send.
+		size - Size of the packet.
+
+	Returns:
+		Number of bytes sent. Negative value on failure.
+*/
+int net_unix_send(UNIXSOCKET sock, UNIXSOCKETADDR *addr, void *data, int size);
+
+/*
+	Function: net_unix_set_addr
+		Sets the unixsocketaddress for a path to a socket file.
+
+	Parameters:
+		addr - Pointer to the addressstruct to fill.
+		path - Path to the (named) unix socket.
+*/
+void net_unix_set_addr(UNIXSOCKETADDR *addr, const char *path);
+
+/*
+	Function: net_unix_close
+		Closes a Unix socket.
+
+	Parameters:
+		sock - Socket to close.
+*/
+void net_unix_close(UNIXSOCKET sock);
+
+#endif
+
 /* Group: Strings */
 
 /*
@@ -993,34 +1055,6 @@ int net_tcp_close(NETSOCKET sock);
 		- Guarantees that dst string will contain zero-termination.
 */
 void str_append(char *dst, const char *src, int dst_size);
-
-/*
-	Function: str_next_token
-		Writes the next token after str into buf, returns the rest of the string.
-	Parameters:
-		str - Pointer to string.
-		delim - Delimiter for tokenization.
-		buffer - Buffer to store token in.
-		buffer_size - Size of the buffer.
-	Returns:
-		Pointer to rest of the string.
-	Remarks:
-		- The token is always null-terminated.
-*/
-const char *str_next_token(const char *str, const char *delim, char *buffer, int buffer_size);
-
-/*
-	Function: str_in_list
-		Checks if needle is in list delimited by delim
-	Parameters:
-		list - List
-		delim - List delimiter.
-		needle - Item that is being looked for.
-	Returns:
-		1 - Item is in list.
-		0 - Item isn't in list.
-*/
-int str_in_list(const char *list, const char *delim, const char *needle);
 
 //TeeUniverses
 void str_append_num(char *dst, const char *src, int dst_size, int num);
@@ -1039,6 +1073,39 @@ void str_append_num(char *dst, const char *src, int dst_size, int num);
 		- Guarantees that dst string will contain zero-termination.
 */
 void str_copy(char *dst, const char *src, int dst_size);
+
+/*
+	Function: str_utf8_truncate
+		Truncates a utf8 encoded string to a given length.
+
+	Parameters:
+		dst - Pointer to a buffer that shall receive the string.
+		dst_size - Size of the buffer dst.
+		str - String to be truncated.
+		truncation_len - Maximum codepoints in the returned string.
+
+	Remarks:
+		- The strings are treated as utf8-encoded zero-terminated strings.
+		- Guarantees that dst string will contain zero-termination.
+*/
+void str_utf8_truncate(char *dst, int dst_size, const char *src, int truncation_len);
+
+/*
+	Function: str_truncate
+		Truncates a string to a given length.
+
+	Parameters:
+		dst - Pointer to a buffer that shall receive the string.
+		dst_size - Size of the buffer dst.
+		src - String to be truncated.
+		truncation_len - Maximum length of the returned string (not
+		counting the zero termination).
+
+	Remarks:
+		- The strings are treated as zero-terminated strings.
+		- Garantees that dst string will contain zero-termination.
+*/
+void str_truncate(char *dst, int dst_size, const char *src, int truncation_len);
 
 /*
 	Function: str_length
@@ -1072,6 +1139,22 @@ int str_length(const char *str);
 */
 int str_format(char *buffer, int buffer_size, const char *format, ...)
 	GNUC_ATTRIBUTE((format(printf, 3, 4)));
+
+/*
+	Function: str_trim_words
+		Trims specific number of words at the start of a string.
+
+	Parameters:
+		str - String to trim the words from.
+		words - Count of words to trim.
+
+	Returns:
+		Trimmed string
+
+	Remarks:
+		- The strings are treated as zero-terminated strings.
+*/
+char *str_trim_words(char *str, int words);
 
 /*
 	Function: str_sanitize_strong
@@ -1111,6 +1194,28 @@ void str_sanitize_cc(char *str);
 void str_sanitize(char *str);
 
 /*
+	Function: str_sanitize_filename
+		Replaces all invalid filename characters with whitespace.
+
+	Parameters:
+		str - String to sanitize.
+
+	Remarks:
+		- The strings are treated as zero-terminated strings.
+*/
+void str_sanitize_filename(char *str);
+
+/*
+	Function: str_clean_whitespaces
+		Removes leading and trailing spaces and limits the use of multiple spaces.
+	Parameters:
+		str - String to clean up
+	Remarks:
+		- The strings are treated as zero-termineted strings.
+*/
+void str_clean_whitespaces(char *str);
+
+/*
 	Function: str_skip_to_whitespace
 		Skips leading non-whitespace characters(all but ' ', '\t', '\n', '\r').
 
@@ -1127,6 +1232,12 @@ void str_sanitize(char *str);
 char *str_skip_to_whitespace(char *str);
 
 /*
+	Function: str_skip_to_whitespace_const
+		See str_skip_to_whitespace.
+*/
+const char *str_skip_to_whitespace_const(const char *str);
+
+/*
 	Function: str_skip_whitespaces
 		Skips leading whitespace characters(' ', '\t', '\n', '\r').
 
@@ -1141,6 +1252,12 @@ char *str_skip_to_whitespace(char *str);
 		- The strings are treated as zero-terminated strings.
 */
 char *str_skip_whitespaces(char *str);
+
+/*
+	Function: str_skip_whitespaces_const
+		See str_skip_whitespaces.
+*/
+const char *str_skip_whitespaces_const(const char *str);
 
 /*
 	Function: str_comp_nocase
@@ -1180,7 +1297,7 @@ int str_comp_nocase(const char *a, const char *b);
 		  (use str_utf8_comp_nocase_num for unicode support)
 		- The strings are treated as zero-terminated strings.
 */
-int str_comp_nocase_num(const char *a, const char *b, const int num);
+int str_comp_nocase_num(const char *a, const char *b, int num);
 
 /*
 	Function: str_comp
@@ -1217,7 +1334,7 @@ int str_comp(const char *a, const char *b);
 	Remarks:
 		- The strings are treated as zero-terminated strings.
 */
-int str_comp_num(const char *a, const char *b, const int num);
+int str_comp_num(const char *a, const char *b, int num);
 
 /*
 	Function: str_comp_filenames
@@ -1272,6 +1389,64 @@ const char *str_startswith(const char *str, const char *prefix);
 const char *str_endswith(const char *str, const char *suffix);
 
 /*
+	Function: str_utf8_dist
+		Computes the edit distance between two strings.
+
+	Parameters:
+		a - First string for the edit distance.
+		b - Second string for the edit distance.
+
+	Returns:
+		The edit distance between the both strings.
+
+	Remarks:
+		- The strings are treated as zero-terminated strings.
+*/
+int str_utf8_dist(const char *a, const char *b);
+
+/*
+	Function: str_utf8_dist_buffer
+		Computes the edit distance between two strings, allows buffers
+		to be passed in.
+
+	Parameters:
+		a - First string for the edit distance.
+		b - Second string for the edit distance.
+		buf - Buffer for the function.
+		buf_len - Length of the buffer, must be at least as long as
+		          twice the length of both strings combined plus two.
+
+	Returns:
+		The edit distance between the both strings.
+
+	Remarks:
+		- The strings are treated as zero-terminated strings.
+*/
+int str_utf8_dist_buffer(const char *a, const char *b, int *buf, int buf_len);
+
+/*
+	Function: str_utf32_dist_buffer
+		Computes the edit distance between two strings, allows buffers
+		to be passed in.
+
+	Parameters:
+		a - First string for the edit distance.
+		a_len - Length of the first string.
+		b - Second string for the edit distance.
+		b_len - Length of the second string.
+		buf - Buffer for the function.
+		buf_len - Length of the buffer, must be at least as long as
+		          the length of both strings combined plus two.
+
+	Returns:
+		The edit distance between the both strings.
+
+	Remarks:
+		- The strings are treated as zero-terminated strings.
+*/
+int str_utf32_dist_buffer(const int *a, int a_len, const int *b, int b_len, int *buf, int buf_len);
+
+/*
 	Function: str_find_nocase
 		Finds a string inside another string case insensitively.
 
@@ -1308,6 +1483,23 @@ const char *str_find_nocase(const char *haystack, const char *needle);
 const char *str_find(const char *haystack, const char *needle);
 
 /*
+	Function: str_rchr
+		Finds the last occurance of a character
+
+	Parameters:
+		haystack - String to search in
+		needle - Character to search for
+
+	Returns:
+		A pointer into haystack where the needle was found.
+		Returns NULL if needle could not be found.
+
+	Remarks:
+		- The strings are treated as zero-terminated strings.
+*/
+const char *str_rchr(const char *haystack, char needle);
+
+/*
 	Function: str_hex
 		Takes a datablock and generates a hex string of it, with spaces
 		between bytes.
@@ -1319,10 +1511,29 @@ const char *str_find(const char *haystack, const char *needle);
 		data - Size of the data
 
 	Remarks:
-		- The desination buffer will be zero-terminated
+		- The destination buffer will be zero-terminated
 */
 void str_hex(char *dst, int dst_size, const void *data, int data_size);
 
+/*
+	Function: str_hex_decode
+		Takes a hex string *without spaces between bytes* and returns a
+		byte array.
+
+	Parameters:
+		dst - Buffer for the byte array
+		dst_size - size of the buffer
+		data - String to decode
+
+	Returns:
+		2 - String doesn't exactly fit the buffer
+		1 - Invalid character in string
+		0 - Success
+
+	Remarks:
+		- The contents of the buffer is only valid on success
+*/
+int str_hex_decode(void *dst, int dst_size, const char *src);
 /*
 	Function: str_timestamp
 		Copies a time stamp in the format year-month-day_hour-minute-second to the string.
@@ -1376,6 +1587,7 @@ int str_time_float(float secs, int format, char *buffer, int buffer_size);
 /*
 	Function: str_escape
 		Escapes \ and " characters in a string.
+
 	Parameters:
 		dst - Destination array pointer, gets increased, will point to
 		      the terminating null.
@@ -1521,6 +1733,7 @@ int fs_parent_dir(char *path);
 
 	Remarks:
 		- The strings are treated as zero-terminated strings.
+		- Returns an error if the path specifies a directory name.
 */
 int fs_remove(const char *filename);
 
@@ -1581,6 +1794,21 @@ int net_would_block();
 
 int net_socket_read_wait(NETSOCKET sock, int time);
 
+/*
+	Function: open_link
+		Opens a link in the browser.
+	
+	Parameters:
+		link - The link to open in a browser.
+	
+	Returns:
+		Returns 1 on success, 0 on failure.
+	
+	Remarks:
+		This may not be called with untrusted input or it'll result in arbitrary code execution.
+*/
+int open_link(const char *link);
+
 void swap_endian(void *data, unsigned elem_size, unsigned num);
 
 typedef void (*DBG_LOGGER)(const char *line, void *user);
@@ -1602,20 +1830,25 @@ typedef struct
 void net_stats(NETSTATS *stats);
 
 int str_toint(const char *str);
+int str_toint_base(const char *str, int base);
+unsigned long str_toulong_base(const char *str, int base);
 float str_tofloat(const char *str);
 int str_isspace(char c);
 char str_uppercase(char c);
+int str_isallnum(const char *str);
 unsigned str_quickhash(const char *str);
 
 /*
-	Function: gui_messagebox
-		Display plain OS-dependent message box
+	Function: str_utf8_isspace
+		Checks whether the given Unicode codepoint renders as space.
 
 	Parameters:
-		title - title of the message box
-		message - text to display
+		code - Unicode codepoint to check.
+
+	Returns:
+		0 if the codepoint does not render as space, != 0 if it does.
 */
-void gui_messagebox(const char *title, const char *message);
+int str_utf8_isspace(int code);
 
 int str_utf8_isstart(char c);
 
@@ -1634,6 +1867,20 @@ int str_utf8_isstart(char c);
 		- The strings are treated as zero-terminated strings.
 */
 const char *str_utf8_skip_whitespaces(const char *str);
+
+/*
+	Function: str_utf8_trim_right
+		Removes trailing characters that render as spaces by modifying
+		the string in-place.
+
+	Parameters:
+		str - Pointer to the string.
+
+	Remarks:
+		- The strings are treated as zero-terminated strings.
+		- The string is modified in-place.
+*/
+void str_utf8_trim_right(char *str);
 
 /*
 	Function: str_utf8_rewind
@@ -1699,6 +1946,21 @@ int str_utf8_decode(const char **ptr);
 int str_utf8_encode(char *ptr, int chr);
 
 /*
+	Function: str_utf16le_encode
+		Encode an utf8 character
+
+	Parameters:
+		ptr - Pointer to a buffer that should receive the data. Should be able to hold at least 4 bytes.
+
+	Returns:
+		Number of bytes put into the buffer.
+
+	Remarks:
+		- Does not do zero termination of the string.
+*/
+int str_utf16le_encode(char *ptr, int chr);
+
+/*
 	Function: str_utf8_check
 		Checks if a strings contains just valid utf8 characters.
 
@@ -1715,6 +1977,112 @@ int str_utf8_encode(char *ptr, int chr);
 int str_utf8_check(const char *str);
 
 /*
+	Function: str_utf8_copy
+		Copies a utf8 string to a buffer.
+
+	Parameters:
+		dst - Pointer to a buffer that shall receive the string.
+		src - utf8 string to be copied.
+		dst_size - Size of the buffer dst.
+
+	Remarks:
+		- The strings are treated as zero-terminated strings.
+		- Guarantees that dst string will contain zero-termination.
+		- Guarantees that dst always contains a valid utf8 string.
+*/
+void str_utf8_copy(char *dst, const char *src, int dst_size);
+
+/*
+	Function: str_next_token
+		Writes the next token after str into buf, returns the rest of the string.
+	Parameters:
+		str - Pointer to string.
+		delim - Delimiter for tokenization.
+		buffer - Buffer to store token in.
+		buffer_size - Size of the buffer.
+	Returns:
+		Pointer to rest of the string.
+	Remarks:
+		- The token is always null-terminated.
+*/
+const char *str_next_token(const char *str, const char *delim, char *buffer, int buffer_size);
+
+/*
+	Function: str_in_list
+		Checks if needle is in list delimited by delim
+
+	Parameters:
+		list - List
+		delim - List delimiter.
+		needle - Item that is being looked for.
+
+	Returns:
+		1 - Item is in list.
+		0 - Item isn't in list.
+*/
+int str_in_list(const char *list, const char *delim, const char *needle);
+
+/*
+	Function: pid
+		Returns the pid of the current process.
+	
+	Returns:
+		pid of the current process
+*/
+int pid(void);
+
+#if defined(CONF_FAMILY_WINDOWS)
+typedef void *PROCESS;
+#else
+typedef pid_t PROCESS;
+#endif
+
+/*
+	Function: shell_execute
+		Executes a given file.
+
+	Returns:
+		handle/pid of the new process
+*/
+PROCESS shell_execute(const char *file);
+
+/*
+	Function: kill_process
+		Sends kill signal to a process.
+
+	Parameters:
+		process - handle/pid of the process
+
+	Returns:
+		0 - Error
+		1 - Success
+*/
+int kill_process(PROCESS process);
+
+/*
+	Function: os_is_winxp_or_lower
+		Checks whether the program runs on Windows XP or lower.
+
+	Returns:
+		1 - Windows XP or lower.
+		0 - Higher Windows version, Linux, macOS, etc.
+*/
+int os_is_winxp_or_lower();
+
+/*
+	Function: generate_password
+		Generates a null-terminated password of length `2 *
+		random_length`.
+
+	Parameters:
+		buffer - Pointer to the start of the output buffer.
+		length - Length of the buffer.
+		random - Pointer to a randomly-initialized array of shorts.
+		random_length - Length of the short array.
+*/
+void generate_password(char *buffer, unsigned length, unsigned short *random, unsigned random_length);
+
+/*
 	Function: secure_random_init
 		Initializes the secure random module.
 		You *MUST* check the return value of this function.
@@ -1726,6 +2094,21 @@ int str_utf8_check(const char *str);
 int secure_random_init();
 
 /*
+	Function: secure_random_password
+		Fills the buffer with the specified amount of random password
+		characters.
+
+		The desired password length must be greater or equal to 6, even
+		and smaller or equal to 128.
+
+	Parameters:
+		buffer - Pointer to the start of the buffer.
+		length - Length of the buffer.
+		pw_length - Length of the desired password.
+*/
+void secure_random_password(char *buffer, unsigned length, unsigned pw_length);
+
+/*
 	Function: secure_random_fill
 		Fills the buffer with the specified amount of random bytes.
 
@@ -1734,6 +2117,22 @@ int secure_random_init();
 		length - Length of the buffer.
 */
 void secure_random_fill(void *bytes, unsigned length);
+
+/*
+	Function: secure_rand
+		Returns random int (replacement for rand()).
+*/
+int secure_rand();
+
+/*
+	Function: secure_rand_below
+		Returns a random nonnegative integer below the given number,
+		with a uniform distribution.
+
+	Parameters:
+		below - Upper limit (exclusive) of integers to return.
+*/
+int secure_rand_below(int below);
 
 #ifdef __cplusplus
 }

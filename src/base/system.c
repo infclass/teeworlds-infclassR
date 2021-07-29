@@ -32,7 +32,14 @@
 #include <dirent.h>
 
 #if defined(CONF_PLATFORM_MACOS)
+// some lock and pthread functions are already defined in headers
+// included from Carbon.h
+// this prevents having duplicate definitions of those
+#define _lock_set_user_
+#define _task_user_
+
 #include <Carbon/Carbon.h>
+#include <mach/mach_time.h>
 #endif
 
 #elif defined(CONF_FAMILY_WINDOWS)
@@ -46,6 +53,8 @@
 #include <direct.h>
 #include <errno.h>
 #include <fcntl.h>
+#include <process.h>
+#include <shellapi.h>
 #include <wincrypt.h>
 #else
 #error NOT IMPLEMENTED
@@ -267,30 +276,11 @@ void mem_zero(void *block, unsigned size)
 IOHANDLE io_open(const char *filename, int flags)
 {
 	if(flags == IOFLAG_READ)
-	{
-	#if defined(CONF_FAMILY_WINDOWS)
-		// check for filename case sensitive
-		WIN32_FIND_DATA finddata;
-		HANDLE handle;
-		int length;
-
-		length = str_length(filename);
-		if(!filename || !length || filename[length-1] == '\\')
-			return 0x0;
-		handle = FindFirstFile(filename, &finddata);
-		if(handle == INVALID_HANDLE_VALUE)
-			return 0x0;
-		else if(str_comp(filename+length-str_length(finddata.cFileName), finddata.cFileName) != 0)
-		{
-			FindClose(handle);
-			return 0x0;
-		}
-		FindClose(handle);
-	#endif
 		return (IOHANDLE)fopen(filename, "rb");
-	}
 	if(flags == IOFLAG_WRITE)
 		return (IOHANDLE)fopen(filename, "wb");
+	if(flags == IOFLAG_APPEND)
+		return (IOHANDLE)fopen(filename, "ab");
 	return 0x0;
 }
 
@@ -362,8 +352,7 @@ unsigned io_write_newline(IOHANDLE io)
 
 int io_close(IOHANDLE io)
 {
-	fclose((FILE*)io);
-	return 1;
+	return fclose((FILE *)io) != 0;
 }
 
 int io_flush(IOHANDLE io)
@@ -1051,7 +1040,9 @@ static void netaddr_to_sockaddr_in6(const NETADDR *src, struct sockaddr_in6 *des
 
 static void sockaddr_to_netaddr(const struct sockaddr *src, NETADDR *dst)
 {
-	if(src->sa_family == AF_INET)
+	// Filled by accept, clang-analyzer probably can't tell because of the
+	// (struct sockaddr *) cast.
+	if(src->sa_family == AF_INET) // NOLINT(clang-analyzer-core.UndefinedBinaryOperatorResult)
 	{
 		mem_zero(dst, sizeof(NETADDR));
 		dst->type = NETTYPE_IPV4;
@@ -1217,16 +1208,15 @@ static int priv_net_extract(const char *hostname, char *host, int max_host, int 
 int net_host_lookup(const char *hostname, NETADDR *addr, int types)
 {
 	struct addrinfo hints;
-	struct addrinfo *result;
+	struct addrinfo *result = NULL;
 	int e;
 	char host[256];
 	int port = 0;
 
 	if(priv_net_extract(hostname, host, sizeof(host), &port))
 		return -1;
-	/*
-	dbg_msg("host lookup", "host='%s' port=%d %d", host, port, types);
-	*/
+
+	dbg_msg("host_lookup", "host='%s' port=%d %d", host, port, types);
 
 	mem_zero(&hints, sizeof(hints));
 
@@ -1238,12 +1228,19 @@ int net_host_lookup(const char *hostname, NETADDR *addr, int types)
 		hints.ai_family = AF_INET6;
 
 	e = getaddrinfo(host, NULL, &hints, &result);
-	if(e != 0 || !result)
+
+	if(!result)
 		return -1;
 
+	if(e != 0)
+	{
+		freeaddrinfo(result);
+		return -1;
+	}
+
 	sockaddr_to_netaddr(result->ai_addr, addr);
-	freeaddrinfo(result);
 	addr->port = port;
+	freeaddrinfo(result);
 	return 0;
 }
 
@@ -1327,7 +1324,9 @@ int net_addr_from_str(NETADDR *addr, const char *string)
 				return -1;
 		}
 #else
-		if(inet_pton(AF_INET6, buf, &sa6) != 1)
+		sa6.sin6_family = AF_INET6;
+
+		if(inet_pton(AF_INET6, buf, &sa6.sin6_addr) != 1)
 			return -1;
 #endif
 		sockaddr_to_netaddr((struct sockaddr *)&sa6, addr);
@@ -1340,6 +1339,10 @@ int net_addr_from_str(NETADDR *addr, const char *string)
 				str++;
 				if(parse_uint16(&addr->port, &str))
 					return -1;
+			}
+			else
+			{
+				addr->port = 0;
 			}
 		}
 		else
@@ -1382,7 +1385,8 @@ static void priv_net_close_socket(int sock)
 #if defined(CONF_FAMILY_WINDOWS)
 	closesocket(sock);
 #else
-	close(sock);
+	if(close(sock) != 0)
+		dbg_msg("socket", "close failed: %d", errno);
 #endif
 }
 
@@ -1426,23 +1430,27 @@ static int priv_net_create_socket(int domain, int type, struct sockaddr *addr, i
 		return -1;
 	}
 
-	/* set to IPv6 only if thats what we are creating */
-#if defined(IPV6_V6ONLY)	/* windows sdk 6.1 and higher */
+#if defined(CONF_FAMILY_UNIX)
+	/* on tcp sockets set SO_REUSEADDR
+		to fix port rebind on restart */
+	if(domain == AF_INET && type == SOCK_STREAM)
+	{
+		int option = 1;
+		if(setsockopt(sock, SOL_SOCKET, SO_REUSEADDR, &option, sizeof(option)) != 0)
+			dbg_msg("socket", "Setting SO_REUSEADDR failed: %d", errno);
+	}
+#endif
+
+	/* set to IPv6 only if that's what we are creating */
+#if defined(IPV6_V6ONLY) /* windows sdk 6.1 and higher */
 	if(domain == AF_INET6)
 	{
 		int ipv6only = 1;
-		setsockopt(sock, IPPROTO_IPV6, IPV6_V6ONLY, (const char*)&ipv6only, sizeof(ipv6only));
+		if(setsockopt(sock, IPPROTO_IPV6, IPV6_V6ONLY, (const char *)&ipv6only, sizeof(ipv6only)) != 0)
+			dbg_msg("socket", "Setting V6ONLY failed: %d", errno);
 	}
 #endif
-#if defined(CONF_FAMILY_WINDOWS)
-	if (setsockopt(sock, SOL_SOCKET, SO_REUSEADDR, &(int){ 1 }, sizeof(int)) < 0) {
-		dbg_msg("net", "failed to setsockopt SO_REUSEADDR");
-	}
-#else
-	if (setsockopt(sock, SOL_SOCKET, SO_REUSEPORT, &(int){ 1 }, sizeof(int)) < 0) {
-		dbg_msg("net", "failed to setsockopt SO_REUSEPORT");
-	}
-#endif
+
 	/* bind the socket */
 	e = bind(sock, addr, sockaddrlen);
 	if(e != 0)
@@ -1469,7 +1477,6 @@ NETSOCKET net_udp_create(NETADDR bindaddr)
 	NETSOCKET sock = invalid_socket;
 	NETADDR tmpbindaddr = bindaddr;
 	int broadcast = 1;
-	int recvsize = 65536;
 
 	if(bindaddr.type & NETTYPE_IPV4)
 	{
@@ -1485,15 +1492,21 @@ NETSOCKET net_udp_create(NETADDR bindaddr)
 			sock.type |= NETTYPE_IPV4;
 			sock.ipv4sock = socket;
 
-			/* set boardcast */
-			setsockopt(socket, SOL_SOCKET, SO_BROADCAST, (const char*)&broadcast, sizeof(broadcast));
+			/* set broadcast */
+			if(setsockopt(socket, SOL_SOCKET, SO_BROADCAST, (const char *)&broadcast, sizeof(broadcast)) != 0)
+				dbg_msg("socket", "Setting BROADCAST on ipv4 failed: %d", errno);
 
-			/* set receive buffer size */
-			setsockopt(socket, SOL_SOCKET, SO_RCVBUF, (char*)&recvsize, sizeof(recvsize));
+			{
+				/* set DSCP/TOS */
+				int iptos = 0x10 /* IPTOS_LOWDELAY */;
+				//int iptos = 46; /* High Priority */
+				if(setsockopt(socket, IPPROTO_IP, IP_TOS, (char *)&iptos, sizeof(iptos)) != 0)
+					dbg_msg("socket", "Setting TOS on ipv4 failed: %d", errno);
+			}
 		}
 	}
 
-	if(bindaddr.type&NETTYPE_IPV6)
+	if(bindaddr.type & NETTYPE_IPV6)
 	{
 		struct sockaddr_in6 addr;
 		int socket = -1;
@@ -1507,11 +1520,17 @@ NETSOCKET net_udp_create(NETADDR bindaddr)
 			sock.type |= NETTYPE_IPV6;
 			sock.ipv6sock = socket;
 
-			/* set boardcast */
-			setsockopt(socket, SOL_SOCKET, SO_BROADCAST, (const char*)&broadcast, sizeof(broadcast));
+			/* set broadcast */
+			if(setsockopt(socket, SOL_SOCKET, SO_BROADCAST, (const char *)&broadcast, sizeof(broadcast)) != 0)
+				dbg_msg("socket", "Setting BROADCAST on ipv6 failed: %d", errno);
 
-			/* set receive buffer size */
-			setsockopt(socket, SOL_SOCKET, SO_RCVBUF, (char*)&recvsize, sizeof(recvsize));
+			{
+				/* set DSCP/TOS */
+				int iptos = 0x10 /* IPTOS_LOWDELAY */;
+				//int iptos = 46; /* High Priority */
+				if(setsockopt(socket, IPPROTO_IP, IP_TOS, (char *)&iptos, sizeof(iptos)) != 0)
+					dbg_msg("socket", "Setting TOS on ipv6 failed: %d", errno);
+			}
 		}
 	}
 
@@ -1674,7 +1693,8 @@ int net_set_non_blocking(NETSOCKET sock)
 #if defined(CONF_FAMILY_WINDOWS)
 		ioctlsocket(sock.ipv4sock, FIONBIO, (unsigned long *)&mode);
 #else
-		ioctl(sock.ipv4sock, FIONBIO, (unsigned long *)&mode);
+		if(ioctl(sock.ipv4sock, FIONBIO, (unsigned long *)&mode) == -1)
+			dbg_msg("socket", "setting ipv4 non-blocking failed: %d", errno);
 #endif
 	}
 
@@ -1683,7 +1703,8 @@ int net_set_non_blocking(NETSOCKET sock)
 #if defined(CONF_FAMILY_WINDOWS)
 		ioctlsocket(sock.ipv6sock, FIONBIO, (unsigned long *)&mode);
 #else
-		ioctl(sock.ipv6sock, FIONBIO, (unsigned long *)&mode);
+		if(ioctl(sock.ipv6sock, FIONBIO, (unsigned long *)&mode) == -1)
+			dbg_msg("socket", "setting ipv6 non-blocking failed: %d", errno);
 #endif
 	}
 
@@ -1698,7 +1719,8 @@ int net_set_blocking(NETSOCKET sock)
 #if defined(CONF_FAMILY_WINDOWS)
 		ioctlsocket(sock.ipv4sock, FIONBIO, (unsigned long *)&mode);
 #else
-		ioctl(sock.ipv4sock, FIONBIO, (unsigned long *)&mode);
+		if(ioctl(sock.ipv4sock, FIONBIO, (unsigned long *)&mode) == -1)
+			dbg_msg("socket", "setting ipv4 blocking failed: %d", errno);
 #endif
 	}
 
@@ -1707,7 +1729,8 @@ int net_set_blocking(NETSOCKET sock)
 #if defined(CONF_FAMILY_WINDOWS)
 		ioctlsocket(sock.ipv6sock, FIONBIO, (unsigned long *)&mode);
 #else
-		ioctl(sock.ipv6sock, FIONBIO, (unsigned long *)&mode);
+		if(ioctl(sock.ipv6sock, FIONBIO, (unsigned long *)&mode) == -1)
+			dbg_msg("socket", "setting ipv6 blocking failed: %d", errno);
 #endif
 	}
 
@@ -1855,6 +1878,30 @@ int net_init()
 	return 0;
 }
 
+#if defined(CONF_FAMILY_UNIX)
+UNIXSOCKET net_unix_create_unnamed()
+{
+	return socket(AF_UNIX, SOCK_DGRAM, 0);
+}
+
+int net_unix_send(UNIXSOCKET sock, UNIXSOCKETADDR *addr, void *data, int size)
+{
+	return sendto(sock, data, size, 0, (struct sockaddr *)addr, sizeof(struct sockaddr_un));
+}
+
+void net_unix_set_addr(UNIXSOCKETADDR *addr, const char *path)
+{
+	mem_zero(addr, sizeof(*addr));
+	addr->sun_family = AF_UNIX;
+	str_copy(addr->sun_path, path, sizeof(addr->sun_path));
+}
+
+void net_unix_close(UNIXSOCKET sock)
+{
+	close(sock);
+}
+#endif
+
 int fs_listdir_info(const char *dir, FS_LISTDIR_INFO_CALLBACK cb, int type, void *user)
 {
 #if defined(CONF_FAMILY_WINDOWS)
@@ -1969,13 +2016,18 @@ int fs_storage_path(const char *appname, char *path, int max)
 	return 0;
 #else
 	char *home = getenv("HOME");
-#if !defined(CONF_PLATFORM_MACOSX)
+#if !defined(CONF_PLATFORM_MACOS)
 	int i;
 #endif
 	if(!home)
 		return -1;
 
-#if defined(CONF_PLATFORM_MACOSX)
+#if defined(CONF_PLATFORM_HAIKU)
+	str_format(path, max, "%s/config/settings/%s", home, appname);
+	return 0;
+#endif
+
+#if defined(CONF_PLATFORM_MACOS)
 	snprintf(path, max, "%s/Library/Application Support/%s", home, appname);
 #else
 	snprintf(path, max, "%s/.%s", home, appname);
@@ -2014,6 +2066,11 @@ int fs_makedir(const char *path)
 		return 0;
 	return -1;
 #else
+#ifdef CONF_PLATFORM_HAIKU
+	struct stat st;
+	if(stat(path, &st) == 0)
+		return 0;
+#endif
 	if(mkdir(path, 0755) == 0)
 		return 0;
 	if(errno == EEXIST)
@@ -2113,15 +2170,22 @@ int fs_parent_dir(char *path)
 
 int fs_remove(const char *filename)
 {
-	if(remove(filename) != 0)
-		return 1;
-	return 0;
+#if defined(CONF_FAMILY_WINDOWS)
+	return _unlink(filename) != 0;
+#else
+	return unlink(filename) != 0;
+#endif
 }
 
 int fs_rename(const char *oldname, const char *newname)
 {
+#if defined(CONF_FAMILY_WINDOWS)
+	if(MoveFileEx(oldname, newname, MOVEFILE_REPLACE_EXISTING | MOVEFILE_COPY_ALLOWED) == 0)
+		return 1;
+#else
 	if(rename(oldname, newname) != 0)
 		return 1;
+#endif
 	return 0;
 }
 
@@ -2182,7 +2246,6 @@ int net_socket_read_wait(NETSOCKET sock, int time)
 
 	if(sock.ipv4sock >= 0 && FD_ISSET(sock.ipv4sock, &readfds))
 		return 1;
-
 	if(sock.ipv6sock >= 0 && FD_ISSET(sock.ipv6sock, &readfds))
 		return 1;
 
@@ -2194,9 +2257,54 @@ int time_timestamp()
 	return time(0);
 }
 
+int time_houroftheday()
+{
+	time_t time_data;
+	struct tm *time_info;
+
+	time(&time_data);
+	time_info = localtime(&time_data);
+	return time_info->tm_hour;
+}
+
+int time_season()
+{
+	time_t time_data;
+	struct tm *time_info;
+
+	time(&time_data);
+	time_info = localtime(&time_data);
+
+	if((time_info->tm_mon == 11 && time_info->tm_mday == 31) || (time_info->tm_mon == 0 && time_info->tm_mday == 1))
+	{
+		return SEASON_NEWYEAR;
+	}
+
+	switch(time_info->tm_mon)
+	{
+	case 11:
+	case 0:
+	case 1:
+		return SEASON_WINTER;
+	case 2:
+	case 3:
+	case 4:
+		return SEASON_SPRING;
+	case 5:
+	case 6:
+	case 7:
+		return SEASON_SUMMER;
+	case 8:
+	case 9:
+	case 10:
+		return SEASON_AUTUMN;
+	}
+	return SEASON_SPRING; // should never happen
+}
+
 void str_append(char *dst, const char *src, int dst_size)
 {
-	int s = strlen(dst);
+	int s = str_length(dst);
 	int i = 0;
 	while(s < dst_size)
 	{
@@ -2207,35 +2315,7 @@ void str_append(char *dst, const char *src, int dst_size)
 		i++;
 	}
 
-	dst[dst_size-1] = 0; /* assure null termination */
-}
-
-static const char *str_token_get(const char *str, const char *delim, int *length)
-{
-	size_t len = strspn(str, delim);
-	if(len > 1)
-		str++;
-	else
-		str += len;
-	if(!*str)
-		return NULL;
-
-	*length = strcspn(str, delim);
-	return str;
-}
-
-int str_in_list(const char *list, const char *delim, const char *needle)
-{
-	const char *tok = list;
-	int len = 0, notfound = 1, needlelen = str_length(needle);
-
-	while(notfound && (tok = str_token_get(tok, delim, &len)))
-	{
-		notfound = needlelen != len || str_comp_num(tok, needle, len);
-		tok = tok + len;
-	}
-
-	return !notfound;
+	dst[dst_size - 1] = 0; /* assure null termination */
 }
 
 //TeeUniverses
@@ -2265,6 +2345,30 @@ void str_copy(char *dst, const char *src, int dst_size)
 {
 	strncpy(dst, src, dst_size - 1);
 	dst[dst_size - 1] = 0; /* assure null termination */
+}
+
+void str_utf8_truncate(char *dst, int dst_size, const char *src, int truncation_len)
+{
+	int size = -1;
+	int cursor = 0;
+	int pos = 0;
+	while(pos <= truncation_len && cursor < dst_size && size != cursor)
+	{
+		size = cursor;
+		cursor = str_utf8_forward(src, cursor);
+		pos++;
+	}
+	str_copy(dst, src, size + 1);
+}
+
+void str_truncate(char *dst, int dst_size, const char *src, int truncation_len)
+{
+	int size = dst_size;
+	if(truncation_len < size)
+	{
+		size = truncation_len + 1;
+	}
+	str_copy(dst, src, size);
 }
 
 int str_length(const char *str)
@@ -2303,7 +2407,16 @@ int str_format(char *buffer, int buffer_size, const char *format, ...)
 	return ret;
 }
 
-
+char *str_trim_words(char *str, int words)
+{
+	while(words && *str)
+	{
+		if(isspace(*str) && !isspace(*(str + 1)))
+			words--;
+		str++;
+	}
+	return str;
+}
 
 /* makes sure that the string only contains the characters between 32 and 127 */
 void str_sanitize_strong(char *str_in)
@@ -2342,6 +2455,49 @@ void str_sanitize(char *str_in)
 	}
 }
 
+void str_sanitize_filename(char *str_in)
+{
+	unsigned char *str = (unsigned char *)str_in;
+	while(*str)
+	{
+		if(*str < 32 || *str == '\\' || *str == '/' || *str == '|' || *str == ':' || *str == '*' || *str == '?' || *str == '<' || *str == '>' || *str == '"')
+			*str = ' ';
+		str++;
+	}
+}
+
+/* removes leading and trailing spaces and limits the use of multiple spaces */
+void str_clean_whitespaces(char *str_in)
+{
+	char *read = str_in;
+	char *write = str_in;
+
+	/* skip initial whitespace */
+	while(*read == ' ')
+		read++;
+
+	/* end of read string is detected in the loop */
+	while(1)
+	{
+		/* skip whitespace */
+		int found_whitespace = 0;
+		for(; *read == ' '; read++)
+			found_whitespace = 1;
+		/* if not at the end of the string, put a found whitespace here */
+		if(*read)
+		{
+			if(found_whitespace)
+				*write++ = ' ';
+			*write++ = *read++;
+		}
+		else
+		{
+			*write = 0;
+			break;
+		}
+	}
+}
+
 char *str_skip_to_whitespace(char *str)
 {
 	while(*str && (*str != ' ' && *str != '\t' && *str != '\n'))
@@ -2349,7 +2505,21 @@ char *str_skip_to_whitespace(char *str)
 	return str;
 }
 
+const char *str_skip_to_whitespace_const(const char *str)
+{
+	while(*str && (*str != ' ' && *str != '\t' && *str != '\n'))
+		str++;
+	return str;
+}
+
 char *str_skip_whitespaces(char *str)
+{
+	while(*str && (*str == ' ' || *str == '\t' || *str == '\n' || *str == '\r'))
+		str++;
+	return str;
+}
+
+const char *str_skip_whitespaces_const(const char *str)
 {
 	while(*str && (*str == ' ' || *str == '\t' || *str == '\n' || *str == '\r'))
 		str++;
@@ -2366,7 +2536,7 @@ int str_comp_nocase(const char *a, const char *b)
 #endif
 }
 
-int str_comp_nocase_num(const char *a, const char *b, const int num)
+int str_comp_nocase_num(const char *a, const char *b, int num)
 {
 #if defined(CONF_FAMILY_WINDOWS)
 	return _strnicmp(a, b, num);
@@ -2380,7 +2550,7 @@ int str_comp(const char *a, const char *b)
 	return strcmp(a, b);
 }
 
-int str_comp_num(const char *a, const char *b, const int num)
+int str_comp_num(const char *a, const char *b, int num)
 {
 	return strncmp(a, b, num);
 }
@@ -2449,13 +2619,99 @@ const char *str_endswith(const char *str, const char *suffix)
 	}
 }
 
+static int min3(int a, int b, int c)
+{
+	int min = a;
+	if(b < min)
+		min = b;
+	if(c < min)
+		min = c;
+	return min;
+}
+
+int str_utf8_dist(const char *a, const char *b)
+{
+	int buf_len = 2 * (str_length(a) + 1 + str_length(b) + 1);
+	int *buf = (int *)calloc(buf_len, sizeof(*buf));
+	int result = str_utf8_dist_buffer(a, b, buf, buf_len);
+	free(buf);
+	return result;
+}
+
+static int str_to_utf32_unchecked(const char *str, int **out)
+{
+	int out_len = 0;
+	while((**out = str_utf8_decode(&str)))
+	{
+		(*out)++;
+		out_len++;
+	}
+	return out_len;
+}
+
+int str_utf32_dist_buffer(const int *a, int a_len, const int *b, int b_len, int *buf, int buf_len)
+{
+	int i, j;
+	dbg_assert(buf_len >= (a_len + 1) + (b_len + 1), "buffer too small");
+	if(a_len > b_len)
+	{
+		int tmp1 = a_len;
+		const int *tmp2 = a;
+
+		a_len = b_len;
+		a = b;
+
+		b_len = tmp1;
+		b = tmp2;
+	}
+#define B(i, j) buf[((j)&1) * (a_len + 1) + (i)]
+	for(i = 0; i <= a_len; i++)
+	{
+		B(i, 0) = i;
+	}
+	for(j = 1; j <= b_len; j++)
+	{
+		B(0, j) = j;
+		for(i = 1; i <= a_len; i++)
+		{
+			int subst = (a[i - 1] != b[j - 1]);
+			B(i, j) = min3(
+				B(i - 1, j) + 1,
+				B(i, j - 1) + 1,
+				B(i - 1, j - 1) + subst);
+		}
+	}
+	return B(a_len, b_len);
+#undef B
+}
+
+int str_utf8_dist_buffer(const char *a_utf8, const char *b_utf8, int *buf, int buf_len)
+{
+	int a_utf8_len = str_length(a_utf8);
+	int b_utf8_len = str_length(b_utf8);
+	int *a, *b; // UTF-32
+	int a_len, b_len; // UTF-32 length
+	dbg_assert(buf_len >= 2 * (a_utf8_len + 1 + b_utf8_len + 1), "buffer too small");
+	if(a_utf8_len > b_utf8_len)
+	{
+		const char *tmp2 = a_utf8;
+		a_utf8 = b_utf8;
+		b_utf8 = tmp2;
+	}
+	a = buf;
+	a_len = str_to_utf32_unchecked(a_utf8, &buf);
+	b = buf;
+	b_len = str_to_utf32_unchecked(b_utf8, &buf);
+	return str_utf32_dist_buffer(a, a_len, b, b_len, buf, buf_len - b_len - a_len);
+}
+
 const char *str_find_nocase(const char *haystack, const char *needle)
 {
 	while(*haystack) /* native implementation */
 	{
 		const char *a = haystack;
 		const char *b = needle;
-		while(*a && *b && tolower(*a) == tolower(*b))
+		while(*a && *b && tolower((unsigned char)*a) == tolower((unsigned char)*b))
 		{
 			a++;
 			b++;
@@ -2487,6 +2743,11 @@ const char *str_find(const char *haystack, const char *needle)
 	return 0;
 }
 
+const char *str_rchr(const char *haystack, char needle)
+{
+	return strrchr(haystack, needle);
+}
+
 void str_hex(char *dst, int dst_size, const void *data, int data_size)
 {
 	static const char hex[] = "0123456789ABCDEF";
@@ -2501,7 +2762,70 @@ void str_hex(char *dst, int dst_size, const void *data, int data_size)
 	}
 }
 
-/* DDNET MODIFICATION START *******************************************/
+static int hexval(char x)
+{
+	switch(x)
+	{
+	case '0': return 0;
+	case '1': return 1;
+	case '2': return 2;
+	case '3': return 3;
+	case '4': return 4;
+	case '5': return 5;
+	case '6': return 6;
+	case '7': return 7;
+	case '8': return 8;
+	case '9': return 9;
+	case 'a':
+	case 'A': return 10;
+	case 'b':
+	case 'B': return 11;
+	case 'c':
+	case 'C': return 12;
+	case 'd':
+	case 'D': return 13;
+	case 'e':
+	case 'E': return 14;
+	case 'f':
+	case 'F': return 15;
+	default: return -1;
+	}
+}
+
+static int byteval(const char *byte, unsigned char *dst)
+{
+	int v1 = -1, v2 = -1;
+	v1 = hexval(byte[0]);
+	v2 = hexval(byte[1]);
+
+	if(v1 < 0 || v2 < 0)
+		return 1;
+
+	*dst = v1 * 16 + v2;
+	return 0;
+}
+
+int str_hex_decode(void *dst, int dst_size, const char *src)
+{
+	unsigned char *cdst = dst;
+	int slen = str_length(src);
+	int len = slen / 2;
+	int i;
+	if(slen != dst_size * 2)
+		return 2;
+
+	for(i = 0; i < len && dst_size; i++, dst_size--)
+	{
+		if(byteval(src + i * 2, cdst++))
+			return 1;
+	}
+	return 0;
+}
+
+#ifdef __GNUC__
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wformat-nonliteral"
+#endif
 void str_timestamp_ex(time_t time_data, char *buffer, int buffer_size, const char *format)
 {
 	struct tm *time_info;
@@ -2575,12 +2899,18 @@ int str_time_float(float secs, int format, char *buffer, int buffer_size)
 
 void str_escape(char **dst, const char *src, const char *end)
 {
-	while(*src && *dst < end)
+	while(*src && *dst + 1 < end)
 	{
 		if(*src == '"' || *src == '\\') // escape \ and "
-			*(*dst)++ = '\\';
+		{
+			if(*dst + 2 < end)
+				*(*dst)++ = '\\';
+			else
+				break;
+		}
 		*(*dst)++ = *src++;
 	}
+	**dst = 0;
 }
 
 int mem_comp(const void *a, const void *b, int size)
@@ -2593,48 +2923,6 @@ void net_stats(NETSTATS *stats_inout)
 	*stats_inout = network_stats;
 }
 
-void gui_messagebox(const char *title, const char *message)
-{
-#if defined(CONF_PLATFORM_MACOSX)
-	DialogRef theItem;
-	DialogItemIndex itemIndex;
-
-	/* FIXME: really needed? can we rely on glfw? */
-	/* HACK - get events without a bundle */
-	ProcessSerialNumber psn;
-	GetCurrentProcess(&psn);
-	TransformProcessType(&psn,kProcessTransformToForegroundApplication);
-	SetFrontProcess(&psn);
-	/* END HACK */
-
-	CreateStandardAlert(kAlertStopAlert,
-			CFStringCreateWithCString(NULL, title, kCFStringEncodingASCII),
-			CFStringCreateWithCString(NULL, message, kCFStringEncodingASCII),
-			NULL,
-			&theItem);
-
-	RunStandardAlert(theItem, NULL, &itemIndex);
-#elif defined(CONF_FAMILY_UNIX)
-	static char cmd[1024];
-	int err;
-	/* use xmessage which is available on nearly every X11 system */
-	snprintf(cmd, sizeof(cmd), "xmessage -center -title '%s' '%s'",
-		title,
-		message);
-
-	err = system(cmd);
-	dbg_msg("gui/msgbox", "result = %i", err);
-#elif defined(CONF_FAMILY_WINDOWS)
-	MessageBox(NULL,
-		message,
-		title,
-		MB_ICONEXCLAMATION | MB_OK);
-#else
-	/* this is not critical */
-	#warning not implemented
-#endif
-}
-
 int str_isspace(char c) { return c == ' ' || c == '\n' || c == '\t'; }
 
 char str_uppercase(char c)
@@ -2644,8 +2932,32 @@ char str_uppercase(char c)
 	return c;
 }
 
+int str_isallnum(const char *str)
+{
+	while(*str)
+	{
+		if(!(*str >= '0' && *str <= '9'))
+			return 0;
+		str++;
+	}
+	return 1;
+}
+
 int str_toint(const char *str) { return atoi(str); }
+int str_toint_base(const char *str, int base) { return strtol(str, NULL, base); }
+unsigned long str_toulong_base(const char *str, int base) { return strtoul(str, NULL, base); }
 float str_tofloat(const char *str) { return atof(str); }
+
+int str_utf8_isspace(int code)
+{
+	return code <= 0x0020 || code == 0x0085 || code == 0x00A0 || code == 0x034F ||
+	       code == 0x115F || code == 0x1160 || code == 0x1680 || code == 0x180E ||
+	       (code >= 0x2000 && code <= 0x200F) || (code >= 0x2028 && code <= 0x202F) ||
+	       (code >= 0x205F && code <= 0x2064) || (code >= 0x206A && code <= 0x206F) ||
+	       code == 0x2800 || code == 0x3000 || code == 0x3164 ||
+	       (code >= 0xFE00 && code <= 0xFE0F) || code == 0xFEFF || code == 0xFFA0 ||
+	       (code >= 0xFFF9 && code <= 0xFFFC);
+}
 
 const char *str_utf8_skip_whitespaces(const char *str)
 {
@@ -2658,15 +2970,38 @@ const char *str_utf8_skip_whitespaces(const char *str)
 		code = str_utf8_decode(&str);
 
 		// check if unicode is not empty
-		if(code > 0x20 && code != 0xA0 && code != 0x034F && (code < 0x2000 || code > 0x200F) && (code < 0x2028 || code > 0x202F) &&
-			(code < 0x205F || code > 0x2064) && (code < 0x206A || code > 0x206F) && (code < 0xFE00 || code > 0xFE0F) &&
-			code != 0xFEFF && (code < 0xFFF9 || code > 0xFFFC))
+		if(!str_utf8_isspace(code))
 		{
 			return str_old;
 		}
 	}
 
 	return str;
+}
+
+void str_utf8_trim_right(char *param)
+{
+	const char *str = param;
+	char *end = 0;
+	while(*str)
+	{
+		char *str_old = (char *)str;
+		int code = str_utf8_decode(&str);
+
+		// check if unicode is not empty
+		if(!str_utf8_isspace(code))
+		{
+			end = 0;
+		}
+		else if(!end)
+		{
+			end = str_old;
+		}
+	}
+	if(end)
+	{
+		*end = 0;
+	}
 }
 
 int str_utf8_isstart(char c)
@@ -2757,74 +3092,128 @@ int str_utf8_encode(char *ptr, int chr)
 	return 0;
 }
 
+int str_utf16le_encode(char *ptr, int chr)
+{
+	if(chr < 0x10000)
+	{
+		ptr[0] = chr;
+		ptr[1] = chr >> 0x8;
+		return 2;
+	}
+	else if(chr <= 0x10FFFF)
+	{
+		int U = chr - 0x10000;
+		int W1 = 0xD800, W2 = 0xDC00;
+
+		W1 |= ((U >> 10) & 0x3FF);
+		W2 |= (U & 0x3FF);
+
+		ptr[0] = W1;
+		ptr[1] = W1 >> 0x8;
+		ptr[2] = W2;
+		ptr[3] = W2 >> 0x8;
+		return 4;
+	}
+
+	return 0;
+}
+
+static unsigned char str_byte_next(const char **ptr)
+{
+	unsigned char byte = **ptr;
+	(*ptr)++;
+	return byte;
+}
+
+static void str_byte_rewind(const char **ptr)
+{
+	(*ptr)--;
+}
+
 int str_utf8_decode(const char **ptr)
 {
-	const char *buf = *ptr;
-	int ch = 0;
-
-	do
+	// As per https://encoding.spec.whatwg.org/#utf-8-decoder.
+	unsigned char utf8_lower_boundary = 0x80;
+	unsigned char utf8_upper_boundary = 0xBF;
+	int utf8_code_point = 0;
+	int utf8_bytes_seen = 0;
+	int utf8_bytes_needed = 0;
+	while(1)
 	{
-		if((*buf&0x80) == 0x0)  /* 0xxxxxxx */
+		unsigned char byte = str_byte_next(ptr);
+		if(utf8_bytes_needed == 0)
 		{
-			ch = *buf;
-			buf++;
+			if(byte <= 0x7F)
+			{
+				return byte;
+			}
+			else if(0xC2 <= byte && byte <= 0xDF)
+			{
+				utf8_bytes_needed = 1;
+				utf8_code_point = byte - 0xC0;
+			}
+			else if(0xE0 <= byte && byte <= 0xEF)
+			{
+				if(byte == 0xE0)
+					utf8_lower_boundary = 0xA0;
+				if(byte == 0xED)
+					utf8_upper_boundary = 0x9F;
+				utf8_bytes_needed = 2;
+				utf8_code_point = byte - 0xE0;
+			}
+			else if(0xF0 <= byte && byte <= 0xF4)
+			{
+				if(byte == 0xF0)
+					utf8_lower_boundary = 0x90;
+				if(byte == 0xF4)
+					utf8_upper_boundary = 0x8F;
+				utf8_bytes_needed = 3;
+				utf8_code_point = byte - 0xF0;
+			}
+			else
+			{
+				return -1; // Error.
+			}
+			utf8_code_point = utf8_code_point << (6 * utf8_bytes_needed);
+			continue;
 		}
-		else if((*buf&0xE0) == 0xC0) /* 110xxxxx */
+		if(!(utf8_lower_boundary <= byte && byte <= utf8_upper_boundary))
 		{
-			ch  = (*buf++ & 0x3F) << 6; if(!(*buf)) break;
-			ch += (*buf++ & 0x3F);
-			if(ch == 0) ch = -1;
+			// Resetting variables not necessary, will be done when
+			// the function is called again.
+			str_byte_rewind(ptr);
+			return -1;
 		}
-		else  if((*buf & 0xF0) == 0xE0)	/* 1110xxxx */
+		utf8_lower_boundary = 0x80;
+		utf8_upper_boundary = 0xBF;
+		utf8_bytes_seen += 1;
+		utf8_code_point = utf8_code_point + ((byte - 0x80) << (6 * (utf8_bytes_needed - utf8_bytes_seen)));
+		if(utf8_bytes_seen != utf8_bytes_needed)
 		{
-			ch  = (*buf++ & 0x1F) << 12; if(!(*buf)) break;
-			ch += (*buf++ & 0x3F) <<  6; if(!(*buf)) break;
-			ch += (*buf++ & 0x3F);
-			if(ch == 0) ch = -1;
+			continue;
 		}
-		else if((*buf & 0xF8) == 0xF0)	/* 11110xxx */
-		{
-			ch  = (*buf++ & 0x0F) << 18; if(!(*buf)) break;
-			ch += (*buf++ & 0x3F) << 12; if(!(*buf)) break;
-			ch += (*buf++ & 0x3F) <<  6; if(!(*buf)) break;
-			ch += (*buf++ & 0x3F);
-			if(ch == 0) ch = -1;
-		}
-		else
-		{
-			/* invalid */
-			buf++;
-			break;
-		}
-
-		*ptr = buf;
-		return ch;
-	} while(0);
-
-	/* out of bounds */
-	*ptr = buf;
-	return -1;
-
+		// Resetting variables not necessary, see above.
+		return utf8_code_point;
+	}
 }
 
 int str_utf8_check(const char *str)
 {
-	while(*str)
+	int codepoint;
+	while((codepoint = str_utf8_decode(&str)))
 	{
-		if((*str&0x80) == 0x0)
-			str++;
-		else if((*str&0xE0) == 0xC0 && (*(str+1)&0xC0) == 0x80)
-			str += 2;
-		else if((*str&0xF0) == 0xE0 && (*(str+1)&0xC0) == 0x80 && (*(str+2)&0xC0) == 0x80)
-			str += 3;
-		else if((*str&0xF8) == 0xF0 && (*(str+1)&0xC0) == 0x80 && (*(str+2)&0xC0) == 0x80 && (*(str+3)&0xC0) == 0x80)
-			str += 4;
-		else
+		if(codepoint == -1)
+		{
 			return 0;
+		}
 	}
 	return 1;
 }
 
+void str_utf8_copy(char *dst, const char *src, int dst_size)
+{
+	str_utf8_truncate(dst, dst_size, src, dst_size);
+}
 
 unsigned str_quickhash(const char *str)
 {
@@ -2832,6 +3221,133 @@ unsigned str_quickhash(const char *str)
 	for(; *str; str++)
 		hash = ((hash << 5) + hash) + (*str); /* hash * 33 + c */
 	return hash;
+}
+
+static const char *str_token_get(const char *str, const char *delim, int *length)
+{
+	size_t len = strspn(str, delim);
+	if(len > 1)
+		str++;
+	else
+		str += len;
+	if(!*str)
+		return NULL;
+
+	*length = strcspn(str, delim);
+	return str;
+}
+
+int str_in_list(const char *list, const char *delim, const char *needle)
+{
+	const char *tok = list;
+	int len = 0, notfound = 1, needlelen = str_length(needle);
+
+	while(notfound && (tok = str_token_get(tok, delim, &len)))
+	{
+		notfound = needlelen != len || str_comp_num(tok, needle, len);
+		tok = tok + len;
+	}
+
+	return !notfound;
+}
+
+const char *str_next_token(const char *str, const char *delim, char *buffer, int buffer_size)
+{
+	int len = 0;
+	const char *tok = str_token_get(str, delim, &len);
+	if(len < 0 || tok == NULL)
+	{
+		buffer[0] = '\0';
+		return NULL;
+	}
+
+	len = buffer_size > len ? len : buffer_size - 1;
+	mem_copy(buffer, tok, len);
+	buffer[len] = '\0';
+
+	return tok + len;
+}
+
+int pid()
+{
+#if defined(CONF_FAMILY_WINDOWS)
+	return _getpid();
+#else
+	return getpid();
+#endif
+}
+
+PROCESS shell_execute(const char *file)
+{
+#if defined(CONF_FAMILY_WINDOWS)
+	SHELLEXECUTEINFOA info;
+	mem_zero(&info, sizeof(SHELLEXECUTEINFOA));
+	info.cbSize = sizeof(SHELLEXECUTEINFOA);
+	info.lpVerb = "open";
+	info.lpFile = file;
+	info.nShow = SW_SHOWMINNOACTIVE;
+	info.fMask = SEE_MASK_NOCLOSEPROCESS;
+	ShellExecuteEx(&info);
+	return info.hProcess;
+#elif defined(CONF_FAMILY_UNIX)
+	char *argv[2];
+	pid_t pid;
+	argv[0] = (char *)file;
+	argv[1] = NULL;
+	pid = fork();
+	if(pid == -1)
+	{
+		return 0;
+	}
+	if(pid == 0)
+	{
+		execv(file, argv);
+		_exit(1);
+	}
+	return pid;
+#endif
+}
+
+int kill_process(PROCESS process)
+{
+#if defined(CONF_FAMILY_WINDOWS)
+	return TerminateProcess(process, 0);
+#elif defined(CONF_FAMILY_UNIX)
+	int status;
+	kill(process, SIGTERM);
+	return !waitpid(process, &status, 0);
+#endif
+}
+
+int open_link(const char *link)
+{
+	char aBuf[512];
+#if defined(CONF_FAMILY_WINDOWS)
+	str_format(aBuf, sizeof(aBuf), "start %s", link);
+	return (uintptr_t)ShellExecuteA(NULL, "open", link, NULL, NULL, SW_SHOWDEFAULT) > 32;
+#elif defined(CONF_PLATFORM_LINUX)
+	str_format(aBuf, sizeof(aBuf), "xdg-open %s >/dev/null 2>&1 &", link);
+	return system(aBuf) == 0;
+#elif defined(CONF_FAMILY_UNIX)
+	str_format(aBuf, sizeof(aBuf), "open %s &", link);
+	return system(aBuf) == 0;
+#endif
+}
+
+int os_is_winxp_or_lower(void)
+{
+#if defined(CONF_FAMILY_WINDOWS)
+	static const DWORD WINXP_MAJOR = 5;
+	static const DWORD WINXP_MINOR = 1;
+	OSVERSIONINFO ver;
+	mem_zero(&ver, sizeof(OSVERSIONINFO));
+	ver.dwOSVersionInfoSize = sizeof(OSVERSIONINFO);
+	GetVersionEx(&ver);
+	return ver.dwMajorVersion < WINXP_MAJOR ||
+	       (ver.dwMajorVersion == WINXP_MAJOR && ver.dwMinorVersion <= WINXP_MINOR);
+#else
+	return 0;
+#endif
 }
 
 struct SECURE_RANDOM_DATA
@@ -2876,6 +3392,42 @@ int secure_random_init()
 #endif
 }
 
+void generate_password(char *buffer, unsigned length, unsigned short *random, unsigned random_length)
+{
+	static const char VALUES[] = "ABCDEFGHKLMNPRSTUVWXYZabcdefghjkmnopqt23456789";
+	static const size_t NUM_VALUES = sizeof(VALUES) - 1; // Disregard the '\0'.
+	unsigned i;
+	dbg_assert(length >= random_length * 2 + 1, "too small buffer");
+	dbg_assert(NUM_VALUES * NUM_VALUES >= 2048, "need at least 2048 possibilities for 2-character sequences");
+
+	buffer[random_length * 2] = 0;
+
+	for(i = 0; i < random_length; i++)
+	{
+		unsigned short random_number = random[i] % 2048;
+		buffer[2 * i + 0] = VALUES[random_number / NUM_VALUES];
+		buffer[2 * i + 1] = VALUES[random_number % NUM_VALUES];
+	}
+}
+
+#define MAX_PASSWORD_LENGTH 128
+
+void secure_random_password(char *buffer, unsigned length, unsigned pw_length)
+{
+	unsigned short random[MAX_PASSWORD_LENGTH / 2];
+	// With 6 characters, we get a password entropy of log(2048) * 6/2 = 33bit.
+	dbg_assert(length >= pw_length + 1, "too small buffer");
+	dbg_assert(pw_length >= 6, "too small password length");
+	dbg_assert(pw_length % 2 == 0, "need an even password length");
+	dbg_assert(pw_length <= MAX_PASSWORD_LENGTH, "too large password length");
+
+	secure_random_fill(random, pw_length);
+
+	generate_password(buffer, length, random, pw_length / 2);
+}
+
+#undef MAX_PASSWORD_LENGTH
+
 void secure_random_fill(void *bytes, unsigned length)
 {
 	if(!secure_random_data.initialized)
@@ -2886,7 +3438,7 @@ void secure_random_fill(void *bytes, unsigned length)
 #if defined(CONF_FAMILY_WINDOWS)
 	if(!CryptGenRandom(secure_random_data.provider, length, bytes))
 	{
-		dbg_msg("secure", "CryptGenRandom failed, last_error=%d", GetLastError());
+		dbg_msg("secure", "CryptGenRandom failed, last_error=%ld", GetLastError());
 		dbg_break();
 	}
 #else
@@ -2898,6 +3450,40 @@ void secure_random_fill(void *bytes, unsigned length)
 #endif
 }
 
+int secure_rand()
+{
+	unsigned int i;
+	secure_random_fill(&i, sizeof(i));
+	return (int)(i % RAND_MAX);
+}
+
+// From https://graphics.stanford.edu/~seander/bithacks.html#RoundUpPowerOf2.
+static unsigned int find_next_power_of_two_minus_one(unsigned int n)
+{
+	n--;
+	n |= n >> 1;
+	n |= n >> 2;
+	n |= n >> 4;
+	n |= n >> 4;
+	n |= n >> 16;
+	return n;
+}
+
+int secure_rand_below(int below)
+{
+	unsigned int mask = find_next_power_of_two_minus_one(below);
+	dbg_assert(below > 0, "below must be positive");
+	while(1)
+	{
+		unsigned int n;
+		secure_random_fill(&n, sizeof(n));
+		n &= mask;
+		if((int)n < below)
+		{
+			return n;
+		}
+	}
+}
 
 #if defined(__cplusplus)
 }
