@@ -66,17 +66,19 @@ IOHANDLE io_stdin()
 IOHANDLE io_stdout() { return (IOHANDLE)stdout; }
 IOHANDLE io_stderr() { return (IOHANDLE)stderr; }
 
-static DBG_LOGGER loggers[16];
+typedef struct
+{
+	DBG_LOGGER logger;
+	DBG_LOGGER_FINISH finish;
+	void *user;
+} DBG_LOGGER_DATA;
+
+static DBG_LOGGER_DATA loggers[16];
 static int num_loggers = 0;
 
 static NETSTATS network_stats = {0};
 
 static NETSOCKET invalid_socket = {NETTYPE_INVALID, -1, -1};
-
-void dbg_logger(DBG_LOGGER logger)
-{
-	loggers[num_loggers++] = logger;
-}
 
 void dbg_assert_imp(const char *filename, int line, int test, const char *msg)
 {
@@ -99,12 +101,18 @@ void dbg_break_imp(void)
 void dbg_msg(const char *sys, const char *fmt, ...)
 {
 	va_list args;
-	char str[1024*4];
 	char *msg;
-	int i, len;
+	int len;
 
-	str_format(str, sizeof(str), "[%08x][%s]: ", (int)time(0), sys);
-	len = strlen(str);
+	char str[1024 * 4];
+	int i;
+
+	char timestr[80];
+	str_timestamp_format(timestr, sizeof(timestr), FORMAT_SPACE);
+
+	str_format(str, sizeof(str), "[%s][%s]: ", timestr, sys);
+
+	len = str_length(str);
 	msg = (char *)str + len;
 
 	va_start(args, fmt);
@@ -116,39 +124,126 @@ void dbg_msg(const char *sys, const char *fmt, ...)
 	va_end(args);
 
 	for(i = 0; i < num_loggers; i++)
-		loggers[i](str);
+		loggers[i].logger(str, loggers[i].user);
 }
 
-static void logger_stdout(const char *line)
-{
-	printf("%s\n", line);
-	fflush(stdout);
-}
-
-static void logger_debugger(const char *line)
-{
 #if defined(CONF_FAMILY_WINDOWS)
+static void logger_debugger(const char *line, void *user)
+{
+	(void)user;
 	OutputDebugString(line);
 	OutputDebugString("\n");
+}
+#endif
+
+static void logger_file(const char *line, void *user)
+{
+	ASYNCIO *logfile = (ASYNCIO *)user;
+	aio_lock(logfile);
+	aio_write_unlocked(logfile, line, str_length(line));
+	aio_write_newline_unlocked(logfile);
+	aio_unlock(logfile);
+}
+
+#if defined(CONF_FAMILY_WINDOWS)
+static void logger_stdout_sync(const char *line, void *user)
+{
+	size_t length = str_length(line);
+	wchar_t *wide = malloc(length * sizeof(*wide));
+	const char *p = line;
+	int wlen = 0;
+	HANDLE console;
+
+	(void)user;
+	mem_zero(wide, length * sizeof *wide);
+
+	for(int codepoint = 0; (codepoint = str_utf8_decode(&p)); wlen++)
+	{
+		char u16[4] = {0};
+
+		if(codepoint < 0)
+		{
+			free(wide);
+			return;
+		}
+
+		if(str_utf16le_encode(u16, codepoint) != 2)
+		{
+			free(wide);
+			return;
+		}
+
+		mem_copy(&wide[wlen], u16, 2);
+	}
+
+	console = GetStdHandle(STD_OUTPUT_HANDLE);
+	WriteConsoleW(console, wide, wlen, NULL, NULL);
+	WriteConsoleA(console, "\n", 1, NULL, NULL);
+	free(wide);
+}
+#endif
+
+static void logger_stdout_finish(void *user)
+{
+	ASYNCIO *logfile = (ASYNCIO *)user;
+	aio_wait(logfile);
+	aio_free(logfile);
+}
+
+static void logger_file_finish(void *user)
+{
+	ASYNCIO *logfile = (ASYNCIO *)user;
+	aio_close(logfile);
+	logger_stdout_finish(user);
+}
+
+static void dbg_logger_finish(void)
+{
+	int i;
+	for(i = 0; i < num_loggers; i++)
+	{
+		if(loggers[i].finish)
+		{
+			loggers[i].finish(loggers[i].user);
+		}
+	}
+}
+
+void dbg_logger(DBG_LOGGER logger, DBG_LOGGER_FINISH finish, void *user)
+{
+	DBG_LOGGER_DATA data;
+	if(num_loggers == 0)
+	{
+		atexit(dbg_logger_finish);
+	}
+	data.logger = logger;
+	data.finish = finish;
+	data.user = user;
+	loggers[num_loggers] = data;
+	num_loggers++;
+}
+
+void dbg_logger_stdout(void)
+{
+#if defined(CONF_FAMILY_WINDOWS)
+	dbg_logger(logger_stdout_sync, 0, 0);
+#else
+	dbg_logger(logger_file, logger_stdout_finish, aio_new(io_stdout()));
 #endif
 }
 
-
-static IOHANDLE logfile = 0;
-static void logger_file(const char *line)
+void dbg_logger_debugger(void)
 {
-	io_write(logfile, line, strlen(line));
-	io_write_newline(logfile);
-	io_flush(logfile);
+#if defined(CONF_FAMILY_WINDOWS)
+	dbg_logger(logger_debugger, 0, 0);
+#endif
 }
 
-void dbg_logger_stdout() { dbg_logger(logger_stdout); }
-void dbg_logger_debugger() { dbg_logger(logger_debugger); }
 void dbg_logger_file(const char *filename)
 {
-	logfile = io_open(filename, IOFLAG_WRITE);
+	IOHANDLE logfile = io_open(filename, IOFLAG_WRITE);
 	if(logfile)
-		dbg_logger(logger_file);
+		dbg_logger(logger_file, logger_file_finish, aio_new(logfile));
 	else
 		dbg_msg("dbg/logger", "failed to open '%s' for logging", filename);
 }

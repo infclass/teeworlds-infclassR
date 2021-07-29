@@ -1583,12 +1583,12 @@ int net_socket_read_wait(NETSOCKET sock, int time);
 
 void swap_endian(void *data, unsigned elem_size, unsigned num);
 
+typedef void (*DBG_LOGGER)(const char *line, void *user);
+typedef void (*DBG_LOGGER_FINISH)(void *user);
+void dbg_logger(DBG_LOGGER logger, DBG_LOGGER_FINISH finish, void *user);
 
-typedef void (*DBG_LOGGER)(const char *line);
-void dbg_logger(DBG_LOGGER logger);
-
-void dbg_logger_stdout();
-void dbg_logger_debugger();
+void dbg_logger_stdout(void);
+void dbg_logger_debugger(void);
 void dbg_logger_file(const char *filename);
 
 typedef struct
