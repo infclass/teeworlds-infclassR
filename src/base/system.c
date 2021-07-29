@@ -3076,6 +3076,67 @@ int str_toint_base(const char *str, int base) { return strtol(str, NULL, base); 
 unsigned long str_toulong_base(const char *str, int base) { return strtoul(str, NULL, base); }
 float str_tofloat(const char *str) { return atof(str); }
 
+int str_utf8_comp_nocase(const char *a, const char *b)
+{
+	int code_a;
+	int code_b;
+
+	while(*a && *b)
+	{
+		code_a = str_utf8_tolower(str_utf8_decode(&a));
+		code_b = str_utf8_tolower(str_utf8_decode(&b));
+
+		if(code_a != code_b)
+			return code_a - code_b;
+	}
+	return (unsigned char)*a - (unsigned char)*b;
+}
+
+int str_utf8_comp_nocase_num(const char *a, const char *b, int num)
+{
+	int code_a;
+	int code_b;
+	const char *old_a = a;
+
+	if(num <= 0)
+		return 0;
+
+	while(*a && *b)
+	{
+		code_a = str_utf8_tolower(str_utf8_decode(&a));
+		code_b = str_utf8_tolower(str_utf8_decode(&b));
+
+		if(code_a != code_b)
+			return code_a - code_b;
+
+		if(a - old_a >= num)
+			return 0;
+	}
+
+	return (unsigned char)*a - (unsigned char)*b;
+}
+
+const char *str_utf8_find_nocase(const char *haystack, const char *needle)
+{
+	while(*haystack) /* native implementation */
+	{
+		const char *a = haystack;
+		const char *b = needle;
+		const char *a_next = a;
+		const char *b_next = b;
+		while(*a && *b && str_utf8_tolower(str_utf8_decode(&a_next)) == str_utf8_tolower(str_utf8_decode(&b_next)))
+		{
+			a = a_next;
+			b = b_next;
+		}
+		if(!(*b))
+			return haystack;
+		str_utf8_decode(&haystack);
+	}
+
+	return 0;
+}
+
 int str_utf8_isspace(int code)
 {
 	return code <= 0x0020 || code == 0x0085 || code == 0x00A0 || code == 0x034F ||

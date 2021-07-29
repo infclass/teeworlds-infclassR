@@ -1849,6 +1849,85 @@ char str_uppercase(char c);
 int str_isallnum(const char *str);
 unsigned str_quickhash(const char *str);
 
+struct SKELETON;
+void str_utf8_skeleton_begin(struct SKELETON *skel, const char *str);
+int str_utf8_skeleton_next(struct SKELETON *skel);
+int str_utf8_to_skeleton(const char *str, int *buf, int buf_len);
+
+/*
+	Function: str_utf8_comp_confusable
+		Compares two strings for visual appearance.
+
+	Parameters:
+		a - String to compare.
+		b - String to compare.
+
+	Returns:
+		0 if the strings are confusable.
+		!=0 otherwise.
+*/
+int str_utf8_comp_confusable(const char *a, const char *b);
+
+/*
+	Function: str_utf8_tolower
+		Converts the given Unicode codepoint to lowercase (locale insensitive).
+
+	Parameters:
+		code - Unicode codepoint to convert.
+
+	Returns:
+		Lowercase codepoint
+*/
+int str_utf8_tolower(int code);
+
+/*
+	Function: str_utf8_comp_nocase
+		Compares two utf8 strings case insensitively.
+
+	Parameters:
+		a - String to compare.
+		b - String to compare.
+
+	Returns:
+		<0 - String a is less than string b
+		0 - String a is equal to string b
+		>0 - String a is greater than string b
+*/
+int str_utf8_comp_nocase(const char *a, const char *b);
+
+/*
+	Function: str_utf8_comp_nocase_num
+		Compares up to num bytes of two utf8 strings case insensitively.
+
+	Parameters:
+		a - String to compare.
+		b - String to compare.
+		num - Maximum bytes to compare
+
+	Returns:
+		<0 - String a is less than string b
+		0 - String a is equal to string b
+		>0 - String a is greater than string b
+*/
+int str_utf8_comp_nocase_num(const char *a, const char *b, int num);
+
+/*
+	Function: str_utf8_find_nocase
+		Finds a utf8 string inside another utf8 string case insensitively.
+
+	Parameters:
+		haystack - String to search in
+		needle - String to search for
+
+	Returns:
+		A pointer into haystack where the needle was found.
+		Returns NULL if needle could not be found.
+
+	Remarks:
+		- The strings are treated as zero-terminated strings.
+*/
+const char *str_utf8_find_nocase(const char *haystack, const char *needle);
+
 /*
 	Function: str_utf8_isspace
 		Checks whether the given Unicode codepoint renders as space.

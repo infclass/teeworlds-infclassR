@@ -462,6 +462,10 @@ set(BASE
   src/base/tl/sorted_array.h
   src/base/tl/string.h
   src/base/tl/threading.h
+  src/base/unicode/confusables.c
+  src/base/unicode/confusables_data.h
+  src/base/unicode/tolower.c
+  src/base/unicode/tolower_data.h
   src/base/vmath.h
 )
 
