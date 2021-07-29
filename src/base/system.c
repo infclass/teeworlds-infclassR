@@ -1,6 +1,7 @@
 /* (c) Magnus Auvinen. See licence.txt in the root of the distribution for more information. */
 /* If you are missing that file, acquire a complete release at teeworlds.com.                */
 #include <ctype.h>
+#include <math.h>
 #include <stdarg.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -2023,11 +2024,67 @@ void str_timestamp_ex(time_t time_data, char *buffer, int buffer_size, const cha
 	buffer[buffer_size - 1] = 0; /* assure null termination */
 }
 
-void str_timestamp(char *buffer, int buffer_size)
+void str_timestamp_format(char *buffer, int buffer_size, const char *format)
 {
 	time_t time_data;
 	time(&time_data);
-	str_timestamp_ex(time_data, buffer, buffer_size, "%Y-%m-%d_%H-%M-%S");
+	str_timestamp_ex(time_data, buffer, buffer_size, format);
+}
+
+void str_timestamp(char *buffer, int buffer_size)
+{
+	str_timestamp_format(buffer, buffer_size, FORMAT_NOSPACE);
+}
+#ifdef __GNUC__
+#pragma GCC diagnostic pop
+#endif
+
+int str_time(int64 centisecs, int format, char *buffer, int buffer_size)
+{
+	const int sec = 100;
+	const int min = 60 * sec;
+	const int hour = 60 * min;
+	const int day = 24 * hour;
+
+	if(buffer_size <= 0)
+		return -1;
+
+	if(centisecs < 0)
+		centisecs = 0;
+
+	buffer[0] = 0;
+
+	switch(format)
+	{
+	case TIME_DAYS:
+		if(centisecs >= day)
+			return str_format(buffer, buffer_size, "%lldd %02lld:%02lld:%02lld", centisecs / day,
+				(centisecs % day) / hour, (centisecs % hour) / min, (centisecs % min) / sec);
+		// fall through
+	case TIME_HOURS:
+		if(centisecs >= hour)
+			return str_format(buffer, buffer_size, "%02lld:%02lld:%02lld", centisecs / hour,
+				(centisecs % hour) / min, (centisecs % min) / sec);
+		// fall through
+	case TIME_MINS:
+		return str_format(buffer, buffer_size, "%02lld:%02lld", centisecs / min,
+			(centisecs % min) / sec);
+	case TIME_HOURS_CENTISECS:
+		if(centisecs >= hour)
+			return str_format(buffer, buffer_size, "%02lld:%02lld:%02lld.%02lld", centisecs / hour,
+				(centisecs % hour) / min, (centisecs % min) / sec, centisecs % sec);
+		// fall through
+	case TIME_MINS_CENTISECS:
+		return str_format(buffer, buffer_size, "%02lld:%02lld.%02lld", centisecs / min,
+			(centisecs % min) / sec, centisecs % sec);
+	}
+
+	return -1;
+}
+
+int str_time_float(float secs, int format, char *buffer, int buffer_size)
+{
+	return str_time(llroundf(secs * 100.0), format, buffer, buffer_size);
 }
 
 void str_escape(char **dst, const char *src, const char *end)
