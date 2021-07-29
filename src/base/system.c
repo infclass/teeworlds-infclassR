@@ -261,113 +261,146 @@ int io_close(IOHANDLE io)
 
 int io_flush(IOHANDLE io)
 {
-	fflush((FILE*)io);
+	return fflush((FILE *)io);
+}
+
+struct THREAD_RUN
+{
+	void (*threadfunc)(void *);
+	void *u;
+};
+
+#if defined(CONF_FAMILY_UNIX)
+static void *thread_run(void *user)
+#elif defined(CONF_FAMILY_WINDOWS)
+static unsigned long __stdcall thread_run(void *user)
+#else
+#error not implemented
+#endif
+{
+	struct THREAD_RUN *data = user;
+	void (*threadfunc)(void *) = data->threadfunc;
+	void *u = data->u;
+	free(data);
+	threadfunc(u);
 	return 0;
 }
 
-void *thread_create(void (*threadfunc)(void *), void *u)
+void *thread_init(void (*threadfunc)(void *), void *u, const char *name)
 {
+	struct THREAD_RUN *data = malloc(sizeof(*data));
+	data->threadfunc = threadfunc;
+	data->u = u;
 #if defined(CONF_FAMILY_UNIX)
-	pthread_t id;
-	pthread_create(&id, NULL, (void *(*)(void*))threadfunc, u);
-	return (void*)id;
+	{
+		pthread_t id;
+		int result = pthread_create(&id, NULL, thread_run, data);
+		if(result != 0)
+		{
+			dbg_msg("thread", "creating %s thread failed: %d", name, result);
+			return 0;
+		}
+		return (void *)id;
+	}
 #elif defined(CONF_FAMILY_WINDOWS)
-	return CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)threadfunc, u, 0, NULL);
+	return CreateThread(NULL, 0, thread_run, data, 0, NULL);
 #else
-	#error not implemented
+#error not implemented
 #endif
 }
-
-/* DDNET MODIFICATION START *******************************************/
-void *thread_init(void (*threadfunc)(void *), void *u)
-{
-#if defined(CONF_FAMILY_UNIX)
-	pthread_t id;
-	pthread_create(&id, NULL, (void *(*)(void*))threadfunc, u);
-	return (void*)id;
-#elif defined(CONF_FAMILY_WINDOWS)
-	return CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)threadfunc, u, 0, NULL);
-#else
-	#error not implemented
-#endif
-}
-/* DDNET MODIFICATION END *********************************************/
 
 void thread_wait(void *thread)
 {
 #if defined(CONF_FAMILY_UNIX)
-	pthread_join((pthread_t)thread, NULL);
+	int result = pthread_join((pthread_t)thread, NULL);
+	if(result != 0)
+		dbg_msg("thread", "!! %d", result);
 #elif defined(CONF_FAMILY_WINDOWS)
 	WaitForSingleObject((HANDLE)thread, INFINITE);
+	CloseHandle(thread);
 #else
-	#error not implemented
+#error not implemented
 #endif
 }
 
-void thread_destroy(void *thread)
+void thread_yield(void)
 {
 #if defined(CONF_FAMILY_UNIX)
-	void *r = 0;
-	pthread_join((pthread_t)thread, &r);
-#else
-	/*#error not implemented*/
-#endif
-}
-
-void thread_yield()
-{
-#if defined(CONF_FAMILY_UNIX)
-	sched_yield();
+	int result = sched_yield();
+	if(result != 0)
+		dbg_msg("thread", "yield failed: %d", errno);
 #elif defined(CONF_FAMILY_WINDOWS)
 	Sleep(0);
 #else
-	#error not implemented
+#error not implemented
 #endif
 }
 
-void thread_sleep(int milliseconds)
+void thread_sleep(int microseconds)
 {
 #if defined(CONF_FAMILY_UNIX)
-	usleep(milliseconds*1000);
+	int result = usleep(microseconds);
+	/* ignore signal interruption */
+	if(result == -1 && errno != EINTR)
+		dbg_msg("thread", "sleep failed: %d", errno);
 #elif defined(CONF_FAMILY_WINDOWS)
-	Sleep(milliseconds);
+	Sleep(microseconds / 1000);
 #else
-	#error not implemented
+#error not implemented
 #endif
 }
 
 void thread_detach(void *thread)
 {
 #if defined(CONF_FAMILY_UNIX)
-	pthread_detach((pthread_t)(thread));
+	int result = pthread_detach((pthread_t)(thread));
+	if(result != 0)
+		dbg_msg("thread", "detach failed: %d", result);
 #elif defined(CONF_FAMILY_WINDOWS)
 	CloseHandle(thread);
 #else
-	#error not implemented
+#error not implemented
 #endif
 }
 
-
-
+void *thread_init_and_detach(void (*threadfunc)(void *), void *u, const char *name)
+{
+	void *thread = thread_init(threadfunc, u, name);
+	if(thread)
+		thread_detach(thread);
+	return thread;
+}
 
 #if defined(CONF_FAMILY_UNIX)
 typedef pthread_mutex_t LOCKINTERNAL;
 #elif defined(CONF_FAMILY_WINDOWS)
 typedef CRITICAL_SECTION LOCKINTERNAL;
 #else
-	#error not implemented on this platform
+#error not implemented on this platform
 #endif
 
-LOCK lock_create()
+LOCK lock_create(void)
 {
 	LOCKINTERNAL *lock = (LOCKINTERNAL *)malloc(sizeof(*lock));
+#if defined(CONF_FAMILY_UNIX)
+	int result;
+#endif
+
+	if(!lock)
+		return 0;
 
 #if defined(CONF_FAMILY_UNIX)
-	pthread_mutex_init(lock, 0x0);
+	result = pthread_mutex_init(lock, 0x0);
+	if(result != 0)
+	{
+		dbg_msg("lock", "init failed: %d", result);
+		free(lock);
+		return 0;
+	}
 #elif defined(CONF_FAMILY_WINDOWS)
 	InitializeCriticalSection((LPCRITICAL_SECTION)lock);
 #else
-	#error not implemented on this platform
+#error not implemented on this platform
 #endif
 	return (LOCK)lock;
 }
@@ -375,77 +408,116 @@ LOCK lock_create()
 void lock_destroy(LOCK lock)
 {
 #if defined(CONF_FAMILY_UNIX)
-	pthread_mutex_destroy((LOCKINTERNAL *)lock);
+	int result = pthread_mutex_destroy((LOCKINTERNAL *)lock);
+	if(result != 0)
+		dbg_msg("lock", "destroy failed: %d", result);
 #elif defined(CONF_FAMILY_WINDOWS)
 	DeleteCriticalSection((LPCRITICAL_SECTION)lock);
 #else
-	#error not implemented on this platform
+#error not implemented on this platform
 #endif
 	free(lock);
 }
 
-int lock_try(LOCK lock)
+int lock_trylock(LOCK lock)
 {
 #if defined(CONF_FAMILY_UNIX)
 	return pthread_mutex_trylock((LOCKINTERNAL *)lock);
 #elif defined(CONF_FAMILY_WINDOWS)
 	return !TryEnterCriticalSection((LPCRITICAL_SECTION)lock);
 #else
-	#error not implemented on this platform
+#error not implemented on this platform
 #endif
 }
 
+#ifdef __clang__
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wthread-safety-analysis"
+#endif
 void lock_wait(LOCK lock)
 {
 #if defined(CONF_FAMILY_UNIX)
-	pthread_mutex_lock((LOCKINTERNAL *)lock);
+	int result = pthread_mutex_lock((LOCKINTERNAL *)lock);
+	if(result != 0)
+		dbg_msg("lock", "lock failed: %d", result);
 #elif defined(CONF_FAMILY_WINDOWS)
 	EnterCriticalSection((LPCRITICAL_SECTION)lock);
 #else
-	#error not implemented on this platform
+#error not implemented on this platform
 #endif
 }
 
-void lock_release(LOCK lock)
-{
-#if defined(CONF_FAMILY_UNIX)
-	pthread_mutex_unlock((LOCKINTERNAL *)lock);
-#elif defined(CONF_FAMILY_WINDOWS)
-	LeaveCriticalSection((LPCRITICAL_SECTION)lock);
-#else
-	#error not implemented on this platform
-#endif
-}
-
-/* DDNET MODIFICATION START *******************************************/
 void lock_unlock(LOCK lock)
 {
 #if defined(CONF_FAMILY_UNIX)
-	pthread_mutex_unlock((LOCKINTERNAL *)lock);
+	int result = pthread_mutex_unlock((LOCKINTERNAL *)lock);
+	if(result != 0)
+		dbg_msg("lock", "unlock failed: %d", result);
 #elif defined(CONF_FAMILY_WINDOWS)
 	LeaveCriticalSection((LPCRITICAL_SECTION)lock);
 #else
-	#error not implemented on this platform
+#error not implemented on this platform
 #endif
 }
-/* DDNET MODIFICATION END *********************************************/
-
-#if !defined(CONF_PLATFORM_MACOSX)
-	#if defined(CONF_FAMILY_UNIX)
-	void semaphore_init(SEMAPHORE *sem) { sem_init(sem, 0, 0); }
-	void semaphore_wait(SEMAPHORE *sem) { sem_wait(sem); }
-	void semaphore_signal(SEMAPHORE *sem) { sem_post(sem); }
-	void semaphore_destroy(SEMAPHORE *sem) { sem_destroy(sem); }
-	#elif defined(CONF_FAMILY_WINDOWS)
-	void semaphore_init(SEMAPHORE *sem) { *sem = CreateSemaphore(0, 0, 10000, 0); }
-	void semaphore_wait(SEMAPHORE *sem) { WaitForSingleObject((HANDLE)*sem, INFINITE); }
-	void semaphore_signal(SEMAPHORE *sem) { ReleaseSemaphore((HANDLE)*sem, 1, NULL); }
-	void semaphore_destroy(SEMAPHORE *sem) { CloseHandle((HANDLE)*sem); }
-	#else
-		#error not implemented on this platform
-	#endif
+#ifdef __clang__
+#pragma clang diagnostic pop
 #endif
 
+#if defined(CONF_FAMILY_WINDOWS)
+void sphore_init(SEMAPHORE *sem)
+{
+	*sem = CreateSemaphore(0, 0, 10000, 0);
+}
+void sphore_wait(SEMAPHORE *sem) { WaitForSingleObject((HANDLE)*sem, INFINITE); }
+void sphore_signal(SEMAPHORE *sem) { ReleaseSemaphore((HANDLE)*sem, 1, NULL); }
+void sphore_destroy(SEMAPHORE *sem) { CloseHandle((HANDLE)*sem); }
+#elif defined(CONF_PLATFORM_MACOS)
+void sphore_init(SEMAPHORE *sem)
+{
+	char aBuf[64];
+	str_format(aBuf, sizeof(aBuf), "/%d-ddnet.tw-%p", pid(), (void *)sem);
+	*sem = sem_open(aBuf, O_CREAT | O_EXCL, S_IRWXU | S_IRWXG, 0);
+}
+void sphore_wait(SEMAPHORE *sem) { sem_wait(*sem); }
+void sphore_signal(SEMAPHORE *sem) { sem_post(*sem); }
+void sphore_destroy(SEMAPHORE *sem)
+{
+	char aBuf[64];
+	sem_close(*sem);
+	str_format(aBuf, sizeof(aBuf), "/%d-ddnet.tw-%p", pid(), (void *)sem);
+	sem_unlink(aBuf);
+}
+#elif defined(CONF_FAMILY_UNIX)
+void sphore_init(SEMAPHORE *sem)
+{
+	if(sem_init(sem, 0, 0) != 0)
+		dbg_msg("sphore", "init failed: %d", errno);
+}
+
+void sphore_wait(SEMAPHORE *sem)
+{
+	if(sem_wait(sem) != 0)
+		dbg_msg("sphore", "wait failed: %d", errno);
+}
+
+void sphore_signal(SEMAPHORE *sem)
+{
+	if(sem_post(sem) != 0)
+		dbg_msg("sphore", "post failed: %d", errno);
+}
+void sphore_destroy(SEMAPHORE *sem)
+{
+	if(sem_destroy(sem) != 0)
+		dbg_msg("sphore", "destroy failed: %d", errno);
+}
+#endif
+
+static int new_tick = -1;
+
+void set_new_tick(void)
+{
+	new_tick = 1;
+}
 
 /* -----  time ----- */
 int64 time_get()
