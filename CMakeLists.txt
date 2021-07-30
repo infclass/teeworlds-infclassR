@@ -758,7 +758,14 @@ install(
   FILES
     "autoexec.cfg"
     "reset.cfg"
+  DESTINATION
+    "${CMAKE_INSTALL_PREFIX}"
+)
+install(
+  FILES
     "storage.cfg"
+  RENAME
+    "storage.cfg.example"
   DESTINATION
     "${CMAKE_INSTALL_PREFIX}"
 )
