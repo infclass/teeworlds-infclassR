@@ -54,6 +54,10 @@ void CInfClassHuman::OnCharacterPreCoreTick()
 	}
 }
 
+void CInfClassHuman::OnCharacterTick()
+{
+}
+
 void CInfClassHuman::GiveClassAttributes()
 {
 	CInfClassPlayerClass::GiveClassAttributes();
