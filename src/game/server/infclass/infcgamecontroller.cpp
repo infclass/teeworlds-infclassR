@@ -259,11 +259,11 @@ int CInfClassGameController::GetClassByName(const char *pClassName, bool *pOk)
 
 	static const ExtraName extraNames[] =
 	{
-		ExtraName("merc", PLAYERCLASS_MERCENARY),
-		ExtraName("mercs", PLAYERCLASS_MERCENARY),
-		ExtraName("engi", PLAYERCLASS_ENGINEER),
 		ExtraName("bio", PLAYERCLASS_BIOLOGIST),
 		ExtraName("bios", PLAYERCLASS_BIOLOGIST),
+		ExtraName("engi", PLAYERCLASS_ENGINEER),
+		ExtraName("merc", PLAYERCLASS_MERCENARY),
+		ExtraName("mercs", PLAYERCLASS_MERCENARY),
 	};
 	if(pOk)
 	{
