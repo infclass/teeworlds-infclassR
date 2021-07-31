@@ -369,6 +369,7 @@ void CVoltageBox::DoDischarge()
 
 		if(Hits)
 		{
+			p->ElectricShock(ElectricityFreezeDuration, GetOwner());
 			CGrowingExplosion *pExplosion = new CGrowingExplosion(GameServer(), p->GetPos(), vec2(0.0, -1.0), GetOwner(), 2, GROWINGEXPLOSIONEFFECT_ELECTRIC_INFECTED);
 			pExplosion->SetDamage(0);
 			p->TakeDamage(DamageForce, ElectricDamage * Hits, GetOwner(), WEAPON_LASER, TAKEDAMAGEMODE_NOINFECTION);
