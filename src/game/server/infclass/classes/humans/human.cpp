@@ -86,6 +86,32 @@ void CInfClassHuman::OnCharacterPreCoreTick()
 void CInfClassHuman::OnCharacterTick()
 {
 	CInfClassPlayerClass::OnCharacterTick();
+
+	if(GetPlayerClass() == PLAYERCLASS_ELECTRICIAN)
+	{
+		CVoltageBox *pBox = m_pCharacter->GetVoltageBox();
+		if(pBox)
+		{
+			const int NumCharges = pBox->GetCharges();
+			GameServer()->SendBroadcast_Localization_P(GetPlayer()->GetCID(),
+					BROADCAST_PRIORITY_WEAPONSTATE, BROADCAST_DURATION_REALTIME,
+					NumCharges,
+				_P("One charge", "{int:NumCharges} charges"),
+				"NumCharges", &NumCharges,
+				NULL
+			);
+		}
+		if(m_pCharacter->GetActiveWeapon() == WEAPON_LASER)
+		{
+			if(!pBox)
+			{
+				GameServer()->SendBroadcast_Localization(GetPlayer()->GetCID(),
+					BROADCAST_PRIORITY_WEAPONSTATE, BROADCAST_DURATION_REALTIME,
+					_("You need a High Voltage Box to use the linking laser"),
+					nullptr);
+			}
+		}
+	}
 }
 
 void CInfClassHuman::OnCharacterSnap(int SnappingClient)

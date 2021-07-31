@@ -6,6 +6,7 @@
 #include <game/server/infclass/entities/infccharacter.h>
 #include <game/server/infclass/entities/voltage-box.h>
 #include <game/server/infclass/infcgamecontroller.h>
+#include <game/server/gamecontext.h>
 
 CElectricianLaser::CElectricianLaser(CGameContext *pGameContext, vec2 Pos, vec2 Direction, float StartEnergy, int Owner)
 	: CInfClassLaser(pGameContext, Pos, Direction, StartEnergy, Owner, 0, CGameWorld::ENTTYPE_LASER)
@@ -49,7 +50,8 @@ bool CElectricianLaser::HitCharacter(vec2 From, vec2 To)
 	static constexpr float Threshold = 16;
 	if(distance(pHit->GetPos(), pBox->GetPos()) + Threshold >= Config()->m_InfVoltageBoxRange)
 	{
-		// TODO: say to the owner that the target is out of the hvbox range
+		GameServer()->SendBroadcast_Localization(GetOwner(), BROADCAST_PRIORITY_GAMEANNOUNCE, BROADCAST_DURATION_GAMEANNOUNCE,
+			_("The target is out of High Voltage Box range"), nullptr);
 		return true;
 	}
 
