@@ -109,6 +109,7 @@ MACRO_CONFIG_INT(InfSlowMotionMaxSpeed, inf_slow_motion_max_speed, 50, 0, 500, C
 MACRO_CONFIG_INT(InfSlowMotionGravity, inf_slow_motion_gravity, 5, -100, 100, CFGFLAG_SERVER, "Modify gravity while in slowmotion")
 
 // Electrician class config
+MACRO_CONFIG_INT(InfVoltageBoxCharges, inf_voltage_box_charges, 2, 0, 100, CFGFLAG_SERVER, "The number of voltage box charges")
 MACRO_CONFIG_INT(InfVoltageBoxRange, inf_voltage_box_range, 800, 0, 10000, CFGFLAG_SERVER, "The maximum length of a voltage box link")
 
 //Turret

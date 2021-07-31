@@ -26,6 +26,8 @@ CVoltageBox::CVoltageBox(CGameContext *pGameContext, vec2 CenterPos, int Owner)
 {
 	GameWorld()->InsertEntity(this);
 
+	m_Charges = Config()->m_InfVoltageBoxCharges;
+
 	for(CLaserSnapItem &SnapItem : m_LasersForSnap)
 	{
 		SnapItem.SnapID = Server()->SnapNewID();
@@ -120,7 +122,10 @@ void CVoltageBox::Tick()
 	{
 		m_DischargedLinks.Clear();
 
-		Reset();
+		if(m_Charges <= 0)
+		{
+			Reset();
+		}
 	}
 
 	UpdateLinks();
@@ -370,8 +375,28 @@ void CVoltageBox::DoDischarge()
 		}
 	}
 
+	switch(m_ScheduledDischarge)
+	{
+		case DISCHARGE_TYPE_INVALID:
+			// TODO: Warning
+			break;
+		case DISCHARGE_TYPE_NORMAL:
+			--m_Charges;
+			break;
+		case DISCHARGE_TYPE_FINAL:
+			m_Charges = 0;
+			break;
+		case DISCHARGE_TYPE_FREE:
+			break;
+	}
+
 	m_DischargedLinks = m_Links;
 	m_Links.Clear();
+
+	if(m_Charges > 0)
+	{
+		AddLink(GetOwner());
+	}
 
 	m_ScheduledDischarge = DISCHARGE_TYPE_INVALID;
 }

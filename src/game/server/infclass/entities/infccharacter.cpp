@@ -2281,7 +2281,7 @@ CVoltageBox *CInfClassCharacter::GetVoltageBox()
 {
 	for(CVoltageBox *pBox = (CVoltageBox*) GameWorld()->FindFirst(CGameWorld::ENTTYPE_VOLTAGE_BOX); pBox; pBox = (CVoltageBox*) pBox->TypeNext())
 	{
-		if((pBox->GetOwner() == GetCID()) && !pBox->IsMarkedForDestroy())
+		if((pBox->GetOwner() == GetCID()) && (pBox->GetCharges() > 0) && !pBox->IsMarkedForDestroy())
 		{
 			return pBox;
 		}

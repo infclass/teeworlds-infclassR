@@ -24,6 +24,8 @@ public:
 	CVoltageBox(CGameContext *pGameContext, vec2 CenterPos, int Owner);
 	~CVoltageBox() override;
 
+	int GetCharges() const { return m_Charges; }
+
 	void AddLink(int ClientID);
 	void RemoveLink(int ClientID);
 	void ScheduleDischarge(DISCHARGE_TYPE Type = DISCHARGE_TYPE_NORMAL);
@@ -77,6 +79,7 @@ protected:
 	CLaserSnapItem m_LasersForSnap[MaxSnapItems];
 	int m_ActiveSnapItems = 0;
 
+	int m_Charges = 0;
 	int m_DischargeFadingTick = 0;
 	array_on_stack<CLink, MaxLinks> m_Links;
 	array_on_stack<CLink, MaxLinks> m_DischargedLinks;
