@@ -150,9 +150,10 @@ void CInfClassHuman::OnCharacterSnap(int SnappingClient)
 			case PLAYERCLASS_ELECTRICIAN:
 			{
 				CVoltageBox *pBox = m_pCharacter->GetVoltageBox();
-				if(pBox)
+				const bool ShowRadius = pBox || ((m_pCharacter->GetActiveWeapon() == WEAPON_HAMMER) && (m_pCharacter->Speed() < 5));
+				if(ShowRadius)
 				{
-					SnapRadiusIndicator(pBox->GetPos(), Config()->m_InfVoltageBoxLinkLength, 20);
+					SnapRadiusIndicator(pBox ? pBox->GetPos() : GetPos(), Config()->m_InfVoltageBoxRange, 20);
 				}
 			}
 				break;
