@@ -4,6 +4,7 @@
 #include <game/gamecore.h>
 #include <game/server/gamecontext.h>
 #include <game/server/infclass/entities/infccharacter.h>
+#include <game/server/infclass/infcgamecontroller.h>
 #include <game/server/infclass/infcplayer.h>
 #include <game/server/teeinfo.h>
 
@@ -310,6 +311,34 @@ void CInfClassPlayerClass::SetupSkin(CTeeInfo *output)
 
 void CInfClassPlayerClass::BroadcastWeaponState()
 {
+}
+
+void CInfClassPlayerClass::SnapRadiusIndicator(const vec2 &Pos, const float Radius, const float Period)
+{
+	const ClientRadiusIndicatorIDs &IDs = GameController()->GetPlayerOwnRadiusIndicatorIDs(GetCID());
+	const int IndicatorItems = IDs.Size();
+
+	float AngleStart = (2.0f * pi * Server()->Tick()/static_cast<float>(Server()->TickSpeed())) * 1.0 / Period;
+	AngleStart = AngleStart*2.0f;
+	static const float AngleStep = 2.0f * pi / IndicatorItems;
+
+	for(int i = 0; i < IndicatorItems; i++)
+	{
+		float Angle = AngleStart + AngleStep * i;
+		vec2 PosStart = Pos + vec2(Radius * cos(Angle), Radius * sin(Angle));
+
+		int ItemID = IDs.At(i);
+		CNetObj_Projectile *pObj = static_cast<CNetObj_Projectile *>(Server()->SnapNewItem(NETOBJTYPE_PROJECTILE, ItemID, sizeof(CNetObj_Projectile)));
+		if(pObj)
+		{
+			pObj->m_X = PosStart.x;
+			pObj->m_Y = PosStart.y;
+			pObj->m_VelX = 0;
+			pObj->m_VelY = 0;
+			pObj->m_StartTick = Server()->Tick();
+			pObj->m_Type = WEAPON_HAMMER;
+		}
+	}
 }
 
 void CInfClassPlayerClass::UpdateSkin()

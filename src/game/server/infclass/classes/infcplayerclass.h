@@ -83,6 +83,8 @@ protected:
 	virtual void SetupSkin(CTeeInfo *output);
 	virtual void BroadcastWeaponState();
 
+	void SnapRadiusIndicator(const vec2 &Pos, const float Radius, const float Period);
+
 	CInfClassPlayer *m_pPlayer = nullptr;
 	CInfClassCharacter *m_pCharacter = nullptr;
 
