@@ -147,6 +147,15 @@ void CInfClassHuman::OnCharacterSnap(int SnappingClient)
 				}
 			}
 				break;
+			case PLAYERCLASS_ELECTRICIAN:
+			{
+				CVoltageBox *pBox = m_pCharacter->GetVoltageBox();
+				if(pBox)
+				{
+					SnapRadiusIndicator(pBox->GetPos(), Config()->m_InfVoltageBoxLinkLength, 20);
+				}
+			}
+				break;
 			default:
 				break;
 		}
