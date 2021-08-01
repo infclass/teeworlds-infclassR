@@ -814,6 +814,13 @@ int CInfClassGameController::GetPlayerOwnCursorID(int ClientID) const
 	return m_PlayerOwnCursorID;
 }
 
+const ClientRadiusIndicatorIDs &CInfClassGameController::GetPlayerOwnRadiusIndicatorIDs(int ClientID) const
+{
+	// ClientID is wanted for debug purposes and to be able to use *different*
+	// IDs for different clients without changing the API
+	return m_PlayerOwnRadiusIndicatorIDs;
+}
+
 void CInfClassGameController::GetSortedTargetsInRange(const vec2 &Center, const float Radius, const ClientsArray &SkipList, ClientsArray *pOutput)
 {
 	struct DistanceItem
@@ -918,11 +925,22 @@ void CInfClassGameController::HandleTargetsToKill()
 void CInfClassGameController::ReservePlayerOwnSnapItems()
 {
 	m_PlayerOwnCursorID = Server()->SnapNewID();
+
+	for(int i = 0; i < m_PlayerOwnRadiusIndicatorIDs.Capacity(); ++i)
+	{
+		m_PlayerOwnRadiusIndicatorIDs.Add(Server()->SnapNewID());
+	}
 }
 
 void CInfClassGameController::FreePlayerOwnSnapItems()
 {
 	Server()->SnapFreeID(m_PlayerOwnCursorID);
+
+	for(int IndicatorID : m_PlayerOwnRadiusIndicatorIDs)
+	{
+		Server()->SnapFreeID(IndicatorID);
+	}
+	m_PlayerOwnRadiusIndicatorIDs.Clear();
 }
 
 void CInfClassGameController::MaybeSuggestMoreRounds()

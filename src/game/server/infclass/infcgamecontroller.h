@@ -14,7 +14,9 @@ class CInfClassPlayer;
 struct CNetObj_GameInfo;
 struct SpawnContext;
 
+static const int MaxRadiusIndicatorItems = 12;
 using ClientsArray = array_on_stack<int, 64>; // MAX_CLIENTS
+using ClientRadiusIndicatorIDs = array_on_stack<int, MaxRadiusIndicatorItems>;
 
 enum class CLASS_AVAILABILITY
 {
@@ -102,6 +104,7 @@ public:
 	CInfClassPlayer *GetPlayer(int ClientID) const;
 	CInfClassCharacter *GetCharacter(int ClientID) const;
 	int GetPlayerOwnCursorID(int ClientID) const;
+	const ClientRadiusIndicatorIDs &GetPlayerOwnRadiusIndicatorIDs(int ClientID) const;
 
 	void GetSortedTargetsInRange(const vec2 &Center, const float Radius, const ClientsArray &SkipList, ClientsArray *pOutput);
 	int GetMinimumInfected() const;
@@ -132,6 +135,7 @@ private:
 	int m_TargetToKillCoolDown;
 
 	int m_PlayerOwnCursorID = -1;
+	ClientRadiusIndicatorIDs m_PlayerOwnRadiusIndicatorIDs;
 	
 	bool m_InfectedStarted;
 	bool m_RoundStarted = false;
