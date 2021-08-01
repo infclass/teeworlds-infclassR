@@ -72,6 +72,9 @@ public:
 	int GetHookedPlayer() const;
 	void SetHookedPlayer(int ClientID);
 
+	vec2 Velocity() const;
+	float Speed() const;
+
 	CInfClassGameController *GameController() const { return m_pGameController; }
 	CGameContext *GameContext() const;
 

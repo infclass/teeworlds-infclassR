@@ -1526,6 +1526,16 @@ void CInfClassCharacter::SetHookedPlayer(int ClientID)
 	}
 }
 
+vec2 CInfClassCharacter::Velocity() const
+{
+	return m_Core.m_Vel;
+}
+
+float CInfClassCharacter::Speed() const
+{
+	return length(m_Core.m_Vel);
+}
+
 CGameContext *CInfClassCharacter::GameContext() const
 {
 	return m_pGameController->GameServer();
