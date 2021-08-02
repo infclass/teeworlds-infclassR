@@ -345,6 +345,8 @@ void CVoltageBox::DoDischarge()
 	}
 
 	const int FreezeTicks = ElectricityFreezeDuration * Server()->TickSpeed();
+	static const int BoxLightningRadiusTiles = 2;
+	const float BoxDamageRadius = 32 * BoxLightningRadiusTiles;
 
 	// Find other players on the links
 	for(int i = 0; i < MAX_CLIENTS; ++i)
@@ -357,24 +359,42 @@ void CVoltageBox::DoDischarge()
 			continue;
 
 		int Hits = 0;
-		for(const CLink &Link : m_Links)
+		bool Animation = false;
+
+		if(distance(GetPos(), p->GetPos()) < BoxDamageRadius + p->GetProximityRadius())
 		{
-			const vec2 IntersectPos = closest_point_on_line(GetPos(), Link.Endpoint, p->GetPos());
-			float Len = distance(p->GetPos(), IntersectPos);
-			if(Len < (p->GetProximityRadius() + LinkFieldRadius))
+			Hits = m_Links.Size();
+		}
+		else
+		{
+			for(const CLink &Link : m_Links)
 			{
-				Hits++;
+				const vec2 IntersectPos = closest_point_on_line(GetPos(), Link.Endpoint, p->GetPos());
+				float Len = distance(p->GetPos(), IntersectPos);
+				if(Len < (p->GetProximityRadius() + LinkFieldRadius))
+				{
+					Hits++;
+				}
 			}
+			Animation = Hits;
 		}
 
 		if(Hits)
 		{
 			p->ElectricShock(ElectricityFreezeDuration, GetOwner());
-			CGrowingExplosion *pExplosion = new CGrowingExplosion(GameServer(), p->GetPos(), vec2(0.0, -1.0), GetOwner(), 2, GROWINGEXPLOSIONEFFECT_ELECTRIC_INFECTED);
-			pExplosion->SetDamage(0);
 			p->TakeDamage(DamageForce, ElectricDamage * Hits, GetOwner(), WEAPON_LASER, TAKEDAMAGEMODE_NOINFECTION);
 		}
+
+		if(Animation)
+		{
+			CGrowingExplosion *pExplosion = new CGrowingExplosion(GameServer(), p->GetPos(), vec2(0.0, -1.0), GetOwner(), 2, GROWINGEXPLOSIONEFFECT_ELECTRIC_INFECTED);
+			pExplosion->SetDamage(0);
+		}
 	}
+
+	CGrowingExplosion *pExplosion = new CGrowingExplosion(GameServer(), GetPos(), vec2(0.0, -1.0),
+		GetOwner(), BoxLightningRadiusTiles, GROWINGEXPLOSIONEFFECT_ELECTRIC_INFECTED);
+	pExplosion->SetDamage(0);
 
 	switch(m_ScheduledDischarge)
 	{
