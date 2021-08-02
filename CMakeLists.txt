@@ -313,7 +313,6 @@ elseif(TARGET_OS STREQUAL "mac")
   find_library(SECURITY Security)
   set(PLATFORM_LIBS ${CARBON} ${SECURITY})
 else()
-  find_package(X11)
   if(TARGET_OS STREQUAL "linux")
     set(PLATFORM_LIBS rt) # clock_gettime for glibc < 2.17
   else()
