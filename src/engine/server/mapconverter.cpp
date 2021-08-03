@@ -823,7 +823,7 @@ int CMapConverter::AddEmbeddedImage(const char *pImageName, int Width, int Heigh
 	str_format(aBuf, sizeof(aBuf), "data/mapres/%s.png", pImageName);
 
 	if (!LoadPNG(pImg, aBuf)) {
-		return 0;
+		return -1;
 	}
 
 	if(GrayScale)
@@ -866,7 +866,7 @@ int CMapConverter::AddEmbeddedImage(const char *pImageName, int Width, int Heigh
 	return m_NumImages-1;
 }
 
-void CMapConverter::Finalize()
+int CMapConverter::Finalize()
 {
 	int ClassImageID[NUM_MENUCLASS];
 	for(int ClassIndex = 0; ClassIndex < NUM_MENUCLASS; ++ClassIndex)
@@ -895,11 +895,18 @@ void CMapConverter::Finalize()
 		{
 			bool GrayScale = true;
 			ImageID = AddEmbeddedImage(SkinPath, 256, 128, GrayScale);
+			if(ImageID < 0)
+			{
+				dbg_msg("MapConverter", "Unable to access a player class skin file. Make sure "
+					"that the game data (including 'data/skins') is correctly installed.");
+				return -1;
+			}
 		}
 		else
 		{
 			ImageID = AddExternalImage(SkinPath, 256, 128);
 		}
+
 		ClassImageID[ClassIndex] = ImageID;
 	}
 
@@ -1142,6 +1149,8 @@ void CMapConverter::Finalize()
 			}
 		}
 	}
+
+	return 0;
 }
 
 bool CMapConverter::CreateMap(const char* pFilename)
@@ -1185,7 +1194,10 @@ bool CMapConverter::CreateMap(const char* pFilename)
 	
 	CopyLayers();
 	
-	Finalize();
+	if (Finalize() < 0)
+	{
+		return false;
+	}
 	
 	m_DataFile.AddItem(MAPITEMTYPE_ENVPOINTS, 0, m_lEnvPoints.size()*sizeof(CEnvPoint), m_lEnvPoints.base_ptr());
 	m_DataFile.Finish();

@@ -92,7 +92,7 @@ protected:
 	int AddExternalImage(const char* pImageName, int Width, int Height);
 	int AddEmbeddedImage(const char* pImageName, int Width, int Height, bool GrayScale);
 	
-	void Finalize();
+	int Finalize();
 
 public:
 	CMapConverter(IStorage *pStorage, IEngineMap *pMap, IConsole* pConsole);
