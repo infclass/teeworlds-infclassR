@@ -128,7 +128,8 @@ void CVoltageBox::Tick()
 		}
 	}
 
-	UpdateLinks();
+	UpdateActiveLinks();
+	UpdateDischargedLinks();
 
 	if(m_ScheduledDischarge != DISCHARGE_TYPE_INVALID)
 	{
@@ -208,10 +209,24 @@ void CVoltageBox::PrepareActiveLinksSnapItems()
 {
 	const float MaxLength = Config()->m_InfVoltageBoxRange;
 
+	ClientsArray DischargedClients;
+	for(const CLink &Link : m_DischargedLinks)
+	{
+		if(Link.ClientID >= 0)
+		{
+			DischargedClients.Add(Link.ClientID);
+		}
+	}
+
 	for(int i = 0; i < m_Links.Size(); ++i)
 	{
-		const vec2 &Endpoint = m_Links.At(i).Endpoint;
+		if(DischargedClients.Contains(m_Links.At(i).ClientID))
+		{
+			// We're already snapping the gfx for that client
+			continue;
+		}
 
+		const vec2 &Endpoint = m_Links.At(i).Endpoint;
 		float Distance = distance(Endpoint, GetPos());
 		if (Distance > MaxLength)
 		{
@@ -260,7 +275,7 @@ void CVoltageBox::PrepareDischargedLinksSnapItems()
 	}
 }
 
-void CVoltageBox::UpdateLinks()
+void CVoltageBox::UpdateActiveLinks()
 {
 	const float MaxLength = Config()->m_InfVoltageBoxRange;
 
@@ -269,19 +284,13 @@ void CVoltageBox::UpdateLinks()
 		int ClientID = m_Links[i].ClientID;
 
 		CInfClassCharacter *pCharacter = GameController()->GetCharacter(ClientID);
-		if(!pCharacter)
+		if(!pCharacter || !pCharacter->IsAlive())
 		{
 			ScheduleDischarge(DISCHARGE_TYPE_FREE);
 			continue;
 		}
 
-		if(!pCharacter->IsAlive())
-		{
-			ScheduleDischarge(DISCHARGE_TYPE_FREE);
-			continue;
-		}
-
-		if((ClientID != GetOwner()) && pCharacter->IsHuman())
+		if(pCharacter->IsHuman() && (pCharacter->GetCID() != GetOwner()))
 		{
 			// The character became a human (e.g. revived)
 			RemoveLink(ClientID);
@@ -324,6 +333,41 @@ void CVoltageBox::UpdateLinks()
 				}
 			}
 		}
+	}
+}
+
+void CVoltageBox::UpdateDischargedLinks()
+{
+	const float MaxLength = Config()->m_InfVoltageBoxRange;
+
+	for(int i = 0; i < m_DischargedLinks.Size(); ++i)
+	{
+		int ClientID = m_DischargedLinks[i].ClientID;
+
+		CInfClassCharacter *pCharacter = GameController()->GetCharacter(ClientID);
+		if(!pCharacter || !pCharacter->IsAlive())
+		{
+			m_DischargedLinks[i].ClientID = -1; // Invalidate the link
+			continue;
+		}
+
+		if(pCharacter->IsHuman() && (pCharacter->GetCID() != GetOwner()))
+		{
+			// The character became a human (e.g. revived)
+			m_DischargedLinks[i].ClientID = -1; // Invalidate the link
+			continue;
+		}
+
+		vec2 NewPos = pCharacter->GetPos();
+		float Distance = distance(NewPos, GetPos());
+
+		if(Distance > MaxLength)
+		{
+			m_DischargedLinks[i].ClientID = -1; // Invalidate the link
+			continue;
+		}
+
+		m_DischargedLinks[i].Endpoint = NewPos;
 	}
 }
 

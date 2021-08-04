@@ -41,7 +41,8 @@ protected:
 	void PrepareActiveLinksSnapItems();
 	void PrepareDischargedLinksSnapItems();
 
-	void UpdateLinks();
+	void UpdateActiveLinks();
+	void UpdateDischargedLinks();
 	void DoDischarge();
 
 	int GetStartTickForDistance(float Progress);
