@@ -949,6 +949,10 @@ void CInfClassCharacter::OnGrenadeFired(WeaponFireContext *pFireContext)
 			GameServer()->CreateSound(PortalPos, SOUND_CTF_RETURN);
 			new CLaserTeleport(GameServer(), PortalPos, OldPos);
 		}
+		else
+		{
+			pFireContext->FireAccepted = false;
+		}
 	}
 	else
 	{
