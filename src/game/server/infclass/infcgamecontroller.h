@@ -87,6 +87,7 @@ public:
 	IConsole *Console();
 	CInfClassPlayer *GetPlayer(int ClientID) const;
 	CInfClassCharacter *GetCharacter(int ClientID) const;
+	int GetPlayerOwnCursorID(int ClientID) const;
 
 	void GetSortedTargetsInRange(const vec2 &Center, const float Radius, const ClientsArray &SkipList, ClientsArray *pOutput);
 
@@ -108,6 +109,8 @@ private:
 	int m_MapHeight;
 	int* m_GrowingMap;
 	bool m_ExplosionStarted;
+
+	int m_PlayerOwnCursorID = -1;
 	
 	bool m_InfectedStarted;
 	bool m_RoundStarted = false;

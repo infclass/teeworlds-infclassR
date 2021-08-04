@@ -689,6 +689,11 @@ CInfClassCharacter *CInfClassGameController::GetCharacter(int ClientID) const
 	return static_cast<CInfClassCharacter*>(GameServer()->GetPlayerChar(ClientID));
 }
 
+int CInfClassGameController::GetPlayerOwnCursorID(int ClientID) const
+{
+	return m_PlayerOwnCursorID;
+}
+
 void CInfClassGameController::GetSortedTargetsInRange(const vec2 &Center, const float Radius, const ClientsArray &SkipList, ClientsArray *pOutput)
 {
 	struct DistanceItem
@@ -739,10 +744,12 @@ void CInfClassGameController::GetSortedTargetsInRange(const vec2 &Center, const 
 
 void CInfClassGameController::ReservePlayerOwnSnapItems()
 {
+	m_PlayerOwnCursorID = Server()->SnapNewID();
 }
 
 void CInfClassGameController::FreePlayerOwnSnapItems()
 {
+	Server()->SnapFreeID(m_PlayerOwnCursorID);
 }
 
 void CInfClassGameController::MaybeSuggestMoreRounds()
