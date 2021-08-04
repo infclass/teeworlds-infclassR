@@ -696,14 +696,19 @@ void CInfClassCharacter::OnHammerFired(WeaponFireContext *pFireContext)
 								pTarget->m_Core.m_Vel += vec2(0.f, -1.f) + normalize(Dir + vec2(0.f, -1.1f)) * 10.0f;
 						}
 					}
-					else if(GetPlayerClass() == PLAYERCLASS_BAT) {
-						pTarget->TakeDamage(vec2(0.f, -1.f) + normalize(Dir + vec2(0.f, -1.1f)) * 10.0f, g_Config.m_InfBatDamage,
-							m_pPlayer->GetCID(), m_ActiveWeapon, TAKEDAMAGEMODE_NOINFECTION);
-					}
-					else if(GameServer()->m_pController->IsInfectionStarted())
+					else
 					{
-						pTarget->TakeDamage(vec2(0.f, -1.f) + normalize(Dir + vec2(0.f, -1.1f)) * 10.0f, g_pData->m_Weapons.m_Hammer.m_pBase->m_Damage,
-							m_pPlayer->GetCID(), m_ActiveWeapon, TAKEDAMAGEMODE_INFECTION);
+						int Damage = g_pData->m_Weapons.m_Hammer.m_pBase->m_Damage;
+						TAKEDAMAGEMODE DamageMode = TAKEDAMAGEMODE_INFECTION;
+
+						if(GetPlayerClass() == PLAYERCLASS_BAT)
+						{
+							Damage = g_Config.m_InfBatDamage;
+							DamageMode = TAKEDAMAGEMODE_NOINFECTION;
+						}
+
+						pTarget->TakeDamage(vec2(0.f, -1.f) + normalize(Dir + vec2(0.f, -1.1f)) * 10.0f, Damage,
+							GetCID(), m_ActiveWeapon, DamageMode);
 					}
 				}
 				else if(GetPlayerClass() == PLAYERCLASS_BIOLOGIST || GetPlayerClass() == PLAYERCLASS_MERCENARY)
