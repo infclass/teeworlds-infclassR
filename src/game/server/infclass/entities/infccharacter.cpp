@@ -1083,6 +1083,14 @@ void CInfClassCharacter::OnHammerFired(WeaponFireContext *pFireContext)
 					}
 					else
 					{
+						if(pTarget->GetPlayerClass() == PLAYERCLASS_NINJA)
+						{
+							// Do not hit slashing ninjas
+							if(pTarget->m_DartLifeSpan >= 0)
+							{
+								continue;
+							}
+						}
 						int Damage = g_pData->m_Weapons.m_Hammer.m_pBase->m_Damage;
 						TAKEDAMAGEMODE DamageMode = TAKEDAMAGEMODE_INFECTION;
 
