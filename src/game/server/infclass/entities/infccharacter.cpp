@@ -1273,7 +1273,8 @@ void CInfClassCharacter::HandleMapMenu()
 			{
 				int MenuClass = m_pPlayer->m_MapMenuItem;
 				int NewClass = CInfClassGameController::MenuClassToPlayerClass(MenuClass);
-				if(GameController()->IsChoosableClass(NewClass))
+				CLASS_AVAILABILITY Availability = GameController()->GetPlayerClassAvailability(NewClass);
+				if(Availability == CLASS_AVAILABILITY::AVAILABLE)
 				{
 					const char *pClassName = CInfClassGameController::GetClassDisplayName(NewClass);
 					GameServer()->SendBroadcast_Localization(m_pPlayer->GetCID(),
@@ -1308,7 +1309,7 @@ void CInfClassCharacter::HandleMapMenu()
 				return;
 			}
 
-			if(GameController()->IsChoosableClass(NewClass))
+			if(GameController()->GetPlayerClassAvailability(NewClass) == CLASS_AVAILABILITY::AVAILABLE)
 			{
 				SetAntiFire();
 				m_pPlayer->m_MapMenuItem = 0;

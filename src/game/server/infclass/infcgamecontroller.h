@@ -15,6 +15,14 @@ struct CNetObj_GameInfo;
 
 using ClientsArray = array_on_stack<int, 64>; // MAX_CLIENTS
 
+enum class CLASS_AVAILABILITY
+{
+	AVAILABLE,
+	DISABLED,
+	NEED_MORE_PLAYERS,
+	LIMIT_EXCEEDED,
+};
+
 class CInfClassGameController : public IGameController
 {
 public:
@@ -44,7 +52,7 @@ public:
 	int ChooseHumanClass(const CPlayer *pPlayer) const;
 	int ChooseInfectedClass(const CPlayer *pPlayer) const override;
 	bool IsEnabledClass(int PlayerClass);
-	bool IsChoosableClass(int PlayerClass);
+	CLASS_AVAILABILITY GetPlayerClassAvailability(int PlayerClass);
 	bool CanVote() override;
 	void OnClientDrop(int ClientID, int Type) override;
 	void OnPlayerInfected(CPlayer* pPlayer, CPlayer* pInfectiousPlayer) override;

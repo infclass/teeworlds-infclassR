@@ -1724,15 +1724,15 @@ bool CInfClassGameController::IsEnabledClass(int PlayerClass) {
 	}
 }
 
-bool CInfClassGameController::IsChoosableClass(int PlayerClass)
+CLASS_AVAILABILITY CInfClassGameController::GetPlayerClassAvailability(int PlayerClass)
 {
 	if (!IsEnabledClass(PlayerClass))
-		return false;
+		return CLASS_AVAILABILITY::DISABLED;
 
 	int ActivePlayerCount = Server()->GetActivePlayerCount();
 	int MinPlayersForClass = Server()->GetMinPlayersForClass(PlayerClass);
 	if (ActivePlayerCount < MinPlayersForClass)
-		return false;
+		return CLASS_AVAILABILITY::NEED_MORE_PLAYERS;
 
 	int nbSupport = 0;
 	int nbDefender = 0;
@@ -1754,15 +1754,15 @@ bool CInfClassGameController::IsChoosableClass(int PlayerClass)
 	}
 	
 	if (IsDefenderClass(PlayerClass) && (nbDefender >= g_Config.m_InfDefenderLimit))
-		return false;
+		return CLASS_AVAILABILITY::LIMIT_EXCEEDED;
 
 	if (IsSupportClass(PlayerClass) && (nbSupport >= g_Config.m_InfSupportLimit))
-		return false;
+		return CLASS_AVAILABILITY::LIMIT_EXCEEDED;
 
 	if (nbClass[PlayerClass] >= Server()->GetClassPlayerLimit(PlayerClass))
-		return false;
+		return CLASS_AVAILABILITY::LIMIT_EXCEEDED;
 	
-	return true;
+	return CLASS_AVAILABILITY::AVAILABLE;
 }
 
 bool CInfClassGameController::CanVote()
