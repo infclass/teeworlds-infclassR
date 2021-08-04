@@ -3607,17 +3607,20 @@ bool CGameContext::ConHelp(IConsole::IResult *pResult, void *pUserData)
 			Buffer.append("~~ ");
 			pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("Hero"), NULL); 
 			Buffer.append(" ~~\n\n");
-			pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("The Hero has a shotgun, a laser rifle and grenades."), NULL); 
+			pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("The Hero has a shotgun, a laser rifle, and a grenade launcher."), NULL);
 			Buffer.append("\n\n");
-			pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("The Hero must find a flag only visible to them hidden in the map."), NULL);
-			Buffer.append("\n");
-			pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("The flag gifts 1 health point, 4 armor points, and full ammo to all humans, furthermore full health and armor to the hero."), NULL);
-			Buffer.append("\n\n");
+			pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("The Hero has to find a flag only visible to them. Stand still to be pointed towards it."), NULL);
+			Buffer.append(" ");
+			static const int NumArmorGift = 4;
+			pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("The flag gifts a health point, {int:NumArmorGift} armor and full ammo to all humans."),
+				"NumArmorGift", &NumArmorGift,
+				NULL);
+			Buffer.append(" ");
+			pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("It fully heals the Hero and it can grant a turret which you can place down with the hammer."), NULL);
+			Buffer.append(" ");
 			pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("The gift to all humans is only applied when the flag is surrounded by hearts and armor."), NULL);
 			Buffer.append("\n\n");
-			pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("Cannot find a flag? Stand still for some seconds, laser will show you the way."), NULL);
-			Buffer.append("\n\n");
-			pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("The hero cannot be healed by a medic, but can withstand a thrust by an infected."), NULL);
+			pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("The Hero cannot be healed by a Medic, but it can withstand a hit from an infected."), NULL);
 			
 			pSelf->SendMOTD(ClientID, Buffer.buffer());
 		}
