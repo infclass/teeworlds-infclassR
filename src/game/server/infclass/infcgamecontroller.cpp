@@ -48,10 +48,14 @@ CInfClassGameController::CInfClassGameController(class CGameContext *pGameServer
 			}
 		}
 	}
+
+	ReservePlayerOwnSnapItems();
 }
 
 CInfClassGameController::~CInfClassGameController()
 {
+	FreePlayerOwnSnapItems();
+
 	if(m_GrowingMap) delete[] m_GrowingMap;
 }
 
@@ -731,6 +735,14 @@ void CInfClassGameController::GetSortedTargetsInRange(const vec2 &Center, const 
 	{
 		pOutput->Add(DistanceItem.ClientID);
 	}
+}
+
+void CInfClassGameController::ReservePlayerOwnSnapItems()
+{
+}
+
+void CInfClassGameController::FreePlayerOwnSnapItems()
+{
 }
 
 void CInfClassGameController::MaybeSuggestMoreRounds()
