@@ -1256,39 +1256,70 @@ void CInfClassCharacter::HandleMapMenu()
 	{
 		vec2 CursorPos = vec2(m_Input.m_TargetX, m_Input.m_TargetY);
 
-		bool Broadcast = false;
-
 		if(length(CursorPos) > 100.0f)
 		{
 			float Angle = 2.0f*pi+atan2(CursorPos.x, -CursorPos.y);
 			float AngleStep = 2.0f*pi/static_cast<float>(CMapConverter::NUM_MENUCLASS);
-			m_pPlayer->m_MapMenuItem = ((int)((Angle+AngleStep/2.0f)/AngleStep))%CMapConverter::NUM_MENUCLASS;
-			if(m_pPlayer->m_MapMenuItem == CMapConverter::MENUCLASS_RANDOM)
+			int HoveredMenuItem = ((int)((Angle+AngleStep/2.0f)/AngleStep))%CMapConverter::NUM_MENUCLASS;
+			if(HoveredMenuItem == CMapConverter::MENUCLASS_RANDOM)
 			{
 				GameServer()->SendBroadcast_Localization(m_pPlayer->GetCID(),
 					BROADCAST_PRIORITY_INTERFACE, BROADCAST_DURATION_REALTIME, _("Random choice"), NULL);
-				Broadcast = true;
+				m_pPlayer->m_MapMenuItem = HoveredMenuItem;
 			}
 			else
 			{
-				int MenuClass = m_pPlayer->m_MapMenuItem;
-				int NewClass = CInfClassGameController::MenuClassToPlayerClass(MenuClass);
+				int NewClass = CInfClassGameController::MenuClassToPlayerClass(HoveredMenuItem);
 				CLASS_AVAILABILITY Availability = GameController()->GetPlayerClassAvailability(NewClass);
+				switch(Availability)
+				{
+					case CLASS_AVAILABILITY::AVAILABLE:
+					{
+						const char *pClassName = CInfClassGameController::GetClassDisplayName(NewClass);
+						GameServer()->SendBroadcast_Localization(m_pPlayer->GetCID(),
+							BROADCAST_PRIORITY_INTERFACE, BROADCAST_DURATION_REALTIME,
+							pClassName, NULL);
+					}
+						break;
+					case CLASS_AVAILABILITY::DISABLED:
+						GameServer()->SendBroadcast_Localization(m_pPlayer->GetCID(),
+							BROADCAST_PRIORITY_INTERFACE, BROADCAST_DURATION_REALTIME,
+							_("The class is disabled"), NULL);
+						break;
+					case CLASS_AVAILABILITY::NEED_MORE_PLAYERS:
+					{
+						int MinPlayers = Server()->GetMinPlayersForClass(NewClass);
+						GameServer()->SendBroadcast_Localization(m_pPlayer->GetCID(),
+							BROADCAST_PRIORITY_INTERFACE, BROADCAST_DURATION_REALTIME,
+							_P("Need at least {int:MinPlayers} player",
+							   "Need at least {int:MinPlayers} players"),
+							"MinPlayers", &MinPlayers,
+							NULL);
+					}
+						break;
+					case CLASS_AVAILABILITY::LIMIT_EXCEEDED:
+						GameServer()->SendBroadcast_Localization(m_pPlayer->GetCID(),
+							BROADCAST_PRIORITY_INTERFACE, BROADCAST_DURATION_REALTIME,
+							_("The class limit exceeded"), NULL);
+						break;
+				}
+
 				if(Availability == CLASS_AVAILABILITY::AVAILABLE)
 				{
-					const char *pClassName = CInfClassGameController::GetClassDisplayName(NewClass);
-					GameServer()->SendBroadcast_Localization(m_pPlayer->GetCID(),
-						BROADCAST_PRIORITY_INTERFACE, BROADCAST_DURATION_REALTIME, pClassName, NULL);
-					Broadcast = true;
+					m_pPlayer->m_MapMenuItem = HoveredMenuItem;
+				}
+				else
+				{
+					m_pPlayer->m_MapMenuItem = -1;
 				}
 			}
 		}
-
-		if(!Broadcast)
+		else
 		{
 			m_pPlayer->m_MapMenuItem = -1;
 			GameServer()->SendBroadcast_Localization(m_pPlayer->GetCID(),
-				BROADCAST_PRIORITY_INTERFACE, BROADCAST_DURATION_REALTIME, _("Choose your class"), NULL);
+				BROADCAST_PRIORITY_INTERFACE, BROADCAST_DURATION_REALTIME,
+				_("Choose your class"), NULL);
 
 			return;
 		}
