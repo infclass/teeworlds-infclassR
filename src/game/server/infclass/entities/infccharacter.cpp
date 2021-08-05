@@ -125,6 +125,12 @@ void CInfClassCharacter::OnCharacterOutOfInfectionZone()
 	m_InfZoneTick = -1;// Reset Tick when zombie is not in infection zone
 }
 
+void CInfClassCharacter::OnWhiteHoleSpawned(const CWhiteHole *pWhiteHole)
+{
+	GetPlayer()->ResetNumberKills();
+	m_ResetKillsTime = pWhiteHole->LifeSpan() + Server()->TickSpeed() * 3;
+}
+
 void CInfClassCharacter::Destroy()
 {
 	if(m_pClass)
@@ -1732,6 +1738,9 @@ float CInfClassCharacter::WebHookLength() const
 
 void CInfClassCharacter::CheckSuperWeaponAccess()
 {
+	if(m_ResetKillsTime)
+		return;
+
 	// check kills of player
 	int kills = m_pPlayer->GetNumberKills();
 

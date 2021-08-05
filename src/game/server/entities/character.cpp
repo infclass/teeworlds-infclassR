@@ -1070,17 +1070,6 @@ void CCharacter::Tick()
 				break;
 			}
 		}
-		
-		//Reset superweapon kill counter, two seconds after whiteHole explosion
-		if (pCurrentWhiteHole && 1+pCurrentWhiteHole->LifeSpan()/Server()->TickSpeed() == 1)
-			m_ResetKillsTime = Server()->TickSpeed()*3;
-
-		if (m_ResetKillsTime)
-		{
-			m_ResetKillsTime--;
-			if(!m_ResetKillsTime)
-				GetPlayer()->ResetNumberKills();
-		}
 
 		if(m_BroadcastWhiteHoleReady+(2*Server()->TickSpeed()) > Server()->Tick())
 		{
@@ -1322,6 +1311,13 @@ void CCharacter::Tick()
 		}
 	}
 /* INFECTION MODIFICATION END *****************************************/
+
+	if (m_ResetKillsTime)
+	{
+		m_ResetKillsTime--;
+		if(!m_ResetKillsTime)
+			GetPlayer()->ResetNumberKills();
+	}
 
 	// Previnput
 	m_PrevInput = m_Input;
