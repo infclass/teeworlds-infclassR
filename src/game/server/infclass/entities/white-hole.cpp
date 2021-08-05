@@ -1,9 +1,10 @@
 /* (c) Magnus Auvinen. See licence.txt in the root of the distribution for more information. */
 /* If you are missing that file, acquire a complete release at teeworlds.com.				*/
+#include "white-hole.h"
+
 #include <game/server/gamecontext.h>
 #include <engine/shared/config.h>
 
-#include "white-hole.h"
 #include "growingexplosion.h"
 
 CWhiteHole::CWhiteHole(CGameContext *pGameContext, vec2 CenterPos, int Owner)

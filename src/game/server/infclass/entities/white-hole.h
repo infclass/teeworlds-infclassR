@@ -20,7 +20,7 @@ public:
 	virtual void TickPaused();
 	virtual void Tick();
 
-	int GetTick() { return m_LifeSpan; }
+	int LifeSpan() const { return m_LifeSpan; }
 	
 private:
 	// physics
