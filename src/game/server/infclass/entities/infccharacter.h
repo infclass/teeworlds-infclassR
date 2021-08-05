@@ -128,6 +128,8 @@ public:
 
 	void ResetMovementsInput();
 
+	void GiveNinjaBuf();
+
 	bool hasPortalIn() const { return m_pPortalIn; }
 	bool hasPortalOut() const { return m_pPortalOut; }
 

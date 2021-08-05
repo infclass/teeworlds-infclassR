@@ -1428,28 +1428,6 @@ int CCharacter::GetPlayerClass() const
 		return m_pPlayer->GetClass();
 }
 
-void CCharacter::GiveNinjaBuf()
-{
-	if(GetPlayerClass() != PLAYERCLASS_NINJA)
-		return;
-	
-	switch(random_int(0, 2))
-	{
-		case 0: //Velocity Buff
-			m_NinjaVelocityBuff++;
-			GameServer()->SendChatTarget_Localization(m_pPlayer->GetCID(), CHATCATEGORY_SCORE, _("Sword velocity increased"), NULL);
-			break;
-		case 1: //Strength Buff
-			m_NinjaStrengthBuff++;
-			GameServer()->SendChatTarget_Localization(m_pPlayer->GetCID(), CHATCATEGORY_SCORE, _("Sword strength increased"), NULL);
-			break;
-		case 2: //Ammo Buff
-			m_NinjaAmmoBuff++;
-			GameServer()->SendChatTarget_Localization(m_pPlayer->GetCID(), CHATCATEGORY_SCORE, _("Grenade limit increased"), NULL);
-			break;
-	}
-}
-
 void CCharacter::ClassSpawnAttributes()
 {
 	m_Health = 10;

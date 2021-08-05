@@ -98,8 +98,6 @@ public:
 
 	bool IsAlive() const { return m_Alive; }
 	class CPlayer *GetPlayer() { return m_pPlayer; }
-	
-	void GiveNinjaBuf();
 
 protected:
 	// player controlling this character
