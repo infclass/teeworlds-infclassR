@@ -111,6 +111,12 @@ public:
 
 	void ResetMovementsInput();
 
+	bool hasPortalIn() const { return m_pPortalIn; }
+	bool hasPortalOut() const { return m_pPortalOut; }
+
+	CHeroFlag *GetHeroFlag() { return m_pHeroFlag; }
+	int GetFlagCoolDown();
+
 protected:
 	void PreCoreTick() override;
 	void PostCoreTick() override;

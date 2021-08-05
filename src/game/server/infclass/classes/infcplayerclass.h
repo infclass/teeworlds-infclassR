@@ -77,6 +77,7 @@ protected:
 	virtual void GiveClassAttributes();
 	virtual void DestroyChildEntities();
 	virtual void SetupSkin(CTeeInfo *output);
+	virtual void BroadcastWeaponState();
 
 	CInfClassPlayer *m_pPlayer = nullptr;
 	CInfClassCharacter *m_pCharacter = nullptr;

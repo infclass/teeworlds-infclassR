@@ -3,7 +3,14 @@
 #include <engine/shared/config.h>
 #include <game/server/classes.h>
 #include <game/server/gamecontext.h>
+#include <game/server/infclass/entities/biologist-mine.h>
+#include <game/server/infclass/entities/engineer-wall.h>
 #include <game/server/infclass/entities/infccharacter.h>
+#include <game/server/infclass/entities/looper-wall.h>
+#include <game/server/infclass/entities/merc-bomb.h>
+#include <game/server/infclass/entities/scientist-mine.h>
+#include <game/server/infclass/entities/soldier-bomb.h>
+#include <game/server/infclass/entities/white-hole.h>
 #include <game/server/infclass/infcgamecontroller.h>
 #include <game/server/infclass/infcplayer.h>
 #include <game/server/teeinfo.h>
@@ -240,6 +247,337 @@ bool CInfClassHuman::SetupSkin(int PlayerClass, CTeeInfo *output)
 void CInfClassHuman::SetupSkin(CTeeInfo *output)
 {
 	SetupSkin(GetPlayerClass(), output);
+}
+
+void CInfClassHuman::BroadcastWeaponState()
+{
+	if(GetPlayerClass() == PLAYERCLASS_ENGINEER)
+	{
+		CEngineerWall* pCurrentWall = NULL;
+		for(CEngineerWall *pWall = (CEngineerWall*) GameWorld()->FindFirst(CGameWorld::ENTTYPE_ENGINEER_WALL); pWall; pWall = (CEngineerWall*) pWall->TypeNext())
+		{
+			if(pWall->GetOwner() == m_pPlayer->GetCID())
+			{
+				pCurrentWall = pWall;
+				break;
+			}
+		}
+
+		if(pCurrentWall)
+		{
+			int Seconds = 1+pCurrentWall->GetTick()/Server()->TickSpeed();
+			GameServer()->SendBroadcast_Localization(GetPlayer()->GetCID(),
+				BROADCAST_PRIORITY_WEAPONSTATE, BROADCAST_DURATION_REALTIME,
+				_("Laser wall: {sec:RemainingTime}"),
+				"RemainingTime", &Seconds,
+				NULL
+			);
+		}
+	}
+	else if(GetPlayerClass() == PLAYERCLASS_MEDIC)
+	{
+		if(m_pCharacter->GetActiveWeapon() == WEAPON_LASER)
+		{
+			const int MIN_ZOMBIES = 4;
+			const int DAMAGE_ON_REVIVE = 17;
+
+			if(m_pCharacter->GetHealthArmorSum() <= DAMAGE_ON_REVIVE)
+			{
+				int MinHp = DAMAGE_ON_REVIVE + 1;
+				GameServer()->SendBroadcast_Localization(GetPlayer()->GetCID(),
+					BROADCAST_PRIORITY_WEAPONSTATE, BROADCAST_DURATION_REALTIME,
+					_("You need at least {int:MinHp} HP to revive a zombie"),
+					"MinHp", &MinHp,
+					NULL
+				);
+			}
+			else if (GameServer()->GetZombieCount() <= MIN_ZOMBIES)
+			{
+				int MinZombies = MIN_ZOMBIES+1;
+				GameServer()->SendBroadcast_Localization(GetPlayer()->GetCID(),
+					BROADCAST_PRIORITY_WEAPONSTATE, BROADCAST_DURATION_REALTIME,
+					_("Too few zombies to revive anyone (less than {int:MinZombies})"),
+					"MinZombies", &MinZombies,
+					NULL
+				);
+			}
+		}
+	}
+	else if(GetPlayerClass() == PLAYERCLASS_LOOPER)
+	{
+		//Potential variable name conflict with engineerwall with pCurrentWall
+		CLooperWall* pCurrentWall = NULL;
+		for(CLooperWall *pWall = (CLooperWall*) GameWorld()->FindFirst(CGameWorld::ENTTYPE_LOOPER_WALL); pWall; pWall = (CLooperWall*) pWall->TypeNext())
+		{
+			if(pWall->GetOwner() == m_pPlayer->GetCID())
+			{
+				pCurrentWall = pWall;
+				break;
+			}
+		}
+
+		if(pCurrentWall)
+		{
+			int Seconds = 1+pCurrentWall->GetTick()/Server()->TickSpeed();
+			GameServer()->SendBroadcast_Localization(GetPlayer()->GetCID(),
+				BROADCAST_PRIORITY_WEAPONSTATE, BROADCAST_DURATION_REALTIME,
+				_("Looper laser wall: {sec:RemainingTime}"),
+				"RemainingTime", &Seconds,
+				NULL
+			);
+		}
+	}
+	else if(GetPlayerClass() == PLAYERCLASS_SOLDIER)
+	{
+		int NumBombs = 0;
+		for(CSoldierBomb *pBomb = (CSoldierBomb*) GameWorld()->FindFirst(CGameWorld::ENTTYPE_SOLDIER_BOMB); pBomb; pBomb = (CSoldierBomb*) pBomb->TypeNext())
+		{
+			if(pBomb->GetOwner() == m_pPlayer->GetCID())
+				NumBombs += pBomb->GetNbBombs();
+		}
+
+		if(NumBombs)
+		{
+			GameServer()->SendBroadcast_Localization_P(GetPlayer()->GetCID(),
+				BROADCAST_PRIORITY_WEAPONSTATE, BROADCAST_DURATION_REALTIME,
+				NumBombs,
+				_P("One bomb left", "{int:NumBombs} bombs left"),
+				"NumBombs", &NumBombs,
+				NULL
+			);
+		}
+	}
+	else if(GetPlayerClass() == PLAYERCLASS_SCIENTIST)
+	{
+		int NumMines = 0;
+		for(CScientistMine *pMine = (CScientistMine*) GameWorld()->FindFirst(CGameWorld::ENTTYPE_SCIENTIST_MINE); pMine; pMine = (CScientistMine*) pMine->TypeNext())
+		{
+			if(pMine->GetOwner() == m_pPlayer->GetCID())
+				NumMines++;
+		}
+
+		CWhiteHole* pCurrentWhiteHole = NULL;
+		for(CWhiteHole *pWhiteHole = (CWhiteHole*) GameWorld()->FindFirst(CGameWorld::ENTTYPE_WHITE_HOLE); pWhiteHole; pWhiteHole = (CWhiteHole*) pWhiteHole->TypeNext())
+		{
+			if(pWhiteHole->GetOwner() == m_pPlayer->GetCID())
+			{
+				pCurrentWhiteHole = pWhiteHole;
+				break;
+			}
+		}
+
+		if(m_pCharacter->m_BroadcastWhiteHoleReady+(2*Server()->TickSpeed()) > Server()->Tick())
+		{
+			GameServer()->SendBroadcast_Localization(GetPlayer()->GetCID(),
+				BROADCAST_PRIORITY_WEAPONSTATE, BROADCAST_DURATION_REALTIME,
+				_("WhiteHole ready !"),
+				NULL
+			);
+		}
+		else if(NumMines > 0 && !pCurrentWhiteHole)
+		{
+			GameServer()->SendBroadcast_Localization_P(GetPlayer()->GetCID(),
+				BROADCAST_PRIORITY_WEAPONSTATE, BROADCAST_DURATION_REALTIME, NumMines,
+				_P("One mine is active", "{int:NumMines} mines are active"),
+				"NumMines", &NumMines,
+				NULL
+			);
+		}
+		else if(NumMines <= 0 && pCurrentWhiteHole)
+		{
+			int Seconds = 1+pCurrentWhiteHole->LifeSpan()/Server()->TickSpeed();
+			GameServer()->SendBroadcast_Localization(GetPlayer()->GetCID(),
+				BROADCAST_PRIORITY_WEAPONSTATE, BROADCAST_DURATION_REALTIME,
+				_("White hole: {sec:RemainingTime}"),
+				"RemainingTime", &Seconds,
+				NULL
+			);
+		}
+		else if(NumMines > 0 && pCurrentWhiteHole)
+		{
+			int Seconds = 1+pCurrentWhiteHole->LifeSpan()/Server()->TickSpeed();
+			GameServer()->SendBroadcast_Localization(GetPlayer()->GetCID(),
+				BROADCAST_PRIORITY_WEAPONSTATE, BROADCAST_DURATION_REALTIME,
+				_("{int:NumMines} mines are active\nWhite hole: {sec:RemainingTime}"),
+				"NumMines", &NumMines,
+				"RemainingTime", &Seconds,
+				NULL
+			);
+		}
+
+	}
+	else if(GetPlayerClass() == PLAYERCLASS_BIOLOGIST)
+	{
+		int NumMines = 0;
+		for(CBiologistMine *pMine = (CBiologistMine*) GameWorld()->FindFirst(CGameWorld::ENTTYPE_BIOLOGIST_MINE); pMine; pMine = (CBiologistMine*) pMine->TypeNext())
+		{
+			if(pMine->GetOwner() == m_pPlayer->GetCID())
+				NumMines++;
+		}
+
+		if(NumMines > 0)
+		{
+			GameServer()->SendBroadcast_Localization(GetPlayer()->GetCID(),
+				BROADCAST_PRIORITY_WEAPONSTATE, BROADCAST_DURATION_REALTIME,
+				_("Mine activated"),
+				NULL
+			);
+		}
+	}
+	else if(GetPlayerClass() == PLAYERCLASS_NINJA)
+	{
+		int TargetID = GameServer()->GetTargetToKill();
+		int CoolDown = GameServer()->GetTargetToKillCoolDown();
+
+		if(CoolDown > 0)
+		{
+			int Seconds = 1+CoolDown/Server()->TickSpeed();
+			GameServer()->SendBroadcast_Localization(GetPlayer()->GetCID(),
+				BROADCAST_PRIORITY_WEAPONSTATE, BROADCAST_DURATION_REALTIME,
+				_("Next target in {sec:RemainingTime}"),
+				"RemainingTime", &Seconds,
+				NULL
+			);
+		}
+		else if(TargetID >= 0)
+		{
+			GameServer()->SendBroadcast_Localization(GetPlayer()->GetCID(),
+				BROADCAST_PRIORITY_WEAPONSTATE, BROADCAST_DURATION_REALTIME,
+				_("Target to eliminate: {str:PlayerName}"),
+				"PlayerName", Server()->ClientName(TargetID),
+				NULL
+			);
+		}
+	}
+	else if(GetPlayerClass() == PLAYERCLASS_SNIPER)
+	{
+		if(m_pCharacter->m_PositionLocked)
+		{
+			int Seconds = 1+m_pCharacter->m_PositionLockTick/Server()->TickSpeed();
+			GameServer()->SendBroadcast_Localization(GetPlayer()->GetCID(),
+				BROADCAST_PRIORITY_WEAPONSTATE, BROADCAST_DURATION_REALTIME,
+				_("Position lock: {sec:RemainingTime}"),
+				"RemainingTime", &Seconds,
+				NULL
+			);
+		}
+	}
+	else if(GetPlayerClass() == PLAYERCLASS_MERCENARY)
+	{
+		CMercenaryBomb *pCurrentBomb = nullptr;
+		for(CMercenaryBomb *pBomb = (CMercenaryBomb*) GameWorld()->FindFirst(CGameWorld::ENTTYPE_MERCENARY_BOMB); pBomb; pBomb = (CMercenaryBomb*) pBomb->TypeNext())
+		{
+			if(pBomb->GetOwner() == m_pPlayer->GetCID())
+			{
+				pCurrentBomb = pBomb;
+				break;
+			}
+		}
+
+		if(pCurrentBomb)
+		{
+			float BombLevel = pCurrentBomb->m_Damage/static_cast<float>(Config()->m_InfMercBombs);
+
+			if(m_pCharacter->GetActiveWeapon() == WEAPON_LASER)
+			{
+				if(BombLevel < 1.0)
+				{
+					dynamic_string Line1;
+					Server()->Localization()->Format(Line1, GetPlayer()->GetLanguage(),
+						_("Use the laser to upgrade the bomb"), NULL);
+
+					dynamic_string Line2;
+					Server()->Localization()->Format(Line2, GetPlayer()->GetLanguage(),
+						_("Explosive yield: {percent:BombLevel}"), "BombLevel", &BombLevel, NULL);
+
+					Line1.append("\n");
+					Line1.append(Line2);
+
+					GameServer()->AddBroadcast(GetPlayer()->GetCID(), Line1.buffer(),
+						BROADCAST_PRIORITY_WEAPONSTATE, BROADCAST_DURATION_REALTIME);
+				}
+				else
+				{
+					GameServer()->SendBroadcast_Localization(GetPlayer()->GetCID(),
+						BROADCAST_PRIORITY_WEAPONSTATE, BROADCAST_DURATION_REALTIME,
+						_("The bomb is fully upgraded.\n"
+						  "There is nothing to do with the laser."), NULL
+					);
+				}
+			}
+			else
+			{
+				GameServer()->SendBroadcast_Localization(GetPlayer()->GetCID(),
+					BROADCAST_PRIORITY_WEAPONSTATE, BROADCAST_DURATION_REALTIME,
+					_("Explosive yield: {percent:BombLevel}"),
+					"BombLevel", &BombLevel,
+					NULL
+				);
+			}
+		}
+		else
+		{
+			if(m_pCharacter->GetActiveWeapon() == WEAPON_LASER)
+			{
+				GameServer()->SendBroadcast_Localization(GetPlayer()->GetCID(),
+					BROADCAST_PRIORITY_WEAPONSTATE, BROADCAST_DURATION_REALTIME,
+					_("Use the hammer to place a bomb and\n"
+					  "then use the laser to upgrade it"),
+					NULL
+				);
+			}
+		}
+	}
+	else if(GetPlayerClass() == PLAYERCLASS_HERO)
+	{
+		//Search for flag
+		int CoolDown = m_pCharacter->GetFlagCoolDown();
+
+		if(m_pCharacter->GetActiveWeapon() == WEAPON_HAMMER)
+		{
+			int Turrets = m_pCharacter->m_TurretCount;
+			if(Turrets > 0)
+			{
+				int MaxTurrets = Config()->m_InfTurretMaxPerPlayer;
+				if(MaxTurrets == 1)
+				{
+					GameServer()->SendBroadcast_Localization(GetCID(),
+						BROADCAST_PRIORITY_WEAPONSTATE, BROADCAST_DURATION_REALTIME,
+						_("You have a turret. Use the hammer to place it."),
+						nullptr
+					);
+				}
+				else
+				{
+					GameServer()->SendBroadcast_Localization_P(GetCID(),
+						BROADCAST_PRIORITY_WEAPONSTATE, BROADCAST_DURATION_REALTIME, Turrets,
+						_("You have {int:NumTurrets} of {int:MaxTurrets} turrets. Use the hammer to place one."),
+						"NumTurrets", &Turrets,
+						"MaxTurrets", &MaxTurrets,
+						nullptr
+					);
+				}
+			}
+			else
+			{
+				GameServer()->SendBroadcast_Localization(GetPlayer()->GetCID(),
+					BROADCAST_PRIORITY_WEAPONSTATE, BROADCAST_DURATION_REALTIME,
+					_("You don't have a turret to place"),
+					nullptr
+				);
+			}
+		}
+		else if(CoolDown > 0)
+		{
+			int Seconds = 1+CoolDown/Server()->TickSpeed();
+			GameServer()->SendBroadcast_Localization(GetPlayer()->GetCID(),
+				BROADCAST_PRIORITY_WEAPONSTATE, BROADCAST_DURATION_REALTIME,
+				_("Next flag in {sec:RemainingTime}"),
+				"RemainingTime", &Seconds,
+				nullptr
+			);
+		}
+	}
 }
 
 void CInfClassHuman::OnSlimeEffect(int Owner)

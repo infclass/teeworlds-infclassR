@@ -224,6 +224,58 @@ void CInfClassInfected::SetupSkin(CTeeInfo *output)
 	}
 }
 
+void CInfClassInfected::BroadcastWeaponState()
+{
+	if(GetPlayerClass() == PLAYERCLASS_SPIDER)
+	{
+		if(m_pCharacter->m_HookMode > 0)
+		{
+			GameServer()->SendBroadcast_Localization(GetCID(), BROADCAST_PRIORITY_WEAPONSTATE,
+				BROADCAST_DURATION_REALTIME, _("Web mode enabled"), NULL);
+		}
+	}
+	else if(GetPlayerClass() == PLAYERCLASS_GHOUL)
+	{
+		if(m_pPlayer->GetGhoulLevel())
+		{
+			float FodderInStomach = m_pPlayer->GetGhoulPercent();
+			GameServer()->SendBroadcast_Localization(GetCID(), BROADCAST_PRIORITY_WEAPONSTATE,
+				BROADCAST_DURATION_REALTIME,
+				_("Stomach filled by {percent:FodderInStomach}"),
+				"FodderInStomach", &FodderInStomach,
+				NULL
+			);
+		}
+	}
+	else if(GetPlayerClass() == PLAYERCLASS_WITCH)
+	{
+		if (m_pCharacter->hasPortalIn() && m_pCharacter->hasPortalOut())
+		{
+			GameServer()->SendBroadcast_Localization(GetCID(), BROADCAST_PRIORITY_WEAPONSTATE,
+				BROADCAST_DURATION_REALTIME,
+				_("The portals system is active!"),
+				nullptr
+			);
+		}
+		else if (m_pCharacter->hasPortalIn())
+		{
+			GameServer()->SendBroadcast_Localization(GetCID(), BROADCAST_PRIORITY_WEAPONSTATE,
+				BROADCAST_DURATION_REALTIME,
+				_("The IN portal is open"),
+				nullptr
+			);
+		}
+		else if (m_pCharacter->hasPortalOut())
+		{
+			GameServer()->SendBroadcast_Localization(GetCID(), BROADCAST_PRIORITY_WEAPONSTATE,
+				BROADCAST_DURATION_REALTIME,
+				_("The OUT portal is open"),
+				nullptr
+			);
+		}
+	}
+}
+
 void CInfClassInfected::SetHookOnLimit(bool OnLimit)
 {
 	if(m_HookOnTheLimit == OnLimit)

@@ -204,6 +204,8 @@ void CInfClassPlayerClass::OnCharacterTick()
 			m_PoisonTick--;
 		}
 	}
+
+	BroadcastWeaponState();
 }
 
 void CInfClassPlayerClass::OnCharacterSnap(int SnappingClient)
@@ -291,6 +293,10 @@ void CInfClassPlayerClass::SetupSkin(CTeeInfo *output)
 {
 	output->m_UseCustomColor = 0;
 	output->SetSkinName("default");
+}
+
+void CInfClassPlayerClass::BroadcastWeaponState()
+{
 }
 
 void CInfClassPlayerClass::UpdateSkin()
