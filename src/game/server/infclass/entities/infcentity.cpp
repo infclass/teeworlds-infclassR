@@ -15,6 +15,11 @@ CInfClassGameController *CInfCEntity::GameController()
 	return static_cast<CInfClassGameController*>(GameServer()->m_pController);
 }
 
+CInfClassCharacter *CInfCEntity::GetOwnerCharacter()
+{
+	return GameController()->GetCharacter(GetOwner());
+}
+
 void CInfCEntity::Reset()
 {
 	GameServer()->m_World.DestroyEntity(this);

@@ -6,6 +6,7 @@
 #include <game/server/entity.h>
 
 class CGameContext;
+class CInfClassCharacter;
 class CInfClassGameController;
 
 class CInfCEntity : public CEntity
@@ -16,6 +17,7 @@ public:
 
 	CInfClassGameController *GameController();
 	int GetOwner() const { return m_Owner; }
+	CInfClassCharacter *GetOwnerCharacter();
 
 	void Reset() override;
 

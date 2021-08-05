@@ -6,6 +6,7 @@
 #include <engine/shared/config.h>
 
 #include "growingexplosion.h"
+#include "infccharacter.h"
 
 CWhiteHole::CWhiteHole(CGameContext *pGameContext, vec2 CenterPos, int Owner)
 	: CInfCEntity(pGameContext, CGameWorld::ENTTYPE_WHITE_HOLE, CenterPos, Owner)
@@ -27,6 +28,12 @@ CWhiteHole::CWhiteHole(CGameContext *pGameContext, vec2 CenterPos, int Owner)
 	}
 	
 	StartVisualEffect();
+
+	CInfClassCharacter *pOwner = GetOwnerCharacter();
+	if(pOwner)
+	{
+		pOwner->OnWhiteHoleSpawned(this);
+	}
 }
 
 CWhiteHole::~CWhiteHole()

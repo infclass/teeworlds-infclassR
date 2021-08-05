@@ -6,6 +6,7 @@
 class CGameContext;
 class CInfClassGameController;
 class CInfClassPlayerClass;
+class CWhiteHole;
 
 struct WeaponFireContext
 {
@@ -29,6 +30,7 @@ public:
 	void OnCharacterSpawned();
 	void OnCharacterInInfectionZone();
 	void OnCharacterOutOfInfectionZone();
+	void OnWhiteHoleSpawned(const CWhiteHole *pWhiteHole);
 
 	void Destroy() override;
 	void Tick() override;

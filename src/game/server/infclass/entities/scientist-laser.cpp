@@ -92,6 +92,5 @@ void CScientistLaser::DoBounce()
 		//Make it unavailable
 		pOwnerChar->m_HasWhiteHole = false;
 		pOwnerChar->m_HasIndicator = false;
-		pOwnerChar->GetPlayer()->ResetNumberKills();
 	}
 }
