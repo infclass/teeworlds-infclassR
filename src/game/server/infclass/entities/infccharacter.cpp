@@ -425,6 +425,28 @@ void CInfClassCharacter::ResetMovementsInput()
 	m_Input.m_Hook = 0;
 }
 
+void CInfClassCharacter::GiveNinjaBuf()
+{
+	if(GetPlayerClass() != PLAYERCLASS_NINJA)
+		return;
+
+	switch(random_int(0, 2))
+	{
+		case 0: //Velocity Buff
+			m_NinjaVelocityBuff++;
+			GameServer()->SendChatTarget_Localization(m_pPlayer->GetCID(), CHATCATEGORY_SCORE, _("Sword velocity increased"), NULL);
+			break;
+		case 1: //Strength Buff
+			m_NinjaStrengthBuff++;
+			GameServer()->SendChatTarget_Localization(m_pPlayer->GetCID(), CHATCATEGORY_SCORE, _("Sword strength increased"), NULL);
+			break;
+		case 2: //Ammo Buff
+			m_NinjaAmmoBuff++;
+			GameServer()->SendChatTarget_Localization(m_pPlayer->GetCID(), CHATCATEGORY_SCORE, _("Grenade limit increased"), NULL);
+			break;
+	}
+}
+
 int CInfClassCharacter::GetFlagCoolDown()
 {
 	return m_pHeroFlag ? m_pHeroFlag->GetCoolDown() : 0;
