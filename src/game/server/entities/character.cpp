@@ -1465,9 +1465,13 @@ void CCharacter::ClassSpawnAttributes()
 
 void CCharacter::DestroyChildEntities()
 {
+	m_NinjaLevel = 0;
 	m_NinjaVelocityBuff = 0;
 	m_NinjaStrengthBuff = 0;
 	m_NinjaAmmoBuff = 0;
+	m_NinjaAmmoRegenReduction = 0;
+	m_NinjaExtraDarts = 0;
+	m_NinjaExtraFlashRadius = 0;
 	
 	for(CProjectile *pProjectile = (CProjectile*) GameWorld()->FindFirst(CGameWorld::ENTTYPE_PROJECTILE); pProjectile; pProjectile = (CProjectile*) pProjectile->TypeNext())
 	{

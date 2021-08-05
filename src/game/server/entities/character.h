@@ -224,9 +224,13 @@ public:
 	int m_LastFreezer;
 	int m_HookMode;
 	int m_InWater;
+	int m_NinjaLevel = 0;
 	int m_NinjaVelocityBuff;
 	int m_NinjaStrengthBuff;
 	int m_NinjaAmmoBuff;
+	int m_NinjaAmmoRegenReduction = 0;
+	int m_NinjaExtraDarts = 0;
+	int m_NinjaExtraFlashRadius = 0;
 	int m_RefreshTime;
 	//Mercenary
 	int m_TurretCount;

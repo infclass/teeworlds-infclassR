@@ -430,20 +430,54 @@ void CInfClassCharacter::GiveNinjaBuf()
 	if(GetPlayerClass() != PLAYERCLASS_NINJA)
 		return;
 
-	switch(random_int(0, 2))
+	const char *pText = nullptr;
+	bool MaxLevelReached = false;
+
+	switch(m_NinjaLevel)
 	{
-		case 0: //Velocity Buff
-			m_NinjaVelocityBuff++;
-			GameServer()->SendChatTarget_Localization(m_pPlayer->GetCID(), CHATCATEGORY_SCORE, _("Sword velocity increased"), NULL);
+		case 0: // Strength buff
+			m_NinjaStrengthBuff = 1;
+			pText = _("Sword strength increased");
 			break;
-		case 1: //Strength Buff
-			m_NinjaStrengthBuff++;
-			GameServer()->SendChatTarget_Localization(m_pPlayer->GetCID(), CHATCATEGORY_SCORE, _("Sword strength increased"), NULL);
+		case 1: // Velocity buff
+			m_NinjaVelocityBuff = 2;
+			pText = _("Sword velocity increased");
 			break;
-		case 2: //Ammo Buff
-			m_NinjaAmmoBuff++;
-			GameServer()->SendChatTarget_Localization(m_pPlayer->GetCID(), CHATCATEGORY_SCORE, _("Grenade limit increased"), NULL);
+		case 2: // Ammo regen buff
+			m_NinjaAmmoRegenReduction = 4000; // Default interval is 15 sec, reduce to 11 sec
+			m_NinjaAmmoBuff = 2;
+			pText = _("Ammo regeneration accelerated");
 			break;
+		case 3: // Grenade AoE buff
+			m_NinjaExtraFlashRadius = 3; // Default radius is 8 tiles, increase to 11
+			pText = _("Flash grenade radius increased");
+			break;
+		case 4: // Extra slash in the air ()
+			m_NinjaExtraDarts = 1; // 3 darts in total (Config()->m_InfNinjaJump + m_NinjaExtraDarts)
+			pText = _("An extra ninja swing given");
+			MaxLevelReached = true;
+			break;
+		default:
+			return;
+	}
+
+	m_NinjaLevel++;
+	int UserVisibleLevel = m_NinjaLevel + 1;
+
+	dynamic_string Buffer;
+	Buffer.append(CGameContext::GetChatCategoryPrefix(CHATCATEGORY_SCORE));
+	Server()->Localization()->Format_L(Buffer, GetPlayer()->GetLanguage(), _("Level {int:Level}:"),
+		"Level", &UserVisibleLevel,
+		nullptr);
+	Buffer.append(" ");
+	Server()->Localization()->Format_L(Buffer, GetPlayer()->GetLanguage(), pText,
+		nullptr);
+
+	GameServer()->SendChatTarget(GetCID(), Buffer.buffer());
+
+	if(MaxLevelReached)
+	{
+		GameServer()->SendChatTarget_Localization(GetCID(), CHATCATEGORY_SCORE, _("The maximum level reached"));
 	}
 }
 
@@ -1099,7 +1133,7 @@ void CInfClassCharacter::OnGrenadeFired(WeaponFireContext *pFireContext)
 			if(GetPlayerClass() == PLAYERCLASS_NINJA)
 			{
 				pProj->FlashGrenade();
-				pProj->SetFlashRadius(8);
+				pProj->SetFlashRadius(8 + m_NinjaExtraFlashRadius);
 			}
 
 			// pack the Projectile and send it to the client Directly

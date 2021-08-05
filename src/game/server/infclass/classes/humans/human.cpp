@@ -31,6 +31,7 @@ void CInfClassHuman::GetAmmoRegenParams(int Weapon, WeaponRegenParams *pParams)
 	if(InfWID == INFWEAPON_NINJA_GRENADE)
 	{
 		pParams->MaxAmmo = minimum(pParams->MaxAmmo + m_pCharacter->m_NinjaAmmoBuff, 10);
+		pParams->RegenInterval = maximum(pParams->RegenInterval - m_pCharacter->m_NinjaAmmoRegenReduction, 100);
 	}
 
 	if(InfWID == INFWEAPON_MERCENARY_GUN)
@@ -73,7 +74,7 @@ void CInfClassHuman::OnCharacterPreCoreTick()
 		{
 			if(m_pCharacter->IsGrounded() && m_pCharacter->m_DartLifeSpan <= 0)
 			{
-				m_pCharacter->m_DartLeft = Config()->m_InfNinjaJump;
+				m_pCharacter->m_DartLeft = Config()->m_InfNinjaJump + m_pCharacter->m_NinjaExtraDarts;
 			}
 		}
 			break;
