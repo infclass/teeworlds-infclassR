@@ -1072,7 +1072,7 @@ void CCharacter::Tick()
 		}
 		
 		//Reset superweapon kill counter, two seconds after whiteHole explosion
-		if (pCurrentWhiteHole && 1+pCurrentWhiteHole->GetTick()/Server()->TickSpeed() == 1)
+		if (pCurrentWhiteHole && 1+pCurrentWhiteHole->LifeSpan()/Server()->TickSpeed() == 1)
 			m_ResetKillsTime = Server()->TickSpeed()*3;
 
 		if (m_ResetKillsTime)
@@ -1099,7 +1099,7 @@ void CCharacter::Tick()
 		}
 		else if(NumMines <= 0 && pCurrentWhiteHole)
 		{
-			int Seconds = 1+pCurrentWhiteHole->GetTick()/Server()->TickSpeed();
+			int Seconds = 1+pCurrentWhiteHole->LifeSpan()/Server()->TickSpeed();
 			GameServer()->SendBroadcast_Localization(GetPlayer()->GetCID(), BROADCAST_PRIORITY_WEAPONSTATE, BROADCAST_DURATION_REALTIME,
 				_("White hole: {sec:RemainingTime}"),
 				"RemainingTime", &Seconds,
@@ -1108,7 +1108,7 @@ void CCharacter::Tick()
 		}
 		else if(NumMines > 0 && pCurrentWhiteHole)
 		{
-			int Seconds = 1+pCurrentWhiteHole->GetTick()/Server()->TickSpeed();
+			int Seconds = 1+pCurrentWhiteHole->LifeSpan()/Server()->TickSpeed();
 			GameServer()->SendBroadcast_Localization(GetPlayer()->GetCID(), BROADCAST_PRIORITY_WEAPONSTATE, BROADCAST_DURATION_REALTIME,
 				_("{int:NumMines} mines are active\nWhite hole: {sec:RemainingTime}"),
 				"NumMines", &NumMines,
