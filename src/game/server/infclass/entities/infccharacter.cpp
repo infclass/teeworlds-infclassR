@@ -408,6 +408,11 @@ void CInfClassCharacter::ResetMovementsInput()
 	m_Input.m_Hook = 0;
 }
 
+int CInfClassCharacter::GetFlagCoolDown()
+{
+	return m_pHeroFlag ? m_pHeroFlag->GetCoolDown() : 0;
+}
+
 void CInfClassCharacter::OnHammerFired(WeaponFireContext *pFireContext)
 {
 	vec2 Direction = GetDirection();

@@ -32,6 +32,7 @@ public:
 protected:
 	void GiveClassAttributes() override;
 	void SetupSkin(CTeeInfo *output) override;
+	void BroadcastWeaponState() override;
 
 	void SetHookOnLimit(bool OnLimit);
 

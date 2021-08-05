@@ -24,6 +24,7 @@ public:
 protected:
 	void GiveClassAttributes() override;
 	void SetupSkin(CTeeInfo *output) override;
+	void BroadcastWeaponState() override;
 };
 
 #endif // GAME_SERVER_INFCLASS_CLASSES_HUMAN_H
