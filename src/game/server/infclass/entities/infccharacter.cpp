@@ -1392,6 +1392,48 @@ void CInfClassCharacter::HandleMapMenu()
 	}
 }
 
+void CInfClassCharacter::HandleWeaponsRegen()
+{
+	for(int i=WEAPON_GUN; i<=WEAPON_LASER; i++)
+	{
+		if(m_ReloadTimer)
+		{
+			if(i == m_ActiveWeapon)
+			{
+				continue;
+			}
+		}
+
+		int InfWID = GetInfWeaponID(i);
+		int AmmoRegenTime = Server()->GetAmmoRegenTime(InfWID);
+		int MaxAmmo = Server()->GetMaxAmmo(GetInfWeaponID(i));
+
+		if(InfWID == INFWEAPON_NINJA_GRENADE)
+			MaxAmmo = minimum(MaxAmmo + m_NinjaAmmoBuff, 10);
+
+		if(InfWID == INFWEAPON_MERCENARY_GUN)
+		{
+			if(m_InAirTick > Server()->TickSpeed()*4)
+			{
+				AmmoRegenTime = 0;
+			}
+		}
+
+		if(AmmoRegenTime)
+		{
+			if (m_aWeapons[i].m_AmmoRegenStart < 0)
+				m_aWeapons[i].m_AmmoRegenStart = Server()->Tick();
+
+			if ((Server()->Tick() - m_aWeapons[i].m_AmmoRegenStart) >= AmmoRegenTime * Server()->TickSpeed() / 1000)
+			{
+				// Add some ammo
+				m_aWeapons[i].m_Ammo = minimum(m_aWeapons[i].m_Ammo + 1, MaxAmmo);
+				m_aWeapons[i].m_AmmoRegenStart = -1;
+			}
+		}
+	}
+}
+
 void CInfClassCharacter::Die(int Killer, int Weapon)
 {
 /* INFECTION MODIFICATION START ***************************************/
@@ -1948,6 +1990,8 @@ void CInfClassCharacter::PostCoreTick()
 	{
 		HandleMapMenu();
 	}
+
+	HandleWeaponsRegen();
 }
 
 void CInfClassCharacter::UpdateTuningParam()
