@@ -519,45 +519,11 @@ void CCharacter::HandleWeapons()
 	if(m_ReloadTimer)
 	{
 		m_ReloadTimer--;
-	}
-	else
-	{
-		// fire Weapon, if wanted
-		FireWeapon();
+		return;
 	}
 
-/* INFECTION MODIFICATION START ***************************************/
-	if(IsZombie())
-	{
-		if(m_Core.m_HookedPlayer >= 0)
-		{
-			CCharacter *VictimChar = GameServer()->GetPlayerChar(m_Core.m_HookedPlayer);
-			if(VictimChar)
-			{
-				float Rate = 1.0f;
-				int Damage = 1;
-				
-				if(GetPlayerClass() == PLAYERCLASS_SMOKER)
-				{
-					Rate = 0.5f;
-					Damage = g_Config.m_InfSmokerHookDamage;
-				}
-				else if(GetPlayerClass() == PLAYERCLASS_GHOUL)
-				{
-					Rate = 0.33f + 0.66f * (1.0f-m_pPlayer->GetGhoulPercent());
-				}
-				
-				if(m_HookDmgTick + Server()->TickSpeed()*Rate < Server()->Tick())
-				{
-					m_HookDmgTick = Server()->Tick();
-					VictimChar->TakeDamage(vec2(0.0f,0.0f), Damage, m_pPlayer->GetCID(), WEAPON_NINJA, TAKEDAMAGEMODE_NOINFECTION);
-					if((GetPlayerClass() == PLAYERCLASS_SMOKER || GetPlayerClass() == PLAYERCLASS_BAT) && VictimChar->IsHuman())
-						IncreaseOverallHp(2);
-				}
-			}
-		}
-	}
-/* INFECTION MODIFICATION END *****************************************/
+	// fire Weapon, if wanted
+	FireWeapon();
 }
 
 /* INFECTION MODIFICATION START ***************************************/

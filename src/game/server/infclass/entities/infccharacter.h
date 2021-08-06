@@ -61,6 +61,7 @@ public:
 	void OpenClassChooser() override;
 	void HandleMapMenu();
 	void HandleWeaponsRegen();
+	void HandleHookDraining();
 
 	void Die(int Killer, int Weapon) override;
 
