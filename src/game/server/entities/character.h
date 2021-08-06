@@ -37,10 +37,6 @@ enum TAKEDAMAGEMODE
 	TAKEDAMAGEMODE_SELFHARM, // works like NOINFECTION but also harms the owner of the damage with 50%
 };
 
-enum
-{
-	GIFT_HEROFLAG=0,
-};
 /* INFECTION MODIFICATION END *****************************************/
 
 class CCharacter : public CEntity
@@ -265,9 +261,7 @@ public:
 	void SaturateVelocity(vec2 Force, float MaxSpeed);
 	bool HasPassenger() const;
 	CCharacter *GetPassenger();
-	void GiveGift(int GiftType);
 	int GetInfZoneTick();
-	void EnableJump();
 
 /* INFECTION MODIFICATION END *****************************************/
 

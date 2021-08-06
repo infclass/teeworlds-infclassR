@@ -1724,6 +1724,11 @@ bool CInfClassCharacter::CanJump() const
 	return true;
 }
 
+void CInfClassCharacter::EnableJump()
+{
+	m_Core.EnableJump();
+}
+
 bool CInfClassCharacter::IsInvisible() const
 {
 	return m_IsInvisible;
@@ -1984,6 +1989,55 @@ bool CInfClassCharacter::ProcessCharacterOnPortal(CPortal *pPortal, CCharacter *
 bool CInfClassCharacter::CanOpenPortals() const
 {
 	return m_canOpenPortals;
+}
+
+void CInfClassCharacter::GiveGift(int GiftType)
+{
+	IncreaseHealth(1);
+	IncreaseArmor(4);
+
+	switch(GetPlayerClass())
+	{
+		case PLAYERCLASS_ENGINEER:
+			GiveWeapon(WEAPON_LASER, -1);
+			break;
+		case PLAYERCLASS_SOLDIER:
+			GiveWeapon(WEAPON_GRENADE, -1);
+			break;
+		case PLAYERCLASS_SCIENTIST:
+			GiveWeapon(WEAPON_GRENADE, -1);
+			GiveWeapon(WEAPON_LASER, -1);
+			break;
+		case PLAYERCLASS_BIOLOGIST:
+			GiveWeapon(WEAPON_LASER, -1);
+			GiveWeapon(WEAPON_SHOTGUN, -1);
+			break;
+		case PLAYERCLASS_LOOPER:
+			GiveWeapon(WEAPON_LASER, -1);
+			GiveWeapon(WEAPON_GRENADE, -1);
+			break;
+		case PLAYERCLASS_MEDIC:
+			GiveWeapon(WEAPON_SHOTGUN, -1);
+			GiveWeapon(WEAPON_GRENADE, -1);
+			GiveWeapon(WEAPON_LASER, -1);
+			break;
+		case PLAYERCLASS_HERO:
+			GiveWeapon(WEAPON_SHOTGUN, -1);
+			GiveWeapon(WEAPON_GRENADE, -1);
+			GiveWeapon(WEAPON_LASER, -1);
+			break;
+		case PLAYERCLASS_NINJA:
+			GiveWeapon(WEAPON_GRENADE, -1);
+			break;
+		case PLAYERCLASS_SNIPER:
+			GiveWeapon(WEAPON_LASER, -1);
+			break;
+		case PLAYERCLASS_MERCENARY:
+			GiveWeapon(WEAPON_GUN, -1);
+			GiveWeapon(WEAPON_GRENADE, -1);
+			GiveWeapon(WEAPON_LASER, -1);
+			break;
+	}
 }
 
 void CInfClassCharacter::GiveRandomClassSelectionBonus()
