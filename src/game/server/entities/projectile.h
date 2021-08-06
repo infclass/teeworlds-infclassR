@@ -35,11 +35,13 @@ private:
 	
 /* INFECTION MODIFICATION START ***************************************/
 	bool m_IsFlashGrenade;
+	int m_FlashRadius = 0;
 	vec2 m_StartPos;
 	TAKEDAMAGEMODE m_TakeDamageMode;
 	
 public:
 	void FlashGrenade();
+	void SetFlashRadius(int Radius);
 /* INFECTION MODIFICATION END *****************************************/
 };
 

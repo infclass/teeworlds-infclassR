@@ -108,7 +108,7 @@ void CProjectile::Tick()
 			vec2 Dir = normalize(PrevPos - CurPos);
 			if(length(Dir) > 1.1) Dir = normalize(m_StartPos - CurPos);
 			
-			new CGrowingExplosion(GameServer(), CurPos, Dir, m_Owner, 8, GROWINGEXPLOSIONEFFECT_FREEZE_INFECTED);
+			new CGrowingExplosion(GameServer(), CurPos, Dir, m_Owner, m_FlashRadius, GROWINGEXPLOSIONEFFECT_FREEZE_INFECTED);
 		}
 		else if(m_Explosive)
 		{
@@ -171,6 +171,11 @@ void CProjectile::Snap(int SnappingClient)
 void CProjectile::FlashGrenade()
 {
 	m_IsFlashGrenade = true;
+}
+
+void CProjectile::SetFlashRadius(int Radius)
+{
+	m_FlashRadius = Radius;
 }
 
 /* INFECTION MODIFICATION END *****************************************/
