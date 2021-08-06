@@ -14,6 +14,8 @@ public:
 
 	bool IsHuman() const final { return true; }
 
+	void GetAmmoRegenParams(int Weapon, WeaponRegenParams *pParams) override;
+
 	void OnCharacterPreCoreTick() override;
 	void OnCharacterTick() override;
 	void OnCharacterSnap(int SnappingClient) override;

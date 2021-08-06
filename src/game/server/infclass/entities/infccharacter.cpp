@@ -1427,6 +1427,11 @@ void CInfClassCharacter::HandleMapMenu()
 
 void CInfClassCharacter::HandleWeaponsRegen()
 {
+	if(!m_pClass)
+	{
+		return;
+	}
+
 	for(int i=WEAPON_GUN; i<=WEAPON_LASER; i++)
 	{
 		if(m_ReloadTimer)
@@ -1437,30 +1442,18 @@ void CInfClassCharacter::HandleWeaponsRegen()
 			}
 		}
 
-		int InfWID = GetInfWeaponID(i);
-		int AmmoRegenTime = Server()->GetAmmoRegenTime(InfWID);
-		int MaxAmmo = Server()->GetMaxAmmo(GetInfWeaponID(i));
+		WeaponRegenParams Params;
+		m_pClass->GetAmmoRegenParams(i, &Params);
 
-		if(InfWID == INFWEAPON_NINJA_GRENADE)
-			MaxAmmo = minimum(MaxAmmo + m_NinjaAmmoBuff, 10);
-
-		if(InfWID == INFWEAPON_MERCENARY_GUN)
-		{
-			if(m_InAirTick > Server()->TickSpeed()*4)
-			{
-				AmmoRegenTime = 0;
-			}
-		}
-
-		if(AmmoRegenTime)
+		if(Params.RegenInterval)
 		{
 			if (m_aWeapons[i].m_AmmoRegenStart < 0)
 				m_aWeapons[i].m_AmmoRegenStart = Server()->Tick();
 
-			if ((Server()->Tick() - m_aWeapons[i].m_AmmoRegenStart) >= AmmoRegenTime * Server()->TickSpeed() / 1000)
+			if ((Server()->Tick() - m_aWeapons[i].m_AmmoRegenStart) >= Params.RegenInterval * Server()->TickSpeed() / 1000)
 			{
 				// Add some ammo
-				m_aWeapons[i].m_Ammo = minimum(m_aWeapons[i].m_Ammo + 1, MaxAmmo);
+				m_aWeapons[i].m_Ammo = minimum(m_aWeapons[i].m_Ammo + 1, Params.MaxAmmo);
 				m_aWeapons[i].m_AmmoRegenStart = -1;
 			}
 		}

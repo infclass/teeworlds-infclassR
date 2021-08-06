@@ -22,6 +22,26 @@ CInfClassHuman::CInfClassHuman(CInfClassPlayer *pPlayer)
 {
 }
 
+void CInfClassHuman::GetAmmoRegenParams(int Weapon, WeaponRegenParams *pParams)
+{
+	int InfWID = m_pCharacter->GetInfWeaponID(Weapon);
+	pParams->MaxAmmo = Server()->GetMaxAmmo(InfWID);
+	pParams->RegenInterval = Server()->GetAmmoRegenTime(InfWID);
+
+	if(InfWID == INFWEAPON_NINJA_GRENADE)
+	{
+		pParams->MaxAmmo = minimum(pParams->MaxAmmo + m_pCharacter->m_NinjaAmmoBuff, 10);
+	}
+
+	if(InfWID == INFWEAPON_MERCENARY_GUN)
+	{
+		if(m_pCharacter->GetInAirTick() > Server()->TickSpeed()*4)
+		{
+			pParams->RegenInterval = 0;
+		}
+	}
+}
+
 void CInfClassHuman::OnCharacterPreCoreTick()
 {
 	CInfClassPlayerClass::OnCharacterPreCoreTick();
