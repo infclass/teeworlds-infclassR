@@ -8,6 +8,11 @@ class CInfClassGameController;
 class CInfClassPlayerClass;
 class CWhiteHole;
 
+enum
+{
+	GIFT_HEROFLAG=0,
+};
+
 struct WeaponFireContext
 {
 	int Weapon = 0;
@@ -87,6 +92,8 @@ public:
 	bool CanDie() const;
 
 	bool CanJump() const;
+	void EnableJump();
+
 	int GetInAirTick() const { return m_InAirTick; }
 
 	bool IsInvisible() const;
@@ -104,6 +111,7 @@ public:
 	bool ProcessCharacterOnPortal(CPortal *pPortal, CCharacter *pCharacter);
 	bool CanOpenPortals() const;
 
+	void GiveGift(int GiftType);
 	void GiveRandomClassSelectionBonus();
 	void MakeVisible();
 

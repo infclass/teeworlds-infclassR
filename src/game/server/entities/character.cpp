@@ -965,55 +965,6 @@ void CCharacter::Tick()
 	return;
 }
 
-void CCharacter::GiveGift(int GiftType)
-{
-	IncreaseHealth(1);
-	IncreaseArmor(4);
-	
-	switch(GetPlayerClass())
-	{
-		case PLAYERCLASS_ENGINEER:
-			GiveWeapon(WEAPON_LASER, -1);
-			break;
-		case PLAYERCLASS_SOLDIER:
-			GiveWeapon(WEAPON_GRENADE, -1);
-			break;
-		case PLAYERCLASS_SCIENTIST:
-			GiveWeapon(WEAPON_GRENADE, -1);
-			GiveWeapon(WEAPON_LASER, -1);
-			break;
-		case PLAYERCLASS_BIOLOGIST:
-			GiveWeapon(WEAPON_LASER, -1);
-			GiveWeapon(WEAPON_SHOTGUN, -1);
-			break;
-		case PLAYERCLASS_LOOPER:
-			GiveWeapon(WEAPON_LASER, -1);
-			GiveWeapon(WEAPON_GRENADE, -1);
-			break;
-		case PLAYERCLASS_MEDIC:
-			GiveWeapon(WEAPON_SHOTGUN, -1);
-			GiveWeapon(WEAPON_GRENADE, -1);
-			GiveWeapon(WEAPON_LASER, -1);
-			break;
-		case PLAYERCLASS_HERO:
-			GiveWeapon(WEAPON_SHOTGUN, -1);
-			GiveWeapon(WEAPON_GRENADE, -1);
-			GiveWeapon(WEAPON_LASER, -1);
-			break;
-		case PLAYERCLASS_NINJA:
-			GiveWeapon(WEAPON_GRENADE, -1);
-			break;
-		case PLAYERCLASS_SNIPER:
-			GiveWeapon(WEAPON_LASER, -1);
-			break;
-		case PLAYERCLASS_MERCENARY:
-			GiveWeapon(WEAPON_GUN, -1);
-			GiveWeapon(WEAPON_GRENADE, -1);
-			GiveWeapon(WEAPON_LASER, -1);
-			break;
-	}
-}
-
 void CCharacter::TickDefered()
 {
 	// advance the dummy
@@ -1854,11 +1805,6 @@ int CCharacter::GetInfZoneTick() // returns how many ticks long a player is alre
 {
 	if (m_InfZoneTick < 0) return 0;
 	return Server()->Tick()-m_InfZoneTick;
-}
-
-void CCharacter::EnableJump()
-{
-	m_Core.EnableJump();
 }
 
 /* INFECTION MODIFICATION END *****************************************/
