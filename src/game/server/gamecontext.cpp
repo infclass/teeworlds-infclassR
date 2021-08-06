@@ -494,27 +494,7 @@ void CGameContext::SendChatTarget_Localization(int To, int Category, const char*
 		if(m_apPlayers[i])
 		{
 			Buffer.clear();
-			switch(Category)
-			{
-				case CHATCATEGORY_INFECTION:
-					Buffer.append("☣ | ");
-					break;
-				case CHATCATEGORY_SCORE:
-					Buffer.append("★ | ");
-					break;
-				case CHATCATEGORY_PLAYER:
-					Buffer.append("♟ | ");
-					break;
-				case CHATCATEGORY_INFECTED:
-					Buffer.append("⛃ | ");
-					break;
-				case CHATCATEGORY_HUMANS:
-					Buffer.append("⛁ | ");
-					break;
-				case CHATCATEGORY_ACCUSATION:
-					Buffer.append("☹ | ");
-					break;
-			}
+			Buffer.append(GetChatCategoryPrefix(Category));
 			if(To < 0 && i == 0)
 			{
 				// one message for record
@@ -553,27 +533,7 @@ void CGameContext::SendChatTarget_Localization_P(int To, int Category, int Numbe
 		if(m_apPlayers[i])
 		{
 			Buffer.clear();
-			switch(Category)
-			{
-				case CHATCATEGORY_INFECTION:
-					Buffer.append("☣ | ");
-					break;
-				case CHATCATEGORY_SCORE:
-					Buffer.append("★ | ");
-					break;
-				case CHATCATEGORY_PLAYER:
-					Buffer.append("♟ | ");
-					break;
-				case CHATCATEGORY_INFECTED:
-					Buffer.append("⛃ | ");
-					break;
-				case CHATCATEGORY_HUMANS:
-					Buffer.append("⛁ | ");
-					break;
-				case CHATCATEGORY_ACCUSATION:
-					Buffer.append("☹ | ");
-					break;
-			}
+			Buffer.append(GetChatCategoryPrefix(Category));
 			Server()->Localization()->Format_VLP(Buffer, m_apPlayers[i]->GetLanguage(), Number, pText, VarArgs);
 			
 			Msg.m_pMessage = Buffer.buffer();
@@ -668,6 +628,29 @@ void CGameContext::SendBroadcast(int To, const char *pText, int Priority, int Li
 void CGameContext::ClearBroadcast(int To, int Priority)
 {
 	SendBroadcast(To, "", Priority, BROADCAST_DURATION_REALTIME);
+}
+
+const char *CGameContext::GetChatCategoryPrefix(int Category)
+{
+	switch(Category)
+	{
+		case CHATCATEGORY_INFECTION:
+			return "☣ | ";
+		case CHATCATEGORY_SCORE:
+			return "★ | ";
+		case CHATCATEGORY_PLAYER:
+			return "♟ | ";
+		case CHATCATEGORY_INFECTED:
+			return "⛃ | ";
+		case CHATCATEGORY_HUMANS:
+			return "⛁ | ";
+		case CHATCATEGORY_ACCUSATION:
+			return "☹ | ";
+		default:
+			break;
+	}
+
+	return "";
 }
 
 void CGameContext::SendBroadcast_Localization(int To, int Priority, int LifeSpan, const char* pText, ...)
