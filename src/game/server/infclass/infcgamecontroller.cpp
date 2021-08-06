@@ -181,6 +181,12 @@ void CInfClassGameController::HandleCharacterTiles(CCharacter *pChr)
 	{
 		pCharacter->OnCharacterOutOfInfectionZone();
 	}
+
+	int BonusZoneIndex = GetBonusZoneValueAt(pChr->GetPos());
+	if(BonusZoneIndex == ZONE_BONUS_BONUS)
+	{
+		pCharacter->OnCharacterInBonusZoneTick();
+	}
 }
 
 int CInfClassGameController::GetZoneValueAt(int ZoneHandle, const vec2 &Pos) const
@@ -191,6 +197,11 @@ int CInfClassGameController::GetZoneValueAt(int ZoneHandle, const vec2 &Pos) con
 int CInfClassGameController::GetDamageZoneValueAt(const vec2 &Pos) const
 {
 	return GetZoneValueAt(GameServer()->m_ZoneHandle_icDamage, Pos);
+}
+
+int CInfClassGameController::GetBonusZoneValueAt(const vec2 &Pos) const
+{
+	return GetZoneValueAt(GameServer()->m_ZoneHandle_icBonus, Pos);
 }
 
 void CInfClassGameController::ResetFinalExplosion()
