@@ -1426,6 +1426,7 @@ void CInfClassCharacter::OnGrenadeFired(WeaponFireContext *pFireContext)
 			if(GetPlayerClass() == PLAYERCLASS_NINJA)
 			{
 				pProj->FlashGrenade();
+				pProj->SetFlashRadius(8);
 			}
 
 			// pack the Projectile and send it to the client Directly
