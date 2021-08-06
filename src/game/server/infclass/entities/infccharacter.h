@@ -22,6 +22,12 @@ struct WeaponFireContext
 	bool NoAmmo = false;
 };
 
+struct WeaponRegenParams
+{
+	int MaxAmmo = 0;
+	int RegenInterval = 0;
+};
+
 class CInfClassCharacter : public CCharacter
 {
 	MACRO_ALLOC_POOL_ID()

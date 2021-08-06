@@ -14,6 +14,7 @@ class CInfClassPlayer;
 class CTeeInfo;
 class IServer;
 
+struct WeaponRegenParams;
 struct WeaponFireContext;
 
 class CInfClassPlayerClass
@@ -28,6 +29,7 @@ public:
 	bool IsZombie() const;
 
 	virtual int GetDefaultEmote() const;
+	virtual void GetAmmoRegenParams(int Weapon, WeaponRegenParams *pParams);
 
 	virtual bool CanDie() const;
 	virtual float GetGhoulPercent() const;
