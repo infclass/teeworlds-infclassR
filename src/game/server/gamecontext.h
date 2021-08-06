@@ -307,6 +307,7 @@ public:
 	virtual void SendBroadcast_ClassIntro(int To, int Class);
 	virtual void ClearBroadcast(int To, int Priority);
 	
+	static const char *GetChatCategoryPrefix(int Category);
 	virtual void SendChatTarget_Localization(int To, int Category, const char* pText, ...);
 	virtual void SendChatTarget_Localization_P(int To, int Category, int Number, const char* pText, ...);
 	
