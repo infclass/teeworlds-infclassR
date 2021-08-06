@@ -79,6 +79,7 @@ public:
 	bool FireJustPressed() const;
 
 	int GetActiveWeapon() const { return m_ActiveWeapon; }
+	int GetReloadTimer() const { return m_ReloadTimer; }
 
 	vec2 GetHookPos() const;
 	int GetHookedPlayer() const;
