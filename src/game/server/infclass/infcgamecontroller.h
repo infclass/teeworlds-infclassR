@@ -41,6 +41,7 @@ public:
 
 	int GetZoneValueAt(int ZoneHandle, const vec2 &Pos) const;
 	int GetDamageZoneValueAt(const vec2 &Pos) const;
+	int GetBonusZoneValueAt(const vec2 &Pos) const;
 
 	int OnCharacterDeath(class CCharacter *pVictim, class CPlayer *pKiller, int Weapon) override;
 	void OnCharacterSpawn(class CCharacter *pChr) override;

@@ -30,6 +30,7 @@ public:
 	void OnCharacterSpawned();
 	void OnCharacterInInfectionZone();
 	void OnCharacterOutOfInfectionZone();
+	void OnCharacterInBonusZoneTick();
 	void OnWhiteHoleSpawned(const CWhiteHole *pWhiteHole);
 
 	void Destroy() override;

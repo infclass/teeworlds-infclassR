@@ -125,6 +125,23 @@ void CInfClassCharacter::OnCharacterOutOfInfectionZone()
 	m_InfZoneTick = -1;// Reset Tick when zombie is not in infection zone
 }
 
+void CInfClassCharacter::OnCharacterInBonusZoneTick()
+{
+	m_BonusTick++;
+	if(m_BonusTick > Server()->TickSpeed()*60)
+	{
+		m_BonusTick = 0;
+
+		GameServer()->SendChatTarget_Localization(m_pPlayer->GetCID(), CHATCATEGORY_SCORE, _("You have held a bonus area for one minute, +5 points"), NULL);
+		GameServer()->SendEmoticon(m_pPlayer->GetCID(), EMOTICON_MUSIC);
+		SetEmote(EMOTE_HAPPY, Server()->Tick() + Server()->TickSpeed());
+		GiveGift(GIFT_HEROFLAG);
+
+		Server()->RoundStatistics()->OnScoreEvent(m_pPlayer->GetCID(), SCOREEVENT_BONUS, GetPlayerClass(), Server()->ClientName(m_pPlayer->GetCID()), Console());
+		GameServer()->SendScoreSound(m_pPlayer->GetCID());
+	}
+}
+
 void CInfClassCharacter::OnWhiteHoleSpawned(const CWhiteHole *pWhiteHole)
 {
 	GetPlayer()->ResetNumberKills();
