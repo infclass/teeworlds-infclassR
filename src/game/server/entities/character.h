@@ -238,7 +238,6 @@ public:
 	void DestroyChildEntities();
 	void ClassSpawnAttributes();
 	vec2 GetDirection() const;
-	virtual void OpenClassChooser() { }
 	int GetPlayerClass() const;
 
 	bool IsZombie() const;

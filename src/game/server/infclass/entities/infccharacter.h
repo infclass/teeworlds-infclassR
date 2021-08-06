@@ -58,7 +58,7 @@ public:
 	void OnMedicGrenadeFired(WeaponFireContext *pFireContext);
 	void OnBiologistLaserFired(WeaponFireContext *pFireContext);
 
-	void OpenClassChooser() override;
+	void OpenClassChooser();
 	void HandleMapMenu();
 	void HandleWeaponsRegen();
 	void HandleHookDraining();
