@@ -46,8 +46,6 @@ void CInfClassPlayer::TryRespawn()
 	m_pCharacter->Spawn(this, SpawnPos);
 	pCharacter->SetClass(m_pInfcPlayerClass);
 	pCharacter->OnCharacterSpawned();
-	if(GetClass() != PLAYERCLASS_NONE)
-		GameServer()->CreatePlayerSpawn(SpawnPos);
 }
 
 void CInfClassPlayer::Tick()
