@@ -427,16 +427,13 @@ void CPlayer::TryRespawn()
 {
 	vec2 SpawnPos;
 
-/* INFECTION MODIFICATION START ***************************************/
 	if(!GameServer()->m_pController->PreSpawn(this, &SpawnPos))
 		return;
-/* INFECTION MODIFICATION END *****************************************/
 
 	m_Spawning = false;
 	m_pCharacter = new(m_ClientID) CCharacter(&GameServer()->m_World, GameServer()->Console());
 	m_pCharacter->Spawn(this, SpawnPos);
-	if(GetClass() != PLAYERCLASS_NONE)
-		GameServer()->CreatePlayerSpawn(SpawnPos);
+	GameServer()->CreatePlayerSpawn(SpawnPos);
 }
 
 int CPlayer::GetDefaultEmote() const
