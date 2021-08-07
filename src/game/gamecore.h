@@ -5,11 +5,13 @@
 
 #include <base/system.h>
 #include <base/math.h>
+#include <base/vmath.h>
 
 #include <math.h>
-#include "collision.h"
 #include <engine/shared/protocol.h>
 #include <game/generated/protocol.h>
+
+class CCollision;
 
 class CTuneParam
 {

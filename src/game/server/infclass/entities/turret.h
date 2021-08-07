@@ -5,6 +5,8 @@
 
 #include "infcentity.h"
 
+#include <base/tl/array.h>
+
 class CTurret : public CInfCEntity
 {
 public:

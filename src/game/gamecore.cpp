@@ -2,6 +2,8 @@
 /* If you are missing that file, acquire a complete release at teeworlds.com.                */
 #include "gamecore.h"
 
+#include "collision.h"
+
 #include <engine/shared/config.h>
 
 const char *CTuningParams::ms_apNames[] =

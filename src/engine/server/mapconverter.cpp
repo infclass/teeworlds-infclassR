@@ -1,6 +1,7 @@
 #include <engine/server/mapconverter.h>
 
 #include <base/color.h>
+#include <game/collision.h>
 #include <game/layers.h>
 #include <game/server/classes.h>
 #include <game/server/infclass/classes/humans/human.h>
