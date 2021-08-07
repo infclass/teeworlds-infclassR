@@ -1000,10 +1000,11 @@ void CInfClassGameController::Tick()
 						NumInfected++;
 						NumHumans--;
 						
-						GameServer()->SendChatTarget_Localization(-1, CHATCATEGORY_INFECTION, _("{str:VictimName} has been infected"),
+						GameServer()->SendChatTarget_Localization(-1, CHATCATEGORY_INFECTION,
+							_("{str:VictimName} has been infected"),
 							"VictimName", Server()->ClientName(Iter.ClientID()),
-							NULL
-						);
+							NULL);
+
 						FairInfectionFound = true;
 						break;
 					}
@@ -1024,8 +1025,11 @@ void CInfClassGameController::Tick()
 							NumInfected++;
 							NumHumans--;
 							
-							GameServer()->SendChatTarget_Localization(-1, CHATCATEGORY_INFECTION, _("{str:VictimName} has been infected"), "VictimName", Server()->ClientName(Iter.ClientID()), NULL);
-							
+							GameServer()->SendChatTarget_Localization(-1, CHATCATEGORY_INFECTION,
+								_("{str:VictimName} has been infected"),
+								"VictimName", Server()->ClientName(Iter.ClientID()),
+								NULL);
+
 							break;
 						}
 						else
