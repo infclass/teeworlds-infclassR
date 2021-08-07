@@ -1351,17 +1351,11 @@ int CInfClassGameController::OnCharacterDeath(class CCharacter *pAbstractVictim,
 	return 0;
 }
 
-void CInfClassGameController::OnCharacterSpawn(class CCharacter *pChr)
+void CInfClassGameController::OnCharacterSpawned(CInfClassCharacter *pCharacter)
 {
-	// default health
-	pChr->IncreaseHealth(10);
-
-	// give default weapons
-	pChr->GiveWeapon(WEAPON_HAMMER, -1);
-
-	if(GameServer()->m_FunRound && !IsInfectionStarted() && pChr->GetPlayerClass() == PLAYERCLASS_NONE)
+	if(GameServer()->m_FunRound && !IsInfectionStarted() && pCharacter->GetPlayerClass() == PLAYERCLASS_NONE)
 	{
-		CPlayer *pPlayer = pChr->GetPlayer();
+		CPlayer *pPlayer = pCharacter->GetPlayer();
 		if(pPlayer)
 		{
 			pPlayer->SetClass(ChooseHumanClass(pPlayer));

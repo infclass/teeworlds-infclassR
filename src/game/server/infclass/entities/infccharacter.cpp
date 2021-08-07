@@ -70,6 +70,8 @@ void CInfClassCharacter::OnCharacterSpawned()
 
 	if(m_pClass)
 		m_pClass->OnCharacterSpawned();
+
+	GameController()->OnCharacterSpawned(this);
 }
 
 void CInfClassCharacter::OnCharacterInInfectionZone()

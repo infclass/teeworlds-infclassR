@@ -44,7 +44,7 @@ public:
 	int GetBonusZoneValueAt(const vec2 &Pos) const;
 
 	int OnCharacterDeath(class CCharacter *pVictim, class CPlayer *pKiller, int Weapon) override;
-	void OnCharacterSpawn(class CCharacter *pChr) override;
+	void OnCharacterSpawned(CInfClassCharacter *pCharacter);
 	void OnPlayerInfoChange(class CPlayer *pP) override;
 	void DoWincheck() override;
 	void StartRound() override;
