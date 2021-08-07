@@ -953,8 +953,11 @@ void CInfClassGameController::Tick()
 					if(StartInfectionTrigger)
 					{
 						Iter.Player()->SetClass(ChooseHumanClass(Iter.Player()));
-						if(Iter.Player()->GetCharacter())
-							Iter.Player()->GetCharacter()->IncreaseArmor(10);
+						CInfClassCharacter *pCharacter = GetCharacter(Iter.Player()->GetCID());
+						if(pCharacter)
+						{
+							pCharacter->GiveRandomClassSelectionBonus();
+						}
 					}
 					else
 					{
