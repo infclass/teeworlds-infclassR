@@ -2096,6 +2096,11 @@ void CInfClassCharacter::GiveRandomClassSelectionBonus()
 	IncreaseArmor(10);
 }
 
+void CInfClassCharacter::GiveLonelyZombieBonus()
+{
+	IncreaseArmor(10);
+}
+
 void CInfClassCharacter::MakeVisible()
 {
 	if(m_IsInvisible)

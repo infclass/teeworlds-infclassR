@@ -1039,6 +1039,29 @@ void CInfClassGameController::Tick()
 					}
 				}
 			}
+
+			if(StartInfectionTrigger)
+			{
+				if(NumInfected == 1)
+				{
+					for(int i = 0; i < MAX_CLIENTS; ++i)
+					{
+						CInfClassPlayer *pPlayer = GetPlayer(i);
+						if(!pPlayer)
+							continue;
+
+						pPlayer->HandleInfection();
+						CInfClassCharacter *pCharacter = pPlayer->GetCharacter();
+						if(!pCharacter)
+							continue;
+
+						if(pPlayer->IsZombie())
+						{
+							pCharacter->GiveLonelyZombieBonus();
+						}
+					}
+				}
+			}
 		}
 		else
 		{			
@@ -1364,6 +1387,11 @@ void CInfClassGameController::OnCharacterSpawned(CInfClassCharacter *pCharacter)
 		{
 			pPlayer->SetClass(ChooseHumanClass(pPlayer));
 		}
+	}
+
+	if(pCharacter->IsZombie() && (GameServer()->GetZombieCount() == 1))
+	{
+		pCharacter->GiveLonelyZombieBonus();
 	}
 }
 
