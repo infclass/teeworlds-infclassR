@@ -4,12 +4,12 @@
 #define GAME_SERVER_ENTITIES_CHARACTER_H
 
 #include <game/server/entity.h>
-#include <game/server/infclass/entities/hero-flag.h>
 #include <game/generated/server_data.h>
 #include <game/generated/protocol.h>
 
 #include <game/gamecore.h>
 
+class CHeroFlag;
 class CPortal;
 
 enum
