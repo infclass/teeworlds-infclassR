@@ -9,7 +9,7 @@
 
 #include <pnglite.h>
 
-enum DDNET_EXTRA_GAME_TILES
+enum class DDNET_TILE
 {
 	TILE_AIR = 0,
 	TILE_SOLID,
@@ -54,13 +54,14 @@ enum DDNET_EXTRA_GAME_TILES
 	TILE_STOPA,
 };
 
-int GetClientGameTileIndex(int PhysicalIndex, int icDamageIndex, int icBonusIndex)
+DDNET_TILE GetClientGameTileIndex(int PhysicalIndex, int icDamageIndex, int icBonusIndex)
 {
 	switch(PhysicalIndex)
 	{
 		case TILE_PHYSICS_SOLID:
+			return DDNET_TILE::TILE_SOLID;
 		case TILE_PHYSICS_NOHOOK:
-			return PhysicalIndex;
+			return DDNET_TILE::TILE_NOHOOK;
 		default:
 			break;
 	}
@@ -68,13 +69,13 @@ int GetClientGameTileIndex(int PhysicalIndex, int icDamageIndex, int icBonusInde
 	switch(icDamageIndex)
 	{
 		case ZONE_DAMAGE_DEATH:
-			return TILE_DEATH;
+			return DDNET_TILE::TILE_DEATH;
 		case ZONE_DAMAGE_DEATH_NOUNDEAD:
-			return TILE_HIT_DISABLE;
+			return DDNET_TILE::TILE_HIT_DISABLE;
 		case ZONE_DAMAGE_DEATH_INFECTED:
-			return TILE_DUNFREEZE;
+			return DDNET_TILE::TILE_DUNFREEZE;
 		case ZONE_DAMAGE_INFECTION:
-			return TILE_TELEINWEAPON;
+			return DDNET_TILE::TILE_TELEINWEAPON;
 		default:
 			break;
 	}
@@ -82,12 +83,12 @@ int GetClientGameTileIndex(int PhysicalIndex, int icDamageIndex, int icBonusInde
 	switch(icBonusIndex)
 	{
 		case ZONE_BONUS_BONUS:
-			return TILE_THROUGH_CUT;
+			return DDNET_TILE::TILE_THROUGH_CUT;
 		default:
 			break;
 	}
 
-	return TILE_PHYSICS_AIR;
+	return DDNET_TILE::TILE_AIR;
 }
 
 class CImageInfo
@@ -705,7 +706,8 @@ void CMapConverter::CopyGameLayer()
 			int icDamageIndex = Collision.GetZoneValueAt(ZoneHandle_icDamage, X, Y);
 			int icBonusIndex = Collision.GetZoneValueAt(ZoneHandle_icBonus, X, Y);
 
-			m_pTiles[j*m_Width+i].m_Index = GetClientGameTileIndex(PhysicalIndex, icDamageIndex, icBonusIndex);
+			const DDNET_TILE Tile = GetClientGameTileIndex(PhysicalIndex, icDamageIndex, icBonusIndex);
+			m_pTiles[j*m_Width+i].m_Index = static_cast<int>(Tile);
 
 			i += m_pPhysicsLayerTiles[j*m_Width+i].m_Skip;
 		}
