@@ -52,10 +52,27 @@ void CInfClassPlayer::TryRespawn()
 
 void CInfClassPlayer::Tick()
 {
-	CPlayer::Tick();
-
 	if(!Server()->ClientIngame(m_ClientID))
 		return;
+
+	if(m_DoInfection)
+	{
+		if(IsHuman())
+		{
+			m_InfectionTick = Server()->Tick();
+		}
+
+		int c = GameController()->ChooseInfectedClass(this);
+		CInfClassPlayer *pInfectiousPlayer = GameController()->GetPlayer(m_InfectiousPlayerCID);
+
+		m_DoInfection = false;
+		m_InfectiousPlayerCID = -1;
+
+		SetClass(c);
+		GameServer()->m_pController->OnPlayerInfected(this, pInfectiousPlayer);
+	}
+
+	CPlayer::Tick();
 
 	if(!GameServer()->m_World.m_Paused)
 	{
