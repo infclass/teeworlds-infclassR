@@ -210,13 +210,8 @@ void CPlayer::Snap(int SnappingClient)
 	if(SnappingClient != DemoClientID && !Server()->Translate(id, SnappingClient))
 		return;
 
-	CNetObj_ClientInfo *pClientInfo = static_cast<CNetObj_ClientInfo *>(Server()->SnapNewItem(NETOBJTYPE_CLIENTINFO, id, sizeof(CNetObj_ClientInfo)));
+	SnapClientInfo(SnappingClient);
 
-	if(!pClientInfo)
-		return;
-
-	StrToInts(&pClientInfo->m_Name0, 4, Server()->ClientName(m_ClientID));
-	
 	int SnapScoreMode = PLAYERSCOREMODE_SCORE;
 	if(GameServer()->GetPlayer(SnappingClient))
 	{
@@ -225,8 +220,7 @@ void CPlayer::Snap(int SnappingClient)
 	
 /* INFECTION MODIFICATION STRAT ***************************************/
 	int PlayerInfoScore = 0;
-	
-	StrToInts(&pClientInfo->m_Clan0, 3, GetClan(SnappingClient));
+
 	if(GetTeam() == TEAM_SPECTATORS)
 	{
 	}
@@ -241,24 +235,6 @@ void CPlayer::Snap(int SnappingClient)
 			PlayerInfoScore = Server()->RoundStatistics()->PlayerScore(m_ClientID);
 		}
 	}
-	
-	pClientInfo->m_Country = Server()->ClientCountry(m_ClientID);
-
-	if(
-		GameServer()->GetPlayer(SnappingClient) && IsHuman() &&
-		(
-			(Server()->GetClientCustomSkin(SnappingClient) == 1 && SnappingClient == GetCID()) ||
-			(Server()->GetClientCustomSkin(SnappingClient) == 2)
-		)
-	)
-	{
-		StrToInts(&pClientInfo->m_Skin0, 6, m_TeeInfos.m_CustomSkinName);
-	}
-	else StrToInts(&pClientInfo->m_Skin0, 6, m_TeeInfos.m_SkinName);
-	
-	pClientInfo->m_UseCustomColor = m_TeeInfos.m_UseCustomColor;
-	pClientInfo->m_ColorBody = m_TeeInfos.m_ColorBody;
-	pClientInfo->m_ColorFeet = m_TeeInfos.m_ColorFeet;
 /* INFECTION MODIFICATION END *****************************************/
 
 	CNetObj_PlayerInfo *pPlayerInfo = static_cast<CNetObj_PlayerInfo *>(Server()->SnapNewItem(NETOBJTYPE_PLAYERINFO, id, sizeof(CNetObj_PlayerInfo)));
@@ -286,6 +262,37 @@ void CPlayer::Snap(int SnappingClient)
 		pSpectatorInfo->m_X = m_ViewPos.x;
 		pSpectatorInfo->m_Y = m_ViewPos.y;
 	}
+}
+
+void CPlayer::SnapClientInfo(int SnappingClient)
+{
+	CNetObj_ClientInfo *pClientInfo = static_cast<CNetObj_ClientInfo *>(Server()->SnapNewItem(NETOBJTYPE_CLIENTINFO, m_ClientID, sizeof(CNetObj_ClientInfo)));
+
+	if(!pClientInfo)
+		return;
+
+	StrToInts(&pClientInfo->m_Name0, 4, Server()->ClientName(m_ClientID));
+	StrToInts(&pClientInfo->m_Clan0, 3, GetClan(SnappingClient));
+	pClientInfo->m_Country = Server()->ClientCountry(m_ClientID);
+
+	if(
+		GameServer()->GetPlayer(SnappingClient) && IsHuman() &&
+		(
+			(Server()->GetClientCustomSkin(SnappingClient) == 1 && SnappingClient == GetCID()) ||
+			(Server()->GetClientCustomSkin(SnappingClient) == 2)
+		)
+	)
+	{
+		StrToInts(&pClientInfo->m_Skin0, 6, m_TeeInfos.m_CustomSkinName);
+	}
+	else
+	{
+		StrToInts(&pClientInfo->m_Skin0, 6, m_TeeInfos.m_SkinName);
+	}
+
+	pClientInfo->m_UseCustomColor = m_TeeInfos.m_UseCustomColor;
+	pClientInfo->m_ColorBody = m_TeeInfos.m_ColorBody;
+	pClientInfo->m_ColorFeet = m_TeeInfos.m_ColorFeet;
 }
 
 void CPlayer::OnDisconnect(int Type, const char *pReason)
