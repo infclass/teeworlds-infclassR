@@ -104,7 +104,7 @@ void CInfClassPlayer::HandleInfection()
 	m_InfectiousPlayerCID = -1;
 
 	SetClass(c);
-	GameServer()->m_pController->OnPlayerInfected(this, pInfectiousPlayer);
+	GameController()->OnPlayerInfected(this, pInfectiousPlayer);
 }
 
 int CInfClassPlayer::GetDefaultEmote() const

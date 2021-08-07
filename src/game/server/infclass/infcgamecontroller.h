@@ -55,7 +55,7 @@ public:
 	CLASS_AVAILABILITY GetPlayerClassAvailability(int PlayerClass);
 	bool CanVote() override;
 	void OnClientDrop(int ClientID, int Type) override;
-	void OnPlayerInfected(CPlayer* pPlayer, CPlayer* pInfectiousPlayer) override;
+	void OnPlayerInfected(CInfClassPlayer *pPlayer, CInfClassPlayer *pInfectiousPlayer);
 	bool IsInfectionStarted() override;
 	bool PortalsAvailableForCharacter(class CCharacter *pCharacter) override;
 	bool AreTurretsEnabled() const;

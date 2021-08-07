@@ -85,7 +85,7 @@ void CInfClassGameController::OnClientDrop(int ClientID, int Type)
     }
 }
 
-void CInfClassGameController::OnPlayerInfected(CPlayer *pPlayer, CPlayer *pInfectiousPlayer)
+void CInfClassGameController::OnPlayerInfected(CInfClassPlayer *pPlayer, CInfClassPlayer *pInfectiousPlayer)
 {
 	if (!pInfectiousPlayer || pInfectiousPlayer->GetTeam() == TEAM_SPECTATORS || pPlayer->GetCID() == pInfectiousPlayer->GetCID()) {
 		if (pPlayer->GetCharacter())

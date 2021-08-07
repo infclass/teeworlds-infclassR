@@ -150,7 +150,6 @@ public:
 	virtual int ChooseInfectedClass(const CPlayer* pPlayer) const = 0;
 	virtual bool IsSpawnable(vec2 Position, int TeleZoneIndex) = 0;
 	virtual void OnClientDrop(int ClientID, int Type) {};
-	virtual void OnPlayerInfected(CPlayer* pPlayer, CPlayer* pInfectiousPlayer) = 0;
 	virtual bool IsInfectionStarted() = 0;
 	virtual bool PortalsAvailableForCharacter(class CCharacter *pCharacter) = 0;
 	
