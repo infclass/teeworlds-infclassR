@@ -502,16 +502,8 @@ void CPlayer::StartInfection(bool force, CPlayer *pInfectiousPlayer)
 	if(!force && IsZombie())
 		return;
 	
-	
-	if(IsHuman())
-	{
-		m_InfectionTick = Server()->Tick();
-	}
-	
-	int c = GameServer()->m_pController->ChooseInfectedClass(this);
-	
-	SetClass(c);
-	GameServer()->m_pController->OnPlayerInfected(this, pInfectiousPlayer);
+	m_DoInfection = true;
+	m_InfectiousPlayerCID = pInfectiousPlayer ? pInfectiousPlayer->GetCID() : -1;
 }
 
 bool CPlayer::IsZombie() const

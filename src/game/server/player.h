@@ -155,6 +155,9 @@ public:
 	int m_HumanTime;
 	
 	bool m_knownClass[NB_PLAYERCLASS];
+	bool m_DoInfection = false;
+	int m_InfectiousPlayerCID = -1;
+
 	int m_InfectionTick;
 	
 	int GetScoreMode();
