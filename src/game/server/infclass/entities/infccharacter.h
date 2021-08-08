@@ -144,6 +144,8 @@ public:
 	int GetLastHooker() const { return m_LastHooker; };
 	void UpdateLastHooker(int ClientID, int HookerTick);
 
+	void UpdateLastEnforcer(int ClientID, float Force, int Weapon, int Tick);
+
 protected:
 	void PreCoreTick() override;
 	void PostCoreTick() override;

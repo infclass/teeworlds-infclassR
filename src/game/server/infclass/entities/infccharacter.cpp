@@ -60,6 +60,8 @@ void CInfClassCharacter::OnCharacterSpawned()
 	m_LastFreezer = -1;
 	m_LastHooker = -1;
 	m_LastHookerTick = -1;
+	m_LastEnforcer = -1;
+	m_LastEnforcerTick = -1;
 	m_PositionLockTick = -1;
 	m_PositionLocked = false;
 	m_PositionLockAvailable = false;
@@ -438,6 +440,16 @@ bool CInfClassCharacter::TakeDamage(vec2 Force, int Dmg, int From, int Weapon, T
 		Force = vec2(0, 0);
 	}
 
+	if((From >= 0) && (From != GetCID()) && (Force.x || Force.y))
+	{
+		const float CurrentSpeed = length(m_Core.m_Vel);
+		const float AddedForce = length(Force);
+		if(AddedForce > 3 && (AddedForce > CurrentSpeed * 0.5))
+		{
+			UpdateLastEnforcer(From, AddedForce, Weapon, Server()->Tick());
+		}
+	}
+
 	m_Core.m_Vel += Force;
 
 	if(GetPlayerClass() == PLAYERCLASS_GHOUL)
@@ -697,6 +709,16 @@ bool CInfClassCharacter::GetIndirectKiller(int *pKillerId, int *pWeaponId)
 	}
 
 	const float LastEnforcerTimeoutInSeconds = Config()->m_InfLastEnforcerTimeMs / 1000.0f;
+	if(m_LastEnforcer >= 0 && (m_LastEnforcerTick > m_LastHookerTick))
+	{
+		if(m_LastEnforcerTick + Server()->TickSpeed() * LastEnforcerTimeoutInSeconds > Server()->Tick())
+		{
+			*pKillerId = m_LastEnforcer;
+			*pWeaponId = m_LastEnforcerWeapon;
+			return true;
+		}
+	}
+
 	if(GetLastHooker() >= 0)
 	{
 		if(m_LastHookerTick + Server()->TickSpeed() * LastEnforcerTimeoutInSeconds > Server()->Tick())
@@ -714,6 +736,13 @@ void CInfClassCharacter::UpdateLastHooker(int ClientID, int HookerTick)
 {
 	m_LastHooker = ClientID;
 	m_LastHookerTick = HookerTick;
+}
+
+void CInfClassCharacter::UpdateLastEnforcer(int ClientID, float Force, int Weapon, int Tick)
+{
+	m_LastEnforcer = ClientID;
+	m_LastEnforcerWeapon = Weapon;
+	m_LastEnforcerTick = Tick;
 }
 
 void CInfClassCharacter::OnHammerFired(WeaponFireContext *pFireContext)
