@@ -55,22 +55,7 @@ void CInfClassPlayer::Tick()
 	if(!Server()->ClientIngame(m_ClientID))
 		return;
 
-	if(m_DoInfection)
-	{
-		if(IsHuman())
-		{
-			m_InfectionTick = Server()->Tick();
-		}
-
-		int c = GameController()->ChooseInfectedClass(this);
-		CInfClassPlayer *pInfectiousPlayer = GameController()->GetPlayer(m_InfectiousPlayerCID);
-
-		m_DoInfection = false;
-		m_InfectiousPlayerCID = -1;
-
-		SetClass(c);
-		GameServer()->m_pController->OnPlayerInfected(this, pInfectiousPlayer);
-	}
+	HandleInfection();
 
 	CPlayer::Tick();
 
@@ -99,6 +84,27 @@ void CInfClassPlayer::Tick()
 	}
 
 	HandleTuningParams();
+}
+
+void CInfClassPlayer::HandleInfection()
+{
+	if(!m_DoInfection)
+	{
+		return;
+	}
+	if(IsHuman())
+	{
+		m_InfectionTick = Server()->Tick();
+	}
+
+	int c = GameController()->ChooseInfectedClass(this);
+	CInfClassPlayer *pInfectiousPlayer = GameController()->GetPlayer(m_InfectiousPlayerCID);
+
+	m_DoInfection = false;
+	m_InfectiousPlayerCID = -1;
+
+	SetClass(c);
+	GameServer()->m_pController->OnPlayerInfected(this, pInfectiousPlayer);
 }
 
 int CInfClassPlayer::GetDefaultEmote() const

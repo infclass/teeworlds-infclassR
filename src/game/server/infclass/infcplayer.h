@@ -26,6 +26,8 @@ public:
 	void Tick() override;
 	int GetDefaultEmote() const override;
 
+	void HandleInfection();
+
 	CInfClassCharacter *GetCharacter();
 	CInfClassPlayerClass *GetCharacterClass() { return m_pInfcPlayerClass; }
 	const CInfClassPlayerClass *GetCharacterClass() const { return m_pInfcPlayerClass; }
