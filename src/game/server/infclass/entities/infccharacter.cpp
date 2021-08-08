@@ -57,6 +57,7 @@ void CInfClassCharacter::OnCharacterSpawned()
 	m_SlowMotionTick = -1;
 	m_HallucinationTick = -1;
 	m_SlipperyTick = -1;
+	m_LastFreezer = -1;
 	m_PositionLockTick = -1;
 	m_PositionLocked = false;
 	m_PositionLockAvailable = false;
