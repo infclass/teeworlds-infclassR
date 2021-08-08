@@ -513,6 +513,17 @@ bool CInfClassCharacter::GetIndirectKiller(int *pKillerId, int *pWeaponId)
 		}
 	}
 
+	const float LastEnforcerTimeoutInSeconds = Config()->m_InfLastEnforcerTimeMs / 1000.0f;
+	if(GetLastHooker() >= 0)
+	{
+		if(m_LastHookerTick + Server()->TickSpeed() * LastEnforcerTimeoutInSeconds > Server()->Tick())
+		{
+			*pKillerId = GetLastHooker();
+			*pWeaponId = WEAPON_NINJA;
+			return true;
+		}
+	}
+
 	return false;
 }
 
