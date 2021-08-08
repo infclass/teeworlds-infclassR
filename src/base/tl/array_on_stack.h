@@ -34,6 +34,11 @@ public:
 		return m_Size;
 	}
 
+	void Resize(int NewSize)
+	{
+		m_Size = NewSize;
+	}
+
 	int Capacity() const
 	{
 		return StackCapacity;
