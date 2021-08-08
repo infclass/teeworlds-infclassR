@@ -223,6 +223,8 @@ public:
 	int m_SlipperyTick;
 	int m_SlowMotionTick; //LooperClass changes here
 	int m_LastFreezer;
+	int m_LastHooker;
+	int m_LastHookerTick;
 	int m_HookMode;
 	int m_InWater;
 	int m_NinjaVelocityBuff;

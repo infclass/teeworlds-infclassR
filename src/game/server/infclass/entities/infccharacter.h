@@ -139,6 +139,9 @@ public:
 
 	bool GetIndirectKiller(int *pKillerId, int *pWeaponId);
 
+	int GetLastHooker() const { return m_LastHooker; };
+	void UpdateLastHooker(int ClientID, int HookerTick);
+
 protected:
 	void PreCoreTick() override;
 	void PostCoreTick() override;

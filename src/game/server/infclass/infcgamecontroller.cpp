@@ -190,6 +190,65 @@ void CInfClassGameController::HandleCharacterTiles(CCharacter *pChr)
 	}
 }
 
+void CInfClassGameController::HandleLastHookers()
+{
+	const int CurrentTick = Server()->Tick();
+	array_on_stack<int, MAX_CLIENTS> ActiveHooks;
+	ActiveHooks.Resize(MAX_CLIENTS);
+	for(int &HookId : ActiveHooks)
+	{
+		HookId = -1;
+	}
+
+	for(int i = 0; i < MAX_CLIENTS; ++i)
+	{
+		CInfClassCharacter *pCharacter = GetCharacter(i);
+		if(!pCharacter)
+		{
+			continue;
+		}
+
+		int HookedPlayer = pCharacter->GetHookedPlayer();
+		if(HookedPlayer < 0)
+		{
+			continue;
+		}
+
+		if(ActiveHooks[HookedPlayer] >= 0)
+		{
+			CInfClassCharacter *pCharacter = GetCharacter(HookedPlayer);
+			if(!pCharacter)
+			{
+				continue;
+			}
+			bool IsLastHooker = i == pCharacter->GetLastHooker();
+			if(!IsLastHooker)
+			{
+				// Only the last hooker has higher priority. Ignore the others for now.
+				continue;
+			}
+		}
+
+		ActiveHooks[HookedPlayer] = i;
+	}
+
+	for(int i = 0; i < ActiveHooks.Size(); ++i)
+	{
+		int NewHookerCID = ActiveHooks.At(i);
+		if(NewHookerCID < 0)
+		{
+			continue;
+		}
+		CInfClassCharacter *pHookedCharacter = GetCharacter(i);
+		if(!pHookedCharacter)
+		{
+			continue;
+		}
+
+		pHookedCharacter->UpdateLastHooker(NewHookerCID, CurrentTick);
+	}
+}
+
 int CInfClassGameController::GetZoneValueAt(int ZoneHandle, const vec2 &Pos) const
 {
 	return GameServer()->Collision()->GetZoneValueAt(ZoneHandle, Pos);
@@ -1090,6 +1149,8 @@ void CInfClassGameController::Tick()
 		
 		m_RoundStartTick = Server()->Tick();
 	}
+
+	HandleLastHookers();
 
 	if(m_SuggestMoreRounds && !GameServer()->HasActiveVote())
 	{

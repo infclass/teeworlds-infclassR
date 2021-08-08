@@ -58,6 +58,8 @@ void CInfClassCharacter::OnCharacterSpawned()
 	m_HallucinationTick = -1;
 	m_SlipperyTick = -1;
 	m_LastFreezer = -1;
+	m_LastHooker = -1;
+	m_LastHookerTick = -1;
 	m_PositionLockTick = -1;
 	m_PositionLocked = false;
 	m_PositionLockAvailable = false;
@@ -512,6 +514,12 @@ bool CInfClassCharacter::GetIndirectKiller(int *pKillerId, int *pWeaponId)
 	}
 
 	return false;
+}
+
+void CInfClassCharacter::UpdateLastHooker(int ClientID, int HookerTick)
+{
+	m_LastHooker = ClientID;
+	m_LastHookerTick = HookerTick;
 }
 
 void CInfClassCharacter::OnHammerFired(WeaponFireContext *pFireContext)
