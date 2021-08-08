@@ -109,7 +109,7 @@ void CInfClassCharacter::OnCharacterInInfectionZone()
 
 		CInfClassPlayer *pKiller = GameController()->GetPlayer(Killer);
 
-		if(pKiller && pKiller != GetPlayer())
+		if(pKiller)
 		{
 			int ModeSpecial = GameController()->OnCharacterDeath(this, pKiller, Weapon);
 
