@@ -1118,15 +1118,27 @@ bool CCharacter::TakeDamage(vec2 Force, int Dmg, int From, int Weapon, TAKEDAMAG
 		Dmg = 0;
 		Mode = TAKEDAMAGEMODE_NOINFECTION;
 	}
-	
-	if(
-			(GetPlayerClass() != PLAYERCLASS_HUNTER || Weapon != WEAPON_SHOTGUN) &&
-			!(IsHuman() && Weapon == WEAPON_NINJA) &&
-			!(GetPlayerClass() == PLAYERCLASS_SOLDIER && Weapon == WEAPON_HAMMER))
+
+	if((GetPlayerClass() == PLAYERCLASS_HUNTER) && (Weapon == WEAPON_SHOTGUN))
 	{
-		m_Core.m_Vel += Force;
+		// Hunters are immune to shotgun force
+		Force = vec2(0, 0);
 	}
-	
+
+	if(IsHuman() && (Weapon == WEAPON_NINJA))
+	{
+		// Humans are immune to Ninja's force
+		Force = vec2(0, 0);
+	}
+
+	if((GetPlayerClass() == PLAYERCLASS_SOLDIER) && (Weapon == WEAPON_HAMMER))
+	{
+		// Soldier is immune to any traps force
+		Force = vec2(0, 0);
+	}
+
+	m_Core.m_Vel += Force;
+
 	if(GetPlayerClass() == PLAYERCLASS_GHOUL)
 	{
 		int DamageAccepted = 0;
