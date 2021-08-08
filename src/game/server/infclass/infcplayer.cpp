@@ -96,6 +96,7 @@ void CInfClassPlayer::HandleInfection()
 		m_InfectionTick = Server()->Tick();
 	}
 
+	const int PreviousClass = GetClass();
 	int c = GameController()->ChooseInfectedClass(this);
 	CInfClassPlayer *pInfectiousPlayer = GameController()->GetPlayer(m_InfectiousPlayerCID);
 
@@ -103,7 +104,7 @@ void CInfClassPlayer::HandleInfection()
 	m_InfectiousPlayerCID = -1;
 
 	SetClass(c);
-	GameController()->OnPlayerInfected(this, pInfectiousPlayer);
+	GameController()->OnPlayerInfected(this, pInfectiousPlayer, PreviousClass);
 }
 
 int CInfClassPlayer::GetDefaultEmote() const

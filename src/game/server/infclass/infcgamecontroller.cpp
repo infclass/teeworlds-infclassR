@@ -90,7 +90,7 @@ void CInfClassGameController::OnClientDrop(int ClientID, int Type)
     }
 }
 
-void CInfClassGameController::OnPlayerInfected(CInfClassPlayer *pPlayer, CInfClassPlayer *pInfectiousPlayer)
+void CInfClassGameController::OnPlayerInfected(CInfClassPlayer *pPlayer, CInfClassPlayer *pInfectiousPlayer, int PreviousClass)
 {
 	if(!pInfectiousPlayer)
 	{
@@ -105,9 +105,34 @@ void CInfClassGameController::OnPlayerInfected(CInfClassPlayer *pPlayer, CInfCla
 	}
 
 	const int InfectedByCID = pInfectiousPlayer->GetCID();
-	GameServer()->SendChatTarget_Localization(InfectedByCID, CHATCATEGORY_SCORE, _("You have infected {str:VictimName}, +3 points"), "VictimName", Server()->ClientName(pPlayer->GetCID()), NULL);
-	Server()->RoundStatistics()->OnScoreEvent(InfectedByCID, SCOREEVENT_INFECTION, pInfectiousPlayer->GetClass(), Server()->ClientName(InfectedByCID), GameServer()->Console());
-	GameServer()->SendScoreSound(InfectedByCID);
+	if(!IsZombieClass(PreviousClass))
+	{
+		if(pInfectiousPlayer->IsHuman())
+		{
+			GameServer()->SendChatTarget_Localization(InfectedByCID, CHATCATEGORY_SCORE,
+				_("You have infected {str:VictimName}, shame on you!"),
+				"VictimName", Server()->ClientName(pPlayer->GetCID()),
+				nullptr);
+			GameServer()->SendEmoticon(pInfectiousPlayer->GetCID(), EMOTICON_SORRY);
+			CInfClassCharacter *pGuiltyCharacter = pInfectiousPlayer->GetCharacter();
+			if(pGuiltyCharacter)
+			{
+				const float GuiltyPlayerFreeze = 3;
+				pGuiltyCharacter->Freeze(GuiltyPlayerFreeze, -1, FREEZEREASON_INFECTION);
+				pGuiltyCharacter->SetEmote(EMOTE_PAIN, Server()->Tick() + Server()->TickSpeed() * GuiltyPlayerFreeze);
+			}
+		}
+		else if (pPlayer != pInfectiousPlayer)
+		{
+			GameServer()->SendChatTarget_Localization(InfectedByCID, CHATCATEGORY_SCORE,
+				_("You have infected {str:VictimName}, +3 points"),
+				"VictimName", Server()->ClientName(pPlayer->GetCID()),
+				nullptr);
+			Server()->RoundStatistics()->OnScoreEvent(InfectedByCID, SCOREEVENT_INFECTION,
+				pInfectiousPlayer->GetClass(), Server()->ClientName(InfectedByCID), GameServer()->Console());
+			GameServer()->SendScoreSound(InfectedByCID);
+		}
+	}
 
 	//Search for hook
 	for(CInfClassCharacter *pHook = (CInfClassCharacter*) GameServer()->m_World.FindFirst(CGameWorld::ENTTYPE_CHARACTER); pHook; pHook = (CInfClassCharacter *)pHook->TypeNext())

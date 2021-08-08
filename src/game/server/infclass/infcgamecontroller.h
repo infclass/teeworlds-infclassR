@@ -57,7 +57,7 @@ public:
 	CLASS_AVAILABILITY GetPlayerClassAvailability(int PlayerClass);
 	bool CanVote() override;
 	void OnClientDrop(int ClientID, int Type) override;
-	void OnPlayerInfected(CInfClassPlayer *pPlayer, CInfClassPlayer *pInfectiousPlayer);
+	void OnPlayerInfected(CInfClassPlayer *pPlayer, CInfClassPlayer *pInfectiousPlayer, int PreviousClass);
 	bool IsInfectionStarted() override;
 	bool PortalsAvailableForCharacter(class CCharacter *pCharacter) override;
 	bool CanJoinTeam(int Team, int ClientID) override;
