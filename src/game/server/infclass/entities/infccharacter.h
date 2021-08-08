@@ -137,6 +137,8 @@ public:
 	CHeroFlag *GetHeroFlag() { return m_pHeroFlag; }
 	int GetFlagCoolDown();
 
+	bool GetIndirectKiller(int *pKillerId, int *pWeaponId);
+
 protected:
 	void PreCoreTick() override;
 	void PostCoreTick() override;

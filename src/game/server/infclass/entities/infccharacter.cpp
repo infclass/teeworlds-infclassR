@@ -454,6 +454,46 @@ int CInfClassCharacter::GetFlagCoolDown()
 	return m_pHeroFlag ? m_pHeroFlag->GetCoolDown() : 0;
 }
 
+bool CInfClassCharacter::GetIndirectKiller(int *pKillerId, int *pWeaponId)
+{
+	CInfClassCharacter *pKillerCharacter = nullptr;
+	//Search for the real killer (if somebody hooked this player)
+	for(CInfClassCharacter *pHooker = (CInfClassCharacter*) GameWorld()->FindFirst(CGameWorld::ENTTYPE_CHARACTER); pHooker; pHooker = (CInfClassCharacter *)pHooker->TypeNext())
+	{
+		if(pHooker->GetPlayer() && pHooker->GetHookedPlayer() == GetCID())
+		{
+			if (pKillerCharacter) {
+				// More than one player hooked this victim
+				// We don't support cooperative killing
+				pKillerCharacter = nullptr;
+				return false;
+			}
+			pKillerCharacter = pHooker;
+		}
+	}
+
+	if (pKillerCharacter && pKillerCharacter->GetPlayer())
+	{
+		*pKillerId = pKillerCharacter->GetCID();
+		*pWeaponId = WEAPON_NINJA;
+	}
+
+	if(!pKillerCharacter && IsFrozen())
+	{
+		*pKillerId = m_LastFreezer;
+		if(m_FreezeReason == FREEZEREASON_FLASH)
+		{
+			*pWeaponId = WEAPON_GRENADE;
+		}
+		else
+		{
+			*pWeaponId = WEAPON_NINJA;
+		}
+	}
+
+	return true;
+}
+
 void CInfClassCharacter::OnHammerFired(WeaponFireContext *pFireContext)
 {
 	vec2 Direction = GetDirection();
@@ -1543,44 +1583,12 @@ void CInfClassCharacter::Die(int Killer, int Weapon)
 	DestroyChildEntities();
 /* INFECTION MODIFICATION END *****************************************/
 
-	CInfClassCharacter *pKillerCharacter = nullptr;
-	if (Weapon == WEAPON_WORLD && Killer == m_pPlayer->GetCID()) {
-		//Search for the real killer (if somebody hooked this player)
-		for(CInfClassCharacter *pHooker = (CInfClassCharacter*) GameWorld()->FindFirst(CGameWorld::ENTTYPE_CHARACTER); pHooker; pHooker = (CInfClassCharacter *)pHooker->TypeNext())
-		{
-			if (pHooker->GetPlayer() && pHooker->m_Core.m_HookedPlayer == m_pPlayer->GetCID())
-			{
-				if (pKillerCharacter) {
-					// More than one player hooked this victim
-					// We don't support cooperative killing
-					pKillerCharacter = nullptr;
-					break;
-				}
-				pKillerCharacter = pHooker;
-			}
-		}
-
-		if (pKillerCharacter && pKillerCharacter->GetPlayer())
-		{
-			Killer = pKillerCharacter->GetCID();
-			Weapon = WEAPON_NINJA;
-		}
-
-		if(!pKillerCharacter && IsFrozen())
-		{
-			Killer = m_LastFreezer;
-			if(m_FreezeReason == FREEZEREASON_FLASH)
-			{
-				Weapon = WEAPON_GRENADE;
-			}
-			else
-			{
-				Weapon = WEAPON_NINJA;
-			}
-		}
+	if(Weapon == WEAPON_WORLD && Killer == m_pPlayer->GetCID())
+	{
+		GetIndirectKiller(&Killer, &Weapon);
 	}
 
-	pKillerCharacter = GameController()->GetCharacter(Killer);
+	CInfClassCharacter *pKillerCharacter = GameController()->GetCharacter(Killer);
 
 	// we got to wait 0.5 secs before respawning
 	m_pPlayer->m_RespawnTick = Server()->Tick()+Server()->TickSpeed()/2;
