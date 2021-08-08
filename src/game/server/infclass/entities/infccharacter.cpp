@@ -464,29 +464,8 @@ int CInfClassCharacter::GetFlagCoolDown()
 
 bool CInfClassCharacter::GetIndirectKiller(int *pKillerId, int *pWeaponId)
 {
-	CInfClassCharacter *pKillerCharacter = nullptr;
-	//Search for the real killer (if somebody hooked this player)
-	for(CInfClassCharacter *pHooker = (CInfClassCharacter*) GameWorld()->FindFirst(CGameWorld::ENTTYPE_CHARACTER); pHooker; pHooker = (CInfClassCharacter *)pHooker->TypeNext())
-	{
-		if(pHooker->GetPlayer() && pHooker->GetHookedPlayer() == GetCID())
-		{
-			if (pKillerCharacter) {
-				// More than one player hooked this victim
-				// We don't support cooperative killing
-				pKillerCharacter = nullptr;
-				return false;
-			}
-			pKillerCharacter = pHooker;
-		}
-	}
-
-	if (pKillerCharacter && pKillerCharacter->GetPlayer())
-	{
-		*pKillerId = pKillerCharacter->GetCID();
-		*pWeaponId = WEAPON_NINJA;
-	}
-
-	if(!pKillerCharacter && IsFrozen())
+	//Search for the real killer
+	if(IsFrozen())
 	{
 		*pKillerId = m_LastFreezer;
 		if(m_FreezeReason == FREEZEREASON_FLASH)
@@ -497,9 +476,42 @@ bool CInfClassCharacter::GetIndirectKiller(int *pKillerId, int *pWeaponId)
 		{
 			*pWeaponId = WEAPON_NINJA;
 		}
+		return true;
 	}
 
-	return true;
+	// if hooked
+	{
+		int CurrentHookerCID = -1;
+		for(CInfClassCharacter *pHooker = (CInfClassCharacter*) GameWorld()->FindFirst(CGameWorld::ENTTYPE_CHARACTER);
+			pHooker;
+			pHooker = (CInfClassCharacter *)pHooker->TypeNext())
+		{
+			if(pHooker->GetPlayer() && pHooker->GetHookedPlayer() == GetCID())
+			{
+				if(CurrentHookerCID < 0)
+				{
+					CurrentHookerCID = pHooker->GetCID();
+				}
+				else
+				{
+					// More than one player hooked this victim
+					// We don't support cooperative killing.
+					// Break this loop and check for the freezer instead.
+					CurrentHookerCID = -1;
+					break;
+				}
+			}
+		}
+
+		if(CurrentHookerCID >= 0)
+		{
+			*pKillerId = CurrentHookerCID;
+			*pWeaponId = WEAPON_NINJA;
+			return true;
+		}
+	}
+
+	return false;
 }
 
 void CInfClassCharacter::OnHammerFired(WeaponFireContext *pFireContext)
