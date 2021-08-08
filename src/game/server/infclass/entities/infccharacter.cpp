@@ -98,19 +98,26 @@ void CInfClassCharacter::OnCharacterInInfectionZone()
 	}
 	else
 	{
-		CPlayer *pKiller = nullptr;
-		for(CCharacter *pHooker = (CCharacter*) GameServer()->m_World.FindFirst(CGameWorld::ENTTYPE_CHARACTER); pHooker; pHooker = (CCharacter *)pHooker->TypeNext())
+		int Killer = GetCID();
+		int Weapon = WEAPON_WORLD;
+		GetIndirectKiller(&Killer, &Weapon);
+
+		CInfClassPlayer *pKiller = GameController()->GetPlayer(Killer);
+
+		if(pKiller && pKiller != GetPlayer())
 		{
-			if (pHooker->GetPlayer() && pHooker->m_Core.m_HookedPlayer == GetCID())
-			{
-				if (pKiller) {
-					// More than one player hooked this victim
-					// We don't support cooperative killing
-					pKiller = nullptr;
-					break;
-				}
-				pKiller = pHooker->GetPlayer();
-			}
+			int ModeSpecial = GameController()->OnCharacterDeath(this, pKiller, Weapon);
+
+			char aBuf[256];
+			str_format(aBuf, sizeof(aBuf), "kill killer='%s' victim='%s' weapon=%d",
+				Server()->ClientName(Killer),
+				Server()->ClientName(m_pPlayer->GetCID()), Weapon);
+			GameServer()->Console()->Print(IConsole::OUTPUT_LEVEL_DEBUG, "game", aBuf);
+
+			GameServer()->SendKillMessage(Killer, m_pPlayer->GetCID(), Weapon, ModeSpecial);
+
+			// a nice sound
+			GameServer()->CreateSound(GetPos(), SOUND_PLAYER_DIE);
 		}
 
 		GetPlayer()->Infect(pKiller);
