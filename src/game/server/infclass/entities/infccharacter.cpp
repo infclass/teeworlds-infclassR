@@ -388,6 +388,189 @@ void CInfClassCharacter::FireWeapon()
 	}
 }
 
+bool CInfClassCharacter::TakeDamage(vec2 Force, int Dmg, int From, int Weapon, TAKEDAMAGEMODE Mode)
+{
+/* INFECTION MODIFICATION START ***************************************/
+
+	//KillerPlayer
+	CPlayer* pKillerPlayer = GameServer()->m_apPlayers[From]; // before using this variable check if it exists with "if(pKillerPlayer)"
+	CCharacter *pKillerChar = 0; // before using this variable check if it exists with "if(pKillerChar)"
+	if(pKillerPlayer)
+		pKillerChar = pKillerPlayer->GetCharacter();
+
+	if(Mode == TAKEDAMAGEMODE_INFECTION)
+	{
+		if(!pKillerPlayer || !pKillerPlayer->IsZombie() || !IsHuman())
+		{
+			// The infection is only possible if the killer is a zombie and the target is a human
+			Mode = TAKEDAMAGEMODE_NOINFECTION;
+		}
+	}
+
+	if(GetPlayerClass() == PLAYERCLASS_HERO && Mode == TAKEDAMAGEMODE_INFECTION)
+	{
+		Dmg = 12;
+		// A zombie can't infect a hero
+		Mode = TAKEDAMAGEMODE_NOINFECTION;
+	}
+
+	if(pKillerChar && pKillerChar->IsInLove())
+	{
+		Dmg = 0;
+		Mode = TAKEDAMAGEMODE_NOINFECTION;
+	}
+
+	if((GetPlayerClass() == PLAYERCLASS_HUNTER) && (Weapon == WEAPON_SHOTGUN))
+	{
+		// Hunters are immune to shotgun force
+		Force = vec2(0, 0);
+	}
+
+	if(IsHuman() && (Weapon == WEAPON_NINJA))
+	{
+		// Humans are immune to Ninja's force
+		Force = vec2(0, 0);
+	}
+
+	if((GetPlayerClass() == PLAYERCLASS_SOLDIER) && (Weapon == WEAPON_HAMMER))
+	{
+		// Soldier is immune to any traps force
+		Force = vec2(0, 0);
+	}
+
+	m_Core.m_Vel += Force;
+
+	if(GetPlayerClass() == PLAYERCLASS_GHOUL)
+	{
+		int DamageAccepted = 0;
+		for(int i=0; i<Dmg; i++)
+		{
+			if(random_prob(1.0f - m_pPlayer->GetGhoulPercent()/2.0f))
+				DamageAccepted++;
+		}
+		Dmg = DamageAccepted;
+	}
+
+	if(m_ProtectionTick > 0)
+	{
+		Dmg = 0;
+	}
+
+	if(From != m_pPlayer->GetCID() && pKillerPlayer)
+	{
+		if(IsZombie())
+		{
+			if(pKillerPlayer->IsZombie())
+			{
+				//Heal and unfreeze
+				if(pKillerPlayer->GetClass() == PLAYERCLASS_BOOMER && Weapon == WEAPON_HAMMER)
+				{
+					IncreaseOverallHp(8+random_int(0, 10));
+					if(IsFrozen())
+						Unfreeze();
+
+					SetEmote(EMOTE_HAPPY, Server()->Tick() + Server()->TickSpeed());
+				}
+				return false;
+			}
+		}
+		else
+		{
+			//If the player is a new infected, don't infected other -> nobody knows that he is infected.
+			if(!pKillerPlayer->IsZombie() || (Server()->Tick() - pKillerPlayer->m_InfectionTick)*Server()->TickSpeed() < 0.5)
+			{
+				return false;
+			}
+		}
+	}
+
+/* INFECTION MODIFICATION END *****************************************/
+
+	// m_pPlayer only inflicts half damage on self
+	if(From == m_pPlayer->GetCID())
+	{
+		if(Mode == TAKEDAMAGEMODE_SELFHARM)
+			Dmg = maximum(1, Dmg/2);
+		else
+			return false;
+	}
+
+	m_DamageTaken++;
+
+	// create healthmod indicator
+	if(Server()->Tick() < m_DamageTakenTick+25)
+	{
+		// make sure that the damage indicators doesn't group together
+		GameServer()->CreateDamageInd(GetPos(), m_DamageTaken*0.25f, Dmg);
+	}
+	else
+	{
+		m_DamageTaken = 0;
+		GameServer()->CreateDamageInd(GetPos(), 0, Dmg);
+	}
+
+/* INFECTION MODIFICATION START ***************************************/
+	if(Dmg)
+	{
+		if(m_Armor)
+		{
+			if(Dmg <= m_Armor)
+			{
+				m_Armor -= Dmg;
+				Dmg = 0;
+			}
+			else
+			{
+				Dmg -= m_Armor;
+				m_Armor = 0;
+			}
+		}
+
+		m_Health -= Dmg;
+
+		if(From != m_pPlayer->GetCID() && pKillerPlayer)
+			m_NeedFullHeal = true;
+
+		if(From >= 0 && From != m_pPlayer->GetCID())
+			GameServer()->SendHitSound(From);
+	}
+/* INFECTION MODIFICATION END *****************************************/
+
+	m_DamageTakenTick = Server()->Tick();
+	m_InvisibleTick = Server()->Tick();
+
+	// check for death
+	if(m_Health <= 0)
+	{
+		Die(From, Weapon);
+		return false;
+	}
+
+/* INFECTION MODIFICATION START ***************************************/
+	if(Mode == TAKEDAMAGEMODE_INFECTION)
+	{
+		m_pPlayer->Infect(pKillerPlayer);
+
+		char aBuf[256];
+		str_format(aBuf, sizeof(aBuf), "kill killer='%s' victim='%s' weapon=%d",
+			Server()->ClientName(From),
+			Server()->ClientName(m_pPlayer->GetCID()), Weapon);
+		GameServer()->Console()->Print(IConsole::OUTPUT_LEVEL_DEBUG, "game", aBuf);
+
+		GameServer()->SendKillMessage(From, m_pPlayer->GetCID(), WEAPON_HAMMER, 0);
+	}
+/* INFECTION MODIFICATION END *****************************************/
+
+	if(Dmg > 2)
+		GameServer()->CreateSound(GetPos(), SOUND_PLAYER_PAIN_LONG);
+	else
+		GameServer()->CreateSound(GetPos(), SOUND_PLAYER_PAIN_SHORT);
+
+	SetEmote(EMOTE_PAIN, Server()->Tick() + 500 * Server()->TickSpeed() / 1000);
+
+	return true;
+}
+
 void CInfClassCharacter::OnWeaponFired(WeaponFireContext *pFireContext)
 {
 	GetClass()->OnWeaponFired(pFireContext);

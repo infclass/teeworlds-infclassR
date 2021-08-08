@@ -51,6 +51,8 @@ public:
 
 	void FireWeapon() override;
 
+	bool TakeDamage(vec2 Force, int Dmg, int From, int Weapon, TAKEDAMAGEMODE Mode) override;
+
 	void OnWeaponFired(WeaponFireContext *pFireContext);
 
 	void OnHammerFired(WeaponFireContext *pFireContext);
