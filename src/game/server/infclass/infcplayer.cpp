@@ -124,12 +124,6 @@ void CInfClassPlayer::SetCharacterClass(CInfClassPlayerClass *pClass)
 		delete m_pInfcPlayerClass;
 
 	m_pInfcPlayerClass = pClass;
-
-	if(m_pCharacter)
-	{
-		CInfClassCharacter *pCharacter = static_cast<CInfClassCharacter*>(m_pCharacter);
-		pCharacter->SetClass(m_pInfcPlayerClass);
-	}
 }
 
 void CInfClassPlayer::SetClass(int newClass)
@@ -183,7 +177,8 @@ void CInfClassPlayer::SetClass(int newClass)
 	{
 		SetCharacterClass(new(m_ClientID) CInfClassInfected(this));
 	}
-	else if(m_pCharacter)
+
+	if(m_pCharacter)
 	{
 		GetCharacter()->SetClass(m_pInfcPlayerClass);
 	}
