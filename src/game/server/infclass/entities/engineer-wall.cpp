@@ -143,7 +143,7 @@ void CEngineerWall::OnZombieHit(CInfClassCharacter *pZombie)
 				if(
 					pHook->GetPlayer() &&
 					pHook->IsHuman() &&
-					pHook->m_Core.m_HookedPlayer == pZombie->GetCID() &&
+					pHook->GetHookedPlayer() == pZombie->GetCID() &&
 					pHook->GetCID() != m_Owner && //The engineer will get the point when the infected dies
 					pZombie->m_LastFreezer != pHook->GetCID() //The ninja will get the point when the infected dies
 				)

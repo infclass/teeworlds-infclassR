@@ -113,7 +113,7 @@ void CInfClassGameController::OnPlayerInfected(CInfClassPlayer *pPlayer, CInfCla
 	{
 		if(
 			pHook->GetPlayer() &&
-			pHook->m_Core.m_HookedPlayer == pPlayer->GetCID() &&
+			pHook->GetHookedPlayer() == pPlayer->GetCID() &&
 			pHook->GetCID() != InfectedByCID
 		)
 		{

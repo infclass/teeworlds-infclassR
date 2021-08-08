@@ -877,9 +877,10 @@ void CCharacter::Tick()
 	//Hook protection
 	if(m_Core.m_HookedPlayer >= 0)
 	{
-		if(GameServer()->m_apPlayers[m_Core.m_HookedPlayer])
+		CPlayer *pHookedPlayer = GameServer()->m_apPlayers[m_Core.m_HookedPlayer];
+		if(pHookedPlayer)
 		{
-			if(IsZombie() == GameServer()->m_apPlayers[m_Core.m_HookedPlayer]->IsZombie() && GameServer()->m_apPlayers[m_Core.m_HookedPlayer]->HookProtectionEnabled())
+			if(IsZombie() == pHookedPlayer->IsZombie() && pHookedPlayer->HookProtectionEnabled())
 			{
 				m_Core.m_HookedPlayer = -1;
 				m_Core.m_HookState = HOOK_RETRACTED;
