@@ -1664,13 +1664,13 @@ void CInfClassCharacter::Die(int Killer, int Weapon)
 	
 	if(GetPlayerClass() == PLAYERCLASS_WITCH)
 	{
-		m_pPlayer->StartInfection(true);
+		m_pPlayer->StartInfection(true, pKillerPlayer);
 		GameServer()->SendBroadcast_Localization(-1, BROADCAST_PRIORITY_GAMEANNOUNCE, BROADCAST_DURATION_GAMEANNOUNCE, _("The witch is dead"), NULL);
 		GameServer()->CreateSoundGlobal(SOUND_CTF_RETURN);
 	}
 	else if(GetPlayerClass() == PLAYERCLASS_UNDEAD)
 	{
-		m_pPlayer->StartInfection(true);
+		m_pPlayer->StartInfection(true, pKillerPlayer);
 		GameServer()->SendBroadcast_Localization(-1, BROADCAST_PRIORITY_GAMEANNOUNCE, BROADCAST_DURATION_GAMEANNOUNCE, _("The undead is finally dead"), NULL);
 		GameServer()->CreateSoundGlobal(SOUND_CTF_RETURN);
 	}
