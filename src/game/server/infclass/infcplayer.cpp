@@ -14,7 +14,8 @@ CInfClassPlayer::CInfClassPlayer(CInfClassGameController *pGameController, int C
 	: CPlayer(pGameController->GameServer(), ClientID, Team)
 	, m_pGameController(pGameController)
 {
-	SetCharacterClass(new(m_ClientID) CInfClassHuman(this));
+	m_class = PLAYERCLASS_INVALID;
+	SetClass(PLAYERCLASS_NONE);
 }
 
 CInfClassPlayer::~CInfClassPlayer()
@@ -169,11 +170,14 @@ void CInfClassPlayer::SetClass(int newClass)
 	else
 		HookProtection(true); // true = hook protection for zombies by default
 
-	if(IsHuman() && !GetCharacterClass()->IsHuman())
+	const bool HadHumanClass = GetCharacterClass() && GetCharacterClass()->IsHuman();
+	const bool HadInfectedClass = GetCharacterClass() && GetCharacterClass()->IsZombie();
+
+	if(IsHuman() && !HadHumanClass)
 	{
 		SetCharacterClass(new(m_ClientID) CInfClassHuman(this));
 	}
-	else if (IsZombie() && !GetCharacterClass()->IsZombie())
+	else if (IsZombie() && !HadInfectedClass)
 	{
 		SetCharacterClass(new(m_ClientID) CInfClassInfected(this));
 	}
