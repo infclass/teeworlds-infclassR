@@ -65,7 +65,7 @@ public:
 	bool IsGrounded();
 
 	void SetWeapon(int W);
-	void HandleWeaponSwitch();
+	virtual void HandleWeaponSwitch();
 	void DoWeaponSwitch();
 
 	void HandleWeapons();

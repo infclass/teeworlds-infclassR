@@ -49,6 +49,8 @@ public:
 	void Snap(int SnappingClient) override;
 	void SpecialSnapForClient(int SnappingClient, bool *pDoSnap);
 
+	void HandleWeaponSwitch();
+
 	void FireWeapon() override;
 
 	bool TakeDamage(vec2 Force, int Dmg, int From, int Weapon, TAKEDAMAGEMODE Mode) override;

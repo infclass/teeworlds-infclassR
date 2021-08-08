@@ -371,75 +371,43 @@ void CCharacter::DoWeaponSwitch()
 
 void CCharacter::HandleWeaponSwitch()
 {
+	int WantedWeapon = m_ActiveWeapon;
+	if(m_QueuedWeapon != -1)
+		WantedWeapon = m_QueuedWeapon;
+
 	// select Weapon
 	int Next = CountInput(m_LatestPrevInput.m_NextWeapon, m_LatestInput.m_NextWeapon).m_Presses;
 	int Prev = CountInput(m_LatestPrevInput.m_PrevWeapon, m_LatestInput.m_PrevWeapon).m_Presses;
 
-	if(GetPlayerClass() == PLAYERCLASS_SPIDER)
+	if(Next < 128) // make sure we only try sane stuff
 	{
-		int WantedHookMode = m_HookMode;
-		
-		if(Next < 128) // make sure we only try sane stuff
+		while(Next) // Next Weapon selection
 		{
-			while(Next) // Next Weapon selection
-			{
-				WantedHookMode = (WantedHookMode+1)%2;
+			WantedWeapon = (WantedWeapon+1)%NUM_WEAPONS;
+			if(m_aWeapons[WantedWeapon].m_Got)
 				Next--;
-			}
 		}
-
-		if(Prev < 128) // make sure we only try sane stuff
-		{
-			while(Prev) // Prev Weapon selection
-			{
-				WantedHookMode = (WantedHookMode+2-1)%2;
-				Prev--;
-			}
-		}
-
-		// Direct Weapon selection
-		if(m_LatestInput.m_WantedWeapon)
-			WantedHookMode = m_Input.m_WantedWeapon-1;
-
-		if(WantedHookMode >= 0 && WantedHookMode < 2)
-			m_HookMode = WantedHookMode;
 	}
-	else
+
+	if(Prev < 128) // make sure we only try sane stuff
 	{
-		int WantedWeapon = m_ActiveWeapon;
-		if(m_QueuedWeapon != -1)
-			WantedWeapon = m_QueuedWeapon;
-		
-		if(Next < 128) // make sure we only try sane stuff
+		while(Prev) // Prev Weapon selection
 		{
-			while(Next) // Next Weapon selection
-			{
-				WantedWeapon = (WantedWeapon+1)%NUM_WEAPONS;
-				if(m_aWeapons[WantedWeapon].m_Got)
-					Next--;
-			}
+			WantedWeapon = (WantedWeapon-1)<0?NUM_WEAPONS-1:WantedWeapon-1;
+			if(m_aWeapons[WantedWeapon].m_Got)
+				Prev--;
 		}
-
-		if(Prev < 128) // make sure we only try sane stuff
-		{
-			while(Prev) // Prev Weapon selection
-			{
-				WantedWeapon = (WantedWeapon-1)<0?NUM_WEAPONS-1:WantedWeapon-1;
-				if(m_aWeapons[WantedWeapon].m_Got)
-					Prev--;
-			}
-		}
-
-		// Direct Weapon selection
-		if(m_LatestInput.m_WantedWeapon)
-			WantedWeapon = m_Input.m_WantedWeapon-1;
-
-		// check for insane values
-		if(WantedWeapon >= 0 && WantedWeapon < NUM_WEAPONS && WantedWeapon != m_ActiveWeapon && m_aWeapons[WantedWeapon].m_Got)
-			m_QueuedWeapon = WantedWeapon;
-
-		DoWeaponSwitch();
 	}
+
+	// Direct Weapon selection
+	if(m_LatestInput.m_WantedWeapon)
+		WantedWeapon = m_Input.m_WantedWeapon-1;
+
+	// check for insane values
+	if(WantedWeapon >= 0 && WantedWeapon < NUM_WEAPONS && WantedWeapon != m_ActiveWeapon && m_aWeapons[WantedWeapon].m_Got)
+		m_QueuedWeapon = WantedWeapon;
+
+	DoWeaponSwitch();
 }
 
 void CCharacter::FireWeapon()

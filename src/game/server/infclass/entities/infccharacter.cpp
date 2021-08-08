@@ -315,6 +315,47 @@ void CInfClassCharacter::SpecialSnapForClient(int SnappingClient, bool *pDoSnap)
 	}
 }
 
+void CInfClassCharacter::HandleWeaponSwitch()
+{
+	// select Weapon
+	int Next = CountInput(m_LatestPrevInput.m_NextWeapon, m_LatestInput.m_NextWeapon).m_Presses;
+	int Prev = CountInput(m_LatestPrevInput.m_PrevWeapon, m_LatestInput.m_PrevWeapon).m_Presses;
+
+	if(GetPlayerClass() == PLAYERCLASS_SPIDER)
+	{
+		int WantedHookMode = m_HookMode;
+
+		if(Next < 128) // make sure we only try sane stuff
+		{
+			while(Next) // Next Weapon selection
+			{
+				WantedHookMode = (WantedHookMode+1)%2;
+				Next--;
+			}
+		}
+
+		if(Prev < 128) // make sure we only try sane stuff
+		{
+			while(Prev) // Prev Weapon selection
+			{
+				WantedHookMode = (WantedHookMode+2-1)%2;
+				Prev--;
+			}
+		}
+
+		// Direct Weapon selection
+		if(m_LatestInput.m_WantedWeapon)
+			WantedHookMode = m_Input.m_WantedWeapon-1;
+
+		if(WantedHookMode >= 0 && WantedHookMode < 2)
+			m_HookMode = WantedHookMode;
+	}
+	else
+	{
+		CCharacter::HandleWeaponSwitch();
+	}
+}
+
 void CInfClassCharacter::FireWeapon()
 {
 /* INFECTION MODIFICATION START ***************************************/
