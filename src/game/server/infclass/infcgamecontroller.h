@@ -59,6 +59,7 @@ public:
 	void OnPlayerInfected(CInfClassPlayer *pPlayer, CInfClassPlayer *pInfectiousPlayer);
 	bool IsInfectionStarted() override;
 	bool PortalsAvailableForCharacter(class CCharacter *pCharacter) override;
+	bool CanJoinTeam(int Team, int ClientID) override;
 	bool AreTurretsEnabled() const;
 
 	void ResetFinalExplosion();

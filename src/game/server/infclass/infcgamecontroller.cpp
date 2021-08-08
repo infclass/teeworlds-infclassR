@@ -1135,6 +1135,39 @@ bool CInfClassGameController::PortalsAvailableForCharacter(class CCharacter *pCh
 	return true;
 }
 
+bool CInfClassGameController::CanJoinTeam(int Team, int ClientID)
+{
+	if(Team != TEAM_SPECTATORS)
+	{
+		return IGameController::CanJoinTeam(Team, ClientID);
+	}
+
+	if (IsGameOver())
+		return true;
+
+	CInfClassPlayer *pPlayer = GetPlayer(ClientID);
+
+	if(!pPlayer) // Invalid call
+		return false;
+
+	if (pPlayer->IsHuman())
+		return true;
+
+	int NumHumans;
+	int NumInfected;
+	GetPlayerCounter(ClientID, NumHumans, NumInfected);
+	const int NumPlayers = NumHumans + NumInfected;
+	const int NumMinInfected = GetMinimumInfectedForPlayers(NumPlayers);
+	if(NumInfected >= NumMinInfected)
+	{
+		// Let the ClientID join the specs if we'll not have to infect
+		// someone after the join.
+		return true;
+	}
+
+	return false;
+}
+
 bool CInfClassGameController::AreTurretsEnabled() const
 {
 	if(!Config()->m_InfTurretEnable)
