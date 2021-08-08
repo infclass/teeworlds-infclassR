@@ -75,12 +75,13 @@ void CInfClassGameController::OnClientDrop(int ClientID, int Type)
 	if(Type == CLIENTDROPTYPE_SHUTDOWN) return;	
 	
 	CPlayer* pPlayer = GameServer()->m_apPlayers[ClientID];
-	if(pPlayer && pPlayer->IsZombie() && m_InfectedStarted)
+	if(pPlayer && pPlayer->IsActuallyZombie() && m_InfectedStarted)
 	{
 		int NumHumans;
 		int NumInfected;
-		int NumFirstInfected;
-		GetPlayerCounter(ClientID, NumHumans, NumInfected, NumFirstInfected);
+		GetPlayerCounter(ClientID, NumHumans, NumInfected);
+		const int NumPlayers = NumHumans + NumInfected;
+		const int NumFirstInfected = GetMinimumInfectedForPlayers(NumPlayers);
 		
 		if(NumInfected < NumFirstInfected)
 		{
@@ -819,7 +820,7 @@ void CInfClassGameController::EndRound()
 	m_RoundStarted = false;
 }
 
-void CInfClassGameController::GetPlayerCounter(int ClientException, int& NumHumans, int& NumInfected, int& NumFirstInfected)
+void CInfClassGameController::GetPlayerCounter(int ClientException, int& NumHumans, int& NumInfected)
 {
 	NumHumans = 0;
 	NumInfected = 0;
@@ -833,25 +834,30 @@ void CInfClassGameController::GetPlayerCounter(int ClientException, int& NumHuma
 		if(Iter.Player()->IsZombie()) NumInfected++;
 		else NumHumans++;
 	}
-	
-	const int NumPlayers = NumHumans + NumInfected;
+}
 
-	if(NumPlayers > 20)
+int CInfClassGameController::GetMinimumInfectedForPlayers(int PlayersNumber) const
+{
+	int NumFirstInfected = 0;
+
+	if(PlayersNumber > 20)
 		NumFirstInfected = 4;
-	else if(NumPlayers > 8)
+	else if(PlayersNumber > 8)
 		NumFirstInfected = 3;
-	else if(NumPlayers > 3)
+	else if(PlayersNumber > 3)
 		NumFirstInfected = 2;
-	else if(NumPlayers > 1)
+	else if(PlayersNumber > 1)
 		NumFirstInfected = 1;
 	else
 		NumFirstInfected = 0;
 
-	int FirstInfectedLimit = g_Config.m_InfFirstInfectedLimit;
+	int FirstInfectedLimit = Config()->m_InfFirstInfectedLimit;
 	if(FirstInfectedLimit && NumFirstInfected > FirstInfectedLimit)
 	{
 		NumFirstInfected = FirstInfectedLimit;
 	}
+
+	return NumFirstInfected;
 }
 
 int CInfClassGameController::RandomZombieToWitch() {
@@ -924,13 +930,15 @@ void CInfClassGameController::Tick()
 	
 	int NumHumans = 0;
 	int NumInfected = 0;
-	int NumFirstInfected = 0;
-	GetPlayerCounter(-1, NumHumans, NumInfected, NumFirstInfected);
-	
+	GetPlayerCounter(-1, NumHumans, NumInfected);
+
+	const int NumPlayers = NumHumans + NumInfected;
+	const int NumFirstInfected = GetMinimumInfectedForPlayers(NumPlayers);
+
 	m_InfectedStarted = false;
 
 	//If the game can start ...
-	if(m_GameOverTick == -1 && NumHumans + NumInfected >= g_Config.m_InfMinPlayers)
+	if(m_GameOverTick == -1 && NumPlayers >= g_Config.m_InfMinPlayers)
 	{
 		//If the infection started
 		if(IsInfectionStarted())
@@ -1407,8 +1415,7 @@ void CInfClassGameController::DoWincheck()
 {
 	int NumHumans = 0;
 	int NumInfected = 0;
-	int NumFirstInfected = 0;
-	GetPlayerCounter(-1, NumHumans, NumInfected, NumFirstInfected);
+	GetPlayerCounter(-1, NumHumans, NumInfected);
 
 	static const char *ClassicRound = "classic";
 	static const char *WitchPortalsRound = "witch_portals";

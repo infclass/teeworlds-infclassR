@@ -100,7 +100,8 @@ private:
 	void SnapMapMenu(int SnappingClient, CNetObj_GameInfo *pGameInfoObj);
 	void RewardTheKiller(CInfClassCharacter *pVictim, CInfClassPlayer *pKiller, int Weapon);
 	bool IsSpawnable(vec2 Pos, int TeleZoneIndex) override;
-	void GetPlayerCounter(int ClientException, int& NumHumans, int& NumInfected, int& NumFirstInfected);
+	void GetPlayerCounter(int ClientException, int& NumHumans, int& NumInfected);
+	int GetMinimumInfectedForPlayers(int PlayersNumber) const;
 
 	int RandomZombieToWitch();
 	std::vector<int> m_WitchCallers;
