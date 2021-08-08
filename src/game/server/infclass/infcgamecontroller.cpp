@@ -92,8 +92,9 @@ void CInfClassGameController::OnClientDrop(int ClientID, int Type)
 
 void CInfClassGameController::OnPlayerInfected(CInfClassPlayer *pPlayer, CInfClassPlayer *pInfectiousPlayer)
 {
-	if (!pInfectiousPlayer || pInfectiousPlayer->GetTeam() == TEAM_SPECTATORS || pPlayer->GetCID() == pInfectiousPlayer->GetCID()) {
-		if (pPlayer->GetCharacter())
+	if(!pInfectiousPlayer)
+	{
+		if(pPlayer->GetCharacter())
 		{
 			// Still send a kill message to notify other players about the infection
 			GameServer()->SendKillMessage(pPlayer->GetCID(), pPlayer->GetCID(), WEAPON_WORLD, 0);
