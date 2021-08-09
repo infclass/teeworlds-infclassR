@@ -475,7 +475,8 @@ bool CInfClassCharacter::TakeDamage(vec2 Force, int Dmg, int From, int Weapon, T
 		Force = vec2(0, 0);
 	}
 
-	if((GetPlayerClass() == PLAYERCLASS_SOLDIER) && (Weapon == WEAPON_HAMMER))
+	const bool DmgFromHuman = pKillerPlayer && pKillerPlayer->IsHuman();
+	if(DmgFromHuman && (GetPlayerClass() == PLAYERCLASS_SOLDIER) && (Weapon == WEAPON_HAMMER))
 	{
 		// Soldier is immune to any traps force
 		Force = vec2(0, 0);
