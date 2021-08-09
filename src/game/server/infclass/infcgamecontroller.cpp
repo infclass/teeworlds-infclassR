@@ -1456,7 +1456,7 @@ int CInfClassGameController::OnCharacterDeath(class CCharacter *pAbstractVictim,
 	RewardTheKiller(pVictim, pKiller, Weapon);
 
 	//Add bonus point for ninja
-	if(pVictim->IsZombie() && pVictim->IsFrozen() && pVictim->m_LastFreezer >= 0 && pVictim->m_LastFreezer)
+	if(pVictim->IsZombie() && pVictim->IsFrozen() && pVictim->m_LastFreezer >= 0)
 	{
 		CInfClassPlayer *pFreezer = GetPlayer(pVictim->m_LastFreezer);
 		if(pFreezer && pFreezer != pKiller)
