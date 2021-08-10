@@ -558,6 +558,7 @@ int CServer::Init()
 		
 /* INFECTION MODIFICATION START ***************************************/
 	m_aPreviousMap[0] = 0;
+	m_aCurrentMap[0] = 0;
 
 	SetFireDelay(INFWEAPON_NONE, 0);
 	SetFireDelay(INFWEAPON_HAMMER, 125);
