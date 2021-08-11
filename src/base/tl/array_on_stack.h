@@ -20,11 +20,17 @@ public:
 	T operator[](int Index) const { return m_Data[Index]; }
 	T &operator[](int Index) { return m_Data[Index]; }
 
+	T &First() { return m_Data[0]; }
+	T &Last() { return m_Data[m_Size - 1]; }
+
 	const T &First() const { return m_Data[0]; }
 	const T &Last() const { return m_Data[m_Size - 1]; }
 
 	T *begin() { return &m_Data[0]; }
 	T *end() { return &m_Data[m_Size]; }
+
+	const T *begin() const { return &m_Data[0]; }
+	const T *end() const { return &m_Data[m_Size]; }
 
 	T *Data() { return &m_Data; }
 	const T *Data() const { return &m_Data; }
