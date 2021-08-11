@@ -122,6 +122,8 @@ public:
 	void ResetFinalExplosion();
 	void SaveRoundRules();
 
+	int GetRoundTick() const;
+
 	static bool IsZombieClass(int PlayerClass);
 	static bool IsDefenderClass(int PlayerClass);
 	static bool IsSupportClass(int PlayerClass);

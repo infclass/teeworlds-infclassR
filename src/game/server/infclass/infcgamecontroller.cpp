@@ -580,6 +580,11 @@ void CInfClassGameController::SaveRoundRules()
 	m_TurretsEnabled = AreTurretsEnabled();
 }
 
+int CInfClassGameController::GetRoundTick() const
+{
+	return Server()->Tick() - m_RoundStartTick;
+}
+
 bool CInfClassGameController::IsZombieClass(int PlayerClass)
 {
 	return (PlayerClass > START_INFECTEDCLASS) && (PlayerClass < END_INFECTEDCLASS);
