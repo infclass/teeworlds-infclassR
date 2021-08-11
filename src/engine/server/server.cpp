@@ -289,6 +289,8 @@ void CServerBan::ConBanExt(IConsole::IResult *pResult, void *pUser)
 		int ClientID = str_toint(pStr);
 		if(ClientID < 0 || ClientID >= MAX_CLIENTS || pThis->Server()->m_aClients[ClientID].m_State == CServer::CClient::STATE_EMPTY)
 			pThis->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "net_ban", "ban error (invalid client id)");
+		else if(ClientID >= 0 && ClientID < MAX_CLIENTS && pThis->Server()->m_aClients[ClientID].m_IsBot)
+			pThis->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "net_ban", "ban error (command denied)");
 		else
 		{
 			pThis->m_BanID = ClientID; //to ban the right guy, not his brother or so :P
@@ -314,6 +316,7 @@ void CServer::CClient::Reset(bool ResetScore)
 	m_LastAckedSnapshot = -1;
 	m_LastInputTick = -1;
 	m_Quitting = false;
+	m_IsBot = false;
 	m_SnapRate = CClient::SNAPRATE_INIT;
 	m_NextMapChunk = 0;
 	m_DDNetVersion = VERSION_NONE;
@@ -528,6 +531,11 @@ void CServer::Kick(int ClientID, const char *pReason)
 		Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "server", "kick command denied");
  		return;
 	}
+	else if(m_aClients[ClientID].m_IsBot)
+	{
+		Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "server", "kick command denied");
+		return;
+	}
 
 	m_NetServer.Drop(ClientID, CLIENTDROPTYPE_KICK, pReason);
 }
@@ -557,6 +565,7 @@ int CServer::Init()
 		m_aClients[i].m_CustClt = 0;
 		m_aClients[i].m_Country = -1;
 		m_aClients[i].m_Snapshots.Init();
+		m_aClients[i].m_IsBot = false;
 		m_aClients[i].m_WaitingTime = 0;
 		m_aClients[i].m_WasInfected = 0;
 		m_aClients[i].m_Accusation.m_Num = 0;
@@ -867,7 +876,7 @@ int CServer::SendMsg(CMsgPacker *pMsg, int Flags, int ClientID)
 		{
 			for(int i = 0; i < MAX_CLIENTS; i++)
 			{
-				if(m_aClients[i].m_State == CClient::STATE_INGAME)
+				if((m_aClients[i].m_State == CClient::STATE_INGAME) && !m_aClients[i].m_IsBot)
 				{
 					CPacker *pPack = &Pack6;
 					Packet.m_pData = pPack->Data();
@@ -924,6 +933,10 @@ void CServer::DoSnapshot()
 	{
 		// client must be ingame to recive snapshots
 		if(m_aClients[i].m_State != CClient::STATE_INGAME)
+			continue;
+
+		// client must be human to recive snapshots
+		if(m_aClients[i].m_IsBot)
 			continue;
 
 		// this client is trying to recover, don't spam snapshots
@@ -1062,6 +1075,35 @@ int CServer::ClientRejoinCallback(int ClientID, void *pUser)
 
 	pThis->SendMap(ClientID);
 
+	return 0;
+}
+
+int CServer::NewBot(int ClientID)
+{
+	if(m_aClients[ClientID].m_State > CClient::STATE_EMPTY && !m_aClients[ClientID].m_IsBot)
+		return 1;
+	m_aClients[ClientID].m_State = CClient::STATE_INGAME;
+	m_aClients[ClientID].m_Country = -1;
+	m_aClients[ClientID].m_UserID = -1;
+	m_aClients[ClientID].m_IsBot = true;
+
+	return 0;
+}
+
+int CServer::DelBot(int ClientID)
+{
+	if( !m_aClients[ClientID].m_IsBot )
+		return 1;
+	m_aClients[ClientID].m_State = CClient::STATE_EMPTY;
+	m_aClients[ClientID].m_aName[0] = 0;
+	m_aClients[ClientID].m_aClan[0] = 0;
+	m_aClients[ClientID].m_Country = -1;
+	m_aClients[ClientID].m_UserID = -1;
+	m_aClients[ClientID].m_Authed = AUTHED_NO;
+	m_aClients[ClientID].m_AuthTries = 0;
+	m_aClients[ClientID].m_pRconCmdToSend = 0;
+	m_aClients[ClientID].m_IsBot = false;
+	m_aClients[ClientID].m_Snapshots.PurgeAll();
 	return 0;
 }
 
@@ -2556,7 +2598,7 @@ int CServer::Run()
 	// disconnect all clients on shutdown
 	for(int i = 0; i < MAX_CLIENTS; ++i)
 	{
-		if(m_aClients[i].m_State != CClient::STATE_EMPTY)
+		if((m_aClients[i].m_State != CClient::STATE_EMPTY) && ! m_aClients[i].m_IsBot)
 			m_NetServer.Drop(i, CLIENTDROPTYPE_SHUTDOWN, m_aShutdownReason);
 
 		m_Econ.Shutdown();
@@ -2723,7 +2765,7 @@ void CServer::ConStatus(IConsole::IResult *pResult, void *pUser)
 /* INFECTION MODIFICATION START ***************************************/
 	for(int i = 0; i < MAX_CLIENTS; i++)
 	{
-		if(pThis->m_aClients[i].m_State != CClient::STATE_EMPTY)
+		if((pThis->m_aClients[i].m_State != CClient::STATE_EMPTY) && !pThis->m_aClients[i].m_IsBot)
 		{
 			net_addr_str(pThis->m_NetServer.ClientAddr(i), aAddrStr, sizeof(aAddrStr), true);
 			if(pThis->m_aClients[i].m_State == CClient::STATE_INGAME)

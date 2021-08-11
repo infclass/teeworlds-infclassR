@@ -138,6 +138,7 @@ public:
 		int m_Latency;
 		int m_SnapRate;
 		bool m_Quitting;
+		bool m_IsBot;
 
 		int m_LastAckedSnapshot;
 		int m_LastInputTick;
@@ -282,6 +283,8 @@ public:
 
 	void DoSnapshot();
 
+	int NewBot(int ClientID);
+	int DelBot(int ClientID);
 	static int ClientRejoinCallback(int ClientID, void *pUser);
 	static int NewClientCallback(int ClientID, void *pUser);
 	static int DelClientCallback(int ClientID, int Type, const char *pReason, void *pUser);
