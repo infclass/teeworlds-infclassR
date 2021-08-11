@@ -1882,7 +1882,8 @@ int CInfClassGameController::ChooseInfectedClass(const CPlayer *pPlayer) const
 	return Class;
 }
 
-bool CInfClassGameController::IsEnabledClass(int PlayerClass) {
+bool CInfClassGameController::IsEnabledClass(int PlayerClass) const
+{
 	switch(PlayerClass)
 	{
 		case PLAYERCLASS_ENGINEER:
@@ -1910,7 +1911,7 @@ bool CInfClassGameController::IsEnabledClass(int PlayerClass) {
 	}
 }
 
-CLASS_AVAILABILITY CInfClassGameController::GetPlayerClassAvailability(int PlayerClass)
+CLASS_AVAILABILITY CInfClassGameController::GetPlayerClassAvailability(int PlayerClass) const
 {
 	if (!IsEnabledClass(PlayerClass))
 		return CLASS_AVAILABILITY::DISABLED;

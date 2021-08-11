@@ -53,8 +53,8 @@ public:
 	bool PreSpawn(CPlayer* pPlayer, vec2 *pPos) override;
 	int ChooseHumanClass(const CPlayer *pPlayer) const;
 	int ChooseInfectedClass(const CPlayer *pPlayer) const override;
-	bool IsEnabledClass(int PlayerClass);
-	CLASS_AVAILABILITY GetPlayerClassAvailability(int PlayerClass);
+	bool IsEnabledClass(int PlayerClass) const;
+	CLASS_AVAILABILITY GetPlayerClassAvailability(int PlayerClass) const;
 	bool CanVote() override;
 	void OnClientDrop(int ClientID, int Type) override;
 	void OnPlayerInfected(CInfClassPlayer *pPlayer, CInfClassPlayer *pInfectiousPlayer, int PreviousClass);
