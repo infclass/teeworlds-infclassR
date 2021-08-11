@@ -1798,20 +1798,11 @@ int CInfClassGameController::ChooseHumanClass(const CPlayer *pPlayer) const
 			continue;
 		}
 
-		if (IsDefenderClass(PlayerClass) && (nbDefender >= g_Config.m_InfDefenderLimit))
+		CLASS_AVAILABILITY Availability = GetPlayerClassAvailability(PlayerClass);
+		if(Availability != CLASS_AVAILABILITY::AVAILABLE)
+		{
 			ClassProbability = 0.0f;
-
-		if (IsSupportClass(PlayerClass) && (nbSupport >= g_Config.m_InfSupportLimit))
-			ClassProbability = 0.0f;
-
-		if (nbClass[PlayerClass] >= Server()->GetClassPlayerLimit(PlayerClass))
-			ClassProbability = 0.0f;
-
-		// Honor the players count
-		int ActivePlayerCount = Server()->GetActivePlayerCount();
-		int MinPlayersForClass = Server()->GetMinPlayersForClass(PlayerClass);
-		if (ActivePlayerCount < MinPlayersForClass)
-			ClassProbability = 0.0f;
+		}
 	}
 
 	//Random is not fair enough. We keep the last two classes took by the player, and avoid to give him those again
