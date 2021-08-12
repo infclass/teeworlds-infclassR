@@ -153,10 +153,7 @@ void CEngineerWall::OnZombieHit(CInfClassCharacter *pZombie)
 					GameServer()->SendScoreSound(pHook->GetCID());
 				}
 			}
-		}
 
-		if(pZombie->GetPlayerClass() != PLAYERCLASS_UNDEAD && pZombie->GetPlayerClass() != PLAYERCLASS_VOODOO)
-		{
 			int LifeSpanReducer = ((Server()->TickSpeed()*Config()->m_InfBarrierTimeReduce)/100);
 			m_WallFlashTicks = 10;
 
