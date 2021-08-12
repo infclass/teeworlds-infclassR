@@ -1641,6 +1641,9 @@ void CServer::SendServerInfo(const NETADDR *pAddr, int Token, bool Extended, boo
 	{
 		if(m_aClients[i].m_State != CClient::STATE_EMPTY)
 		{
+			if(GameServer()->IsClientBot(i))
+				continue;
+
 			if(GameServer()->IsClientPlayer(i))
 				PlayerCount++;
 
@@ -1794,6 +1797,9 @@ void CServer::SendServerInfo(const NETADDR *pAddr, int Token, bool Extended, boo
 		{
 			if(m_aClients[i].m_State != CClient::STATE_EMPTY)
 			{
+				if(GameServer()->IsClientBot(i))
+					continue;
+
 				if(g_Config.m_SvHideInfo)
 				{
 					if(PlayerCount == 0)
