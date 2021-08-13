@@ -320,6 +320,12 @@ int CInfClassInfected::GetGhoulLevel() const
 
 void CInfClassInfected::PrepareToDie(int Killer, int Weapon, bool *pRefusedToDie)
 {
+	if(m_pCharacter->IsInvincible() && (Killer != GetCID()))
+	{
+		*pRefusedToDie = true;
+		return;
+	}
+
 	// Start counting down, delay killer message for later
 	if(GetPlayerClass() == PLAYERCLASS_VOODOO)
 	{
