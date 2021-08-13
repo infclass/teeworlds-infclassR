@@ -107,6 +107,8 @@ void CInfClassInfected::OnCharacterSpawned()
 	CInfClassPlayerClass::OnCharacterSpawned();
 
 	m_SlimeHealTick = 0;
+
+	m_pCharacter->GrantSpawnProtection();
 }
 
 void CInfClassInfected::GiveClassAttributes()
