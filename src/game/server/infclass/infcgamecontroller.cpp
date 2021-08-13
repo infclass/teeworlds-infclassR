@@ -124,6 +124,10 @@ void CInfClassGameController::OnPlayerInfected(CInfClassPlayer *pPlayer, CInfCla
 		}
 		else if (pPlayer != pInfectiousPlayer)
 		{
+			GameServer()->SendChatTarget_Localization(pPlayer->GetCID(), CHATCATEGORY_INFECTED,
+				_("You have been infected by {str:KillerName}"),
+				"KillerName", Server()->ClientName(pInfectiousPlayer->GetCID()),
+				nullptr);
 			GameServer()->SendChatTarget_Localization(InfectedByCID, CHATCATEGORY_SCORE,
 				_("You have infected {str:VictimName}, +3 points"),
 				"VictimName", Server()->ClientName(pPlayer->GetCID()),
