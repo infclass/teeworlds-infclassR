@@ -644,7 +644,6 @@ set_glob(GAME_SERVER GLOB_RECURSE src/game/server
   infclass/infcgamecontroller.h
   infclass/infcplayer.cpp
   infclass/infcplayer.h
-  changelog.cpp
   classes.h
   entity.cpp
   entity.h

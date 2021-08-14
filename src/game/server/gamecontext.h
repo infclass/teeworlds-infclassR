@@ -274,6 +274,7 @@ private:
 	static bool ConLanguage(IConsole::IResult *pResult, void *pUserData);
 	static bool ConCmdList(IConsole::IResult *pResult, void *pUserData);
 	static bool ConChangeLog(IConsole::IResult *pResult, void *pUserData);
+	bool ConChangeLog(IConsole::IResult *pResult);
 
 	static bool ConClearFunRounds(IConsole::IResult *pResult, void *pUserData);
 	static bool ConAddFunRound(IConsole::IResult *pResult, void *pUserData);

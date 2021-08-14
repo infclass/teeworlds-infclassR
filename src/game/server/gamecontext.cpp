@@ -4057,6 +4057,28 @@ bool CGameContext::ConCmdList(IConsole::IResult *pResult, void *pUserData)
 	return true;
 }
 
+bool CGameContext::ConChangeLog(IConsole::IResult *pResult, void *pUserData)
+{
+	CGameContext *pSelf = (CGameContext *)pUserData;
+	return pSelf->ConChangeLog(pResult);
+}
+
+bool CGameContext::ConChangeLog(IConsole::IResult *pResult)
+{
+	int ClientID = pResult->GetClientID();
+
+	int Page = pResult->GetInteger(0);
+	Page = 0;
+
+	if(1)
+	{
+		SendChatTarget_Localization(ClientID, CHATCATEGORY_DEFAULT, _("ChangeLog is not available"), nullptr);
+		return true;
+	}
+
+	return true;
+}
+
 bool CGameContext::ConClearFunRounds(IConsole::IResult *pResult, void *pUserData)
 {
 	CGameContext *pSelf = (CGameContext *)pUserData;
