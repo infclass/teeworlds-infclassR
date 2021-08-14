@@ -8,6 +8,7 @@
 #include <engine/storage.h>
 #include <engine/server/roundstatistics.h>
 #include <engine/server/sql_server.h>
+#include <engine/shared/linereader.h>
 #include "gamecontext.h"
 #include <game/version.h>
 #include <game/collision.h>
@@ -32,6 +33,8 @@ enum
 
 /* INFECTION MODIFICATION START ***************************************/
 bool CGameContext::m_ClientMuted[MAX_CLIENTS][MAX_CLIENTS];
+array_on_stack<string, 256> CGameContext::m_aChangeLogEntries;
+array_on_stack<int, 16> CGameContext::m_aChangeLogPageIndices;
 
 void CGameContext::OnSetAuthed(int ClientID, int Level)
 {
@@ -603,6 +606,90 @@ void CGameContext::SetClientLanguage(int ClientID, const char *pLanguage)
 	{
 		m_apPlayers[ClientID]->SetLanguage(pLanguage);
 	}
+}
+
+void CGameContext::InitChangelog()
+{
+	if(m_aChangeLogEntries.IsEmpty())
+	{
+		ReloadChangelog();
+	}
+}
+
+void CGameContext::ReloadChangelog()
+{
+	for(string & Entry : m_aChangeLogEntries)
+	{
+		Entry = nullptr;
+	}
+	m_aChangeLogEntries.Clear();
+	m_aChangeLogPageIndices.Clear();
+
+	const char *pChangelogFilename = Config()->m_SvChangeLogFile;
+	if(!pChangelogFilename || pChangelogFilename[0] == 0)
+	{
+		dbg_msg("ChangeLog", "ChangeLog file is not set");
+		return;
+	}
+
+	IOHANDLE File = Storage()->OpenFile(pChangelogFilename, IOFLAG_READ, IStorage::TYPE_ALL);
+	if(!File)
+	{
+		dbg_msg("ChangeLog", "unable to open '%s'", pChangelogFilename);
+		return;
+	}
+
+	CLineReader LineReader;
+	LineReader.Init(File);
+	char *pLine = nullptr;
+	const int MaxLinesPerPage = Config()->m_SvChangeLogMaxLinesPerPage;
+	int AddedLines = 0;
+
+	array_on_stack<char, 8> SamePageItemStartChars = {
+		' ',
+		'-',
+	};
+
+	while((pLine = LineReader.Get()))
+	{
+		if(pLine[0] == 0)
+			continue;
+
+		bool ThisLineIsPartOfPrevious = pLine[0] == ' ';
+		bool ImplicitNewPage = str_comp(pLine, "<page>") == 0;
+		bool ExplicitNewPage = m_aChangeLogPageIndices.IsEmpty() || (AddedLines >= MaxLinesPerPage);
+		ExplicitNewPage = ExplicitNewPage || !SamePageItemStartChars.Contains(pLine[0]);
+		if(ImplicitNewPage || ExplicitNewPage)
+		{
+			if(m_aChangeLogPageIndices.Size() == m_aChangeLogPageIndices.Capacity())
+			{
+				dbg_msg("ChangeLog", "ChangeLog truncated: only %d pages allowed", m_aChangeLogPageIndices.Capacity());
+				break;
+			}
+			if(ThisLineIsPartOfPrevious && !m_aChangeLogEntries.IsEmpty())
+			{
+				m_aChangeLogPageIndices.Add(m_aChangeLogEntries.Size() - 1);
+			}
+			else
+			{
+				m_aChangeLogPageIndices.Add(m_aChangeLogEntries.Size());
+			}
+			AddedLines = 0;
+		}
+		if(ImplicitNewPage)
+		{
+			continue;
+		}
+
+		if(m_aChangeLogEntries.Size() == m_aChangeLogEntries.Capacity())
+		{
+			dbg_msg("ChangeLog", "ChangeLog truncated: only %d lines allowed", m_aChangeLogEntries.Capacity());
+			break;
+		}
+		m_aChangeLogEntries.Add(pLine);
+		++AddedLines;
+	}
+	io_close(File);
 }
 
 void CGameContext::SendBroadcast(int To, const char *pText, int Priority, int LifeSpan)
@@ -4072,15 +4159,55 @@ bool CGameContext::ConChangeLog(IConsole::IResult *pResult)
 {
 	int ClientID = pResult->GetClientID();
 
-	int Page = pResult->GetInteger(0);
-	Page = 0;
-
-	if(1)
+	if(m_aChangeLogEntries.Size() == 0)
 	{
-		SendChatTarget_Localization(ClientID, CHATCATEGORY_DEFAULT, _("ChangeLog is not available"), nullptr);
+		SendChatTarget_Localization(ClientID, CHATCATEGORY_DEFAULT, _("ChangeLog is not provided"), nullptr);
 		return true;
 	}
 
+	int PageNumber = pResult->GetInteger(0);
+	if(PageNumber <= 0)
+	{
+		PageNumber = 1;
+	}
+	int PagesInTotal = m_aChangeLogPageIndices.Size();
+	if(PageNumber > PagesInTotal)
+	{
+		SendChatTarget_Localization(ClientID, CHATCATEGORY_DEFAULT, _("ChangeLog page {int:PageNumber} is not available"),
+			"PageNumber", &PageNumber,
+			nullptr);
+		return true;
+	}
+
+	int PageIndex = PageNumber - 1;
+	int From = m_aChangeLogPageIndices.At(PageIndex);
+	int To = (PageIndex + 1) < m_aChangeLogPageIndices.Size() ? m_aChangeLogPageIndices.At(PageIndex + 1) : m_aChangeLogEntries.Size();
+
+	for(int i = From; i < To; ++i)
+	{
+		const char *pText = m_aChangeLogEntries.At(i);
+		SendChatTarget(ClientID, pText);
+	}
+
+	if(PageNumber != PagesInTotal)
+	{
+		int NextPage = PageNumber + 1;
+
+		SendChatTarget_Localization(ClientID, CHATCATEGORY_DEFAULT,
+			_("(page {int:PageNumber}/{int:PagesInTotal}, see /changelog {int:NextPage})"),
+			"PageNumber", &PageNumber,
+			"PagesInTotal", &PagesInTotal,
+			"NextPage", &NextPage,
+			nullptr);
+	}
+
+	return true;
+}
+
+bool CGameContext::ConReloadChangeLog(IConsole::IResult *pResult, void *pUserData)
+{
+	CGameContext *pSelf = (CGameContext *)pUserData;
+	pSelf->ReloadChangelog();
 	return true;
 }
 
@@ -4185,7 +4312,8 @@ void CGameContext::OnConsoleInit()
 	Console()->Register("stats", "i", CFGFLAG_CHAT|CFGFLAG_USER, ConStats, this, "Show stats by id");
 #endif
 	Console()->Register("help", "?s<page>", CFGFLAG_CHAT|CFGFLAG_USER, ConHelp, this, "Display help");
-	Console()->Register("changelog", "?i<list>", CFGFLAG_CHAT|CFGFLAG_USER, ConChangeLog, this, "Display changelogs");
+	Console()->Register("reload_changelog", "?i<page>", CFGFLAG_SERVER, ConReloadChangeLog, this, "Reload the changelog file");
+	Console()->Register("changelog", "?i<page>", CFGFLAG_CHAT|CFGFLAG_USER, ConChangeLog, this, "Display a changelog page");
 	Console()->Register("customskin", "s<all|me|none>", CFGFLAG_CHAT|CFGFLAG_USER, ConCustomSkin, this, "Display information about the mod");
 	Console()->Register("alwaysrandom", "i<0|1>", CFGFLAG_CHAT|CFGFLAG_USER, ConAlwaysRandom, this, "Display information about the mod");
 	Console()->Register("antiping", "i<0|1>", CFGFLAG_CHAT|CFGFLAG_USER, ConAntiPing, this, "Try to improve your ping");
@@ -4296,6 +4424,8 @@ void CGameContext::OnInit(/*class IKernel *pKernel*/)
 		}
 	}
 #endif
+
+	InitChangelog();
 }
 
 void CGameContext::OnStartRound()

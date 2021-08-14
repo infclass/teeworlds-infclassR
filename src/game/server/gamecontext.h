@@ -3,6 +3,9 @@
 #ifndef GAME_SERVER_GAMECONTEXT_H
 #define GAME_SERVER_GAMECONTEXT_H
 
+#include <base/tl/array_on_stack.h>
+#include <base/tl/string.h>
+
 #include <engine/server.h>
 #include <engine/storage.h>
 #include <engine/console.h>
@@ -275,6 +278,7 @@ private:
 	static bool ConCmdList(IConsole::IResult *pResult, void *pUserData);
 	static bool ConChangeLog(IConsole::IResult *pResult, void *pUserData);
 	bool ConChangeLog(IConsole::IResult *pResult);
+	static bool ConReloadChangeLog(IConsole::IResult *pResult, void *pUserData);
 
 	static bool ConClearFunRounds(IConsole::IResult *pResult, void *pUserData);
 	static bool ConAddFunRound(IConsole::IResult *pResult, void *pUserData);
@@ -323,12 +327,16 @@ public:
 	void SendScoreSound(int ClientID);
 	void AddBroadcast(int ClientID, const char* pText, int Priority, int LifeSpan);
 	void SetClientLanguage(int ClientID, const char *pLanguage);
+	void InitChangelog();
+	void ReloadChangelog();
 	
 private:
 	int m_VoteLanguageTick[MAX_CLIENTS];
 	char m_VoteLanguage[MAX_CLIENTS][16];
 	int m_VoteBanClientID;
 	static bool m_ClientMuted[MAX_CLIENTS][MAX_CLIENTS]; // m_ClientMuted[i][j]: i muted j
+	static array_on_stack<string, 256> m_aChangeLogEntries;
+	static array_on_stack<int, 16> m_aChangeLogPageIndices;
 	
 	class CBroadcastState
 	{
