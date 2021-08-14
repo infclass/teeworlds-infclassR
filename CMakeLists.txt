@@ -755,6 +755,7 @@ install(
 )
 install(
   FILES
+    "ChangeLog.txt"
     "autoexec.cfg"
     "reset.cfg"
   DESTINATION

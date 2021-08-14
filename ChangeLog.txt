@@ -1,0 +1,49 @@
+InfclassR v1.3.0_pre3
+- Added messages on a human infected by the zone
+- Added a message to the infected player ("You have been
+  infected by...")
+- Updated `/changelog` implementation
+- Improved indirect killer detection (added some causality)
+- Re-enabled infected hammer force effect on Soldier
+- Undeads and Voodoos now reduce EngineerWall lifespan
+- Ninjas are now invincible for hammers during the split
+  second of katana attack
+- Infection spawn protection (1 second) now actually given
+  on infection spawned
+- Fixed joining specs with 3 first infected
+- Fixed Scientist kills during a white hole effect allowed
+  to place another white hole
+- Fixed the lonely infection HP bonus (given by a mistake)
+- Fixed ninja (freezer) reward if the player ID is 0
+- Fixed missing hook protection until the player class is set
+
+InfclassR v1.3.0_pre2
+- Added initial support for the Entities View
+- Added a broadcast message to Class Menu on a disabled
+  class hovered (suggested by ipoopi)
+- Updated Hero help page (by ipoopi)
+- Base HP increase on a ninja killed a target replaced with
+  overall HP increase (now ninja can get an armor)
+- Fixed the player skin sometimes showed as default if the
+  character is not in the game world
+- Fixed Scientist ammo wasting on an aborted teleportation
+- `infc_floatingislands` remapped (by FluffyTee)
+
+InfclassR v1.3.0_pre1
+- Spider feet are now colored in dark red on web hook length
+  limit reached
+- Fixed sniper position unlock on a jump
+- Fixed InfClass zones sensitivity (only the right top point
+  of the Tee was checked previously)
+- `infc_headquarter` got some graphics cleanup
+- Removed  an invisible tile on `infc_k9f_small`
+
+InfclassR v1.2.1
+- Medics grenade now makes the targets happy only if they're
+  actually healed
+- Fixed looper color in class menu
+- Fixed compatibility with teeworlds-0.6.5 (from DDNet)
+- infc_skull: Added green background to the infection zone
+- infc_warehouse: Updated the infection zones highlight
+- infc_damascus: Slightly optimized for better client
+  performance
