@@ -4198,6 +4198,7 @@ void CGameContext::OnInit(/*class IKernel *pKernel*/)
 	m_pServer = Kernel()->RequestInterface<IServer>();
 	m_pConfig = &g_Config;
 	m_pConsole = Kernel()->RequestInterface<IConsole>();
+	m_pStorage = Kernel()->RequestInterface<IStorage>();
 	m_World.SetGameServer(this);
 	m_Events.SetGameServer(this);
 	
