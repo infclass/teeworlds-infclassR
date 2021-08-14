@@ -36,7 +36,7 @@ void CInfClassPlayer::TryRespawn()
 	vec2 SpawnPos;
 
 /* INFECTION MODIFICATION START ***************************************/
-	if(!GameServer()->m_pController->PreSpawn(this, &SpawnPos))
+	if(!GameController()->PreSpawn(this, &SpawnPos))
 		return;
 /* INFECTION MODIFICATION END *****************************************/
 
