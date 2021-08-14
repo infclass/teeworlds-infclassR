@@ -18,10 +18,10 @@
 
 #include <teeuniverses/components/localization.h>
 
+#include "entities/character.h"
 #include "eventhandler.h"
 #include "gamecontroller.h"
 #include "gameworld.h"
-#include "player.h"
 
 #include <fstream>
 

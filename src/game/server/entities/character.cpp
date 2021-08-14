@@ -7,6 +7,7 @@
 #include <engine/shared/config.h>
 #include <engine/server/roundstatistics.h>
 #include <game/server/gamecontext.h>
+#include <game/server/player.h>
 #include <game/mapitems.h>
 #include <iostream>
 

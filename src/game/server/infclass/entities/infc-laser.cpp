@@ -11,6 +11,7 @@
 #include <game/server/infclass/entities/infccharacter.h>
 #include <game/server/infclass/entities/portal.h>
 #include <game/server/infclass/infcgamecontroller.h>
+#include <game/server/infclass/infcplayer.h>
 
 CInfClassLaser::CInfClassLaser(CGameContext *pGameContext, vec2 Pos, vec2 Direction, float StartEnergy, int Owner, int Dmg, int ObjType)
 	: CInfCEntity(pGameContext, ObjType, Pos, Owner)

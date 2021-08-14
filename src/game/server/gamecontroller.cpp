@@ -4,6 +4,7 @@
 #include <game/mapitems.h>
 
 #include <game/generated/protocol.h>
+#include <game/server/player.h>
 
 #include "gamecontroller.h"
 #include "gamecontext.h"

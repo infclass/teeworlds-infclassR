@@ -8,6 +8,7 @@
 #include "growingexplosion.h"
 
 #include <engine/server/roundstatistics.h>
+#include <game/server/player.h>
 #include <game/server/infclass/infcgamecontroller.h>
 
 static const float PortalRadius = 30.f;

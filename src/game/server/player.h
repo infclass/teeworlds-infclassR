@@ -3,12 +3,15 @@
 #ifndef GAME_SERVER_PLAYER_H
 #define GAME_SERVER_PLAYER_H
 
-// this include should perhaps be removed
-#include "entities/character.h"
-#include "gamecontext.h"
+#include <game/gamecore.h>
+#include <game/server/alloc.h>
 #include <game/server/classes.h>
+#include <game/server/teeinfo.h>
 
-#include "teeinfo.h"
+class CCharacter;
+class CGameContext;
+class IServer;
+struct CNetObj_PlayerInput;
 
 enum
 {

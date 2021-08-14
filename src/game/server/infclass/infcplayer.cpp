@@ -1,6 +1,7 @@
 #include "infcplayer.h"
 
 #include <engine/shared/config.h>
+#include <game/server/gamecontext.h>
 #include <game/server/infclass/infcgamecontroller.h>
 
 #include "classes/humans/human.h"

@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <utility>
 #include <engine/shared/config.h>
+#include <game/server/player.h>
 
 //////////////////////////////////////////////////
 // game world

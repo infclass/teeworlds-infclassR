@@ -2,6 +2,7 @@
 
 #include <base/system.h>
 #include <game/gamecore.h>
+#include <game/server/gamecontext.h>
 #include <game/server/infclass/entities/infccharacter.h>
 #include <game/server/infclass/infcplayer.h>
 #include <game/server/teeinfo.h>

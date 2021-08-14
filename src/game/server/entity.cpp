@@ -5,6 +5,7 @@
 #include "gamecontext.h"
 
 #include <game/animation.h>
+#include <game/server/player.h>
 
 //////////////////////////////////////////////////
 // Entity

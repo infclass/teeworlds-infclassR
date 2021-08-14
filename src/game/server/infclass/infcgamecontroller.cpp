@@ -2,6 +2,7 @@
 /* If you are missing that file, acquire a complete release at teeworlds.com.				*/
 #include "infcgamecontroller.h"
 
+#include <game/server/gamecontext.h>
 #include <game/server/infclass/classes/infcplayerclass.h>
 #include <game/server/infclass/entities/flyingpoint.h>
 #include <game/server/infclass/entities/infccharacter.h>
