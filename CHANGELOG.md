@@ -5,14 +5,29 @@
 General:
 - Added initial support for the Entities View (Infclass game tiles converted to DDNet tiles)
 - Added a broadcast message to Class Menu on a disabled class hovered (suggested by ipoopi)
+- Added a message on an infected hooked human to inf zone
+- Added a message on a human (self) infected by the zone
+- Added a message to the infected player ("You have been infected by...")
 - Updated Hero help page (by ipoopi)
+- Updated conditions for joining specs
+- Updated `/changelog` implementation
+- Improved indirect killer detection (added some causality)
+- Re-enabled infected hammer force effect on Soldier (noticeable on Bat damage)
 - Spider feet are now colored in dark red on web hook length limit reached
 - Base HP increase on a ninja killed a target replaced with overall HP increase (now ninja can get an armor)
+- Undeads and Voodoos now reduce EngineerWall lifespan
+- Ninjas are now invincible for hammers during the split second of katana attack
+- Infection spawn protection (1 second) now actually given on infection spawned
 - Fixed sniper position unlock on a jump
 - Fixed utf8 ban reasons (from DDNet)
 - Fixed InfClass zones sensitivity (only the right top point of the Tee was checked previously)
 - Fixed the player skin sometimes showed as default if the character is not in the game world
 - Fixed Scientist ammo wasting on not allowed teleportation attempts
+- Fixed Scientist kills during a white hole effect allowed to place another white hole
+- Fixed the lonely infection HP bonus (sometimes given by a mistake)
+- Fixed ninja (freezer) reward if the player ID is 0
+- Fixed joining specs with 3 first infected
+- Fixed missing hook protection until the player class is set
 
 Maps:
 - infc_headquarter: The graphics cleaned up (no gamelayer changes)
@@ -21,6 +36,8 @@ Maps:
 
 Maintenance:
 - Added `sci` shortcut for the Scientist class
+- Added `inf_last_enforcer_time_ms` variable to adjust the causality
+- Added `sv_changelog_file`
 - In case of internal failure the server process now will return the actual error code (port from DDNet)
 - Now the server will refuse to generate maps if the needed skins are missing
 - Data files moved from `bin/data` to the correct `data/` dir
