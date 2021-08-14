@@ -452,7 +452,7 @@ void CGameContext::CallVote(int ClientID, const char *pDesc, const char *pCmd, c
 	if(!pPlayer)
 		return;
 
-	SendChat(-1, CGameContext::CHAT_ALL, pChatmsg);
+	SendChatTarget(-1, pChatmsg);
 
 	m_VoteCreator = ClientID;
 	StartVote(pDesc, pCmd, pReason);
@@ -1035,7 +1035,7 @@ void CGameContext::OnTick()
 		{
 			char aChatmsg[512] = {0};
 			str_format(aChatmsg, sizeof(aChatmsg), "Starting vote '%s'", mapVote->m_pDesc);
-			SendChat(-1, CGameContext::CHAT_ALL, aChatmsg);
+			SendChatTarget(-1, aChatmsg);
 			StartVote(mapVote->m_pDesc, mapVote->m_pCommand, mapVote->m_pReason);
 		}
 	}
@@ -1228,7 +1228,7 @@ void CGameContext::OnTick()
 		// abort the kick-vote on player-leave
 		if(m_VoteCloseTime == -1)
 		{
-			SendChat(-1, CGameContext::CHAT_ALL, "Vote aborted");
+			SendChatTarget(-1, "Vote aborted");
 			EndVote();
 		}
 		else
@@ -1289,7 +1289,7 @@ void CGameContext::OnTick()
 				Console()->ExecuteLine(m_aVoteCommand, -1, false);
 				Server()->SetRconCID(IServer::RCON_CID_SERV);
 				EndVote();
-				SendChat(-1, CGameContext::CHAT_ALL, "Vote passed");
+				SendChatTarget(-1, "Vote passed");
 				if(GetOptionVoteType(m_aVoteCommand) & MAP_VOTE_BITS)
 					Server()->ResetMapVotes();
 
@@ -1299,7 +1299,7 @@ void CGameContext::OnTick()
 			else if(m_VoteEnforce == VOTE_ENFORCE_NO || time_get() > m_VoteCloseTime)
 			{
 				EndVote();
-				SendChat(-1, CGameContext::CHAT_ALL, "Vote failed");
+				SendChatTarget(-1, "Vote failed");
 				if(GetOptionVoteType(m_aVoteCommand) & MAP_VOTE_BITS)
 					Server()->ResetMapVotes();
 				
@@ -2340,7 +2340,7 @@ bool CGameContext::ConBroadcast(IConsole::IResult *pResult, void *pUserData)
 bool CGameContext::ConSay(IConsole::IResult *pResult, void *pUserData)
 {
 	CGameContext *pSelf = (CGameContext *)pUserData;
-	pSelf->SendChat(-1, CGameContext::CHAT_ALL, pResult->GetString(0));
+	pSelf->SendChatTarget(-1, pResult->GetString(0));
 	
 	return true;
 }
@@ -2372,7 +2372,7 @@ bool CGameContext::ConSetTeamAll(IConsole::IResult *pResult, void *pUserData)
 
 	char aBuf[256];
 	str_format(aBuf, sizeof(aBuf), "All players were moved to the %s", pSelf->m_pController->GetTeamName(Team));
-	pSelf->SendChat(-1, CGameContext::CHAT_ALL, aBuf);
+	pSelf->SendChatTarget(-1, aBuf);
 
 	for(int i = 0; i < MAX_CLIENTS; ++i)
 		if(pSelf->m_apPlayers[i])
