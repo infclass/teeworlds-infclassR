@@ -731,6 +731,11 @@ void CGameContext::SendChat(int ChatterClientID, int Team, const char *pText)
 		str_format(aBuf, sizeof(aBuf), "*** %s", pText);
 	Console()->Print(IConsole::OUTPUT_LEVEL_ADDINFO, Team!=CHAT_ALL?"teamchat":"chat", aBuf);
 
+	if(pText && pText[0] == '!' && Config()->m_SvFilterChatCommands)
+	{
+		return;
+	}
+
 	if(Team == CGameContext::CHAT_ALL)
 	{
 		CNetMsg_Sv_Chat Msg;
