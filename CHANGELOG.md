@@ -3,19 +3,32 @@
 ## InfclassR v1.3.0 - 2021-xx-xx (unreleased)
 
 General:
+- Added initial support for the Entities View (Infclass game tiles converted to DDNet tiles)
+- Added a broadcast message to Class Menu on a disabled class hovered (suggested by ipoopi)
+- Updated Hero help page (by ipoopi)
 - Spider feet are now colored in dark red on web hook length limit reached
+- Base HP increase on a ninja killed a target replaced with overall HP increase (now ninja can get an armor)
 - Fixed sniper position unlock on a jump
+- Fixed utf8 ban reasons (from DDNet)
 - Fixed InfClass zones sensitivity (only the right top point of the Tee was checked previously)
+- Fixed the player skin sometimes showed as default if the character is not in the game world
+- Fixed Scientist ammo wasting on not allowed teleportation attempts
 
 Maps:
 - infc_headquarter: The graphics cleaned up (no gamelayer changes)
 - infc_k9f_small: Removed an invisible hookable tile on the bottom left
+- infc_floatingislands: Update to a remapped version (by FluffyTee)
 
 Maintenance:
+- Added `sci` shortcut for the Scientist class
 - In case of internal failure the server process now will return the actual error code (port from DDNet)
-- Data files moved from bin/data to the correct data/ dir
+- Now the server will refuse to generate maps if the needed skins are missing
+- Data files moved from `bin/data` to the correct `data/` dir
 - Removed `bam` build support. CMake is the only option now.
 - CMake: Implemented installation target
+- CMake: Minimum version fixed to 3.7 (needed for FindICU module)
+- CMake: Removed unused requirements
+- CMake: `storage.cfg` now installed as `storage.cfg.example` to simplify data customization
 
 ## InfclassR v1.2.1 - 2021-07-14
 
