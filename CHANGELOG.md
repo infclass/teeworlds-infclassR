@@ -1,5 +1,22 @@
 # Changelog
 
+## InfclassR v1.3.0 - 2021-xx-xx (unreleased)
+
+General:
+- Spider feet are now colored in dark red on web hook length limit reached
+- Fixed sniper position unlock on a jump
+- Fixed InfClass zones sensitivity (only the right top point of the Tee was checked previously)
+
+Maps:
+- infc_headquarter: The graphics cleaned up (no gamelayer changes)
+- infc_k9f_small: Removed an invisible hookable tile on the bottom left
+
+Maintenance:
+- In case of internal failure the server process now will return the actual error code (port from DDNet)
+- Data files moved from bin/data to the correct data/ dir
+- Removed `bam` build support. CMake is the only option now.
+- CMake: Implemented installation target
+
 ## InfclassR v1.2.1 - 2021-07-14
 
 General:
