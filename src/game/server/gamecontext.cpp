@@ -3556,441 +3556,437 @@ bool CGameContext::ConHelp(IConsole::IResult *pResult, void *pUserData)
 	const char *pHelpPage = (pResult->NumArguments()>0) ? pResult->GetString(0) : 0x0;
 
 	dynamic_string Buffer;
-	
-	if(pHelpPage)
+
+	if(!pHelpPage || str_comp_nocase(pHelpPage, "game") == 0)
 	{
-		if(str_comp_nocase(pHelpPage, "game") == 0)
-		{
-			Buffer.append("~~ ");
-			pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("Rules of the game"), NULL); 
-			Buffer.append(" ~~\n\n");
-			pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("InfectionClass is a team game between humans and infected."), NULL); 
-			Buffer.append("\n\n");
-			pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("All players start as human."), NULL);
-			Buffer.append("\n\n");
-			pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("10 seconds later, a few players become infected."), NULL);
-			Buffer.append("\n\n");
-			pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("The goal for humans is to survive until the army clean the map."), NULL);
-			Buffer.append("\n\n");
-			pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("The goal for infected is to infect all humans."), NULL);
-			
-			pSelf->SendMOTD(ClientID, Buffer.buffer());
-		}
-		else if(str_comp_nocase(pHelpPage, "translate") == 0)
-		{
-			Buffer.append("~~ ");
-			pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("How to translate the mod"), NULL); 
-			Buffer.append(" ~~\n\n");
-			pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("Create an account on Crowdin and join a translation team:"), NULL); 
-			Buffer.append("\n\n");
-			pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, "https://crowdin.com/project/teeuniverse", NULL);
-			Buffer.append("\n\n");
-			pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("For any question about the translation process, please contact us on IRC ({str:IRCAddress})"), "IRCAddress", "QuakeNet, #infclass", NULL);
+		Buffer.append("~~ ");
+		pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("Rules of the game"), NULL);
+		Buffer.append(" ~~\n\n");
+		pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("InfectionClass is a team game between humans and infected."), NULL);
+		Buffer.append("\n\n");
+		pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("All players start as human."), NULL);
+		Buffer.append("\n\n");
+		pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("10 seconds later, a few players become infected."), NULL);
+		Buffer.append("\n\n");
+		pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("The goal for humans is to survive until the army clean the map."), NULL);
+		Buffer.append("\n\n");
+		pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("The goal for infected is to infect all humans."), NULL);
+		Buffer.append("\n\n");
+		pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("See also `/help pages`"), NULL);
 
-			pSelf->SendMOTD(ClientID, Buffer.buffer());
-		}
-		else if(str_comp_nocase(pHelpPage, "engineer") == 0)
-		{
-			Buffer.append("~~ ");
-			pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("Engineer"), NULL); 
-			Buffer.append(" ~~\n\n");
-			pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("The Engineer can build walls with the hammer to block infected."), NULL); 
-			Buffer.append("\n\n");
-			pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("When an infected touch the wall, it dies."), NULL); 
-			Buffer.append("\n\n");
-			pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("The lifespan of a wall is {sec:LifeSpan}, and walls are limited to one per player at the same time."), "LifeSpan", &g_Config.m_InfBarrierLifeSpan, NULL); 
-			
-			pSelf->SendMOTD(ClientID, Buffer.buffer());
-		}
-		else if(str_comp_nocase(pHelpPage, "soldier") == 0)
-		{
-			Buffer.append("~~ ");
-			pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("Soldier"), NULL); 
-			Buffer.append(" ~~\n\n");
-			pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("The Soldier creates floating bombs with the hammer."), NULL); 
-			Buffer.append("\n\n");
-			pSelf->Server()->Localization()->Format_LP(
-				Buffer, pLanguage, g_Config.m_InfSoldierBombs,
-				_P("Each bomb can explode one time.", "Each bomb can explode {int:NumBombs} times."),
-				"NumBombs", &g_Config.m_InfSoldierBombs,
-				NULL
-			);
-			Buffer.append("\n\n");
-			pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("Use the hammer to place the bomb and explode it multiple times."), NULL);
-			Buffer.append("\n\n");
-			pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("A lucky Soldier, devoted to killing zombies, can get a bonus - stunning grenades."), NULL);
-			
-			pSelf->SendMOTD(ClientID, Buffer.buffer());
-		}
-		else if(str_comp_nocase(pHelpPage, "scientist") == 0)
-		{
-			Buffer.append("~~ ");
-			pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("Scientist"), NULL); 
-			Buffer.append(" ~~\n\n");
-			pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("The Scientist can pose floating mines with the hammer."), NULL); 
-			Buffer.append("\n\n");
-			pSelf->Server()->Localization()->Format_LP(
-				Buffer, pLanguage, g_Config.m_InfMineLimit,
-				_P("Mines are limited to one per player at the same time.", "Mines are limited to {int:NumMines} per player at the same time."),
-				"NumMines", &g_Config.m_InfMineLimit,
-				NULL
-			);
-			Buffer.append("\n\n");
-			pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("Scientist has also grenades that teleport him."), NULL);
-			Buffer.append("\n\n");
-			pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("Additionally scientist can place white holes with the laser rifle. Further information on /help whitehole"), NULL);
-			
-			pSelf->SendMOTD(ClientID, Buffer.buffer());
-		}
-		else if(str_comp_nocase(pHelpPage, "biologist") == 0)
-		{
-
-			Buffer.append("~~ ");
-			pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("Biologist"), NULL); 
-			Buffer.append(" ~~\n\n");
-			pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("The biologist has a shotgun with bouncing bullets and can create a spring laser trap by shooting with the rifle."), NULL);
-			
-			pSelf->SendMOTD(ClientID, Buffer.buffer());
-		}
-		else if(str_comp_nocase(pHelpPage, "looper") == 0)
-		{
-			Buffer.append("~~ ");
-			pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("Looper"), NULL); 
-			Buffer.append(" ~~\n\n");
-			pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("The looper has a laser wall that slows down zombies and a low-range-laser-pistol."), NULL);
-			Buffer.append("\n\n");
-			pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("A lucky Looper, devoted to killing zombies, can get a bonus - stunning grenades."), NULL);
-			
-			pSelf->SendMOTD(ClientID, Buffer.buffer());
-		}
-		else if(str_comp_nocase(pHelpPage, "medic") == 0)
-		{
-			Buffer.append("~~ ");
-			pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("Medic"), NULL); 
-			Buffer.append(" ~~\n\n");
-			pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("The Medic can protect humans with the hammer by giving them armor."), NULL); 
-			Buffer.append("\n\n");
-			pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("Grenades with medicine give armor to everybody in their range, including heroes and medic themself"), NULL);
-			Buffer.append("\n\n");
-			pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("Laser revives infected zombies, but at great cost - 17 hp and armor."), NULL);
-			Buffer.append("\n\n");
-			pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("Medic has also a powerful shotgun that can pullback infected."), NULL);
-			
-			pSelf->SendMOTD(ClientID, Buffer.buffer());
-		}
-		else if(str_comp_nocase(pHelpPage, "hero") == 0)
-		{
-			Buffer.append("~~ ");
-			pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("Hero"), NULL); 
-			Buffer.append(" ~~\n\n");
-			pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("The Hero has a shotgun, a laser rifle, and a grenade launcher."), NULL);
-			Buffer.append("\n\n");
-			pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("The Hero has to find a flag only visible to them. Stand still to be pointed towards it."), NULL);
-			Buffer.append(" ");
-			static const int NumArmorGift = 4;
-			pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("The flag gifts a health point, {int:NumArmorGift} armor and full ammo to all humans."),
-				"NumArmorGift", &NumArmorGift,
-				NULL);
-			Buffer.append(" ");
-			pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("It fully heals the Hero and it can grant a turret which you can place down with the hammer."), NULL);
-			Buffer.append(" ");
-			pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("The gift to all humans is only applied when the flag is surrounded by hearts and armor."), NULL);
-			Buffer.append("\n\n");
-			pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("The Hero cannot be healed by a Medic, but it can withstand a hit from an infected."), NULL);
-			
-			pSelf->SendMOTD(ClientID, Buffer.buffer());
-		}
-		else if(str_comp_nocase(pHelpPage, "ninja") == 0)
-		{
-			Buffer.append("~~ ");
-			pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("Ninja"), NULL); 
-			Buffer.append(" ~~\n\n");
-			pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("The Ninja can throw flash grenades that can freeze infected during three seconds."), NULL); 
-			Buffer.append("\n\n");
-			pSelf->Server()->Localization()->Format_LP(
-				Buffer, pLanguage, g_Config.m_InfNinjaJump,
-				_P("His hammer is replaced by a katana, allowing him to jump one time before touching the ground.", "His hammer is replaced by a katana, allowing him to jump {int:NinjaJump} times before touching the ground."),
-				"NinjaJump", &g_Config.m_InfNinjaJump,
-				NULL
-			);
-			Buffer.append("\n\n");
-			pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("Ninjas get special targets. For killing a target, extra points and abilities are awarded"), NULL);
-			
-			pSelf->SendMOTD(ClientID, Buffer.buffer());
-		}
-		else if(str_comp_nocase(pHelpPage, "mercenary") == 0)
-		{
-			Buffer.append("~~ ");
-			pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("Mercenary"), NULL); 
-			Buffer.append(" ~~\n\n");
-			pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("The Mercenaries fly in the air using their machine gun."), NULL);
-			Buffer.append("\n\n");
-			pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("They can create powerful bombs with their hammer."), NULL);
-			Buffer.append("\n\n");
-			pSelf->Server()->Localization()->Format_LP(
-				Buffer, pLanguage, g_Config.m_InfPoisonDamage,
-				_P("Mercenary can also throw poison grenades that each deal one damage point.", "Mercenary can also throw poison grenades that each deal {int:NumDamagePoints} damage points."),
-				"NumDamagePoints", &g_Config.m_InfPoisonDamage,
-				NULL
-			);
-			
-			pSelf->SendMOTD(ClientID, Buffer.buffer());
-		}
-		else if(str_comp_nocase(pHelpPage, "sniper") == 0)
-		{
-			Buffer.append("~~ ");
-			pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("Sniper"), NULL); 
-			Buffer.append(" ~~\n\n");
-			pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("The Sniper can lock the position in air for 15 seconds with the hammer."), NULL); 
-			Buffer.append("\n\n");
-			pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("Snipers can jump two times in air."), NULL); 
-			Buffer.append("\n\n");
-			pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("They also have a powerful rifle that deals 20 damage points in locked position, and 10–13 otherwise."), NULL);
-			
-			pSelf->SendMOTD(ClientID, Buffer.buffer());
-		}
-		else if(str_comp_nocase(pHelpPage, "smoker") == 0)
-		{
-			Buffer.append("~~ ");
-			pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("Smoker"), NULL); 
-			Buffer.append(" ~~\n\n");
-			pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("The Smoker can infect humans and heal infected with the hammer."), NULL);
-			Buffer.append("\n\n");
-			pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("Smoker has a powerful hook that hurts human."), NULL);
-			Buffer.append("\n\n");
-			pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("Their hook not only hurts humans, but also sucks their blood, restoring the smokers health."), NULL);
-			
-			pSelf->SendMOTD(ClientID, Buffer.buffer());
-		}
-		else if(str_comp_nocase(pHelpPage, "boomer") == 0)
-		{
-			Buffer.append("~~ ");
-			pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("Boomer"), NULL); 
-			Buffer.append(" ~~\n\n");
-			pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("The Boomer explodes when it attacks."), NULL);
-			Buffer.append("\n\n");
-			pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("All humans affected by the explosion become infected."), NULL);
-			Buffer.append("\n\n");
-			pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("It can also inflict 1 damage point per second by hooking humans."), NULL);
-			
-			pSelf->SendMOTD(ClientID, Buffer.buffer());
-		}
-		else if(str_comp_nocase(pHelpPage, "hunter") == 0)
-		{
-			Buffer.append("~~ ");
-			pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("Hunter"), NULL); 
-			Buffer.append(" ~~\n\n");
-			pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("The Hunter can infect humans and heal infected with the hammer."), NULL);
-			Buffer.append("\n\n");
-			pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("He can jump two times in air."), NULL);
-			Buffer.append("\n\n");
-			pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("He can also inflict 1 damage point per second by hooking humans."), NULL);
-			
-			pSelf->SendMOTD(ClientID, Buffer.buffer());
-		}
-		else if(str_comp_nocase(pHelpPage, "bat") == 0)
-		{
-			Buffer.append("~~ ");
-			pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("Bat"), NULL); 
-			Buffer.append(" ~~\n\n");
-			pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("The Bat can heal infected with the hammer, but cannot infect humans"), NULL);
-			Buffer.append("\n\n");
-			pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("Instead, it can hammer humans to reduce their health or even kill them"), NULL);
-			Buffer.append("\n\n");
-			pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("Bat can jump multiple times in air."), NULL);
-			Buffer.append("\n\n");
-			pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("It can also inflict 1 damage point per second by hooking humans."), NULL);
-			Buffer.append("\n\n");
-			pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("Their hook not only hurts humans, but also sucks their blood, restoring the bats health."), NULL);
-			
-			pSelf->SendMOTD(ClientID, Buffer.buffer());
-		}
-		else if(str_comp_nocase(pHelpPage, "ghost") == 0)
-		{
-			Buffer.append("~~ ");
-			pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("Ghost"), NULL); 
-			Buffer.append(" ~~\n\n");
-			pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("The Ghost can infect humans and heal infected with the hammer."), NULL);
-			Buffer.append("\n\n");
-			pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("He is invisible, except if a human is near him, if it takes a damage or if it use the hammer."), NULL);
-			Buffer.append("\n\n");
-			pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("He can also inflict 1 damage point per second by hooking humans."), NULL);
-			
-			pSelf->SendMOTD(ClientID, Buffer.buffer());
-		}
-		else if(str_comp_nocase(pHelpPage, "spider") == 0)
-		{
-			Buffer.append("~~ ");
-			pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("Spider"), NULL);
-			Buffer.append(" ~~\n\n");
-			pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("The Spider can infect humans and heal infected with the hammer."), NULL);
-			Buffer.append("\n\n");
-			pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("When selecting any gun, the hook enter in web mode."), NULL);
-			Buffer.append("\n\n");
-			pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("Any human that touch a hook in web mode is automatically grabbed."), NULL);
-			Buffer.append("\n\n");
-			pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("The hook of the spider (in both mode) deal 1 damage point per second and can grab a human during 2 seconds."), NULL);
-			
-			pSelf->SendMOTD(ClientID, Buffer.buffer());
-		}
-		else if(str_comp_nocase(pHelpPage, "ghoul") == 0)
-		{
-			Buffer.append("~~ ");
-			pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("Ghoul"), NULL);
-			Buffer.append(" ~~\n\n");
-			pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("The Ghoul can infect humans and heal infected with the hammer."), NULL);
-			Buffer.append("\n\n");
-			pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("He can devour all that has died close to him, which makes him stronger, faster and more resistant."), NULL);
-			Buffer.append("\n\n");
-			pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("Thereupon it digests the fodder bit by bit going back to the normal state, and besides, death bereaves him of the nourishment."), NULL);
-			
-			pSelf->SendMOTD(ClientID, Buffer.buffer());
-		}
-		else if(str_comp_nocase(pHelpPage, "slug") == 0)
-		{
-			Buffer.append("~~ ");
-			pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("Slug"), NULL);
-			Buffer.append(" ~~\n\n");
-			pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("The Slug can infect humans and heal infected with the hammer."), NULL);
-			Buffer.append("\n\n");
-			pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("He can make the ground and walls toxic by spreading slime with the hammer."), NULL);
-			Buffer.append("\n\n");
-			pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("Touching the slime inflicts three damage points in three seconds on a human."), NULL);
-			
-			pSelf->SendMOTD(ClientID, Buffer.buffer());
-		}
-		else if(str_comp_nocase(pHelpPage, "voodoo") == 0)
-		{
-			Buffer.append("~~ ");
-			pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("Voodoo"), NULL);
-			Buffer.append(" ~~\n\n");
-			pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("The Voodoo can infect humans and heal infected with the hammer."), NULL);
-			Buffer.append("\n\n");
-			pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("He does not die immediately when killed but instead enters Spirit mode and defies death for a brief span of time."), NULL);
-			Buffer.append("\n\n");
-			pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("While in Spirit mode it cannot be killed. When the time is up it finally dies."), NULL);
-			
-			pSelf->SendMOTD(ClientID, Buffer.buffer());
-		}
-		else if(str_comp_nocase(pHelpPage, "whitehole") == 0)
-		{
-			Buffer.append("~~ ");
-			pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("White hole"), NULL);
-			Buffer.append(" ~~\n\n");
-			pSelf->Server()->Localization()->Format_LP(Buffer, pLanguage, g_Config.m_InfMineLimit, _P("Receive it by killing at least one zombie.","Receive it by killing at least {int:NumKills} zombies as scientist."),
-					"NumKills", &g_Config.m_InfWhiteHoleMinimalKills, NULL);
-			Buffer.append("\n\n");
-			pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("Use it with your laser rifle, the indicator around your Tee will show you if it is available"), NULL);
-			Buffer.append("\n\n");
-			pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("Puts humans and zombies into a vulnerable state by pulling them into its center"), NULL);
-			
-			pSelf->SendMOTD(ClientID, Buffer.buffer());
-		}
-		else if(str_comp_nocase(pHelpPage, "undead") == 0)
-		{
-			Buffer.append("~~ ");
-			pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("Undead"), NULL);
-			Buffer.append(" ~~\n\n");
-			pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("The Undead can infect humans and heal infected with the hammer."), NULL);
-			Buffer.append("\n\n");
-			pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("Instead of dying, it freezes during 10 seconds."), NULL);
-			Buffer.append("\n\n");
-			pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("If an infected heals him, the freeze effect disappear."), NULL);
-			Buffer.append("\n\n");
-			pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("He can also inflict 1 damage point per second by hooking humans."), NULL);
-			
-			pSelf->SendMOTD(ClientID, Buffer.buffer());
-		}
-		else if(str_comp_nocase(pHelpPage, "witch") == 0)
-		{
-			Buffer.append("~~ ");
-			pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("Witch")); 
-			Buffer.append(" ~~\n\n");
-			Buffer.append("\n\n");
-			pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("The Witch can infect humans and heal infected with the hammer."), NULL);
-			Buffer.append("\n\n");
-			if (g_Config.m_InfEnableWitchPortals)
-				pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("Additionally a witch can place portals with the laser rifle. Further information on /help portals"), NULL);
-			else
-				pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("When an infected dies, it may re-spawn near witch."), NULL);
-			Buffer.append("\n\n");
-			pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("If the Witch dies, it disappears and is replaced by another class of infected."), NULL);
-			Buffer.append("\n\n");
-			pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("It can also inflict 1 damage point per second by hooking humans."), NULL);
-			
-			pSelf->SendMOTD(ClientID, Buffer.buffer());
-		}
-		else if(str_comp_nocase(pHelpPage, "portals") == 0)
-		{
-			Buffer.append("~~ ");
-			pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("How to use witch portals"), NULL);
-			Buffer.append(" ~~\n\n");
-			pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("A witch can build a pair of portals to let other infected get from spawn right to the battle."), NULL);
-			Buffer.append("\n\n");
-			pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("Use Rifle to place or \"take\" a portal. The first portal is always Enterance and the last one is always Exit."), NULL);
-			pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("Use Rifle to replace Exit if both portals already opened."), NULL);
-			Buffer.append("\n\n");
-			pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("Once both portals are in place, they need extra {sec:ConnectionTime} to become operational."), "ConnectionTime", &g_Config.m_InfPortalConnectionTime, NULL);
-
-			pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("The portals destroyed when the witch die."), NULL);
-			pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("Only one witch on a map can open a portal."), NULL);
-
-			if (g_Config.m_InfEnableWitchPortals)
-				pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("Portals are currently ENABLED."), NULL);
-			else
-				pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("Portals are currently DISABLED."), NULL);
-
-			pSelf->SendMOTD(ClientID, Buffer.buffer());
-		}
-		else if(str_comp_nocase(pHelpPage, "msg") == 0)
-		{
-			Buffer.append("~~ ");
-			pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("Targeted chat messages")); 
-			Buffer.append(" ~~\n\n");
-			Buffer.append("\n\n");
-			pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("Use “/msg <PlayerName> <My Message>” to send a private message to this player."), NULL);
-			Buffer.append("\n\n");
-			pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("Use “/msg !<ClassName> <My Message>” to send a private message to all players with a specific class."), NULL);
-			Buffer.append("\n\n");
-			pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("Example: “/msg !medic I'm wounded!”"), NULL);
-			Buffer.append("\n\n");
-			pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("Use “/msg !near” to send a private message to all players near you."), NULL);
-			
-			pSelf->SendMOTD(ClientID, Buffer.buffer());
-		}
-		else if(str_comp_nocase(pHelpPage, "mute") == 0)
-		{
-			Buffer.append("~~ ");
-			pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("Persistent player mute")); 
-			Buffer.append(" ~~\n\n");
-			Buffer.append("\n\n");
-			pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("Use “/mute <PlayerName>” to mute this player."), NULL);
-			Buffer.append("\n\n");
-			pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("Unlike a client mute this will persist between map changes and wears off when either you or the muted player disconnects."), NULL);
-			Buffer.append("\n\n");
-			pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("Example: “/mute nameless tee”"), NULL);
-			Buffer.append("\n\n");
-			
-			pSelf->SendMOTD(ClientID, Buffer.buffer());
-		}
-		else if(str_comp_nocase(pHelpPage, "taxi") == 0)
-		{
-			Buffer.append("~~ ");
-			pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("How to use taxi mode"), NULL); 
-			Buffer.append(" ~~\n\n");
-			pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("Two or more humans can form a taxi."), NULL); 
-			Buffer.append("\n\n");
-			pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("In order to use it, both humans have to disable hook protection (usually, with F3). The human being hooked becomes the driver."), NULL);
-			Buffer.append("\n\n");
-			pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("To get off the taxi, jump. To drop off your passengers, enable hook protection (usually, with F3)."), NULL);
-
-			pSelf->SendMOTD(ClientID, Buffer.buffer());
-		}
-		else
-			pHelpPage = 0x0;
+		pSelf->SendMOTD(ClientID, Buffer.buffer());
 	}
-	
-	if(!pHelpPage)
+	else if(str_comp_nocase(pHelpPage, "translate") == 0)
+	{
+		Buffer.append("~~ ");
+		pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("How to translate the mod"), NULL);
+		Buffer.append(" ~~\n\n");
+		pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("Create an account on Crowdin and join a translation team:"), NULL);
+		Buffer.append("\n\n");
+		pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, "https://crowdin.com/project/teeuniverse", NULL);
+		Buffer.append("\n\n");
+		pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("For any question about the translation process, please contact us on IRC ({str:IRCAddress})"), "IRCAddress", "QuakeNet, #infclass", NULL);
+
+		pSelf->SendMOTD(ClientID, Buffer.buffer());
+	}
+	else if(str_comp_nocase(pHelpPage, "engineer") == 0)
+	{
+		Buffer.append("~~ ");
+		pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("Engineer"), NULL);
+		Buffer.append(" ~~\n\n");
+		pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("The Engineer can build walls with the hammer to block infected."), NULL);
+		Buffer.append("\n\n");
+		pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("When an infected touch the wall, it dies."), NULL);
+		Buffer.append("\n\n");
+		pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("The lifespan of a wall is {sec:LifeSpan}, and walls are limited to one per player at the same time."), "LifeSpan", &g_Config.m_InfBarrierLifeSpan, NULL);
+
+		pSelf->SendMOTD(ClientID, Buffer.buffer());
+	}
+	else if(str_comp_nocase(pHelpPage, "soldier") == 0)
+	{
+		Buffer.append("~~ ");
+		pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("Soldier"), NULL);
+		Buffer.append(" ~~\n\n");
+		pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("The Soldier creates floating bombs with the hammer."), NULL);
+		Buffer.append("\n\n");
+		pSelf->Server()->Localization()->Format_LP(
+			Buffer, pLanguage, g_Config.m_InfSoldierBombs,
+			_P("Each bomb can explode one time.", "Each bomb can explode {int:NumBombs} times."),
+			"NumBombs", &g_Config.m_InfSoldierBombs,
+			NULL
+		);
+		Buffer.append("\n\n");
+		pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("Use the hammer to place the bomb and explode it multiple times."), NULL);
+		Buffer.append("\n\n");
+		pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("A lucky Soldier, devoted to killing zombies, can get a bonus - stunning grenades."), NULL);
+
+		pSelf->SendMOTD(ClientID, Buffer.buffer());
+	}
+	else if(str_comp_nocase(pHelpPage, "scientist") == 0)
+	{
+		Buffer.append("~~ ");
+		pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("Scientist"), NULL);
+		Buffer.append(" ~~\n\n");
+		pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("The Scientist can pose floating mines with the hammer."), NULL);
+		Buffer.append("\n\n");
+		pSelf->Server()->Localization()->Format_LP(
+			Buffer, pLanguage, g_Config.m_InfMineLimit,
+			_P("Mines are limited to one per player at the same time.", "Mines are limited to {int:NumMines} per player at the same time."),
+			"NumMines", &g_Config.m_InfMineLimit,
+			NULL
+		);
+		Buffer.append("\n\n");
+		pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("Scientist has also grenades that teleport him."), NULL);
+		Buffer.append("\n\n");
+		pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("Additionally scientist can place white holes with the laser rifle. Further information on /help whitehole"), NULL);
+
+		pSelf->SendMOTD(ClientID, Buffer.buffer());
+	}
+	else if(str_comp_nocase(pHelpPage, "biologist") == 0)
+	{
+
+		Buffer.append("~~ ");
+		pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("Biologist"), NULL);
+		Buffer.append(" ~~\n\n");
+		pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("The biologist has a shotgun with bouncing bullets and can create a spring laser trap by shooting with the rifle."), NULL);
+
+		pSelf->SendMOTD(ClientID, Buffer.buffer());
+	}
+	else if(str_comp_nocase(pHelpPage, "looper") == 0)
+	{
+		Buffer.append("~~ ");
+		pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("Looper"), NULL);
+		Buffer.append(" ~~\n\n");
+		pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("The looper has a laser wall that slows down zombies and a low-range-laser-pistol."), NULL);
+		Buffer.append("\n\n");
+		pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("A lucky Looper, devoted to killing zombies, can get a bonus - stunning grenades."), NULL);
+
+		pSelf->SendMOTD(ClientID, Buffer.buffer());
+	}
+	else if(str_comp_nocase(pHelpPage, "medic") == 0)
+	{
+		Buffer.append("~~ ");
+		pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("Medic"), NULL);
+		Buffer.append(" ~~\n\n");
+		pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("The Medic can protect humans with the hammer by giving them armor."), NULL);
+		Buffer.append("\n\n");
+		pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("Grenades with medicine give armor to everybody in their range, including heroes and medic themself"), NULL);
+		Buffer.append("\n\n");
+		pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("Laser revives infected zombies, but at great cost - 17 hp and armor."), NULL);
+		Buffer.append("\n\n");
+		pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("Medic has also a powerful shotgun that can pullback infected."), NULL);
+
+		pSelf->SendMOTD(ClientID, Buffer.buffer());
+	}
+	else if(str_comp_nocase(pHelpPage, "hero") == 0)
+	{
+		Buffer.append("~~ ");
+		pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("Hero"), NULL);
+		Buffer.append(" ~~\n\n");
+		pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("The Hero has a shotgun, a laser rifle, and a grenade launcher."), NULL);
+		Buffer.append("\n\n");
+		pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("The Hero has to find a flag only visible to them. Stand still to be pointed towards it."), NULL);
+		Buffer.append(" ");
+		static const int NumArmorGift = 4;
+		pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("The flag gifts a health point, {int:NumArmorGift} armor and full ammo to all humans."),
+			"NumArmorGift", &NumArmorGift,
+			NULL);
+		Buffer.append(" ");
+		pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("It fully heals the Hero and it can grant a turret which you can place down with the hammer."), NULL);
+		Buffer.append(" ");
+		pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("The gift to all humans is only applied when the flag is surrounded by hearts and armor."), NULL);
+		Buffer.append("\n\n");
+		pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("The Hero cannot be healed by a Medic, but it can withstand a hit from an infected."), NULL);
+
+		pSelf->SendMOTD(ClientID, Buffer.buffer());
+	}
+	else if(str_comp_nocase(pHelpPage, "ninja") == 0)
+	{
+		Buffer.append("~~ ");
+		pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("Ninja"), NULL);
+		Buffer.append(" ~~\n\n");
+		pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("The Ninja can throw flash grenades that can freeze infected during three seconds."), NULL);
+		Buffer.append("\n\n");
+		pSelf->Server()->Localization()->Format_LP(
+			Buffer, pLanguage, g_Config.m_InfNinjaJump,
+			_P("His hammer is replaced by a katana, allowing him to jump one time before touching the ground.", "His hammer is replaced by a katana, allowing him to jump {int:NinjaJump} times before touching the ground."),
+			"NinjaJump", &g_Config.m_InfNinjaJump,
+			NULL
+		);
+		Buffer.append("\n\n");
+		pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("Ninjas get special targets. For killing a target, extra points and abilities are awarded"), NULL);
+
+		pSelf->SendMOTD(ClientID, Buffer.buffer());
+	}
+	else if(str_comp_nocase(pHelpPage, "mercenary") == 0)
+	{
+		Buffer.append("~~ ");
+		pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("Mercenary"), NULL);
+		Buffer.append(" ~~\n\n");
+		pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("The Mercenaries fly in the air using their machine gun."), NULL);
+		Buffer.append("\n\n");
+		pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("They can create powerful bombs with their hammer."), NULL);
+		Buffer.append("\n\n");
+		pSelf->Server()->Localization()->Format_LP(
+			Buffer, pLanguage, g_Config.m_InfPoisonDamage,
+			_P("Mercenary can also throw poison grenades that each deal one damage point.", "Mercenary can also throw poison grenades that each deal {int:NumDamagePoints} damage points."),
+			"NumDamagePoints", &g_Config.m_InfPoisonDamage,
+			NULL
+		);
+
+		pSelf->SendMOTD(ClientID, Buffer.buffer());
+	}
+	else if(str_comp_nocase(pHelpPage, "sniper") == 0)
+	{
+		Buffer.append("~~ ");
+		pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("Sniper"), NULL);
+		Buffer.append(" ~~\n\n");
+		pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("The Sniper can lock the position in air for 15 seconds with the hammer."), NULL);
+		Buffer.append("\n\n");
+		pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("Snipers can jump two times in air."), NULL);
+		Buffer.append("\n\n");
+		pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("They also have a powerful rifle that deals 20 damage points in locked position, and 10–13 otherwise."), NULL);
+
+		pSelf->SendMOTD(ClientID, Buffer.buffer());
+	}
+	else if(str_comp_nocase(pHelpPage, "smoker") == 0)
+	{
+		Buffer.append("~~ ");
+		pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("Smoker"), NULL);
+		Buffer.append(" ~~\n\n");
+		pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("The Smoker can infect humans and heal infected with the hammer."), NULL);
+		Buffer.append("\n\n");
+		pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("Smoker has a powerful hook that hurts human."), NULL);
+		Buffer.append("\n\n");
+		pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("Their hook not only hurts humans, but also sucks their blood, restoring the smokers health."), NULL);
+
+		pSelf->SendMOTD(ClientID, Buffer.buffer());
+	}
+	else if(str_comp_nocase(pHelpPage, "boomer") == 0)
+	{
+		Buffer.append("~~ ");
+		pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("Boomer"), NULL);
+		Buffer.append(" ~~\n\n");
+		pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("The Boomer explodes when it attacks."), NULL);
+		Buffer.append("\n\n");
+		pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("All humans affected by the explosion become infected."), NULL);
+		Buffer.append("\n\n");
+		pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("It can also inflict 1 damage point per second by hooking humans."), NULL);
+
+		pSelf->SendMOTD(ClientID, Buffer.buffer());
+	}
+	else if(str_comp_nocase(pHelpPage, "hunter") == 0)
+	{
+		Buffer.append("~~ ");
+		pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("Hunter"), NULL);
+		Buffer.append(" ~~\n\n");
+		pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("The Hunter can infect humans and heal infected with the hammer."), NULL);
+		Buffer.append("\n\n");
+		pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("He can jump two times in air."), NULL);
+		Buffer.append("\n\n");
+		pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("He can also inflict 1 damage point per second by hooking humans."), NULL);
+
+		pSelf->SendMOTD(ClientID, Buffer.buffer());
+	}
+	else if(str_comp_nocase(pHelpPage, "bat") == 0)
+	{
+		Buffer.append("~~ ");
+		pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("Bat"), NULL);
+		Buffer.append(" ~~\n\n");
+		pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("The Bat can heal infected with the hammer, but cannot infect humans"), NULL);
+		Buffer.append("\n\n");
+		pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("Instead, it can hammer humans to reduce their health or even kill them"), NULL);
+		Buffer.append("\n\n");
+		pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("Bat can jump multiple times in air."), NULL);
+		Buffer.append("\n\n");
+		pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("It can also inflict 1 damage point per second by hooking humans."), NULL);
+		Buffer.append("\n\n");
+		pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("Their hook not only hurts humans, but also sucks their blood, restoring the bats health."), NULL);
+
+		pSelf->SendMOTD(ClientID, Buffer.buffer());
+	}
+	else if(str_comp_nocase(pHelpPage, "ghost") == 0)
+	{
+		Buffer.append("~~ ");
+		pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("Ghost"), NULL);
+		Buffer.append(" ~~\n\n");
+		pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("The Ghost can infect humans and heal infected with the hammer."), NULL);
+		Buffer.append("\n\n");
+		pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("He is invisible, except if a human is near him, if it takes a damage or if it use the hammer."), NULL);
+		Buffer.append("\n\n");
+		pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("He can also inflict 1 damage point per second by hooking humans."), NULL);
+
+		pSelf->SendMOTD(ClientID, Buffer.buffer());
+	}
+	else if(str_comp_nocase(pHelpPage, "spider") == 0)
+	{
+		Buffer.append("~~ ");
+		pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("Spider"), NULL);
+		Buffer.append(" ~~\n\n");
+		pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("The Spider can infect humans and heal infected with the hammer."), NULL);
+		Buffer.append("\n\n");
+		pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("When selecting any gun, the hook enter in web mode."), NULL);
+		Buffer.append("\n\n");
+		pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("Any human that touch a hook in web mode is automatically grabbed."), NULL);
+		Buffer.append("\n\n");
+		pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("The hook of the spider (in both mode) deal 1 damage point per second and can grab a human during 2 seconds."), NULL);
+
+		pSelf->SendMOTD(ClientID, Buffer.buffer());
+	}
+	else if(str_comp_nocase(pHelpPage, "ghoul") == 0)
+	{
+		Buffer.append("~~ ");
+		pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("Ghoul"), NULL);
+		Buffer.append(" ~~\n\n");
+		pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("The Ghoul can infect humans and heal infected with the hammer."), NULL);
+		Buffer.append("\n\n");
+		pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("He can devour all that has died close to him, which makes him stronger, faster and more resistant."), NULL);
+		Buffer.append("\n\n");
+		pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("Thereupon it digests the fodder bit by bit going back to the normal state, and besides, death bereaves him of the nourishment."), NULL);
+
+		pSelf->SendMOTD(ClientID, Buffer.buffer());
+	}
+	else if(str_comp_nocase(pHelpPage, "slug") == 0)
+	{
+		Buffer.append("~~ ");
+		pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("Slug"), NULL);
+		Buffer.append(" ~~\n\n");
+		pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("The Slug can infect humans and heal infected with the hammer."), NULL);
+		Buffer.append("\n\n");
+		pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("He can make the ground and walls toxic by spreading slime with the hammer."), NULL);
+		Buffer.append("\n\n");
+		pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("Touching the slime inflicts three damage points in three seconds on a human."), NULL);
+
+		pSelf->SendMOTD(ClientID, Buffer.buffer());
+	}
+	else if(str_comp_nocase(pHelpPage, "voodoo") == 0)
+	{
+		Buffer.append("~~ ");
+		pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("Voodoo"), NULL);
+		Buffer.append(" ~~\n\n");
+		pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("The Voodoo can infect humans and heal infected with the hammer."), NULL);
+		Buffer.append("\n\n");
+		pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("He does not die immediately when killed but instead enters Spirit mode and defies death for a brief span of time."), NULL);
+		Buffer.append("\n\n");
+		pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("While in Spirit mode it cannot be killed. When the time is up it finally dies."), NULL);
+
+		pSelf->SendMOTD(ClientID, Buffer.buffer());
+	}
+	else if(str_comp_nocase(pHelpPage, "whitehole") == 0)
+	{
+		Buffer.append("~~ ");
+		pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("White hole"), NULL);
+		Buffer.append(" ~~\n\n");
+		pSelf->Server()->Localization()->Format_LP(Buffer, pLanguage, g_Config.m_InfMineLimit, _P("Receive it by killing at least one zombie.","Receive it by killing at least {int:NumKills} zombies as scientist."),
+				"NumKills", &g_Config.m_InfWhiteHoleMinimalKills, NULL);
+		Buffer.append("\n\n");
+		pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("Use it with your laser rifle, the indicator around your Tee will show you if it is available"), NULL);
+		Buffer.append("\n\n");
+		pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("Puts humans and zombies into a vulnerable state by pulling them into its center"), NULL);
+
+		pSelf->SendMOTD(ClientID, Buffer.buffer());
+	}
+	else if(str_comp_nocase(pHelpPage, "undead") == 0)
+	{
+		Buffer.append("~~ ");
+		pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("Undead"), NULL);
+		Buffer.append(" ~~\n\n");
+		pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("The Undead can infect humans and heal infected with the hammer."), NULL);
+		Buffer.append("\n\n");
+		pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("Instead of dying, it freezes during 10 seconds."), NULL);
+		Buffer.append("\n\n");
+		pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("If an infected heals him, the freeze effect disappear."), NULL);
+		Buffer.append("\n\n");
+		pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("He can also inflict 1 damage point per second by hooking humans."), NULL);
+
+		pSelf->SendMOTD(ClientID, Buffer.buffer());
+	}
+	else if(str_comp_nocase(pHelpPage, "witch") == 0)
+	{
+		Buffer.append("~~ ");
+		pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("Witch"));
+		Buffer.append(" ~~\n\n");
+		Buffer.append("\n\n");
+		pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("The Witch can infect humans and heal infected with the hammer."), NULL);
+		Buffer.append("\n\n");
+		if (g_Config.m_InfEnableWitchPortals)
+			pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("Additionally a witch can place portals with the laser rifle. Further information on /help portals"), NULL);
+		else
+			pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("When an infected dies, it may re-spawn near witch."), NULL);
+		Buffer.append("\n\n");
+		pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("If the Witch dies, it disappears and is replaced by another class of infected."), NULL);
+		Buffer.append("\n\n");
+		pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("It can also inflict 1 damage point per second by hooking humans."), NULL);
+
+		pSelf->SendMOTD(ClientID, Buffer.buffer());
+	}
+	else if(str_comp_nocase(pHelpPage, "portals") == 0)
+	{
+		Buffer.append("~~ ");
+		pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("How to use witch portals"), NULL);
+		Buffer.append(" ~~\n\n");
+		pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("A witch can build a pair of portals to let other infected get from spawn right to the battle."), NULL);
+		Buffer.append("\n\n");
+		pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("Use Rifle to place or \"take\" a portal. The first portal is always Enterance and the last one is always Exit."), NULL);
+		pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("Use Rifle to replace Exit if both portals already opened."), NULL);
+		Buffer.append("\n\n");
+		pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("Once both portals are in place, they need extra {sec:ConnectionTime} to become operational."), "ConnectionTime", &g_Config.m_InfPortalConnectionTime, NULL);
+
+		pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("The portals destroyed when the witch die."), NULL);
+		pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("Only one witch on a map can open a portal."), NULL);
+
+		if (g_Config.m_InfEnableWitchPortals)
+			pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("Portals are currently ENABLED."), NULL);
+		else
+			pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("Portals are currently DISABLED."), NULL);
+
+		pSelf->SendMOTD(ClientID, Buffer.buffer());
+	}
+	else if(str_comp_nocase(pHelpPage, "msg") == 0)
+	{
+		Buffer.append("~~ ");
+		pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("Targeted chat messages"));
+		Buffer.append(" ~~\n\n");
+		Buffer.append("\n\n");
+		pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("Use “/msg <PlayerName> <My Message>” to send a private message to this player."), NULL);
+		Buffer.append("\n\n");
+		pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("Use “/msg !<ClassName> <My Message>” to send a private message to all players with a specific class."), NULL);
+		Buffer.append("\n\n");
+		pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("Example: “/msg !medic I'm wounded!”"), NULL);
+		Buffer.append("\n\n");
+		pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("Use “/msg !near” to send a private message to all players near you."), NULL);
+
+		pSelf->SendMOTD(ClientID, Buffer.buffer());
+	}
+	else if(str_comp_nocase(pHelpPage, "mute") == 0)
+	{
+		Buffer.append("~~ ");
+		pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("Persistent player mute"));
+		Buffer.append(" ~~\n\n");
+		Buffer.append("\n\n");
+		pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("Use “/mute <PlayerName>” to mute this player."), NULL);
+		Buffer.append("\n\n");
+		pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("Unlike a client mute this will persist between map changes and wears off when either you or the muted player disconnects."), NULL);
+		Buffer.append("\n\n");
+		pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("Example: “/mute nameless tee”"), NULL);
+		Buffer.append("\n\n");
+
+		pSelf->SendMOTD(ClientID, Buffer.buffer());
+	}
+	else if(str_comp_nocase(pHelpPage, "taxi") == 0)
+	{
+		Buffer.append("~~ ");
+		pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("How to use taxi mode"), NULL);
+		Buffer.append(" ~~\n\n");
+		pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("Two or more humans can form a taxi."), NULL);
+		Buffer.append("\n\n");
+		pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("In order to use it, both humans have to disable hook protection (usually, with F3). The human being hooked becomes the driver."), NULL);
+		Buffer.append("\n\n");
+		pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("To get off the taxi, jump. To drop off your passengers, enable hook protection (usually, with F3)."), NULL);
+
+		pSelf->SendMOTD(ClientID, Buffer.buffer());
+	}
+	else
 	{
 		pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "help", pSelf->Server()->Localization()->Localize(pLanguage, _("Choose a help page with /help <page>")));
 		
