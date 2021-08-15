@@ -11,7 +11,10 @@ General:
 - Updated Hero help page (by ipoopi)
 - Updated conditions for joining specs
 - Updated `/changelog` implementation
+- `/help` now shows `/help game` page
+- Added a reference to `/help` to the welcome message
 - Improved indirect killer detection (added some causality)
+- Implemented a chat filter for !<msg> messages (!me, !best, etc...)
 - Re-enabled infected hammer force effect on Soldier (noticeable on Bat damage)
 - Spider feet are now colored in dark red on web hook length limit reached
 - Base HP increase on a ninja killed a target replaced with overall HP increase (now ninja can get an armor)
@@ -38,6 +41,7 @@ Maintenance:
 - Added `sci` shortcut for the Scientist class
 - Added `inf_last_enforcer_time_ms` variable to adjust the causality
 - Added `sv_changelog_file`
+- Added `sv_filter_chat_commands` to toggle the filter of !me and similar messages
 - In case of internal failure the server process now will return the actual error code (port from DDNet)
 - Now the server will refuse to generate maps if the needed skins are missing
 - Data files moved from `bin/data` to the correct `data/` dir

@@ -1,4 +1,7 @@
 InfclassR v1.3.0_pre3
+- Added a reference to `/help` to the welcome message
+- `/help` now shows `/help game` page
+- Implemented a chat filter for !<msg> messages
 - Added messages on a human infected by the zone
 - Added a message to the infected player ("You have been
   infected by...")
