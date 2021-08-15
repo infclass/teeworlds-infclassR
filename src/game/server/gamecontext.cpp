@@ -1446,7 +1446,7 @@ void CGameContext::OnClientEnter(int ClientID)
 	SendChatTarget_Localization(-1, CHATCATEGORY_PLAYER, _("{str:PlayerName} entered and joined the game"), "PlayerName", Server()->ClientName(ClientID), NULL);
 
 	SendChatTarget(ClientID, "InfectionClass Mod. Version: " GAME_VERSION);
-	SendChatTarget(ClientID, "See also: /help, /changelog, /info");
+	SendChatTarget(ClientID, "See also: /help, /changelog, /about");
 
 	SendChatTarget(ClientID, "Join our discord server: https://discord.gg/Sxk5ssv");
 	SendChatTarget(ClientID, "Join our matrix.org room: https://matrix.to/#/#teeworlds-infclass:matrix.org");
@@ -2932,7 +2932,7 @@ bool CGameContext::ConCredits(IConsole::IResult *pResult, void *pUserData)
 	return true;
 }
 
-bool CGameContext::ConInfo(IConsole::IResult *pResult, void *pUserData)
+bool CGameContext::ConAbout(IConsole::IResult *pResult, void *pUserData)
 {
 	CGameContext *pSelf = (CGameContext *)pUserData;
 
@@ -4126,7 +4126,7 @@ bool CGameContext::ConCmdList(IConsole::IResult *pResult, void *pUserData)
 	Buffer.append("~~ ");
 	pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("List of commands")); 
 	Buffer.append(" ~~\n\n");
-	pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, "/antiping, /alwaysrandom, /customskin, /help, /info, /language", NULL);
+	pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, "/antiping, /alwaysrandom, /customskin, /help, /about, /language", NULL);
 	Buffer.append("\n\n");
 	pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, "/msg, /mute", NULL);
 	Buffer.append("\n\n");
@@ -4294,7 +4294,8 @@ void CGameContext::OnConsoleInit()
 	Console()->Register("version", "", CFGFLAG_SERVER, ConVersion, this, "Display information about the server version and build");
 
 	Console()->Register("credits", "", CFGFLAG_CHAT | CFGFLAG_USER, ConCredits, this, "Shows the credits of the mod");
-	Console()->Register("info", "", CFGFLAG_CHAT|CFGFLAG_USER, ConInfo, this, "Display information about the mod");
+	Console()->Register("about", "", CFGFLAG_CHAT|CFGFLAG_USER, ConAbout, this, "Display information about the mod");
+	Console()->Register("info", "", CFGFLAG_CHAT|CFGFLAG_USER, ConAbout, this, "Display information about the mod");
 	Console()->Register("register", "s<username> s<password> ?s<email>", CFGFLAG_CHAT|CFGFLAG_USER, ConRegister, this, "Create an account");
 	Console()->Register("login", "s<username> s<password>", CFGFLAG_CHAT|CFGFLAG_USER, ConLogin, this, "Login to an account");
 	Console()->Register("logout", "", CFGFLAG_CHAT|CFGFLAG_USER, ConLogout, this, "Logout");
