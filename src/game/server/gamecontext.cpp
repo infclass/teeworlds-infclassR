@@ -1446,7 +1446,7 @@ void CGameContext::OnClientEnter(int ClientID)
 	SendChatTarget_Localization(-1, CHATCATEGORY_PLAYER, _("{str:PlayerName} entered and joined the game"), "PlayerName", Server()->ClientName(ClientID), NULL);
 
 	SendChatTarget(ClientID, "InfectionClass Mod. Version: " GAME_VERSION);
-	SendChatTarget(ClientID, "See also: /info");
+	SendChatTarget(ClientID, "See also: /help, /changelog, /info");
 
 	SendChatTarget(ClientID, "Join our discord server: https://discord.gg/Sxk5ssv");
 	SendChatTarget(ClientID, "Join our matrix.org room: https://matrix.to/#/#teeworlds-infclass:matrix.org");
