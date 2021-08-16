@@ -118,6 +118,15 @@ class CConsole : public IConsole
 		virtual const char *GetString(unsigned Index);
 		virtual int GetInteger(unsigned Index);
 		virtual float GetFloat(unsigned Index);
+
+		virtual void RemoveArgument(unsigned Index)
+		{
+			dbg_assert(Index < m_NumArgs, "invalid argument index");
+			for(unsigned i = Index; i < m_NumArgs - 1; i++)
+				m_apArgs[i] = m_apArgs[i + 1];
+
+			m_apArgs[m_NumArgs--] = 0;
+		}
 	};
 
 	int ParseStart(CResult *pResult, const char *pString, int Length);

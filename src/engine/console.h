@@ -50,6 +50,8 @@ public:
 		void SetClientID(int ClientID) { m_ClientID = ClientID; }
 		void SetTeamChat(bool TeamChat) { m_TeamChat = TeamChat; }
 
+		virtual void RemoveArgument(unsigned Index) = 0;
+
 		int NumArguments() const { return m_NumArgs; }
 	};
 
