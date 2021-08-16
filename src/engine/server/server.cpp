@@ -1717,8 +1717,8 @@ void CServer::SendServerInfo(const NETADDR *pAddr, int Token, bool Extended, boo
 		if(g_Config.m_SvHideInfo == 2)
 		{
 			// Full hide
-			PlayerCount = 0;
 			ClientCount = 0;
+			PlayerCount = 0;
 			SendClients = false;
 			pMapName = "";
 		}
@@ -1727,12 +1727,12 @@ void CServer::SendServerInfo(const NETADDR *pAddr, int Token, bool Extended, boo
 			// Limit players
 			static const int SoftLimit = 8;
 			static const int HardLimit = 12;
-			if(PlayerCount > SoftLimit)
+			if(ClientCount > SoftLimit)
 			{
-				PlayerCount = SoftLimit + (PlayerCount - SoftLimit) / 3;
+				ClientCount = SoftLimit + (ClientCount - SoftLimit) / 3;
 			}
-			PlayerCount = minimum(PlayerCount, HardLimit);
-			ClientCount = minimum(ClientCount, PlayerCount);
+			ClientCount = minimum(ClientCount, HardLimit);
+			PlayerCount = minimum(ClientCount, PlayerCount);
 		}
 	}
 
@@ -1802,10 +1802,10 @@ void CServer::SendServerInfo(const NETADDR *pAddr, int Token, bool Extended, boo
 
 				if(g_Config.m_SvHideInfo)
 				{
-					if(PlayerCount == 0)
+					if(ClientCount == 0)
 						break;
 
-					--PlayerCount;
+					--ClientCount;
 				}
 
 				if (Skip-- > 0)
