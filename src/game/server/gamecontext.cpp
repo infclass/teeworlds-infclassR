@@ -3601,6 +3601,19 @@ bool CGameContext::ConHelp(IConsole::IResult *pResult)
 		Buffer.append("\n\n");
 		Server()->Localization()->Format_L(Buffer, pLanguage, _C("Engineer", "The lifespan of a wall is {sec:LifeSpan}, and walls are limited to one per player at the same time."), "LifeSpan", &g_Config.m_InfBarrierLifeSpan, NULL);
 	}
+	else if(str_comp_nocase(pHelpPage, "electrician") == 0)
+	{
+		Buffer.append("~~ ");
+		pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("Electrician"), NULL);
+		Buffer.append(" ~~\n\n");
+		pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("The Electrician can place a High Voltage Box with hammer. A Link goes from the Box to you and any infected hit with the laser rifle."), NULL);
+		Buffer.append("\n\n");
+		pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("Using hammer again creates a Discharge which stuns and deals damage to any infected near the Box and along any of the Links."), NULL);
+		Buffer.append("\n\n");
+		pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("The Shotgun is replaced with a chaining laser which deals damage and jumps to any infected nearby. It's twice as powerful against stunned infected."), NULL);
+
+		pSelf->SendMOTD(ClientID, Buffer.buffer());
+	}
 	else if(str_comp_nocase(pHelpPage, "soldier") == 0)
 	{
 		Buffer.append("~~ ");
