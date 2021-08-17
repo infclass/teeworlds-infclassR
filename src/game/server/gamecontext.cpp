@@ -3601,7 +3601,7 @@ bool CGameContext::ConHelp(IConsole::IResult *pResult)
 		Buffer.append("\n\n");
 		Server()->Localization()->Format_L(Buffer, pLanguage, _C("Engineer", "The lifespan of a wall is {sec:LifeSpan}, and walls are limited to one per player at the same time."), "LifeSpan", &g_Config.m_InfBarrierLifeSpan, NULL);
 	}
-	else if(str_comp_nocase(pHelpPage, "electrician") == 0)
+	else if((str_comp_nocase(pHelpPage, "electrician") == 0) || (str_comp_nocase(pHelpPage, "electric") == 0))
 	{
 		Buffer.append("~~ ");
 		pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("Electrician"), NULL);
