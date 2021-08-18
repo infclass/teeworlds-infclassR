@@ -1,3 +1,12 @@
+InfclassR v1.3.0_rc1
+- Ghoul leveling rebalanced (effectively capped at the
+  value of previous 70%)
+- Bat class excluded from the classes available for the
+  first infected
+- Removed Soldier and Looper stun grenades
+- Removed spawn protection for inf spawned by a witch
+- Fixed spectators not always visible on the server
+
 InfclassR v1.3.0_pre3
 - Added a reference to `/help` to the welcome message
 - `/help` now shows `/help game` page

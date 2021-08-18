@@ -19,8 +19,11 @@ General:
 - Spider feet are now colored in dark red on web hook length limit reached
 - Base HP increase on a ninja killed a target replaced with overall HP increase (now ninja can get an armor)
 - Undeads and Voodoos now reduce EngineerWall lifespan
+- Ghoul leveling rebalanced (effectively capped at the value of previous 70%)
+- Bat class excluded from the classes available for the first infected
 - Ninjas are now invincible for hammers during the split second of katana attack
-- Infection spawn protection (1 second) now actually given on infection spawned
+- Infection spawn protection (1 second) now actually given on infection spawned (on a spawn point)
+- Remove (random) stun grenades from Soldier and Looper arsenal
 - Fixed sniper position unlock on a jump
 - Fixed utf8 ban reasons (from DDNet)
 - Fixed InfClass zones sensitivity (only the right top point of the Tee was checked previously)
@@ -42,6 +45,9 @@ Maintenance:
 - Added `inf_last_enforcer_time_ms` variable to adjust the causality
 - Added `sv_changelog_file`
 - Added `sv_filter_chat_commands` to toggle the filter of !me and similar messages
+- Deprecated variables:
+- `inf_stun_grenade_minimal_kills` (does nothing, remove it)
+- `inf_stun_grenade_probability` (does nothing, remove it)
 - In case of internal failure the server process now will return the actual error code (port from DDNet)
 - Now the server will refuse to generate maps if the needed skins are missing
 - Data files moved from `bin/data` to the correct `data/` dir
