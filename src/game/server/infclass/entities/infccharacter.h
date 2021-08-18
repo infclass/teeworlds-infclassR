@@ -30,7 +30,14 @@ struct WeaponRegenParams
 
 struct SpawnContext
 {
+	enum SPAWN_TYPE
+	{
+		MapSpawn,
+		WitchSpawn,
+	};
+
 	vec2 SpawnPos;
+	SPAWN_TYPE SpawnType;
 };
 
 class CInfClassCharacter : public CCharacter

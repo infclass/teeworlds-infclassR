@@ -1739,6 +1739,7 @@ bool CInfClassGameController::TryRespawn(CInfClassPlayer *pPlayer, SpawnContext 
 
 			if(Iter.Player()->GetCharacter()->FindWitchSpawnPosition(pContext->SpawnPos))
 			{
+				pContext->SpawnType = SpawnContext::WitchSpawn;
 				return true;
 			}
 		}
@@ -1760,6 +1761,7 @@ bool CInfClassGameController::TryRespawn(CInfClassPlayer *pPlayer, SpawnContext 
 		if(IsSpawnable(m_SpawnPoints[Type][I], 0))
 		{
 			pContext->SpawnPos = m_SpawnPoints[Type][I];
+			pContext->SpawnType = SpawnContext::WitchSpawn;
 			return true;
 		}
 	}

@@ -108,7 +108,10 @@ void CInfClassInfected::OnCharacterSpawned(const SpawnContext &Context)
 
 	m_SlimeHealTick = 0;
 
-	m_pCharacter->GrantSpawnProtection();
+	if(Context.SpawnType == SpawnContext::MapSpawn)
+	{
+		m_pCharacter->GrantSpawnProtection();
+	}
 }
 
 void CInfClassInfected::GiveClassAttributes()
