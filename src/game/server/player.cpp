@@ -426,15 +426,6 @@ void CPlayer::SetTeam(int Team, bool DoChatMsg)
 
 void CPlayer::TryRespawn()
 {
-	vec2 SpawnPos;
-
-	if(!GameServer()->m_pController->PreSpawn(this, &SpawnPos))
-		return;
-
-	m_Spawning = false;
-	m_pCharacter = new(m_ClientID) CCharacter(&GameServer()->m_World, GameServer()->Console());
-	m_pCharacter->Spawn(this, SpawnPos);
-	GameServer()->CreatePlayerSpawn(SpawnPos);
 }
 
 int CPlayer::GetDefaultEmote() const
