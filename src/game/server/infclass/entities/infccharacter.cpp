@@ -436,8 +436,8 @@ bool CInfClassCharacter::TakeDamage(vec2 Force, int Dmg, int From, int Weapon, T
 /* INFECTION MODIFICATION START ***************************************/
 
 	//KillerPlayer
-	CPlayer* pKillerPlayer = GameServer()->m_apPlayers[From]; // before using this variable check if it exists with "if(pKillerPlayer)"
-	CCharacter *pKillerChar = 0; // before using this variable check if it exists with "if(pKillerChar)"
+	CInfClassPlayer *pKillerPlayer = GameController()->GetPlayer(From);
+	CInfClassCharacter *pKillerChar = nullptr;
 	if(pKillerPlayer)
 		pKillerChar = pKillerPlayer->GetCharacter();
 
@@ -499,7 +499,7 @@ bool CInfClassCharacter::TakeDamage(vec2 Force, int Dmg, int From, int Weapon, T
 		int DamageAccepted = 0;
 		for(int i=0; i<Dmg; i++)
 		{
-			if(random_prob(1.0f - m_pPlayer->GetGhoulPercent()/2.0f))
+			if(random_prob(1.0f - m_pClass->GetGhoulPercent()/2.0f))
 				DamageAccepted++;
 		}
 		Dmg = DamageAccepted;
@@ -510,7 +510,7 @@ bool CInfClassCharacter::TakeDamage(vec2 Force, int Dmg, int From, int Weapon, T
 		Dmg = 0;
 	}
 
-	if(From != m_pPlayer->GetCID() && pKillerPlayer)
+	if(From != GetCID() && pKillerPlayer)
 	{
 		if(IsZombie())
 		{
@@ -541,7 +541,7 @@ bool CInfClassCharacter::TakeDamage(vec2 Force, int Dmg, int From, int Weapon, T
 /* INFECTION MODIFICATION END *****************************************/
 
 	// m_pPlayer only inflicts half damage on self
-	if(From == m_pPlayer->GetCID())
+	if(From == GetCID())
 	{
 		if(Mode == TAKEDAMAGEMODE_SELFHARM)
 			Dmg = maximum(1, Dmg/2);
@@ -582,10 +582,10 @@ bool CInfClassCharacter::TakeDamage(vec2 Force, int Dmg, int From, int Weapon, T
 
 		m_Health -= Dmg;
 
-		if(From != m_pPlayer->GetCID() && pKillerPlayer)
+		if(From != GetCID() && pKillerPlayer)
 			m_NeedFullHeal = true;
 
-		if(From >= 0 && From != m_pPlayer->GetCID())
+		if(From >= 0 && From != GetCID())
 			GameServer()->SendHitSound(From);
 	}
 /* INFECTION MODIFICATION END *****************************************/
@@ -608,10 +608,10 @@ bool CInfClassCharacter::TakeDamage(vec2 Force, int Dmg, int From, int Weapon, T
 		char aBuf[256];
 		str_format(aBuf, sizeof(aBuf), "kill killer='%s' victim='%s' weapon=%d",
 			Server()->ClientName(From),
-			Server()->ClientName(m_pPlayer->GetCID()), Weapon);
+			Server()->ClientName(GetCID()), Weapon);
 		GameServer()->Console()->Print(IConsole::OUTPUT_LEVEL_DEBUG, "game", aBuf);
 
-		GameServer()->SendKillMessage(From, m_pPlayer->GetCID(), WEAPON_HAMMER, 0);
+		GameServer()->SendKillMessage(From, GetCID(), WEAPON_HAMMER, 0);
 	}
 /* INFECTION MODIFICATION END *****************************************/
 
@@ -1845,7 +1845,7 @@ void CInfClassCharacter::HandleHookDraining()
 				}
 				else if(GetPlayerClass() == PLAYERCLASS_GHOUL)
 				{
-					Rate = 0.33f + 0.66f * (1.0f-m_pPlayer->GetGhoulPercent());
+					Rate = 0.33f + 0.66f * (1.0f-m_pClass->GetGhoulPercent());
 				}
 
 				if(m_HookDmgTick + Server()->TickSpeed()*Rate < Server()->Tick())

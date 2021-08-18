@@ -234,7 +234,7 @@ void CInfClassInfected::BroadcastWeaponState()
 	{
 		if(m_pPlayer->GetGhoulLevel())
 		{
-			float FodderInStomach = m_pPlayer->GetGhoulPercent();
+			float FodderInStomach = GetGhoulPercent();
 			GameServer()->SendBroadcast_Localization(GetCID(), BROADCAST_PRIORITY_WEAPONSTATE,
 				BROADCAST_DURATION_REALTIME,
 				_("Stomach filled by {percent:FodderInStomach}"),
