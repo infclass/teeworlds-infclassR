@@ -127,7 +127,6 @@ public:
 	float WebHookLength() const;
 
 	void CheckSuperWeaponAccess();
-	void MaybeGiveStunGrenades();
 	void FireSoldierBomb();
 	void PlacePortal(WeaponFireContext *pFireContext);
 	CPortal *FindPortalInTarget();

@@ -80,7 +80,6 @@ m_pConsole(pConsole)
 	m_HasWhiteHole = false;
 	m_HasIndicator = false;
 	m_TurretCount = 0;
-	m_HasStunGrenade = false;
 	m_BroadcastWhiteHoleReady = -100;
 	m_pHeroFlag = nullptr;
 	m_ResetKillsTime = 0;

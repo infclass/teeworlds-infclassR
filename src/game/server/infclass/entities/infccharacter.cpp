@@ -1388,67 +1388,30 @@ void CInfClassCharacter::OnGrenadeFired(WeaponFireContext *pFireContext)
 	}
 	else
 	{
-		if(m_HasStunGrenade)
+		CProjectile *pProj = new CProjectile(GameWorld(), WEAPON_GRENADE,
+											 m_pPlayer->GetCID(),
+											 ProjStartPos,
+											 Direction,
+											 (int)(Server()->TickSpeed()*GameServer()->Tuning()->m_GrenadeLifetime),
+											 1, true, 0, SOUND_GRENADE_EXPLODE, WEAPON_GRENADE);
+
+		if(GetPlayerClass() == PLAYERCLASS_NINJA)
 		{
-			int ShotSpread = 2;
-
-			CMsgPacker Msg(NETMSGTYPE_SV_EXTRAPROJECTILE);
-			Msg.AddInt(ShotSpread*2+1);
-
-			for(int i = -ShotSpread; i <= ShotSpread; ++i)
-			{
-				float a = GetAngle(Direction) + random_float()/3.0f;
-				
-				CScatterGrenade *pProj = new CScatterGrenade(GameServer(), m_pPlayer->GetCID(), GetPos(), vec2(cosf(a), sinf(a)));
-				
-				if (m_HasStunGrenade)
-				{
-					//Make them flash grenades
-					pProj->FlashGrenade();
-				}
-
-				// pack the Projectile and send it to the client Directly
-				CNetObj_Projectile p;
-				pProj->FillInfo(&p);
-				
-				for(unsigned i = 0; i < sizeof(CNetObj_Projectile)/sizeof(int); i++)
-					Msg.AddInt(((int *)&p)[i]);
-				Server()->SendMsg(&Msg, MSGFLAG_VITAL, m_pPlayer->GetCID());
-			}
-			
-			GameServer()->CreateSound(GetPos(), SOUND_GRENADE_FIRE);
-			
-			m_HasStunGrenade=false;
-			GetPlayer()->ResetNumberKills();
-			return;
+			pProj->FlashGrenade();
+			pProj->SetFlashRadius(8);
 		}
-		else
-		{
-			CProjectile *pProj = new CProjectile(GameWorld(), WEAPON_GRENADE,
-												 m_pPlayer->GetCID(),
-												 ProjStartPos,
-												 Direction,
-												 (int)(Server()->TickSpeed()*GameServer()->Tuning()->m_GrenadeLifetime),
-												 1, true, 0, SOUND_GRENADE_EXPLODE, WEAPON_GRENADE);
 
-			if(GetPlayerClass() == PLAYERCLASS_NINJA)
-			{
-				pProj->FlashGrenade();
-				pProj->SetFlashRadius(8);
-			}
+		// pack the Projectile and send it to the client Directly
+		CNetObj_Projectile p;
+		pProj->FillInfo(&p);
 
-			// pack the Projectile and send it to the client Directly
-			CNetObj_Projectile p;
-			pProj->FillInfo(&p);
+		CMsgPacker Msg(NETMSGTYPE_SV_EXTRAPROJECTILE);
+		Msg.AddInt(1);
+		for(unsigned i = 0; i < sizeof(CNetObj_Projectile)/sizeof(int); i++)
+			Msg.AddInt(((int *)&p)[i]);
+		Server()->SendMsg(&Msg, MSGFLAG_VITAL, m_pPlayer->GetCID());
 
-			CMsgPacker Msg(NETMSGTYPE_SV_EXTRAPROJECTILE);
-			Msg.AddInt(1);
-			for(unsigned i = 0; i < sizeof(CNetObj_Projectile)/sizeof(int); i++)
-				Msg.AddInt(((int *)&p)[i]);
-			Server()->SendMsg(&Msg, MSGFLAG_VITAL, m_pPlayer->GetCID());
-
-			GameServer()->CreateSound(GetPos(), SOUND_GRENADE_FIRE);
-		}
+		GameServer()->CreateSound(GetPos(), SOUND_GRENADE_FIRE);
 	}
 }
 
@@ -2144,33 +2107,6 @@ void CInfClassCharacter::CheckSuperWeaponAccess()
 					}
 				} 
 			} 
-		}
-	}
-	
-	if(GetPlayerClass() == PLAYERCLASS_LOOPER)
-	{
-		MaybeGiveStunGrenades();
-	}
-	
-	if(GetPlayerClass() == PLAYERCLASS_SOLDIER)
-	{
-		MaybeGiveStunGrenades();
-	}
-}
-
-void CInfClassCharacter::MaybeGiveStunGrenades()
-{
-	if(m_HasStunGrenade)
-		return;
-
-	if(m_pPlayer->GetNumberKills() > Config()->m_InfStunGrenadeMinimalKills)
-	{
-		if(random_int(0,100) < Config()->m_InfStunGrenadeProbability)
-		{
-				//grenade launcher usage will make it unavailable and reset player kills
-			
-				m_HasStunGrenade = true;
-				GameServer()->SendChatTarget_Localization(m_pPlayer->GetCID(), CHATCATEGORY_SCORE, _("stun grenades found..."), NULL);
 		}
 	}
 }
