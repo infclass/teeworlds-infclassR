@@ -728,7 +728,7 @@ bool CInfClassGameController::ChatWitch(IConsole::IResult *pResult)
 	str_format(aBuf, sizeof(aBuf), "ConWitch() called");
 	GameServer()->Console()->Print(IConsole::OUTPUT_LEVEL_DEBUG, "conwitch", aBuf);
 
-	if (GameServer()->GetZombieCount(PLAYERCLASS_WITCH) >= Server()->GetClassPlayerLimit(PLAYERCLASS_WITCH)) {
+	if (GameServer()->GetZombieCount(PLAYERCLASS_WITCH) >= GetClassPlayerLimit(PLAYERCLASS_WITCH)) {
 		str_format(aBuf, sizeof(aBuf), "All witches are already here");
 		GameServer()->SendChatTarget(ClientID, aBuf);
 		return true;
@@ -1889,7 +1889,7 @@ int CInfClassGameController::ChooseHumanClass(const CPlayer *pPlayer) const
 	for (int PlayerClass = START_HUMANCLASS + 1; PlayerClass < END_HUMANCLASS; ++PlayerClass)
 	{
 		double &ClassProbability = Probability[PlayerClass - START_HUMANCLASS - 1];
-		ClassProbability = Server()->GetPlayerClassEnabled(PlayerClass) ? 1.0f : 0.0f;
+		ClassProbability = GetPlayerClassEnabled(PlayerClass) ? 1.0f : 0.0f;
 		if (GameServer()->m_FunRound)
 		{
 			// We care only about the class enablement
@@ -1941,7 +1941,7 @@ int CInfClassGameController::ChooseInfectedClass(const CPlayer *pPlayer) const
 	for (int PlayerClass = START_INFECTEDCLASS + 1; PlayerClass < END_INFECTEDCLASS; ++PlayerClass)
 	{
 		double &ClassProbability = Probability[PlayerClass - START_INFECTEDCLASS - 1];
-		ClassProbability = Server()->GetClassAvailability(PlayerClass) ? Server()->GetPlayerClassProbability(PlayerClass) : 0;
+		ClassProbability = Server()->GetClassAvailability(PlayerClass) ? GetPlayerClassProbability(PlayerClass) : 0;
 		if (GameServer()->m_FunRound)
 		{
 			// We care only about the class enablement
@@ -1983,7 +1983,7 @@ int CInfClassGameController::ChooseInfectedClass(const CPlayer *pPlayer) const
 	return Class;
 }
 
-bool CInfClassGameController::IsEnabledClass(int PlayerClass) const
+bool CInfClassGameController::GetPlayerClassEnabled(int PlayerClass) const
 {
 	switch(PlayerClass)
 	{
@@ -2012,13 +2012,71 @@ bool CInfClassGameController::IsEnabledClass(int PlayerClass) const
 	}
 }
 
+int CInfClassGameController::GetMinPlayersForClass(int PlayerClass) const
+{
+	switch (PlayerClass)
+	{
+		case PLAYERCLASS_ENGINEER:
+			return g_Config.m_InfMinPlayersForEngineer;
+		default:
+			return 0;
+	}
+}
+
+int CInfClassGameController::GetClassPlayerLimit(int PlayerClass) const
+{
+	switch (PlayerClass)
+	{
+		case PLAYERCLASS_MEDIC:
+			return g_Config.m_InfMedicLimit;
+		case PLAYERCLASS_HERO:
+			return g_Config.m_InfHeroLimit;
+		case PLAYERCLASS_WITCH:
+			return g_Config.m_InfWitchLimit;
+		default:
+			return g_Config.m_SvMaxClients;
+	}
+}
+
+int CInfClassGameController::GetPlayerClassProbability(int PlayerClass) const
+{
+	switch (PlayerClass)
+	{
+		case PLAYERCLASS_SMOKER:
+			return g_Config.m_InfProbaSmoker;
+		case PLAYERCLASS_BOOMER:
+			return g_Config.m_InfProbaBoomer;
+		case PLAYERCLASS_HUNTER:
+			return g_Config.m_InfProbaHunter;
+		case PLAYERCLASS_BAT:
+			return g_Config.m_InfProbaBat;
+		case PLAYERCLASS_GHOST:
+			return g_Config.m_InfProbaGhost;
+		case PLAYERCLASS_SPIDER:
+			return g_Config.m_InfProbaSpider;
+		case PLAYERCLASS_GHOUL:
+			return g_Config.m_InfProbaGhoul;
+		case PLAYERCLASS_SLUG:
+			return g_Config.m_InfProbaSlug;
+		case PLAYERCLASS_VOODOO:
+			return g_Config.m_InfProbaVoodoo;
+		case PLAYERCLASS_WITCH:
+			return g_Config.m_InfProbaWitch;
+		case PLAYERCLASS_UNDEAD:
+			return g_Config.m_InfProbaUndead;
+		default:
+			GameServer()->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "server", "WARNING: Invalid GetPlayerClassProbability() call");
+			return false;
+	}
+}
+
 CLASS_AVAILABILITY CInfClassGameController::GetPlayerClassAvailability(int PlayerClass) const
 {
-	if (!IsEnabledClass(PlayerClass))
+	if (!GetPlayerClassEnabled(PlayerClass))
 		return CLASS_AVAILABILITY::DISABLED;
 
 	int ActivePlayerCount = Server()->GetActivePlayerCount();
-	int MinPlayersForClass = Server()->GetMinPlayersForClass(PlayerClass);
+	int MinPlayersForClass = GetMinPlayersForClass(PlayerClass);
 	if (ActivePlayerCount < MinPlayersForClass)
 		return CLASS_AVAILABILITY::NEED_MORE_PLAYERS;
 
@@ -2047,7 +2105,7 @@ CLASS_AVAILABILITY CInfClassGameController::GetPlayerClassAvailability(int Playe
 	if (IsSupportClass(PlayerClass) && (nbSupport >= g_Config.m_InfSupportLimit))
 		return CLASS_AVAILABILITY::LIMIT_EXCEEDED;
 
-	if (nbClass[PlayerClass] >= Server()->GetClassPlayerLimit(PlayerClass))
+	if (nbClass[PlayerClass] >= GetClassPlayerLimit(PlayerClass))
 		return CLASS_AVAILABILITY::LIMIT_EXCEEDED;
 	
 	return CLASS_AVAILABILITY::AVAILABLE;

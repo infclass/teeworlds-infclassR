@@ -2738,11 +2738,15 @@ bool CGameContext::StartFunRound(const FunRoundConfiguration &Configuration)
 		return true;
 	}
 
+	// Ugly cast for the sake of IServer cleanup. This method should be moved
+	//  to the GameController so there will be no cast in some future.
+	const CInfClassGameController *pInfGameController = static_cast<CInfClassGameController*>(m_pController);
+
 	// zombies
 	std::vector<int> infectedProbabilities;
 	for (int PlayerClass = START_INFECTEDCLASS + 1; PlayerClass < END_INFECTEDCLASS; PlayerClass++)
 	{
-		infectedProbabilities.push_back(Server()->GetPlayerClassProbability(PlayerClass));
+		infectedProbabilities.push_back(pInfGameController->GetPlayerClassProbability(PlayerClass));
 	}
 	const auto extraConfigValues =
 	{
@@ -2759,7 +2763,7 @@ bool CGameContext::StartFunRound(const FunRoundConfiguration &Configuration)
 	std::vector<int> humanAvailabilities;
 	for (int PlayerClass = START_HUMANCLASS + 1; PlayerClass < END_HUMANCLASS; PlayerClass++)
 	{
-		humanAvailabilities.push_back(Server()->GetPlayerClassEnabled(PlayerClass));
+		humanAvailabilities.push_back(pInfGameController->GetPlayerClassEnabled(PlayerClass));
 	}
 
 	std::vector<const char*> phrases = {

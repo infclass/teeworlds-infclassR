@@ -3267,36 +3267,6 @@ int CServer::IsClassChooserEnabled()
 	return m_InfClassChooser;
 }
 
-bool CServer::GetPlayerClassEnabled(int PlayerClass) const
-{
-	switch (PlayerClass)
-	{
-		case PLAYERCLASS_MERCENARY:
-			return g_Config.m_InfEnableMercenary;
-		case PLAYERCLASS_MEDIC:
-			return g_Config.m_InfEnableMedic;
-		case PLAYERCLASS_HERO:
-			return g_Config.m_InfEnableHero;
-		case PLAYERCLASS_ENGINEER:
-			return g_Config.m_InfEnableEngineer;
-		case PLAYERCLASS_SOLDIER:
-			return g_Config.m_InfEnableSoldier;
-		case PLAYERCLASS_NINJA:
-			return g_Config.m_InfEnableNinja;
-		case PLAYERCLASS_SNIPER:
-			return g_Config.m_InfEnableSniper;
-		case PLAYERCLASS_SCIENTIST:
-			return g_Config.m_InfEnableScientist;
-		case PLAYERCLASS_BIOLOGIST:
-			return g_Config.m_InfEnableBiologist;
-		case PLAYERCLASS_LOOPER:
-			return g_Config.m_InfEnableLooper;
-		default:
-			m_pConsole->Print(IConsole::OUTPUT_LEVEL_STANDARD, "server", "WARNING: Invalid GetPlayerClassEnabled() call");
-			return false;
-	}
-}
-
 void CServer::SetPlayerClassEnabled(int PlayerClass, bool Enabled)
 {
 	const int Value = Enabled ? 1 : 0;
@@ -3335,64 +3305,6 @@ void CServer::SetPlayerClassEnabled(int PlayerClass, bool Enabled)
 		default:
 			m_pConsole->Print(IConsole::OUTPUT_LEVEL_STANDARD, "server", "WARNING: Invalid SetPlayerClassEnabled() call");
 			return;
-	}
-}
-
-int CServer::GetMinPlayersForClass(int PlayerClass) const
-{
-	switch (PlayerClass)
-	{
-		case PLAYERCLASS_ENGINEER:
-			return g_Config.m_InfMinPlayersForEngineer;
-		default:
-			return 0;
-	}
-}
-
-int CServer::GetClassPlayerLimit(int PlayerClass) const
-{
-	switch (PlayerClass)
-	{
-		case PLAYERCLASS_MEDIC:
-			return g_Config.m_InfMedicLimit;
-		case PLAYERCLASS_HERO:
-			return g_Config.m_InfHeroLimit;
-		case PLAYERCLASS_WITCH:
-			return g_Config.m_InfWitchLimit;
-		default:
-			return g_Config.m_SvMaxClients;
-	}
-}
-
-int CServer::GetPlayerClassProbability(int PlayerClass) const
-{
-	switch (PlayerClass)
-	{
-		case PLAYERCLASS_SMOKER:
-			return g_Config.m_InfProbaSmoker;
-		case PLAYERCLASS_BOOMER:
-			return g_Config.m_InfProbaBoomer;
-		case PLAYERCLASS_HUNTER:
-			return g_Config.m_InfProbaHunter;
-		case PLAYERCLASS_BAT:
-			return g_Config.m_InfProbaBat;
-		case PLAYERCLASS_GHOST:
-			return g_Config.m_InfProbaGhost;
-		case PLAYERCLASS_SPIDER:
-			return g_Config.m_InfProbaSpider;
-		case PLAYERCLASS_GHOUL:
-			return g_Config.m_InfProbaGhoul;
-		case PLAYERCLASS_SLUG:
-			return g_Config.m_InfProbaSlug;
-		case PLAYERCLASS_VOODOO:
-			return g_Config.m_InfProbaVoodoo;
-		case PLAYERCLASS_WITCH:
-			return g_Config.m_InfProbaWitch;
-		case PLAYERCLASS_UNDEAD:
-			return g_Config.m_InfProbaUndead;
-		default:
-			m_pConsole->Print(IConsole::OUTPUT_LEVEL_STANDARD, "server", "WARNING: Invalid GetPlayerClassProbability() call");
-			return false;
 	}
 }
 
