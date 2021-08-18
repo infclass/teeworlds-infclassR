@@ -499,7 +499,7 @@ bool CInfClassCharacter::TakeDamage(vec2 Force, int Dmg, int From, int Weapon, T
 		int DamageAccepted = 0;
 		for(int i=0; i<Dmg; i++)
 		{
-			if(random_prob(1.0f - m_pClass->GetGhoulPercent()/2.0f))
+			if(random_prob(1.0f - m_pClass->GetGhoulPercent() / 3.0f))
 				DamageAccepted++;
 		}
 		Dmg = DamageAccepted;
@@ -1845,7 +1845,7 @@ void CInfClassCharacter::HandleHookDraining()
 				}
 				else if(GetPlayerClass() == PLAYERCLASS_GHOUL)
 				{
-					Rate = 0.33f + 0.66f * (1.0f-m_pClass->GetGhoulPercent());
+					Rate = 0.56f + 0.44f * (1.0f-m_pClass->GetGhoulPercent());
 				}
 
 				if(m_HookDmgTick + Server()->TickSpeed()*Rate < Server()->Tick())
@@ -2543,7 +2543,7 @@ void CInfClassCharacter::UpdateTuningParam()
 	
 	if(GetPlayerClass() == PLAYERCLASS_GHOUL)
 	{
-		float Factor = GetClass()->GetGhoulPercent();
+		float Factor = GetClass()->GetGhoulPercent() * 0.7;
 		pTuningParams->m_GroundControlSpeed = pTuningParams->m_GroundControlSpeed * (1.0f + 0.5f*Factor);
 		pTuningParams->m_GroundControlAccel = pTuningParams->m_GroundControlAccel * (1.0f + 0.5f*Factor);
 		pTuningParams->m_GroundJumpImpulse = pTuningParams->m_GroundJumpImpulse * (1.0f + 0.35f*Factor);
