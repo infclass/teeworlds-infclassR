@@ -1715,7 +1715,7 @@ bool CInfClassGameController::IsSpawnable(vec2 Pos, int TeleZoneIndex)
 	return true;
 }
 
-bool CInfClassGameController::PreSpawn(CPlayer* pPlayer, vec2 *pOutPos)
+bool CInfClassGameController::TryRespawn(CInfClassPlayer *pPlayer, SpawnContext *pContext)
 {
 	// spectators can't spawn
 	if(pPlayer->GetTeam() == TEAM_SPECTATORS)
@@ -1736,11 +1736,9 @@ bool CInfClassGameController::PreSpawn(CPlayer* pPlayer, vec2 *pOutPos)
 			if(Iter.Player()->GetClass() != PLAYERCLASS_WITCH) continue;
 			if(!Iter.Player()->GetCharacter()) continue;
 			if (Iter.Player()->GetCharacter()->HasPortal()) continue;
-			
-			vec2 SpawnPos;
-			if(Iter.Player()->GetCharacter()->FindWitchSpawnPosition(SpawnPos))
+
+			if(Iter.Player()->GetCharacter()->FindWitchSpawnPosition(pContext->SpawnPos))
 			{
-				*pOutPos = SpawnPos;
 				return true;
 			}
 		}
@@ -1761,7 +1759,7 @@ bool CInfClassGameController::PreSpawn(CPlayer* pPlayer, vec2 *pOutPos)
 		int I = (i + RandomShift)%m_SpawnPoints[Type].size();
 		if(IsSpawnable(m_SpawnPoints[Type][I], 0))
 		{
-			*pOutPos = m_SpawnPoints[Type][I];
+			pContext->SpawnPos = m_SpawnPoints[Type][I];
 			return true;
 		}
 	}

@@ -12,6 +12,7 @@ class CGameWorld;
 class CInfClassCharacter;
 class CInfClassPlayer;
 struct CNetObj_GameInfo;
+struct SpawnContext;
 
 using ClientsArray = array_on_stack<int, 64>; // MAX_CLIENTS
 
@@ -50,7 +51,7 @@ public:
 	void DoWincheck() override;
 	void StartRound() override;
 	void EndRound() override;
-	bool PreSpawn(CPlayer* pPlayer, vec2 *pPos) override;
+	bool TryRespawn(CInfClassPlayer *pPlayer, SpawnContext *pContext);
 	int ChooseHumanClass(const CPlayer *pPlayer) const;
 	int ChooseInfectedClass(const CPlayer *pPlayer) const override;
 	bool IsEnabledClass(int PlayerClass) const;

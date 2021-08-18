@@ -34,20 +34,17 @@ CInfClassGameController *CInfClassPlayer::GameController()
 
 void CInfClassPlayer::TryRespawn()
 {
-	vec2 SpawnPos;
-
-/* INFECTION MODIFICATION START ***************************************/
-	if(!GameController()->PreSpawn(this, &SpawnPos))
+	SpawnContext Context;
+	if(!GameController()->TryRespawn(this, &Context))
 		return;
-/* INFECTION MODIFICATION END *****************************************/
 
 	m_Spawning = false;
 	CInfClassCharacter *pCharacter = new(m_ClientID) CInfClassCharacter(GameController());
 
 	m_pCharacter = pCharacter;
-	m_pCharacter->Spawn(this, SpawnPos);
+	m_pCharacter->Spawn(this, Context.SpawnPos);
 	pCharacter->SetClass(m_pInfcPlayerClass);
-	pCharacter->OnCharacterSpawned();
+	pCharacter->OnCharacterSpawned(Context);
 }
 
 void CInfClassPlayer::Tick()

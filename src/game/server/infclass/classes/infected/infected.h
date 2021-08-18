@@ -18,7 +18,7 @@ public:
 
 	void OnCharacterPreCoreTick() override;
 	void OnCharacterTick() override;
-	void OnCharacterSpawned() override;
+	void OnCharacterSpawned(const SpawnContext &Context) override;
 
 	void OnSlimeEffect(int Owner) override;
 	void OnFloatingPointCollected(int Points) override;

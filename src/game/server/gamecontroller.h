@@ -146,7 +146,6 @@ public:
 
 	//
 /* INFECTION MODIFICATION START ***************************************/
-	virtual bool PreSpawn(CPlayer* pPlayer, vec2 *pPos) = 0;
 	virtual int ChooseInfectedClass(const CPlayer* pPlayer) const = 0;
 	virtual bool IsSpawnable(vec2 Position, int TeleZoneIndex) = 0;
 	virtual void OnClientDrop(int ClientID, int Type) {};

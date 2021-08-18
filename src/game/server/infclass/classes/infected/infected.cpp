@@ -102,9 +102,9 @@ void CInfClassInfected::OnCharacterTick()
 	}
 }
 
-void CInfClassInfected::OnCharacterSpawned()
+void CInfClassInfected::OnCharacterSpawned(const SpawnContext &Context)
 {
-	CInfClassPlayerClass::OnCharacterSpawned();
+	CInfClassPlayerClass::OnCharacterSpawned(Context);
 
 	m_SlimeHealTick = 0;
 

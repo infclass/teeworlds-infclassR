@@ -28,6 +28,11 @@ struct WeaponRegenParams
 	int RegenInterval = 0;
 };
 
+struct SpawnContext
+{
+	vec2 SpawnPos;
+};
+
 class CInfClassCharacter : public CCharacter
 {
 	MACRO_ALLOC_POOL_ID()
@@ -38,7 +43,7 @@ public:
 	static const CInfClassCharacter *fromCharacter(const CCharacter *pCharacter);
 	static CInfClassCharacter *fromCharacter(CCharacter *pCharacter);
 
-	void OnCharacterSpawned();
+	void OnCharacterSpawned(const SpawnContext &Context);
 	void OnCharacterInInfectionZone();
 	void OnCharacterOutOfInfectionZone();
 	void OnCharacterInBonusZoneTick();

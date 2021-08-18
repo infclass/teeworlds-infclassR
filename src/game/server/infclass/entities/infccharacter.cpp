@@ -47,7 +47,7 @@ CInfClassCharacter::~CInfClassCharacter()
 		m_pClass->SetCharacter(nullptr);
 }
 
-void CInfClassCharacter::OnCharacterSpawned()
+void CInfClassCharacter::OnCharacterSpawned(const SpawnContext &Context)
 {
 	SetAntiFire();
 	m_IsFrozen = false;
@@ -74,7 +74,7 @@ void CInfClassCharacter::OnCharacterSpawned()
 	}
 
 	if(m_pClass)
-		m_pClass->OnCharacterSpawned();
+		m_pClass->OnCharacterSpawned(Context);
 
 	GameController()->OnCharacterSpawned(this);
 }

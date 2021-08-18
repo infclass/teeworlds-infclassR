@@ -220,7 +220,7 @@ void CInfClassPlayerClass::OnCharacterSnap(int SnappingClient)
 {
 }
 
-void CInfClassPlayerClass::OnCharacterSpawned()
+void CInfClassPlayerClass::OnCharacterSpawned(const SpawnContext &Context)
 {
 	m_Poison = 0;
 

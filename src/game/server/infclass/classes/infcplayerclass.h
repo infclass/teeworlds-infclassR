@@ -14,8 +14,9 @@ class CInfClassPlayer;
 class CTeeInfo;
 class IServer;
 
-struct WeaponRegenParams;
+struct SpawnContext;
 struct WeaponFireContext;
+struct WeaponRegenParams;
 
 class CInfClassPlayerClass
 {
@@ -46,7 +47,7 @@ public:
 	virtual void OnCharacterPreCoreTick();
 	virtual void OnCharacterTick();
 	virtual void OnCharacterSnap(int SnappingClient);
-	virtual void OnCharacterSpawned();
+	virtual void OnCharacterSpawned(const SpawnContext &Context);
 	virtual void OnCharacterDeath(int Weapon);
 
 	virtual void OnWeaponFired(WeaponFireContext *pFireContext);
