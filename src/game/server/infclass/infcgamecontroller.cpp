@@ -1833,12 +1833,16 @@ int CInfClassGameController::ChooseInfectedClass(const CPlayer *pPlayer) const
 		nbClass[PlayerClass] = 0;
 
 	CPlayerIterator<PLAYERITER_INGAME> Iter(GameServer()->m_apPlayers);
+	int PlayersCount = 0;
 	while(Iter.Next())
 	{
+		++PlayersCount;
 		const int AnotherPlayerClass = Iter.Player()->GetClass();
 		if(Iter.Player()->IsZombie()) nbInfected++;
 		nbClass[AnotherPlayerClass]++;
 	}
+
+	int InitiallyInfected = GetMinimumInfectedForPlayers(PlayersCount);
 	
 	double Probability[NB_INFECTEDCLASS];
 	for (int PlayerClass = START_INFECTEDCLASS + 1; PlayerClass < END_INFECTEDCLASS; ++PlayerClass)
@@ -1853,6 +1857,14 @@ int CInfClassGameController::ChooseInfectedClass(const CPlayer *pPlayer) const
 
 		switch(PlayerClass)
 		{
+			case PLAYERCLASS_BAT:
+				if(nbInfected <= InitiallyInfected)
+				{
+					// We can't just set the proba to 0, because it would break a config
+					// with all classes except the Bat set to 0.
+					ClassProbability = ClassProbability / 10000.0;
+				}
+				break;
 			case PLAYERCLASS_GHOUL:
 				if (nbInfected < g_Config.m_InfGhoulThreshold)
 					ClassProbability = 0;
