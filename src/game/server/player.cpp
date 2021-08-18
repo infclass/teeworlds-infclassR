@@ -570,12 +570,7 @@ float CPlayer::GetGhoulPercent() const
 void CPlayer::IncreaseGhoulLevel(int Diff)
 {
 	int NewGhoulLevel = m_GhoulLevel + Diff;
-	if(NewGhoulLevel < 0)
-		NewGhoulLevel = 0;
-	if(NewGhoulLevel > g_Config.m_InfGhoulStomachSize)
-		NewGhoulLevel = g_Config.m_InfGhoulStomachSize;
-	
-	m_GhoulLevel = NewGhoulLevel;
+	m_GhoulLevel = clamp(NewGhoulLevel, 0, g_Config.m_InfGhoulStomachSize);
 }
 
 /* INFECTION MODIFICATION END *****************************************/
