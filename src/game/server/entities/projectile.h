@@ -3,28 +3,26 @@
 #ifndef GAME_SERVER_ENTITIES_PROJECTILE_H
 #define GAME_SERVER_ENTITIES_PROJECTILE_H
 
-#include <game/server/entity.h>
+#include <game/server/infclass/entities/infcentity.h>
 
-class CProjectile : public CEntity
+enum class TAKEDAMAGEMODE;
+
+class CProjectile : public CInfCEntity
 {
 public:
-	CProjectile(CGameWorld *pGameWorld, int Type, int Owner, vec2 Pos, vec2 Dir, int Span,
-		int Damage, bool Explosive, float Force, int SoundImpact, int Weapon, TAKEDAMAGEMODE TakeDamageMode = TAKEDAMAGEMODE::NOINFECTION);
+	CProjectile(CGameContext *pGameContext, int Type, int Owner, vec2 Pos, vec2 Dir, int Span,
+		int Damage, bool Explosive, float Force, int SoundImpact, int Weapon, TAKEDAMAGEMODE TakeDamageMode);
 
 	vec2 GetPos(float Time);
 	void FillInfo(CNetObj_Projectile *pProj);
 
-	virtual void Reset();
-	virtual void Tick();
-	virtual void TickPaused();
-	virtual void Snap(int SnappingClient);
-
-	int GetOwner() const;
+	void Tick() override;
+	void TickPaused() override;
+	void Snap(int SnappingClient) override;
 
 private:
 	vec2 m_Direction;
 	int m_LifeSpan;
-	int m_Owner;
 	int m_Type;
 	int m_Damage;
 	int m_SoundImpact;

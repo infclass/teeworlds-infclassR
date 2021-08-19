@@ -1205,12 +1205,12 @@ void CInfClassCharacter::OnGunFired(WeaponFireContext *pFireContext)
 	
 	if(GetPlayerClass() == PLAYERCLASS_MERCENARY)
 	{
-		CProjectile *pProj = new CProjectile(GameWorld(), WEAPON_GUN,
+		CProjectile *pProj = new CProjectile(GameContext(), WEAPON_GUN,
 			GetCID(),
 			ProjStartPos,
 			Direction,
 			(int)(Server()->TickSpeed()*GameServer()->Tuning()->m_GunLifetime),
-			1, 0, 0, -1, WEAPON_GUN);
+			1, 0, 0, -1, WEAPON_GUN, TAKEDAMAGEMODE::NOINFECTION);
 
 		// pack the Projectile and send it to the client Directly
 		CNetObj_Projectile p;
@@ -1231,12 +1231,12 @@ void CInfClassCharacter::OnGunFired(WeaponFireContext *pFireContext)
 	}
 	else
 	{
-		CProjectile *pProj = new CProjectile(GameWorld(), WEAPON_GUN,
+		CProjectile *pProj = new CProjectile(GameContext(), WEAPON_GUN,
 			GetCID(),
 			ProjStartPos,
 			Direction,
 			(int)(Server()->TickSpeed()*GameServer()->Tuning()->m_GunLifetime),
-			1, 0, 0, -1, WEAPON_GUN);
+			1, 0, 0, -1, WEAPON_GUN, TAKEDAMAGEMODE::NOINFECTION);
 
 		// pack the Projectile and send it to the client Directly
 		CNetObj_Projectile p;
@@ -1294,12 +1294,12 @@ void CInfClassCharacter::OnShotgunFired(WeaponFireContext *pFireContext)
 		}
 		else
 		{
-			CProjectile *pProj = new CProjectile(GameWorld(), WEAPON_SHOTGUN,
+			CProjectile *pProj = new CProjectile(GameContext(), WEAPON_SHOTGUN,
 				GetCID(),
 				ProjStartPos,
 				vec2(cosf(a), sinf(a))*Speed,
 				(int)(Server()->TickSpeed()*LifeTime),
-				1, 0, Force, -1, WEAPON_SHOTGUN);
+				1, 0, Force, -1, WEAPON_SHOTGUN, TAKEDAMAGEMODE::NOINFECTION);
 
 			// pack the Projectile and send it to the client Directly
 			CNetObj_Projectile p;
@@ -1366,12 +1366,12 @@ void CInfClassCharacter::OnGrenadeFired(WeaponFireContext *pFireContext)
 	}
 	else
 	{
-		CProjectile *pProj = new CProjectile(GameWorld(), WEAPON_GRENADE,
-											 GetCID(),
-											 ProjStartPos,
-											 Direction,
-											 (int)(Server()->TickSpeed()*GameServer()->Tuning()->m_GrenadeLifetime),
-											 1, true, 0, SOUND_GRENADE_EXPLODE, WEAPON_GRENADE);
+		CProjectile *pProj = new CProjectile(GameContext(), WEAPON_GRENADE,
+			GetCID(),
+			ProjStartPos,
+			Direction,
+			(int)(Server()->TickSpeed()*GameServer()->Tuning()->m_GrenadeLifetime),
+			1, true, 0, SOUND_GRENADE_EXPLODE, WEAPON_GRENADE, TAKEDAMAGEMODE::NOINFECTION);
 
 		if(GetPlayerClass() == PLAYERCLASS_NINJA)
 		{

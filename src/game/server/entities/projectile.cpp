@@ -8,15 +8,13 @@
 
 #include "projectile.h"
 
-CProjectile::CProjectile(CGameWorld *pGameWorld, int Type, int Owner, vec2 Pos, vec2 Dir, int Span,
+CProjectile::CProjectile(CGameContext *pGameContext, int Type, int Owner, vec2 Pos, vec2 Dir, int Span,
 		int Damage, bool Explosive, float Force, int SoundImpact, int Weapon, TAKEDAMAGEMODE TakeDamageMode)
-: CEntity(pGameWorld, CGameWorld::ENTTYPE_PROJECTILE)
+: CInfCEntity(pGameContext, CGameWorld::ENTTYPE_PROJECTILE, Pos, Owner)
 {
 	m_Type = Type;
-	m_Pos = Pos;
 	m_Direction = Dir;
 	m_LifeSpan = Span;
-	m_Owner = Owner;
 	m_Force = Force;
 	m_Damage = Damage;
 	m_SoundImpact = SoundImpact;
@@ -31,16 +29,6 @@ CProjectile::CProjectile(CGameWorld *pGameWorld, int Type, int Owner, vec2 Pos, 
 	m_StartPos = Pos;
 	m_TakeDamageMode = TakeDamageMode;
 /* INFECTION MODIFICATION END *****************************************/
-}
-
-void CProjectile::Reset()
-{
-	GameServer()->m_World.DestroyEntity(this);
-}
-
-int CProjectile::GetOwner() const
-{
-	return m_Owner;
 }
 
 vec2 CProjectile::GetPos(float Time)
