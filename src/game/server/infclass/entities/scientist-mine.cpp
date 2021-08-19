@@ -40,11 +40,11 @@ void CScientistMine::Explode(int DetonatedBy)
 	{
 		float Dist = distance(m_Pos, OwnerChar->GetPos());
 		if(Dist < OwnerChar->GetProximityRadius()+Config()->m_InfMineRadius)
-			OwnerChar->TakeDamage(vec2(0.0f, 0.0f), 4, DetonatedBy, WEAPON_HAMMER, TAKEDAMAGEMODE_SELFHARM);
+			OwnerChar->TakeDamage(vec2(0.0f, 0.0f), 4, DetonatedBy, WEAPON_HAMMER, TAKEDAMAGEMODE::SELFHARM);
 		else if(Dist < OwnerChar->GetProximityRadius()+2*Config()->m_InfMineRadius)
 		{
 			float Alpha = (Dist - Config()->m_InfMineRadius-OwnerChar->GetProximityRadius())/Config()->m_InfMineRadius;
-			OwnerChar->TakeDamage(vec2(0.0f, 0.0f), 4*Alpha, DetonatedBy, WEAPON_HAMMER, TAKEDAMAGEMODE_SELFHARM);
+			OwnerChar->TakeDamage(vec2(0.0f, 0.0f), 4*Alpha, DetonatedBy, WEAPON_HAMMER, TAKEDAMAGEMODE::SELFHARM);
 		}
 	}
 }

@@ -306,7 +306,7 @@ void CCharacter::HandleNinja()
 				if(m_NumObjectsHit < 10)
 					m_apHitObjects[m_NumObjectsHit++] = aEnts[i];
 
-				aEnts[i]->TakeDamage(vec2(0, -10.0f), minimum(g_pData->m_Weapons.m_Ninja.m_pBase->m_Damage + m_NinjaStrengthBuff, 20), m_pPlayer->GetCID(), WEAPON_NINJA, TAKEDAMAGEMODE_NOINFECTION);
+				aEnts[i]->TakeDamage(vec2(0, -10.0f), minimum(g_pData->m_Weapons.m_Ninja.m_pBase->m_Damage + m_NinjaStrengthBuff, 20), m_pPlayer->GetCID(), WEAPON_NINJA, TAKEDAMAGEMODE::NOINFECTION);
 			}
 		}
 	}

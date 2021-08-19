@@ -27,7 +27,7 @@ void CBiologistLaser::HitCharacter(vec2 From, vec2 To)
 		float Len = distance(p->m_Pos, IntersectPos);
 		if(Len < p->m_ProximityRadius)
 		{
-			p->TakeDamage(vec2(0.f, 0.f), m_Dmg, m_Owner, WEAPON_LASER, TAKEDAMAGEMODE_NOINFECTION);
+			p->TakeDamage(vec2(0.f, 0.f), m_Dmg, m_Owner, WEAPON_LASER, TAKEDAMAGEMODE::NOINFECTION);
 			break;
 		}
 	}

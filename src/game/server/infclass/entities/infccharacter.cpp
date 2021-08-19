@@ -438,26 +438,26 @@ bool CInfClassCharacter::TakeDamage(vec2 Force, int Dmg, int From, int Weapon, T
 	if(pKillerPlayer)
 		pKillerChar = pKillerPlayer->GetCharacter();
 
-	if(Mode == TAKEDAMAGEMODE_INFECTION)
+	if(Mode == TAKEDAMAGEMODE::INFECTION)
 	{
 		if(!pKillerPlayer || !pKillerPlayer->IsZombie() || !IsHuman())
 		{
 			// The infection is only possible if the killer is a zombie and the target is a human
-			Mode = TAKEDAMAGEMODE_NOINFECTION;
+			Mode = TAKEDAMAGEMODE::NOINFECTION;
 		}
 	}
 
-	if(GetPlayerClass() == PLAYERCLASS_HERO && Mode == TAKEDAMAGEMODE_INFECTION)
+	if(GetPlayerClass() == PLAYERCLASS_HERO && Mode == TAKEDAMAGEMODE::INFECTION)
 	{
 		Dmg = 12;
 		// A zombie can't infect a hero
-		Mode = TAKEDAMAGEMODE_NOINFECTION;
+		Mode = TAKEDAMAGEMODE::NOINFECTION;
 	}
 
 	if(pKillerChar && pKillerChar->IsInLove())
 	{
 		Dmg = 0;
-		Mode = TAKEDAMAGEMODE_NOINFECTION;
+		Mode = TAKEDAMAGEMODE::NOINFECTION;
 	}
 
 	if((GetPlayerClass() == PLAYERCLASS_HUNTER) && (Weapon == WEAPON_SHOTGUN))
@@ -542,7 +542,7 @@ bool CInfClassCharacter::TakeDamage(vec2 Force, int Dmg, int From, int Weapon, T
 	// m_pPlayer only inflicts half damage on self
 	if(From == GetCID())
 	{
-		if(Mode == TAKEDAMAGEMODE_SELFHARM)
+		if(Mode == TAKEDAMAGEMODE::SELFHARM)
 			Dmg = maximum(1, Dmg/2);
 		else
 			return false;
@@ -600,7 +600,7 @@ bool CInfClassCharacter::TakeDamage(vec2 Force, int Dmg, int From, int Weapon, T
 	}
 
 /* INFECTION MODIFICATION START ***************************************/
-	if(Mode == TAKEDAMAGEMODE_INFECTION)
+	if(Mode == TAKEDAMAGEMODE::INFECTION)
 	{
 		GetPlayer()->Infect(pKillerPlayer);
 
@@ -1086,12 +1086,12 @@ void CInfClassCharacter::OnHammerFired(WeaponFireContext *pFireContext)
 							}
 						}
 						int Damage = g_pData->m_Weapons.m_Hammer.m_pBase->m_Damage;
-						TAKEDAMAGEMODE DamageMode = TAKEDAMAGEMODE_INFECTION;
+						TAKEDAMAGEMODE DamageMode = TAKEDAMAGEMODE::INFECTION;
 
 						if(GetPlayerClass() == PLAYERCLASS_BAT)
 						{
 							Damage = g_Config.m_InfBatDamage;
-							DamageMode = TAKEDAMAGEMODE_NOINFECTION;
+							DamageMode = TAKEDAMAGEMODE::NOINFECTION;
 						}
 
 						pTarget->TakeDamage(vec2(0.f, -1.f) + normalize(Dir + vec2(0.f, -1.1f)) * 10.0f, Damage,
@@ -1104,7 +1104,7 @@ void CInfClassCharacter::OnHammerFired(WeaponFireContext *pFireContext)
 					if (pTarget->IsZombie())
 					{
 						pTarget->TakeDamage(vec2(0.f, -1.f) + normalize(Dir + vec2(0.f, -1.1f)) * 10.0f, 20, 
-								GetCID(), m_ActiveWeapon, TAKEDAMAGEMODE_NOINFECTION);
+								GetCID(), m_ActiveWeapon, TAKEDAMAGEMODE::NOINFECTION);
 					}
 				}
 				else if(GetPlayerClass() == PLAYERCLASS_MEDIC)
@@ -1112,7 +1112,7 @@ void CInfClassCharacter::OnHammerFired(WeaponFireContext *pFireContext)
 					if (pTarget->IsZombie())
 					{
 						pTarget->TakeDamage(vec2(0.f, -1.f) + normalize(Dir + vec2(0.f, -1.1f)) * 10.0f, 20, 
-								GetCID(), m_ActiveWeapon, TAKEDAMAGEMODE_NOINFECTION);
+								GetCID(), m_ActiveWeapon, TAKEDAMAGEMODE::NOINFECTION);
 					}
 					else
 					{
@@ -1133,7 +1133,7 @@ void CInfClassCharacter::OnHammerFired(WeaponFireContext *pFireContext)
 				else
 				{
 					pTarget->TakeDamage(vec2(0.f, -1.f) + normalize(Dir + vec2(0.f, -1.1f)) * 10.0f, g_pData->m_Weapons.m_Hammer.m_pBase->m_Damage,
-						GetCID(), m_ActiveWeapon, TAKEDAMAGEMODE_NOINFECTION);
+						GetCID(), m_ActiveWeapon, TAKEDAMAGEMODE::NOINFECTION);
 				}
 /* INFECTION MODIFICATION END *****************************************/
 				Hits++;
@@ -1352,7 +1352,7 @@ void CInfClassCharacter::OnGrenadeFired(WeaponFireContext *pFireContext)
 			m_Core.m_HookState = HOOK_RETRACTED;
 			m_Core.m_HookPos = m_Core.m_Pos;
 			if(g_Config.m_InfScientistTpSelfharm > 0) {
-				TakeDamage(vec2(0.0f, 0.0f), g_Config.m_InfScientistTpSelfharm * 2, GetCID(), WEAPON_HAMMER, TAKEDAMAGEMODE_SELFHARM);
+				TakeDamage(vec2(0.0f, 0.0f), g_Config.m_InfScientistTpSelfharm * 2, GetCID(), WEAPON_HAMMER, TAKEDAMAGEMODE::SELFHARM);
 			}
 			GameServer()->CreateDeath(OldPos, GetCID());
 			GameServer()->CreateDeath(PortalPos, GetCID());
@@ -1784,7 +1784,7 @@ void CInfClassCharacter::HandleHookDraining()
 				if(m_HookDmgTick + Server()->TickSpeed()*Rate < Server()->Tick())
 				{
 					m_HookDmgTick = Server()->Tick();
-					VictimChar->TakeDamage(vec2(0.0f,0.0f), Damage, GetCID(), WEAPON_NINJA, TAKEDAMAGEMODE_NOINFECTION);
+					VictimChar->TakeDamage(vec2(0.0f,0.0f), Damage, GetCID(), WEAPON_NINJA, TAKEDAMAGEMODE::NOINFECTION);
 					if((GetPlayerClass() == PLAYERCLASS_SMOKER || GetPlayerClass() == PLAYERCLASS_BAT) && VictimChar->IsHuman())
 						IncreaseOverallHp(2);
 				}

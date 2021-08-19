@@ -201,7 +201,7 @@ void CInfClassPlayerClass::OnCharacterTick()
 			m_Poison--;
 			vec2 Force(0, 0);
 			static const int PoisonDamage = 1;
-			m_pCharacter->TakeDamage(Force, PoisonDamage, m_PoisonFrom, WEAPON_HAMMER, TAKEDAMAGEMODE_NOINFECTION);
+			m_pCharacter->TakeDamage(Force, PoisonDamage, m_PoisonFrom, WEAPON_HAMMER, TAKEDAMAGEMODE::NOINFECTION);
 			if(m_Poison > 0)
 			{
 				m_PoisonTick = Server()->TickSpeed()/2;

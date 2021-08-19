@@ -62,7 +62,7 @@ void CTurret::Tick()
 		// selfdestruction
 		if(Len < pChr->GetProximityRadius() + 4.0f )
 		{
-			pChr->TakeDamage(vec2(0.f, 0.f), Config()->m_InfTurretSelfDestructDmg, m_Owner, WEAPON_LASER, TAKEDAMAGEMODE_NOINFECTION);
+			pChr->TakeDamage(vec2(0.f, 0.f), Config()->m_InfTurretSelfDestructDmg, m_Owner, WEAPON_LASER, TAKEDAMAGEMODE::NOINFECTION);
 			GameServer()->CreateSound(m_Pos, SOUND_LASER_FIRE);
 			int ClientID = pChr->GetCID();
 			char aBuf[64];

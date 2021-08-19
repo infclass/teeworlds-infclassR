@@ -23,11 +23,11 @@ enum FREEZEREASON
 #define GHOST_RADIUS 11
 #define GHOST_SEARCHMAP_SIZE (2*GHOST_RADIUS+1)
 
-enum TAKEDAMAGEMODE
+enum class TAKEDAMAGEMODE
 {
-	TAKEDAMAGEMODE_NOINFECTION=0,
-	TAKEDAMAGEMODE_INFECTION,
-	TAKEDAMAGEMODE_SELFHARM, // works like NOINFECTION but also harms the owner of the damage with 50%
+	NOINFECTION=0,
+	INFECTION,
+	SELFHARM, // works like NOINFECTION but also harms the owner of the damage with 50%
 };
 
 /* INFECTION MODIFICATION END *****************************************/

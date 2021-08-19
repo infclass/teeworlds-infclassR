@@ -1743,7 +1743,7 @@ void CInfClassGameController::DoWincheck()
 					if(random_prob(0.1f))
 					{
 						vec2 TilePos = vec2(16.0f, 16.0f) + vec2(i*32.0f, j*32.0f);
-						GameServer()->CreateExplosion(TilePos, -1, WEAPON_GAME, true);
+						GameServer()->CreateExplosion(TilePos, -1, WEAPON_GAME, true, TAKEDAMAGEMODE::NOINFECTION);
 						GameServer()->CreateSound(TilePos, SOUND_GRENADE_EXPLODE);
 					}
 				}

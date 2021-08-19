@@ -72,7 +72,7 @@ void CPlasma::Explode()
 	//GameServer()->CreateSound(CurPos, m_SoundImpact);
 	if (m_Explosive) 
 	{
-		GameServer()->CreateExplosion(m_Pos, m_Owner, WEAPON_GRENADE, false, TAKEDAMAGEMODE_NOINFECTION, Config()->m_InfTurretDmgFactor*0.1f);
+		GameServer()->CreateExplosion(m_Pos, m_Owner, WEAPON_GRENADE, false, TAKEDAMAGEMODE::NOINFECTION, Config()->m_InfTurretDmgFactor*0.1f);
 	}
 	Reset();
 }

@@ -68,7 +68,7 @@ bool CInfClassLaser::HitCharacter(vec2 From, vec2 To)
 			pInfected->GetPlayer()->SetClass(LastHumanClass);
 			pInfected->SetHealthArmor(1, 0);
 			pInfected->Unfreeze();
-			pMedic->TakeDamage(vec2(0.f, 0.f), DAMAGE_ON_REVIVE * 2, m_Owner, WEAPON_LASER, TAKEDAMAGEMODE_SELFHARM);
+			pMedic->TakeDamage(vec2(0.f, 0.f), DAMAGE_ON_REVIVE * 2, m_Owner, WEAPON_LASER, TAKEDAMAGEMODE::SELFHARM);
 			str_format(aBuf, sizeof(aBuf), "Medic %s revived %s",
 				Server()->ClientName(pMedic->GetCID()),
 				Server()->ClientName(pInfected->GetCID()));
@@ -79,7 +79,7 @@ bool CInfClassLaser::HitCharacter(vec2 From, vec2 To)
 		return true;
 	}
 
-	pHit->TakeDamage(vec2(0.f, 0.f), m_Dmg, m_Owner, WEAPON_LASER, TAKEDAMAGEMODE_NOINFECTION);
+	pHit->TakeDamage(vec2(0.f, 0.f), m_Dmg, m_Owner, WEAPON_LASER, TAKEDAMAGEMODE::NOINFECTION);
 
 	if(pOwnerChar && pOwnerChar->GetPlayerClass() == PLAYERCLASS_LOOPER)
 	{

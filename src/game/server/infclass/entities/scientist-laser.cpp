@@ -63,7 +63,7 @@ void CScientistLaser::DoBounce()
 		}
 	}
 	
-	GameServer()->CreateExplosion(m_Pos, m_Owner, WEAPON_LASER, false, TAKEDAMAGEMODE_NOINFECTION);
+	GameServer()->CreateExplosion(m_Pos, m_Owner, WEAPON_LASER, false, TAKEDAMAGEMODE::NOINFECTION);
 	
 	//Create a white hole entity
 	CCharacter *pOwnerChar = GameServer()->GetPlayerChar(m_Owner);
