@@ -1,10 +1,12 @@
 // Strongly modified version of ddnet Plasma. Source: Shereef Marzouk
+#include "plasma.h"
+
 #include <engine/server.h>
 #include <engine/config.h>
 #include <engine/shared/config.h>
 #include <game/generated/protocol.h>
 #include <game/server/gamecontext.h>
-#include "plasma.h"
+#include <game/server/infclass/infcgamecontroller.h>
 
 CPlasma::CPlasma(CGameContext *pGameContext, vec2 Pos, int Owner, int TrackedPlayer, vec2 Direction, bool Freeze, bool Explosive)
 	: CInfCEntity(pGameContext, CGameWorld::ENTTYPE_PLASMA, Pos, Owner)
@@ -72,7 +74,7 @@ void CPlasma::Explode()
 	//GameServer()->CreateSound(CurPos, m_SoundImpact);
 	if (m_Explosive) 
 	{
-		GameServer()->CreateExplosion(m_Pos, m_Owner, WEAPON_GRENADE, false, TAKEDAMAGEMODE::NOINFECTION, Config()->m_InfTurretDmgFactor*0.1f);
+		GameController()->CreateExplosion(m_Pos, m_Owner, WEAPON_GRENADE, TAKEDAMAGEMODE::NOINFECTION, Config()->m_InfTurretDmgFactor*0.1f);
 	}
 	Reset();
 }

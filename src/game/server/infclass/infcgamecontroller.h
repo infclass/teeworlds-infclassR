@@ -14,6 +14,8 @@ class CInfClassPlayer;
 struct CNetObj_GameInfo;
 struct SpawnContext;
 
+enum class TAKEDAMAGEMODE;
+
 using ClientsArray = array_on_stack<int, 64>; // MAX_CLIENTS
 
 enum class CLASS_AVAILABILITY
@@ -44,6 +46,9 @@ public:
 	int GetZoneValueAt(int ZoneHandle, const vec2 &Pos) const;
 	int GetDamageZoneValueAt(const vec2 &Pos) const;
 	int GetBonusZoneValueAt(const vec2 &Pos) const;
+
+	void CreateExplosion(const vec2 &Pos, int Owner, int Weapon, TAKEDAMAGEMODE TakeDamageMode, float DamageFactor = 1.0f);
+	void CreateExplosionDisk(vec2 Pos, float InnerRadius, float DamageRadius, int Damage, float Force, int Owner, int Weapon, TAKEDAMAGEMODE TakeDamageMode);
 
 	int OnCharacterDeath(class CCharacter *pVictim, class CPlayer *pKiller, int Weapon) override;
 	void OnCharacterSpawned(CInfClassCharacter *pCharacter);

@@ -5,6 +5,7 @@
 
 #include <game/server/gamecontext.h>
 #include <game/server/infclass/classes/infcplayerclass.h>
+#include <game/server/infclass/infcgamecontroller.h>
 
 #include "infccharacter.h"
 
@@ -165,9 +166,9 @@ void CGrowingExplosion::Tick()
 							}
 							break;
 						case GROWINGEXPLOSIONEFFECT_BOOM_INFECTED:
-							if (random_prob(0.2f))
+							if(random_prob(0.2f))
 							{
-								GameServer()->CreateExplosion(TileCenter, m_Owner, WEAPON_HAMMER, false, m_TakeDamageMode);
+								GameController()->CreateExplosion(TileCenter, m_Owner, WEAPON_HAMMER, m_TakeDamageMode);
 							}
 							break;
 						case GROWINGEXPLOSIONEFFECT_ELECTRIC_INFECTED:

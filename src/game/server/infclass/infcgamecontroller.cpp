@@ -301,6 +301,84 @@ int CInfClassGameController::GetBonusZoneValueAt(const vec2 &Pos) const
 	return GetZoneValueAt(GameServer()->m_ZoneHandle_icBonus, Pos);
 }
 
+void CInfClassGameController::CreateExplosion(const vec2 &Pos, int Owner, int Weapon, TAKEDAMAGEMODE TakeDamageMode, float DamageFactor)
+{
+	GameServer()->CreateExplosion(Pos, Owner, Weapon);
+	
+	if(DamageFactor != 0)
+	{
+		// deal damage
+		CInfClassCharacter *apEnts[MAX_CLIENTS];
+		float Radius = 135.0f;
+		float InnerRadius = 48.0f;
+		int Num = GameWorld()->FindEntities(Pos, Radius, (CEntity**)apEnts, MAX_CLIENTS, CGameWorld::ENTTYPE_CHARACTER);
+		for(int i = 0; i < Num; i++)
+		{
+			if(!Config()->m_InfShockwaveAffectHumans)
+			{
+				if(apEnts[i]->GetCID() == Owner)
+				{
+					//owner selfharm
+				}
+				else if(apEnts[i]->IsHuman())
+				{
+					continue;// humans are not affected by force
+				}
+			}
+			vec2 Diff = apEnts[i]->m_Pos - Pos;
+			vec2 ForceDir(0,1);
+			float l = length(Diff);
+			if(l)
+				ForceDir = normalize(Diff);
+			l = 1-clamp((l-InnerRadius)/(Radius-InnerRadius), 0.0f, 1.0f);
+			float Dmg = 6 * l * DamageFactor;
+			if((int)Dmg)
+			{
+				apEnts[i]->TakeDamage(ForceDir*Dmg*2, (int)Dmg, Owner, Weapon, TakeDamageMode);
+			}
+		}
+	}
+}
+
+// Thanks to Stitch for the idea
+void CInfClassGameController::CreateExplosionDisk(vec2 Pos, float InnerRadius, float DamageRadius, int Damage, float Force, int Owner, int Weapon, TAKEDAMAGEMODE TakeDamageMode)
+{
+	GameServer()->CreateExplosion(Pos, Owner, Weapon);
+
+	if(Damage > 0)
+	{
+		// deal damage
+		CCharacter *apEnts[MAX_CLIENTS];
+		int Num = GameWorld()->FindEntities(Pos, DamageRadius, (CEntity**)apEnts, MAX_CLIENTS, CGameWorld::ENTTYPE_CHARACTER);
+		for(int i = 0; i < Num; i++)
+		{
+			vec2 Diff = apEnts[i]->m_Pos - Pos;
+			if (Diff.x == 0.0f && Diff.y == 0.0f)
+				Diff.y = -0.5f;
+			vec2 ForceDir(0,1);
+			float len = length(Diff);
+			len = 1-clamp((len-InnerRadius)/(DamageRadius-InnerRadius), 0.0f, 1.0f);
+			
+			if(len)
+				ForceDir = normalize(Diff);
+			
+			float DamageToDeal = 1 + ((Damage - 1) * len);
+			apEnts[i]->TakeDamage(ForceDir*Force*len, DamageToDeal, Owner, Weapon, TakeDamageMode);
+		}
+	}
+	
+	float CircleLength = 2.0*pi*maximum(DamageRadius-135.0f, 0.0f);
+	int NumSuroundingExplosions = CircleLength/32.0f;
+	float AngleStart = random_float()*pi*2.0f;
+	float AngleStep = pi*2.0f/static_cast<float>(NumSuroundingExplosions);
+	const float Radius = (DamageRadius-135.0f);
+	for(int i=0; i<NumSuroundingExplosions; i++)
+	{
+		vec2 Offset = vec2(Radius * cos(AngleStart + i*AngleStep), Radius * sin(AngleStart + i*AngleStep));
+		GameServer()->CreateExplosion(Pos + Offset, Owner, Weapon);
+	}
+}
+
 void CInfClassGameController::ResetFinalExplosion()
 {
 	m_ExplosionStarted = false;
@@ -1743,7 +1821,8 @@ void CInfClassGameController::DoWincheck()
 					if(random_prob(0.1f))
 					{
 						vec2 TilePos = vec2(16.0f, 16.0f) + vec2(i*32.0f, j*32.0f);
-						GameServer()->CreateExplosion(TilePos, -1, WEAPON_GAME, true, TAKEDAMAGEMODE::NOINFECTION);
+						static const int Damage = 0;
+						CreateExplosion(TilePos, -1, WEAPON_GAME, TAKEDAMAGEMODE::NOINFECTION, Damage);
 						GameServer()->CreateSound(TilePos, SOUND_GRENADE_EXPLODE);
 					}
 				}

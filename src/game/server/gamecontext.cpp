@@ -277,7 +277,7 @@ void CGameContext::CreateLoveEvent(vec2 Pos)
 	m_LoveDots.add(State);
 }
 
-void CGameContext::CreateExplosion(vec2 Pos, int Owner, int Weapon, bool NoDamage, TAKEDAMAGEMODE TakeDamageMode, float DamageFactor)
+void CGameContext::CreateExplosion(vec2 Pos, int Owner, int Weapon)
 {
 	// create the event
 	CNetEvent_Explosion *pEvent = (CNetEvent_Explosion *)m_Events.Create(NETEVENTTYPE_EXPLOSION, sizeof(CNetEvent_Explosion));
@@ -285,78 +285,6 @@ void CGameContext::CreateExplosion(vec2 Pos, int Owner, int Weapon, bool NoDamag
 	{
 		pEvent->m_X = (int)Pos.x;
 		pEvent->m_Y = (int)Pos.y;
-	}
-
-	if (!NoDamage)
-	{
-		// deal damage
-		CCharacter *apEnts[MAX_CLIENTS];
-		float Radius = 135.0f;
-		float InnerRadius = 48.0f;
-		int Num = m_World.FindEntities(Pos, Radius, (CEntity**)apEnts, MAX_CLIENTS, CGameWorld::ENTTYPE_CHARACTER);
-		for(int i = 0; i < Num; i++)
-		{
-			if(!g_Config.m_InfShockwaveAffectHumans){
-				if(apEnts[i]->GetPlayer() && apEnts[i]->GetPlayer()->GetCID() == Owner) {} //owner selfharm
-				else if(apEnts[i]->IsHuman()) continue;// humans are not affected by force
-			}
-			vec2 Diff = apEnts[i]->m_Pos - Pos;
-			vec2 ForceDir(0,1);
-			float l = length(Diff);
-			if(l)
-				ForceDir = normalize(Diff);
-			l = 1-clamp((l-InnerRadius)/(Radius-InnerRadius), 0.0f, 1.0f);
-			float Dmg = 6 * l * DamageFactor;
-			if((int)Dmg)
-				apEnts[i]->TakeDamage(ForceDir*Dmg*2, (int)Dmg, Owner, Weapon, TakeDamageMode);
-		}
-	}
-}
-
-// Thanks to Stitch for the idea
-void CGameContext::CreateExplosionDisk(vec2 Pos, float InnerRadius, float DamageRadius, int Damage, float Force, int Owner, int Weapon, TAKEDAMAGEMODE TakeDamageMode)
-{
-	// create the event
-	CNetEvent_Explosion *pEvent = (CNetEvent_Explosion *)m_Events.Create(NETEVENTTYPE_EXPLOSION, sizeof(CNetEvent_Explosion));
-	if(pEvent)
-	{
-		pEvent->m_X = (int)Pos.x;
-		pEvent->m_Y = (int)Pos.y;
-	}
-	if(Damage > 0)
-	{
-		// deal damage
-		CCharacter *apEnts[MAX_CLIENTS];
-		int Num = m_World.FindEntities(Pos, DamageRadius, (CEntity**)apEnts, MAX_CLIENTS, CGameWorld::ENTTYPE_CHARACTER);
-		for(int i = 0; i < Num; i++)
-		{
-			vec2 Diff = apEnts[i]->m_Pos - Pos;
-			if (Diff.x == 0.0f && Diff.y == 0.0f)
-				Diff.y = -0.5f;
-			vec2 ForceDir(0,1);
-			float len = length(Diff);
-			len = 1-clamp((len-InnerRadius)/(DamageRadius-InnerRadius), 0.0f, 1.0f);
-			
-			if(len)
-				ForceDir = normalize(Diff);
-			
-			float DamageToDeal = 1 + ((Damage - 1) * len);
-			apEnts[i]->TakeDamage(ForceDir*Force*len, DamageToDeal, Owner, Weapon, TakeDamageMode);
-		}
-	}
-	
-	float CircleLength = 2.0*pi*maximum(DamageRadius-135.0f, 0.0f);
-	int NumSuroundingExplosions = CircleLength/32.0f;
-	float AngleStart = random_float()*pi*2.0f;
-	float AngleStep = pi*2.0f/static_cast<float>(NumSuroundingExplosions);
-	for(int i=0; i<NumSuroundingExplosions; i++)
-	{
-		CNetEvent_Explosion *pEvent = (CNetEvent_Explosion *)m_Events.Create(NETEVENTTYPE_EXPLOSION, sizeof(CNetEvent_Explosion));
-		if(pEvent)
-		{
-			pEvent->m_X = (int)Pos.x + (DamageRadius-135.0f) * cos(AngleStart + i*AngleStep);
-			pEvent->m_Y = (int)Pos.y + (DamageRadius-135.0f) * sin(AngleStart + i*AngleStep);
-		}
 	}
 }
 

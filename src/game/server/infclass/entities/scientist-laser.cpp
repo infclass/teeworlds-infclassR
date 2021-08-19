@@ -4,6 +4,7 @@
 #include <game/server/gamecontext.h>
 #include "scientist-laser.h"
 
+#include <game/server/infclass/infcgamecontroller.h>
 
 #include "white-hole.h"
 #include "growingexplosion.h"
@@ -63,7 +64,7 @@ void CScientistLaser::DoBounce()
 		}
 	}
 	
-	GameServer()->CreateExplosion(m_Pos, m_Owner, WEAPON_LASER, false, TAKEDAMAGEMODE::NOINFECTION);
+	GameController()->CreateExplosion(m_Pos, m_Owner, WEAPON_LASER, TAKEDAMAGEMODE::NOINFECTION);
 	
 	//Create a white hole entity
 	CCharacter *pOwnerChar = GameServer()->GetPlayerChar(m_Owner);

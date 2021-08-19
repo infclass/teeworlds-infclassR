@@ -5,6 +5,7 @@
 #include <game/generated/protocol.h>
 #include <game/server/gamecontext.h>
 #include <game/server/infclass/entities/growingexplosion.h>
+#include <game/server/infclass/infcgamecontroller.h>
 
 #include "projectile.h"
 
@@ -86,7 +87,7 @@ void CProjectile::Tick()
 		}
 		else if(m_Explosive)
 		{
-			GameServer()->CreateExplosion(CurPos, m_Owner, m_Weapon, false, m_TakeDamageMode);
+			GameController()->CreateExplosion(CurPos, m_Owner, m_Weapon, m_TakeDamageMode);
 		}
 		else if(TargetChr)
 		{
