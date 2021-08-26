@@ -1271,6 +1271,21 @@ bool CInfClassGameController::AreTurretsEnabled() const
 	 return Server()->GetActivePlayerCount() >= Config()->m_InfMinPlayersForTurrets;
 }
 
+void CInfClassGameController::LogDeathContext(int ClientID) const
+{
+	if (m_RoundStarted)
+	{
+		int aliveTime = GameServer()->GetPlayer(ClientID)->m_HumanTime / ((float)Server()->TickSpeed());
+		vec2 pos = GameServer()->GetPlayer(ClientID)->GetCharacter()->GetPos();
+
+		char aBuf[256];
+		str_format(aBuf, sizeof(aBuf), "deathContext: mapName=%s lifetime=%d pos_x=%d pos_y=%d",
+				   g_Config.m_SvMap, aliveTime, static_cast<int>(pos.x), static_cast<int>(pos.y)
+		);
+		GameServer()->Console()->Print(IConsole::OUTPUT_LEVEL_DEBUG, "game", aBuf);
+	}
+}
+
 void CInfClassGameController::Snap(int SnappingClient)
 {
 	CNetObj_GameInfo *pGameInfoObj = (CNetObj_GameInfo *)Server()->SnapNewItem(NETOBJTYPE_GAMEINFO, 0, sizeof(CNetObj_GameInfo));

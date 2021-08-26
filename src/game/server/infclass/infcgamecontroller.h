@@ -63,6 +63,7 @@ public:
 	bool PortalsAvailableForCharacter(class CCharacter *pCharacter) override;
 	bool CanJoinTeam(int Team, int ClientID) override;
 	bool AreTurretsEnabled() const;
+	void LogDeathContext(int ClientID) const;
 
 	void ResetFinalExplosion();
 	void SaveRoundRules();
