@@ -637,6 +637,7 @@ set_glob(GAME_SERVER GLOB_RECURSE src/game/server
   infclass/entities/turret.h
   infclass/entities/white-hole.cpp
   infclass/entities/white-hole.h
+  infclass/infc_config_variables.h
   infclass/infcgamecontroller.cpp
   infclass/infcgamecontroller.h
   infclass/infcplayer.cpp
