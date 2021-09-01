@@ -286,9 +286,6 @@ void CInfClassInfected::SetHookOnLimit(bool OnLimit)
 
 void CInfClassInfected::OnSlimeEffect(int Owner)
 {
-	if(GetPlayerClass() == PLAYERCLASS_SLUG)
-		return;
-
 	m_pCharacter->SetEmote(EMOTE_HAPPY, Server()->Tick());
 	if(Server()->Tick() >= m_SlimeHealTick + (Server()->TickSpeed() / Config()->m_InfSlimeHealRate))
 	{
