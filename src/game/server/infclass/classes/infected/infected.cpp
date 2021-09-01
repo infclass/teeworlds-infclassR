@@ -289,8 +289,11 @@ void CInfClassInfected::OnSlimeEffect(int Owner)
 	m_pCharacter->SetEmote(EMOTE_HAPPY, Server()->Tick());
 	if(Server()->Tick() >= m_SlimeHealTick + (Server()->TickSpeed() / Config()->m_InfSlimeHealRate))
 	{
+		if(m_pCharacter->GetHealthArmorSum() < Config()->m_InfSlimeMaxHeal)
+		{
+			m_pCharacter->IncreaseOverallHp(1);
+		}
 		m_SlimeHealTick = Server()->Tick();
-		m_pCharacter->IncreaseHealth(1);
 	}
 }
 
