@@ -46,8 +46,10 @@ set(AUTO_DEPENDENCIES_DEFAULT OFF)
 if(TARGET_OS STREQUAL "windows")
   set(AUTO_DEPENDENCIES_DEFAULT ON)
 endif()
+find_package(MaxMindDB QUIET)
+set(GEOLOCATION_DEFAULT ${MaxMindDB_FOUND})
 
-option(GEOLOCATION "Enable geolocation support" ON)
+option(GEOLOCATION "Enable geolocation support" ${GEOLOCATION_DEFAULT})
 option(MYSQL "Enable mysql support" OFF)
 option(PREFER_BUNDLED_LIBS "Prefer bundled libraries over system libraries" ${AUTO_DEPENDENCIES_DEFAULT})
 
