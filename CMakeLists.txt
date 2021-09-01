@@ -247,6 +247,7 @@ if(NOT CMAKE_CROSSCOMPILING)
   find_package(PkgConfig)
 endif()
 find_package(ZLIB)
+find_package(Crypto)
 if(MYSQL)
   find_package(MySQL)
 else()
@@ -301,6 +302,7 @@ endif()
 if(MYSQL)
   show_dependency_status("MySQL" MYSQL)
 endif()
+show_dependency_status("OpenSSL Crypto" CRYPTO)
 show_dependency_status("PythonInterp" PYTHONINTERP)
 show_dependency_status("Zlib" ZLIB)
 
@@ -332,7 +334,10 @@ add_library(md5 EXCLUDE_FROM_ALL OBJECT ${DEP_MD5_SRC})
 
 list(APPEND TARGETS_DEP json md5)
 set(DEP_JSON $<TARGET_OBJECTS:json>)
-set(DEP_MD5 $<TARGET_OBJECTS:md5>)
+set(DEP_MD5)
+if(NOT CRYPTO_FOUND)
+  set(DEP_MD5 $<TARGET_OBJECTS:md5>)
+endif()
 
 ########################################################################
 # COPY DATA AND DLLS
@@ -395,6 +400,12 @@ generate_source("src/game/generated/server_data.h" "server_content_header")
 # Sources
 set(BASE
   src/base/detect.h
+  src/base/hash.c
+  src/base/hash.h
+  src/base/hash_bundled.c
+  src/base/hash_ctxt.h
+  src/base/hash_libtomcrypt.c
+  src/base/hash_openssl.c
   src/base/math.cpp
   src/base/math.h
   src/base/system.c
