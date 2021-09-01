@@ -23,6 +23,7 @@
 #include <engine/shared/network.h>
 #include <engine/shared/packer.h>
 #include <engine/shared/protocol.h>
+#include <engine/shared/protocol_ex.h>
 #include <engine/shared/snapshot.h>
 #include <game/mapitems.h>
 #include <game/gamecore.h>
@@ -1297,15 +1298,24 @@ void CServer::ProcessClientPacket(CNetChunk *pPacket)
 	int ClientID = pPacket->m_ClientID;
 	CUnpacker Unpacker;
 	Unpacker.Reset(pPacket->m_pData, pPacket->m_DataSize);
+	CMsgPacker Packer(NETMSG_EX);
 
 	// unpack msgid and system flag
-	int Msg = Unpacker.GetInt();
-	int Sys = Msg&1;
-	Msg >>= 1;
+	int Msg;
+	bool Sys;
+	CUuid Uuid;
 
-	if(Unpacker.Error())
+	int Result = UnpackMessageID(&Msg, &Sys, &Uuid, &Unpacker, &Packer);
+	if(Result == UNPACKMESSAGE_ERROR)
+	{
 		return;
-	
+	}
+
+	if(Result == UNPACKMESSAGE_ANSWER)
+	{
+		SendMsgEx(&Packer, MSGFLAG_VITAL, ClientID, true);
+	}
+
 	if(Sys)
 	{
 		// system message
@@ -2074,6 +2084,11 @@ static bool IsSeparator(char c) { return c == ';' || c == ' ' || c == ',' || c =
 
 int CServer::Run()
 {
+	if(g_Config.m_Debug)
+	{
+		g_UuidManager.DebugDump();
+	}
+
 	m_PrintCBIndex = Console()->RegisterPrintCallback(g_Config.m_ConsoleOutputLevel, SendRconLineAuthed, this);
 
 	//Choose a random map from the rotation
@@ -2980,8 +2995,11 @@ void CServer::SnapFreeID(int ID)
 
 void *CServer::SnapNewItem(int Type, int ID, int Size)
 {
-	dbg_assert(Type >= 0 && Type <=0xffff, "incorrect type");
-	dbg_assert(ID >= 0 && ID <=0xffff, "incorrect id");
+	if(!(Type >= 0 && Type <= 0xffff))
+	{
+		g_UuidManager.GetUuid(Type);
+	}
+	dbg_assert(ID >= 0 && ID <= 0xffff, "incorrect id");
 	return ID < 0 ? 0 : m_SnapshotBuilder.NewItem(Type, ID, Size);
 }
 

@@ -12,6 +12,7 @@ Powerups = ["HEALTH", "ARMOR", "WEAPON", "NINJA"]
 RawHeader = '''
 
 #include <engine/message.h>
+#include <engine/shared/teehistorian_ex.h>
 
 enum
 {
@@ -195,6 +196,9 @@ Objects = [
 		NetIntAny("m_Y"),
 	]),
 
+	NetObjectEx("MyOwnObject", "my-own-object@heinrich5991.de", [
+		NetIntAny("m_Test"),
+	]),
 
 	NetEvent("Explosion:Common", []),
 	NetEvent("Spawn:Common", []),
@@ -214,6 +218,10 @@ Objects = [
 
 	NetEvent("DamageInd:Common", [
 		NetIntAny("m_Angle"),
+	]),
+    
+	NetObjectEx("MyOwnEvent", "my-own-event@heinrich5991.de", [
+		NetIntAny("m_Test"),
 	]),
 ]
 

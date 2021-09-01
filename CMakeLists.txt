@@ -438,6 +438,7 @@ set_glob(ENGINE_INTERFACE GLOB src/engine
   message.h
   server.h
   storage.h
+  uuid.h
 )
 set_glob(ENGINE_SHARED GLOB src/engine/shared
   compression.cpp
@@ -456,6 +457,7 @@ set_glob(ENGINE_SHARED GLOB src/engine/shared
   engine.cpp
   filecollection.cpp
   filecollection.h
+  global_uuid_manager.cpp
   huffman.cpp
   huffman.h
   jobs.cpp
@@ -482,11 +484,17 @@ set_glob(ENGINE_SHARED GLOB src/engine/shared
   packer.cpp
   packer.h
   protocol.h
+  protocol_ex.cpp
+  protocol_ex.h
+  protocol_ex_msgs.h
   ringbuffer.cpp
   ringbuffer.h
   snapshot.cpp
   snapshot.h
   storage.cpp
+  teehistorian_ex.h
+  uuid_manager.cpp
+  uuid_manager.h
 )
 
 set_glob(GAME_SHARED GLOB src/game
