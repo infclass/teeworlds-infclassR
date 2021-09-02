@@ -68,8 +68,6 @@ void CGameContext::Construct(int Resetting)
 	m_pVoteOptionFirst = 0;
 	m_pVoteOptionLast = 0;
 	m_NumVoteOptions = 0;
-	m_TargetToKill = -1;
-	m_TargetToKillCoolDown = 0;
 	m_HeroGiftCooldown = 0;
 	
 	m_ChatResponseTargetID = -1;
@@ -1047,60 +1045,10 @@ void CGameContext::OnTick()
 			}
 		}
 	}
-	
-	//Target to kill
-	if(m_TargetToKill >= 0 && (!m_apPlayers[m_TargetToKill] || !m_apPlayers[m_TargetToKill]->GetCharacter()))
-	{
-		m_TargetToKill = -1;
-	}
-	
-	int LastTarget = -1;
-	// Zombie is in InfecZone too long -> change target
-	if(m_TargetToKill >= 0 && m_apPlayers[m_TargetToKill] && m_apPlayers[m_TargetToKill]->GetCharacter() && (m_apPlayers[m_TargetToKill]->GetCharacter()->GetInfZoneTick()*Server()->TickSpeed()) > 1000*g_Config.m_InfNinjaTargetAfkTime) 
-	{
-		LastTarget = m_TargetToKill;
-		m_TargetToKill = -1;
-	}
-	
+
 	if(m_HeroGiftCooldown > 0)
 		m_HeroGiftCooldown--;
 
-	if(m_TargetToKillCoolDown > 0)
-		m_TargetToKillCoolDown--;
-	
-	if((m_TargetToKillCoolDown == 0 && m_TargetToKill == -1))
-	{
-		int m_aTargetList[MAX_CLIENTS];
-		int NbTargets = 0;
-		int infectedCount = 0;
-		for(int i=0; i<MAX_CLIENTS; i++)
-		{		
-			if(m_apPlayers[i] && m_apPlayers[i]->IsZombie() && m_apPlayers[i]->GetClass() != PLAYERCLASS_UNDEAD)
-			{
-				if (m_apPlayers[i]->GetCharacter() && (m_apPlayers[i]->GetCharacter()->GetInfZoneTick()*Server()->TickSpeed()) < 1000*g_Config.m_InfNinjaTargetAfkTime) // Make sure zombie is not camping in InfZone
-				{
-					m_aTargetList[NbTargets] = i;
-					NbTargets++;
-				} 
-				infectedCount++;
-			}
-		}
-		
-		if(NbTargets > 0)
-			m_TargetToKill = m_aTargetList[random_int(0, NbTargets-1)];
-			
-		if(m_TargetToKill == -1)
-		{
-			if (LastTarget >= 0)
-				m_TargetToKill = LastTarget; // Reset Target if no new targets were found
-		}
-		
-		if (infectedCount < g_Config.m_InfNinjaMinInfected)
-		{
-			m_TargetToKill = -1; // disable target system
-		}
-	}
-	
 	//Check for banvote
 	if(!m_VoteCloseTime)
 	{
@@ -4535,22 +4483,6 @@ void CGameContext::OnSnap(int ClientID)
 		if(m_apPlayers[i])
 			m_apPlayers[i]->Snap(ClientID);
 	}
-}
-
-int CGameContext::GetTargetToKill()
-{
-	return m_TargetToKill;
-}
-void CGameContext::TargetKilled()
-{
-	m_TargetToKill = -1;
-	
-	int PlayerCounter = 0;
-	CPlayerIterator<PLAYERITER_INGAME> Iter(m_apPlayers);
-	while(Iter.Next())
-		PlayerCounter++;
-	
-	m_TargetToKillCoolDown = Server()->TickSpeed()*(10 + 3*maximum(0, 16 - PlayerCounter));
 }
 
 void CGameContext::FlagCollected()

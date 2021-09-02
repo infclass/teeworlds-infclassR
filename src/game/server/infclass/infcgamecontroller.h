@@ -64,6 +64,12 @@ public:
 	bool CanJoinTeam(int Team, int ClientID) override;
 	bool AreTurretsEnabled() const;
 
+	int GetTargetToKill() const;
+	void TargetKilled();
+	void EnableTargetToKill() { m_TargetToKill = (m_TargetToKill < 0 ? -1 : m_TargetToKill); }
+	void DisableTargetToKill() { m_TargetToKill = -2; }
+	int GetTargetToKillCoolDown() { return m_TargetToKillCoolDown; }
+
 	void ResetFinalExplosion();
 	void SaveRoundRules();
 
@@ -96,6 +102,8 @@ public:
 	void GetSortedTargetsInRange(const vec2 &Center, const float Radius, const ClientsArray &SkipList, ClientsArray *pOutput);
 
 private:
+	void HandleTargetsToKill();
+
 	void ReservePlayerOwnSnapItems();
 	void FreePlayerOwnSnapItems();
 
@@ -114,6 +122,9 @@ private:
 	int m_MapHeight;
 	int* m_GrowingMap;
 	bool m_ExplosionStarted;
+
+	int m_TargetToKill;
+	int m_TargetToKillCoolDown;
 
 	int m_PlayerOwnCursorID = -1;
 	

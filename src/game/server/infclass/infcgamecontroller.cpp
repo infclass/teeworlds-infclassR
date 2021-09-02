@@ -31,7 +31,10 @@ CInfClassGameController::CInfClassGameController(class CGameContext *pGameServer
 	m_MapWidth = GameServer()->Collision()->GetWidth();
 	m_MapHeight = GameServer()->Collision()->GetHeight();
 	m_GrowingMap = new int[m_MapWidth*m_MapHeight];
-	
+
+	m_TargetToKill = -1;
+	m_TargetToKillCoolDown = 0;
+
 	m_InfectedStarted = false;
 	
 	for(int j=0; j<m_MapHeight; j++)
@@ -844,6 +847,59 @@ void CInfClassGameController::GetSortedTargetsInRange(const vec2 &Center, const 
 	}
 }
 
+void CInfClassGameController::HandleTargetsToKill()
+{
+	//Target to kill
+	if(m_TargetToKill >= 0 && (!GetPlayer(m_TargetToKill) || !GetCharacter(m_TargetToKill)))
+	{
+		m_TargetToKill = -1;
+	}
+
+	int LastTarget = -1;
+	// Zombie is in InfecZone too long -> change target
+	if(m_TargetToKill >= 0 && GetCharacter(m_TargetToKill) && (GetCharacter(m_TargetToKill)->GetInfZoneTick()*Server()->TickSpeed()) > 1000*Config()->m_InfNinjaTargetAfkTime)
+	{
+		LastTarget = m_TargetToKill;
+		m_TargetToKill = -1;
+	}
+
+	if(m_TargetToKillCoolDown > 0)
+		m_TargetToKillCoolDown--;
+
+	if((m_TargetToKillCoolDown == 0 && m_TargetToKill == -1))
+	{
+		int m_aTargetList[MAX_CLIENTS];
+		int NbTargets = 0;
+		int infectedCount = 0;
+		for(int i=0; i<MAX_CLIENTS; i++)
+		{
+			if(GetCharacter(i) && GetCharacter(i)->IsZombie() && GetPlayer(i)->GetClass() != PLAYERCLASS_UNDEAD)
+			{
+				if (GetCharacter(i)->GetInfZoneTick() * Server()->TickSpeed() < 1000*Config()->m_InfNinjaTargetAfkTime) // Make sure zombie is not camping in InfZone
+				{
+					m_aTargetList[NbTargets] = i;
+					NbTargets++;
+				}
+				infectedCount++;
+			}
+		}
+
+		if(NbTargets > 0)
+			m_TargetToKill = m_aTargetList[random_int(0, NbTargets-1)];
+
+		if(m_TargetToKill == -1)
+		{
+			if (LastTarget >= 0)
+				m_TargetToKill = LastTarget; // Reset Target if no new targets were found
+		}
+
+		if (infectedCount < g_Config.m_InfNinjaMinInfected)
+		{
+			m_TargetToKill = -1; // disable target system
+		}
+	}
+}
+
 void CInfClassGameController::ReservePlayerOwnSnapItems()
 {
 	m_PlayerOwnCursorID = Server()->SnapNewID();
@@ -1039,7 +1095,7 @@ void CInfClassGameController::Tick()
 			{
 				MaybeSuggestMoreRounds();
 			}
-			GameServer()->EnableTargetToKill();
+			EnableTargetToKill();
 			
 			m_InfectedStarted = true;
 	
@@ -1163,7 +1219,7 @@ void CInfClassGameController::Tick()
 		}
 		else
 		{			
-			GameServer()->DisableTargetToKill();
+			DisableTargetToKill();
 			
 			CPlayerIterator<PLAYERITER_SPECTATORS> IterSpec(GameServer()->m_apPlayers);
 			while(IterSpec.Next())
@@ -1176,11 +1232,12 @@ void CInfClassGameController::Tick()
 	}
 	else
 	{
-		GameServer()->DisableTargetToKill();
+		DisableTargetToKill();
 		
 		m_RoundStartTick = Server()->Tick();
 	}
 
+	HandleTargetsToKill();
 	HandleLastHookers();
 
 	if(m_SuggestMoreRounds && !GameServer()->HasActiveVote())
@@ -1268,7 +1325,24 @@ bool CInfClassGameController::AreTurretsEnabled() const
 	if(m_RoundStarted)
 		return m_TurretsEnabled;
 
-	 return Server()->GetActivePlayerCount() >= Config()->m_InfMinPlayersForTurrets;
+	return Server()->GetActivePlayerCount() >= Config()->m_InfMinPlayersForTurrets;
+}
+
+int CInfClassGameController::GetTargetToKill() const
+{
+	return m_TargetToKill;
+}
+
+void CInfClassGameController::TargetKilled()
+{
+	m_TargetToKill = -1;
+
+	int PlayerCounter = 0;
+	CPlayerIterator<PLAYERITER_INGAME> Iter(GameServer()->m_apPlayers);
+	while(Iter.Next())
+		PlayerCounter++;
+
+	m_TargetToKillCoolDown = Server()->TickSpeed()*(10 + 3*maximum(0, 16 - PlayerCounter));
 }
 
 void CInfClassGameController::Snap(int SnappingClient)
@@ -1436,11 +1510,11 @@ void CInfClassGameController::RewardTheKiller(CInfClassCharacter *pVictim, CInfC
 				GameServer()->SendScoreSound(pKiller->GetCID());
 			}
 		
-			if(pKiller->GetClass() == PLAYERCLASS_NINJA && pVictim->GetCID() == GameServer()->GetTargetToKill())
+			if(pKiller->GetClass() == PLAYERCLASS_NINJA && pVictim->GetCID() == GetTargetToKill())
 			{
 				GameServer()->SendChatTarget_Localization(pKiller->GetCID(), CHATCATEGORY_SCORE, _("You have eliminated your target, +2 points"), NULL);
 				Server()->RoundStatistics()->OnScoreEvent(pKiller->GetCID(), SCOREEVENT_KILL_TARGET, pKiller->GetClass(), Server()->ClientName(pKiller->GetCID()), GameServer()->Console());
-				GameServer()->TargetKilled();
+				TargetKilled();
 				
 				if(pKiller->GetCharacter())
 				{
@@ -1471,11 +1545,11 @@ int CInfClassGameController::OnCharacterDeath(class CCharacter *pAbstractVictim,
 				Server()->RoundStatistics()->OnScoreEvent(pFreezer->GetCID(), SCOREEVENT_HELP_FREEZE, pFreezer->GetClass(), Server()->ClientName(pFreezer->GetCID()), GameServer()->Console());
 				GameServer()->SendScoreSound(pFreezer->GetCID());
 				
-				if(pVictim->GetCID() == GameServer()->GetTargetToKill())
+				if(pVictim->GetCID() == GetTargetToKill())
 				{
 					GameServer()->SendChatTarget_Localization(pFreezer->GetCID(), CHATCATEGORY_SCORE, _("You have eliminated your target, +2 points"), NULL);
 					Server()->RoundStatistics()->OnScoreEvent(pFreezer->GetCID(), SCOREEVENT_KILL_TARGET, pFreezer->GetClass(), Server()->ClientName(pFreezer->GetCID()), GameServer()->Console());
-					GameServer()->TargetKilled();
+					TargetKilled();
 					
 					if(pFreezer->GetCharacter())
 					{

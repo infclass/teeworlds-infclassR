@@ -447,8 +447,8 @@ void CInfClassHuman::BroadcastWeaponState()
 	}
 	else if(GetPlayerClass() == PLAYERCLASS_NINJA)
 	{
-		int TargetID = GameServer()->GetTargetToKill();
-		int CoolDown = GameServer()->GetTargetToKillCoolDown();
+		int TargetID = GameController()->GetTargetToKill();
+		int CoolDown = GameController()->GetTargetToKillCoolDown();
 
 		if(CoolDown > 0)
 		{
