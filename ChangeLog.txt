@@ -1,3 +1,8 @@
+InfclassR v1.3.0_rc2
+- Slug slime now heals the slugs
+- Slug slime now heals up to 12 of total HP
+- Fixed ServerInfo compatibility with DDNet 15.5+
+
 InfclassR v1.3.0_rc1
 - Ghoul leveling rebalanced (effectively capped at the
   value of previous 70%)

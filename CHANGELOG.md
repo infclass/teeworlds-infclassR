@@ -20,6 +20,8 @@ General:
 - Base HP increase on a ninja killed a target replaced with overall HP increase (now ninja can get an armor)
 - Undeads and Voodoos now reduce EngineerWall lifespan
 - Ghoul leveling rebalanced (effectively capped at the value of previous 70%)
+- Slug slime now heals the slugs
+- Slug slime now heals up to 12 of total HP
 - Bat class excluded from the classes available for the first infected
 - Ninjas are now invincible for hammers during the split second of katana attack
 - Infection spawn protection (1 second) now actually given on infection spawned (on a spawn point)
@@ -34,6 +36,7 @@ General:
 - Fixed ninja (freezer) reward if the player ID is 0
 - Fixed joining specs with 3 first infected
 - Fixed missing hook protection until the player class is set
+- Fixed ServerInfo compatibility with DDNet 15.5+
 
 Maps:
 - infc_headquarter: The graphics cleaned up (no gamelayer changes)
