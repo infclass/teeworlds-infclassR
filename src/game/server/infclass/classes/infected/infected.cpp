@@ -323,7 +323,13 @@ int CInfClassInfected::GetGhoulLevel() const
 
 void CInfClassInfected::PrepareToDie(int Killer, int Weapon, bool *pRefusedToDie)
 {
-	if(m_pCharacter->IsInvincible() && (Killer != GetCID()))
+	if((Killer == GetCID()) && (Weapon == WEAPON_SELF))
+	{
+		// Accept the death to go with the default self kill routine
+		return;
+	}
+
+	if(m_pCharacter->IsInvincible())
 	{
 		*pRefusedToDie = true;
 		return;
