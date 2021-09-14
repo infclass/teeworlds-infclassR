@@ -39,7 +39,7 @@ void CInfClassPlayer::TryRespawn()
 	CInfClassCharacter *pCharacter = new(m_ClientID) CInfClassCharacter(GameController());
 
 	m_pCharacter = pCharacter;
-	m_pCharacter->Spawn(this, Context.SpawnPos);
+	pCharacter->Spawn(this, Context.SpawnPos);
 	m_pInfcPlayerClass->SetCharacter(pCharacter);
 
 	pCharacter->OnCharacterSpawned(Context);
@@ -180,7 +180,7 @@ void CInfClassPlayer::SetClass(int newClass)
 	}
 
 	m_pInfcPlayerClass->SetCharacter(GetCharacter());
-	GetCharacterClass()->OnPlayerClassChanged();
+	m_pInfcPlayerClass->OnPlayerClassChanged();
 }
 
 const char *CInfClassPlayer::GetClan(int SnappingClient) const
