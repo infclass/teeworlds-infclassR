@@ -1885,12 +1885,6 @@ void CInfClassCharacter::Die(int Killer, int Weapon)
 	GetClass()->OnCharacterDeath(Weapon);
 /* INFECTION MODIFICATION START ***************************************/
 
-	if(GetPlayerClass() == PLAYERCLASS_BOOMER && !IsFrozen() && Weapon != WEAPON_GAME && !(IsInLove() && Weapon == WEAPON_SELF) )
-	{
-		GameServer()->CreateSound(GetPos(), SOUND_GRENADE_EXPLODE);
-		GameServer()->CreateExplosionDisk(GetPos(), 60.0f, 80.5f, 14, 52.0f, m_pPlayer->GetCID(), WEAPON_HAMMER, TAKEDAMAGEMODE_INFECTION);
-	}
-	
 	if(GetPlayerClass() == PLAYERCLASS_WITCH)
 	{
 		m_pPlayer->StartInfection(true, pKillerPlayer);

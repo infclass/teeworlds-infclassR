@@ -123,6 +123,15 @@ void CInfClassInfected::OnCharacterDeath(int Weapon)
 		IncreaseGhoulLevel(-20);
 		UpdateSkin();
 	}
+
+	if(GetPlayerClass() == PLAYERCLASS_BOOMER)
+	{
+		if(!m_pCharacter->IsFrozen() && Weapon != WEAPON_GAME && !(m_pCharacter->IsInLove() && Weapon == WEAPON_SELF))
+		{
+			GameServer()->CreateSound(GetPos(), SOUND_GRENADE_EXPLODE);
+			GameServer()->CreateExplosionDisk(GetPos(), 60.0f, 80.5f, 14, 52.0f, m_pPlayer->GetCID(), WEAPON_HAMMER, TAKEDAMAGEMODE_INFECTION);
+		}
+	}
 }
 
 void CInfClassInfected::GiveClassAttributes()
