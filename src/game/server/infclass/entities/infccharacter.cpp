@@ -86,7 +86,7 @@ void CInfClassCharacter::OnCharacterInInfectionZone()
 		if(Server()->Tick() >= m_HealTick + (Server()->TickSpeed()/g_Config.m_InfInfzoneHealRate))
 		{
 			m_HealTick = Server()->Tick();
-			if(GameServer()->GetZombieCount() == 1)
+			if((GameController()->GetMinimumInfected() == 1) && (GameServer()->GetZombieCount() == 1))
 			{
 				// See also: Character::GiveArmorIfLonely()
 				IncreaseOverallHp(1);
