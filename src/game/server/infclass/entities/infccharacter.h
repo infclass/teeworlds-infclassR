@@ -61,7 +61,7 @@ public:
 	void Snap(int SnappingClient) override;
 	void SpecialSnapForClient(int SnappingClient, bool *pDoSnap);
 
-	void HandleWeaponSwitch();
+	void HandleWeaponSwitch() override;
 
 	void FireWeapon() override;
 
