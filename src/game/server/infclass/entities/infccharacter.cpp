@@ -499,8 +499,10 @@ bool CInfClassCharacter::TakeDamage(vec2 Force, int Dmg, int From, int Weapon, T
 		int DamageAccepted = 0;
 		for(int i=0; i<Dmg; i++)
 		{
-			if(random_prob(1.0f - m_pClass->GetGhoulPercent() / 3.0f))
-				DamageAccepted++;
+			if(random_prob(m_pClass->GetGhoulPercent() * 0.33))
+				continue;
+
+			DamageAccepted++;
 		}
 		Dmg = DamageAccepted;
 	}
