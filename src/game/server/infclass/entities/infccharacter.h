@@ -84,6 +84,7 @@ public:
 	void HandleMapMenu();
 	void HandleWeaponsRegen();
 	void HandleHookDraining();
+	void HandleIndirectKillerCleanup();
 
 	void Die(int Killer, int Weapon) override;
 
