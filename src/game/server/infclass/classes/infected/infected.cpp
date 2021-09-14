@@ -181,7 +181,7 @@ void CInfClassInfected::SetupSkin(CTeeInfo *output)
 			output->SetSkinName("cammo");
 			output->m_UseCustomColor = 1;
 			{
-				int Hue = 58 * (1.0f - GetGhoulPercent());
+				int Hue = 58 * (1.0f - GetGhoulPercent() * 0.8f);
 				output->m_ColorBody = (Hue<<16) + (255<<8);
 			}
 			output->m_ColorFeet = 65414;
