@@ -8,6 +8,7 @@ General:
 - Added a message on an infected hooked human to inf zone
 - Added a message on a human (self) infected by the zone
 - Added a message to the infected player ("You have been infected by...")
+- Added freeze indicator
 - Updated Hero help page (by ipoopi)
 - Updated conditions for joining specs
 - Updated `/changelog` implementation
@@ -19,13 +20,18 @@ General:
 - Spider feet are now colored in dark red on web hook length limit reached
 - Base HP increase on a ninja killed a target replaced with overall HP increase (now ninja can get an armor)
 - Undeads and Voodoos now reduce EngineerWall lifespan
-- Ghoul leveling rebalanced (effectively capped at the value of previous 70%)
+- Ghoul leveling rebalanced (effectively capped at the value of previous 50%)
+- Removed Ghouls bonus to hook damage
 - Slug slime now heals the slugs
 - Slug slime now heals up to 12 of total HP
 - Bat class excluded from the classes available for the first infected
 - Ninjas are now invincible for hammers during the split second of katana attack
 - Infection spawn protection (1 second) now actually given on infection spawned (on a spawn point)
-- Remove (random) stun grenades from Soldier and Looper arsenal
+- Removed (random) stun grenades from Soldier and Looper arsenal
+- Activity check is now disabled if the player is alone
+- The indirect killer lookup now applied to self killers
+- Hero gift now includes ammo for the Gun
+- Stunned characters now express EMOTE_BLINK
 - Fixed sniper position unlock on a jump
 - Fixed utf8 ban reasons (from DDNet)
 - Fixed InfClass zones sensitivity (only the right top point of the Tee was checked previously)
@@ -37,6 +43,8 @@ General:
 - Fixed joining specs with 3 first infected
 - Fixed missing hook protection until the player class is set
 - Fixed ServerInfo compatibility with DDNet 15.5+
+- Fixed spawn delay on Voodoo selfkill
+- Fixed ninja target update on the target revival
 
 Maps:
 - infc_headquarter: The graphics cleaned up (no gamelayer changes)

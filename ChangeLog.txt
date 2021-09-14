@@ -1,3 +1,15 @@
+InfclassR v1.3.0_rc3
+- Added freeze indicator
+- Stunned characters now express EMOTE_BLINK
+- Hero gift now includes ammo for the Gun
+- Ghoul class nerfed even further (control and hook
+  speed and acceleration reduced by 1/3)
+- Removed Ghouls bonus to hook damage
+- Fixed spawn delay on Voodoo selfkill
+- Fixed ninja target update on the target revival
+- Activity check is now disabled if the player is alone
+- The indirect killer lookup now applied to self killers
+
 InfclassR v1.3.0_rc2
 - Slug slime now heals the slugs
 - Slug slime now heals up to 12 of total HP
