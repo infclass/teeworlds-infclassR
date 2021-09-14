@@ -21,10 +21,7 @@ CInfClassPlayer::CInfClassPlayer(CInfClassGameController *pGameController, int C
 
 CInfClassPlayer::~CInfClassPlayer()
 {
-	if(m_pInfcPlayerClass)
-		delete m_pInfcPlayerClass;
-
-	m_pInfcPlayerClass = nullptr;
+	SetCharacterClass(nullptr);
 }
 
 CInfClassGameController *CInfClassPlayer::GameController()
