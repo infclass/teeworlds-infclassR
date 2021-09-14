@@ -40,7 +40,8 @@ void CInfClassPlayer::TryRespawn()
 
 	m_pCharacter = pCharacter;
 	m_pCharacter->Spawn(this, Context.SpawnPos);
-	pCharacter->SetClass(m_pInfcPlayerClass);
+	m_pInfcPlayerClass->SetCharacter(pCharacter);
+
 	pCharacter->OnCharacterSpawned(Context);
 }
 
@@ -178,11 +179,7 @@ void CInfClassPlayer::SetClass(int newClass)
 		SetCharacterClass(new(m_ClientID) CInfClassInfected(this));
 	}
 
-	if(m_pCharacter)
-	{
-		GetCharacter()->SetClass(m_pInfcPlayerClass);
-	}
-
+	m_pInfcPlayerClass->SetCharacter(GetCharacter());
 	GetCharacterClass()->OnPlayerClassChanged();
 }
 
