@@ -1612,7 +1612,7 @@ void CInfClassGameController::OnCharacterSpawned(CInfClassCharacter *pCharacter)
 		}
 	}
 
-	if(pCharacter->IsZombie() && (GameServer()->GetZombieCount() == 1))
+	if(pCharacter->IsZombie() && (GetMinimumInfected() == 1))
 	{
 		pCharacter->GiveLonelyZombieBonus();
 	}
