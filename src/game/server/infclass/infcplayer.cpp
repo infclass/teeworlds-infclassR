@@ -162,11 +162,6 @@ void CInfClassPlayer::SetClass(int newClass)
 
 	m_class = newClass;
 
-	if(m_class < END_HUMANCLASS)
-		HookProtection(true);
-	else
-		HookProtection(true); // true = hook protection for zombies by default
-
 	const bool HadHumanClass = GetCharacterClass() && GetCharacterClass()->IsHuman();
 	const bool HadInfectedClass = GetCharacterClass() && GetCharacterClass()->IsZombie();
 

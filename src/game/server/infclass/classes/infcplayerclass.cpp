@@ -169,6 +169,8 @@ void CInfClassPlayerClass::OnPlayerClassChanged()
 {
 	UpdateSkin();
 
+	// Enable hook protection by default for both infected and humans on class changed
+	m_pPlayer->HookProtection(true);
 }
 
 void CInfClassPlayerClass::PrepareToDie(int Killer, int Weapon, bool *pRefusedToDie)
