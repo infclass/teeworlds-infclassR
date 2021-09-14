@@ -377,7 +377,7 @@ void CInfClassCharacter::FireWeapon()
 		return;
 
 /* INFECTION MODIFICATION START ***************************************/
-	if(GetPlayerClass() == PLAYERCLASS_NONE)
+	if((GetPlayerClass() == PLAYERCLASS_NONE) || !GetClass())
 		return;
 /* INFECTION MODIFICATION END *****************************************/
 
