@@ -249,7 +249,7 @@ void CCharacterCore::Tick(bool UseInput, CParams* pParams)
 			for(int i = 0; i < MAX_CLIENTS; i++)
 			{
 				CCharacterCore *pCharCore = m_pWorld->m_apCharacters[i];
-				if (IsChildCharacter(pCharCore, this))
+				if (IsRecursePassenger(pCharCore))
 					continue;
 				if(!pCharCore || pCharCore == this || (pCharCore->m_HookProtected && (m_Infected == pCharCore->m_Infected)) || m_IsPassenger || m_Passenger == pCharCore)
 					continue;
@@ -380,7 +380,7 @@ void CCharacterCore::Tick(bool UseInput, CParams* pParams)
 					m_Vel.y = SaturatedAdd(-DragSpeed, DragSpeed, m_Vel.y, -Accel*Dir.y*0.25f);
 
 					// InfClassR taxi mode, todo: cleanup
-					if (!pCharCore->m_Passenger && (!m_Infected && !pCharCore->m_Infected && !m_HookProtected) && !IsChildCharacter(pCharCore, this)) {
+					if (!pCharCore->m_Passenger && (!m_Infected && !pCharCore->m_Infected && !m_HookProtected) && !IsRecursePassenger(pCharCore)) {
 						pCharCore->SetPassenger(this);
 						m_HookedPlayer = -1;
 						m_HookState = HOOK_RETRACTED;
@@ -508,13 +508,19 @@ void CCharacterCore::Quantize()
 	Read(&Core);
 }
 
-bool CCharacterCore::IsChildCharacter(CCharacterCore *suspect, CCharacterCore *me) {
-	if (me->m_Passenger) {
-		if (me->m_Passenger == suspect)
+bool CCharacterCore::IsRecursePassenger(CCharacterCore *pMaybePassenger) const
+{
+	if(m_Passenger)
+	{
+		if(m_Passenger == pMaybePassenger)
+		{
 			return true;
-		else return IsChildCharacter(suspect, me->m_Passenger);
+		}
+
+		return m_Passenger->IsRecursePassenger(pMaybePassenger);
 	}
-	else return false;
+
+	return false;
 }
 
 void CCharacterCore::SetPassenger(CCharacterCore *pPassenger)
