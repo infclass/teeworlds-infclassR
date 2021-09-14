@@ -119,6 +119,7 @@ void CInfClassPlayerClass::SetCharacter(CInfClassCharacter *character)
 	if(m_pCharacter)
 	{
 		DestroyChildEntities();
+		m_pCharacter->SetClass(nullptr);
 	}
 
 	m_pCharacter = character;
