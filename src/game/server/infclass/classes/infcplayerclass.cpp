@@ -169,10 +169,6 @@ void CInfClassPlayerClass::OnPlayerClassChanged()
 {
 	UpdateSkin();
 
-	if(m_pCharacter)
-	{
-		GiveClassAttributes();
-	}
 }
 
 void CInfClassPlayerClass::PrepareToDie(int Killer, int Weapon, bool *pRefusedToDie)
