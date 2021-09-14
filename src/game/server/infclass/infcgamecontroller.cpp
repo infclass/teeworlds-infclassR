@@ -850,7 +850,7 @@ void CInfClassGameController::GetSortedTargetsInRange(const vec2 &Center, const 
 void CInfClassGameController::HandleTargetsToKill()
 {
 	//Target to kill
-	if(m_TargetToKill >= 0 && (!GetPlayer(m_TargetToKill) || !GetCharacter(m_TargetToKill)))
+	if(m_TargetToKill >= 0 && (!GetPlayer(m_TargetToKill) || !GetCharacter(m_TargetToKill) || !GetPlayer(m_TargetToKill)->IsActuallyZombie()))
 	{
 		m_TargetToKill = -1;
 	}
