@@ -114,6 +114,17 @@ void CInfClassInfected::OnCharacterSpawned(const SpawnContext &Context)
 	}
 }
 
+void CInfClassInfected::OnCharacterDeath(int Weapon)
+{
+	CInfClassPlayerClass::OnCharacterDeath(Weapon);
+
+	if(GetPlayerClass() == PLAYERCLASS_GHOUL)
+	{
+		IncreaseGhoulLevel(-20);
+		UpdateSkin();
+	}
+}
+
 void CInfClassInfected::GiveClassAttributes()
 {
 	CInfClassPlayerClass::GiveClassAttributes();

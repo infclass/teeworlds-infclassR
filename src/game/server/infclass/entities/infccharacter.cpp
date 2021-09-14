@@ -1841,12 +1841,6 @@ void CInfClassCharacter::Die(int Killer, int Weapon)
 		return;
 	}
 
-	if(GetPlayerClass() == PLAYERCLASS_GHOUL)
-	{
-		m_pPlayer->IncreaseGhoulLevel(-20);
-		GetClass()->UpdateSkin();
-	}
-
 	DestroyChildEntities();
 /* INFECTION MODIFICATION END *****************************************/
 
