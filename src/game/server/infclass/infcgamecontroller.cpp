@@ -1006,6 +1006,22 @@ int CInfClassGameController::GetMinimumInfectedForPlayers(int PlayersNumber) con
 	return NumFirstInfected;
 }
 
+int CInfClassGameController::GetMinimumInfected() const
+{
+	int NumPlayers = 0;
+	for(int i = 0; i < MAX_CLIENTS; ++i)
+	{
+		CInfClassPlayer *pPlayer = GetPlayer(i);
+		if(!pPlayer || !pPlayer->m_IsInGame || pPlayer->IsSpectator())
+		{
+			continue;
+		}
+		++NumPlayers;
+	}
+
+	return GetMinimumInfectedForPlayers(NumPlayers);
+}
+
 int CInfClassGameController::RandomZombieToWitch() {
 	std::vector<int> zombies_id;
 
