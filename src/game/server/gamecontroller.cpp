@@ -48,6 +48,19 @@ void IGameController::DoActivityCheck()
 	if(g_Config.m_SvInactiveKickTime == 0)
 		return;
 
+	unsigned int nbPlayers=0;
+	CPlayerIterator<PLAYERITER_INGAME> Iter(GameServer()->m_apPlayers);
+	while(Iter.Next())
+	{
+		nbPlayers++;
+	}
+
+	if(nbPlayers < 2)
+	{
+		// Do not kick players when they are the only (non-spectating) player
+		return;
+	}
+
 	for(int i = 0; i < MAX_CLIENTS; ++i)
 	{
 #ifdef CONF_DEBUG
@@ -580,13 +593,6 @@ void IGameController::Tick()
 			m_ForceBalanced = true;
 		}
 		m_UnbalancedTick = -1;
-	}
-
-	unsigned int nbPlayers=0;
-	CPlayerIterator<PLAYERITER_INGAME> Iter(GameServer()->m_apPlayers);
-	while(Iter.Next())
-	{
-		nbPlayers++;
 	}
 
 	DoActivityCheck();
