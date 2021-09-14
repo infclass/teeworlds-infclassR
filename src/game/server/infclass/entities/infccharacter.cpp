@@ -1952,9 +1952,16 @@ void CInfClassCharacter::SetClass(CInfClassPlayerClass *pClass)
 	m_pClass = pClass;
 	m_pClass->SetCharacter(this);
 
+	DestroyChildEntities();
+
+	if(!pClass)
+	{
+		// Destruction. Do not care about initialization
+		return;
+	}
+
 	// ex SetClass(int):
 	ClassSpawnAttributes();
-	DestroyChildEntities();
 
 	m_QueuedWeapon = -1;
 	m_NeedFullHeal = false;
