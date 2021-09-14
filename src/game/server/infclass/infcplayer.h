@@ -45,4 +45,16 @@ protected:
 	CInfClassPlayerClass *m_pInfcPlayerClass = nullptr;
 };
 
+template<int FLAGS>
+class CInfClassPlayerIterator : public CPlayerIterator<FLAGS>
+{
+public:
+	CInfClassPlayerIterator(CPlayer **ppPlayers) :
+		CPlayerIterator<FLAGS>(ppPlayers)
+	{
+	}
+
+	CInfClassPlayer *Player() { return static_cast<CInfClassPlayer *> (CPlayerIterator<FLAGS>::Player()); }
+};
+
 #endif // GAME_SERVER_INFCLASS_PLAYER_H

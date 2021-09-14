@@ -972,7 +972,7 @@ void CInfClassGameController::GetPlayerCounter(int ClientException, int& NumHuma
 	NumInfected = 0;
 	
 	//Count type of players
-	CPlayerIterator<PLAYERITER_INGAME> Iter(GameServer()->m_apPlayers);
+	CInfClassPlayerIterator<PLAYERITER_INGAME> Iter(GameServer()->m_apPlayers);
 	while(Iter.Next())
 	{
 		if(Iter.ClientID() == ClientException) continue;
@@ -1044,7 +1044,7 @@ void CInfClassGameController::Tick()
 	
 	//Check session
 	{
-		CPlayerIterator<PLAYERITER_ALL> Iter(GameServer()->m_apPlayers);
+		CInfClassPlayerIterator<PLAYERITER_ALL> Iter(GameServer()->m_apPlayers);
 		while(Iter.Next())
 		{
 			//Update session
@@ -1099,7 +1099,7 @@ void CInfClassGameController::Tick()
 			
 			m_InfectedStarted = true;
 	
-			CPlayerIterator<PLAYERITER_INGAME> Iter(GameServer()->m_apPlayers);
+			CInfClassPlayerIterator<PLAYERITER_INGAME> Iter(GameServer()->m_apPlayers);
 			while(Iter.Next())
 			{
 				if(Iter.Player()->GetClass() == PLAYERCLASS_NONE)
@@ -1107,7 +1107,7 @@ void CInfClassGameController::Tick()
 					if(StartInfectionTrigger)
 					{
 						Iter.Player()->SetClass(ChooseHumanClass(Iter.Player()));
-						CInfClassCharacter *pCharacter = GetCharacter(Iter.Player()->GetCID());
+						CInfClassCharacter *pCharacter = Iter.Player()->GetCharacter();
 						if(pCharacter)
 						{
 							pCharacter->GiveRandomClassSelectionBonus();
@@ -1129,7 +1129,7 @@ void CInfClassGameController::Tick()
 				// before infecting those who play, mark spectators as
 				// already infected. It will prevent issue causing a
 				// player getting infected several times in a row
-				CPlayerIterator<PLAYERITER_SPECTATORS> IterSpec(GameServer()->m_apPlayers);
+				CInfClassPlayerIterator<PLAYERITER_SPECTATORS> IterSpec(GameServer()->m_apPlayers);
 				while(IterSpec.Next())
 				{
 					IterSpec.Player()->SetClass(PLAYERCLASS_NONE);
@@ -1221,7 +1221,7 @@ void CInfClassGameController::Tick()
 		{			
 			DisableTargetToKill();
 			
-			CPlayerIterator<PLAYERITER_SPECTATORS> IterSpec(GameServer()->m_apPlayers);
+			CInfClassPlayerIterator<PLAYERITER_SPECTATORS> IterSpec(GameServer()->m_apPlayers);
 			while(IterSpec.Next())
 			{
 				IterSpec.Player()->SetClass(PLAYERCLASS_NONE);
@@ -1338,7 +1338,7 @@ void CInfClassGameController::TargetKilled()
 	m_TargetToKill = -1;
 
 	int PlayerCounter = 0;
-	CPlayerIterator<PLAYERITER_INGAME> Iter(GameServer()->m_apPlayers);
+	CInfClassPlayerIterator<PLAYERITER_INGAME> Iter(GameServer()->m_apPlayers);
 	while(Iter.Next())
 		PlayerCounter++;
 
@@ -1375,7 +1375,7 @@ void CInfClassGameController::Snap(int SnappingClient)
 		return;
 
 	//Search for witch
-	CPlayerIterator<PLAYERITER_INGAME> Iter(GameServer()->m_apPlayers);
+	CInfClassPlayerIterator<PLAYERITER_INGAME> Iter(GameServer()->m_apPlayers);
 	while(Iter.Next())
 	{
 		if(Iter.Player()->GetClass() == PLAYERCLASS_WITCH)
@@ -1423,7 +1423,7 @@ void CInfClassGameController::SnapMapMenu(int SnappingClient, CNetObj_GameInfo *
 		int Hero = 0;
 		int Support = 0;
 
-		CPlayerIterator<PLAYERITER_INGAME> Iter(GameServer()->m_apPlayers);
+		CInfClassPlayerIterator<PLAYERITER_INGAME> Iter(GameServer()->m_apPlayers);
 		while(Iter.Next())
 		{
 			switch(Iter.Player()->GetClass())
@@ -1727,7 +1727,7 @@ void CInfClassGameController::DoWincheck()
 				str_format(aBuf, sizeof(aBuf), "round_end winner='humans' survivors='%d' duration='%d' round='%d of %d' type='%s'", NumHumans, Seconds, m_RoundCount+1, g_Config.m_SvRoundsPerMap, RoundType);
 				GameServer()->Console()->Print(IConsole::OUTPUT_LEVEL_DEBUG, "game", aBuf);
 
-					CPlayerIterator<PLAYERITER_INGAME> Iter(GameServer()->m_apPlayers);
+					CInfClassPlayerIterator<PLAYERITER_INGAME> Iter(GameServer()->m_apPlayers);
 				while(Iter.Next())
 				{
 					if(Iter.Player()->IsHuman())
@@ -1803,7 +1803,7 @@ bool CInfClassGameController::TryRespawn(CInfClassPlayer *pPlayer, SpawnContext 
 		
 	if(m_InfectedStarted && pPlayer->IsZombie() && random_prob(g_Config.m_InfProbaSpawnNearWitch / 100.0f))
 	{
-		CPlayerIterator<PLAYERITER_INGAME> Iter(GameServer()->m_apPlayers);
+		CInfClassPlayerIterator<PLAYERITER_INGAME> Iter(GameServer()->m_apPlayers);
 		while(Iter.Next())
 		{
 			if(Iter.Player()->GetCID() == pPlayer->GetCID()) continue;
@@ -1852,7 +1852,7 @@ int CInfClassGameController::ChooseHumanClass(const CPlayer *pPlayer) const
 	for (int PlayerClass = START_HUMANCLASS + 1; PlayerClass < END_HUMANCLASS; ++PlayerClass)
 		nbClass[PlayerClass] = 0;
 
-	CPlayerIterator<PLAYERITER_INGAME> Iter(GameServer()->m_apPlayers);	
+	CInfClassPlayerIterator<PLAYERITER_INGAME> Iter(GameServer()->m_apPlayers);
 	while(Iter.Next())
 	{
 		const int AnotherPlayerClass = Iter.Player()->GetClass();
@@ -1906,7 +1906,7 @@ int CInfClassGameController::ChooseInfectedClass(const CPlayer *pPlayer) const
 	for (int PlayerClass = START_INFECTEDCLASS + 1; PlayerClass < END_INFECTEDCLASS; ++PlayerClass)
 		nbClass[PlayerClass] = 0;
 
-	CPlayerIterator<PLAYERITER_INGAME> Iter(GameServer()->m_apPlayers);
+	CInfClassPlayerIterator<PLAYERITER_INGAME> Iter(GameServer()->m_apPlayers);
 	int PlayersCount = 0;
 	while(Iter.Next())
 	{
@@ -2009,7 +2009,7 @@ CLASS_AVAILABILITY CInfClassGameController::GetPlayerClassAvailability(int Playe
 	for (int PlayerClass = START_HUMANCLASS + 1; PlayerClass < END_HUMANCLASS; ++PlayerClass)
 		nbClass[PlayerClass] = 0;
 
-	CPlayerIterator<PLAYERITER_INGAME> Iter(GameServer()->m_apPlayers);
+	CInfClassPlayerIterator<PLAYERITER_INGAME> Iter(GameServer()->m_apPlayers);
 	while(Iter.Next())
 	{
 		const int AnotherPlayerClass = Iter.Player()->GetClass();
