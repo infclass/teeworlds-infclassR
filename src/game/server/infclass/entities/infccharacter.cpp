@@ -762,22 +762,16 @@ bool CInfClassCharacter::GetIndirectKiller(int *pKillerId, int *pWeaponId)
 	const float LastEnforcerTimeoutInSeconds = Config()->m_InfLastEnforcerTimeMs / 1000.0f;
 	if(m_LastEnforcer >= 0 && (m_LastEnforcerTick > m_LastHookerTick))
 	{
-		if(m_LastEnforcerTick + Server()->TickSpeed() * LastEnforcerTimeoutInSeconds > Server()->Tick())
-		{
-			*pKillerId = m_LastEnforcer;
-			*pWeaponId = m_LastEnforcerWeapon;
-			return true;
-		}
+		*pKillerId = m_LastEnforcer;
+		*pWeaponId = m_LastEnforcerWeapon;
+		return true;
 	}
 
-	if(GetLastHooker() >= 0)
+	if(m_LastHooker >= 0)
 	{
-		if(m_LastHookerTick + Server()->TickSpeed() * LastEnforcerTimeoutInSeconds > Server()->Tick())
-		{
-			*pKillerId = GetLastHooker();
-			*pWeaponId = WEAPON_NINJA;
-			return true;
-		}
+		*pKillerId = m_LastHooker;
+		*pWeaponId = WEAPON_NINJA;
+		return true;
 	}
 
 	return false;
@@ -1832,6 +1826,35 @@ void CInfClassCharacter::HandleHookDraining()
 	}
 }
 
+void CInfClassCharacter::HandleIndirectKillerCleanup()
+{
+	bool CharacterControlsItsPosition = IsGrounded() || m_Core.m_HookState == HOOK_GRABBED || m_Core.m_IsPassenger;
+
+	if(!CharacterControlsItsPosition)
+	{
+		return;
+	}
+
+	const float LastEnforcerTimeoutInSeconds = Config()->m_InfLastEnforcerTimeMs / 1000.0f;
+	if(m_LastEnforcer >= 0)
+	{
+		if(Server()->Tick() > m_LastEnforcerTick + Server()->TickSpeed() * LastEnforcerTimeoutInSeconds)
+		{
+			m_LastEnforcer = -1;
+			m_LastEnforcerTick = -1;
+		}
+	}
+
+	if(m_LastHooker >= 0)
+	{
+		if(m_LastHookerTick + Server()->TickSpeed() * LastEnforcerTimeoutInSeconds > Server()->Tick())
+		{
+			m_LastHooker = -1;
+			m_LastHookerTick = -1;
+		}
+	}
+}
+
 void CInfClassCharacter::Die(int Killer, int Weapon)
 {
 /* INFECTION MODIFICATION START ***************************************/
@@ -2400,6 +2423,7 @@ void CInfClassCharacter::PostCoreTick()
 
 	HandleWeaponsRegen();
 	HandleHookDraining();
+	HandleIndirectKillerCleanup();
 }
 
 void CInfClassCharacter::UpdateTuningParam()
