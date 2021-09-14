@@ -1851,7 +1851,7 @@ void CInfClassCharacter::Die(int Killer, int Weapon)
 	DestroyChildEntities();
 /* INFECTION MODIFICATION END *****************************************/
 
-	if(Weapon == WEAPON_WORLD && Killer == m_pPlayer->GetCID())
+	if((Weapon == WEAPON_WORLD) || (Weapon == WEAPON_SELF) && Killer == m_pPlayer->GetCID())
 	{
 		GetIndirectKiller(&Killer, &Weapon);
 	}
