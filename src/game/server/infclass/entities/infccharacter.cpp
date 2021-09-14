@@ -77,8 +77,7 @@ void CInfClassCharacter::OnCharacterSpawned(const SpawnContext &Context)
 		OpenClassChooser();
 	}
 
-	if(m_pClass)
-		m_pClass->OnCharacterSpawned(Context);
+	m_pClass->OnCharacterSpawned(Context);
 
 	GameController()->OnCharacterSpawned(this);
 }
