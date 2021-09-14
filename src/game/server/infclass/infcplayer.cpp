@@ -119,7 +119,10 @@ CInfClassCharacter *CInfClassPlayer::GetCharacter()
 void CInfClassPlayer::SetCharacterClass(CInfClassPlayerClass *pClass)
 {
 	if(m_pInfcPlayerClass)
+	{
+		m_pInfcPlayerClass->SetCharacter(nullptr);
 		delete m_pInfcPlayerClass;
+	}
 
 	m_pInfcPlayerClass = pClass;
 }
