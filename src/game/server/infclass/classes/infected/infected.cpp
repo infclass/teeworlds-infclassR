@@ -24,7 +24,16 @@ int CInfClassInfected::GetDefaultEmote() const
 		EmoteNormal = EMOTE_SURPRISE;
 
 	if(m_pCharacter->IsFrozen())
-		EmoteNormal = EMOTE_PAIN;
+	{
+		if(m_pCharacter->GetFreezeReason() == FREEZEREASON_UNDEAD)
+		{
+			EmoteNormal = EMOTE_PAIN;
+		}
+		else
+		{
+			EmoteNormal = EMOTE_BLINK;
+		}
+	}
 
 	return EmoteNormal;
 }
