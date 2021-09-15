@@ -249,7 +249,6 @@ public:
 	void LoveEffect();
 	void HallucinationEffect();
 	void SlipperyEffect();
-	void GrantSpawnProtection();
 	int GetInfWeaponID(int WID) const;
 	bool FindPortalPosition(vec2 Pos, vec2& Res);
 	bool FindWitchSpawnPosition(vec2& Res);

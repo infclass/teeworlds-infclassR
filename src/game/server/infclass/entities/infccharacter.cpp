@@ -2388,6 +2388,16 @@ void CInfClassCharacter::MakeVisible()
 	m_InvisibleTick = Server()->Tick();
 }
 
+void CInfClassCharacter::GrantSpawnProtection()
+{
+	// Indicate time left being protected via eyes
+	if(m_ProtectionTick <= 0)
+	{
+		m_ProtectionTick = Server()->TickSpeed() * g_Config.m_InfSpawnProtectionTime;
+		SetEmote(EMOTE_SURPRISE, Server()->Tick() + m_ProtectionTick);
+	}
+}
+
 void CInfClassCharacter::PreCoreTick()
 {
 	if(!m_InWater && !IsGrounded() && (m_Core.m_HookState != HOOK_GRABBED || m_Core.m_HookedPlayer != -1))

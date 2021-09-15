@@ -140,6 +140,7 @@ public:
 	void GiveRandomClassSelectionBonus();
 	void GiveLonelyZombieBonus();
 	void MakeVisible();
+	void GrantSpawnProtection();
 
 	void LockPosition();
 	void UnlockPosition();

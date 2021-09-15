@@ -1408,16 +1408,6 @@ void CCharacter::SlipperyEffect()
 		m_SlipperyTick = Server()->TickSpeed()/2;
 }
 
-void CCharacter::GrantSpawnProtection()
-{
-	// Indicate time left being protected via eyes
-	if(m_ProtectionTick <= 0)
-	{
-		m_ProtectionTick = Server()->TickSpeed() * g_Config.m_InfSpawnProtectionTime;
-		SetEmote(EMOTE_SURPRISE, Server()->Tick() + m_ProtectionTick);
-	}
-}
-
 void CCharacter::Freeze(float Time, int Player, FREEZEREASON Reason)
 {
 	if(m_IsFrozen && m_FreezeReason == FREEZEREASON_UNDEAD)
