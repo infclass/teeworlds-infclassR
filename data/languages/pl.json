@@ -262,7 +262,7 @@
 		"value": "10 sekund p\u00f3\u017aniej, dwoje graczy zostaje zara\u017conych."
 	},
 	{
-		"key": "The goal for humans is to survive until the army clean the map.",
+		"key": "The goal for humans is to survive until the army cleans the map.",
 		"value": "Celem ludzi jest przetrwanie, dop\u00f3ki armia nie oczy\u015bci mapy."
 	},
 	{
@@ -286,7 +286,7 @@
 		"value": "In\u017cynier mo\u017ce budowa\u0107 \u015bciany, kt\u00f3re blokuj\u0105 zara\u017conych."
 	},
 	{
-		"key": "When an infected touch the wall, he dies.",
+		"key": "When an infected touches the wall, it dies.",
 		"value": "Kiedy zara\u017cony dotnie \u015bciany, umiera."
 	},
 	{
@@ -322,11 +322,11 @@
 		"many": "Miny s\u0105 limitowane {int:NumMines} dla ka\u017cdego gracza w jednym momencie.",
 	},
 	{
-		"key": "He has also grenades that teleport him.",
+		"key": "Scientist has also grenades that teleport them.",
 		"value": "Ma r\u00f3wnie\u017c granaty do teleportacji."
 	},
 	{
-		"key": "The biologist has a shotgun with bouncing bullets and can create a spring laser trap by shooting with his rifle.",
+		"key": "The Biologist has a shotgun with bouncing bullets and can create a spring laser trap by shooting with the laser rifle.",
 		"value": "Biolog posiada strzelb\u0119 strzelaj\u0105c\u0105 skacz\u0105cymi pociskami i mo\u017ce ustawi\u0107 laserow\u0105 min\u0119 strzelaj\u0105c z lasera."
 	},
 	{
@@ -334,7 +334,7 @@
 		"value": "Medyk mo\u017ce chroni\u0107 ludzi swoim m\u0142otem, daj\u0105c im pancerz."
 	},
 	{
-		"key": "He has also a powerful shotgun that can pullback infected.",
+		"key": "Medic also has a powerful shotgun that can knock back infected.",
 		"value": "Ma r\u00f3wnie\u017c pot\u0119\u017cn\u0105 strzelb\u0119, kt\u00f3ra odpycha zara\u017conych."
 	},
 	{
@@ -364,7 +364,7 @@
 		"many": "Jego m\u0142otek jest zamieniony w katan\u0119, pozwalaj\u0105c mu skaka\u0107 {int:NinjaJump}  razy przed dotkni\u0119ciem ziemi.",
 	},
 	{
-		"key": "The Mercenary fly in air using his machine gun.",
+		"key": "he Mercenary can fly in the air using their machine gun.",
 		"value": "Najemnik mo\u017ce lata\u0107 u\u017cywaj\u0105c swojego pistelotu maszynowego."
 	},
 	{
@@ -406,7 +406,7 @@
 		"value": "Wszyscy ludzie dotkni\u0119ci eksplozj\u0105 zostaj\u0105 zara\u017ceni."
 	},
 	{
-		"key": "He can also inflict 1 damage point per second by hooking humans.",
+		"key": "It can also inflict 1 damage point per second by hooking humans.",
 		"value": "Mo\u017ce r\u00f3wnie\u017c zabiera\u0107 1 punkt \u017cycia \u0142api\u0105c na hak ludzi."
 	},
 	{
@@ -418,7 +418,7 @@
 		"value": "Duch mo\u017ce zara\u017ca\u0107 ludzi i leczy\u0107 zara\u017conych swoim m\u0142otem."
 	},
 	{
-		"key": "He is invisible, except if a human is near him, if he takes a damage or if he use his hammer.",
+		"key": "It is invisible, unless a human is nearby, it takes damage or it uses the hammer.",
 		"value": "Jest niewidzialny, dop\u00f3ki nie ma cz\u0142owieka w jego okolicy, otrzyma obra\u017cenia lub u\u017cyje m\u0142ota."
 	},
 	{
@@ -442,11 +442,11 @@
 		"value": "Ghul mo\u017ce zara\u017ca\u0107 ludzi swoim m\u0142otem."
 	},
 	{
-		"key": "He can devour all that has died close to him, which makes him stronger, faster and more resistant.",
+		"key": "It can devour anything that has died nearby, which makes it stronger, faster and more resistant.",
 		"value": "Mo\u017ce pobiera\u0107 tych, kt\u00f3rzy umarli blisko niego, co czyni go silniejszym, szynszym i bardziej odpornym."
 	},
 	{
-		"key": "Thereupon he digests his fodder bit by bit going back to his normal state, and besides, death bereaves him of his nourishment.",
+		"key": "It digests the fodder over time, going back to the normal state. Some nourishment is also lost on death.",
 		"value": "Jednakowo\u017c je\u017celi nie czerpie, kawa\u0142ek po kawa\u0142ku b\u0119dzie wraca\u0142 do normalno\u015bci, albo gdy zginie."
 	},
 	{
@@ -466,11 +466,11 @@
 		"value": "Nieumar\u0142y mo\u017ce zara\u017ca\u0107 ludzi i leczy\u0107 zara\u017conych swoim m\u0142otem."
 	},
 	{
-		"key": "Instead of dying, he freezes during 10 seconds.",
+		"key": "Instead of dying, it freezes for 10 seconds.",
 		"value": "Zamiast umiera\u0107, zostaje zamro\u017cony na 10 sekund."
 	},
 	{
-		"key": "If an infected heals him, the freeze effect disappear.",
+		"key": "If an infected heals it, the freeze effect disappears.",
 		"value": "Je\u017celi zara\u017ceni ulecz\u0105 go, efekt zamro\u017cenia zniknie."
 	},
 	{
@@ -478,7 +478,7 @@
 		"value": "Wied\u017ama mo\u017ce zara\u017ca\u0107 lud\u017ai i leczy\u0107 zainfekowanych swoim m\u0142otem."
 	},
 	{
-		"key": "When an infected dies, he may re-spawn near her.",
+		"key": "When an infected dies, it may respawn near the Witch.",
 		"value": "Kiedy zara\u017cony umiera, mo\u017ce od\u017cy\u0107 przy niej."
 	},
 	{

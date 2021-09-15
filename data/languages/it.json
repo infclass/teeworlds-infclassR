@@ -261,7 +261,7 @@
 		"value": "10 secondi dopo, due giocatori diventano infetti."
 	},
 	{
-		"key": "The goal for humans is to survive until the army clean the map.",
+		"key": "The goal for humans is to survive until the army cleans the map.",
 		"value": "Lo scopo degli umani \u00e8 di sopravvivere fino a quando l'esercito ripulir\u00e0 la mappa."
 	},
 	{
@@ -285,7 +285,7 @@
 		"value": "L'Ingegnere pu\u00f2 creare una barriera col suo martello per bloccare gli infetti."
 	},
 	{
-		"key": "When an infected touch the wall, he dies.",
+		"key": "When an infected touches the wall, it dies.",
 		"value": "Se un infetto tocca la barriera, muore istantanamente."
 	},
 	{
@@ -319,11 +319,11 @@
 		"other": "Le mine sono limitate a {int:NumMines} per giocatore nello stesso tempo. ",
 	},
 	{
-		"key": "He has also grenades that teleport him.",
+		"key": "Scientist has also grenades that teleport them.",
 		"value": "Ha anche un lancia granate che lo pu\u00f2 teletrasportare."
 	},
 	{
-		"key": "The biologist has a shotgun with bouncing bullets and can create a spring laser trap by shooting with his rifle.",
+		"key": "The Biologist has a shotgun with bouncing bullets and can create a spring laser trap by shooting with the laser rifle.",
 		"value": "Il biologo ha un fucile con proiettili rimbalzanti e pu\u00f2 creare un trappola sparando con il suo laser."
 	},
 	{
@@ -331,7 +331,7 @@
 		"value": "Il Medico pu\u00f2 proteggere gli umani col suo martello, donando loro un'armatura."
 	},
 	{
-		"key": "He has also a powerful shotgun that can pullback infected.",
+		"key": "Medic also has a powerful shotgun that can knock back infected.",
 		"value": "Possiede anche un potente fucile a pompa che pu\u00f2 respingere gli infetti."
 	},
 	{
@@ -360,7 +360,7 @@
 		"other": "Il suo martello \u00e8 rimpiazzato da una katana che gli permette di saltare {int:NinjaJump} volte prima di toccare terra.",
 	},
 	{
-		"key": "The Mercenary fly in air using his machine gun.",
+		"key": "he Mercenary can fly in the air using their machine gun.",
 		"value": "Il Mercenario vola nell'aria usando la sua pistola."
 	},
 	{
@@ -401,7 +401,7 @@
 		"value": "Tutti gli umani toccati dall'esposione diventano infetti."
 	},
 	{
-		"key": "He can also inflict 1 damage point per second by hooking humans.",
+		"key": "It can also inflict 1 damage point per second by hooking humans.",
 		"value": "Lui pu\u00f2 anche infliggere 1 punto di danno per secondo quando afferra un umano col suo gancio."
 	},
 	{
@@ -413,7 +413,7 @@
 		"value": "Il Fantasma pu\u00f2 infettare umani e curare infetti con il suo martello. "
 	},
 	{
-		"key": "He is invisible, except if a human is near him, if he takes a damage or if he use his hammer.",
+		"key": "It is invisible, unless a human is nearby, it takes damage or it uses the hammer.",
 		"value": "Lui \u00e8 invisibile, eccetto se un umano \u00e8 vicino a lui, se prende danno o se usa il suo martello. "
 	},
 	{
@@ -437,11 +437,11 @@
 		"value": "Lo spirito pu\u00f2 infettare gli umani e curare gli infetti con il suo martello."
 	},
 	{
-		"key": "He can devour all that has died close to him, which makes him stronger, faster and more resistant.",
+		"key": "It can devour anything that has died nearby, which makes it stronger, faster and more resistant.",
 		"value": "Lui pu\u00f2 divorare tutto quello che \u00e8 morto vicino a lui e ci\u00f2 lo rende pi\u00f9 forte, veloce e pi\u00f9 resistente."
 	},
 	{
-		"key": "Thereupon he digests his fodder bit by bit going back to his normal state, and besides, death bereaves him of his nourishment.",
+		"key": "It digests the fodder over time, going back to the normal state. Some nourishment is also lost on death.",
 		"value": "Dopo digerisce il suo cibo poco a poco tornando indietro al suo stato originale, e poi, quando muore, libera il suo nutrimento."
 	},
 	{
@@ -461,11 +461,11 @@
 		"value": "Il Morto Vivente pu\u00f2 infettare gli umani e guarire gli infetti con il suo martello."
 	},
 	{
-		"key": "Instead of dying, he freezes during 10 seconds.",
+		"key": "Instead of dying, it freezes for 10 seconds.",
 		"value": "Invece di morire, si congela per 10 secondi."
 	},
 	{
-		"key": "If an infected heals him, the freeze effect disappear.",
+		"key": "If an infected heals it, the freeze effect disappears.",
 		"value": "Se un infetto lo guarisce, l'effetto del congelamento svanisce."
 	},
 	{
@@ -473,7 +473,7 @@
 		"value": "La Strega pu\u00f2 infettare gli umani e guarire gli infetti con il suo martello."
 	},
 	{
-		"key": "When an infected dies, he may re-spawn near her.",
+		"key": "When an infected dies, it may respawn near the Witch.",
 		"value": "Quando un infetto muore, ha una probabilit\u00e0 di riapparire vicino a lei."
 	},
 	{

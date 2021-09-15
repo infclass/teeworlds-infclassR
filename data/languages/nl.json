@@ -261,7 +261,7 @@
 		"value": "10 seconden later worden twee spelers ge\u00efnfecteerd."
 	},
 	{
-		"key": "The goal for humans is to survive until the army clean the map.",
+		"key": "The goal for humans is to survive until the army cleans the map.",
 		"value": "Het doel voor de mens is om te overleven tot het leger de kaart opruimt."
 	},
 	{
@@ -285,7 +285,7 @@
 		"value": "De ingenieur kan muren maken met zijn hamer om ge\u00efnfecteren te blokkeren."
 	},
 	{
-		"key": "When an infected touch the wall, he dies.",
+		"key": "When an infected touches the wall, it dies.",
 		"value": "Wanneer een ge\u00efnfecteerde de muur raakt, sterft hij."
 	},
 	{
@@ -319,11 +319,11 @@
 		"other": "Mijnen zijn gelimiteerd tot {int:NumMines} per speler tegelijkertijd.",
 	},
 	{
-		"key": "He has also grenades that teleport him.",
+		"key": "Scientist has also grenades that teleport them.",
 		"value": "Hij kan ook granaten gooien die hem teleporteren."
 	},
 	{
-		"key": "The biologist has a shotgun with bouncing bullets and can create a spring laser trap by shooting with his rifle.",
+		"key": "The Biologist has a shotgun with bouncing bullets and can create a spring laser trap by shooting with the laser rifle.",
 		"value": "De bioloog heeft een shotgun met weerkaatsende kogels en kan een lente laser val maken door te schieten met zijn lasergeweer."
 	},
 	{
@@ -331,7 +331,7 @@
 		"value": "De dokter kan alle mensen beschermen met zijn hamer door hen armor te geven."
 	},
 	{
-		"key": "He has also a powerful shotgun that can pullback infected.",
+		"key": "Medic also has a powerful shotgun that can knock back infected.",
 		"value": "Hij heeft ook een krachtig jachtgeweer dat ge\u00efnfecteerden kan terugdeinzen."
 	},
 	{
@@ -360,7 +360,7 @@
 		"other": "Zijn hamer is vervangen door een katana waardoor hij {int:NinjaJump} keer kan springen voordat hij de grond raakt.",
 	},
 	{
-		"key": "The Mercenary fly in air using his machine gun.",
+		"key": "he Mercenary can fly in the air using their machine gun.",
 		"value": "De huurling kan in de lucht vliegen met zijn machinegeweer."
 	},
 	{
@@ -401,7 +401,7 @@
 		"value": "Alle mensen rond de explosie worden ge\u00efnfecteerd."
 	},
 	{
-		"key": "He can also inflict 1 damage point per second by hooking humans.",
+		"key": "It can also inflict 1 damage point per second by hooking humans.",
 		"value": "Hij kan ook 1 schade punt opleveren per seconde door mensen te haken."
 	},
 	{
@@ -413,7 +413,7 @@
 		"value": "De geest kan mensen infecteren en mensen genezen met zijn hamer."
 	},
 	{
-		"key": "He is invisible, except if a human is near him, if he takes a damage or if he use his hammer.",
+		"key": "It is invisible, unless a human is nearby, it takes damage or it uses the hammer.",
 		"value": "Hij is onzichtbaar, behalve als er een mens in de buurt is, als hij schade krijgt of hij zijn hamer gebruikt."
 	},
 	{
@@ -437,11 +437,11 @@
 		"value": "De Ghoul kan mensen infecteren en ge\u00efnfecteerden genezen met zijn hamer."
 	},
 	{
-		"key": "He can devour all that has died close to him, which makes him stronger, faster and more resistant.",
+		"key": "It can devour anything that has died nearby, which makes it stronger, faster and more resistant.",
 		"value": "Hij kan al die dicht bij hem is overleden verslinden, dat maakt hem sterker, sneller en meer resistent."
 	},
 	{
-		"key": "Thereupon he digests his fodder bit by bit going back to his normal state, and besides, death bereaves him of his nourishment.",
+		"key": "It digests the fodder over time, going back to the normal state. Some nourishment is also lost on death.",
 		"value": "Daarop verteert hij zijn voeder beetje bij beetje en gaat hij terug naar zijn normale toestand, en bovendien, de dood berooft hem van zijn voeding."
 	},
 	{
@@ -461,11 +461,11 @@
 		"value": "De ondode kan mensen infecteren en mensen genezen met zijn hamer."
 	},
 	{
-		"key": "Instead of dying, he freezes during 10 seconds.",
+		"key": "Instead of dying, it freezes for 10 seconds.",
 		"value": "In plaats van te sterven, bevriest hij voor 10 seconden."
 	},
 	{
-		"key": "If an infected heals him, the freeze effect disappear.",
+		"key": "If an infected heals it, the freeze effect disappears.",
 		"value": "Als een ge\u00efnfecteerde hem geneest, dan is hij niet meer bevroren."
 	},
 	{
@@ -473,7 +473,7 @@
 		"value": "De Heks kan mensen infecteren en ge\u00efnfecteerden genezen met haar hamer."
 	},
 	{
-		"key": "When an infected dies, he may re-spawn near her.",
+		"key": "When an infected dies, it may respawn near the Witch.",
 		"value": "Wanneer een ge\u00efnfecteerde sterft is er een kans dat hij herleeft in de buurt van haar."
 	},
 	{

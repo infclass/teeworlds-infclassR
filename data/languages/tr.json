@@ -261,7 +261,7 @@
 		"value": "10 saniye sonra 2 oyuncu zombiye d\u00f6n\u00fc\u015f\u00fcr."
 	},
 	{
-		"key": "The goal for humans is to survive until the army clean the map.",
+		"key": "The goal for humans is to survive until the army cleans the map.",
 		"value": "\u0130nsanlar\u0131n g\u00f6revi, ordu haritay\u0131 temizleyene kadar hayatta kalmakt\u0131r."
 	},
 	{
@@ -285,7 +285,7 @@
 		"value": "M\u00fchendis, zombileri uzak tutmak i\u00e7in \u00e7ekiciyle duvar \u00f6rebilir."
 	},
 	{
-		"key": "When an infected touch the wall, he dies.",
+		"key": "When an infected touches the wall, it dies.",
 		"value": "Duvara dokunan zombiler \u00f6l\u00fcr."
 	},
 	{
@@ -319,11 +319,11 @@
 		"other": "May\u0131nlar oyuncu ba\u015f\u0131 ayn\u0131 anda {int:NumMines} adet ile s\u0131n\u0131rl\u0131d\u0131r.",
 	},
 	{
-		"key": "He has also grenades that teleport him.",
+		"key": "Scientist has also grenades that teleport them.",
 		"value": "Ayr\u0131ca onu \u0131\u015f\u0131nlayan bombalar\u0131 vard\u0131r."
 	},
 	{
-		"key": "The biologist has a shotgun with bouncing bullets and can create a spring laser trap by shooting with his rifle.",
+		"key": "The Biologist has a shotgun with bouncing bullets and can create a spring laser trap by shooting with the laser rifle.",
 		"value": "Biyologlar\u0131n seken mermilere sahip pompal\u0131lar\u0131 vard\u0131r ve t\u00fcfekleriyle ate\u015f ederek lazer tuza\u011f\u0131 kurabilirler."
 	},
 	{
@@ -331,7 +331,7 @@
 		"value": "Doktorlar, \u00e7eki\u00e7leriyle z\u0131rh vererek insanlar\u0131 koruyabilirler."
 	},
 	{
-		"key": "He has also a powerful shotgun that can pullback infected.",
+		"key": "Medic also has a powerful shotgun that can knock back infected.",
 		"value": "Ayr\u0131ca zombileri itekleyen g\u00fc\u00e7l\u00fc pompal\u0131lar\u0131 vard\u0131r."
 	},
 	{
@@ -360,7 +360,7 @@
 		"other": "\u00c7ekicinin yerine bir katana vard\u0131r, yere dokunmadan \u00f6nce {int:NinjaJump} kez z\u0131plamas\u0131n\u0131 sa\u011flar.",
 	},
 	{
-		"key": "The Mercenary fly in air using his machine gun.",
+		"key": "he Mercenary can fly in the air using their machine gun.",
 		"value": "Paral\u0131 asker, makineli t\u00fcfe\u011fini kullanarak havada u\u00e7abilir."
 	},
 	{
@@ -401,7 +401,7 @@
 		"value": "Patlamaya temas eden b\u00fct\u00fcn insanlar zombiye d\u00f6n\u00fc\u015f\u00fcr."
 	},
 	{
-		"key": "He can also inflict 1 damage point per second by hooking humans.",
+		"key": "It can also inflict 1 damage point per second by hooking humans.",
 		"value": "Ayr\u0131ca kancayla insanlar\u0131 tuttu\u011fu her saniye 1 puan zarar verir."
 	},
 	{
@@ -413,7 +413,7 @@
 		"value": "Hayalet, insanlar\u0131 d\u00f6n\u00fc\u015ft\u00fcrebilir ve \u00e7ekiciyle vurarak zombileri iyile\u015ftirebilir."
 	},
 	{
-		"key": "He is invisible, except if a human is near him, if he takes a damage or if he use his hammer.",
+		"key": "It is invisible, unless a human is nearby, it takes damage or it uses the hammer.",
 		"value": "Yak\u0131n\u0131nda bir insan bulunmad\u0131\u011f\u0131, hasar almad\u0131\u011f\u0131 veya \u00e7ekicini kullanmad\u0131\u011f\u0131 s\u00fcrece g\u00f6r\u00fcnmezdir."
 	},
 	{
@@ -437,11 +437,11 @@
 		"value": "Gulyabani, insanlar\u0131 d\u00f6n\u00fc\u015ft\u00fcrebilir ve \u00e7ekiciyle vurarak zombileri iyile\u015ftirebilir."
 	},
 	{
-		"key": "He can devour all that has died close to him, which makes him stronger, faster and more resistant.",
+		"key": "It can devour anything that has died nearby, which makes it stronger, faster and more resistant.",
 		"value": "Yak\u0131n\u0131nda \u00f6len herkesi yiyerek daha g\u00fc\u00e7l\u00fc, h\u0131zl\u0131 ve dayan\u0131kl\u0131 olur."
 	},
 	{
-		"key": "Thereupon he digests his fodder bit by bit going back to his normal state, and besides, death bereaves him of his nourishment.",
+		"key": "It digests the fodder over time, going back to the normal state. Some nourishment is also lost on death.",
 		"value": "Yediklerini par\u00e7a par\u00e7a sindirerek normal haline d\u00f6ner, ayr\u0131ca \u00f6lmek de yediklerini ondan al\u0131r."
 	},
 	{
@@ -461,11 +461,11 @@
 		"value": "\u00d6l\u00fcms\u00fcz, insanlara bula\u015fabilir ve \u00e7ekici ile bula\u015f\u0131c\u0131y\u0131 iyile\u015ftirebilir."
 	},
 	{
-		"key": "Instead of dying, he freezes during 10 seconds.",
+		"key": "Instead of dying, it freezes for 10 seconds.",
 		"value": "\u00d6lmek yerine 10 saniyeli\u011fine donar."
 	},
 	{
-		"key": "If an infected heals him, the freeze effect disappear.",
+		"key": "If an infected heals it, the freeze effect disappears.",
 		"value": "E\u011fer bir zombi onu iyile\u015ftirirse, donma etkisi ortadan kalkar."
 	},
 	{
@@ -473,7 +473,7 @@
 		"value": "Cad\u0131, insanlar\u0131 d\u00f6n\u00fc\u015ft\u00fcrebilir ve \u00e7ekiciyle vurarak zombileri iyile\u015ftirebilir."
 	},
 	{
-		"key": "When an infected dies, he may re-spawn near her.",
+		"key": "When an infected dies, it may respawn near the Witch.",
 		"value": "\u00d6len baz\u0131 zombiler yan\u0131nda do\u011far."
 	},
 	{

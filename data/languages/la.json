@@ -261,7 +261,7 @@
 		"value": "Post secundas 10, arenarii duo inficiuntur."
 	},
 	{
-		"key": "The goal for humans is to survive until the army clean the map.",
+		"key": "The goal for humans is to survive until the army cleans the map.",
 		"value": "Finis hominum est supervivere, donec militia arenam repurgat."
 	},
 	{
@@ -285,7 +285,7 @@
 		"value": "Clavicarius malleo valla infectos inhibendes exstruere potest."
 	},
 	{
-		"key": "When an infected touch the wall, he dies.",
+		"key": "When an infected touches the wall, it dies.",
 		"value": "Quum infectus vallum tangit, tum moritur."
 	},
 	{
@@ -319,11 +319,11 @@
 		"other": "Minae terminatae sunt, ut {int:NumMines} arenario quoicumque quandocumque exstent.",
 	},
 	{
-		"key": "He has also grenades that teleport him.",
+		"key": "Scientist has also grenades that teleport them.",
 		"value": "Etiam granatas quae eum teleportant habet."
 	},
 	{
-		"key": "The biologist has a shotgun with bouncing bullets and can create a spring laser trap by shooting with his rifle.",
+		"key": "The Biologist has a shotgun with bouncing bullets and can create a spring laser trap by shooting with the laser rifle.",
 		"value": "Biologus sclopetum dispergens cum missilibus reflectentibus habet laqueumque sclopeto laserico struere potest."
 	},
 	{
@@ -331,7 +331,7 @@
 		"value": "Medicus malleo tegumina disponens homines tuerier potest."
 	},
 	{
-		"key": "He has also a powerful shotgun that can pullback infected.",
+		"key": "Medic also has a powerful shotgun that can knock back infected.",
 		"value": "Etiam sibi sclopetum dispergens habet potens, quod infectos deicere pollet."
 	},
 	{
@@ -360,7 +360,7 @@
 		"other": "Malleus eius katana permutatus. Quo in manus pervenit, ut insultet {int:NinjaJump} temporibus, antequam solum contingit.",
 	},
 	{
-		"key": "The Mercenary fly in air using his machine gun.",
+		"key": "he Mercenary can fly in the air using their machine gun.",
 		"value": "Mercennarius sclopeto polybolico in aere volare potest."
 	},
 	{
@@ -401,7 +401,7 @@
 		"value": "Homines toti explosione affecti inficiuntur."
 	},
 	{
-		"key": "He can also inflict 1 damage point per second by hooking humans.",
+		"key": "It can also inflict 1 damage point per second by hooking humans.",
 		"value": "Plagam 1 quoque per secundam unco infligere potest."
 	},
 	{
@@ -413,7 +413,7 @@
 		"value": "Larua malleo homines inficere infectosque sanare potest."
 	},
 	{
-		"key": "He is invisible, except if a human is near him, if he takes a damage or if he use his hammer.",
+		"key": "It is invisible, unless a human is nearby, it takes damage or it uses the hammer.",
 		"value": "Latens est, donec homo proxumus sit, pugnam experiatur aut malleo utatur."
 	},
 	{
@@ -437,11 +437,11 @@
 		"value": "\u0120\u016bl malleo homines inficere infectosque sanare potest."
 	},
 	{
-		"key": "He can devour all that has died close to him, which makes him stronger, faster and more resistant.",
+		"key": "It can devour anything that has died nearby, which makes it stronger, faster and more resistant.",
 		"value": "Omnia circa eum mortua devorare potest, quo fortior, celerior firmiorque fiat."
 	},
 	{
-		"key": "Thereupon he digests his fodder bit by bit going back to his normal state, and besides, death bereaves him of his nourishment.",
+		"key": "It digests the fodder over time, going back to the normal state. Some nourishment is also lost on death.",
 		"value": "Exinde pabulum digerit sensim ad statum vulgarem revolviens, ultro ei letum alimenta detrahit."
 	},
 	{
@@ -461,11 +461,11 @@
 		"value": "Immortalis malleo homines inficere infectosque sanare potest."
 	},
 	{
-		"key": "Instead of dying, he freezes during 10 seconds.",
+		"key": "Instead of dying, it freezes for 10 seconds.",
 		"value": "Pro morte secundas 10 gelatur."
 	},
 	{
-		"key": "If an infected heals him, the freeze effect disappear.",
+		"key": "If an infected heals it, the freeze effect disappears.",
 		"value": "Quando infectus eum sanat, effectus gelationis decedit."
 	},
 	{
@@ -473,7 +473,7 @@
 		"value": "Malefica malleo homines inficere infectosque sanare potest."
 	},
 	{
-		"key": "When an infected dies, he may re-spawn near her.",
+		"key": "When an infected dies, it may respawn near the Witch.",
 		"value": "Infectus mortuus iuxta eam ab inferis exsistere potest."
 	},
 	{

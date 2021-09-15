@@ -261,7 +261,7 @@
 		"value": "Nach 10 Sekunden werden zwei Spieler von der Seuche erfa\u00dft."
 	},
 	{
-		"key": "The goal for humans is to survive until the army clean the map.",
+		"key": "The goal for humans is to survive until the army cleans the map.",
 		"value": "Das Ziel der \u00dcberlebenden ist es, Ansteckung zu vermeiden, bis die Armee eintrifft und die Karte bereinigt."
 	},
 	{
@@ -285,7 +285,7 @@
 		"value": "Der Ingenieur kann W\u00e4nde aus Licht (Walls) aufbauen, die Erkrankte bei Ber\u00fchrung t\u00f6ten."
 	},
 	{
-		"key": "When an infected touch the wall, he dies.",
+		"key": "When an infected touches the wall, it dies.",
 		"value": "Wenn ein Erkrankter eine Wall ber\u00fchrt, f\u00fchrt dies zu dessen Tode."
 	},
 	{
@@ -319,19 +319,19 @@
 		"other": "Es ist f\u00fcr den Spieler nicht m\u00f6glich, mehr als {int:NumMines} Minen zur selben Zeit gesetzt zu haben.",
 	},
 	{
-		"key": "He has also grenades that teleport him.",
+		"key": "Scientist has also grenades that teleport them.",
 		"value": "Er besitzt dar\u00fcberhinaus Granaten, die ihn teleportieren."
 	},
 	{
-		"key": "The biologist has a shotgun with bouncing bullets and can create a spring laser trap by shooting with his rifle.",
+		"key": "The Biologist has a shotgun with bouncing bullets and can create a spring laser trap by shooting with the laser rifle.",
 		"value": "Der Biologe hat eine Schrotflinte mit abprallenden Kugeln und kann eine Selbstschu\u00dflaserfalle durch Schu\u00df mit seinem Gewehr errichten."
 	},
 	{
-		"key": "The Medic can protect humans with his hammer by giving them armor.",
+		"key": "The Medic can protect humans with the hammer by giving them armor.",
 		"value": "Der Arzt beschirmt \u00dcberlebende, indem er sie mit dem Hammer schl\u00e4gt, wodurch ihnen Schilde zuwachsen."
 	},
 	{
-		"key": "He has also a powerful shotgun that can pullback infected.",
+		"key": "Medic also has a powerful shotgun that can knock back infected.",
 		"value": "Er hat als Waffe eine starke Schrotflinte, mit der er Erkrankte zur\u00fcckschie\u00dfen kann."
 	},
 	{
@@ -360,7 +360,7 @@
 		"other": "Sein Hammer ist durch ein japanisches Langschwert ersetzt, welches seinem Tr\u00e4ger die F\u00e4higkeit verleiht, {int:NinjaJump}mal durch die Luft zu sto\u00dfen, ehe er wieder den Boden ber\u00fchren mu\u00df.",
 	},
 	{
-		"key": "The Mercenary fly in air using his machine gun.",
+		"key": "he Mercenary can fly in the air using their machine gun.",
 		"value": "Der S\u00f6ldner ist mit einem Maschinengewehr ausgestattet, dessen R\u00fccksto\u00df ihn in die L\u00fcfte erhebt."
 	},
 	{
@@ -401,7 +401,7 @@
 		"value": "Alle \u00dcberlebenden, die von der Sprengung etwas abbekommen, werden angesteckt."
 	},
 	{
-		"key": "He can also inflict 1 damage point per second by hooking humans.",
+		"key": "It can also inflict 1 damage point per second by hooking humans.",
 		"value": "Au\u00dferdem kann er einem \u00dcberlebenden einen Schadenspunkt f\u00fcr jede Sekunde, in der er sich an ihn klammert, zuf\u00fcgen."
 	},
 	{
@@ -413,7 +413,7 @@
 		"value": "Der Geist kann unter Verwendung seines Hammers entweder Erkrankte heilen oder \u00dcberlebende anstecken. "
 	},
 	{
-		"key": "He is invisible, except if a human is near him, if he takes a damage or if he use his hammer.",
+		"key": "It is invisible, unless a human is nearby, it takes damage or it uses the hammer.",
 		"value": "Solange sich kein \u00dcberlebender in seiner N\u00e4he befindet, ihm Schaden zugef\u00fcgt wird oder er seinen Hammer nutzt, ist er f\u00fcr \u00dcberlebende unsichtbar."
 	},
 	{
@@ -437,11 +437,11 @@
 		"value": "Der \u0120ul kann unter Verwendung seines Hammers entweder Erkrankte heilen oder \u00dcberlebende anstecken. "
 	},
 	{
-		"key": "He can devour all that has died close to him, which makes him stronger, faster and more resistant.",
+		"key": "It can devour anything that has died nearby, which makes it stronger, faster and more resistant.",
 		"value": "Er hat die F\u00e4higkeit, alles zu verschlingen, was in seiner N\u00e4he gestorben ist \u2013 das macht ihn st\u00e4rker, schneller und widerst\u00e4ndiger."
 	},
 	{
-		"key": "Thereupon he digests his fodder bit by bit going back to his normal state, and besides, death bereaves him of his nourishment.",
+		"key": "It digests the fodder over time, going back to the normal state. Some nourishment is also lost on death.",
 		"value": "Daraufhin verdaut er sein Futter nachgerade, zu seinem n\u00fcchternen Zustande zur\u00fcckkehrend, und \u00fcberdies erleichtert ihn der Tod seiner S\u00e4ttigung."
 	},
 	{
@@ -461,11 +461,11 @@
 		"value": "Der Untote kann unter Verwendung seines Hammers entweder Erkrankte heilen oder \u00dcberlebende anstecken."
 	},
 	{
-		"key": "Instead of dying, he freezes during 10 seconds.",
+		"key": "Instead of dying, it freezes for 10 seconds.",
 		"value": "Anstatt zu sterben, friert er f\u00fcr zehn Sekunden ein."
 	},
 	{
-		"key": "If an infected heals him, the freeze effect disappear.",
+		"key": "If an infected heals it, the freeze effect disappears.",
 		"value": "Wird er von einem Erkrankten geh\u00e4mmert, taut er sofort wieder auf."
 	},
 	{
@@ -473,7 +473,7 @@
 		"value": "Die Hexe kann unter Verwendung ihres Hammers entweder Erkrankte heilen oder \u00dcberlebende anstecken."
 	},
 	{
-		"key": "When an infected dies, he may re-spawn near her.",
+		"key": "When an infected dies, it may respawn near the Witch.",
 		"value": "Wenn ein Erkrankter stirbt, besteht eine Aussicht darauf, da\u00df er neben ihr wieder zum Leben erwacht."
 	},
 	{

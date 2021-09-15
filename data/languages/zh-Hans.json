@@ -260,7 +260,7 @@
 		"value": "10 \u79d2\u540e\uff0c\u6709\u4e24\u540d\u73a9\u5bb6\u4f1a\u88ab\u611f\u67d3\u3002"
 	},
 	{
-		"key": "The goal for humans is to survive until the army clean the map.",
+		"key": "The goal for humans is to survive until the army cleans the map.",
 		"value": "\u4eba\u7c7b\u76ee\u6807\u662f\u575a\u6301\u5230\u63f4\u519b\u5230\u6765\u3002"
 	},
 	{
@@ -284,7 +284,7 @@
 		"value": "\u5de5\u7a0b\u5e08\u53ef\u4ee5\u7528\u9524\u5b50\u521b\u5efa\u6fc0\u5149\u5899\uff0c\u963b\u6321\u88ab\u611f\u67d3\u8005\u3002"
 	},
 	{
-		"key": "When an infected touch the wall, he dies.",
+		"key": "When an infected touches the wall, it dies.",
 		"value": "\u5f53\u53d7\u611f\u67d3\u8005\u78b0\u5230\u6fc0\u5149\u5899\u65f6\uff0cBoom\uff01"
 	},
 	{
@@ -316,11 +316,11 @@
 		"other": "\u6bcf\u4e2a\u73a9\u5bb6\u540c\u65f6\u53ef\u4f7f\u7528 {int:NumMines} \u4e2a\u5730\u96f7\u3002",
 	},
 	{
-		"key": "He has also grenades that teleport him.",
+		"key": "Scientist has also grenades that teleport them.",
 		"value": "\u4e5f\u53ef\u4ee5\u7528\u69b4\u5f39\u67aa\u77ac\u79fb\u3002"
 	},
 	{
-		"key": "The biologist has a shotgun with bouncing bullets and can create a spring laser trap by shooting with his rifle.",
+		"key": "The Biologist has a shotgun with bouncing bullets and can create a spring laser trap by shooting with the laser rifle.",
 		"value": "\u751f\u7269\u5b66\u5bb6\u53ef\u4ee5\u7528\u9730\u5f39\u67aa\u5c04\u51fa\u8df3\u5f39\uff0c\u4e5f\u53ef\u4ee5\u7528\u6fc0\u5149\u67aa\u8bbe\u7f6e\u5f39\u7c27\u6fc0\u5149\u9677\u9631\u3002"
 	},
 	{
@@ -328,7 +328,7 @@
 		"value": "\u533b\u7597\u5175\u53ef\u4ee5\u7528\u4ed6\u7684\u9524\u5b50\u4e3a\u5176\u4ed6\u4eba\u7c7b\u589e\u52a0\u62a4\u7532\u3002"
 	},
 	{
-		"key": "He has also a powerful shotgun that can pullback infected.",
+		"key": "Medic also has a powerful shotgun that can knock back infected.",
 		"value": "\u4ed6\u6709\u4e00\u628a\u5f3a\u529b\u7684\u9730\u5f39\u67aa\u6765\u51fb\u9000\u88ab\u611f\u67d3\u8005\u3002"
 	},
 	{
@@ -356,7 +356,7 @@
 		"other": "\u4ed6\u7684\u9524\u5b50\u88ab\u6b66\u58eb\u5200\u53d6\u4ee3\uff0c\u5141\u8bb8\u4ed6\u89e6\u5730\u540e\u51b2\u523a {int:NinjaJump} \u6b21\u3002",
 	},
 	{
-		"key": "The Mercenary fly in air using his machine gun.",
+		"key": "he Mercenary can fly in the air using their machine gun.",
 		"value": "\u96c7\u4f63\u5175\u53ef\u4ee5\u7528\u673a\u67aa\u98de\u884c\u3002"
 	},
 	{
@@ -396,7 +396,7 @@
 		"value": "\u88ab\u70b8\u5230\u7684\u4eba\u90fd\u4f1a\u88ab\u611f\u67d3\u3002"
 	},
 	{
-		"key": "He can also inflict 1 damage point per second by hooking humans.",
+		"key": "It can also inflict 1 damage point per second by hooking humans.",
 		"value": "\u52fe\u4f4f\u6b63\u5e38\u4eba\u65f6\u80fd\u9020\u6210\u6bcf\u79d2 1 \u70b9\u4f24\u5bb3\u3002"
 	},
 	{
@@ -408,7 +408,7 @@
 		"value": "\u5e7d\u7075\u53ef\u4ee5\u7528\u9524\u5b50\u611f\u67d3\u4eba\u7c7b\uff0c\u6216\u6cbb\u7597\u88ab\u611f\u67d3\u8005\u3002"
 	},
 	{
-		"key": "He is invisible, except if a human is near him, if he takes a damage or if he use his hammer.",
+		"key": "It is invisible, unless a human is nearby, it takes damage or it uses the hammer.",
 		"value": "\u4ed6\u662f\u9690\u8eab\u7684\uff0c\u5f53\u4eba\u7c7b\u63a5\u8fd1\u4ed6\u3001\u53d7\u5230\u4f24\u5bb3\u3001\u4f7f\u7528\u9524\u5b50\u65f6\u4f1a\u73b0\u8eab\u3002"
 	},
 	{
@@ -432,11 +432,11 @@
 		"value": "\u98df\u5c38\u9b3c\u53ef\u4ee5\u7528\u9524\u5b50\u611f\u67d3\u4eba\u7c7b\uff0c\u6216\u6cbb\u7597\u88ab\u611f\u67d3\u8005\u3002"
 	},
 	{
-		"key": "He can devour all that has died close to him, which makes him stronger, faster and more resistant.",
+		"key": "It can devour anything that has died nearby, which makes it stronger, faster and more resistant.",
 		"value": "\u4ed6\u53ef\u4ee5\u541e\u98df\u4ed6\u9644\u8fd1\u7684\u6fd2\u6b7b\u8005\uff0c\u5e76\u4f1a\u4f7f\u4ed6\u66f4\u5feb\uff0c\u66f4\u58ee\uff0c\u66f4\u5f3a\uff01"
 	},
 	{
-		"key": "Thereupon he digests his fodder bit by bit going back to his normal state, and besides, death bereaves him of his nourishment.",
+		"key": "It digests the fodder over time, going back to the normal state. Some nourishment is also lost on death.",
 		"value": "\u4ed6\u4f1a\u4e0d\u65ad\u6d88\u8017\u8425\u517b\u503c\u56de\u5230\u6b63\u5e38\u72b6\u6001\uff0c\u6b64\u5916\uff0c\u6b7b\u4ea1\u4f1a\u6d88\u8017\u6240\u6709\u8425\u517b\u503c\u3002"
 	},
 	{
@@ -456,11 +456,11 @@
 		"value": "\u4e0d\u6b7b\u65cf\u53ef\u4ee5\u7528\u9524\u5b50\u611f\u67d3\u4eba\u7c7b\uff0c\u6216\u6cbb\u7597\u88ab\u611f\u67d3\u8005\u3002"
 	},
 	{
-		"key": "Instead of dying, he freezes during 10 seconds.",
+		"key": "Instead of dying, it freezes for 10 seconds.",
 		"value": "\u4ed6\u4e0d\u4f1a\u6b7b\u4ea1\uff0c\u4f46\u5f53\u4ed6 HP \u4e3a 0 \u65f6\u4f1a\u88ab\u51bb\u7ed3 10 \u79d2\u3002"
 	},
 	{
-		"key": "If an infected heals him, the freeze effect disappear.",
+		"key": "If an infected heals it, the freeze effect disappears.",
 		"value": "\u5982\u679c\u88ab\u611f\u67d3\u8005\u6cbb\u7597\u4ed6\uff0c\u51bb\u7ed3\u6548\u679c\u6d88\u5931\u3002"
 	},
 	{
@@ -468,7 +468,7 @@
 		"value": "\u5973\u5deb\u53ef\u4ee5\u7528\u9524\u5b50\u611f\u67d3\u4eba\u7c7b\uff0c\u6216\u6cbb\u7597\u88ab\u611f\u67d3\u8005\u3002"
 	},
 	{
-		"key": "When an infected dies, he may re-spawn near her.",
+		"key": "When an infected dies, it may respawn near the Witch.",
 		"value": "\u5f53\u88ab\u611f\u67d3\u8005\u6b7b\u4ea1\u65f6\uff0c\u53ef\u80fd\u4f1a\u91cd\u751f\u5728\u5973\u5deb\u65c1\u8fb9\u3002"
 	},
 	{

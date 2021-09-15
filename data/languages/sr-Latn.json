@@ -262,7 +262,7 @@
 		"value": "10 sekundi posle, dva igra\u010da postanu zara\u017eena."
 	},
 	{
-		"key": "The goal for humans is to survive until the army clean the map.",
+		"key": "The goal for humans is to survive until the army cleans the map.",
 		"value": "Cilj za ljude je pre\u017eiveti sve dok vojska ne o\u010disti mapu."
 	},
 	{
@@ -286,7 +286,7 @@
 		"value": "In\u017eenjer mo\u017ee raditi zidove sa \u010deki\u0107em."
 	},
 	{
-		"key": "When an infected touch the wall, he dies.",
+		"key": "When an infected touches the wall, it dies.",
 		"value": "Kada zara\u017eeni dotakne zid, on umre."
 	},
 	{
@@ -322,11 +322,11 @@
 		"other": "Mine su ograni\u010dene na {int:NumMines} po igra\u010du u isto vreme.",
 	},
 	{
-		"key": "He has also grenades that teleport him.",
+		"key": "Scientist has also grenades that teleport them.",
 		"value": "Ima i granate koje ga teleportiraju."
 	},
 	{
-		"key": "The biologist has a shotgun with bouncing bullets and can create a spring laser trap by shooting with his rifle.",
+		"key": "The Biologist has a shotgun with bouncing bullets and can create a spring laser trap by shooting with the laser rifle.",
 		"value": "Biolog ima sa\u010dmaru sa mecima koji odska\u010du od zidova i mo\u017ee da stvori lasersku zamku uz pomo\u0107 svoje laserske pu\u0161ke."
 	},
 	{
@@ -334,7 +334,7 @@
 		"value": "Le\u010dnik mo\u017ee da da ljudima oklop pomo\u0107u svog \u010deki\u0107a."
 	},
 	{
-		"key": "He has also a powerful shotgun that can pullback infected.",
+		"key": "Medic also has a powerful shotgun that can knock back infected.",
 		"value": "Ima i sna\u017enu sa\u010dmaru koja odbacuje zara\u017eene."
 	},
 	{
@@ -364,7 +364,7 @@
 		"other": "Njegov \u010deki\u0107 je zamenjen katanom, mo\u017ee sko\u010diti {int:NinjaJump} puta pre nego padne.",
 	},
 	{
-		"key": "The Mercenary fly in air using his machine gun.",
+		"key": "he Mercenary can fly in the air using their machine gun.",
 		"value": "Pla\u0107enik leti vazduhom koriste\u0107i se machine gunom."
 	},
 	{
@@ -406,7 +406,7 @@
 		"value": "Svi ljudi zahva\u0107eni eksplozijom postanu zara\u017eeni."
 	},
 	{
-		"key": "He can also inflict 1 damage point per second by hooking humans.",
+		"key": "It can also inflict 1 damage point per second by hooking humans.",
 		"value": "Mo\u017ee da nanese 1 \u0161kodan bod po sekundi kada huka ljude."
 	},
 	{
@@ -418,7 +418,7 @@
 		"value": "Duh mo\u017ee da zarazi ljude i da le\u010di zara\u017eene svojim \u010deki\u0107em."
 	},
 	{
-		"key": "He is invisible, except if a human is near him, if he takes a damage or if he use his hammer.",
+		"key": "It is invisible, unless a human is nearby, it takes damage or it uses the hammer.",
 		"value": "Nevidljiv je, osim ako je \u010dovek blizu, ako primi udarac ili ako koristi \u010deki\u0107."
 	},
 	{
@@ -442,11 +442,11 @@
 		"value": "Zloduh mo\u017ee da zara\u017eava ljude i da le\u010di zara\u017eene svojim \u010deki\u0107em."
 	},
 	{
-		"key": "He can devour all that has died close to him, which makes him stronger, faster and more resistant.",
+		"key": "It can devour anything that has died nearby, which makes it stronger, faster and more resistant.",
 		"value": "On mo\u017ee da izjede sve \u0161to je umrlo blizu njega, \u0161to ga \u010dini sna\u017enijim, br\u017eim i otpornijim."
 	},
 	{
-		"key": "Thereupon he digests his fodder bit by bit going back to his normal state, and besides, death bereaves him of his nourishment.",
+		"key": "It digests the fodder over time, going back to the normal state. Some nourishment is also lost on death.",
 		"value": "Odmah nakon \u0161to svari svoju hranu malo pomalo vra\u0107a u svoje normalno stanje, i sem toga, smrt ucvili njega od svoje hrane."
 	},
 	{
@@ -466,11 +466,11 @@
 		"value": "Undead mo\u017ee da zarazi ljude i da le\u010di zara\u017eene svojim \u010deki\u0107em."
 	},
 	{
-		"key": "Instead of dying, he freezes during 10 seconds.",
+		"key": "Instead of dying, it freezes for 10 seconds.",
 		"value": "Umesto da umre, on se zaledi na 10 sekundi."
 	},
 	{
-		"key": "If an infected heals him, the freeze effect disappear.",
+		"key": "If an infected heals it, the freeze effect disappears.",
 		"value": "Ako ga zara\u017eeni izle\u010di, odledit \u0107e se."
 	},
 	{
@@ -478,7 +478,7 @@
 		"value": "Ve\u0161tica mo\u017ee da zarazi ljude i da le\u010di zara\u017eene svojim \u010deki\u0107em."
 	},
 	{
-		"key": "When an infected dies, he may re-spawn near her.",
+		"key": "When an infected dies, it may respawn near the Witch.",
 		"value": "Kada zara\u017eeni umre, ponovo \u0107e se stvoriti kod nje."
 	},
 	{

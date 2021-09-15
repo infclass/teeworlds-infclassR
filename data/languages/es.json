@@ -261,7 +261,7 @@
 		"value": "10 segundos despu\u00e9s, dos jugadores son infectados."
 	},
 	{
-		"key": "The goal for humans is to survive until the army clean the map.",
+		"key": "The goal for humans is to survive until the army cleans the map.",
 		"value": "El objetivo de los humanos es sobrevivir hasta que el ej\u00e9rcito limpie el mapa."
 	},
 	{
@@ -285,7 +285,7 @@
 		"value": "El Ingeniero puede crear barreras con su martillo para bloquear el paso de los infectados."
 	},
 	{
-		"key": "When an infected touch the wall, he dies.",
+		"key": "When an infected touches the wall, it dies.",
 		"value": "Cuando un infectado toca la barrera, este muere."
 	},
 	{
@@ -319,11 +319,11 @@
 		"other": "Las minas est\u00e1n limitadas a {int:NumMines} por jugador al mismo tiempo.",
 	},
 	{
-		"key": "He has also grenades that teleport him.",
+		"key": "Scientist has also grenades that teleport them.",
 		"value": "El tambi\u00e9n tiene granadas que lo teletransportan."
 	},
 	{
-		"key": "The biologist has a shotgun with bouncing bullets and can create a spring laser trap by shooting with his rifle.",
+		"key": "The Biologist has a shotgun with bouncing bullets and can create a spring laser trap by shooting with the laser rifle.",
 		"value": "El bi\u00f3logo tiene una escopeta con bolas rebotandas y puede erigir trampas l\u00e1ser con su f\u00fasil."
 	},
 	{
@@ -331,7 +331,7 @@
 		"value": "El M\u00e9dico puede proteger a los humanos con su martillo d\u00e1ndoles armadura."
 	},
 	{
-		"key": "He has also a powerful shotgun that can pullback infected.",
+		"key": "Medic also has a powerful shotgun that can knock back infected.",
 		"value": "Tambi\u00e9n posee una poderosa escopeta capaz de hacer retroceder a los infectados."
 	},
 	{
@@ -360,7 +360,7 @@
 		"other": "Su martillo ha sido reemplazado por una katana, permiti\u00e9ndole saltar {int:NinjaJump} veces antes de tocar el suelo.",
 	},
 	{
-		"key": "The Mercenary fly in air using his machine gun.",
+		"key": "he Mercenary can fly in the air using their machine gun.",
 		"value": "El mercenario vuela usando su metralleta."
 	},
 	{
@@ -401,7 +401,7 @@
 		"value": "Todos los humanos afectados por la explosi\u00f3n son infectados."
 	},
 	{
-		"key": "He can also inflict 1 damage point per second by hooking humans.",
+		"key": "It can also inflict 1 damage point per second by hooking humans.",
 		"value": "Tambi\u00e9n puede infligir 1 punto de da\u00f1o por segundo al enganchar a humanos."
 	},
 	{
@@ -413,7 +413,7 @@
 		"value": "El Fantasma puede infectar a humanos y curar a otros infectados con su martillo."
 	},
 	{
-		"key": "He is invisible, except if a human is near him, if he takes a damage or if he use his hammer.",
+		"key": "It is invisible, unless a human is nearby, it takes damage or it uses the hammer.",
 		"value": "\u00c9l es invisible, excepto si un humano esta cerca de \u00e9l, si le infligen da\u00f1o o si usa su martillo."
 	},
 	{
@@ -437,11 +437,11 @@
 		"value": "El Gul puede infectar a humanos y curar a otros infectados con su martillo."
 	},
 	{
-		"key": "He can devour all that has died close to him, which makes him stronger, faster and more resistant.",
+		"key": "It can devour anything that has died nearby, which makes it stronger, faster and more resistant.",
 		"value": "Puede devorar todo que ha muerto cerca de \u00e9l, lo que lo hace m\u00e1s vigoroso, m\u00e1s r\u00e1pido y m\u00e1s resistente."
 	},
 	{
-		"key": "Thereupon he digests his fodder bit by bit going back to his normal state, and besides, death bereaves him of his nourishment.",
+		"key": "It digests the fodder over time, going back to the normal state. Some nourishment is also lost on death.",
 		"value": "Seguidamente digiere su forraje poco a poco volviendo a su estado normal, y aparte de eso le quita alimento el fallecer."
 	},
 	{
@@ -461,11 +461,11 @@
 		"value": "El Muerto viviente puede infectar a humanos y curar a otros infectados con su martillo."
 	},
 	{
-		"key": "Instead of dying, he freezes during 10 seconds.",
+		"key": "Instead of dying, it freezes for 10 seconds.",
 		"value": "En vez de morir, se queda congelado 10 segundos."
 	},
 	{
-		"key": "If an infected heals him, the freeze effect disappear.",
+		"key": "If an infected heals it, the freeze effect disappears.",
 		"value": "Si un infectado lo cura, el efecto de congelaci\u00f3n desaparece."
 	},
 	{
@@ -473,7 +473,7 @@
 		"value": "La Bruja puede infectar a humanos y curar a otros infectados con su martillo."
 	},
 	{
-		"key": "When an infected dies, he may re-spawn near her.",
+		"key": "When an infected dies, it may respawn near the Witch.",
 		"value": "Cuando un infectado muere, este puede renacer cerca suyo."
 	},
 	{
