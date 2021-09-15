@@ -1809,10 +1809,6 @@ void CInfClassCharacter::HandleHookDraining()
 					Rate = 0.5f;
 					Damage = g_Config.m_InfSmokerHookDamage;
 				}
-				else if(GetPlayerClass() == PLAYERCLASS_GHOUL)
-				{
-					Rate = 0.56f + 0.44f * (1.0f-m_pClass->GetGhoulPercent());
-				}
 
 				if(m_HookDmgTick + Server()->TickSpeed()*Rate < Server()->Tick())
 				{

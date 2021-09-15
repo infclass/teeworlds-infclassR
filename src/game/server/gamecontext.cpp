@@ -3791,6 +3791,8 @@ bool CGameContext::ConHelp(IConsole::IResult *pResult, void *pUserData)
 		pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("He can devour all that has died close to him, which makes him stronger, faster and more resistant."), NULL);
 		Buffer.append("\n\n");
 		pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("Thereupon it digests the fodder bit by bit going back to the normal state, and besides, death bereaves him of the nourishment."), NULL);
+		Buffer.append("\n\n");
+		pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("It can also inflict 1 damage point per second by hooking humans."), NULL);
 
 		pSelf->SendMOTD(ClientID, Buffer.buffer());
 	}
