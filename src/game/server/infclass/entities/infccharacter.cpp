@@ -2394,7 +2394,10 @@ void CInfClassCharacter::GrantSpawnProtection()
 	if(m_ProtectionTick <= 0)
 	{
 		m_ProtectionTick = Server()->TickSpeed() * g_Config.m_InfSpawnProtectionTime;
-		SetEmote(EMOTE_SURPRISE, Server()->Tick() + m_ProtectionTick);
+		if(!IsFrozen())
+		{
+			SetEmote(EMOTE_SURPRISE, Server()->Tick() + m_ProtectionTick);
+		}
 	}
 }
 
