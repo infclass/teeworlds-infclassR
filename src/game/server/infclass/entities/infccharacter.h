@@ -124,6 +124,7 @@ public:
 	bool IsInvisible() const;
 	bool IsInvincible() const; // Invincible here means "ignores all damage"
 	bool HasHallucination() const;
+	FREEZEREASON GetFreezeReason() const { return m_FreezeReason; }
 
 	float WebHookLength() const;
 

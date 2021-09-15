@@ -2408,6 +2408,12 @@ void CInfClassCharacter::PreCoreTick()
 
 	if(IsFrozen())
 	{
+		if(m_FrozenTime % Server()->TickSpeed() == Server()->TickSpeed() - 1)
+		{
+			int FreezeSec = 1+(m_FrozenTime/Server()->TickSpeed());
+			GameServer()->CreateDamageInd(m_Pos, 0, FreezeSec);
+		}
+
 		ResetMovementsInput();
 	}
 
