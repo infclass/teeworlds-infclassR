@@ -409,11 +409,11 @@
 		"value": "Avc\u0131, insanlar\u0131 d\u00f6n\u00fc\u015ft\u00fcrebilir ve \u00e7ekiciyle vurarak zombileri iyile\u015ftirebilir."
 	},
 	{
-		"key": "The Ghost can infect humans and heal infected with his hammer.",
+		"key": "The Ghost can infect humans and heal infected with the hammer.",
 		"value": "Hayalet, insanlar\u0131 d\u00f6n\u00fc\u015ft\u00fcrebilir ve \u00e7ekiciyle vurarak zombileri iyile\u015ftirebilir."
 	},
 	{
-		"key": "It is invisible, unless a human is nearby, it takes damage or it uses the hammer.",
+		"key": "It is invisible, unless a human is nearby, it takes damage, or it uses the hammer.",
 		"value": "Yak\u0131n\u0131nda bir insan bulunmad\u0131\u011f\u0131, hasar almad\u0131\u011f\u0131 veya \u00e7ekicini kullanmad\u0131\u011f\u0131 s\u00fcrece g\u00f6r\u00fcnmezdir."
 	},
 	{

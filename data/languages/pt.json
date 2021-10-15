@@ -409,11 +409,11 @@
 		"value": "O Ca\u00e7ador pode infectar humanos e curar infectados com seu martelo."
 	},
 	{
-		"key": "The Ghost can infect humans and heal infected with his hammer.",
+		"key": "The Ghost can infect humans and heal infected with the hammer.",
 		"value": "O Fantasma pode infectar humanos e curar infectados com seu martelo."
 	},
 	{
-		"key": "It is invisible, unless a human is nearby, it takes damage or it uses the hammer.",
+		"key": "It is invisible, unless a human is nearby, it takes damage, or it uses the hammer.",
 		"value": "Ele \u00e9 invis\u00edvel, exceto se um humano estiver pr\u00f3ximo a ele, se ele tomar dano ou se ele usar seu martelo. "
 	},
 	{

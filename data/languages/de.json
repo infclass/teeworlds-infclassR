@@ -409,11 +409,11 @@
 		"value": "Der J\u00e4ger kann kann unter Verwendung seines Hammers entweder Erkrankte heilen oder \u00dcberlebende anstecken."
 	},
 	{
-		"key": "The Ghost can infect humans and heal infected with his hammer.",
+		"key": "The Ghost can infect humans and heal infected with the hammer.",
 		"value": "Der Geist kann unter Verwendung seines Hammers entweder Erkrankte heilen oder \u00dcberlebende anstecken. "
 	},
 	{
-		"key": "It is invisible, unless a human is nearby, it takes damage or it uses the hammer.",
+		"key": "It is invisible, unless a human is nearby, it takes damage, or it uses the hammer.",
 		"value": "Solange sich kein \u00dcberlebender in seiner N\u00e4he befindet, ihm Schaden zugef\u00fcgt wird oder er seinen Hammer nutzt, ist er f\u00fcr \u00dcberlebende unsichtbar."
 	},
 	{

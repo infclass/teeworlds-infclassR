@@ -409,11 +409,11 @@
 		"value": "Les Chasseuses et les Chasseurs peuvent infecter les humain\u00b7e\u00b7s et soigner les infect\u00e9\u00b7e\u00b7s \u00e0 l'aide de leur marteau."
 	},
 	{
-		"key": "The Ghost can infect humans and heal infected with his hammer.",
+		"key": "The Ghost can infect humans and heal infected with the hammer.",
 		"value": "Les Fant\u00f4me peuvent infecter les humain\u00b7e\u00b7s et soigner les infect\u00e9\u00b7e\u00b7s \u00e0 l'aide de leur marteau."
 	},
 	{
-		"key": "It is invisible, unless a human is nearby, it takes damage or it uses the hammer.",
+		"key": "It is invisible, unless a human is nearby, it takes damage, or it uses the hammer.",
 		"value": "Illes sont invisibles, sauf si une humaine ou un humain est proche d'eux, si illes prennent un d\u00e9g\u00e2t, ou si illes utilisent leur marteau."
 	},
 	{

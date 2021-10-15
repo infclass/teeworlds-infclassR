@@ -409,11 +409,11 @@
 		"value": "A vad\u00e1sz kalap\u00e1cs\u00e1val megfert\u0151zhet embereket, \u00e9s gy\u00f3gy\u00edthat zombikat."
 	},
 	{
-		"key": "The Ghost can infect humans and heal infected with his hammer.",
+		"key": "The Ghost can infect humans and heal infected with the hammer.",
 		"value": "A szellem kalap\u00e1cs\u00e1val megfert\u0151zhet embereket, \u00e9s gy\u00f3gy\u00edthat zombikat."
 	},
 	{
-		"key": "It is invisible, unless a human is nearby, it takes damage or it uses the hammer.",
+		"key": "It is invisible, unless a human is nearby, it takes damage, or it uses the hammer.",
 		"value": "L\u00e1thatatlan az emberek sz\u00e1b\u00e1ra kiv\u00e9ve ha k\u00f6zel vannak hozz\u00e1, vagy kaszn\u00e1lja kalap\u00e1cs\u00e1t."
 	},
 	{

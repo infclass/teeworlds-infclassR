@@ -404,11 +404,11 @@
 		"value": "\u730e\u4eba\u53ef\u4ee5\u7528\u9524\u5b50\u611f\u67d3\u4eba\u7c7b\uff0c\u6216\u6cbb\u7597\u88ab\u611f\u67d3\u8005\u3002"
 	},
 	{
-		"key": "The Ghost can infect humans and heal infected with his hammer.",
+		"key": "The Ghost can infect humans and heal infected with the hammer.",
 		"value": "\u5e7d\u7075\u53ef\u4ee5\u7528\u9524\u5b50\u611f\u67d3\u4eba\u7c7b\uff0c\u6216\u6cbb\u7597\u88ab\u611f\u67d3\u8005\u3002"
 	},
 	{
-		"key": "It is invisible, unless a human is nearby, it takes damage or it uses the hammer.",
+		"key": "It is invisible, unless a human is nearby, it takes damage, or it uses the hammer.",
 		"value": "\u4ed6\u662f\u9690\u8eab\u7684\uff0c\u5f53\u4eba\u7c7b\u63a5\u8fd1\u4ed6\u3001\u53d7\u5230\u4f24\u5bb3\u3001\u4f7f\u7528\u9524\u5b50\u65f6\u4f1a\u73b0\u8eab\u3002"
 	},
 	{

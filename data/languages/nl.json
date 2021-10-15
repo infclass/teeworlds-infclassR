@@ -409,11 +409,11 @@
 		"value": "De jager kan mensen infecteren en mensen genezen met zijn hamer."
 	},
 	{
-		"key": "The Ghost can infect humans and heal infected with his hammer.",
+		"key": "The Ghost can infect humans and heal infected with the hammer.",
 		"value": "De geest kan mensen infecteren en mensen genezen met zijn hamer."
 	},
 	{
-		"key": "It is invisible, unless a human is nearby, it takes damage or it uses the hammer.",
+		"key": "It is invisible, unless a human is nearby, it takes damage, or it uses the hammer.",
 		"value": "Hij is onzichtbaar, behalve als er een mens in de buurt is, als hij schade krijgt of hij zijn hamer gebruikt."
 	},
 	{

@@ -386,11 +386,11 @@
 		"value": "lovec m\u016f\u017ee infikovat lidi a l\u00e9\u010dit naka\u017een\u00e9 sv\u00fdm kladivem."
 	},
 	{
-		"key": "The Ghost can infect humans and heal infected with his hammer.",
+		"key": "The Ghost can infect humans and heal infected with the hammer.",
 		"value": "Duch m\u016f\u017ee infikovat lidi a l\u00e9\u010dit naka\u017een\u00e9 sv\u00fdm kladivem."
 	},
 	{
-		"key": "It is invisible, unless a human is nearby, it takes damage or it uses the hammer.",
+		"key": "It is invisible, unless a human is nearby, it takes damage, or it uses the hammer.",
 		"value": "Je neviditeln\u00fd dokud neza\u00fato\u010d\u00ed, nebo dokud se neocitne p\u0159\u00edli\u0161 bl\u00edzko \u010dlov\u011bka."
 	},
 	{

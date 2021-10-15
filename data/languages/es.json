@@ -409,11 +409,11 @@
 		"value": "El Cazador puede infectar a humanos y curar a otros infectados con su martillo."
 	},
 	{
-		"key": "The Ghost can infect humans and heal infected with his hammer.",
+		"key": "The Ghost can infect humans and heal infected with the hammer.",
 		"value": "El Fantasma puede infectar a humanos y curar a otros infectados con su martillo."
 	},
 	{
-		"key": "It is invisible, unless a human is nearby, it takes damage or it uses the hammer.",
+		"key": "It is invisible, unless a human is nearby, it takes damage, or it uses the hammer.",
 		"value": "\u00c9l es invisible, excepto si un humano esta cerca de \u00e9l, si le infligen da\u00f1o o si usa su martillo."
 	},
 	{

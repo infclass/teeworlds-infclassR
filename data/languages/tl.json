@@ -409,11 +409,11 @@
 		"value": "Ang Hunter ay kayang makainfect ng humans at makagamot ng mga infected gamit ang kanyang hammer."
 	},
 	{
-		"key": "The Ghost can infect humans and heal infected with his hammer.",
+		"key": "The Ghost can infect humans and heal infected with the hammer.",
 		"value": "Ang Ghost ay kayang maka infect ng humans at makagamot ng mga infected gamit ang kanyang hammer."
 	},
 	{
-		"key": "It is invisible, unless a human is nearby, it takes damage or it uses the hammer.",
+		"key": "It is invisible, unless a human is nearby, it takes damage, or it uses the hammer.",
 		"value": "Siya ay hindi nakikita, except kung may malapit na tao sa kanya, o kung masaktan sya o kung ginamit niya ang kanyang hammer."
 	},
 	{

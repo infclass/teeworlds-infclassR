@@ -409,11 +409,11 @@
 		"value": "Venator malleo homines inficere infectosque sanare potest."
 	},
 	{
-		"key": "The Ghost can infect humans and heal infected with his hammer.",
+		"key": "The Ghost can infect humans and heal infected with the hammer.",
 		"value": "Larua malleo homines inficere infectosque sanare potest."
 	},
 	{
-		"key": "It is invisible, unless a human is nearby, it takes damage or it uses the hammer.",
+		"key": "It is invisible, unless a human is nearby, it takes damage, or it uses the hammer.",
 		"value": "Latens est, donec homo proxumus sit, pugnam experiatur aut malleo utatur."
 	},
 	{
