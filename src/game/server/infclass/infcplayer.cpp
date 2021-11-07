@@ -184,7 +184,13 @@ void CInfClassPlayer::SetClass(int newClass)
 		SetCharacterClass(new(m_ClientID) CInfClassInfected(this));
 	}
 
-	m_pInfcPlayerClass->SetCharacter(GetCharacter());
+	// Skip the SetCharacter() routine if the World ResetRequested because it
+	// means that the Character is going to be destroyed during this
+	// IGameServer::Tick() which also invalidates possible auto class selection.
+	if(!GameServer()->m_World.m_ResetRequested)
+	{
+		m_pInfcPlayerClass->SetCharacter(GetCharacter());
+	}
 	m_pInfcPlayerClass->OnPlayerClassChanged();
 }
 
