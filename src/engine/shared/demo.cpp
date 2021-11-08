@@ -81,14 +81,8 @@ int CDemoRecorder::Start(class IStorage *pStorage, class IConsole *pConsole, con
 	str_copy(Header.m_aNetversion, pNetVersion, sizeof(Header.m_aNetversion));
 	str_copy(Header.m_aMapName, pMap, sizeof(Header.m_aMapName));
 	unsigned MapSize = io_length(MapFile);
-	Header.m_aMapSize[0] = (MapSize>>24)&0xff;
-	Header.m_aMapSize[1] = (MapSize>>16)&0xff;
-	Header.m_aMapSize[2] = (MapSize>>8)&0xff;
-	Header.m_aMapSize[3] = (MapSize)&0xff;
-	Header.m_aMapCrc[0] = (Crc>>24)&0xff;
-	Header.m_aMapCrc[1] = (Crc>>16)&0xff;
-	Header.m_aMapCrc[2] = (Crc>>8)&0xff;
-	Header.m_aMapCrc[3] = (Crc)&0xff;
+	uint_to_bytes_be(Header.m_aMapSize, MapSize);
+	uint_to_bytes_be(Header.m_aMapCrc, Crc);
 	str_copy(Header.m_aType, pType, sizeof(Header.m_aType));
 	// Header.m_Length - add this on stop
 	str_timestamp(Header.m_aTimestamp, sizeof(Header.m_aTimestamp));
@@ -153,10 +147,7 @@ void CDemoRecorder::WriteTickMarker(int Tick, int Keyframe)
 	{
 		unsigned char aChunk[5];
 		aChunk[0] = CHUNKTYPEFLAG_TICKMARKER;
-		aChunk[1] = (Tick>>24)&0xff;
-		aChunk[2] = (Tick>>16)&0xff;
-		aChunk[3] = (Tick>>8)&0xff;
-		aChunk[4] = (Tick)&0xff;
+		uint_to_bytes_be(aChunk + 1, Tick);
 
 		if(Keyframe)
 			aChunk[0] |= CHUNKTICKFLAG_KEYFRAME;
@@ -272,30 +263,19 @@ int CDemoRecorder::Stop()
 
 	// add the demo length to the header
 	io_seek(m_File, gs_LengthOffset, IOSEEK_START);
-	int DemoLength = Length();
-	char aLength[4];
-	aLength[0] = (DemoLength>>24)&0xff;
-	aLength[1] = (DemoLength>>16)&0xff;
-	aLength[2] = (DemoLength>>8)&0xff;
-	aLength[3] = (DemoLength)&0xff;
+	unsigned char aLength[4];
+	int_to_bytes_be(aLength, Length());
 	io_write(m_File, aLength, sizeof(aLength));
 
 	// add the timeline markers to the header
 	io_seek(m_File, gs_NumMarkersOffset, IOSEEK_START);
-	char aNumMarkers[4];
-	aNumMarkers[0] = (m_NumTimelineMarkers>>24)&0xff;
-	aNumMarkers[1] = (m_NumTimelineMarkers>>16)&0xff;
-	aNumMarkers[2] = (m_NumTimelineMarkers>>8)&0xff;
-	aNumMarkers[3] = (m_NumTimelineMarkers)&0xff;
+	unsigned char aNumMarkers[4];
+	int_to_bytes_be(aNumMarkers, m_NumTimelineMarkers);
 	io_write(m_File, aNumMarkers, sizeof(aNumMarkers));
 	for(int i = 0; i < m_NumTimelineMarkers; i++)
 	{
-		int Marker = m_aTimelineMarkers[i];
-		char aMarker[4];
-		aMarker[0] = (Marker>>24)&0xff;
-		aMarker[1] = (Marker>>16)&0xff;
-		aMarker[2] = (Marker>>8)&0xff;
-		aMarker[3] = (Marker)&0xff;
+		unsigned char aMarker[4];
+		int_to_bytes_be(aMarker, m_aTimelineMarkers[i]);
 		io_write(m_File, aMarker, sizeof(aMarker));
 	}
 
@@ -362,7 +342,7 @@ int CDemoPlayer::ReadChunkHeader(int *pType, int *pSize, int *pTick)
 			unsigned char aTickdata[4];
 			if(io_read(m_File, aTickdata, sizeof(aTickdata)) != sizeof(aTickdata))
 				return -1;
-			*pTick = (aTickdata[0]<<24) | (aTickdata[1]<<16) | (aTickdata[2]<<8) | aTickdata[3];
+			*pTick = bytes_be_to_int(aTickdata);
 		}
 		else
 		{
@@ -646,11 +626,11 @@ int CDemoPlayer::Load(class IStorage *pStorage, class IConsole *pConsole, const 
 		m_DemoType = DEMOTYPE_INVALID;
 
 	// read map
-	unsigned MapSize = (m_Info.m_Header.m_aMapSize[0]<<24) | (m_Info.m_Header.m_aMapSize[1]<<16) | (m_Info.m_Header.m_aMapSize[2]<<8) | (m_Info.m_Header.m_aMapSize[3]);
+	unsigned MapSize = bytes_be_to_uint(m_Info.m_Header.m_aMapSize);
 
 	// check if we already have the map
 	// TODO: improve map checking (maps folder, check crc)
-	unsigned Crc = (m_Info.m_Header.m_aMapCrc[0]<<24) | (m_Info.m_Header.m_aMapCrc[1]<<16) | (m_Info.m_Header.m_aMapCrc[2]<<8) | (m_Info.m_Header.m_aMapCrc[3]);
+	unsigned Crc = bytes_be_to_uint(m_Info.m_Header.m_aMapCrc);
 	char aMapFilename[128];
 	str_format(aMapFilename, sizeof(aMapFilename), "downloadedmaps/%s_%08x.map", m_Info.m_Header.m_aMapName, Crc);
 	IOHANDLE MapFile = pStorage->OpenFile(aMapFilename, IOFLAG_READ, IStorage::TYPE_ALL);
@@ -678,14 +658,11 @@ int CDemoPlayer::Load(class IStorage *pStorage, class IConsole *pConsole, const 
 	if(m_Info.m_Header.m_Version > gs_OldVersion)
 	{
 		// get timeline markers
-		int Num = ((m_Info.m_TimelineMarkers.m_aNumTimelineMarkers[0]<<24)&0xFF000000) | ((m_Info.m_TimelineMarkers.m_aNumTimelineMarkers[1]<<16)&0xFF0000) |
-					((m_Info.m_TimelineMarkers.m_aNumTimelineMarkers[2]<<8)&0xFF00) | (m_Info.m_TimelineMarkers.m_aNumTimelineMarkers[3]&0xFF);
-		m_Info.m_Info.m_NumTimelineMarkers = Num;
-		for(int i = 0; i < Num && i < MAX_TIMELINE_MARKERS; i++)
+		int Num = bytes_be_to_int(m_Info.m_TimelineMarkers.m_aNumTimelineMarkers);
+		m_Info.m_Info.m_NumTimelineMarkers = minimum(Num, (int)MAX_TIMELINE_MARKERS);
+		for(int i = 0; i < m_Info.m_Info.m_NumTimelineMarkers; i++)
 		{
-			char *pTimelineMarker = m_Info.m_TimelineMarkers.m_aTimelineMarkers[i];
-			m_Info.m_Info.m_aTimelineMarkers[i] = ((pTimelineMarker[0]<<24)&0xFF000000) | ((pTimelineMarker[1]<<16)&0xFF0000) |
-													((pTimelineMarker[2]<<8)&0xFF00) | (pTimelineMarker[3]&0xFF);
+			m_Info.m_Info.m_aTimelineMarkers[i] = bytes_be_to_int(m_Info.m_TimelineMarkers.m_aTimelineMarkers[i]);
 		}
 	}
 

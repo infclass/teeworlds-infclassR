@@ -32,6 +32,8 @@ public:
 	{
 		OFFSET_UUID_TYPE = 0x4000,
 		MAX_TYPE = 0x7fff,
+		MAX_ID = 0xffff,
+		MAX_ITEMS = 1024,
 		MAX_PARTS = 64,
 		MAX_SIZE = MAX_PARTS * 1024
 	};
@@ -46,10 +48,10 @@ public:
 	int GetItemSize(int Index) const;
 	int GetItemIndex(int Key) const;
 	int GetItemType(int Index) const;
+	void *FindItem(int Type, int ID) const;
 
 	unsigned Crc();
 	void DebugDump();
-	static void RemoveExtraInfo(unsigned char *pData);
 };
 
 // CSnapshotDelta
@@ -72,23 +74,22 @@ private:
 		MAX_NETOBJSIZES = 64
 	};
 	short m_aItemSizes[MAX_NETOBJSIZES];
-	int m_aSnapshotDataRate[0xffff];
-	int m_aSnapshotDataUpdates[0xffff];
-	int m_SnapshotCurrent;
+	int m_aSnapshotDataRate[CSnapshot::MAX_TYPE + 1];
+	int m_aSnapshotDataUpdates[CSnapshot::MAX_TYPE + 1];
 	CData m_Empty;
 
-	void UndiffItem(int *pPast, int *pDiff, int *pOut, int Size);
+	static void UndiffItem(int *pPast, int *pDiff, int *pOut, int Size, int *pDataRate);
 
 public:
 	static int DiffItem(int *pPast, int *pCurrent, int *pOut, int Size);
 	CSnapshotDelta();
 	CSnapshotDelta(const CSnapshotDelta &Old);
-	int GetDataRate(int Index) { return m_aSnapshotDataRate[Index]; }
-	int GetDataUpdates(int Index) { return m_aSnapshotDataUpdates[Index]; }
+	int GetDataRate(int Index) const { return m_aSnapshotDataRate[Index]; }
+	int GetDataUpdates(int Index) const { return m_aSnapshotDataUpdates[Index]; }
 	void SetStaticsize(int ItemType, int Size);
-	CData *EmptyDelta();
-	int CreateDelta(class CSnapshot *pFrom, class CSnapshot *pTo, void *pData);
-	int UnpackDelta(class CSnapshot *pFrom, class CSnapshot *pTo, void *pData, int DataSize);
+	const CData *EmptyDelta() const;
+	int CreateDelta(class CSnapshot *pFrom, class CSnapshot *pTo, void *pDstData);
+	int UnpackDelta(class CSnapshot *pFrom, class CSnapshot *pTo, const void *pSrcData, int DataSize);
 };
 
 // CSnapshotStorage
@@ -102,7 +103,7 @@ public:
 		CHolder *m_pPrev;
 		CHolder *m_pNext;
 
-		int64 m_Tagtime;
+		int64_t m_Tagtime;
 		int m_Tick;
 
 		int m_SnapSize;
@@ -113,27 +114,26 @@ public:
 	CHolder *m_pFirst;
 	CHolder *m_pLast;
 
-	CSnapshotStorage() { Init(); };
-	~CSnapshotStorage() { PurgeAll(); };
+	CSnapshotStorage() { Init(); }
+	~CSnapshotStorage() { PurgeAll(); }
 	void Init();
 	void PurgeAll();
 	void PurgeUntil(int Tick);
-	void Add(int Tick, int64 Tagtime, int DataSize, void *pData, int CreateAlt);
-	int Get(int Tick, int64 *pTagtime, CSnapshot **ppData, CSnapshot **ppAltData);
+	void Add(int Tick, int64_t Tagtime, int DataSize, void *pData, int CreateAlt);
+	int Get(int Tick, int64_t *pTagtime, CSnapshot **ppData, CSnapshot **ppAltData);
 };
 
 class CSnapshotBuilder
 {
 	enum
 	{
-		MAX_ITEMS = 1024,
 		MAX_EXTENDED_ITEM_TYPES = 64,
 	};
 
 	char m_aData[CSnapshot::MAX_SIZE];
 	int m_DataSize;
 
-	int m_aOffsets[MAX_ITEMS];
+	int m_aOffsets[CSnapshot::MAX_ITEMS];
 	int m_NumItems;
 
 	int m_aExtendedItemTypes[MAX_EXTENDED_ITEM_TYPES];

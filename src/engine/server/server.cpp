@@ -1559,7 +1559,7 @@ void CServer::ProcessClientPacket(CNetChunk *pPacket)
 		else if(Msg == NETMSG_INPUT)
 		{
 			CClient::CInput *pInput;
-			int64 TagTime;
+			int64_t TagTime;
 
 			m_aClients[ClientID].m_LastAckedSnapshot = Unpacker.GetInt();
 			int IntendedTick = Unpacker.GetInt();
