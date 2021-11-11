@@ -151,7 +151,7 @@ function(set_glob VAR GLOBBING DIRECTORY) # ...
   list(SORT GLOB_RESULT)
   set(FILES)
   foreach(file ${ARGN})
-    list(APPEND FILES "${PROJECT_SOURCE_DIR}/${DIRECTORY}/${file}")
+    list(APPEND FILES "${DIRECTORY}/${file}")
   endforeach()
 
   if(NOT FILES STREQUAL GLOB_RESULT)
