@@ -3,9 +3,9 @@
 import polib, json, os
 
 def ConvertPo2Json(languageCode, plurals):
-	if os.path.isfile("../infclass-translation/infclasspot_"+languageCode+".po"):
-		poFileName = "../infclass-translation/infclasspot_"+languageCode+".po"
-		jsonFileName = "./data/languages/"+languageCode+".json"
+	poFileName = "other/po/"+languageCode+"/infclass.po"
+	if os.path.isfile(poFileName):
+		jsonFileName = "data/languages/"+languageCode+".json"
 
 		po = polib.pofile(poFileName)
 
