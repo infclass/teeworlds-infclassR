@@ -1688,8 +1688,9 @@ void CInfClassCharacter::HandleMapMenu()
 					case CLASS_AVAILABILITY::NEED_MORE_PLAYERS:
 					{
 						int MinPlayers = GameController()->GetMinPlayersForClass(NewClass);
-						GameServer()->SendBroadcast_Localization(m_pPlayer->GetCID(),
+						GameServer()->SendBroadcast_Localization_P(m_pPlayer->GetCID(),
 							BROADCAST_PRIORITY_INTERFACE, BROADCAST_DURATION_REALTIME,
+							MinPlayers,
 							_P("Need at least {int:MinPlayers} player",
 							   "Need at least {int:MinPlayers} players"),
 							"MinPlayers", &MinPlayers,
