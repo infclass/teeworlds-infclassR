@@ -728,6 +728,13 @@ foreach(PO_LANG ${PO_LANGS})
   )
 endforeach()
 
+add_custom_target(dev-update-json-files)
+add_custom_command(
+  TARGET dev-update-json-files
+  COMMAND ${PYTHON_EXECUTABLE} scripts/translation-python3.py
+  WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
+)
+
 # Target
 add_executable(Server
   ${DEPS}
