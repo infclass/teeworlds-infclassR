@@ -474,7 +474,7 @@ void CPlayer::StartInfection(bool force, CPlayer *pInfectiousPlayer)
 	if(!force && IsZombie())
 		return;
 	
-	m_DoInfection = true;
+	m_DoInfection = force ? DO_INFECTION::FORCED : DO_INFECTION::REGULAR;
 	m_InfectiousPlayerCID = pInfectiousPlayer ? pInfectiousPlayer->GetCID() : -1;
 }
 

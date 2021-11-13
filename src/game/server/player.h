@@ -20,6 +20,13 @@ enum
 	WEAPON_WORLD = -1, // death tiles etc
 };
 
+enum class DO_INFECTION
+{
+	NO,
+	REGULAR,
+	FORCED,
+};
+
 // player object
 class CPlayer
 {
@@ -166,7 +173,7 @@ public:
 	int m_HumanTime;
 	
 	bool m_knownClass[NB_PLAYERCLASS];
-	bool m_DoInfection = false;
+	DO_INFECTION m_DoInfection = DO_INFECTION::NO;
 	int m_InfectiousPlayerCID = -1;
 
 	int m_InfectionTick;

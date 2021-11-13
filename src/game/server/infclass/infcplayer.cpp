@@ -83,10 +83,17 @@ void CInfClassPlayer::Tick()
 
 void CInfClassPlayer::HandleInfection()
 {
-	if(!m_DoInfection)
+	if(m_DoInfection == DO_INFECTION::NO)
 	{
 		return;
 	}
+	if(IsZombie() && (m_DoInfection != DO_INFECTION::FORCED))
+	{
+		// Do not infect if inf class already set
+		m_DoInfection = DO_INFECTION::NO;
+		return;
+	}
+
 	if(IsHuman())
 	{
 		m_InfectionTick = Server()->Tick();
@@ -96,7 +103,7 @@ void CInfClassPlayer::HandleInfection()
 	int c = GameController()->ChooseInfectedClass(this);
 	CInfClassPlayer *pInfectiousPlayer = GameController()->GetPlayer(m_InfectiousPlayerCID);
 
-	m_DoInfection = false;
+	m_DoInfection = DO_INFECTION::NO;
 	m_InfectiousPlayerCID = -1;
 
 	SetClass(c);
