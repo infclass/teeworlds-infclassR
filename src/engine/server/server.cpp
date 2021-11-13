@@ -3174,6 +3174,7 @@ int CServer::GetClientAntiPing(int ClientID)
 
 void CServer::SetClientAntiPing(int ClientID, int Value)
 {
+	dbg_msg("server", "set_antiping ClientID=%d antiping=%d", ClientID, Value);
 	m_aClients[ClientID].m_AntiPing = Value;
 }
 
@@ -3214,6 +3215,7 @@ const char* CServer::GetClientLanguage(int ClientID)
 
 void CServer::SetClientLanguage(int ClientID, const char* pLanguage)
 {
+	dbg_msg("server", "set_language ClientID=%d lang=%s", ClientID, pLanguage);
 	str_copy(m_aClients[ClientID].m_aLanguage, pLanguage, sizeof(m_aClients[ClientID].m_aLanguage));
 }
 	
