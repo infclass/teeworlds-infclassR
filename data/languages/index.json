@@ -142,12 +142,7 @@
 		"parent": "ru"
 	},
 	{
-		"file": "zh",
-		"name": "中文",
-		"parent": "zh-Hans"
-	},
-	{
-		"file": "zh-Hans",
+		"file": "zh-CN",
 		"name": "白话文",
 		"parent": "en"
 	}
