@@ -1,0 +1,682 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: teeuniverse\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2017-07-31 19:50+0200\n"
+"PO-Revision-Date: 2017-07-31 15:23-0400\n"
+"Last-Translator: necropotame <necropotame@gmail.com>\n"
+"Language-Team: Greek\n"
+"Language: el_GR\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Generator: crowdin.com\n"
+"X-Crowdin-Project: teeuniverse\n"
+"X-Crowdin-Language: el\n"
+"X-Crowdin-File: infclasspot.po\n"
+
+#: src/engine/server/server.cpp:2164
+msgid "{str:Victim} has been muted for {sec:Duration} ({str:Reason})"
+msgstr ""
+
+#: src/engine/server/server.cpp:2912
+msgid "You are now logged."
+msgstr "Τώρα είσαι συνδεδεμένος."
+
+#: src/engine/server/server.cpp:2919
+msgid "Wrong username/password."
+msgstr "Λάθος όνομα παίκτη/κωδικός."
+
+#: src/engine/server/server.cpp:2994
+msgid "An error occured during the operation."
+msgstr "Ένα πρόβλημα εμφανίστηκε στην λειτουργία."
+
+#: src/engine/server/server.cpp:3009
+msgid "You must be logged for this operation"
+msgstr "Πρέπει να είσαι συνδεδεμένος για αυτή τη λειτουργία."
+
+#: src/engine/server/server.cpp:3063
+msgid "Please wait 5 minutes before creating another account"
+msgstr "Παρακαλώ περιμένεται 5 λεπτά πριν δημιουργήσεται έναν καινούργιο λογαριασμό"
+
+#: src/engine/server/server.cpp:3071 src/engine/server/server.cpp:3098
+#: src/engine/server/server.cpp:3117 src/engine/server/server.cpp:3156
+#: src/engine/server/server.cpp:3164
+msgid "An error occured during the creation of your account."
+msgstr "Ένα πρόβλημα δημιουργήθηκε στη δημιουργία ενος καινούργιου λογαριασμόυ"
+
+#: src/engine/server/server.cpp:3090
+msgid "This username is already taken by an existing account"
+msgstr "Αυτό το όνομα έχει ήδη πιαστεί από έναν ήδη υπάρχοντα λογαριασμό"
+
+#: src/engine/server/server.cpp:3135
+msgid "Your account has been created and you are now logged."
+msgstr "Ο λογαριασμός σας δημιουργήθηκε και τώρα είστε συνδεδεμένος."
+
+#: src/engine/server/server.cpp:3719
+msgid "You must be logged to see your rank"
+msgstr "Πρέπει να έιστε συνδεδεμένος για να δείτε την θέση σας"
+
+#: src/engine/server/server.cpp:3803
+msgid "You must be logged to see your goal"
+msgstr "Πρέπει να έιστε συνδεδεμένος για να δείτε τον στόχο σας"
+
+#: src/engine/server/server.cpp:4110
+msgid "You have already notified that {str:PlayerName} ought to be banned"
+msgstr "Έχεται ήδη αναφέρει οτι θέλετε ο/η {str:PlayerName} να αποκλειστεί"
+
+#: src/engine/server/server.cpp:4125
+msgid "{str:PlayerName} wants {str:VictimName} to be banned ({str:Reason})"
+msgstr "Ο/Η {str:PlayerName} θέλει ο/η {str:VictimName} να αποκλειστεί ({str:Reason})"
+
+#: src/game/server/gamemodes/mod.cpp:243 src/game/server/gamemodes/mod.cpp:267
+msgid "{str:VictimName} has been infected"
+msgstr "{str:VictimName} Μολύνθηκε"
+
+#: src/game/server/gamemodes/mod.cpp:298 src/game/server/gamemodes/mod.cpp:405
+msgid "Infected won the round in {sec:RoundDuration}"
+msgstr "Οι μολυσμένοι κέρδισαν τον γύρο"
+
+#: src/game/server/gamemodes/mod.cpp:385
+msgid "One human won the round"
+msgid_plural "{int:NumHumans} humans won the round"
+msgstr[0] "Ένας άνθρωπος κέρδισε τον γύρο"
+msgstr[1] "{int:NumHumans}  κέρδισαν τον γύρο"
+
+#: src/game/server/gamemodes/mod.cpp:398
+msgid "You have survived, +5 points"
+msgstr "Επέζησες, +5 πόντοι"
+
+#: src/game/server/gamemodes/mod.cpp:546
+#: src/game/server/entities/character.cpp:2471
+msgid "You have infected {str:VictimName}, +3 points"
+msgstr "Μόλυνες τον/την {str:VictimName}, +3 πόντοι"
+
+#: src/game/server/gamemodes/mod.cpp:576
+msgid "You have killed a witch, +5 points"
+msgstr "Σκότωσες την μάγισσα, +5 πόντοι"
+
+#: src/game/server/gamemodes/mod.cpp:588 src/game/server/gamemodes/mod.cpp:614
+msgid "You have eliminated your target, +2 points"
+msgstr ""
+
+#: src/game/server/player.cpp:195
+msgid "Hook protection enabled"
+msgstr "Ενεργή προστασία γάντζου"
+
+#: src/game/server/player.cpp:197
+msgid "Hook protection disabled"
+msgstr "Ανενεργή προστασία γάντζου"
+
+#: src/game/server/player.cpp:368
+msgid "{str:PlayerName} has been banned ({str:Reason})"
+msgstr "{str:PlayerName} έχει αποκλειστεί ({str:Reason})"
+
+#: src/game/server/player.cpp:375
+msgid "{str:PlayerName} has been kicked ({str:Reason})"
+msgstr "{str:PlayerName} διώχτηκε ({str:Reason})"
+
+#: src/game/server/player.cpp:382
+msgid "{str:PlayerName} has left the game ({str:Reason})"
+msgstr "{str:PlayerName} έφυγε από το παιχνίδι ({str:Reason})"
+
+#: src/game/server/player.cpp:389
+msgid "{str:PlayerName} has left the game"
+msgstr "{str:PlayerName} έφυγε από το παιχνίδι"
+
+#: src/game/server/player.cpp:476
+msgid "{str:PlayerName} joined the spectators"
+msgstr "{str:PlayerName} μπήκε στους παρατηρητές"
+
+#: src/game/server/player.cpp:480
+msgid "{str:PlayerName} joined the game"
+msgstr "{str:PlayerName} μπήκε στο παιχνίδι"
+
+#: src/game/server/gamecontext.cpp:556 src/game/server/gamecontext.cpp:3074
+#: src/game/server/entities/character.cpp:1767
+msgid "Engineer"
+msgstr "Μηχανικός"
+
+#: src/game/server/gamecontext.cpp:559 src/game/server/gamecontext.cpp:3087
+#: src/game/server/entities/character.cpp:1774
+msgid "Soldier"
+msgstr "Στρατιώτης"
+
+#: src/game/server/gamecontext.cpp:562 src/game/server/gamecontext.cpp:3135
+#: src/game/server/entities/character.cpp:1795
+msgid "Medic"
+msgstr "Γιατρός"
+
+#: src/game/server/gamecontext.cpp:565 src/game/server/gamecontext.cpp:3146
+#: src/game/server/entities/character.cpp:1802
+msgid "Hero"
+msgstr "Ήρωας"
+
+#: src/game/server/gamecontext.cpp:568 src/game/server/gamecontext.cpp:3161
+#: src/game/server/entities/character.cpp:1809
+msgid "Ninja"
+msgstr "Νίντζα"
+
+#: src/game/server/gamecontext.cpp:571 src/game/server/gamecontext.cpp:3177
+#: src/game/server/entities/character.cpp:1816
+msgid "Mercenary"
+msgstr "Μισθοφόρος"
+
+#: src/game/server/gamecontext.cpp:574 src/game/server/gamecontext.cpp:3195
+#: src/game/server/entities/character.cpp:1823
+msgid "Sniper"
+msgstr "Ελέυθερος σκοπευτής"
+
+#: src/game/server/gamecontext.cpp:577 src/game/server/gamecontext.cpp:3107
+#: src/game/server/entities/character.cpp:1781
+msgid "Scientist"
+msgstr "Επιστήμονας"
+
+#: src/game/server/gamecontext.cpp:580 src/game/server/gamecontext.cpp:3126
+#: src/game/server/entities/character.cpp:1788
+msgid "Biologist"
+msgstr ""
+
+#: src/game/server/gamecontext.cpp:583 src/game/server/gamecontext.cpp:3208
+msgid "Smoker"
+msgstr "Φίδι"
+
+#: src/game/server/gamecontext.cpp:586 src/game/server/gamecontext.cpp:3232
+msgid "Hunter"
+msgstr "Κοράκι"
+
+#: src/game/server/gamecontext.cpp:589 src/game/server/gamecontext.cpp:3219
+msgid "Boomer"
+msgstr "Βομβιστής"
+
+#: src/game/server/gamecontext.cpp:592 src/game/server/gamecontext.cpp:3245
+msgid "Ghost"
+msgstr "Φάντασμα"
+
+#: src/game/server/gamecontext.cpp:595 src/game/server/gamecontext.cpp:3258
+msgid "Spider"
+msgstr "Αράχνη"
+
+#: src/game/server/gamecontext.cpp:598 src/game/server/gamecontext.cpp:3273
+msgid "Ghoul"
+msgstr "Γκούλ"
+
+#: src/game/server/gamecontext.cpp:601 src/game/server/gamecontext.cpp:3286
+msgid "Slug"
+msgstr ""
+
+#: src/game/server/gamecontext.cpp:604 src/game/server/gamecontext.cpp:3314
+msgid "Witch"
+msgstr "Μάγισσα"
+
+#: src/game/server/gamecontext.cpp:607 src/game/server/gamecontext.cpp:3299
+msgid "Undead"
+msgstr "Αθάνατος"
+
+#: src/game/server/gamecontext.cpp:610
+msgid "Unknown class"
+msgstr "Άγνωστη ιδιότητα"
+
+#: src/game/server/gamecontext.cpp:615
+msgid "You are a human: {str:ClassName}"
+msgstr "Έίσαι άνθρωπος: {str:ClassName} "
+
+#: src/game/server/gamecontext.cpp:617
+msgid "You are an infected: {str:ClassName}"
+msgstr "Είσαι μολυσμένος: {str:ClassName}"
+
+#: src/game/server/gamecontext.cpp:1199
+msgid "{str:PlayerName} entered and joined the game"
+msgstr "{str:PlayerName} μπήκε και πήρε μερος στο παιχνίδι"
+
+#: src/game/server/gamecontext.cpp:1389 src/game/server/gamecontext.cpp:2522
+msgid "You are muted for {sec:Duration}"
+msgstr ""
+
+#: src/game/server/gamecontext.cpp:1619
+msgid "You can't join the spectators right now"
+msgstr "δεν μπορείς να μπείς στους παρατηρητές αυτή τη στιγμή"
+
+#: src/game/server/gamecontext.cpp:1675
+msgid "{str:PlayerName} changed their name to {str:NewName}"
+msgstr "Ο/Η  {str:NewName} αλλαξε το όνομά του/της σε {str:NewName}"
+
+#: src/game/server/gamecontext.cpp:1914
+msgid "Switch language to english ?"
+msgstr "Αλλαγή της γλώσσας στα ελληνικά;"
+
+#: src/game/server/gamecontext.cpp:1920
+msgid "You can change the language of this mod using the command /language."
+msgstr "Μπορείς να αλλάξεις τη γλώσσα αυτής της έκδοσης γράφοντας /language."
+
+#: src/game/server/gamecontext.cpp:1921
+msgid "If your language is not available, you can help with translation (/help translate)."
+msgstr "Άν δεν είσαι απασχολημένος/η, μπορείς να βοηθήσεις στο μετάφραση (/help translate)."
+
+#: src/game/server/gamecontext.cpp:2503
+msgid "InfectionClass, by necropotame (version {str:VersionCode})"
+msgstr "Τρέχα να Μολύνεις, από τον necropotame (έκδοση {str:VersionCode})"
+
+#: src/game/server/gamecontext.cpp:2505
+msgid "Based on the concept of Infection mod by Gravity"
+msgstr ""
+
+#: src/game/server/gamecontext.cpp:2507
+msgid "Main contributors: {str:ListOfContributors}"
+msgstr ""
+
+#: src/game/server/gamecontext.cpp:2509
+msgid "Thanks to {str:ListOfContributors}"
+msgstr "Εχαριστουμε τους {str:ListOfContributors}"
+
+#: src/game/server/gamecontext.cpp:2721
+msgid "No player was found with this name"
+msgstr "Δέν βρέθηκαν παίκτες με αυτό το όνομα"
+
+#: src/game/server/gamecontext.cpp:3044
+msgid "Rules of the game"
+msgstr "Κανόνες του παιχνιδιού"
+
+#: src/game/server/gamecontext.cpp:3046
+msgid "InfectionClass is a team game between humans and infected."
+msgstr "Το Τρέχα να μολύνεις είναι ενα ομαδικό παιχνίδι μεταξύ ανθρώπων και μολυσμένων"
+
+#: src/game/server/gamecontext.cpp:3048
+msgid "All players start as human."
+msgstr "Όλοι οι παίκτες ξεκινούν σαν άνθρωποι"
+
+#: src/game/server/gamecontext.cpp:3050
+msgid "10 seconds later, two players become infected."
+msgstr "10 δευτερόλεπτα αργότερα, δυο παίκτες γίνονται μολυσμένοι"
+
+#: src/game/server/gamecontext.cpp:3052
+msgid "The goal for humans is to survive until the army clean the map."
+msgstr "Ο στόχος των ανθρώπων είναι να επιβιώσουν πρωτού ο στρατος των μολυσμένων καθαρίσουν τον χάρτη"
+
+#: src/game/server/gamecontext.cpp:3054
+msgid "The goal for infected is to infect all humans."
+msgstr "Ο στόχος των μολυσμένων είναι να μολύνουν όλους τους ανθρώπους"
+
+#: src/game/server/gamecontext.cpp:3061
+msgid "How to translate the mod"
+msgstr "Πώς να μεταφράσεις αυτήν την έκδοση"
+
+#: src/game/server/gamecontext.cpp:3063
+msgid "Create an account on Crowdin and join a translation team:"
+msgstr "Δημιούργησε εναν λογαρισμό στο Crowdin και γίνε μέλος στην ομάδα μετάφρασης:"
+
+#: src/game/server/gamecontext.cpp:3067
+msgid "For any question about the translation process, please contact us on IRC ({str:IRCAddress})"
+msgstr "Για οποιαδήποτε ερώτηση σχετικά με την πρόοδο της μετάφρασης, παρακαλώ επικοινωνήστε μαζί μας στο  IRC ({str:IRCAddress})"
+
+#: src/game/server/gamecontext.cpp:3076
+msgid "The Engineer can build walls with his hammer to block infected."
+msgstr "Οι μηχανικοί μπορούν να χτίσουν τείχος με το σφυρί τους για να εμποδίσουν τους μολυσμένους"
+
+#: src/game/server/gamecontext.cpp:3078
+msgid "When an infected touch the wall, he dies."
+msgstr "όταν ενας μολυσμένος ακουμπήσει το τείχος, πεθαίνει."
+
+#: src/game/server/gamecontext.cpp:3080
+msgid "The lifespan of a wall is {sec:LifeSpan}, and walls are limited to one per player at the same time."
+msgstr "Ο χρόνος ζωής ενός τείχους είναι: {sec:LifeSpan}, και τα τείχη μπορουν να είναι ένα για καθε παίκτη συγχρόνως."
+
+#: src/game/server/gamecontext.cpp:3089
+msgid "The Soldier can pose floating bombs with his hammer."
+msgstr "Ο στρατιώτης μπορεί να τοποθετήσει βόμβες με το σφυρί του"
+
+#: src/game/server/gamecontext.cpp:3093
+msgid "Each bomb can explode one time."
+msgid_plural "Each bomb can explode {int:NumBombs} times."
+msgstr[0] "Κάθε βόμβα μπορεί να εκραγεί μία μονο φορα."
+msgstr[1] "Κάθε βόμβα μπορεί να εκραγεί  {int:NumBombs} φορές."
+
+#: src/game/server/gamecontext.cpp:3098
+msgid "Use the hammer to place the bomb and explode it multiple times."
+msgstr "Χρησημοποίησε το σφυρί για να τοποθετήσεις βόμβες και να εκραγούν πολλες φορές"
+
+#: src/game/server/gamecontext.cpp:3100
+msgid "Bombs are limited to one per player at the same time."
+msgstr "Οι βόμβες είναι περιορισμένες σε μια για καθε παίκτη συγχρόνως"
+
+#: src/game/server/gamecontext.cpp:3109
+msgid "The Scientist can pose floating mines with his hammer."
+msgstr "Ο επιστήμονας μπορεί να τοποθετίσει νάρκες με το σφυρί του."
+
+#: src/game/server/gamecontext.cpp:3113
+msgid "Mines are limited to one per player at the same time."
+msgid_plural "Mines are limited to {int:NumMines} per player at the same time."
+msgstr[0] "Οι νάρκες είναι περιορισμένες σε μια για καθε παίκτη συγχρόνως"
+msgstr[1] "Οι νάρκες είναι περιορισμένες σε {int:NumMines} για κάθε παίκτη συγχρόνως."
+
+#: src/game/server/gamecontext.cpp:3118
+msgid "He has also grenades that teleport him."
+msgstr "Έχει επίσης χειροβομβίδες που τον τηλεμεταφέρουν."
+
+#: src/game/server/gamecontext.cpp:3128
+msgid "The biologist has a shotgun with bouncing bullets and can create a spring laser trap by shooting with his rifle."
+msgstr ""
+
+#: src/game/server/gamecontext.cpp:3137
+msgid "The Medic can protect humans with his hammer by giving them armor."
+msgstr "Ο γιατρός μπορεί να προστατέψει τους ανθρώπους δίνοντάς τους ασπίδες."
+
+#: src/game/server/gamecontext.cpp:3139
+msgid "He has also a powerful shotgun that can pullback infected."
+msgstr "Έχει επίσης ένα πανίσχυρο shotgun το οποίο απωθεί πίσω τους μολυσμένους."
+
+#: src/game/server/gamecontext.cpp:3148
+msgid "The Hero has a shotgun, a laser rifle and grenades."
+msgstr "Ο ήρωας έχει ένα shotgun, μια καραμπίνα-λέιζερ και χειρομβίδες."
+
+#: src/game/server/gamecontext.cpp:3150
+msgid "The Hero must find a flag hidden in the map."
+msgstr "Ο ήρωας πρέπεινα βρεί την σημαι που είναι κρυμμένη στην πίστα."
+
+#: src/game/server/gamecontext.cpp:3152
+msgid "Once taken, the flag gives 1 health point, 4 armor points, and full ammo to all humans, furthermore full health and armor to the hero."
+msgstr "Μόλις την πάρει, η σημαία δίνει έναν πόντο ζωής, 4 ασπίδες, και γεμάτα πυρομαχικά σε όλους τους ανθρώπους, επιπλέον γεμίζει την ζωή και τις ασπίδες στον συγκεκριμένο ήρωα."
+
+#: src/game/server/gamecontext.cpp:3154
+msgid "The hero cannot be healed by a medic, but he can withstand a thrust by an infected, an his health suffice."
+msgstr "Ο ήρωας δεν μπορεί να γιατρευτεί από τον γιατρό, αλλα μπορεί αντέξει ένα χτύπημα από έναν μολυσμένο, και να επαρκέσει η ζωή του."
+
+#: src/game/server/gamecontext.cpp:3163
+msgid "The Ninja can throw flash grenades that can freeze infected during three seconds."
+msgstr "Ο νίντζα μπορεί να πετάξει χειροβομβιδες κροτου λαμψης  που ακινητοποιούν τους μολυσμένους για τρία δευτερόλεπτα"
+
+#: src/game/server/gamecontext.cpp:3167
+msgid "His hammer is replaced by a katana, allowing him to jump one time before touching the ground."
+msgid_plural "His hammer is replaced by a katana, allowing him to jump {int:NinjaJump} times before touching the ground."
+msgstr[0] "Το σγυρί του εει αντικατασταθεί από ένα κατάνα, το οπολι του επιτρέπει να πηδάει μια φορά πριν ακουμπήσει το έδαφος"
+msgstr[1] "Το σγυρί του εει αντικατασταθεί από ένα κατάνα, το οποίο του επιτρέπει να πηδάει {int:NinjaJump} φορές πριν ακουμπήσει το έδαφος"
+
+#: src/game/server/gamecontext.cpp:3179
+msgid "The Mercenary fly in air using his machine gun."
+msgstr "Ο μισθοφόρος μπορεί να πετάξει ψτον αέρα χρησιμοποιώντας το πολυβόλο του."
+
+#: src/game/server/gamecontext.cpp:3181
+msgid "He can coil explosives with his hammer that hinder infected from harming."
+msgstr "Αυτός μπορεί να συσπειρώσει και εξ αποστάσεως να ενεργοποιήσει τα εκρηκτικά διαφόρων εφέ με το σφυρί του."
+
+#: src/game/server/gamecontext.cpp:3185
+msgid "He can also throw poison grenades that each deal one damage point."
+msgid_plural "He can also throw poison grenades that each deal {int:NumDamagePoints} damage points."
+msgstr[0] "Μπορεί να πετάξει επίσης δηλητηριούχες χειροβομβίδες που προκαλούν έναν πόντο ζημιάς."
+msgstr[1] "Μπορεί επίσης να πετάξει δηλητηριούχες χειροβομβίδες που προκαλούν {int:NumDamagePoints} πόντους ζημιάς."
+
+#: src/game/server/gamecontext.cpp:3197
+msgid "The Sniper can lock his position in air for 15 seconds with his hammer."
+msgstr "Ο ελευθερος σκοπευτής μπορεί να κλειδώσει την θέση του στον αέρα με το σφυρί του για 15 δευτερόλεπτα."
+
+#: src/game/server/gamecontext.cpp:3199 src/game/server/gamecontext.cpp:3236
+msgid "He can jump two times in air."
+msgstr "Μπορεί να πηδήξει δύο φορές στον αέρα."
+
+#: src/game/server/gamecontext.cpp:3201
+msgid "He has also a powerful rifle that deals 30 damage points in locked position, and 10–13 otherwise."
+msgstr "Έχει επίσης μια πανίσχυρη καραμπίνα η οποία προκαλεί 30 πόντους ζημιάς στην κλειδωμένη θέση, και 10–13 διαφορετικά."
+
+#: src/game/server/gamecontext.cpp:3210
+msgid "The Smoker can infect humans and heal infected with his hammer."
+msgstr "Το φίδι μπορεί να μολύνει τους ανθρώπους με το σφυρί του."
+
+#: src/game/server/gamecontext.cpp:3212
+msgid "He can also inflict 4 damage points per second by hooking humans."
+msgstr "Μπορεί επίσης να προκαλέσει 4 πόντους ζημιάς το δευτερόλεπτο με το να γαντζώνει τους ανθρώπους"
+
+#: src/game/server/gamecontext.cpp:3221
+msgid "The Boomer explodes when he attack."
+msgstr "Ο βομβιστής εκρήγνυται όταν επιτήθεται."
+
+#: src/game/server/gamecontext.cpp:3223
+msgid "All humans affected by the explosion become infected."
+msgstr "Όλοι οι άνθρωποι επηρεάζονται από την έκρηξη και γίνονται μολυσμένοι."
+
+#: src/game/server/gamecontext.cpp:3225 src/game/server/gamecontext.cpp:3238
+#: src/game/server/gamecontext.cpp:3251 src/game/server/gamecontext.cpp:3307
+msgid "He can also inflict 1 damage point per second by hooking humans."
+msgstr "Μπορεί επίσης να προκαλέσει 1 πόντο ζημιάς το δευτερόλεπτο με το να γαντζώνει τους ανθρώπους"
+
+#: src/game/server/gamecontext.cpp:3234
+msgid "The Hunter can infect humans and heal infected with his hammer."
+msgstr "Το κοράκι μπορεί να μολύνει τους ανθρώπους με το σφυρί του."
+
+#: src/game/server/gamecontext.cpp:3247
+msgid "The Ghost can infect humans and heal infected with his hammer."
+msgstr "Το φάντασμα μπορεί να μολύνει τους ανθρώπους με το σφυρί του."
+
+#: src/game/server/gamecontext.cpp:3249
+msgid "He is invisible, except if a human is near him, if he takes a damage or if he use his hammer."
+msgstr "Είναι αόρατος, εκτός και αν ένας άνθρωπος είναι κοντά του , αν δεκτεί ζημιά ή αν χρησιμοποιήσει το σφυρί του."
+
+#: src/game/server/gamecontext.cpp:3260
+msgid "The Spider can infect humans and heal infected with his hammer."
+msgstr "Η αράχνη μπορεί να μολύνει τους ανθρώπους με το σφυρί του."
+
+#: src/game/server/gamecontext.cpp:3262
+msgid "When selecting any gun, his hook enter in web mode."
+msgstr "Όταν επιλέγει ένα οποιοδήποτε όπλο, ο γάντζος του μετατρέπεται σε λειτουργεία ιστού."
+
+#: src/game/server/gamecontext.cpp:3264
+msgid "Any human that touch a hook in web mode is automatically grabbed."
+msgstr "Οποιοσδήποτε άνθρωπος αγγίξει τον γάντζο σε λειτουργεία αράχνης αυτόματα γαντζόνεται."
+
+#: src/game/server/gamecontext.cpp:3266
+msgid "The hook of the spider (in both mode) deal 1 damage point per second and can grab a human during 2 seconds."
+msgstr "Ο γάντζος της αράχνης(και στις δύο λειτουργίες) προκαλεί έναν πόντο ζωής κάθε δευτερόλεπτο και διαρκεί δύο δευτερόλεπτα"
+
+#: src/game/server/gamecontext.cpp:3275
+msgid "The Ghoul can infect humans and heal infected with his hammer."
+msgstr "Το γκούλ μπορεί να μολύνει τους ανθρώπους και να γιατρέψει τους μολυσμένους με το σφυρί του."
+
+#: src/game/server/gamecontext.cpp:3277
+msgid "He can devour all that has died close to him, which makes him stronger, faster and more resistant."
+msgstr "Μπορεί να παίρνει την ενέργεια των μολυσμένων που πέθαναν κοντά του, η οποία τον κάνει δυνατότερο, γρηγορότερο και ανθεκτικότερο."
+
+#: src/game/server/gamecontext.cpp:3279
+msgid "Thereupon he digests his fodder bit by bit going back to his normal state, and besides, death bereaves him of his nourishment."
+msgstr "Έπειτα με την πέψη η τροφή του λίγο λίγο πηγαίνει στην κανονική κατάσταση, και εκτός των άλλων, ο θάνατός, του στερεί τη θρέψη."
+
+#: src/game/server/gamecontext.cpp:3288
+msgid "The Slug can infect humans and heal infected with his hammer."
+msgstr ""
+
+#: src/game/server/gamecontext.cpp:3290
+msgid "He can make the ground and walls toxic by spreading slime with his hammer."
+msgstr ""
+
+#: src/game/server/gamecontext.cpp:3292
+msgid "Touching the slime inflicts three damage points in three seconds on a human."
+msgstr ""
+
+#: src/game/server/gamecontext.cpp:3301
+msgid "The Undead can infect humans and heal infected with his hammer."
+msgstr "Ο αθάνατος μπορεί να μολύνει τους ανθρώπους με το σφυρί του."
+
+#: src/game/server/gamecontext.cpp:3303
+msgid "Instead of dying, he freezes during 10 seconds."
+msgstr "Αντί να πεθάνει, παραμένει παγωμένος για 10 δυτερόλεπτα."
+
+#: src/game/server/gamecontext.cpp:3305
+msgid "If an infected heals him, the freeze effect disappear."
+msgstr "Άν ένας μολυσμένος τον ακουμπήσει, η αγωμένη λειτουργεία εξαφανίζεται."
+
+#: src/game/server/gamecontext.cpp:3317
+msgid "The Witch can infect humans and heal infected with his hammer."
+msgstr "Η μάγισσα μπορεί να μολύνει τους ανθρώπους με το σφυρί του."
+
+#: src/game/server/gamecontext.cpp:3319
+msgid "When an infected dies, he may re-spawn near her."
+msgstr "Όταν ενας μολυσμένος πεθάνει, ίσως να ξαναζωντανέψει δίπλα της."
+
+#: src/game/server/gamecontext.cpp:3321
+msgid "If the Witch dies, she disappears and is replaced by another class of infected."
+msgstr "Άν η μάγισσα πεθάνει, αυτή εξαφανίζεται και αντικαθίσταται από μια άλλη ιδιότητα μολυσμένου."
+
+#: src/game/server/gamecontext.cpp:3323
+msgid "She can also inflict 1 damage point per second by hooking humans."
+msgstr "Μπορεί επίσης να προκαλέσει 1 πόντο ζημιάς το δευτερόλεπτο με το να γαντζώνει τους ανθρώπους"
+
+#: src/game/server/gamecontext.cpp:3330
+msgid "Targeted chat messages"
+msgstr "Στοχευμένα μηνύματα συνομιλίας"
+
+#: src/game/server/gamecontext.cpp:3333
+msgid "Use “/msg <PlayerName> <My Message>” to send a private message to this player."
+msgstr "Γράψε «msg<ΌνομαΠαίκτη> <Το μήνυμά σου>» για να στείλεις προσωπικό μήνυμα σε αυτόν τον παίκτη."
+
+#: src/game/server/gamecontext.cpp:3335
+msgid "Use “/msg !<ClassName> <My Message>” to send a private message to all players with a specific class."
+msgstr "Γράψε «msg<ΌνομαΙδιότητας> <Το μήνυμά σου>» για να στείλεις προσωπικό μήνυμα σε όλους τους παίκτες με αυτήν την ιδιότητα."
+
+#: src/game/server/gamecontext.cpp:3337
+msgid "Example: “/msg !medic I'm wounded!”"
+msgstr "Για παράδειγμα: «/msg !medic Είμαι πληγωμένος!»"
+
+#: src/game/server/gamecontext.cpp:3339
+msgid "Use “/msg !near” to send a private message to all players near you."
+msgstr "Γράψε «/msg !near» για να στείλεις προσωπικό μήνυμα σε όλους τους κοντινούς παίκτες."
+
+#: src/game/server/gamecontext.cpp:3349
+msgid "Choose a help page with /help <page>"
+msgstr "Διάλεξε μια βοήθεια πατώντας /help <σελίδα>"
+
+#: src/game/server/gamecontext.cpp:3352
+msgid "Available help pages: {str:PageList}"
+msgstr "Διαθέσιμη σελίδ βοήθειας: {str:PageList}"
+
+#: src/game/server/gamecontext.cpp:3411
+msgid "A random class will be automatically attributed to you when rounds start"
+msgstr "Μια τυχαία ιδιότητα θα σου τεθεί όταν ξεκινήσει ο νέος γύρος"
+
+#: src/game/server/gamecontext.cpp:3417
+msgid "The class selector will be displayed when rounds start"
+msgstr "Ο επιλογέας ιδιότητας θα εμφανιστεί όταν ξεκινήσει αινούργιος γύρος."
+
+#: src/game/server/gamecontext.cpp:3457
+msgid "Unknown language"
+msgstr "Άγνωστη γλώσσα"
+
+#: src/game/server/gamecontext.cpp:3470
+msgid "Available languages: {str:ListOfLanguage}"
+msgstr "Διαθέσιμες γλώσσες: {str:ListOfLanguage}"
+
+#: src/game/server/gamecontext.cpp:3487
+msgid "List of commands"
+msgstr "Λίστα εντολών"
+
+#: src/game/server/gamecontext.cpp:3499
+msgid "Press <F3> or <F4> to enable or disable hook protection"
+msgstr "Πίεσε <F3> ή <F4> για να ενεγοποιήσεις ή να απενεργοποιήσεις την προστασία γάντζου."
+
+#: src/game/server/entities/character.cpp:1407
+msgid "You have held a bonus area for one minute, +5 points"
+msgstr ""
+
+#: src/game/server/entities/character.cpp:1476
+msgid "You are frozen: {sec:EffectDuration}"
+msgstr "Είσαι παγωμένος: {sec:EffectDuration}"
+
+#: src/game/server/entities/character.cpp:1761
+msgid "Random choice"
+msgstr "Τυχαία επιλογή"
+
+#: src/game/server/entities/character.cpp:1833
+msgid "Choose your class"
+msgstr "Διάλεξε την ιδιότητά σου"
+
+#: src/game/server/entities/character.cpp:1905
+msgid "Laser wall: {sec:RemainingTime}"
+msgstr "Τοίχος λέιζερ: {sec:RemainingTime} "
+
+#: src/game/server/entities/character.cpp:1923
+msgid "One bomb left"
+msgid_plural "{int:NumBombs} bombs left"
+msgstr[0] "Σου έμεινε μια βόμβα"
+msgstr[1] "Σου έμειναν {int:NumBombs} βόμβες"
+
+#: src/game/server/entities/character.cpp:1941
+msgid "One mine is active"
+msgid_plural "{int:NumMines} mines are active"
+msgstr[0] "Μία βόμβα είναι ενεργή."
+msgstr[1] "{int:NumMines} είναι ενεργές"
+
+#: src/game/server/entities/character.cpp:1959
+msgid "Mine activated"
+msgstr ""
+
+#: src/game/server/entities/character.cpp:1973
+msgid "Next target in {sec:RemainingTime}"
+msgstr "Επόμενος στόχος σε {sec:RemainingTime}"
+
+#: src/game/server/entities/character.cpp:1981
+msgid "Target to eliminate: {str:PlayerName}"
+msgstr "Στόχος για εξολόθρευση: {str:PlayerName}"
+
+#: src/game/server/entities/character.cpp:1993
+msgid "Position lock: {sec:RemainingTime}"
+msgstr "Κλειδωμένη θέση: {sec:RemainingTime}"
+
+#: src/game/server/entities/character.cpp:2015
+msgid "Explosive yield: {percent:BombLevel}"
+msgstr "Πεδίο έκρηξης: {percent:BombLevel}"
+
+#: src/game/server/entities/character.cpp:2040
+msgid "Next flag in {sec:RemainingTime}"
+msgstr "Η επόμενη σημαία βγαίνει σε {sec:RemainingTime} δευτερόλεπτα"
+
+#: src/game/server/entities/character.cpp:2050
+msgid "Web mode enabled"
+msgstr "Λειτουργεία ιστού ενεργή"
+
+#: src/game/server/entities/character.cpp:2059
+msgid "Stomach filled by {percent:FodderInStomach}"
+msgstr "Το στομάχι είναι {percent:FodderInStomach} γεμάτο"
+
+#: src/game/server/entities/character.cpp:2336
+msgid "The witch is dead"
+msgstr "Η μάγισσα είναι νεκρή"
+
+#: src/game/server/entities/character.cpp:2342
+msgid "The undead is finally dead"
+msgstr "Ο αθάνατος είναι επιτέλους νεκρός"
+
+#: src/game/server/entities/character.cpp:2764
+msgid "Sword velocity increased"
+msgstr ""
+
+#: src/game/server/entities/character.cpp:2768
+msgid "Sword strength increased"
+msgstr ""
+
+#: src/game/server/entities/character.cpp:2772
+msgid "Grenade limit increased"
+msgstr ""
+
+#: src/game/server/entities/character.cpp:2794
+#: src/game/server/entities/character.cpp:2811
+#: src/game/server/entities/character.cpp:2828
+#: src/game/server/entities/character.cpp:2845
+#: src/game/server/entities/character.cpp:2863
+#: src/game/server/entities/character.cpp:2881
+#: src/game/server/entities/character.cpp:2898
+#: src/game/server/entities/character.cpp:2916
+#: src/game/server/entities/character.cpp:2932
+#: src/game/server/entities/character.cpp:2954
+#: src/game/server/entities/character.cpp:2969
+#: src/game/server/entities/character.cpp:2984
+#: src/game/server/entities/character.cpp:2999
+#: src/game/server/entities/character.cpp:3014
+#: src/game/server/entities/character.cpp:3029
+#: src/game/server/entities/character.cpp:3044
+#: src/game/server/entities/character.cpp:3059
+#: src/game/server/entities/character.cpp:3074
+msgid "Type “/help {str:ClassName}” for more information about your class"
+msgstr "Γράψε «/help {str:ClassName}» για περισσόερες πηροφορίες για την ιδιότητά σου"
+
+#: src/game/server/entities/hero-flag.cpp:41
+msgid "The Hero found the flag!"
+msgstr "Ο ήρωας βρήκε τη σημαία!"
+

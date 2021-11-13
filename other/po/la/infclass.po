@@ -1,0 +1,682 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: teeuniverse\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2017-07-31 19:50+0200\n"
+"PO-Revision-Date: 2017-07-31 15:23-0400\n"
+"Last-Translator: necropotame <necropotame@gmail.com>\n"
+"Language-Team: Latin\n"
+"Language: la_LA\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Generator: crowdin.com\n"
+"X-Crowdin-Project: teeuniverse\n"
+"X-Crowdin-Language: la-LA\n"
+"X-Crowdin-File: infclasspot.po\n"
+
+#: src/engine/server/server.cpp:2164
+msgid "{str:Victim} has been muted for {sec:Duration} ({str:Reason})"
+msgstr "{str:Victim} lingua praecisa est ad {sec:Duration} ({str:Reason})"
+
+#: src/engine/server/server.cpp:2912
+msgid "You are now logged."
+msgstr "Nunc conscriptus es."
+
+#: src/engine/server/server.cpp:2919
+msgid "Wrong username/password."
+msgstr "Nomen falsum aut tessera falsa."
+
+#: src/engine/server/server.cpp:2994
+msgid "An error occured during the operation."
+msgstr "Error obvenit operatione."
+
+#: src/engine/server/server.cpp:3009
+msgid "You must be logged for this operation"
+msgstr "Tibi conscriptum esse opus est, ut hanc operationem conficias."
+
+#: src/engine/server/server.cpp:3063
+msgid "Please wait 5 minutes before creating another account"
+msgstr "Expecta minutas 5 ante quam recrees adcomputum alium"
+
+#: src/engine/server/server.cpp:3071 src/engine/server/server.cpp:3098
+#: src/engine/server/server.cpp:3117 src/engine/server/server.cpp:3156
+#: src/engine/server/server.cpp:3164
+msgid "An error occured during the creation of your account."
+msgstr "Error obvenit, quum accomputus creatus est."
+
+#: src/engine/server/server.cpp:3090
+msgid "This username is already taken by an existing account"
+msgstr "Hoc accomputus iam exemptus est."
+
+#: src/engine/server/server.cpp:3135
+msgid "Your account has been created and you are now logged."
+msgstr "Accomputus tuus confectus est tuque iam conscriptus es."
+
+#: src/engine/server/server.cpp:3719
+msgid "You must be logged to see your rank"
+msgstr "Tibi conscriptum esse opus est, ut decus videas."
+
+#: src/engine/server/server.cpp:3803
+msgid "You must be logged to see your goal"
+msgstr "Tibi conscriptum esse opus est, ut terminum videas."
+
+#: src/engine/server/server.cpp:4110
+msgid "You have already notified that {str:PlayerName} ought to be banned"
+msgstr "Iam denuntiavisti {str:PlayerName} esse proiectum"
+
+#: src/engine/server/server.cpp:4125
+msgid "{str:PlayerName} wants {str:VictimName} to be banned ({str:Reason})"
+msgstr "{str:PlayerName} {str:VictimName} proiectum esse postulavit ({str:Reason})"
+
+#: src/game/server/gamemodes/mod.cpp:243 src/game/server/gamemodes/mod.cpp:267
+msgid "{str:VictimName} has been infected"
+msgstr "{str:VictimName} infectus est"
+
+#: src/game/server/gamemodes/mod.cpp:298 src/game/server/gamemodes/mod.cpp:405
+msgid "Infected won the round in {sec:RoundDuration}"
+msgstr "Infecti evicere per {sec:RoundDuration}"
+
+#: src/game/server/gamemodes/mod.cpp:385
+msgid "One human won the round"
+msgid_plural "{int:NumHumans} humans won the round"
+msgstr[0] "Homo unicus pugnam evicit"
+msgstr[1] "{int:NumHumans} Homines pugnam evicere"
+
+#: src/game/server/gamemodes/mod.cpp:398
+msgid "You have survived, +5 points"
+msgstr "Pugnae superes, +5 copiae"
+
+#: src/game/server/gamemodes/mod.cpp:546
+#: src/game/server/entities/character.cpp:2471
+msgid "You have infected {str:VictimName}, +3 points"
+msgstr "Infecisti {str:VictimName}, +3 copiae"
+
+#: src/game/server/gamemodes/mod.cpp:576
+msgid "You have killed a witch, +5 points"
+msgstr "Maleficam necavisti, +5 copiae"
+
+#: src/game/server/gamemodes/mod.cpp:588 src/game/server/gamemodes/mod.cpp:614
+msgid "You have eliminated your target, +2 points"
+msgstr "Scopum sustulisti, +2 copiae"
+
+#: src/game/server/player.cpp:195
+msgid "Hook protection enabled"
+msgstr "Protectio contra captionem instructa"
+
+#: src/game/server/player.cpp:197
+msgid "Hook protection disabled"
+msgstr "Protectio contra captionem secessa"
+
+#: src/game/server/player.cpp:368
+msgid "{str:PlayerName} has been banned ({str:Reason})"
+msgstr "{str:PlayerName} proiectus est ({str:Reason})"
+
+#: src/game/server/player.cpp:375
+msgid "{str:PlayerName} has been kicked ({str:Reason})"
+msgstr "{str:PlayerName} eiectus est ({str:Reason}) "
+
+#: src/game/server/player.cpp:382
+msgid "{str:PlayerName} has left the game ({str:Reason})"
+msgstr "{str:PlayerName} pugnam reliquit ({str:Reason})"
+
+#: src/game/server/player.cpp:389
+msgid "{str:PlayerName} has left the game"
+msgstr "{str:PlayerName} pugnam reliquit"
+
+#: src/game/server/player.cpp:476
+msgid "{str:PlayerName} joined the spectators"
+msgstr "{str:PlayerName} ad spectatores accessit"
+
+#: src/game/server/player.cpp:480
+msgid "{str:PlayerName} joined the game"
+msgstr "{str:PlayerName} ad ludum accessit"
+
+#: src/game/server/gamecontext.cpp:556 src/game/server/gamecontext.cpp:3074
+#: src/game/server/entities/character.cpp:1767
+msgid "Engineer"
+msgstr "Clavicarius"
+
+#: src/game/server/gamecontext.cpp:559 src/game/server/gamecontext.cpp:3087
+#: src/game/server/entities/character.cpp:1774
+msgid "Soldier"
+msgstr "Miles"
+
+#: src/game/server/gamecontext.cpp:562 src/game/server/gamecontext.cpp:3135
+#: src/game/server/entities/character.cpp:1795
+msgid "Medic"
+msgstr "Medicus"
+
+#: src/game/server/gamecontext.cpp:565 src/game/server/gamecontext.cpp:3146
+#: src/game/server/entities/character.cpp:1802
+msgid "Hero"
+msgstr "Heros"
+
+#: src/game/server/gamecontext.cpp:568 src/game/server/gamecontext.cpp:3161
+#: src/game/server/entities/character.cpp:1809
+msgid "Ninja"
+msgstr "Ninja"
+
+#: src/game/server/gamecontext.cpp:571 src/game/server/gamecontext.cpp:3177
+#: src/game/server/entities/character.cpp:1816
+msgid "Mercenary"
+msgstr "Mercennarius"
+
+#: src/game/server/gamecontext.cpp:574 src/game/server/gamecontext.cpp:3195
+#: src/game/server/entities/character.cpp:1823
+msgid "Sniper"
+msgstr "Sniper"
+
+#: src/game/server/gamecontext.cpp:577 src/game/server/gamecontext.cpp:3107
+#: src/game/server/entities/character.cpp:1781
+msgid "Scientist"
+msgstr "Scientista"
+
+#: src/game/server/gamecontext.cpp:580 src/game/server/gamecontext.cpp:3126
+#: src/game/server/entities/character.cpp:1788
+msgid "Biologist"
+msgstr "Biologista"
+
+#: src/game/server/gamecontext.cpp:583 src/game/server/gamecontext.cpp:3208
+msgid "Smoker"
+msgstr "Fumigator"
+
+#: src/game/server/gamecontext.cpp:586 src/game/server/gamecontext.cpp:3232
+msgid "Hunter"
+msgstr "Venator"
+
+#: src/game/server/gamecontext.cpp:589 src/game/server/gamecontext.cpp:3219
+msgid "Boomer"
+msgstr "Boomer"
+
+#: src/game/server/gamecontext.cpp:592 src/game/server/gamecontext.cpp:3245
+msgid "Ghost"
+msgstr "Larua"
+
+#: src/game/server/gamecontext.cpp:595 src/game/server/gamecontext.cpp:3258
+msgid "Spider"
+msgstr "Aranea"
+
+#: src/game/server/gamecontext.cpp:598 src/game/server/gamecontext.cpp:3273
+msgid "Ghoul"
+msgstr "Ġūl"
+
+#: src/game/server/gamecontext.cpp:601 src/game/server/gamecontext.cpp:3286
+msgid "Slug"
+msgstr "Limax"
+
+#: src/game/server/gamecontext.cpp:604 src/game/server/gamecontext.cpp:3314
+msgid "Witch"
+msgstr "Malefica"
+
+#: src/game/server/gamecontext.cpp:607 src/game/server/gamecontext.cpp:3299
+msgid "Undead"
+msgstr "Immortalis"
+
+#: src/game/server/gamecontext.cpp:610
+msgid "Unknown class"
+msgstr "Classis incognita"
+
+#: src/game/server/gamecontext.cpp:615
+msgid "You are a human: {str:ClassName}"
+msgstr "Homo es: {str:ClassName}"
+
+#: src/game/server/gamecontext.cpp:617
+msgid "You are an infected: {str:ClassName}"
+msgstr "Infectus es: {str:ClassName}"
+
+#: src/game/server/gamecontext.cpp:1199
+msgid "{str:PlayerName} entered and joined the game"
+msgstr "{str:PlayerName} intravit accessitque"
+
+#: src/game/server/gamecontext.cpp:1389 src/game/server/gamecontext.cpp:2522
+msgid "You are muted for {sec:Duration}"
+msgstr "Lingua tibi praecisa est ad {sec:Duration}"
+
+#: src/game/server/gamecontext.cpp:1619
+msgid "You can't join the spectators right now"
+msgstr "Nondum ad spectatores accedere potes"
+
+#: src/game/server/gamecontext.cpp:1675
+msgid "{str:PlayerName} changed their name to {str:NewName}"
+msgstr "{str:PlayerName} nomen innovavit {str:NewName}"
+
+#: src/game/server/gamecontext.cpp:1914
+msgid "Switch language to english ?"
+msgstr "Linguam in latinam commutare?"
+
+#: src/game/server/gamecontext.cpp:1920
+msgid "You can change the language of this mod using the command /language."
+msgstr "Linguam modificationis iusso /language permutare licet."
+
+#: src/game/server/gamecontext.cpp:1921
+msgid "If your language is not available, you can help with translation (/help translate)."
+msgstr "Si lingua tua non in promptu est, tibi traductioni subvenire licet (/help translate)."
+
+#: src/game/server/gamecontext.cpp:2503
+msgid "InfectionClass, by necropotame (version {str:VersionCode})"
+msgstr "InfectionClass, auctoris necropotame (version {str:VersionCode})"
+
+#: src/game/server/gamecontext.cpp:2505
+msgid "Based on the concept of Infection mod by Gravity"
+msgstr "Constat in conceptu modificationis Infection, auctoris Gravity"
+
+#: src/game/server/gamecontext.cpp:2507
+msgid "Main contributors: {str:ListOfContributors}"
+msgstr "Contributores praecipui: {str:ListOfContributors}"
+
+#: src/game/server/gamecontext.cpp:2509
+msgid "Thanks to {str:ListOfContributors}"
+msgstr "Grates {str:ListOfContributors}"
+
+#: src/game/server/gamecontext.cpp:2721
+msgid "No player was found with this name"
+msgstr "Arenarius huius nominis non repertus est."
+
+#: src/game/server/gamecontext.cpp:3044
+msgid "Rules of the game"
+msgstr "Regulae ludi"
+
+#: src/game/server/gamecontext.cpp:3046
+msgid "InfectionClass is a team game between humans and infected."
+msgstr "InfectionClass ludus gregum inter homines infectosque."
+
+#: src/game/server/gamecontext.cpp:3048
+msgid "All players start as human."
+msgstr "Omnes arenarii homines incohant."
+
+#: src/game/server/gamecontext.cpp:3050
+msgid "10 seconds later, two players become infected."
+msgstr "Post secundas 10, arenarii duo inficiuntur."
+
+#: src/game/server/gamecontext.cpp:3052
+msgid "The goal for humans is to survive until the army clean the map."
+msgstr "Finis hominum est supervivere, donec militia arenam repurgat."
+
+#: src/game/server/gamecontext.cpp:3054
+msgid "The goal for infected is to infect all humans."
+msgstr "Finis infectorum est inficere homines omnes."
+
+#: src/game/server/gamecontext.cpp:3061
+msgid "How to translate the mod"
+msgstr "Quemadmodum modificationem traducere potes:"
+
+#: src/game/server/gamecontext.cpp:3063
+msgid "Create an account on Crowdin and join a translation team:"
+msgstr "Nomen tibi apud Crowdin da et gregi traductionis accede:"
+
+#: src/game/server/gamecontext.cpp:3067
+msgid "For any question about the translation process, please contact us on IRC ({str:IRCAddress})"
+msgstr "Quaestione de traductionis processu exorta nos via IRC ({str:IRCAddress}) postula"
+
+#: src/game/server/gamecontext.cpp:3076
+msgid "The Engineer can build walls with his hammer to block infected."
+msgstr "Clavicarius malleo valla infectos inhibendes exstruere potest."
+
+#: src/game/server/gamecontext.cpp:3078
+msgid "When an infected touch the wall, he dies."
+msgstr "Quum infectus vallum tangit, tum moritur."
+
+#: src/game/server/gamecontext.cpp:3080
+msgid "The lifespan of a wall is {sec:LifeSpan}, and walls are limited to one per player at the same time."
+msgstr "Vallum {sec:LifeSpan} constat durare, tummodo arenarius unum solum vallum exstruere potest."
+
+#: src/game/server/gamecontext.cpp:3089
+msgid "The Soldier can pose floating bombs with his hammer."
+msgstr "Miles malleo bombas impendentes creare potest."
+
+#: src/game/server/gamecontext.cpp:3093
+msgid "Each bomb can explode one time."
+msgid_plural "Each bomb can explode {int:NumBombs} times."
+msgstr[0] "Bomba posita explosioni uni ideona est."
+msgstr[1] "Bomba posita explosioni numeri {int:NumBombs} ideona est."
+
+#: src/game/server/gamecontext.cpp:3098
+msgid "Use the hammer to place the bomb and explode it multiple times."
+msgstr "Malleo utere, ut bombam interponas inardescasque pluriens."
+
+#: src/game/server/gamecontext.cpp:3100
+msgid "Bombs are limited to one per player at the same time."
+msgstr "Bombae terminatae sunt, ut una arenario quoicumque quandocumque sola exstet."
+
+#: src/game/server/gamecontext.cpp:3109
+msgid "The Scientist can pose floating mines with his hammer."
+msgstr "Scientista malleo minas pendentes interponere potest."
+
+#: src/game/server/gamecontext.cpp:3113
+msgid "Mines are limited to one per player at the same time."
+msgid_plural "Mines are limited to {int:NumMines} per player at the same time."
+msgstr[0] "Minae terminatae sunt, ut una arenario quoicumque quandocumque exstet."
+msgstr[1] "Minae terminatae sunt, ut {int:NumMines} arenario quoicumque quandocumque exstent."
+
+#: src/game/server/gamecontext.cpp:3118
+msgid "He has also grenades that teleport him."
+msgstr "Etiam granatas quae eum teleportant habet."
+
+#: src/game/server/gamecontext.cpp:3128
+msgid "The biologist has a shotgun with bouncing bullets and can create a spring laser trap by shooting with his rifle."
+msgstr "Biologus sclopetum dispergens cum missilibus reflectentibus habet laqueumque sclopeto laserico struere potest."
+
+#: src/game/server/gamecontext.cpp:3137
+msgid "The Medic can protect humans with his hammer by giving them armor."
+msgstr "Medicus malleo tegumina disponens homines tuerier potest."
+
+#: src/game/server/gamecontext.cpp:3139
+msgid "He has also a powerful shotgun that can pullback infected."
+msgstr "Etiam sibi sclopetum dispergens habet potens, quod infectos deicere pollet."
+
+#: src/game/server/gamecontext.cpp:3148
+msgid "The Hero has a shotgun, a laser rifle and grenades."
+msgstr "Heros sclopetum dispergens, sclopetum lasericum granatasque habet."
+
+#: src/game/server/gamecontext.cpp:3150
+msgid "The Hero must find a flag hidden in the map."
+msgstr "Heroi vexillum in mappa reconditum inveniendum est. "
+
+#: src/game/server/gamecontext.cpp:3152
+msgid "Once taken, the flag gives 1 health point, 4 armor points, and full ammo to all humans, furthermore full health and armor to the hero."
+msgstr "Heroe vexillum indepto punctum unum integritatis valetudinis uniquoique gregis humani redditur, puncta quatuor tegumentorum suppletur et arma replentur, integritas herois penitus."
+
+#: src/game/server/gamecontext.cpp:3154
+msgid "The hero cannot be healed by a medic, but he can withstand a thrust by an infected, an his health suffice."
+msgstr "Heros a medico sanari non ideoneus est, sed plagae infecti resistere, quin pereat, si integritas sua huic sufficit."
+
+#: src/game/server/gamecontext.cpp:3163
+msgid "The Ninja can throw flash grenades that can freeze infected during three seconds."
+msgstr "Ninja granatas iacere potest quae infectos tres secundas congelare pollent."
+
+#: src/game/server/gamecontext.cpp:3167
+msgid "His hammer is replaced by a katana, allowing him to jump one time before touching the ground."
+msgid_plural "His hammer is replaced by a katana, allowing him to jump {int:NinjaJump} times before touching the ground."
+msgstr[0] "Malleus eius katana permutatus. Quo in manus pervenit, ut insultet semel, antequam solum contingit."
+msgstr[1] "Malleus eius katana permutatus. Quo in manus pervenit, ut insultet {int:NinjaJump} temporibus, antequam solum contingit."
+
+#: src/game/server/gamecontext.cpp:3179
+msgid "The Mercenary fly in air using his machine gun."
+msgstr "Mercennarius sclopeto polybolico in aere volare potest."
+
+#: src/game/server/gamecontext.cpp:3181
+msgid "He can coil explosives with his hammer that hinder infected from harming."
+msgstr "Vasa displosiva quae infectos nocendi valentia distineunt convolvere capax est."
+
+#: src/game/server/gamecontext.cpp:3185
+msgid "He can also throw poison grenades that each deal one damage point."
+msgid_plural "He can also throw poison grenades that each deal {int:NumDamagePoints} damage points."
+msgstr[0] "Ad hoc granatas veneficas iacere potest quae singulae plagam unam inponunt."
+msgstr[1] "Ad hoc granatas veneficas iacere potest quae plagas {int:NumDamagePoints} inponunt."
+
+#: src/game/server/gamecontext.cpp:3197
+msgid "The Sniper can lock his position in air for 15 seconds with his hammer."
+msgstr "Sniper malleo positionem 15 secundas claudere in aere potest."
+
+#: src/game/server/gamecontext.cpp:3199 src/game/server/gamecontext.cpp:3236
+msgid "He can jump two times in air."
+msgstr "Bis in aere exsilere potest."
+
+#: src/game/server/gamecontext.cpp:3201
+msgid "He has also a powerful rifle that deals 30 damage points in locked position, and 10–13 otherwise."
+msgstr "Sclopetum striatum habet quod nocet 30 in claustro, 10–13 alias."
+
+#: src/game/server/gamecontext.cpp:3210
+msgid "The Smoker can infect humans and heal infected with his hammer."
+msgstr "Fumigator malleo homines inficere infectosque sanare potest."
+
+#: src/game/server/gamecontext.cpp:3212
+msgid "He can also inflict 4 damage points per second by hooking humans."
+msgstr "Plagas quoque 4 per secundam unco infligere potest."
+
+#: src/game/server/gamecontext.cpp:3221
+msgid "The Boomer explodes when he attack."
+msgstr "Boomer explodit, quum oppugnat."
+
+#: src/game/server/gamecontext.cpp:3223
+msgid "All humans affected by the explosion become infected."
+msgstr "Homines toti explosione affecti inficiuntur."
+
+#: src/game/server/gamecontext.cpp:3225 src/game/server/gamecontext.cpp:3238
+#: src/game/server/gamecontext.cpp:3251 src/game/server/gamecontext.cpp:3307
+msgid "He can also inflict 1 damage point per second by hooking humans."
+msgstr "Plagam 1 quoque per secundam unco infligere potest."
+
+#: src/game/server/gamecontext.cpp:3234
+msgid "The Hunter can infect humans and heal infected with his hammer."
+msgstr "Venator malleo homines inficere infectosque sanare potest."
+
+#: src/game/server/gamecontext.cpp:3247
+msgid "The Ghost can infect humans and heal infected with his hammer."
+msgstr "Larua malleo homines inficere infectosque sanare potest."
+
+#: src/game/server/gamecontext.cpp:3249
+msgid "He is invisible, except if a human is near him, if he takes a damage or if he use his hammer."
+msgstr "Latens est, donec homo proxumus sit, pugnam experiatur aut malleo utatur."
+
+#: src/game/server/gamecontext.cpp:3260
+msgid "The Spider can infect humans and heal infected with his hammer."
+msgstr "Aranea malleo homines inficere infectosque sanare potest."
+
+#: src/game/server/gamecontext.cpp:3262
+msgid "When selecting any gun, his hook enter in web mode."
+msgstr "Quum telum quodlubet seligis, captio eius unco in modum retialem transit."
+
+#: src/game/server/gamecontext.cpp:3264
+msgid "Any human that touch a hook in web mode is automatically grabbed."
+msgstr "Homo quicumque uncum in modo retiali tangens apprehenditur."
+
+#: src/game/server/gamecontext.cpp:3266
+msgid "The hook of the spider (in both mode) deal 1 damage point per second and can grab a human during 2 seconds."
+msgstr "Uncus araneus (in modos ambobus) plagam 1 infligit et hominem secundas 2 tenet."
+
+#: src/game/server/gamecontext.cpp:3275
+msgid "The Ghoul can infect humans and heal infected with his hammer."
+msgstr "Ġūl malleo homines inficere infectosque sanare potest."
+
+#: src/game/server/gamecontext.cpp:3277
+msgid "He can devour all that has died close to him, which makes him stronger, faster and more resistant."
+msgstr "Omnia circa eum mortua devorare potest, quo fortior, celerior firmiorque fiat."
+
+#: src/game/server/gamecontext.cpp:3279
+msgid "Thereupon he digests his fodder bit by bit going back to his normal state, and besides, death bereaves him of his nourishment."
+msgstr "Exinde pabulum digerit sensim ad statum vulgarem revolviens, ultro ei letum alimenta detrahit."
+
+#: src/game/server/gamecontext.cpp:3288
+msgid "The Slug can infect humans and heal infected with his hammer."
+msgstr "Limax malleo homines inficere infectosque sanare potest."
+
+#: src/game/server/gamecontext.cpp:3290
+msgid "He can make the ground and walls toxic by spreading slime with his hammer."
+msgstr "Solum parietesque veneniferos malleo mucum reddendo potest."
+
+#: src/game/server/gamecontext.cpp:3292
+msgid "Touching the slime inflicts three damage points in three seconds on a human."
+msgstr "Contamen muci homini plagas tres per secunda tria infligit."
+
+#: src/game/server/gamecontext.cpp:3301
+msgid "The Undead can infect humans and heal infected with his hammer."
+msgstr "Immortalis malleo homines inficere infectosque sanare potest."
+
+#: src/game/server/gamecontext.cpp:3303
+msgid "Instead of dying, he freezes during 10 seconds."
+msgstr "Pro morte secundas 10 gelatur."
+
+#: src/game/server/gamecontext.cpp:3305
+msgid "If an infected heals him, the freeze effect disappear."
+msgstr "Quando infectus eum sanat, effectus gelationis decedit."
+
+#: src/game/server/gamecontext.cpp:3317
+msgid "The Witch can infect humans and heal infected with his hammer."
+msgstr "Malefica malleo homines inficere infectosque sanare potest."
+
+#: src/game/server/gamecontext.cpp:3319
+msgid "When an infected dies, he may re-spawn near her."
+msgstr "Infectus mortuus iuxta eam ab inferis exsistere potest."
+
+#: src/game/server/gamecontext.cpp:3321
+msgid "If the Witch dies, she disappears and is replaced by another class of infected."
+msgstr "Malefica mortua decedit commutaturque infecto classis alius."
+
+#: src/game/server/gamecontext.cpp:3323
+msgid "She can also inflict 1 damage point per second by hooking humans."
+msgstr "Plagam 1 quoque per secundam unco infligere potest."
+
+#: src/game/server/gamecontext.cpp:3330
+msgid "Targeted chat messages"
+msgstr "Nuntia colineata"
+
+#: src/game/server/gamecontext.cpp:3333
+msgid "Use “/msg <PlayerName> <My Message>” to send a private message to this player."
+msgstr "Utere »/msg <Nomen arenarii> <Nuntium meum>«, ut nuntium privatum haec arenario emittas."
+
+#: src/game/server/gamecontext.cpp:3335
+msgid "Use “/msg !<ClassName> <My Message>” to send a private message to all players with a specific class."
+msgstr "Utere »/msg !<nomen classis> <Nuntium meum>«, ut nuntium ad arenarios classis specialis collineatum emittas."
+
+#: src/game/server/gamecontext.cpp:3337
+msgid "Example: “/msg !medic I'm wounded!”"
+msgstr "Exemplum: »/msg !medic Vulneratus sum!«"
+
+#: src/game/server/gamecontext.cpp:3339
+msgid "Use “/msg !near” to send a private message to all players near you."
+msgstr "Utere »/msg !near«, ut nuntium collineatum ad arenarios propinquos emittas."
+
+#: src/game/server/gamecontext.cpp:3349
+msgid "Choose a help page with /help <page>"
+msgstr "Paginam auxiliarem iusso »/help <pagina>« eligas"
+
+#: src/game/server/gamecontext.cpp:3352
+msgid "Available help pages: {str:PageList}"
+msgstr "Paginae auxiliares promptae: {str:PageList}"
+
+#: src/game/server/gamecontext.cpp:3411
+msgid "A random class will be automatically attributed to you when rounds start"
+msgstr "Classis fortuita tibi assignatur, quum ludus incipit"
+
+#: src/game/server/gamecontext.cpp:3417
+msgid "The class selector will be displayed when rounds start"
+msgstr "Selector classis praebebitur, quum ludus incipit"
+
+#: src/game/server/gamecontext.cpp:3457
+msgid "Unknown language"
+msgstr "Lingua incognita"
+
+#: src/game/server/gamecontext.cpp:3470
+msgid "Available languages: {str:ListOfLanguage}"
+msgstr "Paginae auxiliares promptae: {str:ListOfLanguage}"
+
+#: src/game/server/gamecontext.cpp:3487
+msgid "List of commands"
+msgstr "Tabula iussorum"
+
+#: src/game/server/gamecontext.cpp:3499
+msgid "Press <F3> or <F4> to enable or disable hook protection"
+msgstr "Preme <F3> aut <F4> ad instructionem protectionis contra captionem"
+
+#: src/game/server/entities/character.cpp:1407
+msgid "You have held a bonus area for one minute, +5 points"
+msgstr "Zonae seorsae unam minutam immoratus es, +5 copiae"
+
+#: src/game/server/entities/character.cpp:1476
+msgid "You are frozen: {sec:EffectDuration}"
+msgstr "Gelatus es: {sec:EffectDuration}"
+
+#: src/game/server/entities/character.cpp:1761
+msgid "Random choice"
+msgstr "Electio fortuita"
+
+#: src/game/server/entities/character.cpp:1833
+msgid "Choose your class"
+msgstr "Classem elige"
+
+#: src/game/server/entities/character.cpp:1905
+msgid "Laser wall: {sec:RemainingTime}"
+msgstr "Vallum lasericum: {sec:RemainingTime}"
+
+#: src/game/server/entities/character.cpp:1923
+msgid "One bomb left"
+msgid_plural "{int:NumBombs} bombs left"
+msgstr[0] "Bomba una reliqua"
+msgstr[1] "{int:NumBombs} bombae reliquae"
+
+#: src/game/server/entities/character.cpp:1941
+msgid "One mine is active"
+msgid_plural "{int:NumMines} mines are active"
+msgstr[0] "Una mina reliqua"
+msgstr[1] "{int:NumMines} minae reliquae"
+
+#: src/game/server/entities/character.cpp:1959
+msgid "Mine activated"
+msgstr "Mina posita"
+
+#: src/game/server/entities/character.cpp:1973
+msgid "Next target in {sec:RemainingTime}"
+msgstr "Scopus sequens post {sec:RemainingTime}"
+
+#: src/game/server/entities/character.cpp:1981
+msgid "Target to eliminate: {str:PlayerName}"
+msgstr "Scopus tollendus: {str:PlayerName}"
+
+#: src/game/server/entities/character.cpp:1993
+msgid "Position lock: {sec:RemainingTime}"
+msgstr "Claustrum positionis: {sec:RemainingTime}"
+
+#: src/game/server/entities/character.cpp:2015
+msgid "Explosive yield: {percent:BombLevel}"
+msgstr "Vis displosiva: {percent:BombLevel}"
+
+#: src/game/server/entities/character.cpp:2040
+msgid "Next flag in {sec:RemainingTime}"
+msgstr "Vexillum sequens post {sec:RemainingTime}"
+
+#: src/game/server/entities/character.cpp:2050
+msgid "Web mode enabled"
+msgstr "Modus retialis instructus"
+
+#: src/game/server/entities/character.cpp:2059
+msgid "Stomach filled by {percent:FodderInStomach}"
+msgstr "Venter infertus {percent:FodderInStomach}"
+
+#: src/game/server/entities/character.cpp:2336
+msgid "The witch is dead"
+msgstr "Malefica mortua est"
+
+#: src/game/server/entities/character.cpp:2342
+msgid "The undead is finally dead"
+msgstr "Immortalis tandem mortuus est"
+
+#: src/game/server/entities/character.cpp:2764
+msgid "Sword velocity increased"
+msgstr "Velocitas ensis aucta"
+
+#: src/game/server/entities/character.cpp:2768
+msgid "Sword strength increased"
+msgstr "Vis ensis aucta"
+
+#: src/game/server/entities/character.cpp:2772
+msgid "Grenade limit increased"
+msgstr "Limes granatarius auctus"
+
+#: src/game/server/entities/character.cpp:2794
+#: src/game/server/entities/character.cpp:2811
+#: src/game/server/entities/character.cpp:2828
+#: src/game/server/entities/character.cpp:2845
+#: src/game/server/entities/character.cpp:2863
+#: src/game/server/entities/character.cpp:2881
+#: src/game/server/entities/character.cpp:2898
+#: src/game/server/entities/character.cpp:2916
+#: src/game/server/entities/character.cpp:2932
+#: src/game/server/entities/character.cpp:2954
+#: src/game/server/entities/character.cpp:2969
+#: src/game/server/entities/character.cpp:2984
+#: src/game/server/entities/character.cpp:2999
+#: src/game/server/entities/character.cpp:3014
+#: src/game/server/entities/character.cpp:3029
+#: src/game/server/entities/character.cpp:3044
+#: src/game/server/entities/character.cpp:3059
+#: src/game/server/entities/character.cpp:3074
+msgid "Type “/help {str:ClassName}” for more information about your class"
+msgstr "Scribe »/help {str:ClassName}« pro informationibus pluribus"
+
+#: src/game/server/entities/hero-flag.cpp:41
+msgid "The Hero found the flag!"
+msgstr "Heros vexillum invenit!"
+

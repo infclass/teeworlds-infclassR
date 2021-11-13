@@ -1,0 +1,689 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: teeuniverse\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2017-07-31 19:50+0200\n"
+"PO-Revision-Date: 2017-07-31 15:23-0400\n"
+"Last-Translator: necropotame <necropotame@gmail.com>\n"
+"Language-Team: Russian\n"
+"Language: ru_RU\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
+"X-Generator: crowdin.com\n"
+"X-Crowdin-Project: teeuniverse\n"
+"X-Crowdin-Language: ru\n"
+"X-Crowdin-File: infclasspot.po\n"
+
+#: src/engine/server/server.cpp:2164
+msgid "{str:Victim} has been muted for {sec:Duration} ({str:Reason})"
+msgstr "{str:Victim} замолчал на {sec:Duration} ({str:Reason})"
+
+#: src/engine/server/server.cpp:2912
+msgid "You are now logged."
+msgstr "Теперь ты вошел."
+
+#: src/engine/server/server.cpp:2919
+msgid "Wrong username/password."
+msgstr "Неверное имя пользователя/неверный пароль."
+
+#: src/engine/server/server.cpp:2994
+msgid "An error occured during the operation."
+msgstr "Возникла ошибка во время действия."
+
+#: src/engine/server/server.cpp:3009
+msgid "You must be logged for this operation"
+msgstr "Надо войти в учётную запись для этого действия"
+
+#: src/engine/server/server.cpp:3063
+msgid "Please wait 5 minutes before creating another account"
+msgstr "Пожалуйста, подожди 5 минут перед созданием ещё одной учётной записи"
+
+#: src/engine/server/server.cpp:3071 src/engine/server/server.cpp:3098
+#: src/engine/server/server.cpp:3117 src/engine/server/server.cpp:3156
+#: src/engine/server/server.cpp:3164
+msgid "An error occured during the creation of your account."
+msgstr "Произошла ошибка при создании твоей учётной записи."
+
+#: src/engine/server/server.cpp:3090
+msgid "This username is already taken by an existing account"
+msgstr "Это прозвище уже занято"
+
+#: src/engine/server/server.cpp:3135
+msgid "Your account has been created and you are now logged."
+msgstr "Твоя учётная запись создана и ты уже вошёл в неё."
+
+#: src/engine/server/server.cpp:3719
+msgid "You must be logged to see your rank"
+msgstr "Надо быть подключённым к своей учётной записи, чтобы видеть свой ранг"
+
+#: src/engine/server/server.cpp:3803
+msgid "You must be logged to see your goal"
+msgstr "Надо быть подключённым к своей учётной записи, чтобы видеть свой целевой балл"
+
+#: src/engine/server/server.cpp:4110
+msgid "You have already notified that {str:PlayerName} ought to be banned"
+msgstr "Ты уже провозгласил, что {str:PlayerName} надо забанить"
+
+#: src/engine/server/server.cpp:4125
+msgid "{str:PlayerName} wants {str:VictimName} to be banned ({str:Reason})"
+msgstr "{str:PlayerName} хочет, чтобы {str:VictimName} был забанен ({str:Reason})"
+
+#: src/game/server/gamemodes/mod.cpp:243 src/game/server/gamemodes/mod.cpp:267
+msgid "{str:VictimName} has been infected"
+msgstr "{str:VictimName} заражён"
+
+#: src/game/server/gamemodes/mod.cpp:298 src/game/server/gamemodes/mod.cpp:405
+msgid "Infected won the round in {sec:RoundDuration}"
+msgstr "Зараженные выиграли раунд за {sec:RoundDuration}"
+
+#: src/game/server/gamemodes/mod.cpp:385
+msgid "One human won the round"
+msgid_plural "{int:NumHumans} humans won the round"
+msgstr[0] "{int:NumHumans} человек победил."
+msgstr[1] "{int:NumHumans} человека победили"
+msgstr[2] "{int:NumHumans} людей победило"
+
+#: src/game/server/gamemodes/mod.cpp:398
+msgid "You have survived, +5 points"
+msgstr "Ты выжил, +5 очков"
+
+#: src/game/server/gamemodes/mod.cpp:546
+#: src/game/server/entities/character.cpp:2471
+msgid "You have infected {str:VictimName}, +3 points"
+msgstr "Ты заразил {str:VictimName}, +3 очка"
+
+#: src/game/server/gamemodes/mod.cpp:576
+msgid "You have killed a witch, +5 points"
+msgstr "Ты убил ведьму, +5 очков"
+
+#: src/game/server/gamemodes/mod.cpp:588 src/game/server/gamemodes/mod.cpp:614
+msgid "You have eliminated your target, +2 points"
+msgstr "Ты уничтожил свою цель, +2 очка"
+
+#: src/game/server/player.cpp:195
+msgid "Hook protection enabled"
+msgstr "Защита против зацепки включена"
+
+#: src/game/server/player.cpp:197
+msgid "Hook protection disabled"
+msgstr "Защита против зацепки выключена"
+
+#: src/game/server/player.cpp:368
+msgid "{str:PlayerName} has been banned ({str:Reason})"
+msgstr "{str:PlayerName} заблокирован/забанен ({str:Reason})"
+
+#: src/game/server/player.cpp:375
+msgid "{str:PlayerName} has been kicked ({str:Reason})"
+msgstr "{str:PlayerName} изгнан/кикнут из игры ({str:Reason})"
+
+#: src/game/server/player.cpp:382
+msgid "{str:PlayerName} has left the game ({str:Reason})"
+msgstr "{str:PlayerName} покинул игру ({str:Reason})"
+
+#: src/game/server/player.cpp:389
+msgid "{str:PlayerName} has left the game"
+msgstr "{str:PlayerName} вышел из игры"
+
+#: src/game/server/player.cpp:476
+msgid "{str:PlayerName} joined the spectators"
+msgstr "{str:PlayerName} присоединился к наблюдателям"
+
+#: src/game/server/player.cpp:480
+msgid "{str:PlayerName} joined the game"
+msgstr "{str:PlayerName} присоединился к игре"
+
+#: src/game/server/gamecontext.cpp:556 src/game/server/gamecontext.cpp:3074
+#: src/game/server/entities/character.cpp:1767
+msgid "Engineer"
+msgstr "Инженер"
+
+#: src/game/server/gamecontext.cpp:559 src/game/server/gamecontext.cpp:3087
+#: src/game/server/entities/character.cpp:1774
+msgid "Soldier"
+msgstr "Солдат"
+
+#: src/game/server/gamecontext.cpp:562 src/game/server/gamecontext.cpp:3135
+#: src/game/server/entities/character.cpp:1795
+msgid "Medic"
+msgstr "Врач"
+
+#: src/game/server/gamecontext.cpp:565 src/game/server/gamecontext.cpp:3146
+#: src/game/server/entities/character.cpp:1802
+msgid "Hero"
+msgstr "Храбрец"
+
+#: src/game/server/gamecontext.cpp:568 src/game/server/gamecontext.cpp:3161
+#: src/game/server/entities/character.cpp:1809
+msgid "Ninja"
+msgstr "Ниндзя"
+
+#: src/game/server/gamecontext.cpp:571 src/game/server/gamecontext.cpp:3177
+#: src/game/server/entities/character.cpp:1816
+msgid "Mercenary"
+msgstr "Наёмник"
+
+#: src/game/server/gamecontext.cpp:574 src/game/server/gamecontext.cpp:3195
+#: src/game/server/entities/character.cpp:1823
+msgid "Sniper"
+msgstr "Снайпер"
+
+#: src/game/server/gamecontext.cpp:577 src/game/server/gamecontext.cpp:3107
+#: src/game/server/entities/character.cpp:1781
+msgid "Scientist"
+msgstr "Учёный"
+
+#: src/game/server/gamecontext.cpp:580 src/game/server/gamecontext.cpp:3126
+#: src/game/server/entities/character.cpp:1788
+msgid "Biologist"
+msgstr "Биолог"
+
+#: src/game/server/gamecontext.cpp:583 src/game/server/gamecontext.cpp:3208
+msgid "Smoker"
+msgstr "Курильщик"
+
+#: src/game/server/gamecontext.cpp:586 src/game/server/gamecontext.cpp:3232
+msgid "Hunter"
+msgstr "Охотник"
+
+#: src/game/server/gamecontext.cpp:589 src/game/server/gamecontext.cpp:3219
+msgid "Boomer"
+msgstr "Взрывун"
+
+#: src/game/server/gamecontext.cpp:592 src/game/server/gamecontext.cpp:3245
+msgid "Ghost"
+msgstr "Призрак"
+
+#: src/game/server/gamecontext.cpp:595 src/game/server/gamecontext.cpp:3258
+msgid "Spider"
+msgstr "Паук"
+
+#: src/game/server/gamecontext.cpp:598 src/game/server/gamecontext.cpp:3273
+msgid "Ghoul"
+msgstr "Гуль"
+
+#: src/game/server/gamecontext.cpp:601 src/game/server/gamecontext.cpp:3286
+msgid "Slug"
+msgstr "Улитка"
+
+#: src/game/server/gamecontext.cpp:604 src/game/server/gamecontext.cpp:3314
+msgid "Witch"
+msgstr "Ведьма"
+
+#: src/game/server/gamecontext.cpp:607 src/game/server/gamecontext.cpp:3299
+msgid "Undead"
+msgstr "Бессмертный"
+
+#: src/game/server/gamecontext.cpp:610
+msgid "Unknown class"
+msgstr "Неизвестный класс"
+
+#: src/game/server/gamecontext.cpp:615
+msgid "You are a human: {str:ClassName}"
+msgstr "Ты человек в роли: {str:ClassName}"
+
+#: src/game/server/gamecontext.cpp:617
+msgid "You are an infected: {str:ClassName}"
+msgstr "Ты заражённый в роли: {str:ClassName}"
+
+#: src/game/server/gamecontext.cpp:1199
+msgid "{str:PlayerName} entered and joined the game"
+msgstr "{str:PlayerName} вошёл и присоединился к игре"
+
+#: src/game/server/gamecontext.cpp:1389 src/game/server/gamecontext.cpp:2522
+msgid "You are muted for {sec:Duration}"
+msgstr "Тебя заглушили на {sec:Duration}"
+
+#: src/game/server/gamecontext.cpp:1619
+msgid "You can't join the spectators right now"
+msgstr "Ты не можешь присоединиться к наблюдателям в данный момент"
+
+#: src/game/server/gamecontext.cpp:1675
+msgid "{str:PlayerName} changed their name to {str:NewName}"
+msgstr "{str:PlayerName} сменил своё имя на {str:NewName}"
+
+#: src/game/server/gamecontext.cpp:1914
+msgid "Switch language to english ?"
+msgstr "Переключить язык на русский?"
+
+#: src/game/server/gamecontext.cpp:1920
+msgid "You can change the language of this mod using the command /language."
+msgstr "Ты можешь изменить язык данного режима на русский используя команду /language."
+
+#: src/game/server/gamecontext.cpp:1921
+msgid "If your language is not available, you can help with translation (/help translate)."
+msgstr "Если твой язык отсутствует, то ты можешь поспособствовать переводу (/help translate)."
+
+#: src/game/server/gamecontext.cpp:2503
+msgid "InfectionClass, by necropotame (version {str:VersionCode})"
+msgstr "InfectionClass, от necropotame (version {str:VersionCode})"
+
+#: src/game/server/gamecontext.cpp:2505
+msgid "Based on the concept of Infection mod by Gravity"
+msgstr "Режим игры основан на модификации Infection автора Gravity"
+
+#: src/game/server/gamecontext.cpp:2507
+msgid "Main contributors: {str:ListOfContributors}"
+msgstr "Основополагающие разработчики: {str:ListOfContributors}"
+
+#: src/game/server/gamecontext.cpp:2509
+msgid "Thanks to {str:ListOfContributors}"
+msgstr "Благодарю {str:ListOfContributors}"
+
+#: src/game/server/gamecontext.cpp:2721
+msgid "No player was found with this name"
+msgstr "Ненайдено игрока с этим именем"
+
+#: src/game/server/gamecontext.cpp:3044
+msgid "Rules of the game"
+msgstr "Правила игры"
+
+#: src/game/server/gamecontext.cpp:3046
+msgid "InfectionClass is a team game between humans and infected."
+msgstr "InfectionClass командная игра, где противоборствуют Заражённые и Выжившие."
+
+#: src/game/server/gamecontext.cpp:3048
+msgid "All players start as human."
+msgstr "Все игроки начинают за людей."
+
+#: src/game/server/gamecontext.cpp:3050
+msgid "10 seconds later, two players become infected."
+msgstr "10 секунд спустя, два человека становятся заражёнными."
+
+#: src/game/server/gamecontext.cpp:3052
+msgid "The goal for humans is to survive until the army clean the map."
+msgstr "Цель людей - выжить определённое время."
+
+#: src/game/server/gamecontext.cpp:3054
+msgid "The goal for infected is to infect all humans."
+msgstr "Цель заражённых - инфицировать людей."
+
+#: src/game/server/gamecontext.cpp:3061
+msgid "How to translate the mod"
+msgstr "Как перевести модификацию"
+
+#: src/game/server/gamecontext.cpp:3063
+msgid "Create an account on Crowdin and join a translation team:"
+msgstr "Создайте учётную запись в Crowdin и присоединитесь к команде переводчиков:"
+
+#: src/game/server/gamecontext.cpp:3067
+msgid "For any question about the translation process, please contact us on IRC ({str:IRCAddress})"
+msgstr "При наличие вопросов о переводе обратитесь к нам по IRC ({str:IRCAddress})"
+
+#: src/game/server/gamecontext.cpp:3076
+msgid "The Engineer can build walls with his hammer to block infected."
+msgstr "Инженер может строить стены, чтобы блокировать заражённых."
+
+#: src/game/server/gamecontext.cpp:3078
+msgid "When an infected touch the wall, he dies."
+msgstr "Когда заражённый прикасается к стене – он умирает."
+
+#: src/game/server/gamecontext.cpp:3080
+msgid "The lifespan of a wall is {sec:LifeSpan}, and walls are limited to one per player at the same time."
+msgstr "Стена существует {sec:LifeSpan}. Один человек может поставить только одну стену за раз."
+
+#: src/game/server/gamecontext.cpp:3089
+msgid "The Soldier can pose floating bombs with his hammer."
+msgstr "Солдат может ставить летающие бомбы с помощью молота."
+
+#: src/game/server/gamecontext.cpp:3093
+msgid "Each bomb can explode one time."
+msgid_plural "Each bomb can explode {int:NumBombs} times."
+msgstr[0] "Каждая бомба может взорваться {int:NumBombs} раз."
+msgstr[1] "Каждая бомба может взорваться {int:NumBombs} раза."
+msgstr[2] "Каждая бомба может взорваться {int:NumBombs} раз."
+
+#: src/game/server/gamecontext.cpp:3098
+msgid "Use the hammer to place the bomb and explode it multiple times."
+msgstr "Используй молот, чтобы поставить бомбу и взорвать её."
+
+#: src/game/server/gamecontext.cpp:3100
+msgid "Bombs are limited to one per player at the same time."
+msgstr "Ты можешь ставить только одну бомбу за раз."
+
+#: src/game/server/gamecontext.cpp:3109
+msgid "The Scientist can pose floating mines with his hammer."
+msgstr "Учёный может помещать плавучие мины молотом."
+
+#: src/game/server/gamecontext.cpp:3113
+msgid "Mines are limited to one per player at the same time."
+msgid_plural "Mines are limited to {int:NumMines} per player at the same time."
+msgstr[0] "Мины ограничены в количестве {int:NumMines} для каждого из игроков."
+msgstr[1] "Мины ограничены на {int:NumMines} для каждого игрока за раз."
+msgstr[2] "Мины ограничены в количестве {int:NumMines} для каждого из игроков."
+
+#: src/game/server/gamecontext.cpp:3118
+msgid "He has also grenades that teleport him."
+msgstr "Также, у него есть гранаты, которые телепортируют его."
+
+#: src/game/server/gamecontext.cpp:3128
+msgid "The biologist has a shotgun with bouncing bullets and can create a spring laser trap by shooting with his rifle."
+msgstr "У биолога дробовик с рикошетом и он может ставить лазерные ловушки стреляя лазерной винтовкой."
+
+#: src/game/server/gamecontext.cpp:3137
+msgid "The Medic can protect humans with his hammer by giving them armor."
+msgstr "Врач может восстанавливать людей, используя свой молот, чтобы дать им броню."
+
+#: src/game/server/gamecontext.cpp:3139
+msgid "He has also a powerful shotgun that can pullback infected."
+msgstr "Также он обладает мощным дробовиком, способным отталкивать заражённых."
+
+#: src/game/server/gamecontext.cpp:3148
+msgid "The Hero has a shotgun, a laser rifle and grenades."
+msgstr "У храбреца есть дробовик, лазерная винтовка и гранаты."
+
+#: src/game/server/gamecontext.cpp:3150
+msgid "The Hero must find a flag hidden in the map."
+msgstr "Храбрец должен найти знамя спрятанное на карте."
+
+#: src/game/server/gamecontext.cpp:3152
+msgid "Once taken, the flag gives 1 health point, 4 armor points, and full ammo to all humans, furthermore full health and armor to the hero."
+msgstr "Когда он подбирает знамя, оно распределяет каждому человеку одно очко здоровья и четыре очка брони, а жизнь его самого полностью восстанавливается."
+
+#: src/game/server/gamecontext.cpp:3154
+msgid "The hero cannot be healed by a medic, but he can withstand a thrust by an infected, an his health suffice."
+msgstr "Храбрец не может быть вылечен врачом, но он может выдержать один удар заражённого, если его броня крепка."
+
+#: src/game/server/gamecontext.cpp:3163
+msgid "The Ninja can throw flash grenades that can freeze infected during three seconds."
+msgstr "Ниндзя может кидать замораживающие гранаты, которые останавливают заражённых на 3 секунды."
+
+#: src/game/server/gamecontext.cpp:3167
+msgid "His hammer is replaced by a katana, allowing him to jump one time before touching the ground."
+msgid_plural "His hammer is replaced by a katana, allowing him to jump {int:NinjaJump} times before touching the ground."
+msgstr[0] "Его молот заменён катаной, позволяющей ему делать рывок {int:NinjaJump} раз, пока он не коснётся земли"
+msgstr[1] "Его молот заменён катаной, позволяющей ему делать рывок {int:NinjaJump} раза, пока он не коснётся земли"
+msgstr[2] "Его молот заменён катаной, позволяющей ему делать прыжок {int:NinjaJump} раз, пока он не коснётся земли"
+
+#: src/game/server/gamecontext.cpp:3179
+msgid "The Mercenary fly in air using his machine gun."
+msgstr "Наёмник может летать в воздухе используя свой пулемёт."
+
+#: src/game/server/gamecontext.cpp:3181
+msgid "He can coil explosives with his hammer that hinder infected from harming."
+msgstr "Он имеет способность заводить взрывные устройства которые препятсвуют вреду от заражённых."
+
+#: src/game/server/gamecontext.cpp:3185
+msgid "He can also throw poison grenades that each deal one damage point."
+msgid_plural "He can also throw poison grenades that each deal {int:NumDamagePoints} damage points."
+msgstr[0] "Притом он может кидать ядовитые гранаты, которые причиняют {int:NumDamagePoints} пункт урона."
+msgstr[1] "Притом он может кидать ядовитые гранаты, которые причиняют {int:NumDamagePoints} пункта урона."
+msgstr[2] "Притом он может кидать ядовитые гранаты, которые причиняют {int:NumDamagePoints} пунктов урона."
+
+#: src/game/server/gamecontext.cpp:3197
+msgid "The Sniper can lock his position in air for 15 seconds with his hammer."
+msgstr "Снайпер способен закреплять своё местоположение на 15 секунд с помощью своего молота."
+
+#: src/game/server/gamecontext.cpp:3199 src/game/server/gamecontext.cpp:3236
+msgid "He can jump two times in air."
+msgstr "Он способен на тройной прыжок."
+
+#: src/game/server/gamecontext.cpp:3201
+msgid "He has also a powerful rifle that deals 30 damage points in locked position, and 10–13 otherwise."
+msgstr "Притом он имеет мощную винтовку, которая причиняет 30 урона в закреплённом состоянии, и от 10 до 13 в других случаях."
+
+#: src/game/server/gamecontext.cpp:3210
+msgid "The Smoker can infect humans and heal infected with his hammer."
+msgstr "Курильщик может заражать людей и лечить заражённых с помощью своего молота."
+
+#: src/game/server/gamecontext.cpp:3212
+msgid "He can also inflict 4 damage points per second by hooking humans."
+msgstr "Также он наносит 4 урона в секунду человеку, к которому прицеплен цепочкой (хуком)."
+
+#: src/game/server/gamecontext.cpp:3221
+msgid "The Boomer explodes when he attack."
+msgstr "Взрывун производит взрыв вместо атаки."
+
+#: src/game/server/gamecontext.cpp:3223
+msgid "All humans affected by the explosion become infected."
+msgstr "Все люди, задетые взрывом, заражаются."
+
+#: src/game/server/gamecontext.cpp:3225 src/game/server/gamecontext.cpp:3238
+#: src/game/server/gamecontext.cpp:3251 src/game/server/gamecontext.cpp:3307
+msgid "He can also inflict 1 damage point per second by hooking humans."
+msgstr "Ещё он наносит 1 урон в секунду человеку, к которому прицеплен цепочкой (хуком)."
+
+#: src/game/server/gamecontext.cpp:3234
+msgid "The Hunter can infect humans and heal infected with his hammer."
+msgstr "Охотник может заражать людей и лечить заражённых с помощью своего молота."
+
+#: src/game/server/gamecontext.cpp:3247
+msgid "The Ghost can infect humans and heal infected with his hammer."
+msgstr "Призрак может заражать людей и лечить заражённых с помощью своего молота."
+
+#: src/game/server/gamecontext.cpp:3249
+msgid "He is invisible, except if a human is near him, if he takes a damage or if he use his hammer."
+msgstr "Он невидим, за исключением случаев, когда человек находится достаточно близко, ему наносен урон, или он пользуется молотом."
+
+#: src/game/server/gamecontext.cpp:3260
+msgid "The Spider can infect humans and heal infected with his hammer."
+msgstr "Паук может заражать людей и лечить заражённых с помощью своего молота."
+
+#: src/game/server/gamecontext.cpp:3262
+msgid "When selecting any gun, his hook enter in web mode."
+msgstr "Выбирая любое оружие, его зацепка переходит к паутинному состоянию."
+
+#: src/game/server/gamecontext.cpp:3264
+msgid "Any human that touch a hook in web mode is automatically grabbed."
+msgstr "Любой человек прикоснувшийся к цепочке автоматически к ней прицепляется."
+
+#: src/game/server/gamecontext.cpp:3266
+msgid "The hook of the spider (in both mode) deal 1 damage point per second and can grab a human during 2 seconds."
+msgstr "Зацепка пауком (в обоих состояниях) причиняет 1 пункт урона в секунду и прицепляет человека на два секунды."
+
+#: src/game/server/gamecontext.cpp:3275
+msgid "The Ghoul can infect humans and heal infected with his hammer."
+msgstr "Гуль может заражать людей и лечить заражённых с помощью своего молота."
+
+#: src/game/server/gamecontext.cpp:3277
+msgid "He can devour all that has died close to him, which makes him stronger, faster and more resistant."
+msgstr "Он имеет способность заглатывать всё, что умерло рядом с ним, и это его делает сильнее, быстрее и устойчивее."
+
+#: src/game/server/gamecontext.cpp:3279
+msgid "Thereupon he digests his fodder bit by bit going back to his normal state, and besides, death bereaves him of his nourishment."
+msgstr "Потом он переваривает свою пищу постепенно возвращаясь к своему первоначальному состоянию."
+
+#: src/game/server/gamecontext.cpp:3288
+msgid "The Slug can infect humans and heal infected with his hammer."
+msgstr "Улитка может заражать людей и лечить заражённых с помощью своего молота."
+
+#: src/game/server/gamecontext.cpp:3290
+msgid "He can make the ground and walls toxic by spreading slime with his hammer."
+msgstr "Она может делать землю и стены вредоносными распространяя слизь с помощью своего молота."
+
+#: src/game/server/gamecontext.cpp:3292
+msgid "Touching the slime inflicts three damage points in three seconds on a human."
+msgstr "Прикосновение слизи причиняет человеку три урона через три секунды."
+
+#: src/game/server/gamecontext.cpp:3301
+msgid "The Undead can infect humans and heal infected with his hammer."
+msgstr "Бессмертный может заражать людей и лечить заражённых с помощью своего молота."
+
+#: src/game/server/gamecontext.cpp:3303
+msgid "Instead of dying, he freezes during 10 seconds."
+msgstr "Вместо смерти он впадает в спячку на 10 секунд."
+
+#: src/game/server/gamecontext.cpp:3305
+msgid "If an infected heals him, the freeze effect disappear."
+msgstr "Если заражённый его излечит, то Бессмертный пробуждается ото сна."
+
+#: src/game/server/gamecontext.cpp:3317
+msgid "The Witch can infect humans and heal infected with his hammer."
+msgstr "Ведьма может заражать людей и лечить заражённых с помощью своего молота."
+
+#: src/game/server/gamecontext.cpp:3319
+msgid "When an infected dies, he may re-spawn near her."
+msgstr "После смерти заражённый с определённым шансом может воскреснуть рядом с Ведьмой."
+
+#: src/game/server/gamecontext.cpp:3321
+msgid "If the Witch dies, she disappears and is replaced by another class of infected."
+msgstr "Когда она умрёт, её игрок получит другой класс зараженных."
+
+#: src/game/server/gamecontext.cpp:3323
+msgid "She can also inflict 1 damage point per second by hooking humans."
+msgstr "А также она наносит 1 урона в секунду человеку, к которому прицеплена цепочкой (хуком)."
+
+#: src/game/server/gamecontext.cpp:3330
+msgid "Targeted chat messages"
+msgstr "Целевые сообщения"
+
+#: src/game/server/gamecontext.cpp:3333
+msgid "Use “/msg <PlayerName> <My Message>” to send a private message to this player."
+msgstr "Примени «/msg <Имя игрока> <Моё сообщение>», чтобы послать частное сообщение данному игроку."
+
+#: src/game/server/gamecontext.cpp:3335
+msgid "Use “/msg !<ClassName> <My Message>” to send a private message to all players with a specific class."
+msgstr "Примени «/msg !<имя классы> <Моё сообщение>», чтобы послать частное сообщение всем игрокам отдельного класса."
+
+#: src/game/server/gamecontext.cpp:3337
+msgid "Example: “/msg !medic I'm wounded!”"
+msgstr "Пример: «/msg !medic Я ранен!»"
+
+#: src/game/server/gamecontext.cpp:3339
+msgid "Use “/msg !near” to send a private message to all players near you."
+msgstr "Примени «/msg !near», чтобы послать частное сообщение всем игрокам в окрестностях."
+
+#: src/game/server/gamecontext.cpp:3349
+msgid "Choose a help page with /help <page>"
+msgstr "Выбирай вспомогательную страницу используя /help <страница>"
+
+#: src/game/server/gamecontext.cpp:3352
+msgid "Available help pages: {str:PageList}"
+msgstr "Имеющиеся вспомогательные страницы: {str:PageList}"
+
+#: src/game/server/gamecontext.cpp:3411
+msgid "A random class will be automatically attributed to you when rounds start"
+msgstr "Как только начнётся раунд, тебе будет назначен случайный класс"
+
+#: src/game/server/gamecontext.cpp:3417
+msgid "The class selector will be displayed when rounds start"
+msgstr "Выбор класса появится с началом раунда"
+
+#: src/game/server/gamecontext.cpp:3457
+msgid "Unknown language"
+msgstr "Неизвестный язык"
+
+#: src/game/server/gamecontext.cpp:3470
+msgid "Available languages: {str:ListOfLanguage}"
+msgstr "Доступные языки: {str:ListOfLanguage}"
+
+#: src/game/server/gamecontext.cpp:3487
+msgid "List of commands"
+msgstr "Список команд"
+
+#: src/game/server/gamecontext.cpp:3499
+msgid "Press <F3> or <F4> to enable or disable hook protection"
+msgstr "Нажми <F3> или <F4>, чтобы включить или выключить защиту против зацепки"
+
+#: src/game/server/entities/character.cpp:1407
+msgid "You have held a bonus area for one minute, +5 points"
+msgstr "Ты продержался в бонусной зоне одну минуту, +5 очков"
+
+#: src/game/server/entities/character.cpp:1476
+msgid "You are frozen: {sec:EffectDuration}"
+msgstr "Ты заморожен: {sec:EffectDuration}"
+
+#: src/game/server/entities/character.cpp:1761
+msgid "Random choice"
+msgstr "Случайный выбор"
+
+#: src/game/server/entities/character.cpp:1833
+msgid "Choose your class"
+msgstr "Выбирай класс"
+
+#: src/game/server/entities/character.cpp:1905
+msgid "Laser wall: {sec:RemainingTime}"
+msgstr "Стена: {sec:RemainingTime}"
+
+#: src/game/server/entities/character.cpp:1923
+msgid "One bomb left"
+msgid_plural "{int:NumBombs} bombs left"
+msgstr[0] "{int:NumBombs} бомба осталась."
+msgstr[1] "{int:NumBombs} бомбы остались"
+msgstr[2] "{int:NumBombs} бомб осталось"
+
+#: src/game/server/entities/character.cpp:1941
+msgid "One mine is active"
+msgid_plural "{int:NumMines} mines are active"
+msgstr[0] "{int:NumMines} мина задействованна"
+msgstr[1] "{int:NumMines} мины задействованны"
+msgstr[2] "{int:NumMines} мины задействованны"
+
+#: src/game/server/entities/character.cpp:1959
+msgid "Mine activated"
+msgstr "Ловушка стоит"
+
+#: src/game/server/entities/character.cpp:1973
+msgid "Next target in {sec:RemainingTime}"
+msgstr "Следущая цель через {sec:RemainingTime}"
+
+#: src/game/server/entities/character.cpp:1981
+msgid "Target to eliminate: {str:PlayerName}"
+msgstr "Цель для уничтожения: {str:PlayerName}"
+
+#: src/game/server/entities/character.cpp:1993
+msgid "Position lock: {sec:RemainingTime}"
+msgstr "Местоположение закреплено: {sec:RemainingTime}"
+
+#: src/game/server/entities/character.cpp:2015
+msgid "Explosive yield: {percent:BombLevel}"
+msgstr "Разрывной заряд: {percent:BombLevel}"
+
+#: src/game/server/entities/character.cpp:2040
+msgid "Next flag in {sec:RemainingTime}"
+msgstr "Следующее знамя через {sec:RemainingTime}"
+
+#: src/game/server/entities/character.cpp:2050
+msgid "Web mode enabled"
+msgstr "Паутинное состояние включено"
+
+#: src/game/server/entities/character.cpp:2059
+msgid "Stomach filled by {percent:FodderInStomach}"
+msgstr "Брюхо наполнено на {percent:FodderInStomach}"
+
+#: src/game/server/entities/character.cpp:2336
+msgid "The witch is dead"
+msgstr "Ведьма мертва"
+
+#: src/game/server/entities/character.cpp:2342
+msgid "The undead is finally dead"
+msgstr "Бессмертный уничтожен"
+
+#: src/game/server/entities/character.cpp:2764
+msgid "Sword velocity increased"
+msgstr "Скорость меча поднята"
+
+#: src/game/server/entities/character.cpp:2768
+msgid "Sword strength increased"
+msgstr "Сила меча поднята"
+
+#: src/game/server/entities/character.cpp:2772
+msgid "Grenade limit increased"
+msgstr "Предел гранат поднят"
+
+#: src/game/server/entities/character.cpp:2794
+#: src/game/server/entities/character.cpp:2811
+#: src/game/server/entities/character.cpp:2828
+#: src/game/server/entities/character.cpp:2845
+#: src/game/server/entities/character.cpp:2863
+#: src/game/server/entities/character.cpp:2881
+#: src/game/server/entities/character.cpp:2898
+#: src/game/server/entities/character.cpp:2916
+#: src/game/server/entities/character.cpp:2932
+#: src/game/server/entities/character.cpp:2954
+#: src/game/server/entities/character.cpp:2969
+#: src/game/server/entities/character.cpp:2984
+#: src/game/server/entities/character.cpp:2999
+#: src/game/server/entities/character.cpp:3014
+#: src/game/server/entities/character.cpp:3029
+#: src/game/server/entities/character.cpp:3044
+#: src/game/server/entities/character.cpp:3059
+#: src/game/server/entities/character.cpp:3074
+msgid "Type “/help {str:ClassName}” for more information about your class"
+msgstr "Напиши «/help {str:ClassName}», чтобы больше узнать о своём классе"
+
+#: src/game/server/entities/hero-flag.cpp:41
+msgid "The Hero found the flag!"
+msgstr "Храбрец нашёл знамя!"
+
