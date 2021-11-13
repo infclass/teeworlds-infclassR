@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: teeuniverse\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-07-31 19:50+0200\n"
+"POT-Creation-Date: 2021-11-13 15:31+0300\n"
 "PO-Revision-Date: 2017-07-31 15:23-0400\n"
 "Last-Translator: necropotame <necropotame@gmail.com>\n"
 "Language-Team: Czech\n"
@@ -16,676 +16,1141 @@ msgstr ""
 "X-Crowdin-Language: cs\n"
 "X-Crowdin-File: infclasspot.po\n"
 
-#: src/engine/server/server.cpp:2164
-msgid "{str:Victim} has been muted for {sec:Duration} ({str:Reason})"
+#: src/game/server/gamecontext.cpp:4143
+msgid "(page {int:PageNumber}/{int:PagesInTotal}, see /changelog {int:NextPage})"
 msgstr ""
 
-#: src/engine/server/server.cpp:2912
-msgid "You are now logged."
-msgstr "Jsi příhlášen/a"
+#: src/game/server/gamecontext.cpp:3521
+#, fuzzy
+msgid "10 seconds later, a few players become infected."
+msgstr "Za 10 sekund se 2 hráči stanou nakaženými."
 
-#: src/engine/server/server.cpp:2919
-msgid "Wrong username/password."
-msgstr "Špatné jméno. nebo heslo"
-
-#: src/engine/server/server.cpp:2994
-msgid "An error occured during the operation."
-msgstr "Během operace se stala chyba"
-
-#: src/engine/server/server.cpp:3009
-msgid "You must be logged for this operation"
-msgstr "K tomuto úkonu musíš být přihlášen"
-
-#: src/engine/server/server.cpp:3063
-msgid "Please wait 5 minutes before creating another account"
-msgstr "Prosím, počkej 5 minut před vytvořením dalšího účtu"
-
-#: src/engine/server/server.cpp:3071 src/engine/server/server.cpp:3098
-#: src/engine/server/server.cpp:3117 src/engine/server/server.cpp:3156
-#: src/engine/server/server.cpp:3164
-msgid "An error occured during the creation of your account."
-msgstr "Při vytváření účtu se stala chyba."
-
-#: src/engine/server/server.cpp:3090
-msgid "This username is already taken by an existing account"
-msgstr "Toto jméno je obsazené"
-
-#: src/engine/server/server.cpp:3135
-msgid "Your account has been created and you are now logged."
-msgstr "Tvůj účet byl vytvořen a už jsi přihlášen."
-
-#: src/engine/server/server.cpp:3719
-msgid "You must be logged to see your rank"
-msgstr "Musíš být příhlášen, aby jsi viděl svou pozici"
-
-#: src/engine/server/server.cpp:3803
-msgid "You must be logged to see your goal"
-msgstr "Musíš být přihlášen, aby jsi viděl svůj cíl"
-
-#: src/engine/server/server.cpp:4110
-msgid "You have already notified that {str:PlayerName} ought to be banned"
-msgstr "Už jsi oznámil, že {str:PlayerName} musí být zabanován"
-
-#: src/engine/server/server.cpp:4125
-msgid "{str:PlayerName} wants {str:VictimName} to be banned ({str:Reason})"
-msgstr "{str:PlayerName} chce, aby byl {str:VictimName} zabanován z důvodu: ({str:Reason})"
-
-#: src/game/server/gamemodes/mod.cpp:243 src/game/server/gamemodes/mod.cpp:267
-msgid "{str:VictimName} has been infected"
-msgstr "{str:VictimName} byl nakažen"
-
-#: src/game/server/gamemodes/mod.cpp:298 src/game/server/gamemodes/mod.cpp:405
-msgid "Infected won the round in {sec:RoundDuration}"
-msgstr "Nakažení vyhráli kolo v čase {sec:RoundDuration}"
-
-#: src/game/server/gamemodes/mod.cpp:385
-msgid "One human won the round"
-msgid_plural "{int:NumHumans} humans won the round"
-msgstr[0] "Vyhrál jeden človek"
-msgstr[1] "{int:NumHumans} lidé vyhráli"
-msgstr[2] "{int:NumHumans} lidé vyhráli"
-
-#: src/game/server/gamemodes/mod.cpp:398
-msgid "You have survived, +5 points"
-msgstr "Přežil jsi, +5 bodů"
-
-#: src/game/server/gamemodes/mod.cpp:546
-#: src/game/server/entities/character.cpp:2471
-msgid "You have infected {str:VictimName}, +3 points"
-msgstr "Nakazil jsi {str:VictimName}, +3 body"
-
-#: src/game/server/gamemodes/mod.cpp:576
-msgid "You have killed a witch, +5 points"
-msgstr "Zabil jsi čarodějnici, +5 bodů"
-
-#: src/game/server/gamemodes/mod.cpp:588 src/game/server/gamemodes/mod.cpp:614
-msgid "You have eliminated your target, +2 points"
+#: src/game/server/gamecontext.cpp:3591
+msgid "A lucky Scientist devoted to killing can get a white hole that sucks infected in which can be placed with the laser rifle."
 msgstr ""
 
-#: src/game/server/player.cpp:195
-msgid "Hook protection enabled"
-msgstr "Ochrana proti hákům aktivována"
+#: src/game/server/gamecontext.cpp:4003
+msgid "A random class will be automatically attributed to you when rounds start"
+msgstr "Pokud si do začátku kola nevybereš povolání, tak je ti náhodně uděleno."
 
-#: src/game/server/player.cpp:197
-msgid "Hook protection disabled"
-msgstr "Ochrana proti hákům deaktivována"
-
-#: src/game/server/player.cpp:368
-msgid "{str:PlayerName} has been banned ({str:Reason})"
-msgstr "{str:PlayerName} byl zabanován ({str:Reason})"
-
-#: src/game/server/player.cpp:375
-msgid "{str:PlayerName} has been kicked ({str:Reason})"
-msgstr "{str:PlayerName} byl vyhozen ze hry ({str:Reason})"
-
-#: src/game/server/player.cpp:382
-msgid "{str:PlayerName} has left the game ({str:Reason})"
-msgstr "{str:PlayerName} opustil hru ({str:Reason})"
-
-#: src/game/server/player.cpp:389
-msgid "{str:PlayerName} has left the game"
-msgstr "{str:PlayerName} opustil hru"
-
-#: src/game/server/player.cpp:476
-msgid "{str:PlayerName} joined the spectators"
-msgstr "{str:PlayerName} začal pozorovat"
-
-#: src/game/server/player.cpp:480
-msgid "{str:PlayerName} joined the game"
-msgstr "{str:PlayerName} se připojil do hry"
-
-#: src/game/server/gamecontext.cpp:556 src/game/server/gamecontext.cpp:3074
-#: src/game/server/entities/character.cpp:1767
-msgid "Engineer"
-msgstr "Inženýr"
-
-#: src/game/server/gamecontext.cpp:559 src/game/server/gamecontext.cpp:3087
-#: src/game/server/entities/character.cpp:1774
-msgid "Soldier"
-msgstr "Voják"
-
-#: src/game/server/gamecontext.cpp:562 src/game/server/gamecontext.cpp:3135
-#: src/game/server/entities/character.cpp:1795
-msgid "Medic"
-msgstr "Lékař"
-
-#: src/game/server/gamecontext.cpp:565 src/game/server/gamecontext.cpp:3146
-#: src/game/server/entities/character.cpp:1802
-msgid "Hero"
-msgstr "Hrdina"
-
-#: src/game/server/gamecontext.cpp:568 src/game/server/gamecontext.cpp:3161
-#: src/game/server/entities/character.cpp:1809
-msgid "Ninja"
-msgstr "Nindža"
-
-#: src/game/server/gamecontext.cpp:571 src/game/server/gamecontext.cpp:3177
-#: src/game/server/entities/character.cpp:1816
-msgid "Mercenary"
-msgstr "Žoldnéř"
-
-#: src/game/server/gamecontext.cpp:574 src/game/server/gamecontext.cpp:3195
-#: src/game/server/entities/character.cpp:1823
-msgid "Sniper"
-msgstr "Odstřelovač"
-
-#: src/game/server/gamecontext.cpp:577 src/game/server/gamecontext.cpp:3107
-#: src/game/server/entities/character.cpp:1781
-msgid "Scientist"
-msgstr "Vědec"
-
-#: src/game/server/gamecontext.cpp:580 src/game/server/gamecontext.cpp:3126
-#: src/game/server/entities/character.cpp:1788
-msgid "Biologist"
+#: src/game/server/gamecontext.cpp:3878
+msgid "A witch can build a pair of portals to let other infected get from spawn right to the battle."
 msgstr ""
 
-#: src/game/server/gamecontext.cpp:583 src/game/server/gamecontext.cpp:3208
-msgid "Smoker"
-msgstr "Kuřák"
-
-#: src/game/server/gamecontext.cpp:586 src/game/server/gamecontext.cpp:3232
-msgid "Hunter"
-msgstr "Lovec"
-
-#: src/game/server/gamecontext.cpp:589 src/game/server/gamecontext.cpp:3219
-msgid "Boomer"
-msgstr "Sebevrah"
-
-#: src/game/server/gamecontext.cpp:592 src/game/server/gamecontext.cpp:3245
-msgid "Ghost"
-msgstr "Duch"
-
-#: src/game/server/gamecontext.cpp:595 src/game/server/gamecontext.cpp:3258
-msgid "Spider"
-msgstr "Pavouk"
-
-#: src/game/server/gamecontext.cpp:598 src/game/server/gamecontext.cpp:3273
-msgid "Ghoul"
-msgstr "Ghůl"
-
-#: src/game/server/gamecontext.cpp:601 src/game/server/gamecontext.cpp:3286
-msgid "Slug"
+#: src/game/server/gamecontext.cpp:3863
+msgid "Additionally a witch can place portals with the laser rifle. Further information on /help portals"
 msgstr ""
 
-#: src/game/server/gamecontext.cpp:604 src/game/server/gamecontext.cpp:3314
-msgid "Witch"
-msgstr "Čarodějnice"
+#: src/game/server/gamecontext.cpp:3720
+msgid "All humans affected by the explosion become infected."
+msgstr "Všichni lidé v dosahu exploze se stanou nakaženými."
 
-#: src/game/server/gamecontext.cpp:607 src/game/server/gamecontext.cpp:3299
-msgid "Undead"
-msgstr "Nemrtvý"
-
-#: src/game/server/gamecontext.cpp:610
-msgid "Unknown class"
-msgstr "Neznámé povolání"
-
-#: src/game/server/gamecontext.cpp:615
-msgid "You are a human: {str:ClassName}"
-msgstr "Jsi člověk {str:ClassName}"
-
-#: src/game/server/gamecontext.cpp:617
-msgid "You are an infected: {str:ClassName}"
-msgstr "Jsi nakažený: {str:ClassName}"
-
-#: src/game/server/gamecontext.cpp:1199
-msgid "{str:PlayerName} entered and joined the game"
-msgstr "{str:PlayerName} se připojil a vstoupil do hry"
-
-#: src/game/server/gamecontext.cpp:1389 src/game/server/gamecontext.cpp:2522
-msgid "You are muted for {sec:Duration}"
-msgstr ""
-
-#: src/game/server/gamecontext.cpp:1619
-msgid "You can't join the spectators right now"
-msgstr "Právě nemůžeš pozorovat"
-
-#: src/game/server/gamecontext.cpp:1675
-msgid "{str:PlayerName} changed their name to {str:NewName}"
-msgstr "{str:PlayerName} změnil své jméno na {str:NewName}"
-
-#: src/game/server/gamecontext.cpp:1914
-msgid "Switch language to english ?"
-msgstr "Změnit jazyk do angličtiny"
-
-#: src/game/server/gamecontext.cpp:1920
-msgid "You can change the language of this mod using the command /language."
-msgstr "Můžeš změnit jazyk tohoto módu pomocí příkazu /language"
-
-#: src/game/server/gamecontext.cpp:1921
-msgid "If your language is not available, you can help with translation (/help translate)."
-msgstr "Pokud tvůk jazyk není dostupný, můžeš pomoct s překladem (/help translate)."
-
-#: src/game/server/gamecontext.cpp:2503
-msgid "InfectionClass, by necropotame (version {str:VersionCode})"
-msgstr "InfectionClass, vytvořil necropotame (version{str:VersionCode})"
-
-#: src/game/server/gamecontext.cpp:2505
-msgid "Based on the concept of Infection mod by Gravity"
-msgstr ""
-
-#: src/game/server/gamecontext.cpp:2507
-msgid "Main contributors: {str:ListOfContributors}"
-msgstr "Hlavní přispěvatelé: {str:ListOfContributors}"
-
-#: src/game/server/gamecontext.cpp:2509
-msgid "Thanks to {str:ListOfContributors}"
-msgstr "Děkujeme {str:ListOfContributors}"
-
-#: src/game/server/gamecontext.cpp:2721
-msgid "No player was found with this name"
-msgstr "Nebyl nalezen žádný hráč s tímhle jménem"
-
-#: src/game/server/gamecontext.cpp:3044
-msgid "Rules of the game"
-msgstr "Pravidla hry"
-
-#: src/game/server/gamecontext.cpp:3046
-msgid "InfectionClass is a team game between humans and infected."
-msgstr "InfectionClass je týmová hra, mezi lidmi a nakaženými."
-
-#: src/game/server/gamecontext.cpp:3048
+#: src/game/server/gamecontext.cpp:3519
 msgid "All players start as human."
 msgstr "Všichni hráči začínají jako člověk."
 
-#: src/game/server/gamecontext.cpp:3050
-msgid "10 seconds later, two players become infected."
-msgstr "Za 10 sekund se 2 hráči stanou nakaženými."
+#: src/engine/server/server.cpp:3651 src/engine/server/server.cpp:3678 src/engine/server/server.cpp:3697 src/engine/server/server.cpp:3736 src/engine/server/server.cpp:3744
+msgid "An error occured during the creation of your account."
+msgstr "Při vytváření účtu se stala chyba."
 
-#: src/game/server/gamecontext.cpp:3052
-msgid "The goal for humans is to survive until the army clean the map."
-msgstr "Cíl lidí je přežít, dokud armáda konflikt nevyřeší."
+#: src/engine/server/server.cpp:3574
+msgid "An error occured during the operation."
+msgstr "Během operace se stala chyba"
 
-#: src/game/server/gamecontext.cpp:3054
-msgid "The goal for infected is to infect all humans."
-msgstr "Cíl nakažených, je nakazit všechny lidi."
+#: src/game/server/gamecontext.cpp:3778
+msgid "Any human that touch a hook in web mode is automatically grabbed."
+msgstr "Jakýkoliv člověk, který se dotkne háku v pavučinovém módu tak je automaticky přitáhnut k pavoukovi."
 
-#: src/game/server/gamecontext.cpp:3061
-msgid "How to translate the mod"
-msgstr "Jak přeložit mód"
+#: src/game/server/gamecontext.cpp:3944
+msgid "Available help pages: {str:PageList}"
+msgstr "Dostupné stránky pomoci: {str:PageList}"
 
-#: src/game/server/gamecontext.cpp:3063
+#: src/game/server/gamecontext.cpp:4060
+msgid "Available languages: {str:ListOfLanguage}"
+msgstr "Dostupné jazyky: {str:ListOfLanguage}"
+
+#: src/game/server/gamecontext.cpp:2876
+msgid "Based on the concept of Infection mod by Gravity"
+msgstr ""
+
+#: src/game/server/infclass/infcgamecontroller.cpp:547 src/game/server/gamecontext.cpp:3742
+msgid "Bat"
+msgstr ""
+
+#: src/game/server/gamecontext.cpp:3748
+#, fuzzy
+msgid "Bat can jump multiple times in air."
+msgstr "Může skočit 3 krát"
+
+#: src/game/server/infclass/infcgamecontroller.cpp:610
+msgid "Bats"
+msgstr ""
+
+#: src/game/server/infclass/infcgamecontroller.cpp:536 src/game/server/gamecontext.cpp:3599
+msgid "Biologist"
+msgstr ""
+
+#: src/game/server/infclass/infcgamecontroller.cpp:599
+msgid "Biologists"
+msgstr ""
+
+#: src/game/server/infclass/infcgamecontroller.cpp:543 src/game/server/gamecontext.cpp:3716
+msgid "Boomer"
+msgstr "Sebevrah"
+
+#: src/game/server/infclass/infcgamecontroller.cpp:606
+#, fuzzy
+msgid "Boomers"
+msgstr "Sebevrah"
+
+#: src/game/server/gamecontext.cpp:4110
+msgid "ChangeLog is not provided"
+msgstr ""
+
+#: src/game/server/gamecontext.cpp:4122
+msgid "ChangeLog page {int:PageNumber} is not available"
+msgstr ""
+
+#: src/game/server/gamecontext.cpp:3941
+msgid "Choose a help page with /help <page>"
+msgstr "Vyber si stránku pomocí příkazu /help <čislo-strany>"
+
+#: src/game/server/infclass/entities/infccharacter.cpp:1721
+msgid "Choose your class"
+msgstr "Vyber si své povolání"
+
+#: src/game/server/gamecontext.cpp:3536
 msgid "Create an account on Crowdin and join a translation team:"
 msgstr "Vytvoř si účet na Crowdin a připoj se k překladatelům:"
 
-#: src/game/server/gamecontext.cpp:3067
-msgid "For any question about the translation process, please contact us on IRC ({str:IRCAddress})"
-msgstr "Pokud máš nějaké otázky o překládání kontaktuj nás na IRC ({str:IRCAddress})"
-
-#: src/game/server/gamecontext.cpp:3076
-msgid "The Engineer can build walls with his hammer to block infected."
-msgstr "Inženýr může kladivem budovat laserové zdi."
-
-#: src/game/server/gamecontext.cpp:3078
-msgid "When an infected touch the wall, he dies."
-msgstr "Když se nakažený dotkne zdi, zemře."
-
-#: src/game/server/gamecontext.cpp:3080
-msgid "The lifespan of a wall is {sec:LifeSpan}, and walls are limited to one per player at the same time."
-msgstr "Životnost zdi je {sec:LifeSpan}, a zeď můžeš mít vždy jen jednu."
-
-#: src/game/server/gamecontext.cpp:3089
-msgid "The Soldier can pose floating bombs with his hammer."
-msgstr "Voják může svým kladivem umístit nehybné bomby"
-
-#: src/game/server/gamecontext.cpp:3093
+#: src/game/server/gamecontext.cpp:3566
 msgid "Each bomb can explode one time."
 msgid_plural "Each bomb can explode {int:NumBombs} times."
 msgstr[0] "Každá bomba může vybouchnout jednou"
 msgstr[1] "Každá bomba může vybouchnout dvakrát"
 msgstr[2] "Každá bomba může vybouchnout třikrát"
 
-#: src/game/server/gamecontext.cpp:3098
-msgid "Use the hammer to place the bomb and explode it multiple times."
-msgstr "Použij kladivo poprvé k umístění bomby, podruhé k nechání bomby vybouchnout."
+#: src/game/server/infclass/infcgamecontroller.cpp:526 src/game/server/gamecontext.cpp:3547
+msgid "Engineer"
+msgstr "Inženýr"
 
-#: src/game/server/gamecontext.cpp:3100
-msgid "Bombs are limited to one per player at the same time."
-msgstr "Bombu můžeš umístit jen jednu."
+#: src/game/server/infclass/infcgamecontroller.cpp:589
+#, fuzzy
+msgid "Engineers"
+msgstr "Inženýr"
 
-#: src/game/server/gamecontext.cpp:3109
-msgid "The Scientist can pose floating mines with his hammer."
-msgstr "Vědci můžou kladivem umístit nehybné miny"
+#: src/game/server/gamecontext.cpp:3905
+msgid "Example: “/msg !medic I'm wounded!”"
+msgstr "Příklad: »/msg !medic Jsem zraněný!«"
 
-#: src/game/server/gamecontext.cpp:3113
-msgid "Mines are limited to one per player at the same time."
-msgid_plural "Mines are limited to {int:NumMines} per player at the same time."
-msgstr[0] "Minu můžeš mít vždy jen jednu."
-msgstr[1] "Miny můžeš mít maximálně {int:NumMines}"
-msgstr[2] "Minu můžeš mít vždy jen {int:NumMines}"
+#: src/game/server/gamecontext.cpp:3921
+#, fuzzy
+msgid "Example: “/mute nameless tee”"
+msgstr "Příklad: »/msg !medic Jsem zraněný!«"
 
-#: src/game/server/gamecontext.cpp:3118
-msgid "He has also grenades that teleport him."
-msgstr "Vědec má taky gránatomet, který ho teleportuje."
+#: src/game/server/infclass/classes/humans/human.cpp:512 src/game/server/infclass/classes/humans/human.cpp:533
+msgid "Explosive yield: {percent:BombLevel}"
+msgstr "Explosivní efekt: {percent:BombLevel}"
 
-#: src/game/server/gamecontext.cpp:3128
-msgid "The biologist has a shotgun with bouncing bullets and can create a spring laser trap by shooting with his rifle."
+#: src/game/server/gamecontext.cpp:3540
+msgid "For any question about the translation process, please contact us on IRC ({str:IRCAddress})"
+msgstr "Pokud máš nějaké otázky o překládání kontaktuj nás na IRC ({str:IRCAddress})"
+
+#: src/game/server/infclass/infcgamecontroller.cpp:549 src/game/server/gamecontext.cpp:3759
+msgid "Ghost"
+msgstr "Duch"
+
+#: src/game/server/infclass/infcgamecontroller.cpp:612
+#, fuzzy
+msgid "Ghosts"
+msgstr "Duch"
+
+#: src/game/server/infclass/infcgamecontroller.cpp:553 src/game/server/gamecontext.cpp:3787
+msgid "Ghoul"
+msgstr "Ghůl"
+
+#: src/game/server/infclass/infcgamecontroller.cpp:616
+#, fuzzy
+msgid "Ghouls"
+msgstr "Ghůl"
+
+#: src/game/server/infclass/entities/infccharacter.cpp:703
+msgid "Grenade limit increased"
 msgstr ""
 
-#: src/game/server/gamecontext.cpp:3137
-msgid "The Medic can protect humans with his hammer by giving them armor."
-msgstr "Lékař může lidím svým kladivem dát štíty."
+#: src/game/server/gamecontext.cpp:3621
+msgid "Grenades with medicine give armor to everybody in their range, including Heroes and the Medic themself"
+msgstr ""
 
-#: src/game/server/gamecontext.cpp:3139
-msgid "He has also a powerful shotgun that can pullback infected."
-msgstr "Má i silnou brokovnici, která dokáže odžduchnout nakažené"
+#: src/game/server/gamecontext.cpp:3735
+msgid "He can also inflict 1 damage point per second by hooking humans."
+msgstr "Taky může způsobit 1 útočný bod za sekundu zaháknutím lidí."
 
-#: src/game/server/gamecontext.cpp:3148
-msgid "The Hero has a shotgun, a laser rifle and grenades."
-msgstr "Hrdina má brokovnici, laser a granátomet"
+#: src/game/server/gamecontext.cpp:3733
+msgid "He can jump two times in air."
+msgstr "Může skočit 3 krát"
 
-#: src/game/server/gamecontext.cpp:3150
-msgid "The Hero must find a flag hidden in the map."
-msgstr "Musí najít vlajku skrytou někde ve hře"
+#: src/game/server/gamecontext.cpp:3806
+msgid "He can make the ground and walls toxic by spreading slime with the hammer."
+msgstr ""
 
-#: src/game/server/gamecontext.cpp:3152
-msgid "Once taken, the flag gives 1 health point, 4 armor points, and full ammo to all humans, furthermore full health and armor to the hero."
-msgstr "Když vezme vlajku, přidá 1 život, 4 štíty a všechny náboje všem lidem.\n"
-"K tomu přidá všechny životy a brnění hrdinovi."
+#: src/game/server/gamecontext.cpp:3819
+msgid "He does not die immediately when killed but instead enters Spirit mode and defies death for a brief span of time."
+msgstr ""
 
-#: src/game/server/gamecontext.cpp:3154
-msgid "The hero cannot be healed by a medic, but he can withstand a thrust by an infected, an his health suffice."
-msgstr "Hrdina nemůže být vyléčen léařem, ale dokáže vydržet bouchnutí od nakaženého, když má dost životů."
+#: src/game/server/infclass/infcgamecontroller.cpp:524 src/game/server/gamecontext.cpp:3632
+msgid "Hero"
+msgstr "Hrdina"
 
-#: src/game/server/gamecontext.cpp:3163
-msgid "The Ninja can throw flash grenades that can freeze infected during three seconds."
-msgstr "Ninja má granátomet, který zmrazí nakažené na 3 vteřiny."
+#: src/game/server/infclass/infcgamecontroller.cpp:587
+#, fuzzy
+msgid "Heroes"
+msgstr "Hrdina"
 
-#: src/game/server/gamecontext.cpp:3167
+#: src/game/server/gamecontext.cpp:3660
 msgid "His hammer is replaced by a katana, allowing him to jump one time before touching the ground."
 msgid_plural "His hammer is replaced by a katana, allowing him to jump {int:NinjaJump} times before touching the ground."
 msgstr[0] "Jeho kladivo je nahrazeno katanou, se kterou může skočit 1 krát, před dotknutím se země"
 msgstr[1] "Jeho kladivo je nahrazeno katanou, se kterou může skočit {int:NinjaJump} krát před dotkutím se země."
 msgstr[2] "Jeho kladivo je nahrazeno katanou, se kterou může skočit {int:NinjaJump} krát před dotkutím se země"
 
-#: src/game/server/gamecontext.cpp:3179
-msgid "The Mercenary fly in air using his machine gun."
-msgstr "Žoldnéř létá ve vzduchu pomocí jeho pistole."
+#: src/game/server/player.cpp:195
+msgid "Hook protection disabled"
+msgstr "Ochrana proti hákům deaktivována"
 
-#: src/game/server/gamecontext.cpp:3181
-msgid "He can coil explosives with his hammer that hinder infected from harming."
-msgstr "Může svým kladivem tvořit exploze."
+#: src/game/server/player.cpp:193
+msgid "Hook protection enabled"
+msgstr "Ochrana proti hákům aktivována"
 
-#: src/game/server/gamecontext.cpp:3185
-msgid "He can also throw poison grenades that each deal one damage point."
-msgid_plural "He can also throw poison grenades that each deal {int:NumDamagePoints} damage points."
+#: src/game/server/gamecontext.cpp:3534
+msgid "How to translate the mod"
+msgstr "Jak přeložit mód"
+
+#: src/game/server/gamecontext.cpp:3929
+#, fuzzy
+msgid "How to use taxi mode"
+msgstr "Jak přeložit mód"
+
+#: src/game/server/gamecontext.cpp:3876
+msgid "How to use witch portals"
+msgstr ""
+
+#: src/game/server/infclass/infcgamecontroller.cpp:545 src/game/server/gamecontext.cpp:3729
+msgid "Hunter"
+msgstr "Lovec"
+
+#: src/game/server/infclass/infcgamecontroller.cpp:608
+#, fuzzy
+msgid "Hunters"
+msgstr "Lovec"
+
+#: src/game/server/gamecontext.cpp:3848
+#, fuzzy
+msgid "If an infected heals it, the freeze effect disappears."
+msgstr "Pokud ho nakažený vyléčí zmrazení zmizí"
+
+#: src/game/server/gamecontext.cpp:3867
+#, fuzzy
+msgid "If the Witch dies, it disappears and is replaced by another class of infected."
+msgstr "Když zemřeš jako čarodějnice, tak se spawneš s jiným povoláním."
+
+#: src/game/server/gamecontext.cpp:2088
+msgid "If your language is not available, you can help with translation (/help translate)."
+msgstr "Pokud tvůk jazyk není dostupný, můžeš pomoct s překladem (/help translate)."
+
+#: src/game/server/gamecontext.cpp:3933
+msgid "In order to use it, both humans have to disable hook protection (usually, with F3). The human being hooked becomes the driver."
+msgstr ""
+
+#: src/game/server/infclass/infcgamecontroller.cpp:1652 src/game/server/infclass/infcgamecontroller.cpp:1769
+msgid "Infected won the round in {sec:RoundDuration}"
+msgstr "Nakažení vyhráli kolo v čase {sec:RoundDuration}"
+
+#: src/game/server/gamecontext.cpp:3517
+msgid "InfectionClass is a team game between humans and infected."
+msgstr "InfectionClass je týmová hra, mezi lidmi a nakaženými."
+
+#: src/game/server/gamecontext.cpp:2874 src/game/server/gamecontext.cpp:2895
+msgid "InfectionClass, by necropotame (version {str:VersionCode})"
+msgstr "InfectionClass, vytvořil necropotame (version{str:VersionCode})"
+
+#: src/game/server/gamecontext.cpp:3846
+#, fuzzy
+msgid "Instead of dying, it freezes for 10 seconds."
+msgstr "Místo smrti se zmrazí na 10 sekund"
+
+#: src/game/server/gamecontext.cpp:3746
+msgid "Instead, it can hammer humans to reduce their health or even kill them"
+msgstr ""
+
+#: src/game/server/gamecontext.cpp:3722 src/game/server/gamecontext.cpp:3750 src/game/server/gamecontext.cpp:3765 src/game/server/gamecontext.cpp:3795 src/game/server/gamecontext.cpp:3850
+#: src/game/server/gamecontext.cpp:3869
+#, fuzzy
+msgid "It can also inflict 1 damage point per second by hooking humans."
+msgstr "Taky může způsobit 1 útočný bod za sekundu zaháknutím lidí."
+
+#: src/game/server/gamecontext.cpp:3791
+#, fuzzy
+msgid "It can devour anything that has died nearby, which makes it stronger, faster and more resistant."
+msgstr "Může absorbovat nakažené, které umřeli blízko něho, což ho poté dělá odolnějším a rychlejším."
+
+#: src/game/server/gamecontext.cpp:3793
+msgid "It digests the fodder over time, going back to the normal state. Some nourishment is also lost on death."
+msgstr ""
+
+#: src/game/server/gamecontext.cpp:3643
+msgid "It fully heals the Hero and it can grant a turret which you can place down with the hammer."
+msgstr ""
+
+#: src/game/server/gamecontext.cpp:3763
+#, fuzzy
+msgid "It is invisible, unless a human is nearby, it takes damage, or it uses the hammer."
+msgstr "Je neviditelný dokud nezaútočí, nebo dokud se neocitne příliš blízko člověka."
+
+#: src/game/server/gamecontext.cpp:3623
+msgid "Laser rifle revives the infected, but at the cost of 17 hp and armor."
+msgstr ""
+
+#: src/game/server/infclass/classes/humans/human.cpp:292
+msgid "Laser wall: {sec:RemainingTime}"
+msgstr "Laserová stěna: {sec:RemainingTime}"
+
+#: src/game/server/gamecontext.cpp:4077
+msgid "List of commands"
+msgstr "List příkazů"
+
+#: src/game/server/infclass/infcgamecontroller.cpp:538 src/game/server/gamecontext.cpp:3608
+msgid "Looper"
+msgstr ""
+
+#: src/game/server/infclass/classes/humans/human.cpp:345
+#, fuzzy
+msgid "Looper laser wall: {sec:RemainingTime}"
+msgstr "Laserová stěna: {sec:RemainingTime}"
+
+#: src/game/server/infclass/infcgamecontroller.cpp:601
+msgid "Loopers"
+msgstr ""
+
+#: src/game/server/gamecontext.cpp:2878
+msgid "Main contributors: {str:ListOfContributors}"
+msgstr "Hlavní přispěvatelé: {str:ListOfContributors}"
+
+#: src/game/server/infclass/infcgamecontroller.cpp:522 src/game/server/gamecontext.cpp:3617
+msgid "Medic"
+msgstr "Lékař"
+
+#: src/game/server/gamecontext.cpp:3625
+#, fuzzy
+msgid "Medic also has a powerful shotgun that can knock back infected."
+msgstr "Má i silnou brokovnici, která dokáže odžduchnout nakažené"
+
+#: src/game/server/infclass/infcgamecontroller.cpp:585
+#, fuzzy
+msgid "Medics"
+msgstr "Lékař"
+
+#: src/game/server/infclass/infcgamecontroller.cpp:583
+#, fuzzy
+msgid "Mercenaries"
+msgstr "Žoldnéř"
+
+#: src/game/server/infclass/infcgamecontroller.cpp:520 src/game/server/gamecontext.cpp:3672
+msgid "Mercenary"
+msgstr "Žoldnéř"
+
+#: src/game/server/gamecontext.cpp:3680
+#, fuzzy
+msgid "Mercenary can also throw poison grenades that each deal one damage point."
+msgid_plural "Mercenary can also throw poison grenades that each deal {int:NumDamagePoints} damage points."
 msgstr[0] "Může házet jedovaté granáty, které ubírají postupně 1 život."
 msgstr[1] "Může házet jedovaté granáty, které ubírají postupně {int:NumDamagePoints} životy."
 msgstr[2] "Může házet jedovaté granáty, které ubírají postupně {int:NumDamagePoints} životů."
 
-#: src/game/server/gamecontext.cpp:3197
-msgid "The Sniper can lock his position in air for 15 seconds with his hammer."
-msgstr "Sniper se může znehybnit ve vzduchu po dobu 15 sekund použitím kladiva."
-
-#: src/game/server/gamecontext.cpp:3199 src/game/server/gamecontext.cpp:3236
-msgid "He can jump two times in air."
-msgstr "Může skočit 3 krát"
-
-#: src/game/server/gamecontext.cpp:3201
-msgid "He has also a powerful rifle that deals 30 damage points in locked position, and 10–13 otherwise."
-msgstr "Taky má velmi silný laser, který uděluje 30 životů v zhehybněnosti a 10-13 normálně."
-
-#: src/game/server/gamecontext.cpp:3210
-msgid "The Smoker can infect humans and heal infected with his hammer."
-msgstr "Kuřák může infikovat lidi and léčit infikované svým kladivem"
-
-#: src/game/server/gamecontext.cpp:3212
-msgid "He can also inflict 4 damage points per second by hooking humans."
-msgstr "Taky může způsobit 4 útočné body za sekundu dotknutí se hákem člověka."
-
-#: src/game/server/gamecontext.cpp:3221
-msgid "The Boomer explodes when he attack."
-msgstr "Sebevrah exploduje když zaútočí svým kladivem."
-
-#: src/game/server/gamecontext.cpp:3223
-msgid "All humans affected by the explosion become infected."
-msgstr "Všichni lidé v dosahu exploze se stanou nakaženými."
-
-#: src/game/server/gamecontext.cpp:3225 src/game/server/gamecontext.cpp:3238
-#: src/game/server/gamecontext.cpp:3251 src/game/server/gamecontext.cpp:3307
-msgid "He can also inflict 1 damage point per second by hooking humans."
-msgstr "Taky může způsobit 1 útočný bod za sekundu zaháknutím lidí."
-
-#: src/game/server/gamecontext.cpp:3234
-msgid "The Hunter can infect humans and heal infected with his hammer."
-msgstr "lovec může infikovat lidi a léčit nakažené svým kladivem."
-
-#: src/game/server/gamecontext.cpp:3247
-msgid "The Ghost can infect humans and heal infected with his hammer."
-msgstr "Duch může infikovat lidi a léčit nakažené svým kladivem."
-
-#: src/game/server/gamecontext.cpp:3249
-msgid "He is invisible, except if a human is near him, if he takes a damage or if he use his hammer."
-msgstr "Je neviditelný dokud nezaútočí, nebo dokud se neocitne příliš blízko člověka."
-
-#: src/game/server/gamecontext.cpp:3260
-msgid "The Spider can infect humans and heal infected with his hammer."
-msgstr "Pavou může infikovat lidi a léčit infikované svým kladivem"
-
-#: src/game/server/gamecontext.cpp:3262
-msgid "When selecting any gun, his hook enter in web mode."
-msgstr "Při pokoušení se přepnout na jinou zbraň se jeho hák dostane do pavučinového módu"
-
-#: src/game/server/gamecontext.cpp:3264
-msgid "Any human that touch a hook in web mode is automatically grabbed."
-msgstr "Jakýkoliv člověk, který se dotkne háku v pavučinovém módu tak je automaticky přitáhnut k pavoukovi."
-
-#: src/game/server/gamecontext.cpp:3266
-msgid "The hook of the spider (in both mode) deal 1 damage point per second and can grab a human during 2 seconds."
-msgstr "Hák pavouka uděluje 1 útočný bod(v jakémoliv módu) za sekundu a člověka může držet 2 sekundy."
-
-#: src/game/server/gamecontext.cpp:3275
-msgid "The Ghoul can infect humans and heal infected with his hammer."
-msgstr "Ghůl může nakazit lidi a léčit nakažené kladivem"
-
-#: src/game/server/gamecontext.cpp:3277
-msgid "He can devour all that has died close to him, which makes him stronger, faster and more resistant."
-msgstr "Může absorbovat nakažené, které umřeli blízko něho, což ho poté dělá odolnějším a rychlejším."
-
-#: src/game/server/gamecontext.cpp:3279
-msgid "Thereupon he digests his fodder bit by bit going back to his normal state, and besides, death bereaves him of his nourishment."
-msgstr "Poté se postupně vrací do svého normálního stavu.\n"
-"Když umře, instantně ztratí část toho co absorboval"
-
-#: src/game/server/gamecontext.cpp:3288
-msgid "The Slug can infect humans and heal infected with his hammer."
+#: src/game/server/infclass/classes/humans/human.cpp:443
+msgid "Mine activated"
 msgstr ""
 
-#: src/game/server/gamecontext.cpp:3290
-msgid "He can make the ground and walls toxic by spreading slime with his hammer."
+#: src/game/server/gamecontext.cpp:3584
+msgid "Mines are limited to one per player at the same time."
+msgid_plural "Mines are limited to {int:NumMines} per player at the same time."
+msgstr[0] "Minu můžeš mít vždy jen jednu."
+msgstr[1] "Miny můžeš mít maximálně {int:NumMines}"
+msgstr[2] "Minu můžeš mít vždy jen {int:NumMines}"
+
+#: src/game/server/infclass/entities/infccharacter.cpp:1693
+msgid "Need at least {int:MinPlayers} player"
+msgid_plural "Need at least {int:MinPlayers} players"
+msgstr[0] ""
+msgstr[1] ""
+msgstr[2] ""
+
+#: src/game/server/infclass/classes/humans/human.cpp:596
+msgid "Next flag in {sec:RemainingTime}"
+msgstr "Příští vlajka se spawne za {sec:RemainingTime}"
+
+#: src/game/server/infclass/classes/humans/human.cpp:458
+msgid "Next target in {sec:RemainingTime}"
+msgstr "Příští cíl za {sec:RemainingTime}"
+
+#: src/game/server/infclass/infcgamecontroller.cpp:530 src/game/server/gamecontext.cpp:3654
+msgid "Ninja"
+msgstr "Nindža"
+
+#: src/game/server/infclass/infcgamecontroller.cpp:593
+#, fuzzy
+msgid "Ninjas"
+msgstr "Nindža"
+
+#: src/game/server/gamecontext.cpp:3665
+msgid "Ninjas get special targets. For killing a target, extra points and abilities are awarded"
 msgstr ""
 
-#: src/game/server/gamecontext.cpp:3292
-msgid "Touching the slime inflicts three damage points in three seconds on a human."
+#: src/game/server/gamecontext.cpp:3136
+msgid "No player was found with this name"
+msgstr "Nebyl nalezen žádný hráč s tímhle jménem"
+
+#: src/game/server/gamecontext.cpp:3883
+msgid "Once both portals are in place, they need extra {sec:ConnectionTime} to become operational."
 msgstr ""
 
-#: src/game/server/gamecontext.cpp:3301
-msgid "The Undead can infect humans and heal infected with his hammer."
-msgstr "Nemrtvý může infikovat lidi a léčit nakažené."
-
-#: src/game/server/gamecontext.cpp:3303
-msgid "Instead of dying, he freezes during 10 seconds."
-msgstr "Místo smrti se zmrazí na 10 sekund"
-
-#: src/game/server/gamecontext.cpp:3305
-msgid "If an infected heals him, the freeze effect disappear."
-msgstr "Pokud ho nakažený vyléčí zmrazení zmizí"
-
-#: src/game/server/gamecontext.cpp:3317
-msgid "The Witch can infect humans and heal infected with his hammer."
-msgstr "Čarodějnice můžou infikovat lidi a léčit nakažené svým kladivem."
-
-#: src/game/server/gamecontext.cpp:3319
-msgid "When an infected dies, he may re-spawn near her."
-msgstr "Když nakažený zemře, může se spawnout u čarodějnice."
-
-#: src/game/server/gamecontext.cpp:3321
-msgid "If the Witch dies, she disappears and is replaced by another class of infected."
-msgstr "Když zemřeš jako čarodějnice, tak se spawneš s jiným povoláním."
-
-#: src/game/server/gamecontext.cpp:3323
-msgid "She can also inflict 1 damage point per second by hooking humans."
-msgstr "Může udělit 1 útočný bod za sekundu zaháknutím člověka."
-
-#: src/game/server/gamecontext.cpp:3330
-msgid "Targeted chat messages"
-msgstr "Cílené zprávy chatu"
-
-#: src/game/server/gamecontext.cpp:3333
-msgid "Use “/msg <PlayerName> <My Message>” to send a private message to this player."
-msgstr "Pokud chceš napsat zprávu jinému hráči použij »/msg <JménoHráče> <Zpráva>«."
-
-#: src/game/server/gamecontext.cpp:3335
-msgid "Use “/msg !<ClassName> <My Message>” to send a private message to all players with a specific class."
-msgstr "Když chceš poslat zprávu specifické třídě, použij »/msg!<JménoTřídy> <Zpráva>«."
-
-#: src/game/server/gamecontext.cpp:3337
-msgid "Example: “/msg !medic I'm wounded!”"
-msgstr "Příklad: »/msg !medic Jsem zraněný!«"
-
-#: src/game/server/gamecontext.cpp:3339
-msgid "Use “/msg !near” to send a private message to all players near you."
-msgstr "Použij »/msg !near« k napsání zprávy všem hráčům blízko tebe."
-
-#: src/game/server/gamecontext.cpp:3349
-msgid "Choose a help page with /help <page>"
-msgstr "Vyber si stránku pomocí příkazu /help <čislo-strany>"
-
-#: src/game/server/gamecontext.cpp:3352
-msgid "Available help pages: {str:PageList}"
-msgstr "Dostupné stránky pomoci: {str:PageList}"
-
-#: src/game/server/gamecontext.cpp:3411
-msgid "A random class will be automatically attributed to you when rounds start"
-msgstr "Pokud si do začátku kola nevybereš povolání, tak je ti náhodně uděleno."
-
-#: src/game/server/gamecontext.cpp:3417
-msgid "The class selector will be displayed when rounds start"
-msgstr "Výběr povolání se ti zobrazí na obrazovce když začne kolo."
-
-#: src/game/server/gamecontext.cpp:3457
-msgid "Unknown language"
-msgstr "Neznámý jazyk"
-
-#: src/game/server/gamecontext.cpp:3470
-msgid "Available languages: {str:ListOfLanguage}"
-msgstr "Dostupné jazyky: {str:ListOfLanguage}"
-
-#: src/game/server/gamecontext.cpp:3487
-msgid "List of commands"
-msgstr "List příkazů"
-
-#: src/game/server/gamecontext.cpp:3499
-msgid "Press <F3> or <F4> to enable or disable hook protection"
-msgstr "Zmáčkni <F3> nebo <F4> k aktivaci,  nebo deaktivaci hákové ochrany"
-
-#: src/game/server/entities/character.cpp:1407
-msgid "You have held a bonus area for one minute, +5 points"
-msgstr ""
-
-#: src/game/server/entities/character.cpp:1476
-msgid "You are frozen: {sec:EffectDuration}"
-msgstr "Jsi zmražený:  {sec:EffectDuration}"
-
-#: src/game/server/entities/character.cpp:1761
-msgid "Random choice"
-msgstr "Náhodná volba"
-
-#: src/game/server/entities/character.cpp:1833
-msgid "Choose your class"
-msgstr "Vyber si své povolání"
-
-#: src/game/server/entities/character.cpp:1905
-msgid "Laser wall: {sec:RemainingTime}"
-msgstr "Laserová stěna: {sec:RemainingTime}"
-
-#: src/game/server/entities/character.cpp:1923
+#: src/game/server/infclass/classes/humans/human.cpp:365
 msgid "One bomb left"
 msgid_plural "{int:NumBombs} bombs left"
 msgstr[0] "Jedna bomba zbývá"
 msgstr[1] "{int:NumBombs} bomby zbývají"
 msgstr[2] "{int:NumBombs} bomby zbývají"
 
-#: src/game/server/entities/character.cpp:1941
+#: src/game/server/infclass/infcgamecontroller.cpp:1743
+msgid "One human won the round"
+msgid_plural "{int:NumHumans} humans won the round"
+msgstr[0] "Vyhrál jeden človek"
+msgstr[1] "{int:NumHumans} lidé vyhráli"
+msgstr[2] "{int:NumHumans} lidé vyhráli"
+
+#: src/game/server/infclass/classes/humans/human.cpp:402
 msgid "One mine is active"
 msgid_plural "{int:NumMines} mines are active"
 msgstr[0] "Jedna mina je aktivní"
 msgstr[1] "{int:NumMines} miny jsou aktivní"
 msgstr[2] "{int:NumMines} miny jsou aktivní"
 
-#: src/game/server/entities/character.cpp:1959
-msgid "Mine activated"
+#: src/game/server/gamecontext.cpp:3886
+msgid "Only one witch on a map can open a portal."
 msgstr ""
 
-#: src/game/server/entities/character.cpp:1973
-msgid "Next target in {sec:RemainingTime}"
-msgstr "Příští cíl za {sec:RemainingTime}"
+#: src/game/server/gamecontext.cpp:3914
+msgid "Persistent player mute"
+msgstr ""
 
-#: src/game/server/entities/character.cpp:1981
-msgid "Target to eliminate: {str:PlayerName}"
-msgstr "Terč k zavraždění: {str:PlayerName}"
+#: src/game/server/infclass/infcgamecontroller.cpp:1261
+msgid "Play more on this map"
+msgstr ""
 
-#: src/game/server/entities/character.cpp:1993
+#: src/engine/server/server.cpp:3643
+msgid "Please wait 5 minutes before creating another account"
+msgstr "Prosím, počkej 5 minut před vytvořením dalšího účtu"
+
+#: src/game/server/gamecontext.cpp:3891
+msgid "Portals are currently DISABLED."
+msgstr ""
+
+#: src/game/server/gamecontext.cpp:3889
+msgid "Portals are currently ENABLED."
+msgstr ""
+
+#: src/game/server/infclass/classes/humans/human.cpp:480
 msgid "Position lock: {sec:RemainingTime}"
 msgstr "Znehybnění: {sec:RemainingTime}"
 
-#: src/game/server/entities/character.cpp:2015
-msgid "Explosive yield: {percent:BombLevel}"
-msgstr "Explosivní efekt: {percent:BombLevel}"
+#: src/game/server/gamecontext.cpp:4091
+msgid "Press <F3> or <F4> to enable or disable hook protection"
+msgstr "Zmáčkni <F3> nebo <F4> k aktivaci,  nebo deaktivaci hákové ochrany"
 
-#: src/game/server/entities/character.cpp:2040
-msgid "Next flag in {sec:RemainingTime}"
-msgstr "Příští vlajka se spawne za {sec:RemainingTime}"
+#: src/game/server/gamecontext.cpp:3835
+msgid "Puts humans and zombies into a vulnerable state by pulling them into its center"
+msgstr ""
 
-#: src/game/server/entities/character.cpp:2050
-msgid "Web mode enabled"
-msgstr "Pavučinový mód aktivován"
+#: src/game/server/infclass/entities/infccharacter.cpp:1666
+msgid "Random choice"
+msgstr "Náhodná volba"
 
-#: src/game/server/entities/character.cpp:2059
+#: src/game/server/gamecontext.cpp:3830
+msgid "Receive it by killing at least one zombie."
+msgid_plural "Receive it by killing at least {int:NumKills} zombies as scientist."
+msgstr[0] ""
+msgstr[1] ""
+msgstr[2] ""
+
+#: src/game/server/gamecontext.cpp:3515
+msgid "Rules of the game"
+msgstr "Pravidla hry"
+
+#: src/game/server/infclass/infcgamecontroller.cpp:534 src/game/server/gamecontext.cpp:3578
+msgid "Scientist"
+msgstr "Vědec"
+
+#: src/game/server/gamecontext.cpp:3589
+#, fuzzy
+msgid "Scientist has also grenades that teleport them."
+msgstr "Vědec má taky gránatomet, který ho teleportuje."
+
+#: src/game/server/infclass/infcgamecontroller.cpp:597
+#, fuzzy
+msgid "Scientists"
+msgstr "Vědec"
+
+#: src/game/server/gamecontext.cpp:3527
+msgid "See also `/help pages`"
+msgstr ""
+
+#: src/game/server/gamecontext.cpp:2899
+msgid "Server version from {str:ServerCompileDate} "
+msgstr ""
+
+#: src/game/server/infclass/infcgamecontroller.cpp:555 src/game/server/gamecontext.cpp:3802
+msgid "Slug"
+msgstr ""
+
+#: src/game/server/infclass/infcgamecontroller.cpp:618
+msgid "Slugs"
+msgstr ""
+
+#: src/game/server/infclass/infcgamecontroller.cpp:541 src/game/server/gamecontext.cpp:3703
+msgid "Smoker"
+msgstr "Kuřák"
+
+#: src/game/server/gamecontext.cpp:3707
+msgid "Smoker has a powerful hook that hurts human."
+msgstr ""
+
+#: src/game/server/infclass/infcgamecontroller.cpp:604
+#, fuzzy
+msgid "Smokers"
+msgstr "Kuřák"
+
+#: src/game/server/infclass/infcgamecontroller.cpp:532 src/game/server/gamecontext.cpp:3690
+msgid "Sniper"
+msgstr "Odstřelovač"
+
+#: src/game/server/infclass/infcgamecontroller.cpp:595
+#, fuzzy
+msgid "Snipers"
+msgstr "Odstřelovač"
+
+#: src/game/server/gamecontext.cpp:3694
+#, fuzzy
+msgid "Snipers can jump two times in air."
+msgstr "Může skočit 3 krát"
+
+#: src/game/server/infclass/infcgamecontroller.cpp:528 src/game/server/gamecontext.cpp:3560
+msgid "Soldier"
+msgstr "Voják"
+
+#: src/game/server/infclass/infcgamecontroller.cpp:591
+#, fuzzy
+msgid "Soldiers"
+msgstr "Voják"
+
+#: src/game/server/gamecontext.cpp:2910
+msgid "Sources: {str:SourceUrl} "
+msgstr ""
+
+#: src/game/server/infclass/infcgamecontroller.cpp:551 src/game/server/gamecontext.cpp:3772
+msgid "Spider"
+msgstr "Pavouk"
+
+#: src/game/server/infclass/infcgamecontroller.cpp:614
+#, fuzzy
+msgid "Spiders"
+msgstr "Pavouk"
+
+#: src/game/server/infclass/classes/infected/infected.cpp:102
+#, fuzzy
+msgid "Staying alive for: {int:RemainingTime}"
+msgstr "Znehybnění: {sec:RemainingTime}"
+
+#: src/game/server/infclass/classes/infected/infected.cpp:272
 msgid "Stomach filled by {percent:FodderInStomach}"
 msgstr "Žaludek naplněn za {percent:FodderInStomach}"
 
-#: src/game/server/entities/character.cpp:2336
-msgid "The witch is dead"
-msgstr "Čarodějnice byla zabita"
+#: src/game/server/gamecontext.cpp:2081
+#, fuzzy
+msgid "Switch language to english?"
+msgstr "Změnit jazyk do angličtiny"
 
-#: src/game/server/entities/character.cpp:2342
-msgid "The undead is finally dead"
-msgstr "Nemrtvý je konečně mrtvý"
-
-#: src/game/server/entities/character.cpp:2764
-msgid "Sword velocity increased"
-msgstr ""
-
-#: src/game/server/entities/character.cpp:2768
+#: src/game/server/infclass/entities/infccharacter.cpp:699
 msgid "Sword strength increased"
 msgstr ""
 
-#: src/game/server/entities/character.cpp:2772
-msgid "Grenade limit increased"
+#: src/game/server/infclass/entities/infccharacter.cpp:695
+msgid "Sword velocity increased"
 msgstr ""
 
-#: src/game/server/entities/character.cpp:2794
-#: src/game/server/entities/character.cpp:2811
-#: src/game/server/entities/character.cpp:2828
-#: src/game/server/entities/character.cpp:2845
-#: src/game/server/entities/character.cpp:2863
-#: src/game/server/entities/character.cpp:2881
-#: src/game/server/entities/character.cpp:2898
-#: src/game/server/entities/character.cpp:2916
-#: src/game/server/entities/character.cpp:2932
-#: src/game/server/entities/character.cpp:2954
-#: src/game/server/entities/character.cpp:2969
-#: src/game/server/entities/character.cpp:2984
-#: src/game/server/entities/character.cpp:2999
-#: src/game/server/entities/character.cpp:3014
-#: src/game/server/entities/character.cpp:3029
-#: src/game/server/entities/character.cpp:3044
-#: src/game/server/entities/character.cpp:3059
-#: src/game/server/entities/character.cpp:3074
-msgid "Type “/help {str:ClassName}” for more information about your class"
-msgstr "Napiš »/help {str:ClassName}« pro víc informací o tvém povolání"
+#: src/game/server/infclass/classes/humans/human.cpp:467
+msgid "Target to eliminate: {str:PlayerName}"
+msgstr "Terč k zavraždění: {str:PlayerName}"
 
-#: src/game/server/entities/hero-flag.cpp:41
+#: src/game/server/gamecontext.cpp:3898
+msgid "Targeted chat messages"
+msgstr "Cílené zprávy chatu"
+
+#: src/game/server/gamecontext.cpp:2880
+msgid "Thanks to {str:ListOfContributors}"
+msgstr "Děkujeme {str:ListOfContributors}"
+
+#: src/game/server/gamecontext.cpp:3744
+#, fuzzy
+msgid "The Bat can heal infected with the hammer, but cannot infect humans"
+msgstr "Cíl nakažených, je nakazit všechny lidi."
+
+#: src/game/server/gamecontext.cpp:3601
+msgid "The Biologist has a shotgun with bouncing bullets and can create a spring laser trap by shooting with the laser rifle."
+msgstr ""
+
+#: src/game/server/gamecontext.cpp:3718
+#, fuzzy
+msgid "The Boomer explodes when it attacks."
+msgstr "Sebevrah exploduje když zaútočí svým kladivem."
+
+#: src/game/server/gamecontext.cpp:3549
+#, fuzzy
+msgid "The Engineer can build walls with the hammer to block infected."
+msgstr "Inženýr může kladivem budovat laserové zdi."
+
+#: src/game/server/gamecontext.cpp:3761
+#, fuzzy
+msgid "The Ghost can infect humans and heal infected with the hammer."
+msgstr "Duch může infikovat lidi a léčit nakažené svým kladivem."
+
+#: src/game/server/gamecontext.cpp:3789
+#, fuzzy
+msgid "The Ghoul can infect humans and heal infected with the hammer."
+msgstr "Ghůl může nakazit lidi a léčit nakažené kladivem"
+
+#: src/game/server/gamecontext.cpp:3647
+#, fuzzy
+msgid "The Hero cannot be healed by a Medic, but it can withstand a hit from an infected."
+msgstr "Hrdina nemůže být vyléčen léařem, ale dokáže vydržet bouchnutí od nakaženého, když má dost životů."
+
+#: src/game/server/infclass/entities/hero-flag.cpp:90
 msgid "The Hero found the flag!"
 msgstr "Hrdina našel vlajku!"
 
+#: src/game/server/gamecontext.cpp:3634
+#, fuzzy
+msgid "The Hero has a shotgun, a laser rifle, and a grenade launcher."
+msgstr "Hrdina má brokovnici, laser a granátomet"
+
+#: src/game/server/gamecontext.cpp:3636
+msgid "The Hero has to find a flag only visible to them. Stand still to be pointed towards it."
+msgstr ""
+
+#: src/game/server/gamecontext.cpp:3731
+#, fuzzy
+msgid "The Hunter can infect humans and heal infected with the hammer."
+msgstr "lovec může infikovat lidi a léčit nakažené svým kladivem."
+
+#: src/game/server/infclass/classes/infected/infected.cpp:292
+msgid "The IN portal is open"
+msgstr ""
+
+#: src/game/server/gamecontext.cpp:3610
+msgid "The Looper has a laser wall that slows down infected and a low-range laser rifle with a high fire rate."
+msgstr ""
+
+#: src/game/server/gamecontext.cpp:3619
+#, fuzzy
+msgid "The Medic can protect humans with the hammer by giving them armor."
+msgstr "Lékař může lidím svým kladivem dát štíty."
+
+#: src/game/server/gamecontext.cpp:3656
+msgid "The Ninja can throw flash grenades that can freeze infected during three seconds."
+msgstr "Ninja má granátomet, který zmrazí nakažené na 3 vteřiny."
+
+#: src/game/server/infclass/classes/infected/infected.cpp:300
+msgid "The OUT portal is open"
+msgstr ""
+
+#: src/game/server/gamecontext.cpp:3580
+#, fuzzy
+msgid "The Scientist can pose floating mines with the hammer."
+msgstr "Vědci můžou kladivem umístit nehybné miny"
+
+#: src/game/server/gamecontext.cpp:3804
+#, fuzzy
+msgid "The Slug can infect humans and heal infected with the hammer."
+msgstr "Ghůl může nakazit lidi a léčit nakažené kladivem"
+
+#: src/game/server/gamecontext.cpp:3705
+#, fuzzy
+msgid "The Smoker can infect humans and heal infected with the hammer."
+msgstr "Kuřák může infikovat lidi and léčit infikované svým kladivem"
+
+#: src/game/server/gamecontext.cpp:3692
+#, fuzzy
+msgid "The Sniper can lock the position in air for 15 seconds with the hammer."
+msgstr "Sniper se může znehybnit ve vzduchu po dobu 15 sekund použitím kladiva."
+
+#: src/game/server/gamecontext.cpp:3562
+#, fuzzy
+msgid "The Soldier creates floating bombs with the hammer."
+msgstr "Voják může svým kladivem umístit nehybné bomby"
+
+#: src/game/server/gamecontext.cpp:3774
+#, fuzzy
+msgid "The Spider can infect humans and heal infected with the hammer."
+msgstr "Pavou může infikovat lidi a léčit infikované svým kladivem"
+
+#: src/game/server/gamecontext.cpp:3844
+#, fuzzy
+msgid "The Undead can infect humans and heal infected with the hammer."
+msgstr "Nemrtvý může infikovat lidi a léčit nakažené."
+
+#: src/game/server/gamecontext.cpp:3817
+#, fuzzy
+msgid "The Voodoo can infect humans and heal infected with the hammer."
+msgstr "Duch může infikovat lidi a léčit nakažené svým kladivem."
+
+#: src/game/server/gamecontext.cpp:3860
+#, fuzzy
+msgid "The Witch can infect humans and heal infected with the hammer."
+msgstr "Čarodějnice můžou infikovat lidi a léčit nakažené svým kladivem."
+
+#: src/game/server/infclass/classes/humans/human.cpp:524
+msgid ""
+"The bomb is fully upgraded.\n"
+"There is nothing to do with the laser."
+msgstr ""
+
+#: src/game/server/infclass/entities/infccharacter.cpp:1686
+#, fuzzy
+msgid "The class is disabled"
+msgstr "Čarodějnice byla zabita"
+
+#: src/game/server/infclass/entities/infccharacter.cpp:1702
+msgid "The class limit exceeded"
+msgstr ""
+
+#: src/game/server/gamecontext.cpp:4009
+msgid "The class selector will be displayed when rounds start"
+msgstr "Výběr povolání se ti zobrazí na obrazovce když začne kolo."
+
+#: src/game/server/gamecontext.cpp:3639
+msgid "The flag gifts a health point, {int:NumArmorGift} armor and full ammo to all humans."
+msgstr ""
+
+#: src/game/server/gamecontext.cpp:3645
+msgid "The gift to all humans is only applied when the flag is surrounded by hearts and armor."
+msgstr ""
+
+#: src/game/server/gamecontext.cpp:3523
+#, fuzzy
+msgid "The goal for humans is to survive until the army cleans the map."
+msgstr "Cíl lidí je přežít, dokud armáda konflikt nevyřeší."
+
+#: src/game/server/gamecontext.cpp:3525
+msgid "The goal for infected is to infect all humans."
+msgstr "Cíl nakažených, je nakazit všechny lidi."
+
+#: src/game/server/gamecontext.cpp:3780
+msgid "The hook of the spider (in both mode) deal 1 damage point per second and can grab a human during 2 seconds."
+msgstr "Hák pavouka uděluje 1 útočný bod(v jakémoliv módu) za sekundu a člověka může držet 2 sekundy."
+
+#: src/game/server/infclass/infcgamecontroller.cpp:1264
+msgid "The last round"
+msgstr ""
+
+#: src/game/server/gamecontext.cpp:3553
+msgid "The lifespan of a wall is {sec:LifeSpan}, and walls are limited to one per player at the same time."
+msgstr "Životnost zdi je {sec:LifeSpan}, a zeď můžeš mít vždy jen jednu."
+
+#: src/game/server/gamecontext.cpp:3885
+msgid "The portals destroyed when the witch die."
+msgstr ""
+
+#: src/game/server/infclass/classes/infected/infected.cpp:284
+msgid "The portals system is active!"
+msgstr ""
+
+#: src/game/server/infclass/entities/infccharacter.cpp:1916
+msgid "The undead is finally dead"
+msgstr "Nemrtvý je konečně mrtvý"
+
+#: src/game/server/infclass/entities/infccharacter.cpp:1910
+msgid "The witch is dead"
+msgstr "Čarodějnice byla zabita"
+
+#: src/game/server/gamecontext.cpp:3752
+msgid "Their hook not only hurts humans, but also sucks their blood, restoring the bats health."
+msgstr ""
+
+#: src/game/server/gamecontext.cpp:3709
+msgid "Their hook not only hurts humans, but also sucks their blood, restoring the smokers health."
+msgstr ""
+
+#: src/game/server/gamecontext.cpp:3696
+#, fuzzy
+msgid "They also have a powerful rifle that deals 20 damage points in locked position, and 10–13 otherwise."
+msgstr "Taky má velmi silný laser, který uděluje 30 životů v zhehybněnosti a 10-13 normálně."
+
+#: src/game/server/gamecontext.cpp:3676
+#, fuzzy
+msgid "They can create powerful bombs with their hammer."
+msgstr "Voják může svým kladivem umístit nehybné bomby"
+
+#: src/engine/server/server.cpp:3670
+msgid "This username is already taken by an existing account"
+msgstr "Toto jméno je obsazené"
+
+#: src/game/server/gamecontext.cpp:3935
+msgid "To get off the taxi, jump. To drop off your passengers, enable hook protection (usually, with F3)."
+msgstr ""
+
+#: src/game/server/infclass/classes/humans/human.cpp:320
+msgid "Too few zombies to revive anyone (less than {int:MinZombies})"
+msgstr ""
+
+#: src/game/server/gamecontext.cpp:3808
+msgid "Touching the slime inflicts three damage points in three seconds on a human."
+msgstr ""
+
+#: src/game/server/gamecontext.cpp:3931
+msgid "Two or more humans can form a taxi."
+msgstr ""
+
+#: src/game/server/entities/character.cpp:1272
+msgid "Type “/help {str:ClassName}” for more information about your class"
+msgstr "Napiš »/help {str:ClassName}« pro víc informací o tvém povolání"
+
+#: src/game/server/infclass/infcgamecontroller.cpp:561 src/game/server/gamecontext.cpp:3842
+msgid "Undead"
+msgstr "Nemrtvý"
+
+#: src/game/server/infclass/infcgamecontroller.cpp:624
+#, fuzzy
+msgid "Undeads"
+msgstr "Nemrtvý"
+
+#: src/game/server/infclass/infcgamecontroller.cpp:565
+msgid "Unknown class"
+msgstr "Neznámé povolání"
+
+#: src/game/server/gamecontext.cpp:4047
+msgid "Unknown language"
+msgstr "Neznámý jazyk"
+
+#: src/game/server/infclass/infcgamecontroller.cpp:627
+#, fuzzy
+msgid "Unknowns"
+msgstr "Neznámé povolání"
+
+#: src/game/server/gamecontext.cpp:3919
+msgid "Unlike a client mute this will persist between map changes and wears off when either you or the muted player disconnects."
+msgstr ""
+
+#: src/game/server/gamecontext.cpp:3880
+msgid "Use Rifle to place or \"take\" a portal. The first portal is always Enterance and the last one is always Exit."
+msgstr ""
+
+#: src/game/server/gamecontext.cpp:3881
+msgid "Use Rifle to replace Exit if both portals already opened."
+msgstr ""
+
+#: src/game/server/gamecontext.cpp:3833
+msgid "Use it with your laser rifle, the indicator around your Tee will show you if it is available"
+msgstr ""
+
+#: src/game/server/infclass/classes/humans/human.cpp:545
+#, fuzzy
+msgid ""
+"Use the hammer to place a bomb and\n"
+"then use the laser to upgrade it"
+msgstr "Použij kladivo poprvé k umístění bomby, podruhé k nechání bomby vybouchnout."
+
+#: src/game/server/gamecontext.cpp:3571
+msgid "Use the hammer to place the bomb and explode it multiple times."
+msgstr "Použij kladivo poprvé k umístění bomby, podruhé k nechání bomby vybouchnout."
+
+#: src/game/server/infclass/classes/humans/human.cpp:508
+msgid "Use the laser to upgrade the bomb"
+msgstr ""
+
+#: src/game/server/gamecontext.cpp:3903
+msgid "Use “/msg !<ClassName> <My Message>” to send a private message to all players with a specific class."
+msgstr "Když chceš poslat zprávu specifické třídě, použij »/msg!<JménoTřídy> <Zpráva>«."
+
+#: src/game/server/gamecontext.cpp:3907
+msgid "Use “/msg !near” to send a private message to all players near you."
+msgstr "Použij »/msg !near« k napsání zprávy všem hráčům blízko tebe."
+
+#: src/game/server/gamecontext.cpp:3901
+msgid "Use “/msg <PlayerName> <My Message>” to send a private message to this player."
+msgstr "Pokud chceš napsat zprávu jinému hráči použij »/msg <JménoHráče> <Zpráva>«."
+
+#: src/game/server/gamecontext.cpp:3917
+#, fuzzy
+msgid "Use “/mute <PlayerName>” to mute this player."
+msgstr "Pokud chceš napsat zprávu jinému hráči použij »/msg <JménoHráče> <Zpráva>«."
+
+#: src/game/server/infclass/infcgamecontroller.cpp:557 src/game/server/gamecontext.cpp:3815
+msgid "Voodoo"
+msgstr ""
+
+#: src/game/server/infclass/infcgamecontroller.cpp:620
+msgid "Voodoos"
+msgstr ""
+
+#: src/game/server/infclass/classes/infected/infected.cpp:262
+msgid "Web mode enabled"
+msgstr "Pavučinový mód aktivován"
+
+#: src/game/server/gamecontext.cpp:3865
+#, fuzzy
+msgid "When an infected dies, it may respawn near the Witch."
+msgstr "Když nakažený zemře, může se spawnout u čarodějnice."
+
+#: src/game/server/gamecontext.cpp:3551
+#, fuzzy
+msgid "When an infected touches the wall, it dies."
+msgstr "Když se nakažený dotkne zdi, zemře."
+
+#: src/game/server/gamecontext.cpp:3776
+#, fuzzy
+msgid "When selecting any gun, the hook enter in web mode."
+msgstr "Při pokoušení se přepnout na jinou zbraň se jeho hák dostane do pavučinového módu"
+
+#: src/game/server/gamecontext.cpp:3821
+msgid "While in Spirit mode it cannot be killed. When the time is up it finally dies."
+msgstr ""
+
+#: src/game/server/gamecontext.cpp:3828
+msgid "White hole"
+msgstr ""
+
+#: src/game/server/infclass/classes/humans/human.cpp:412
+#, fuzzy
+msgid "White hole: {sec:RemainingTime}"
+msgstr "Laserová stěna: {sec:RemainingTime}"
+
+#: src/game/server/infclass/classes/humans/human.cpp:394
+msgid "WhiteHole ready !"
+msgstr ""
+
+#: src/game/server/infclass/infcgamecontroller.cpp:559 src/game/server/gamecontext.cpp:3857
+msgid "Witch"
+msgstr "Čarodějnice"
+
+#: src/game/server/infclass/infcgamecontroller.cpp:622
+#, fuzzy
+msgid "Witches"
+msgstr "Čarodějnice"
+
+#: src/engine/server/server.cpp:3496
+msgid "Wrong username/password."
+msgstr "Špatné jméno. nebo heslo"
+
+#: src/game/server/gamecontext.cpp:802
+msgid "You are a human: {str:ClassName}"
+msgstr "Jsi člověk {str:ClassName}"
+
+#: src/game/server/gamecontext.cpp:805
+msgid "You are an infected: {str:ClassName}"
+msgstr "Jsi nakažený: {str:ClassName}"
+
+#: src/game/server/entities/character.cpp:652
+msgid "You are frozen: {sec:EffectDuration}"
+msgstr "Jsi zmražený:  {sec:EffectDuration}"
+
+#: src/game/server/gamecontext.cpp:1833 src/game/server/gamecontext.cpp:2926
+msgid "You are muted for {sec:Duration}"
+msgstr ""
+
+#: src/game/server/entities/character.cpp:668
+#, fuzzy
+msgid "You are slowed: {sec:EffectDuration}"
+msgstr "Jsi zmražený:  {sec:EffectDuration}"
+
+#: src/game/server/gamecontext.cpp:2087
+msgid "You can change the language of this mod using the command /language."
+msgstr "Můžeš změnit jazyk tohoto módu pomocí příkazu /language"
+
+#: src/game/server/gamecontext.cpp:1925
+msgid "You can't join the spectators right now"
+msgstr "Právě nemůžeš pozorovat"
+
+#: src/game/server/infclass/classes/humans/human.cpp:586
+msgid "You don't have a turret to place"
+msgstr ""
+
+#: src/game/server/infclass/classes/humans/human.cpp:567
+msgid "You have a turret. Use the hammer to place it."
+msgstr ""
+
+#: src/engine/server/server.cpp:4818
+msgid "You have already notified that {str:PlayerName} ought to be banned"
+msgstr "Už jsi oznámil, že {str:PlayerName} musí být zabanován"
+
+#: src/engine/server/server.cpp:4901
+msgid "You have already voted to change this map"
+msgstr ""
+
+#: src/game/server/infclass/infcgamecontroller.cpp:132
+#, fuzzy
+msgid "You have been infected by {str:KillerName}"
+msgstr "Jsi nakažený: {str:ClassName}"
+
+#: src/game/server/infclass/infcgamecontroller.cpp:1531 src/game/server/infclass/infcgamecontroller.cpp:1566
+msgid "You have eliminated your target, +2 points"
+msgstr ""
+
+#: src/game/server/infclass/entities/infccharacter.cpp:152
+msgid "You have held a bonus area for one minute, +5 points"
+msgstr ""
+
+#: src/game/server/infclass/infcgamecontroller.cpp:136
+msgid "You have infected {str:VictimName}, +3 points"
+msgstr "Nakazil jsi {str:VictimName}, +3 body"
+
+#: src/game/server/infclass/infcgamecontroller.cpp:117
+#, fuzzy
+msgid "You have infected {str:VictimName}, shame on you!"
+msgstr "Nakazil jsi {str:VictimName}, +3 body"
+
+#: src/game/server/infclass/infcgamecontroller.cpp:1513
+msgid "You have killed a witch, +5 points"
+msgstr "Zabil jsi čarodějnici, +5 bodů"
+
+#: src/game/server/infclass/infcgamecontroller.cpp:1519
+#, fuzzy
+msgid "You have killed an undead! +5 points"
+msgstr "Zabil jsi čarodějnici, +5 bodů"
+
+#: src/game/server/infclass/infcgamecontroller.cpp:1760
+msgid "You have survived, +5 points"
+msgstr "Přežil jsi, +5 bodů"
+
+#: src/game/server/infclass/classes/humans/human.cpp:575
+msgid "You have {int:NumTurrets} of {int:MaxTurrets} turrets. Use the hammer to place one."
+msgstr ""
+
+#: src/engine/server/server.cpp:3589
+msgid "You must be logged for this operation"
+msgstr "K tomuto úkonu musíš být přihlášen"
+
+#: src/engine/server/server.cpp:4474
+#, fuzzy
+msgid "You must be logged to see stats"
+msgstr "Musíš být příhlášen, aby jsi viděl svou pozici"
+
+#: src/engine/server/server.cpp:4390
+msgid "You must be logged to see your goal"
+msgstr "Musíš být přihlášen, aby jsi viděl svůj cíl"
+
+#: src/engine/server/server.cpp:4306
+msgid "You must be logged to see your rank"
+msgstr "Musíš být příhlášen, aby jsi viděl svou pozici"
+
+#: src/game/server/infclass/classes/humans/human.cpp:310
+msgid "You need at least {int:MinHp} HP to revive a zombie"
+msgstr ""
+
+#: src/engine/server/server.cpp:3715
+msgid "Your account has been created and you are now logged."
+msgstr "Tvůj účet byl vytvořen a už jsi přihlášen."
+
+#: src/game/server/gamecontext.cpp:3674
+#, fuzzy
+msgid "he Mercenary can fly in the air using their machine gun."
+msgstr "Žoldnéř létá ve vzduchu pomocí jeho pistole."
+
+#: src/game/server/infclass/entities/infccharacter.cpp:2127
+msgid "white hole found, adjusting scientific parameters..."
+msgstr ""
+
+#: src/game/server/infclass/entities/superweapon-indicator.cpp:71
+msgid "white hole ready, your laser rifle now disrupts space time"
+msgstr ""
+
+#: src/game/server/infclass/classes/humans/human.cpp:422
+msgid ""
+"{int:NumMines} mines are active\n"
+"White hole: {sec:RemainingTime}"
+msgstr ""
+
+#: src/game/server/gamecontext.cpp:1985
+msgid "{str:PlayerName} changed their name to {str:NewName}"
+msgstr "{str:PlayerName} změnil své jméno na {str:NewName}"
+
+#: src/game/server/gamecontext.cpp:1394
+msgid "{str:PlayerName} entered and joined the game"
+msgstr "{str:PlayerName} se připojil a vstoupil do hry"
+
+#: src/game/server/player.cpp:307
+msgid "{str:PlayerName} has been banned ({str:Reason})"
+msgstr "{str:PlayerName} byl zabanován ({str:Reason})"
+
+#: src/game/server/player.cpp:314
+msgid "{str:PlayerName} has been kicked ({str:Reason})"
+msgstr "{str:PlayerName} byl vyhozen ze hry ({str:Reason})"
+
+#: src/game/server/player.cpp:328
+msgid "{str:PlayerName} has left the game"
+msgstr "{str:PlayerName} opustil hru"
+
+#: src/game/server/player.cpp:321
+msgid "{str:PlayerName} has left the game ({str:Reason})"
+msgstr "{str:PlayerName} opustil hru ({str:Reason})"
+
+#: src/game/server/gamecontroller.cpp:193
+msgid "{str:PlayerName} joined the game"
+msgstr "{str:PlayerName} se připojil do hry"
+
+#: src/game/server/gamecontroller.cpp:187
+msgid "{str:PlayerName} joined the spectators"
+msgstr "{str:PlayerName} začal pozorovat"
+
+#: src/engine/server/server.cpp:4913
+#, fuzzy
+msgid "{str:PlayerName} wants to start the vote '{str:VoteName}'"
+msgstr "{str:PlayerName} změnil své jméno na {str:NewName}"
+
+#: src/engine/server/server.cpp:4833
+msgid "{str:PlayerName} wants {str:VictimName} to be banned ({str:Reason})"
+msgstr "{str:PlayerName} chce, aby byl {str:VictimName} zabanován z důvodu: ({str:Reason})"
+
+#: src/game/server/infclass/infcgamecontroller.cpp:1174 src/game/server/infclass/infcgamecontroller.cpp:1199
+msgid "{str:VictimName} has been infected"
+msgstr "{str:VictimName} byl nakažen"
+
+#: src/engine/server/server.cpp:2470
+msgid "{str:Victim} has been muted for {sec:Duration} ({str:Reason})"
+msgstr ""
+
+#~ msgid "Bombs are limited to one per player at the same time."
+#~ msgstr "Bombu můžeš umístit jen jednu."
+
+#~ msgid "He can also inflict 4 damage points per second by hooking humans."
+#~ msgstr "Taky může způsobit 4 útočné body za sekundu dotknutí se hákem člověka."
+
+#~ msgid "He can coil explosives with his hammer that hinder infected from harming."
+#~ msgstr "Může svým kladivem tvořit exploze."
+
+#~ msgid "Once taken, the flag gives 1 health point, 4 armor points, and full ammo to all humans, furthermore full health and armor to the hero."
+#~ msgstr ""
+#~ "Když vezme vlajku, přidá 1 život, 4 štíty a všechny náboje všem lidem.\n"
+#~ "K tomu přidá všechny životy a brnění hrdinovi."
+
+#~ msgid "She can also inflict 1 damage point per second by hooking humans."
+#~ msgstr "Může udělit 1 útočný bod za sekundu zaháknutím člověka."
+
+#~ msgid "The Hero must find a flag hidden in the map."
+#~ msgstr "Musí najít vlajku skrytou někde ve hře"
+
+#~ msgid "Thereupon he digests his fodder bit by bit going back to his normal state, and besides, death bereaves him of his nourishment."
+#~ msgstr ""
+#~ "Poté se postupně vrací do svého normálního stavu.\n"
+#~ "Když umře, instantně ztratí část toho co absorboval"
+
+#~ msgid "You are now logged."
+#~ msgstr "Jsi příhlášen/a"
