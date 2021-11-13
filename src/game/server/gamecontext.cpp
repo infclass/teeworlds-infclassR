@@ -2932,6 +2932,21 @@ bool CGameContext::ConAbout(IConsole::IResult *pResult)
 		Buffer.clear();
 	}
 
+	if(Config()->m_AboutContactsDiscord[0])
+	{
+		Server()->Localization()->Format_L(Buffer, pLanguage, _("Discord: {str:Url}"), "Url",
+			Config()->m_AboutContactsDiscord, nullptr);
+		Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "info", Buffer.buffer());
+		Buffer.clear();
+	}
+	if(Config()->m_AboutContactsMatrix[0])
+	{
+		Server()->Localization()->Format_L(Buffer, pLanguage, _("Matrix room: {str:Url}"), "Url",
+			Config()->m_AboutContactsMatrix, nullptr);
+		Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "info", Buffer.buffer());
+		Buffer.clear();
+	}
+
 	Server()->Localization()->Format_L(Buffer, pLanguage, _("See also: /credits"), nullptr);
 	Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "info", Buffer.buffer());
 	Buffer.clear();
