@@ -1,5 +1,10 @@
 // NO INCLUDE GUARDS!
 
+MACRO_CONFIG_STR(AboutSourceUrl, about_source_url, 128, "https://github.com/InfectionDust/teeworlds-infclassR", CFGFLAG_SERVER, "The server source code URL")
+MACRO_CONFIG_STR(AboutTranslationUrl, about_translation_url, 128, "https://crowdin.com/translate/infectiondust", CFGFLAG_SERVER, "The translation site URL")
+MACRO_CONFIG_STR(AboutContactsDiscord, about_contacts_discord, 128, "https://discord.gg/Sxk5ssv", CFGFLAG_SERVER, "Discord server invite URL")
+MACRO_CONFIG_STR(AboutContactsMatrix, about_contacts_matrix, 128, "https://matrix.to/#/#teeworlds-infclass:matrix.org", CFGFLAG_SERVER, "Matrix room URL")
+
 MACRO_CONFIG_INT(InfMinPlayers, inf_min_players, 2, 0, 64, CFGFLAG_SERVER, "Minimum number of players to start the round")
 MACRO_CONFIG_INT(InfChallenge, inf_challenge, 0, 0, 1, CFGFLAG_SERVER, "Enable challenges")
 MACRO_CONFIG_INT(InfAccusationThreshold, inf_accusation_threshold, 4, 0, 8, CFGFLAG_SERVER, "Number of accusations needed to start a banvote")

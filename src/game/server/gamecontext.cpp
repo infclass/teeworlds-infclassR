@@ -1394,10 +1394,21 @@ void CGameContext::OnClientEnter(int ClientID)
 	SendChatTarget_Localization(-1, CHATCATEGORY_PLAYER, _("{str:PlayerName} entered and joined the game"), "PlayerName", Server()->ClientName(ClientID), NULL);
 
 	SendChatTarget(ClientID, "InfectionClass Mod. Version: " GAME_VERSION);
-	SendChatTarget(ClientID, "See also: /help, /changelog, /about");
+	SendChatTarget_Localization(ClientID, CHATCATEGORY_DEFAULT,
+		_("See also: /help, /changelog, /about"), nullptr);
 
-	SendChatTarget(ClientID, "Join our discord server: https://discord.gg/Sxk5ssv");
-	SendChatTarget(ClientID, "Join our matrix.org room: https://matrix.to/#/#teeworlds-infclass:matrix.org");
+	if(Config()->m_AboutContactsDiscord[0])
+	{
+		SendChatTarget_Localization(ClientID, CHATCATEGORY_DEFAULT,
+			_("Join our Discord server: {str:Url}"), "Url",
+			Config()->m_AboutContactsDiscord, nullptr);
+	}
+	if(Config()->m_AboutContactsMatrix[0])
+	{
+		SendChatTarget_Localization(ClientID, CHATCATEGORY_DEFAULT,
+			_("Join our Matrix room: {str:Url}"), "Url",
+			Config()->m_AboutContactsMatrix, nullptr);
+	}
 
 	char output[512];
 	str_format(output, sizeof(output), "[%08x][%s][%s]", (int)time(0), Server()->GetClientIP(ClientID).c_str(), Server()->ClientName(ClientID));
@@ -2911,13 +2922,19 @@ bool CGameContext::ConAbout(IConsole::IResult *pResult)
 		Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "info", aBuf);
 	}
 
-	Server()->Localization()->Format_L(Buffer, pLanguage, _("Sources: {str:SourceUrl} "), "SourceUrl",
-		"https://github.com/InfectionDust/teeworlds-infclassR", NULL);
+	const char *pSourceUrl = Config()->m_AboutSourceUrl;
+	if(pSourceUrl[0])
+	{
+		Server()->Localization()->Format_L(Buffer, pLanguage, _("Sources: {str:SourceUrl} "), "SourceUrl",
+			pSourceUrl, NULL
+		);
+		Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "info", Buffer.buffer());
+		Buffer.clear();
+	}
+
+	Server()->Localization()->Format_L(Buffer, pLanguage, _("See also: /credits"), nullptr);
 	Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "info", Buffer.buffer());
 	Buffer.clear();
-
-	Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "info",
-		"See also: /credits");
 
 	return true;
 }
@@ -3539,9 +3556,7 @@ bool CGameContext::ConHelp(IConsole::IResult *pResult, void *pUserData)
 		Buffer.append(" ~~\n\n");
 		pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("Create an account on Crowdin and join a translation team:"), NULL);
 		Buffer.append("\n\n");
-		pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, "https://crowdin.com/project/teeuniverse", NULL);
-		Buffer.append("\n\n");
-		pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("For any question about the translation process, please contact us on IRC ({str:IRCAddress})"), "IRCAddress", "QuakeNet, #infclass", NULL);
+		pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, pSelf->Config()->m_AboutTranslationUrl, NULL);
 
 		pSelf->SendMOTD(ClientID, Buffer.buffer());
 	}
