@@ -2887,32 +2887,36 @@ bool CGameContext::ConCredits(IConsole::IResult *pResult, void *pUserData)
 bool CGameContext::ConAbout(IConsole::IResult *pResult, void *pUserData)
 {
 	CGameContext *pSelf = (CGameContext *)pUserData;
+	return pSelf->ConAbout(pResult);
+}
 
+bool CGameContext::ConAbout(IConsole::IResult *pResult)
+{
 	int ClientID = pResult->GetClientID();
-	const char* pLanguage = pSelf->m_apPlayers[ClientID]->GetLanguage();
+	const char* pLanguage = m_apPlayers[ClientID]->GetLanguage();
 
 	dynamic_string Buffer;
-	pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("InfectionClass, by necropotame (version {str:VersionCode})"), "VersionCode", GAME_VERSION, NULL);
-	pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "info", Buffer.buffer());
+	Server()->Localization()->Format_L(Buffer, pLanguage, _("InfectionClass, by necropotame (version {str:VersionCode})"), "VersionCode", GAME_VERSION, NULL);
+	Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "info", Buffer.buffer());
 	Buffer.clear();
 
-	pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("Server version from {str:ServerCompileDate} "), "ServerCompileDate", LAST_COMPILE_DATE, NULL); 
-	pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "info", Buffer.buffer());
+	Server()->Localization()->Format_L(Buffer, pLanguage, _("Server version from {str:ServerCompileDate} "), "ServerCompileDate", LAST_COMPILE_DATE, NULL);
+	Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "info", Buffer.buffer());
 	Buffer.clear();
 
 	if(GIT_SHORTREV_HASH)
 	{
 		char aBuf[64];
 		str_format(aBuf, sizeof(aBuf), "Git revision hash: %s", GIT_SHORTREV_HASH);
-		pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "info", aBuf);
+		Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "info", aBuf);
 	}
 
-	pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("Sources: {str:SourceUrl} "), "SourceUrl",
-	                                          "https://github.com/InfectionDust/teeworlds-infclassR", NULL);
-	pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "info", Buffer.buffer());
+	Server()->Localization()->Format_L(Buffer, pLanguage, _("Sources: {str:SourceUrl} "), "SourceUrl",
+		"https://github.com/InfectionDust/teeworlds-infclassR", NULL);
+	Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "info", Buffer.buffer());
 	Buffer.clear();
 
-	pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "info",
+	Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "info",
 		"See also: /credits");
 
 	return true;
