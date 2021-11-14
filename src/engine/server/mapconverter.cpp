@@ -1,6 +1,9 @@
 #include <engine/server/mapconverter.h>
 
 #include <base/color.h>
+
+#include <game/server/infclass/events-director.h>
+
 #include <game/collision.h>
 #include <game/layers.h>
 #include <game/server/classes.h>
@@ -1040,6 +1043,8 @@ int CMapConverter::Finalize()
 			CInfClassHuman::SetupSkin(SkinContext, &ClassTeeInfo, DDNetVersion, InfClassVersion);
 		}
 
+		EventsDirector::SetupSkin(SkinContext, &ClassTeeInfo, DDNetVersion, InfClassVersion);
+
 		char SkinPath[96];
 		str_format(SkinPath, sizeof(SkinPath), "../skins/%s", ClassTeeInfo.pSkinName);
 
@@ -1280,6 +1285,7 @@ int CMapConverter::Finalize()
 							int PlayerClass = CInfClassGameController::MenuClassToPlayerClass(i);
 							const char *pClassName = CInfClassGameController::GetClassDisplayName(PlayerClass);
 							CInfClassHuman::SetupSkin(SkinContext, &SkinInfo, DDNetVersion, InfClassVersion);
+							EventsDirector::SetupSkin(SkinContext, &SkinInfo, DDNetVersion, InfClassVersion);
 							bool Black = false;
 							AddTeeLayer(pClassName, ClassImageID[i], Pos, 64.0f, m_NumEnvs-1, Black, SkinInfo);
 						}

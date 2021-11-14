@@ -42,6 +42,7 @@
 #include <engine/server/mapconverter.h>
 #include <engine/server/sql_job.h>
 #include <engine/server/crypt.h>
+#include <game/server/infclass/events-director.h>
 
 #include <teeuniverses/components/localization.h>
 /* INFECTION MODIFICATION END *****************************************/
@@ -1333,6 +1334,9 @@ bool CServer::InitCaptcha()
 
 bool CServer::GenerateClientMap(const char *pMapFilePath, const char *pMapName)
 {
+	if(!m_pMap->Load(pMapFilePath))
+		return 0;
+
 	//The map format of InfectionClass is different from the vanilla format.
 	//We need to convert the map to something that the client can use
 	//First, try to find if the client map is already generated
@@ -1342,9 +1346,12 @@ bool CServer::GenerateClientMap(const char *pMapFilePath, const char *pMapName)
 	unsigned ServerMapCrc = dfServerMap.Crc();
 	dfServerMap.Close();
 
+	EventsDirector::SetPreloadedMapName(pMapName);
+
 	char aClientMapDir[256];
 	char aClientMapName[256];
-	static const char *pConverterId = CMapConverter::GetConverterVersionId();
+	const char *pConverterId = CMapConverter::GetConverterVersionId();
+	pConverterId = EventsDirector::GetMapConverterId(pConverterId);
 	str_format(aClientMapDir, sizeof(aClientMapDir), "clientmaps/%s", pConverterId);
 	str_format(aClientMapName, sizeof(aClientMapName), "%s/%s_%08x.map", aClientMapDir, pMapName, ServerMapCrc);
 
@@ -2149,15 +2156,19 @@ void CServer::ChangeMap(const char *pMap)
 
 int CServer::LoadMap(const char *pMapName)
 {
-	char aBuf[512];
-	str_format(aBuf, sizeof(aBuf), "maps/%s.map", pMapName);
-
-	if(!m_pMap->Load(aBuf))
-		return 0;
-			
 /* INFECTION MODIFICATION START ***************************************/
-	if(!GenerateClientMap(aBuf, pMapName))
-		return 0;
+	const char *pEventMapName = EventsDirector::GetEventMapName(pMapName);
+
+	char aBuf[512];
+	str_format(aBuf, sizeof(aBuf), "maps/%s.map", pEventMapName);
+
+	if(!GenerateClientMap(aBuf, pEventMapName))
+	{
+		str_format(aBuf, sizeof(aBuf), "maps/%s.map", pMapName);
+
+		if(!GenerateClientMap(aBuf, pMapName))
+			return 0;
+	}
 /* INFECTION MODIFICATION END *****************************************/
 
 	// stop recording when we change map

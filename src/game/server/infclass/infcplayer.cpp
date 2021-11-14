@@ -3,6 +3,7 @@
 #include <engine/shared/config.h>
 #include <game/server/gamecontext.h>
 #include <game/server/infclass/infcgamecontroller.h>
+#include <game/server/infclass/events-director.h>
 
 #include "classes/humans/human.h"
 #include "classes/infcplayerclass.h"
@@ -178,6 +179,7 @@ void CInfClassPlayer::SnapClientInfo(int SnappingClient)
 	if(m_SkinGetter)
 	{
 		m_SkinGetter(m_SkinContext, &SkinInfo, ClientInfo.m_DDNetVersion, ClientInfo.m_InfClassVersion);
+		EventsDirector::SetupSkin(m_SkinContext, &SkinInfo, ClientInfo.m_DDNetVersion, ClientInfo.m_InfClassVersion);
 	}
 	else
 	{
