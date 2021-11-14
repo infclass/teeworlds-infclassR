@@ -3561,8 +3561,6 @@ bool CGameContext::ConHelp(IConsole::IResult *pResult, void *pUserData)
 		pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("The goal for infected is to infect all humans."), NULL);
 		Buffer.append("\n\n");
 		pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("See also `/help pages`"), NULL);
-
-		pSelf->SendMOTD(ClientID, Buffer.buffer());
 	}
 	else if(str_comp_nocase(pHelpPage, "translate") == 0)
 	{
@@ -3572,8 +3570,6 @@ bool CGameContext::ConHelp(IConsole::IResult *pResult, void *pUserData)
 		pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("Create an account on Crowdin and join a translation team:"), NULL);
 		Buffer.append("\n\n");
 		pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, pSelf->Config()->m_AboutTranslationUrl, NULL);
-
-		pSelf->SendMOTD(ClientID, Buffer.buffer());
 	}
 	else if(str_comp_nocase(pHelpPage, "engineer") == 0)
 	{
@@ -3585,8 +3581,6 @@ bool CGameContext::ConHelp(IConsole::IResult *pResult, void *pUserData)
 		pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("When an infected touches the wall, it dies."), NULL);
 		Buffer.append("\n\n");
 		pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("The lifespan of a wall is {sec:LifeSpan}, and walls are limited to one per player at the same time."), "LifeSpan", &g_Config.m_InfBarrierLifeSpan, NULL);
-
-		pSelf->SendMOTD(ClientID, Buffer.buffer());
 	}
 	else if(str_comp_nocase(pHelpPage, "soldier") == 0)
 	{
@@ -3603,8 +3597,6 @@ bool CGameContext::ConHelp(IConsole::IResult *pResult, void *pUserData)
 		);
 		Buffer.append("\n\n");
 		pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("Use the hammer to place the bomb and explode it multiple times."), NULL);
-
-		pSelf->SendMOTD(ClientID, Buffer.buffer());
 	}
 	else if(str_comp_nocase(pHelpPage, "scientist") == 0)
 	{
@@ -3623,8 +3615,6 @@ bool CGameContext::ConHelp(IConsole::IResult *pResult, void *pUserData)
 		pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("Scientist has also grenades that teleport them."), NULL);
 		Buffer.append("\n\n");
 		pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("A lucky Scientist devoted to killing can get a white hole that sucks infected in which can be placed with the laser rifle."), NULL);
-
-		pSelf->SendMOTD(ClientID, Buffer.buffer());
 	}
 	else if(str_comp_nocase(pHelpPage, "biologist") == 0)
 	{
@@ -3633,8 +3623,6 @@ bool CGameContext::ConHelp(IConsole::IResult *pResult, void *pUserData)
 		pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("Biologist"), NULL);
 		Buffer.append(" ~~\n\n");
 		pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("The Biologist has a shotgun with bouncing bullets and can create a spring laser trap by shooting with the laser rifle."), NULL);
-
-		pSelf->SendMOTD(ClientID, Buffer.buffer());
 	}
 	else if(str_comp_nocase(pHelpPage, "looper") == 0)
 	{
@@ -3642,8 +3630,6 @@ bool CGameContext::ConHelp(IConsole::IResult *pResult, void *pUserData)
 		pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("Looper"), NULL);
 		Buffer.append(" ~~\n\n");
 		pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("The Looper has a laser wall that slows down infected and a low-range laser rifle with a high fire rate."), NULL);
-
-		pSelf->SendMOTD(ClientID, Buffer.buffer());
 	}
 	else if(str_comp_nocase(pHelpPage, "medic") == 0)
 	{
@@ -3657,8 +3643,6 @@ bool CGameContext::ConHelp(IConsole::IResult *pResult, void *pUserData)
 		pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("Laser rifle revives the infected, but at the cost of 17 hp and armor."), NULL);
 		Buffer.append("\n\n");
 		pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("Medic also has a powerful shotgun that can knock back infected."), NULL);
-
-		pSelf->SendMOTD(ClientID, Buffer.buffer());
 	}
 	else if(str_comp_nocase(pHelpPage, "hero") == 0)
 	{
@@ -3679,8 +3663,6 @@ bool CGameContext::ConHelp(IConsole::IResult *pResult, void *pUserData)
 		pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("The gift to all humans is only applied when the flag is surrounded by hearts and armor."), NULL);
 		Buffer.append("\n\n");
 		pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("The Hero cannot be healed by a Medic, but it can withstand a hit from an infected."), NULL);
-
-		pSelf->SendMOTD(ClientID, Buffer.buffer());
 	}
 	else if(str_comp_nocase(pHelpPage, "ninja") == 0)
 	{
@@ -3698,8 +3680,6 @@ bool CGameContext::ConHelp(IConsole::IResult *pResult, void *pUserData)
 		);
 		Buffer.append("\n\n");
 		pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("Ninja gets special targets. For killing a target, extra points and abilities are awarded."), NULL);
-
-		pSelf->SendMOTD(ClientID, Buffer.buffer());
 	}
 	else if(str_comp_nocase(pHelpPage, "mercenary") == 0)
 	{
@@ -3716,8 +3696,6 @@ bool CGameContext::ConHelp(IConsole::IResult *pResult, void *pUserData)
 			"NumDamagePoints", &g_Config.m_InfPoisonDamage,
 			NULL
 		);
-
-		pSelf->SendMOTD(ClientID, Buffer.buffer());
 	}
 	else if(str_comp_nocase(pHelpPage, "sniper") == 0)
 	{
@@ -3729,8 +3707,6 @@ bool CGameContext::ConHelp(IConsole::IResult *pResult, void *pUserData)
 		pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("Sniper can jump two times in the air."), NULL);
 		Buffer.append("\n\n");
 		pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("They also have a powerful rifle that deals 20 damage points in locked position, and 10–13 otherwise."), NULL);
-
-		pSelf->SendMOTD(ClientID, Buffer.buffer());
 	}
 	else if(str_comp_nocase(pHelpPage, "smoker") == 0)
 	{
@@ -3740,8 +3716,6 @@ bool CGameContext::ConHelp(IConsole::IResult *pResult, void *pUserData)
 		pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("The Smoker can infect humans and heal infected with the hammer."), NULL);
 		Buffer.append("\n\n");
 		pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("Smoker has a powerful hook that hurts humans and sucks their blood, restoring the Smoker's health."), NULL);
-
-		pSelf->SendMOTD(ClientID, Buffer.buffer());
 	}
 	else if(str_comp_nocase(pHelpPage, "boomer") == 0)
 	{
@@ -3753,8 +3727,6 @@ bool CGameContext::ConHelp(IConsole::IResult *pResult, void *pUserData)
 		pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("All humans affected by the explosion become infected."), NULL);
 		Buffer.append("\n\n");
 		pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("It can also inflict 1 damage point per second by hooking humans."), NULL);
-
-		pSelf->SendMOTD(ClientID, Buffer.buffer());
 	}
 	else if(str_comp_nocase(pHelpPage, "hunter") == 0)
 	{
@@ -3766,8 +3738,6 @@ bool CGameContext::ConHelp(IConsole::IResult *pResult, void *pUserData)
 		pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("He can jump two times in the air."), NULL);
 		Buffer.append("\n\n");
 		pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("He can also inflict 1 damage point per second by hooking humans."), NULL);
-
-		pSelf->SendMOTD(ClientID, Buffer.buffer());
 	}
 	else if(str_comp_nocase(pHelpPage, "bat") == 0)
 	{
@@ -3781,8 +3751,6 @@ bool CGameContext::ConHelp(IConsole::IResult *pResult, void *pUserData)
 		pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("Bat can jump infinitely in the air."), NULL);
 		Buffer.append("\n\n");
 		pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("It can also inflict 1 damage point per second by hooking humans, which sucks their blood, restoring the Bat's health."), NULL);
-
-		pSelf->SendMOTD(ClientID, Buffer.buffer());
 	}
 	else if(str_comp_nocase(pHelpPage, "ghost") == 0)
 	{
@@ -3794,8 +3762,6 @@ bool CGameContext::ConHelp(IConsole::IResult *pResult, void *pUserData)
 		pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("It is invisible, unless a human is nearby, it takes damage, or it uses the hammer."), NULL);
 		Buffer.append("\n\n");
 		pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("It can also inflict 1 damage point per second by hooking humans."), NULL);
-
-		pSelf->SendMOTD(ClientID, Buffer.buffer());
 	}
 	else if(str_comp_nocase(pHelpPage, "spider") == 0)
 	{
@@ -3809,8 +3775,6 @@ bool CGameContext::ConHelp(IConsole::IResult *pResult, void *pUserData)
 		pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("Any human that touches a hook in web mode is automatically grabbed."), NULL);
 		Buffer.append("\n\n");
 		pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("The hook (in both modes) inflicts 1 damage point per second and can grab a human for longer."), NULL);
-
-		pSelf->SendMOTD(ClientID, Buffer.buffer());
 	}
 	else if(str_comp_nocase(pHelpPage, "ghoul") == 0)
 	{
@@ -3824,8 +3788,6 @@ bool CGameContext::ConHelp(IConsole::IResult *pResult, void *pUserData)
 		pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("It digests the fodder over time, going back to the normal state. Some nourishment is also lost on death."), NULL);
 		Buffer.append("\n\n");
 		pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("It can also inflict 1 damage point per second by hooking humans."), NULL);
-
-		pSelf->SendMOTD(ClientID, Buffer.buffer());
 	}
 	else if(str_comp_nocase(pHelpPage, "slug") == 0)
 	{
@@ -3839,8 +3801,6 @@ bool CGameContext::ConHelp(IConsole::IResult *pResult, void *pUserData)
 		pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("Touching the slime inflicts 3 damage points in three seconds to a human."), NULL);
 		Buffer.append("\n\n");
 		pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("It can also inflict 1 damage point per second by hooking humans."), NULL);
-
-		pSelf->SendMOTD(ClientID, Buffer.buffer());
 	}
 	else if(str_comp_nocase(pHelpPage, "voodoo") == 0)
 	{
@@ -3854,8 +3814,6 @@ bool CGameContext::ConHelp(IConsole::IResult *pResult, void *pUserData)
 		pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("While in Spirit mode it cannot be killed. When the time is up it finally dies."), NULL);
 		Buffer.append("\n\n");
 		pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("It can also inflict 1 damage point per second by hooking humans."), NULL);
-
-		pSelf->SendMOTD(ClientID, Buffer.buffer());
 	}
 	else if(str_comp_nocase(pHelpPage, "whitehole") == 0)
 	{
@@ -3868,8 +3826,6 @@ bool CGameContext::ConHelp(IConsole::IResult *pResult, void *pUserData)
 		pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("Use it with your laser rifle, the indicator around your Tee will show you if it is available."), NULL);
 		Buffer.append("\n\n");
 		pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("Puts humans and zombies into a vulnerable state by pulling them into its center."), NULL);
-
-		pSelf->SendMOTD(ClientID, Buffer.buffer());
 	}
 	else if(str_comp_nocase(pHelpPage, "undead") == 0)
 	{
@@ -3883,8 +3839,6 @@ bool CGameContext::ConHelp(IConsole::IResult *pResult, void *pUserData)
 		pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("If an infected heals it, the freeze effect disappears."), NULL);
 		Buffer.append("\n\n");
 		pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("It can also inflict 1 damage point per second by hooking humans."), NULL);
-
-		pSelf->SendMOTD(ClientID, Buffer.buffer());
 	}
 	else if(str_comp_nocase(pHelpPage, "witch") == 0)
 	{
@@ -3899,8 +3853,6 @@ bool CGameContext::ConHelp(IConsole::IResult *pResult, void *pUserData)
 		pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("If the Witch dies, it disappears and is replaced by another class of infected."), NULL);
 		Buffer.append("\n\n");
 		pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("It can also inflict 1 damage point per second by hooking humans."), NULL);
-
-		pSelf->SendMOTD(ClientID, Buffer.buffer());
 	}
 	else if(str_comp_nocase(pHelpPage, "msg") == 0)
 	{
@@ -3915,8 +3867,6 @@ bool CGameContext::ConHelp(IConsole::IResult *pResult, void *pUserData)
 		pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("Example: “/msg !medic I'm wounded!”"), NULL);
 		Buffer.append("\n\n");
 		pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("Use “/msg !near” to send a private message to all players near you."), NULL);
-
-		pSelf->SendMOTD(ClientID, Buffer.buffer());
 	}
 	else if(str_comp_nocase(pHelpPage, "mute") == 0)
 	{
@@ -3930,8 +3880,6 @@ bool CGameContext::ConHelp(IConsole::IResult *pResult, void *pUserData)
 		Buffer.append("\n\n");
 		pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("Example: “/mute nameless tee”"), NULL);
 		Buffer.append("\n\n");
-
-		pSelf->SendMOTD(ClientID, Buffer.buffer());
 	}
 	else if(str_comp_nocase(pHelpPage, "taxi") == 0)
 	{
@@ -3943,14 +3891,12 @@ bool CGameContext::ConHelp(IConsole::IResult *pResult, void *pUserData)
 		pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("In order to use it, both humans have to disable hook protection (usually, with F3). The human being hooked becomes the driver."), NULL);
 		Buffer.append("\n\n");
 		pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("To get off the taxi, jump. To drop off your passengers, enable hook protection (usually, with F3)."), NULL);
-
-		pSelf->SendMOTD(ClientID, Buffer.buffer());
 	}
-	else
+
+	if(Buffer.empty())
 	{
 		pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "help", pSelf->Server()->Localization()->Localize(pLanguage, _("Choose a help page with /help <page>")));
 		
-		dynamic_string Buffer;
 		pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("Available help pages: {str:PageList}"),
 			"PageList", "game, translate, msg, taxi",
 			NULL
@@ -3960,7 +3906,11 @@ bool CGameContext::ConHelp(IConsole::IResult *pResult, void *pUserData)
 		pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "help", "engineer, soldier, scientist, biologist, looper, medic, hero, ninja, mercenary, sniper, whitehole");		
 		pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "help", "smoker, hunter, bat, boomer, ghost, spider, ghoul, voodoo, undead, witch, portals.");
 	}
-	
+	else
+	{
+		pSelf->SendMOTD(ClientID, Buffer.buffer());
+	}
+
 	return true;
 }
 
