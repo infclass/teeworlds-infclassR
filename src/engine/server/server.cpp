@@ -1728,26 +1728,16 @@ void CServer::SendServerInfo(const NETADDR *pAddr, int Token, int Type, bool Sen
 	const char *pMapName = GetMapName();
 	if(g_Config.m_SvHideInfo)
 	{
-		if(g_Config.m_SvHideInfo == 2)
-		{
-			// Full hide
-			ClientCount = 0;
-			PlayerCount = 0;
-			SendClients = false;
-			pMapName = "";
-		}
-		else
-		{
-			// Limit players
-			static const int SoftLimit = 8;
-			static const int HardLimit = 12;
-			if(ClientCount > SoftLimit)
-			{
-				ClientCount = SoftLimit + (ClientCount - SoftLimit) / 3;
-			}
-			ClientCount = minimum(ClientCount, HardLimit);
-			PlayerCount = minimum(ClientCount, PlayerCount);
-		}
+		// Full hide
+		ClientCount = 0;
+		PlayerCount = 0;
+		SendClients = false;
+		pMapName = "";
+	}
+	else if (g_Config.m_SvInfoMaxClients >= 0)
+	{
+		ClientCount = minimum(ClientCount, g_Config.m_SvInfoMaxClients);
+		PlayerCount = minimum(ClientCount, PlayerCount);
 	}
 
 	if(Type != SERVERINFO_VANILLA)
@@ -1870,13 +1860,10 @@ void CServer::SendServerInfo(const NETADDR *pAddr, int Token, int Type, bool Sen
 			if(GameServer()->IsClientBot(i))
 				continue;
 
-			if(g_Config.m_SvHideInfo)
-			{
-				if(ClientCount == 0)
-					break;
+			if(ClientCount == 0)
+				break;
 
-				--ClientCount;
-			}
+			--ClientCount;
 
 			if(Remaining == 0)
 			{
