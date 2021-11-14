@@ -1700,6 +1700,11 @@ void CGameContext::OnCallVote(void *pRawMsg, int ClientID)
 	}
 }
 
+void CGameContext::CensorMessage(char *pCensoredMessage, const char *pMessage, int Size)
+{
+	str_copy(pCensoredMessage, pMessage, Size);
+}
+
 void CGameContext::OnMessage(int MsgID, CUnpacker *pUnpacker, int ClientID)
 {
 	void *pRawMsg = m_NetObjHandler.SecureUnpackMsg(MsgID, pUnpacker);
