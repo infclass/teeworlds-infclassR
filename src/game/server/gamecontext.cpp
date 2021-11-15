@@ -2299,8 +2299,21 @@ bool CGameContext::ConSkipMap(IConsole::IResult *pResult, void *pUserData)
 bool CGameContext::ConQueueMap(IConsole::IResult *pResult, void *pUserData)
 {
 	CGameContext *pSelf = (CGameContext *)pUserData;
-	pSelf->m_pController->QueueMap(pResult->GetString(0));
 
+	const char *pMapName = pResult->GetString(0);
+
+	char aBuf[256];
+	if(pSelf->MapExists(pMapName))
+	{
+		str_format(aBuf, sizeof(aBuf), "Map '%s' will be the next map", pMapName);
+		pSelf->m_pController->QueueMap(pResult->GetString(0));
+	}
+	else
+	{
+		str_format(aBuf, sizeof(aBuf), "Unable to find map '%s'", pMapName);
+	}
+
+	pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "server", aBuf);
 	return true;
 }
 
