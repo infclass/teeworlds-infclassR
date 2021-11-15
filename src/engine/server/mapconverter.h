@@ -61,6 +61,7 @@ protected:
 	int m_NumGroups;
 	int m_NumLayers;
 	int m_NumImages;
+	int m_NumSounds;
 	int m_NumEnvs;
 	array<CEnvPoint> m_lEnvPoints;
 	
@@ -83,6 +84,7 @@ protected:
 	void CopyVersion();
 	void CopyMapInfo();
 	void CopyImages();
+	void CopySounds();
 	void CopyGameLayer();
 	void CopyLayers();
 	void CopyAnimations();

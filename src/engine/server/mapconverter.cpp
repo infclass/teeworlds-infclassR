@@ -591,6 +591,7 @@ void CMapConverter::InitState()
 	m_NumGroups = 0;
 	m_NumLayers = 0;
 	m_NumImages = 0;
+	m_NumSounds = 0;
 	m_NumEnvs = 0;
 	m_lEnvPoints.clear();
 }
@@ -634,6 +635,36 @@ void CMapConverter::CopyImages()
 		// unload image
 		Map()->UnloadData(pItem->m_ImageData);
 		Map()->UnloadData(pItem->m_ImageName);
+	}
+}
+
+void CMapConverter::CopySounds()
+{
+	int Start, Num;
+	Map()->GetType(MAPITEMTYPE_SOUND, &Start, &Num);
+	for(int i = 0; i < Num; i++)
+	{
+		CMapItemSound *pItem = (CMapItemSound *)Map()->GetItem(Start+i, 0, 0);
+		char *pName = (char *)Map()->GetData(pItem->m_SoundName);
+
+		CMapItemSound SoundItem;
+		SoundItem.m_Version = 1;
+		SoundItem.m_SoundName = m_DataFile.AddData(str_length(pName) + 1, pName);
+		SoundItem.m_External = pItem->m_External;
+		if(pItem->m_External)
+			SoundItem.m_SoundData = -1;
+		else
+		{
+			char *pData = (char *)Map()->GetData(pItem->m_SoundData);
+			SoundItem.m_SoundData = m_DataFile.AddData(pItem->m_SoundDataSize, pData);
+			SoundItem.m_SoundDataSize = pItem->m_SoundDataSize;
+		}
+
+		m_DataFile.AddItem(MAPITEMTYPE_SOUND, m_NumSounds++, sizeof(SoundItem), &SoundItem);
+
+		// unload sound
+		Map()->UnloadData(pItem->m_SoundData);
+		Map()->UnloadData(pItem->m_SoundName);
 	}
 }
 
@@ -793,6 +824,22 @@ void CMapConverter::CopyLayers()
 
 				Map()->UnloadData(pQuadsItem->m_Data);
 				
+				GroupLayers++;
+			}
+			else if(pLayerItem->m_Type == LAYERTYPE_SOUNDS)
+			{
+				CMapItemLayerSounds *pSoundsItem = (CMapItemLayerSounds *)pLayerItem;
+
+				void *pData = Map()->GetData(pSoundsItem->m_Data);
+
+				CMapItemLayerSounds LayerItem;
+				LayerItem = *pSoundsItem;
+				LayerItem.m_Data = m_DataFile.AddData(LayerItem.m_NumSources*sizeof(CSoundSource), pData);
+
+				m_DataFile.AddItem(MAPITEMTYPE_LAYER, m_NumLayers++, sizeof(LayerItem), &LayerItem);
+
+				Map()->UnloadData(pSoundsItem->m_Data);
+
 				GroupLayers++;
 			}
 		}
@@ -1172,6 +1219,7 @@ bool CMapConverter::CreateMap(const char* pFilename)
 	
 	CopyVersion();
 	CopyMapInfo();
+	CopySounds();
 	CopyImages();
 	CopyAnimations();
 	
