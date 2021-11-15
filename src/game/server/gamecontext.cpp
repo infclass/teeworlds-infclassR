@@ -690,6 +690,15 @@ void CGameContext::ReloadChangelog()
 	io_close(File);
 }
 
+bool CGameContext::MapExists(const char *pMapName) const
+{
+	char aMapFilename[128];
+	str_format(aMapFilename, sizeof(aMapFilename), "%s.map", pMapName);
+
+	char aBuf[512];
+	return Storage()->FindFile(aMapFilename, "maps", IStorage::TYPE_ALL, aBuf, sizeof(aBuf));
+}
+
 void CGameContext::SendBroadcast(int To, const char *pText, int Priority, int LifeSpan)
 {
 	int Start = (To < 0 ? 0 : To);
@@ -2329,18 +2338,13 @@ bool CGameContext::ConAddMap(IConsole::IResult *pResult, void *pUserData)
 		}
 	}
 
+	char aBuf[256];
+	if(!pSelf->MapExists(pMapName))
 	{
-		char aMapFilename[128];
-		str_format(aMapFilename, sizeof(aMapFilename), "%s.map", pMapName);
+		str_format(aBuf, sizeof(aBuf), "Unable to find map %s", pMapName);
+		pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "server", aBuf);
 
-		char aBuf[512];
-		if(!pSelf->Storage()->FindFile(aMapFilename, "maps", IStorage::TYPE_ALL, aBuf, sizeof(aBuf)))
-		{
-			str_format(aBuf, sizeof(aBuf), "Unable to find map %s", pMapName);
-			pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "server", aBuf);
-
-			return true;
-		}
+		return true;
 	}
 
 	char *pData = g_Config.m_SvMaprotation;
@@ -2361,7 +2365,6 @@ bool CGameContext::ConAddMap(IConsole::IResult *pResult, void *pUserData)
 	str_copy(pData + i, pMapName, MaxSize - i);
 
 	{
-		char aBuf[256];
 		str_format(aBuf, sizeof(aBuf), "Map %s added to the rotation list", pMapName);
 		pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "server", aBuf);
 	}

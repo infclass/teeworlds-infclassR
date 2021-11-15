@@ -329,6 +329,8 @@ public:
 	void SetClientLanguage(int ClientID, const char *pLanguage);
 	void InitChangelog();
 	void ReloadChangelog();
+
+	bool MapExists(const char *pMapName) const;
 	
 private:
 	int m_VoteLanguageTick[MAX_CLIENTS];
