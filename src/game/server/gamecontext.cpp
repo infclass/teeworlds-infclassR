@@ -3745,7 +3745,7 @@ bool CGameContext::ConHelp(IConsole::IResult *pResult)
 		Buffer.append("\n\n");
 		Server()->Localization()->Format_L(Buffer, pLanguage, _("All humans affected by the explosion become infected."), NULL);
 		Buffer.append("\n\n");
-		Server()->Localization()->Format_L(Buffer, pLanguage, _("It can also inflict 1 damage point per second by hooking humans."), NULL);
+		Server()->Localization()->Format_L(Buffer, pLanguage, _C("Boomer", "It can also inflict 1 damage point per second by hooking humans."), NULL);
 	}
 	else if(str_comp_nocase(pHelpPage, "hunter") == 0)
 	{
@@ -3756,7 +3756,7 @@ bool CGameContext::ConHelp(IConsole::IResult *pResult)
 		Buffer.append("\n\n");
 		Server()->Localization()->Format_L(Buffer, pLanguage, _("He can jump two times in the air."), NULL);
 		Buffer.append("\n\n");
-		Server()->Localization()->Format_L(Buffer, pLanguage, _("He can also inflict 1 damage point per second by hooking humans."), NULL);
+		Server()->Localization()->Format_L(Buffer, pLanguage, _C("Hunter", "He can also inflict 1 damage point per second by hooking humans."), NULL);
 	}
 	else if(str_comp_nocase(pHelpPage, "bat") == 0)
 	{
@@ -3765,11 +3765,11 @@ bool CGameContext::ConHelp(IConsole::IResult *pResult)
 		Buffer.append(" ~~\n\n");
 		Server()->Localization()->Format_L(Buffer, pLanguage, _("The Bat can heal infected with the hammer, but cannot infect humans"), NULL);
 		Buffer.append("\n\n");
-		Server()->Localization()->Format_L(Buffer, pLanguage, _("Instead, it can hammer humans to reduce their health or even kill them"), NULL);
+		Server()->Localization()->Format_L(Buffer, pLanguage, _C("Bat", "Instead, it can hammer humans to reduce their health or even kill them."), NULL);
 		Buffer.append("\n\n");
 		Server()->Localization()->Format_L(Buffer, pLanguage, _("Bat can jump infinitely in the air."), NULL);
 		Buffer.append("\n\n");
-		Server()->Localization()->Format_L(Buffer, pLanguage, _("It can also inflict 1 damage point per second by hooking humans, which sucks their blood, restoring the Bat's health."), NULL);
+		Server()->Localization()->Format_L(Buffer, pLanguage, _C("Bat", "It can also inflict 1 damage point per second by hooking humans, which sucks their blood, restoring the Bat's health."), NULL);
 	}
 	else if(str_comp_nocase(pHelpPage, "ghost") == 0)
 	{
@@ -3778,9 +3778,9 @@ bool CGameContext::ConHelp(IConsole::IResult *pResult)
 		Buffer.append(" ~~\n\n");
 		Server()->Localization()->Format_L(Buffer, pLanguage, _("The Ghost can infect humans and heal infected with the hammer."), NULL);
 		Buffer.append("\n\n");
-		Server()->Localization()->Format_L(Buffer, pLanguage, _("It is invisible, unless a human is nearby, it takes damage, or it uses the hammer."), NULL);
+		Server()->Localization()->Format_L(Buffer, pLanguage, _C("Ghost", "It is invisible, unless a human is nearby, it takes damage, or it uses the hammer."), NULL);
 		Buffer.append("\n\n");
-		Server()->Localization()->Format_L(Buffer, pLanguage, _("It can also inflict 1 damage point per second by hooking humans."), NULL);
+		Server()->Localization()->Format_L(Buffer, pLanguage, _C("Ghost", "It can also inflict 1 damage point per second by hooking humans."), NULL);
 	}
 	else if(str_comp_nocase(pHelpPage, "spider") == 0)
 	{
@@ -3793,7 +3793,7 @@ bool CGameContext::ConHelp(IConsole::IResult *pResult)
 		Buffer.append("\n\n");
 		Server()->Localization()->Format_L(Buffer, pLanguage, _("Any human that touches a hook in web mode is automatically grabbed."), NULL);
 		Buffer.append("\n\n");
-		Server()->Localization()->Format_L(Buffer, pLanguage, _("The hook (in both modes) inflicts 1 damage point per second and can grab a human for longer."), NULL);
+		Server()->Localization()->Format_L(Buffer, pLanguage, _C("Spider", "The hook (in both modes) inflicts 1 damage point per second and can grab a human for longer."), NULL);
 	}
 	else if(str_comp_nocase(pHelpPage, "ghoul") == 0)
 	{
@@ -3806,7 +3806,7 @@ bool CGameContext::ConHelp(IConsole::IResult *pResult)
 		Buffer.append("\n\n");
 		Server()->Localization()->Format_L(Buffer, pLanguage, _("It digests the fodder over time, going back to the normal state. Some nourishment is also lost on death."), NULL);
 		Buffer.append("\n\n");
-		Server()->Localization()->Format_L(Buffer, pLanguage, _("It can also inflict 1 damage point per second by hooking humans."), NULL);
+		Server()->Localization()->Format_L(Buffer, pLanguage, _C("Ghoul", "It can also inflict 1 damage point per second by hooking humans."), NULL);
 	}
 	else if(str_comp_nocase(pHelpPage, "slug") == 0)
 	{
@@ -3819,7 +3819,7 @@ bool CGameContext::ConHelp(IConsole::IResult *pResult)
 		Buffer.append("\n\n");
 		Server()->Localization()->Format_L(Buffer, pLanguage, _("Touching the slime inflicts 3 damage points in three seconds to a human."), NULL);
 		Buffer.append("\n\n");
-		Server()->Localization()->Format_L(Buffer, pLanguage, _("It can also inflict 1 damage point per second by hooking humans."), NULL);
+		Server()->Localization()->Format_L(Buffer, pLanguage, _C("Slug", "It can also inflict 1 damage point per second by hooking humans."), NULL);
 	}
 	else if(str_comp_nocase(pHelpPage, "voodoo") == 0)
 	{
@@ -3832,7 +3832,7 @@ bool CGameContext::ConHelp(IConsole::IResult *pResult)
 		Buffer.append("\n\n");
 		Server()->Localization()->Format_L(Buffer, pLanguage, _("While in Spirit mode it cannot be killed. When the time is up it finally dies."), NULL);
 		Buffer.append("\n\n");
-		Server()->Localization()->Format_L(Buffer, pLanguage, _("It can also inflict 1 damage point per second by hooking humans."), NULL);
+		Server()->Localization()->Format_L(Buffer, pLanguage, _C("Voodoo", "It can also inflict 1 damage point per second by hooking humans."), NULL);
 	}
 	else if(str_comp_nocase(pHelpPage, "whitehole") == 0)
 	{
@@ -3857,7 +3857,7 @@ bool CGameContext::ConHelp(IConsole::IResult *pResult)
 		Buffer.append("\n\n");
 		Server()->Localization()->Format_L(Buffer, pLanguage, _("If an infected heals it, the freeze effect disappears."), NULL);
 		Buffer.append("\n\n");
-		Server()->Localization()->Format_L(Buffer, pLanguage, _("It can also inflict 1 damage point per second by hooking humans."), NULL);
+		Server()->Localization()->Format_L(Buffer, pLanguage, _C("Undead", "It can also inflict 1 damage point per second by hooking humans."), NULL);
 	}
 	else if(str_comp_nocase(pHelpPage, "witch") == 0)
 	{
@@ -3871,7 +3871,7 @@ bool CGameContext::ConHelp(IConsole::IResult *pResult)
 		Buffer.append("\n\n");
 		Server()->Localization()->Format_L(Buffer, pLanguage, _("If the Witch dies, it disappears and is replaced by another class of infected."), NULL);
 		Buffer.append("\n\n");
-		Server()->Localization()->Format_L(Buffer, pLanguage, _("It can also inflict 1 damage point per second by hooking humans."), NULL);
+		Server()->Localization()->Format_L(Buffer, pLanguage, _C("Witch", "It can also inflict 1 damage point per second by hooking humans."), NULL);
 	}
 	else if(str_comp_nocase(pHelpPage, "msg") == 0)
 	{
