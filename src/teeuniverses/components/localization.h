@@ -25,6 +25,8 @@ struct CLocalizableString
 /* BEGIN EDIT *********************************************************/
 #define _(TEXT) TEXT
 #define _P(TEXT_SINGULAR, TEXT_PLURAL) TEXT_PLURAL
+#define _C(CONTEXT, TEXT) TEXT
+#define _CP(CONTEXT, TEXT_SINGULAR, TEXT_PLURAL) TEXT_PLURAL
 /* END EDIT ***********************************************************/
 
 /* BEGIN EDIT *********************************************************/

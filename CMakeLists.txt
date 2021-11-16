@@ -683,7 +683,7 @@ set(LIBS_SERVER
 # Translation dev targets
 set(PO_TEMPlATE "other/po/infclass.pot")
 add_custom_target(dev-generate-pot
-  COMMAND xgettext -d infclass -o ${PO_TEMPlATE} -k_ -k_P:1,2 -s --from-code=UTF-8 ${ENGINE_SERVER} ${GAME_SERVER}
+  COMMAND xgettext -d infclass -o ${PO_TEMPlATE} -k_ -k_P:1,2 -k_C:1c,2 -k_CP:1c,2,3 -s --from-code=UTF-8 ${ENGINE_SERVER} ${GAME_SERVER}
   WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
 )
 
