@@ -2103,7 +2103,7 @@ void CInfClassCharacter::CheckSuperWeaponAccess()
 					//create an indicator object
 					if (m_HasIndicator == false) {
 						m_HasIndicator = true;
-						GameServer()->SendChatTarget_Localization(m_pPlayer->GetCID(), CHATCATEGORY_SCORE, _("white hole found, adjusting scientific parameters..."), NULL);
+						GameServer()->SendChatTarget_Localization(m_pPlayer->GetCID(), CHATCATEGORY_SCORE, _("White hole found, adjusting scientific parameters..."), NULL);
 						new CSuperWeaponIndicator(GameServer(), GetPos(), m_pPlayer->GetCID());
 					}
 				} 

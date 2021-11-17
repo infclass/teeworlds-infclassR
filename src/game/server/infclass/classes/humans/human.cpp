@@ -391,7 +391,7 @@ void CInfClassHuman::BroadcastWeaponState()
 		{
 			GameServer()->SendBroadcast_Localization(GetPlayer()->GetCID(),
 				BROADCAST_PRIORITY_WEAPONSTATE, BROADCAST_DURATION_REALTIME,
-				_("WhiteHole ready !"),
+				_("The white hole is available!"),
 				NULL
 			);
 		}
