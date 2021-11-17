@@ -3839,7 +3839,7 @@ bool CGameContext::ConHelp(IConsole::IResult *pResult)
 		Buffer.append("~~ ");
 		Server()->Localization()->Format_L(Buffer, pLanguage, _("White hole"), NULL);
 		Buffer.append(" ~~\n\n");
-		Server()->Localization()->Format_LP(Buffer, pLanguage, g_Config.m_InfMineLimit, _P("Receive it by killing at least one zombie.","Receive it by killing at least {int:NumKills} zombies as scientist."),
+		Server()->Localization()->Format_LP(Buffer, pLanguage, g_Config.m_InfWhiteHoleMinimalKills, _P("Receive it by killing at least one zombie.","Receive it by killing at least {int:NumKills} zombies as scientist."),
 				"NumKills", &g_Config.m_InfWhiteHoleMinimalKills, NULL);
 		Buffer.append("\n\n");
 		Server()->Localization()->Format_L(Buffer, pLanguage, _("Use it with your laser rifle, the indicator around your Tee will show you if it is available."), NULL);
