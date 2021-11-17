@@ -71,7 +71,7 @@ void CTurret::Tick()
 			GameServer()->SendChatTarget(m_Owner, "A zombie has destroyed your turret!");
 
 			//increase score
-			Server()->RoundStatistics()->OnScoreEvent(ClientID, SCOREEVENT_DESTROY_PORTAL, pChr->GetPlayerClass(), Server()->ClientName(ClientID), GameServer()->Console());
+			Server()->RoundStatistics()->OnScoreEvent(ClientID, SCOREEVENT_DESTROY_TURRET, pChr->GetPlayerClass(), Server()->ClientName(ClientID), GameServer()->Console());
 			GameServer()->SendScoreSound(pChr->GetCID());
 			Reset();
 		}
