@@ -416,16 +416,20 @@ void CInfClassHuman::BroadcastWeaponState()
 		}
 		else if(NumMines > 0 && pCurrentWhiteHole)
 		{
-			int Seconds = 1+pCurrentWhiteHole->LifeSpan()/Server()->TickSpeed();
-			GameServer()->SendBroadcast_Localization(GetPlayer()->GetCID(),
-				BROADCAST_PRIORITY_WEAPONSTATE, BROADCAST_DURATION_REALTIME,
-				_("{int:NumMines} mines are active\nWhite hole: {sec:RemainingTime}"),
+			dynamic_string Buffer;
+			Server()->Localization()->Format_LP(Buffer, GetPlayer()->GetLanguage(), NumMines,
+				_P("One mine is active", "{int:NumMines} mines are active"),
 				"NumMines", &NumMines,
+				nullptr);
+			Buffer.append("\n");
+			int Seconds = 1+pCurrentWhiteHole->LifeSpan()/Server()->TickSpeed();
+			Server()->Localization()->Format_L(Buffer, GetPlayer()->GetLanguage(),
+				_("White hole: {sec:RemainingTime}"),
 				"RemainingTime", &Seconds,
-				NULL
-			);
+				nullptr);
+			GameServer()->SendBroadcast(GetCID(), Buffer.buffer(),
+				BROADCAST_PRIORITY_WEAPONSTATE, BROADCAST_DURATION_REALTIME);
 		}
-
 	}
 	else if(GetPlayerClass() == PLAYERCLASS_BIOLOGIST)
 	{
