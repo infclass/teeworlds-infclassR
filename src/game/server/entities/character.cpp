@@ -23,7 +23,6 @@
 #include <game/server/infclass/entities/medic-grenade.h>
 #include <game/server/infclass/entities/merc-bomb.h>
 #include <game/server/infclass/entities/plasma.h>
-#include <game/server/infclass/entities/portal.h>
 #include <game/server/infclass/entities/scatter-grenade.h>
 #include <game/server/infclass/entities/scientist-mine.h>
 #include <game/server/infclass/entities/slug-slime.h>
@@ -343,16 +342,6 @@ void CCharacter::HandleNinja()
 
 				aEnts[i]->TakeDamage(vec2(0, -10.0f), minimum(g_pData->m_Weapons.m_Ninja.m_pBase->m_Damage + m_NinjaStrengthBuff, 20), m_pPlayer->GetCID(), WEAPON_NINJA, TAKEDAMAGEMODE_NOINFECTION);
 			}
-
-			const int Damage = minimum(g_pData->m_Weapons.m_Ninja.m_pBase->m_Damage + m_NinjaStrengthBuff, 20);
-			for(CPortal* pPortal = (CPortal*) GameServer()->m_World.FindFirst(CGameWorld::ENTTYPE_PORTAL); pPortal; pPortal = (CPortal*) pPortal->TypeNext())
-			{
-				// check so we are sufficiently close
-				if(distance(pPortal->GetPos(), GetPos()) > (m_ProximityRadius * 2.0f))
-					continue;
-
-				pPortal->TakeDamage(Damage, m_pPlayer->GetCID(), WEAPON_NINJA, TAKEDAMAGEMODE_NOINFECTION);
-			}
 		}
 	}
 }
@@ -412,11 +401,6 @@ void CCharacter::HandleWeaponSwitch()
 
 void CCharacter::FireWeapon()
 {
-}
-
-bool CCharacter::HasPortal()
-{
-	return m_pPortalIn || m_pPortalOut;
 }
 
 void CCharacter::SaturateVelocity(vec2 Force, float MaxSpeed)
@@ -1078,7 +1062,7 @@ void CCharacter::Snap(int SnappingClient)
 
 	if(SnappingClient == m_pPlayer->GetCID())
 	{
-		if((GetPlayerClass() == PLAYERCLASS_WITCH) && ((m_ActiveWeapon == WEAPON_LASER) || ((m_ActiveWeapon == WEAPON_HAMMER) && !HasPortal())))
+		if((GetPlayerClass() == PLAYERCLASS_WITCH) && ((m_ActiveWeapon == WEAPON_LASER) || ((m_ActiveWeapon == WEAPON_HAMMER))))
 		{
 			vec2 SpawnPos;
 			if(FindWitchSpawnPosition(SpawnPos))
@@ -1261,8 +1245,6 @@ void CCharacter::ClassSpawnAttributes()
 		m_pHeroFlag = nullptr;
 	}
 
-	m_canOpenPortals = GameServer()->m_pController->PortalsAvailableForCharacter(this);
-
 	if(PlayerClass != PLAYERCLASS_NONE)
 	{
 		GameServer()->SendBroadcast_ClassIntro(m_pPlayer->GetCID(), PlayerClass);
@@ -1362,12 +1344,6 @@ void CCharacter::DestroyChildEntities()
 		GameServer()->m_World.DestroyEntity(pFlag);
 	}
 
-	for(CPortal* pPortal = (CPortal*) GameWorld()->FindFirst(CGameWorld::ENTTYPE_PORTAL); pPortal; pPortal = (CPortal*) pPortal->TypeNext())
-	{
-		if(pPortal->GetOwner() != m_pPlayer->GetCID()) continue;
-		GameServer()->m_World.DestroyEntity(pPortal);
-	}
-			
 	m_FirstShot = true;
 	m_HookMode = 0;
 	m_PositionLockTick = 0;
@@ -1534,8 +1510,6 @@ int CCharacter::GetInfWeaponID(int WID) const
 				return INFWEAPON_BIOLOGIST_LASER;
 			case PLAYERCLASS_MEDIC:
 				return INFWEAPON_MEDIC_LASER;
-			case PLAYERCLASS_WITCH:
-				return INFWEAPON_WITCH_PORTAL_LASER;
 			case PLAYERCLASS_MERCENARY:
 				return INFWEAPON_MERCENARY_LASER;
 			default:

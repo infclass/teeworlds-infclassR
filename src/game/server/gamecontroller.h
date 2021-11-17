@@ -150,7 +150,6 @@ public:
 	virtual bool IsSpawnable(vec2 Position, int TeleZoneIndex) = 0;
 	virtual void OnClientDrop(int ClientID, int Type) {};
 	virtual bool IsInfectionStarted() = 0;
-	virtual bool PortalsAvailableForCharacter(class CCharacter *pCharacter) = 0;
 	
 	void MaybeSendStatistics();
 	int GetRoundId() { return m_RoundId; }

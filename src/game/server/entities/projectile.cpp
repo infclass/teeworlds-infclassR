@@ -5,7 +5,6 @@
 #include <game/generated/protocol.h>
 #include <game/server/gamecontext.h>
 #include <game/server/infclass/entities/growingexplosion.h>
-#include <game/server/infclass/entities/portal.h>
 
 #include "projectile.h"
 
@@ -81,24 +80,11 @@ void CProjectile::Tick()
 	const float ProjectileRadius = 6.0f;
 	CCharacter *OwnerChar = GameServer()->GetPlayerChar(m_Owner);
 	CCharacter *TargetChr = GameServer()->m_World.IntersectCharacter(PrevPos, CurPos, ProjectileRadius, CurPos, OwnerChar);
-	vec2 WitchPortalAt;
-	CEntity *TargetWitchPortal = GameServer()->m_World.IntersectEntity(PrevPos, CurPos, ProjectileRadius, &WitchPortalAt, CGameWorld::ENTTYPE_PORTAL);
-	if (TargetChr && TargetWitchPortal)
-	{
-		if (distance(PrevPos, TargetWitchPortal->m_Pos) < distance(PrevPos, TargetChr->m_Pos))
-		{
-			TargetChr = nullptr;
-		}
-		else
-		{
-			TargetWitchPortal = nullptr;
-		}
-	}
 
 	m_LifeSpan--;
 	
 /* INFECTION MODIFICATION START ***************************************/
-	if(TargetWitchPortal || TargetChr || Collide || m_LifeSpan < 0 || GameLayerClipped(CurPos))
+	if(TargetChr || Collide || m_LifeSpan < 0 || GameLayerClipped(CurPos))
 	{
 		if(m_LifeSpan >= 0 || (m_Weapon == WEAPON_GRENADE))
 			GameServer()->CreateSound(CurPos, m_SoundImpact);
@@ -127,11 +113,6 @@ void CProjectile::Tick()
 					TargetChr->TakeDamage(m_Direction * maximum(0.001f, m_Force), m_Damage, m_Owner, m_Weapon, m_TakeDamageMode);
 				}
 			}
-		}
-		else if (TargetWitchPortal)
-		{
-			CPortal *Portal = static_cast<CPortal*>(TargetWitchPortal);
-			Portal->TakeDamage(m_Damage, m_Owner, m_Weapon, m_TakeDamageMode);
 		}
 
 		GameServer()->m_World.DestroyEntity(this);

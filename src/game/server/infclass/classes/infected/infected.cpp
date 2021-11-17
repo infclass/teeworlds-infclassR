@@ -150,11 +150,6 @@ void CInfClassInfected::GiveClassAttributes()
 	m_pCharacter->GiveWeapon(WEAPON_HAMMER, -1);
 	m_pCharacter->SetActiveWeapon(WEAPON_HAMMER);
 
-	if(m_pCharacter->CanOpenPortals())
-	{
-		m_pCharacter->GiveWeapon(WEAPON_LASER, -1);
-	}
-
 	m_VoodooAboutToDie = false;
 	m_VoodooTimeAlive = Server()->TickSpeed()*Config()->m_InfVoodooAliveTime;
 }
@@ -272,33 +267,6 @@ void CInfClassInfected::BroadcastWeaponState()
 				_("Stomach filled by {percent:FodderInStomach}"),
 				"FodderInStomach", &FodderInStomach,
 				NULL
-			);
-		}
-	}
-	else if(GetPlayerClass() == PLAYERCLASS_WITCH)
-	{
-		if (m_pCharacter->hasPortalIn() && m_pCharacter->hasPortalOut())
-		{
-			GameServer()->SendBroadcast_Localization(GetCID(), BROADCAST_PRIORITY_WEAPONSTATE,
-				BROADCAST_DURATION_REALTIME,
-				_("The portals system is active!"),
-				nullptr
-			);
-		}
-		else if (m_pCharacter->hasPortalIn())
-		{
-			GameServer()->SendBroadcast_Localization(GetCID(), BROADCAST_PRIORITY_WEAPONSTATE,
-				BROADCAST_DURATION_REALTIME,
-				_("The IN portal is open"),
-				nullptr
-			);
-		}
-		else if (m_pCharacter->hasPortalOut())
-		{
-			GameServer()->SendBroadcast_Localization(GetCID(), BROADCAST_PRIORITY_WEAPONSTATE,
-				BROADCAST_DURATION_REALTIME,
-				_("The OUT portal is open"),
-				nullptr
 			);
 		}
 	}

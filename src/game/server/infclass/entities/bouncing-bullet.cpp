@@ -6,7 +6,6 @@
 #include <game/server/gamecontext.h>
 
 #include "bouncing-bullet.h"
-#include <game/server/infclass/entities/portal.h>
 
 CBouncingBullet::CBouncingBullet(CGameContext *pGameContext, int Owner, vec2 Pos, vec2 Dir)
 	: CInfCEntity(pGameContext, CGameWorld::ENTTYPE_BOUNCING_BULLET, Pos, Owner)
@@ -58,21 +57,8 @@ void CBouncingBullet::Tick()
 	const float ProjectileRadius = 6.0f;
 	CCharacter *OwnerChar = GameServer()->GetPlayerChar(m_Owner);
 	CCharacter *TargetChr = GameServer()->m_World.IntersectCharacter(PrevPos, CurPos, ProjectileRadius, CurPos, OwnerChar);
-	vec2 WitchPortalAt;
-	CEntity *TargetWitchPortal = GameServer()->m_World.IntersectEntity(PrevPos, CurPos, ProjectileRadius, &WitchPortalAt, CGameWorld::ENTTYPE_PORTAL);
-	if (TargetChr && TargetWitchPortal)
-	{
-		if (distance(PrevPos, TargetWitchPortal->m_Pos) < distance(PrevPos, TargetChr->m_Pos))
-		{
-			TargetChr = nullptr;
-		}
-		else
-		{
-			TargetWitchPortal = nullptr;
-		}
-	}
 
-	if(TargetChr || TargetWitchPortal)
+	if(TargetChr)
 	{
 		int Damage = random_prob(0.33f) ? 2 : 1;
 		if(OwnerChar && TargetChr)
@@ -81,11 +67,6 @@ void CBouncingBullet::Tick()
 				TargetChr->TakeDamage(m_Direction * 0.001f, Damage, m_Owner, WEAPON_SHOTGUN, TAKEDAMAGEMODE_NOINFECTION);
 			else
 				TargetChr->TakeDamage(m_Direction * maximum(0.001f, 2.0f), Damage, m_Owner, WEAPON_SHOTGUN, TAKEDAMAGEMODE_NOINFECTION);
-		}
-		else if (TargetWitchPortal)
-		{
-			CPortal *Portal = static_cast<CPortal*>(TargetWitchPortal);
-			Portal->TakeDamage(Damage, m_Owner, WEAPON_SHOTGUN, TAKEDAMAGEMODE_NOINFECTION);
 		}
 
 		GameServer()->m_World.DestroyEntity(this);

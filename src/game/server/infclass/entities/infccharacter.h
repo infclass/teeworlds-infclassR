@@ -131,10 +131,6 @@ public:
 	void CheckSuperWeaponAccess();
 	void FireSoldierBomb();
 	void PlacePortal(WeaponFireContext *pFireContext);
-	CPortal *FindPortalInTarget();
-	void OnPortalDestroy(CPortal *pPortal);
-	bool ProcessCharacterOnPortal(CPortal *pPortal, CCharacter *pCharacter);
-	bool CanOpenPortals() const;
 
 	void GiveGift(int GiftType);
 	void GiveRandomClassSelectionBonus();
@@ -148,9 +144,6 @@ public:
 	void ResetMovementsInput();
 
 	void GiveNinjaBuf();
-
-	bool hasPortalIn() const { return m_pPortalIn; }
-	bool hasPortalOut() const { return m_pPortalOut; }
 
 	CHeroFlag *GetHeroFlag() { return m_pHeroFlag; }
 	int GetFlagCoolDown();

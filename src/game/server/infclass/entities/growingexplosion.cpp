@@ -7,7 +7,6 @@
 #include <game/server/infclass/classes/infcplayerclass.h>
 
 #include "infccharacter.h"
-#include "portal.h"
 
 CGrowingExplosion::CGrowingExplosion(CGameContext *pGameContext, vec2 Pos, vec2 Dir, int Owner, int Radius, int ExplosionEffect, TAKEDAMAGEMODE TakeDamageMode)
 		: CInfCEntity(pGameContext, CGameWorld::ENTTYPE_GROWINGEXPLOSION, Pos, Owner),
@@ -106,23 +105,6 @@ CGrowingExplosion::~CGrowingExplosion()
 	{
 		delete[] m_pGrowingMapVec;
 		m_pGrowingMapVec = NULL;
-	}
-}
-
-void CGrowingExplosion::DamagePortals()
-{
-	const int tick = Server()->Tick();
-	for(CPortal* pPortal = (CPortal*) GameWorld()->FindFirst(CGameWorld::ENTTYPE_PORTAL); pPortal; pPortal = (CPortal*) pPortal->TypeNext())
-	{
-		const float d = distance(m_SeedPos, pPortal->m_Pos);
-		if(d > (pPortal->m_ProximityRadius + m_MaxGrowing))
-			continue;
-
-		int Damage = GetActualDamage();
-		if(Damage)
-		{
-			pPortal->TakeDamage(Damage, m_Owner, WEAPON_HAMMER, m_TakeDamageMode);
-		}
 	}
 }
 
@@ -329,16 +311,6 @@ void CGrowingExplosion::Tick()
 		}
 	}
 
-	switch(m_ExplosionEffect)
-	{
-		case GROWINGEXPLOSIONEFFECT_ELECTRIC_INFECTED:
-		case GROWINGEXPLOSIONEFFECT_BOOM_INFECTED:
-			DamagePortals();
-			break;
-		default:
-			break;
-	}
-	
 	// clean slug slime
 	if (m_ExplosionEffect == GROWINGEXPLOSIONEFFECT_FREEZE_INFECTED) 
 	{

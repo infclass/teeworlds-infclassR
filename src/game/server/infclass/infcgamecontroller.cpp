@@ -1275,31 +1275,6 @@ bool CInfClassGameController::IsInfectionStarted()
 	return (m_RoundStartTick + Server()->TickSpeed()*10 <= Server()->Tick());
 }
 
-bool CInfClassGameController::PortalsAvailableForCharacter(class CCharacter *pCharacter)
-{
-	if (!g_Config.m_InfEnableWitchPortals)
-		return false;
-
-	if (GameServer()->m_FunRound)
-		return false;
-
-	if (pCharacter->GetPlayerClass() != PLAYERCLASS_WITCH)
-		return false;
-
-	for(int ClientID = 0; ClientID < MAX_CLIENTS; ++ClientID)
-	{
-		CInfClassCharacter *pAnotherCharacter = GetCharacter(ClientID);
-		if(!pAnotherCharacter)
-			continue;
-		if(pAnotherCharacter == pCharacter)
-			continue;
-		if(pAnotherCharacter->CanOpenPortals())
-			return false;
-	}
-
-	return true;
-}
-
 bool CInfClassGameController::CanJoinTeam(int Team, int ClientID)
 {
 	if(Team != TEAM_SPECTATORS)
@@ -1636,13 +1611,7 @@ void CInfClassGameController::DoWincheck()
 	GetPlayerCounter(-1, NumHumans, NumInfected);
 
 	static const char *ClassicRound = "classic";
-	static const char *WitchPortalsRound = "witch_portals";
 	const char *RoundType = ClassicRound;
-
-	if (g_Config.m_InfEnableWitchPortals)
-	{
-		RoundType = WitchPortalsRound;
-	}
 
 	//Win check
 	const int Seconds = (Server()->Tick()-m_RoundStartTick)/((float)Server()->TickSpeed());
@@ -1828,7 +1797,6 @@ bool CInfClassGameController::TryRespawn(CInfClassPlayer *pPlayer, SpawnContext 
 			if(Iter.Player()->GetCID() == pPlayer->GetCID()) continue;
 			if(Iter.Player()->GetClass() != PLAYERCLASS_WITCH) continue;
 			if(!Iter.Player()->GetCharacter()) continue;
-			if (Iter.Player()->GetCharacter()->HasPortal()) continue;
 
 			if(Iter.Player()->GetCharacter()->FindWitchSpawnPosition(pContext->SpawnPos))
 			{

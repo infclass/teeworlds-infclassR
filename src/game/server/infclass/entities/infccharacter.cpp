@@ -21,7 +21,6 @@
 #include <game/server/infclass/entities/merc-bomb.h>
 #include <game/server/infclass/entities/merc-laser.h>
 #include <game/server/infclass/entities/plasma.h>
-#include <game/server/infclass/entities/portal.h>
 #include <game/server/infclass/entities/scatter-grenade.h>
 #include <game/server/infclass/entities/scientist-laser.h>
 #include <game/server/infclass/entities/scientist-mine.h>
@@ -1153,21 +1152,6 @@ void CInfClassCharacter::OnHammerFired(WeaponFireContext *pFireContext)
 				else
 					GameServer()->CreateHammerHit(ProjStartPos);
 			}
-
-			for(CPortal* pPortal = (CPortal*) GameWorld()->FindFirst(CGameWorld::ENTTYPE_PORTAL); pPortal; pPortal = (CPortal*) pPortal->TypeNext())
-			{
-				if(m_pPlayer->IsZombie())
-					continue;
-
-				if(pPortal->GetOwner() == m_pPlayer->GetCID())
-					continue;
-
-				if(distance(GetPos(), pPortal->GetPos()) > (pPortal->m_ProximityRadius + m_ProximityRadius*0.5f))
-					continue;
-
-				pPortal->TakeDamage(g_pData->m_Weapons.m_Hammer.m_pBase->m_Damage, m_pPlayer->GetCID(), m_ActiveWeapon, TAKEDAMAGEMODE_NOINFECTION);
-				Hits++;
-			}
 		}
 
 		// if we Hit anything, we have to wait for the reload
@@ -1423,12 +1407,6 @@ void CInfClassCharacter::OnLaserFired(WeaponFireContext *pFireContext)
 	if(GetPlayerClass() == PLAYERCLASS_BIOLOGIST)
 	{
 		OnBiologistLaserFired(pFireContext);
-		return;
-	}
-
-	if(CanOpenPortals())
-	{
-		PlacePortal(pFireContext);
 		return;
 	}
 
@@ -2149,166 +2127,6 @@ void CInfClassCharacter::FireSoldierBomb()
 
 	new CSoldierBomb(GameServer(), ProjStartPos, m_pPlayer->GetCID());
 	GameServer()->CreateSound(GetPos(), SOUND_GRENADE_FIRE);
-}
-
-void CInfClassCharacter::PlacePortal(WeaponFireContext *pFireContext)
-{
-	if(IsFrozen() && IsInLove())
-		return;
-
-	vec2 TargetPos = GetPos();
-
-	m_ReloadTimer = Server()->TickSpeed() / 4;
-
-	if(GetPlayerClass() == PLAYERCLASS_WITCH)
-	{
-		if(!FindWitchSpawnPosition(TargetPos))
-		{
-			// Witch can't place the portal here
-			pFireContext->FireAccepted = false;
-			return;
-		}
-	}
-
-	CPortal *PortalToTake = FindPortalInTarget();
-
-	if(PortalToTake)
-	{
-		PortalToTake->Disconnect();
-		GameWorld()->DestroyEntity(PortalToTake);
-
-		if (PortalToTake == m_pPortalIn)
-			m_pPortalIn = nullptr;
-		if (PortalToTake == m_pPortalOut)
-			m_pPortalOut = nullptr;
-
-		GiveWeapon(WEAPON_LASER, m_aWeapons[WEAPON_LASER].m_Ammo + 1);
-		return;
-	}
-
-	if(pFireContext->NoAmmo)
-	{
-		return;
-	}
-
-	// Place new portal
-	int OwnerCID = GetPlayer() ? GetCID() : -1;
-	CPortal *existingPortal = m_pPortalIn ? m_pPortalIn : m_pPortalOut;
-	if(existingPortal && distance(existingPortal->GetPos(), TargetPos) < g_Config.m_InfMinPortalDistance)
-	{
-		char aBuf[256];
-		str_format(aBuf, sizeof(aBuf), "Unable to place portals that close to each other");
-		GameServer()->SendChatTarget(OwnerCID, aBuf);
-		return;
-	}
-
-	if(TargetPos.y < -20)
-	{
-		char aBuf[256];
-		str_format(aBuf, sizeof(aBuf), "Unable to open a portal at this height");
-		GameServer()->SendChatTarget(OwnerCID, aBuf);
-		return;
-	}
-
-	if(m_pPortalIn && m_pPortalOut)
-	{
-		m_pPortalOut->Disconnect();
-		GameWorld()->DestroyEntity(m_pPortalOut);
-		m_pPortalOut = nullptr;
-	}
-
-	if(m_pPortalIn)
-	{
-		m_pPortalOut = new CPortal(GameServer(), TargetPos, OwnerCID, CPortal::PortalType::Out);
-		m_pPortalOut->ConnectPortal(m_pPortalIn);
-		GameServer()->CreateSound(m_pPortalOut->GetPos(), m_pPortalOut->GetNewEntitySound());
-	}
-	else
-	{
-		m_pPortalIn = new CPortal(GameServer(), TargetPos, OwnerCID, CPortal::PortalType::In);
-		m_pPortalIn->ConnectPortal(m_pPortalOut);
-		GameServer()->CreateSound(m_pPortalIn->GetPos(), m_pPortalIn->GetNewEntitySound());
-	}
-}
-
-CPortal *CInfClassCharacter::FindPortalInTarget()
-{
-	vec2 TargetPos = GetPos();
-
-	if (GetPlayerClass() == PLAYERCLASS_WITCH)
-	{
-		if(!FindWitchSpawnPosition(TargetPos))
-		{
-			// Witch can't place the portal here
-			return nullptr;
-		}
-	}
-
-	// Check if unmount wanted
-	const int displacementExtraDistance = 20;
-	if(m_pPortalIn && (distance(m_pPortalIn->GetPos(), TargetPos) < m_ProximityRadius + m_pPortalIn->GetRadius() + displacementExtraDistance))
-	{
-		return m_pPortalIn;
-	}
-
-	if(m_pPortalOut && (distance(m_pPortalOut->GetPos(), TargetPos) < m_ProximityRadius + m_pPortalOut->GetRadius() + displacementExtraDistance))
-	{
-		return m_pPortalOut;
-	}
-
-	return nullptr;
-}
-
-void CInfClassCharacter::OnPortalDestroy(CPortal *pPortal)
-{
-	if (!pPortal)
-		return;
-
-	if (m_pPortalIn == pPortal)
-	{
-		m_pPortalIn->Disconnect();
-		m_pPortalIn = nullptr;
-	}
-	else if (m_pPortalOut == pPortal)
-	{
-		m_pPortalOut->Disconnect();
-		m_pPortalOut = nullptr;
-	}
-}
-
-bool CInfClassCharacter::ProcessCharacterOnPortal(CPortal *pPortal, CCharacter *pCharacter)
-{
-	switch (GetPlayerClass())
-	{
-		case PLAYERCLASS_WITCH:
-			if (pPortal->GetPortalType() != CPortal::PortalType::In)
-				return false;
-
-			if(!pCharacter->IsZombie())
-				return false;
-
-			if (pCharacter == this)
-				return false;
-
-			break;
-
-		default:
-			return false;
-	}
-
-	// The idea here is to have a point to catch all allowed teleportations
-	SetEmote(EMOTE_HAPPY, Server()->Tick() + Server()->TickSpeed());
-	GameServer()->SendEmoticon(GetCID(), EMOTICON_MUSIC);
-
-	Server()->RoundStatistics()->OnScoreEvent(m_pPlayer->GetCID(), SCOREEVENT_PORTAL_USED, GetPlayerClass(), Server()->ClientName(m_pPlayer->GetCID()), Console());
-	GameServer()->SendScoreSound(m_pPlayer->GetCID());
-
-	return true;
-}
-
-bool CInfClassCharacter::CanOpenPortals() const
-{
-	return m_canOpenPortals;
 }
 
 void CInfClassCharacter::GiveGift(int GiftType)

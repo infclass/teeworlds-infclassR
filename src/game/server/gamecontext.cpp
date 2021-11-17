@@ -16,7 +16,6 @@
 #include <iostream>
 #include <algorithm>
 
-#include <game/server/infclass/entities/portal.h>
 #include <game/server/infclass/infcgamecontroller.h>
 
 #include <game/server/player.h>
@@ -310,18 +309,6 @@ void CGameContext::CreateExplosion(vec2 Pos, int Owner, int Weapon, bool NoDamag
 			float Dmg = 6 * l * DamageFactor;
 			if((int)Dmg)
 				apEnts[i]->TakeDamage(ForceDir*Dmg*2, (int)Dmg, Owner, Weapon, TakeDamageMode);
-		}
-
-		for(CPortal* pPortal = (CPortal*) m_World.FindFirst(CGameWorld::ENTTYPE_PORTAL); pPortal; pPortal = (CPortal*) pPortal->TypeNext())
-		{
-			const float d = distance(Pos, pPortal->m_Pos);
-			if(d > (pPortal->m_ProximityRadius + Radius))
-				continue;
-
-			const float l = 1-clamp((d-InnerRadius)/(Radius-InnerRadius), 0.0f, 1.0f);
-			int Damage = 6 * l;
-			if(Damage)
-				pPortal->TakeDamage(Damage, Owner, Weapon, TakeDamageMode);
 		}
 	}
 }

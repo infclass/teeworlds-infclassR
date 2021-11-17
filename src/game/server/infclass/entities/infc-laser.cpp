@@ -9,7 +9,6 @@
 #include <engine/server/roundstatistics.h>
 
 #include <game/server/infclass/entities/infccharacter.h>
-#include <game/server/infclass/entities/portal.h>
 #include <game/server/infclass/infcgamecontroller.h>
 #include <game/server/infclass/infcplayer.h>
 
@@ -33,24 +32,8 @@ bool CInfClassLaser::HitCharacter(vec2 From, vec2 To)
 	vec2 At;
 	CInfClassCharacter *pOwnerChar = GameController()->GetCharacter(GetOwner());
 	CInfClassCharacter *pHit = static_cast<CInfClassCharacter*>(GameWorld()->IntersectCharacter(m_Pos, To, 0.f, At, pOwnerChar));
-	vec2 PortalHitAt;
-	CEntity *pPortalEntity = GameWorld()->IntersectEntity(m_Pos, To, 0, &PortalHitAt, CGameWorld::ENTTYPE_PORTAL);
 
-	if (pHit && pPortalEntity)
-	{
-		if (distance(From, pHit->m_Pos) < distance(From, pPortalEntity->m_Pos))
-		{
-			// The Character pHit is closer than the Portal.
-			pPortalEntity = nullptr;
-		}
-		else
-		{
-			pHit = nullptr;
-			At = PortalHitAt;
-		}
-	}
-
-	if(!pHit && !pPortalEntity)
+	if(!pHit)
 		return false;
 
 	m_From = From;
@@ -96,21 +79,13 @@ bool CInfClassLaser::HitCharacter(vec2 From, vec2 To)
 		return true;
 	}
 
-	if (pPortalEntity)
-	{
-		CPortal *pPortal = static_cast<CPortal*>(pPortalEntity);
-		pPortal->TakeDamage(m_Dmg, m_Owner, WEAPON_LASER, TAKEDAMAGEMODE_NOINFECTION);
-	}
-	else
-	{
-		pHit->TakeDamage(vec2(0.f, 0.f), m_Dmg, m_Owner, WEAPON_LASER, TAKEDAMAGEMODE_NOINFECTION);
+	pHit->TakeDamage(vec2(0.f, 0.f), m_Dmg, m_Owner, WEAPON_LASER, TAKEDAMAGEMODE_NOINFECTION);
 
-		if(pOwnerChar && pOwnerChar->GetPlayerClass() == PLAYERCLASS_LOOPER)
-		{
-			pHit->SlowMotionEffect(g_Config.m_InfSlowMotionGunDuration);
-			if(Config()->m_InfSlowMotionGunDuration != 0)
-				GameServer()->SendEmoticon(pHit->GetCID(), EMOTICON_EXCLAMATION);
-		}
+	if(pOwnerChar && pOwnerChar->GetPlayerClass() == PLAYERCLASS_LOOPER)
+	{
+		pHit->SlowMotionEffect(g_Config.m_InfSlowMotionGunDuration);
+		if(Config()->m_InfSlowMotionGunDuration != 0)
+			GameServer()->SendEmoticon(pHit->GetCID(), EMOTICON_EXCLAMATION);
 	}
 	return true;
 }

@@ -11,7 +11,6 @@
 #include <game/gamecore.h>
 
 class CHeroFlag;
-class CPortal;
 
 /* INFECTION MODIFICATION START ***************************************/
 enum FREEZEREASON
@@ -69,8 +68,6 @@ public:
 	void OnDirectInput(CNetObj_PlayerInput *pNewInput);
 	void ResetInput();
 	virtual void FireWeapon();
-
-	bool HasPortal();
 
 	virtual void Die(int Killer, int Weapon);
 	virtual bool TakeDamage(vec2 Force, int Dmg, int From, int Weapon, TAKEDAMAGEMODE Mode);
@@ -199,9 +196,6 @@ protected:
 	vec2 m_SpawnPosition;
 
 	CHeroFlag* m_pHeroFlag;
-	bool m_canOpenPortals = false;
-	CPortal *m_pPortalIn = nullptr;
-	CPortal *m_pPortalOut = nullptr;
 
 public:
 	int m_PositionLockTick;
