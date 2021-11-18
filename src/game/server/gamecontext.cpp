@@ -1803,19 +1803,27 @@ void CGameContext::OnMessage(int MsgID, CUnpacker *pUnpacker, int ClientID)
 			{
 				if(str_comp_nocase_num(pMsg->m_pMessage + 1, "w ", 2) == 0)
 				{
-					PrivateMessage(pMsg->m_pMessage + 3, ClientID, (Team != CGameContext::CHAT_ALL));
+					char aWhisperMsg[256];
+					str_copy(aWhisperMsg, pMsg->m_pMessage + 3, 256);
+					Whisper(pPlayer->GetCID(), aWhisperMsg);
 				}
 				else if(str_comp_nocase_num(pMsg->m_pMessage + 1, "whisper ", 8) == 0)
 				{
-					PrivateMessage(pMsg->m_pMessage + 9, ClientID, (Team != CGameContext::CHAT_ALL));
+					char aWhisperMsg[256];
+					str_copy(aWhisperMsg, pMsg->m_pMessage + 9, 256);
+					Whisper(pPlayer->GetCID(), aWhisperMsg);
 				}
 				else if(str_comp_nocase_num(pMsg->m_pMessage + 1, "c ", 2) == 0)
 				{
-					Converse(ClientID, pMsg->m_pMessage + 3, Team);
+					char aWhisperMsg[256];
+					str_copy(aWhisperMsg, pMsg->m_pMessage + 3, 256);
+					Converse(pPlayer->GetCID(), aWhisperMsg);
 				}
 				else if(str_comp_nocase_num(pMsg->m_pMessage + 1, "converse ", 9) == 0)
 				{
-					Converse(ClientID, pMsg->m_pMessage + 10, Team);
+					char aWhisperMsg[256];
+					str_copy(aWhisperMsg, pMsg->m_pMessage + 10, 256);
+					Converse(pPlayer->GetCID(), aWhisperMsg);
 				}
 				else if(str_comp_num(pMsg->m_pMessage + 1, "msg ", 4) == 0)
 				{
@@ -4583,18 +4591,185 @@ bool CGameContext::RateLimitPlayerVote(int ClientID)
 	return false;
 }
 
-void CGameContext::Converse(int ClientID, const char* pStr, int team)
+bool CheckClientID2(int ClientID)
+{
+	if(ClientID < 0 || ClientID >= MAX_CLIENTS)
+		return false;
+	return true;
+}
+
+void CGameContext::Whisper(int ClientID, char *pStr)
+{
+	char *pName;
+	char *pMessage;
+	int Error = 0;
+
+	pStr = str_skip_whitespaces(pStr);
+
+	int Victim;
+
+	// add token
+	if(*pStr == '"')
+	{
+		pStr++;
+
+		pName = pStr;
+		char *pDst = pStr; // we might have to process escape data
+		while(1)
+		{
+			if(pStr[0] == '"')
+				break;
+			else if(pStr[0] == '\\')
+			{
+				if(pStr[1] == '\\')
+					pStr++; // skip due to escape
+				else if(pStr[1] == '"')
+					pStr++; // skip due to escape
+			}
+			else if(pStr[0] == 0)
+				Error = 1;
+
+			*pDst = *pStr;
+			pDst++;
+			pStr++;
+		}
+
+		// write null termination
+		*pDst = 0;
+
+		pStr++;
+
+		for(Victim = 0; Victim < MAX_CLIENTS; Victim++)
+			if(str_comp(pName, Server()->ClientName(Victim)) == 0)
+				break;
+	}
+	else
+	{
+		pName = pStr;
+		while(1)
+		{
+			if(pStr[0] == 0)
+			{
+				Error = 1;
+				break;
+			}
+			if(pStr[0] == ' ')
+			{
+				pStr[0] = 0;
+				for(Victim = 0; Victim < MAX_CLIENTS; Victim++)
+					if(str_comp(pName, Server()->ClientName(Victim)) == 0)
+						break;
+
+				pStr[0] = ' ';
+
+				if(Victim < MAX_CLIENTS)
+					break;
+			}
+			pStr++;
+		}
+	}
+
+	if(pStr[0] != ' ')
+	{
+		Error = 1;
+	}
+
+	*pStr = 0;
+	pStr++;
+
+	pMessage = pStr;
+
+	char aBuf[256];
+
+	if(Error)
+	{
+		str_format(aBuf, sizeof(aBuf), "Invalid whisper");
+		SendChatTarget(ClientID, aBuf);
+		return;
+	}
+
+	if(Victim >= MAX_CLIENTS || !CheckClientID2(Victim))
+	{
+		str_format(aBuf, sizeof(aBuf), "No player with name \"%s\" found", pName);
+		SendChatTarget(ClientID, aBuf);
+		return;
+	}
+
+	WhisperID(ClientID, Victim, pMessage);
+}
+
+void CGameContext::WhisperID(int ClientID, int VictimID, const char *pMessage)
+{
+	if(!CheckClientID2(ClientID))
+		return;
+
+	if(!CheckClientID2(VictimID))
+		return;
+
+	if(m_apPlayers[ClientID])
+	{
+		m_apPlayers[ClientID]->m_LastWhisperTo = VictimID;
+		m_apPlayers[ClientID]->m_LastChat = Server()->Tick();
+	}
+
+	char aCensoredMessage[256];
+	CensorMessage(aCensoredMessage, pMessage, sizeof(aCensoredMessage));
+
+	char aBuf[256];
+
+	if(GetClientVersion(ClientID) >= VERSION_DDNET_WHISPER)
+	{
+		CNetMsg_Sv_Chat Msg;
+		Msg.m_Team = CHAT_WHISPER_SEND;
+		Msg.m_ClientID = VictimID;
+		Msg.m_pMessage = aCensoredMessage;
+
+		Server()->SendPackMsg(&Msg, MSGFLAG_VITAL | MSGFLAG_NORECORD, ClientID);
+	}
+	else
+	{
+		str_format(aBuf, sizeof(aBuf), "[→ %s] %s", Server()->ClientName(VictimID), aCensoredMessage);
+		SendChatTarget(ClientID, aBuf);
+	}
+
+	if(ClientID == VictimID)
+	{
+		return;
+	}
+
+	if(CGameContext::m_ClientMuted[VictimID][ClientID])
+	{
+		return;
+	}
+
+	if(GetClientVersion(VictimID) >= VERSION_DDNET_WHISPER)
+	{
+		CNetMsg_Sv_Chat Msg2;
+		Msg2.m_Team = CHAT_WHISPER_RECV;
+		Msg2.m_ClientID = ClientID;
+		Msg2.m_pMessage = aCensoredMessage;
+
+		Server()->SendPackMsg(&Msg2, MSGFLAG_VITAL | MSGFLAG_NORECORD, VictimID);
+	}
+	else
+	{
+		str_format(aBuf, sizeof(aBuf), "[← %s] %s", Server()->ClientName(ClientID), aCensoredMessage);
+		SendChatTarget(VictimID, aBuf);
+	}
+}
+
+void CGameContext::Converse(int ClientID, const char *pStr)
 {
 	CPlayer *pPlayer = m_apPlayers[ClientID];
-	if (pPlayer->m_LastWhisperTo < 0)
+	if(!pPlayer)
+		return;
+
+	if(pPlayer->m_LastWhisperTo < 0)
 	{
 		SendChatTarget(ClientID, "You do not have an ongoing conversation. Whisper to someone to start one");
 	}
 	else
 	{
-		char aBuf[256];
-		str_format(aBuf, sizeof(aBuf), "%s %s", Server()->ClientName(pPlayer->m_LastWhisperTo), pStr);
-		//dbg_msg("TEST", aBuf);
-		PrivateMessage(aBuf, ClientID, (team != CGameContext::CHAT_ALL));
+		WhisperID(ClientID, pPlayer->m_LastWhisperTo, pStr);
 	}
 }

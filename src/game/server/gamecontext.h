@@ -197,10 +197,12 @@ public:
 
 	enum
 	{
-		CHAT_ALL=-2,
-		CHAT_SPEC=-1,
-		CHAT_RED=0,
-		CHAT_BLUE=1
+		CHAT_ALL = -2,
+		CHAT_SPEC = -1,
+		CHAT_RED = 0,
+		CHAT_BLUE = 1,
+		CHAT_WHISPER_SEND = 2,
+		CHAT_WHISPER_RECV = 3,
 	};
 
 	// network
@@ -285,7 +287,9 @@ private:
 	static bool ConAddFunRound(IConsole::IResult *pResult, void *pUserData);
 
 	bool PrivateMessage(const char* pStr, int ClientID, bool TeamChat);
-	void Converse(int ClientID, const char* pStr, int team);
+	void Whisper(int ClientID, char *pStr);
+	void WhisperID(int ClientID, int VictimID, const char *pMessage);
+	void Converse(int ClientID, const char *pStr);
 	void MutePlayer(const char* pStr, int ClientID);
 
 	void InitGeolocation();
