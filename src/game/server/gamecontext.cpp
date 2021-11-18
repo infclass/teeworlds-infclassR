@@ -2988,7 +2988,7 @@ bool CGameContext::PrivateMessage(const char* pStr, int ClientID, bool TeamChat)
 	{
 		SendChatTarget(ClientID, "Usage: /msg <username or group> <message>");
 		SendChatTarget(ClientID, "Send a private message to a player or a group of players");
-		SendChatTarget(ClientID, "Available groups: #near, #engineer, #soldier, ...");
+		SendChatTarget(ClientID, "Available groups: !near, !engineer, !soldier, ...");
 		return true;
 	}
 	
