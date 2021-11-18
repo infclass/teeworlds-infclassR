@@ -1399,6 +1399,12 @@ void CGameContext::OnClientEnter(int ClientID)
 			_("Join our Discord server: {str:Url}"), "Url",
 			Config()->m_AboutContactsDiscord, nullptr);
 	}
+	if(Config()->m_AboutContactsTelegram[0])
+	{
+		SendChatTarget_Localization(ClientID, CHATCATEGORY_DEFAULT,
+			_("Join our Telegram: {str:Url}"), "Url",
+			Config()->m_AboutContactsTelegram, nullptr);
+	}
 	if(Config()->m_AboutContactsMatrix[0])
 	{
 		SendChatTarget_Localization(ClientID, CHATCATEGORY_DEFAULT,
@@ -2944,6 +2950,13 @@ bool CGameContext::ConAbout(IConsole::IResult *pResult)
 	{
 		Server()->Localization()->Format_L(Buffer, pLanguage, _("Discord: {str:Url}"), "Url",
 			Config()->m_AboutContactsDiscord, nullptr);
+		Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "info", Buffer.buffer());
+		Buffer.clear();
+	}
+	if(Config()->m_AboutContactsTelegram[0])
+	{
+		Server()->Localization()->Format_L(Buffer, pLanguage, _("Telegram: {str:Url}"), "Url",
+			Config()->m_AboutContactsTelegram, nullptr);
 		Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "info", Buffer.buffer());
 		Buffer.clear();
 	}
