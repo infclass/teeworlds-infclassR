@@ -1799,49 +1799,52 @@ void CGameContext::OnMessage(int MsgID, CUnpacker *pUnpacker, int ClientID)
 			
 			
 /* INFECTION MODIFICATION START ***************************************/
-			if(str_comp_num(pMsg->m_pMessage, "/msg ", 5) == 0)
+			if(pMsg->m_pMessage[0] == '/')
 			{
-				PrivateMessage(pMsg->m_pMessage+5, ClientID, (Team != CGameContext::CHAT_ALL));
-			}
-			else if(str_comp_num(pMsg->m_pMessage, "/whisper ", 9) == 0)
-			{
-				PrivateMessage(pMsg->m_pMessage+9, ClientID, (Team != CGameContext::CHAT_ALL));
-			}
-			else if(str_comp_num(pMsg->m_pMessage, "/w ", 3) == 0)
-			{
-				PrivateMessage(pMsg->m_pMessage+3, ClientID, (Team != CGameContext::CHAT_ALL));
-			}
-			else if(str_comp_num(pMsg->m_pMessage, "/converse ", 10) == 0)
-			{
-				Converse(ClientID, pMsg->m_pMessage + 10, Team);
-			}
-			else if(str_comp_num(pMsg->m_pMessage, "/c ", 3) == 0)
-			{
-				Converse(ClientID, pMsg->m_pMessage + 3, Team);
-			}
-			else if(str_comp_num(pMsg->m_pMessage, "/mute ", 6) == 0)
-			{
-				MutePlayer(pMsg->m_pMessage+6, ClientID);
-			}
-			else if(pMsg->m_pMessage[0] == '/' || pMsg->m_pMessage[0] == '\\')
-			{
-				switch(m_apPlayers[ClientID]->m_Authed)
+				if(str_comp_nocase_num(pMsg->m_pMessage + 1, "w ", 2) == 0)
 				{
-					case IServer::AUTHED_ADMIN:
-						Console()->SetAccessLevel(IConsole::ACCESS_LEVEL_ADMIN);
-						break;
-					case IServer::AUTHED_MOD:
-						Console()->SetAccessLevel(IConsole::ACCESS_LEVEL_MOD);
-						break;
-					default:
-						Console()->SetAccessLevel(IConsole::ACCESS_LEVEL_USER);
-				}	
-				m_ChatResponseTargetID = ClientID;
-				
-				Console()->ExecuteLineFlag(pMsg->m_pMessage + 1, ClientID, (Team != CGameContext::CHAT_ALL), CFGFLAG_CHAT);
-				
-				m_ChatResponseTargetID = -1;
-				Console()->SetAccessLevel(IConsole::ACCESS_LEVEL_ADMIN);
+					PrivateMessage(pMsg->m_pMessage + 3, ClientID, (Team != CGameContext::CHAT_ALL));
+				}
+				else if(str_comp_nocase_num(pMsg->m_pMessage + 1, "whisper ", 8) == 0)
+				{
+					PrivateMessage(pMsg->m_pMessage + 9, ClientID, (Team != CGameContext::CHAT_ALL));
+				}
+				else if(str_comp_nocase_num(pMsg->m_pMessage + 1, "c ", 2) == 0)
+				{
+					Converse(ClientID, pMsg->m_pMessage + 3, Team);
+				}
+				else if(str_comp_nocase_num(pMsg->m_pMessage + 1, "converse ", 9) == 0)
+				{
+					Converse(ClientID, pMsg->m_pMessage + 10, Team);
+				}
+				else if(str_comp_num(pMsg->m_pMessage + 1, "msg ", 4) == 0)
+				{
+					PrivateMessage(pMsg->m_pMessage + 5, ClientID, (Team != CGameContext::CHAT_ALL));
+				}
+				else if(str_comp_num(pMsg->m_pMessage + 1, "mute ", 5) == 0)
+				{
+					MutePlayer(pMsg->m_pMessage + 6, ClientID);
+				}
+				else
+				{
+					switch(m_apPlayers[ClientID]->m_Authed)
+					{
+						case IServer::AUTHED_ADMIN:
+							Console()->SetAccessLevel(IConsole::ACCESS_LEVEL_ADMIN);
+							break;
+						case IServer::AUTHED_MOD:
+							Console()->SetAccessLevel(IConsole::ACCESS_LEVEL_MOD);
+							break;
+						default:
+							Console()->SetAccessLevel(IConsole::ACCESS_LEVEL_USER);
+					}
+					m_ChatResponseTargetID = ClientID;
+
+					Console()->ExecuteLineFlag(pMsg->m_pMessage + 1, ClientID, (Team != CGameContext::CHAT_ALL), CFGFLAG_CHAT);
+
+					m_ChatResponseTargetID = -1;
+					Console()->SetAccessLevel(IConsole::ACCESS_LEVEL_ADMIN);
+				}
 			}
 			else
 			{
