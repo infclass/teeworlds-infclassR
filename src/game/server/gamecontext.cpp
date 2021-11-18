@@ -3023,7 +3023,6 @@ bool CGameContext::PrivateMessage(const char* pStr, int ClientID, bool TeamChat)
 	bool CheckDistance = false;
 	vec2 CheckDistancePos = vec2(0.0f, 0.0f);
 	
-	int CheckID = -1;
 	int CheckTeam = -1;
 	int CheckClass = -1;
 #ifdef CONF_SQL
@@ -3177,11 +3176,9 @@ bool CGameContext::PrivateMessage(const char* pStr, int ClientID, bool TeamChat)
 				{
 					if(m_apPlayers[i] && str_comp(Server()->ClientName(i), aNameFound) == 0)
 					{
-						CheckID = i;
-						str_copy(aChatTitle, "private", sizeof(aChatTitle));						
-						m_apPlayers[ClientID]->m_LastWhisperTo = i;
-						CheckTeam = -1;
-						break;
+						const char *pMessage = pStr[c] == 0 ? &pStr[c] : &pStr[c + 1];
+						WhisperID(ClientID, i, pMessage);
+						return true;
 					}
 				}
 			}
@@ -3238,9 +3235,6 @@ bool CGameContext::PrivateMessage(const char* pStr, int ClientID, bool TeamChat)
 				if(Server()->GetUserLevel(i) < CheckLevel)
 					continue;
 #endif
-				
-				if(CheckID >= 0 && !(i == CheckID))
-					continue;
 				
 				if(CheckClass >= 0 && !(m_apPlayers[i]->GetClass() == CheckClass))
 					continue;
