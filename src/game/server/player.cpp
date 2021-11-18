@@ -38,10 +38,10 @@ void CPlayer::Reset()
 	m_LastActionMoveTick = Server()->Tick();
 	m_TeamChangeTick = Server()->Tick();
 	m_ClientVersion = 0;
-	m_LastWhisperId = -1;
 
 	m_LastEyeEmote = 0;
 	m_DefEmote = EMOTE_NORMAL;
+	m_LastWhisperTo = -1;
 	m_OverrideEmote = 0;
 	m_OverrideEmoteReset = -1;
 

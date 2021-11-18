@@ -1499,8 +1499,8 @@ void CGameContext::OnClientDrop(int ClientID, int Type, const char *pReason)
 	// InfClassR end
 	for(int i = 0; i < MAX_CLIENTS; ++i)
 	{
-		if(m_apPlayers[i] && m_apPlayers[i]->m_LastWhisperId == ClientID)
-			m_apPlayers[i]->m_LastWhisperId = -1;
+		if(m_apPlayers[i] && m_apPlayers[i]->m_LastWhisperTo == ClientID)
+			m_apPlayers[i]->m_LastWhisperTo = -1;
 	}
 }
 
@@ -3155,7 +3155,7 @@ bool CGameContext::PrivateMessage(const char* pStr, int ClientID, bool TeamChat)
 					{
 						CheckID = i;
 						str_copy(aChatTitle, "private", sizeof(aChatTitle));						
-						m_apPlayers[ClientID]->m_LastWhisperId = i;
+						m_apPlayers[ClientID]->m_LastWhisperTo = i;
 						CheckTeam = -1;
 						break;
 					}
@@ -4570,14 +4570,14 @@ bool CGameContext::RateLimitPlayerVote(int ClientID)
 void CGameContext::Converse(int ClientID, const char* pStr, int team)
 {
 	CPlayer *pPlayer = m_apPlayers[ClientID];
-	if (pPlayer->m_LastWhisperId < 0)
+	if (pPlayer->m_LastWhisperTo < 0)
 	{
 		SendChatTarget(ClientID, "You do not have an ongoing conversation. Whisper to someone to start one");
 	}
 	else
 	{
 		char aBuf[256];
-		str_format(aBuf, sizeof(aBuf), "%s %s", Server()->ClientName(pPlayer->m_LastWhisperId), pStr);
+		str_format(aBuf, sizeof(aBuf), "%s %s", Server()->ClientName(pPlayer->m_LastWhisperTo), pStr);
 		//dbg_msg("TEST", aBuf);
 		PrivateMessage(aBuf, ClientID, (team != CGameContext::CHAT_ALL));
 	}

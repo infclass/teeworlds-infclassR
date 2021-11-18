@@ -92,6 +92,7 @@ public:
 	int m_LastChangeInfo;
 	int m_LastEmote;
 	int m_LastKill;
+	int m_LastWhisperTo;
 
 	int m_ClientVersion;
 
@@ -110,8 +111,6 @@ public:
 		int m_TargetX;
 		int m_TargetY;
 	} m_LatestActivity;
-
-	int m_LastWhisperId;
 
 	// network latency calculations
 	struct
