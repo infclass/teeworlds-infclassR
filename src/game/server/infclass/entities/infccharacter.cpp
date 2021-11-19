@@ -1912,7 +1912,7 @@ void CInfClassCharacter::Die(int Killer, int Weapon)
 
 		if(pKillerCharacter->GetPlayerClass() == PLAYERCLASS_MERCENARY)
 		{
-			pKillerCharacter->GiveWeapon(WEAPON_LASER, m_aWeapons[WEAPON_LASER].m_Ammo + 3);
+			pKillerCharacter->AddAmmo(WEAPON_LASER, 3);
 		}
 	}
 }
