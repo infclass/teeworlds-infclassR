@@ -1903,18 +1903,6 @@ void CInfClassCharacter::Die(int Killer, int Weapon)
 		m_Core.SetPassenger(nullptr);
 	}
 /* INFECTION MODIFICATION END *****************************************/
-
-	if(pKillerCharacter && (pKillerCharacter != this))
-	{
-		// set attacker's face to happy (taunt!)
-		pKillerCharacter->SetEmote(EMOTE_HAPPY, Server()->Tick() + Server()->TickSpeed());
-		pKillerCharacter->CheckSuperWeaponAccess();
-
-		if(pKillerCharacter->GetPlayerClass() == PLAYERCLASS_MERCENARY)
-		{
-			pKillerCharacter->AddAmmo(WEAPON_LASER, 3);
-		}
-	}
 }
 
 void CInfClassCharacter::SetActiveWeapon(int Weapon)

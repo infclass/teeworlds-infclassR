@@ -1473,6 +1473,19 @@ void CInfClassGameController::RewardTheKiller(CInfClassCharacter *pVictim, CInfC
 	if(pKiller != pVictim->GetPlayer())
 	{
 		pKiller->IncreaseNumberKills();
+
+		CInfClassCharacter *pKillerCharacter = pKiller->GetCharacter();
+		if(pKillerCharacter)
+		{
+			// set attacker's face to happy (taunt!)
+			pKillerCharacter->SetEmote(EMOTE_HAPPY, Server()->Tick() + Server()->TickSpeed());
+			pKillerCharacter->CheckSuperWeaponAccess();
+
+			if(pKillerCharacter->GetPlayerClass() == PLAYERCLASS_MERCENARY)
+			{
+				pKillerCharacter->AddAmmo(WEAPON_LASER, 3);
+			}
+		}
 	}
 
 	if(pKiller->IsHuman())
