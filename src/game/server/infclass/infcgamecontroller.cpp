@@ -1496,21 +1496,24 @@ void CInfClassGameController::RewardTheKiller(CInfClassCharacter *pVictim, CInfC
 		}
 		else
 		{
-			if(pVictim->GetPlayerClass() == PLAYERCLASS_WITCH)
+			if(pVictim->IsZombie())
 			{
-				GameServer()->SendChatTarget_Localization(pKiller->GetCID(), CHATCATEGORY_SCORE, _("You have killed a witch, +5 points"), NULL);
-				Server()->RoundStatistics()->OnScoreEvent(pKiller->GetCID(), SCOREEVENT_KILL_WITCH, pKiller->GetClass(), Server()->ClientName(pKiller->GetCID()), GameServer()->Console());
-				GameServer()->SendScoreSound(pKiller->GetCID());
-			}
-			else if(pVictim->GetPlayerClass() == PLAYERCLASS_UNDEAD)
-			{
-				GameServer()->SendChatTarget_Localization(pKiller->GetCID(), CHATCATEGORY_SCORE, _("You have killed an undead! +5 points"), NULL);
-				Server()->RoundStatistics()->OnScoreEvent(pKiller->GetCID(), SCOREEVENT_KILL_UNDEAD, pKiller->GetClass(), Server()->ClientName(pKiller->GetCID()), GameServer()->Console());
-				GameServer()->SendScoreSound(pKiller->GetCID());
-			}
-			else if(pVictim->IsZombie())
-			{
-				Server()->RoundStatistics()->OnScoreEvent(pKiller->GetCID(), SCOREEVENT_KILL_INFECTED, pKiller->GetClass(), Server()->ClientName(pKiller->GetCID()), GameServer()->Console());
+				int ScoreEvent = SCOREEVENT_KILL_INFECTED;
+				switch(pVictim->GetPlayerClass())
+				{
+					case PLAYERCLASS_WITCH:
+						ScoreEvent = SCOREEVENT_KILL_WITCH;
+						GameServer()->SendChatTarget_Localization(pKiller->GetCID(), CHATCATEGORY_SCORE, _("You have killed a witch, +5 points"), NULL);
+						break;
+					case PLAYERCLASS_UNDEAD:
+						ScoreEvent = SCOREEVENT_KILL_UNDEAD;
+						GameServer()->SendChatTarget_Localization(pKiller->GetCID(), CHATCATEGORY_SCORE, _("You have killed an undead! +5 points"), NULL);
+						break;
+					default:
+						break;
+				}
+
+				Server()->RoundStatistics()->OnScoreEvent(pKiller->GetCID(), ScoreEvent, pKiller->GetClass(), Server()->ClientName(pKiller->GetCID()), GameServer()->Console());
 				GameServer()->SendScoreSound(pKiller->GetCID());
 			}
 		
@@ -1599,23 +1602,26 @@ int CInfClassGameController::OnCharacterDeath(class CCharacter *pAbstractVictim,
 
 	pVictim->GetClass()->OnCharacterDeath(Weapon);
 
-	if(pVictim->GetPlayerClass() == PLAYERCLASS_WITCH)
+	bool ForceInfection = false;
+	switch(pVictim->GetPlayerClass())
 	{
-		pVictim->GetPlayer()->StartInfection(true, pKiller);
-		GameServer()->SendBroadcast_Localization(-1, BROADCAST_PRIORITY_GAMEANNOUNCE, BROADCAST_DURATION_GAMEANNOUNCE, _("The witch is dead"), NULL);
-		GameServer()->CreateSoundGlobal(SOUND_CTF_RETURN);
+		case PLAYERCLASS_WITCH:
+			GameServer()->SendBroadcast_Localization(-1, BROADCAST_PRIORITY_GAMEANNOUNCE, BROADCAST_DURATION_GAMEANNOUNCE, _("The witch is dead"), NULL);
+			GameServer()->CreateSoundGlobal(SOUND_CTF_RETURN);
+			ForceInfection = true;
+			break;
+		case PLAYERCLASS_UNDEAD:
+			GameServer()->SendBroadcast_Localization(-1, BROADCAST_PRIORITY_GAMEANNOUNCE, BROADCAST_DURATION_GAMEANNOUNCE, _("The undead is finally dead"), NULL);
+			GameServer()->CreateSoundGlobal(SOUND_CTF_RETURN);
+			ForceInfection = true;
+			break;
+		default:
+			break;
 	}
-	else if(pVictim->GetPlayerClass() == PLAYERCLASS_UNDEAD)
+	pVictim->GetPlayer()->StartInfection(ForceInfection, pKiller);
+
+	if(pVictim->m_Core.m_Passenger)
 	{
-		pVictim->GetPlayer()->StartInfection(true, pKiller);
-		GameServer()->SendBroadcast_Localization(-1, BROADCAST_PRIORITY_GAMEANNOUNCE, BROADCAST_DURATION_GAMEANNOUNCE, _("The undead is finally dead"), NULL);
-		GameServer()->CreateSoundGlobal(SOUND_CTF_RETURN);
-	}
-	else
-	{
-		pVictim->GetPlayer()->Infect(pKiller);
-	}
-	if (pVictim->m_Core.m_Passenger) {
 		pVictim->m_Core.SetPassenger(nullptr);
 	}
 
