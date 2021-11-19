@@ -92,6 +92,8 @@ public:
 	void SetLastWeapon(int Weapon);
 	void TakeAllWeapons();
 
+	void AddAmmo(int Weapon, int Ammo);
+
 	int GetCID() const;
 
 	const CInfClassPlayerClass *GetClass() const { return m_pClass; }

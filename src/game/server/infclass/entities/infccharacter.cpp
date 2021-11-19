@@ -1936,6 +1936,24 @@ void CInfClassCharacter::TakeAllWeapons()
 	}
 }
 
+void CInfClassCharacter::AddAmmo(int Weapon, int Ammo)
+{
+	int InfWID = GetInfWeaponID(Weapon);
+	int MaxAmmo = Server()->GetMaxAmmo(InfWID);
+
+	if(InfWID == INFWEAPON_NINJA_GRENADE)
+		MaxAmmo = minimum(MaxAmmo + m_NinjaAmmoBuff, 10);
+
+	if(Ammo <= 0)
+		return;
+
+	if(!m_aWeapons[Weapon].m_Got)
+		return;
+
+	int TargetAmmo = maximum(0, m_aWeapons[Weapon].m_Ammo) + Ammo;
+	m_aWeapons[Weapon].m_Ammo = minimum(MaxAmmo, TargetAmmo);
+}
+
 int CInfClassCharacter::GetCID() const
 {
 	if(m_pPlayer)
