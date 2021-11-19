@@ -8,13 +8,16 @@ General:
 - Added a message on an infected hooked human to inf zone
 - Added a message on a human (self) infected by the zone
 - Added a message to the infected player ("You have been infected by...")
+- Added /lang shortcut for /language chat command
 - Added freeze indicator
-- Updated Hero help page (by ipoopi)
+- Updated help pages (big thanks to ipoopi)
+- Updated translation
 - Updated conditions for joining specs
 - Updated `/changelog` implementation
 - `/help` now shows `/help game` page
 - Added a reference to `/help` to the welcome message
 - Improved indirect killer detection (added some causality)
+- Implemented DDNet-specific /w support
 - Implemented a chat filter for !<msg> messages (!me, !best, etc...)
 - Re-enabled infected hammer force effect on Soldier (noticeable on Bat damage)
 - Spider feet are now colored in dark red on web hook length limit reached
@@ -22,15 +25,18 @@ General:
 - Undeads and Voodoos now reduce EngineerWall lifespan
 - Ghoul leveling rebalanced (effectively capped at the value of previous 50%)
 - Removed Ghouls bonus to hook damage
+- Removed (random) stun grenades from Soldier and Looper arsenal
+- Removed 'witch portal' game feature
 - Slug slime now heals the slugs
 - Slug slime now heals up to 12 of total HP
 - Bat class excluded from the classes available for the first infected
 - Ninjas are now invincible for hammers during the split second of katana attack
+- Infection 'by the game' (e.g. the initial infection and the 'unfair' infection) now kills the characters
 - Infection spawn protection (1 second) now actually given on infection spawned (on a spawn point)
-- Removed (random) stun grenades from Soldier and Looper arsenal
 - Activity check is now disabled if the player is alone
 - The indirect killer lookup now applied to self killers
 - Hero gift now includes ammo for the Gun
+- Witch death speciality turned off for fun rounds
 - Stunned characters now express EMOTE_BLINK
 - Fixed sniper position unlock on a jump
 - Fixed utf8 ban reasons (from DDNet)
@@ -45,6 +51,8 @@ General:
 - Fixed ServerInfo compatibility with DDNet 15.5+
 - Fixed spawn delay on Voodoo selfkill
 - Fixed ninja target update on the target revival
+- Fixed Mercenary (laser rifle) reward on kills
+- Fixed '/alwaysrandom 1' armor bonus (big thanks to breton)
 
 Maps:
 - infc_headquarter: The graphics cleaned up (no gamelayer changes)
@@ -56,6 +64,12 @@ Maintenance:
 - Added `inf_last_enforcer_time_ms` variable to adjust the causality
 - Added `sv_changelog_file`
 - Added `sv_filter_chat_commands` to toggle the filter of !me and similar messages
+- Added various `about` config variables so an admin don't need to hack the server to change contacts:
+  - `about_source_url`
+  - `about_translation_url`
+  - `about_contacts_discord`
+  - `about_contacts_telegram`
+  - `about_contacts_matrix`
 - Deprecated variables:
 - `inf_stun_grenade_minimal_kills` (does nothing, remove it)
 - `inf_stun_grenade_probability` (does nothing, remove it)

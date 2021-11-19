@@ -1,3 +1,14 @@
+InfclassR v1.3.0_rc4
+- Implemented DDNet-specific /w support
+- Infection 'by the game' now kills
+- Added /lang shortcut for /language chat command
+- Witch death speciality turned off for fun rounds
+- Reconnected players now get the same Infected class
+- Fixed Mercenary (laser rifle) reward on kills
+- Fixed /alwaysrandom armor bonus
+- Updated help pages
+- Updated translation
+
 InfclassR v1.3.0_rc3
 - Added freeze indicator
 - Stunned characters now express EMOTE_BLINK
