@@ -15,6 +15,8 @@
 #include <game/server/infclass/infcplayer.h>
 #include <game/server/teeinfo.h>
 
+static const int SniperPositionLockTimeLimit = 15;
+
 MACRO_ALLOC_POOL_ID_IMPL(CInfClassHuman, MAX_CLIENTS)
 
 CInfClassHuman::CInfClassHuman(CInfClassPlayer *pPlayer)
@@ -50,7 +52,22 @@ void CInfClassHuman::OnCharacterPreCoreTick()
 	{
 		case PLAYERCLASS_SNIPER:
 		{
-			if(m_pCharacter->m_PositionLocked)
+			if(m_pCharacter->PositionIsLocked())
+			{
+				--m_PositionLockTicksRemaining;
+				if(m_PositionLockTicksRemaining <= 0)
+					m_pCharacter->UnlockPosition();
+			}
+
+			if(!m_pCharacter->PositionIsLocked())
+			{
+				if(m_pCharacter->IsGrounded())
+				{
+					m_PositionLockTicksRemaining = Server()->TickSpeed() * SniperPositionLockTimeLimit;
+				}
+			}
+
+			if(m_pCharacter->PositionIsLocked())
 			{
 				if(m_pCharacter->m_Input.m_Jump && !m_pCharacter->m_PrevInput.m_Jump)
 				{
@@ -60,12 +77,6 @@ void CInfClassHuman::OnCharacterPreCoreTick()
 				{
 					m_pCharacter->ResetMovementsInput();
 				}
-			}
-
-			if(m_pCharacter->GetInAirTick() <= Server()->TickSpeed())
-			{
-				// Allow to re-lock in during the first second
-				m_pCharacter->m_PositionLockAvailable = true;
 			}
 		}
 			break;
@@ -123,6 +134,24 @@ void CInfClassHuman::OnCharacterSnap(int SnappingClient)
 			default:
 				break;
 		}
+	}
+}
+
+void CInfClassHuman::OnHammerFired(WeaponFireContext *pFireContext)
+{
+	switch(GetPlayerClass())
+	{
+		case PLAYERCLASS_SNIPER:
+			if(m_pCharacter->PositionIsLocked())
+			{
+				m_pCharacter->UnlockPosition();
+			}
+			else if(PositionLockAvailable())
+			{
+				m_pCharacter->LockPosition();
+			}
+		default:
+			break;
 	}
 }
 
@@ -211,6 +240,27 @@ void CInfClassHuman::GiveClassAttributes()
 			m_pCharacter->SetActiveWeapon(WEAPON_HAMMER);
 			break;
 	}
+
+	if(GetPlayerClass() == PLAYERCLASS_SNIPER)
+	{
+		m_PositionLockTicksRemaining = Server()->TickSpeed() * SniperPositionLockTimeLimit;;
+	}
+	else
+	{
+		m_PositionLockTicksRemaining = 0;
+	}
+	m_pCharacter->UnlockPosition();
+}
+
+void CInfClassHuman::DestroyChildEntities()
+{
+	if(!m_pCharacter)
+	{
+		return;
+	}
+
+	m_PositionLockTicksRemaining = 0;
+	m_pCharacter->UnlockPosition();
 }
 
 bool CInfClassHuman::SetupSkin(int PlayerClass, CTeeInfo *output)
@@ -481,9 +531,9 @@ void CInfClassHuman::BroadcastWeaponState()
 	}
 	else if(GetPlayerClass() == PLAYERCLASS_SNIPER)
 	{
-		if(m_pCharacter->m_PositionLocked)
+		if(m_pCharacter->PositionIsLocked())
 		{
-			int Seconds = 1+m_pCharacter->m_PositionLockTick/Server()->TickSpeed();
+			int Seconds = 1+m_PositionLockTicksRemaining/Server()->TickSpeed();
 			GameServer()->SendBroadcast_Localization(GetPlayer()->GetCID(),
 				BROADCAST_PRIORITY_WEAPONSTATE, BROADCAST_DURATION_REALTIME,
 				_("Position lock: {sec:RemainingTime}"),
@@ -608,6 +658,22 @@ void CInfClassHuman::BroadcastWeaponState()
 			);
 		}
 	}
+}
+
+bool CInfClassHuman::PositionLockAvailable() const
+{
+	const int TickSpeed = GameContext()->Server()->TickSpeed();
+	if(m_PositionLockTicksRemaining < TickSpeed * (SniperPositionLockTimeLimit - 1))
+	{
+		return false;
+	}
+
+	if(GetPos().y <= -600)
+	{
+		return false;
+	}
+
+	return true;
 }
 
 void CInfClassHuman::OnSlimeEffect(int Owner)

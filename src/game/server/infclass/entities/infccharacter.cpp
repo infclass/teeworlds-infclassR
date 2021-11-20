@@ -65,9 +65,6 @@ void CInfClassCharacter::OnCharacterSpawned(const SpawnContext &Context)
 	m_LastHookerTick = -1;
 	m_LastEnforcer = -1;
 	m_LastEnforcerTick = -1;
-	m_PositionLockTick = -1;
-	m_PositionLocked = false;
-	m_PositionLockAvailable = false;
 
 	ClassSpawnAttributes();
 	DestroyChildEntities();
@@ -167,10 +164,18 @@ void CInfClassCharacter::Destroy()
 
 void CInfClassCharacter::Tick()
 {
+	const vec2 PrevPos = m_Core.m_Pos;
+
 	CCharacter::Tick();
 
 	if(m_pClass)
 		m_pClass->OnCharacterTick();
+
+	if(GetPlayerClass() == PLAYERCLASS_SNIPER && PositionIsLocked())
+	{
+		m_Core.m_Vel = vec2(0.0f, 0.0f);
+		m_Core.m_Pos = PrevPos;
+	}
 }
 
 void CInfClassCharacter::Snap(int SnappingClient)
@@ -649,16 +654,19 @@ void CInfClassCharacter::OnWeaponFired(WeaponFireContext *pFireContext)
 	}
 }
 
+// TODO: Move those to CInfClassHuman
+bool CInfClassCharacter::PositionIsLocked() const
+{
+	return m_PositionLocked;
+}
+
 void CInfClassCharacter::LockPosition()
 {
-	m_PositionLockTick = Server()->TickSpeed()*15;
 	m_PositionLocked = true;
-	m_PositionLockAvailable = false;
 }
 
 void CInfClassCharacter::UnlockPosition()
 {
-	m_PositionLockTick = 0;
 	m_PositionLocked = false;
 }
 
@@ -896,17 +904,7 @@ void CInfClassCharacter::OnHammerFired(WeaponFireContext *pFireContext)
 	}
 	else if(GetPlayerClass() == PLAYERCLASS_SNIPER)
 	{
-		if(GetPos().y > -600.0)
-		{
-			if(m_PositionLockTick <= 0 && m_PositionLockAvailable)
-			{
-				LockPosition();
-			}
-			else
-			{
-				UnlockPosition();
-			}
-		}
+		// Moved to CInfClassHuman::OnHammerFired()
 	}
 	else if(GetPlayerClass() == PLAYERCLASS_MERCENARY && g_Config.m_InfMercLove && !GameServer()->m_FunRound)
 	{
@@ -1407,7 +1405,7 @@ void CInfClassCharacter::OnLaserFired(WeaponFireContext *pFireContext)
 
 	if(GetPlayerClass() == PLAYERCLASS_SNIPER)
 	{
-		if(m_PositionLocked)
+		if(PositionIsLocked())
 			Damage = 30;
 		else
 			Damage = random_int(10, 13);
@@ -2234,7 +2232,7 @@ void CInfClassCharacter::UpdateTuningParam()
 	bool NoActions = false;
 	bool FixedPosition = false;
 	
-	if(m_PositionLocked)
+	if(PositionIsLocked())
 	{
 		NoActions = true;
 		FixedPosition = true;

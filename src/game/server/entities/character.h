@@ -198,9 +198,6 @@ protected:
 	CHeroFlag* m_pHeroFlag;
 
 public:
-	int m_PositionLockTick;
-	bool m_PositionLocked;
-	bool m_PositionLockAvailable;
 	bool m_HasWhiteHole;
 	bool m_HasIndicator;
 	int m_BroadcastWhiteHoleReady; // used to broadcast "WhiteHole ready" for a short period of time

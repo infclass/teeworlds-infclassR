@@ -140,6 +140,7 @@ public:
 	void MakeVisible();
 	void GrantSpawnProtection();
 
+	bool PositionIsLocked() const;
 	void LockPosition();
 	void UnlockPosition();
 
@@ -166,6 +167,8 @@ protected:
 protected:
 	CInfClassGameController *m_pGameController = nullptr;
 	CInfClassPlayerClass *m_pClass = nullptr;
+
+	bool m_PositionLocked = false;
 };
 
 inline const CInfClassCharacter *CInfClassCharacter::fromCharacter(const CCharacter *pCharacter)

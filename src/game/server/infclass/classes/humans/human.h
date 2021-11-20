@@ -19,14 +19,23 @@ public:
 	void OnCharacterPreCoreTick() override;
 	void OnCharacterTick() override;
 	void OnCharacterSnap(int SnappingClient) override;
+
+	void OnHammerFired(WeaponFireContext *pFireContext) override;
+
 	void OnSlimeEffect(int Owner) override;
 
 	static bool SetupSkin(int PlayerClass, CTeeInfo *output);
 
 protected:
 	void GiveClassAttributes() override;
+	void DestroyChildEntities() override;
 	void SetupSkin(CTeeInfo *output) override;
 	void BroadcastWeaponState() override;
+
+	bool PositionLockAvailable() const;
+
+private:
+	int m_PositionLockTicksRemaining = 0;
 };
 
 #endif // GAME_SERVER_INFCLASS_CLASSES_HUMAN_H

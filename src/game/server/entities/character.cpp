@@ -63,9 +63,6 @@ m_pConsole(pConsole)
 	m_DartLifeSpan = -1;
 	m_IsInvisible = false;
 	m_InvisibleTick = 0;
-	m_PositionLockTick = -1;
-	m_PositionLocked = false;
-	m_PositionLockAvailable = false;
 	m_HealTick = 0;
 	m_InfZoneTick = -1;
 	m_InAirTick = 0;
@@ -616,13 +613,6 @@ void CCharacter::Tick()
 
 	GameServer()->m_pController->HandleCharacterTiles(this);
 
-	if(m_PositionLockTick > 0)
-	{
-		--m_PositionLockTick;
-		if(m_PositionLockTick <= 0)
-			m_PositionLocked = false;
-	}
-	
 	--m_FrozenTime;
 	if(m_IsFrozen)
 	{
@@ -818,14 +808,7 @@ void CCharacter::Tick()
 	}
 	CoreTickParams.m_HookMode = m_HookMode;
 	
-	vec2 PrevPos = m_Core.m_Pos;
 	m_Core.Tick(true, &CoreTickParams);
-	
-	if(GetPlayerClass() == PLAYERCLASS_SNIPER && m_PositionLocked)
-	{
-		m_Core.m_Vel = vec2(0.0f, 0.0f);
-		m_Core.m_Pos = PrevPos;
-	}
 	
 	//Hook protection
 	if(m_Core.m_HookedPlayer >= 0)
@@ -1346,9 +1329,6 @@ void CCharacter::DestroyChildEntities()
 
 	m_FirstShot = true;
 	m_HookMode = 0;
-	m_PositionLockTick = 0;
-	m_PositionLocked = false;
-	m_PositionLockAvailable = false;
 }
 
 bool CCharacter::IsZombie() const
