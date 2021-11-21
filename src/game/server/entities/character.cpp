@@ -174,41 +174,10 @@ void CCharacter::Destroy()
 {	
 /* INFECTION MODIFICATION START ***************************************/
 	DestroyChildEntities();
+	FreeChildSnapIDs();
 	
 	if(m_pPlayer)
 		m_pPlayer->ResetNumberKills();
-	
-	if(m_FlagID >= 0)
-	{
-		Server()->SnapFreeID(m_FlagID);
-		m_FlagID = -1;
-	}
-	if(m_HeartID >= 0)
-	{
-		Server()->SnapFreeID(m_HeartID);
-		m_HeartID = -1;
-	}
-	if(m_CursorID >= 0)
-	{
-		Server()->SnapFreeID(m_CursorID);
-		m_CursorID = -1;
-	}
-	
-	if(m_BarrierHintID >= 0)
-	{
-		Server()->SnapFreeID(m_BarrierHintID);
-		m_BarrierHintID = -1;
-	}
-	
-	if(m_BarrierHintIDs[0] >= 0)
-	{
-		for(int i=0; i<2; i++) 
-		{
-			Server()->SnapFreeID(m_BarrierHintIDs[i]);
-			m_BarrierHintIDs[i] = -1;
-		}
-
-	}
 	
 /* INFECTION MODIFICATION END *****************************************/
 
@@ -1329,6 +1298,41 @@ void CCharacter::DestroyChildEntities()
 
 	m_FirstShot = true;
 	m_HookMode = 0;
+}
+
+void CCharacter::FreeChildSnapIDs()
+{
+	if(m_FlagID >= 0)
+	{
+		Server()->SnapFreeID(m_FlagID);
+		m_FlagID = -1;
+	}
+	if(m_HeartID >= 0)
+	{
+		Server()->SnapFreeID(m_HeartID);
+		m_HeartID = -1;
+	}
+	if(m_CursorID >= 0)
+	{
+		Server()->SnapFreeID(m_CursorID);
+		m_CursorID = -1;
+	}
+
+	if(m_BarrierHintID >= 0)
+	{
+		Server()->SnapFreeID(m_BarrierHintID);
+		m_BarrierHintID = -1;
+	}
+
+	if(m_BarrierHintIDs[0] >= 0)
+	{
+		for(int i=0; i<2; i++)
+		{
+			Server()->SnapFreeID(m_BarrierHintIDs[i]);
+			m_BarrierHintIDs[i] = -1;
+		}
+
+	}
 }
 
 bool CCharacter::IsZombie() const

@@ -223,6 +223,7 @@ public:
 
 public:
 	void DestroyChildEntities();
+	void FreeChildSnapIDs();
 	void ClassSpawnAttributes();
 	vec2 GetDirection() const;
 	int GetPlayerClass() const;
