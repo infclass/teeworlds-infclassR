@@ -84,7 +84,7 @@ m_pConsole(pConsole)
 
 CCharacter::~CCharacter()
 {
-	Destroy();
+	FreeChildSnapIDs();
 }
 
 bool CCharacter::FindWitchSpawnPosition(vec2& Pos)
