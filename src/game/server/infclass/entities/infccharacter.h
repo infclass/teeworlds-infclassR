@@ -164,6 +164,8 @@ protected:
 
 	void UpdateTuningParam();
 
+	void ResetClassObject();
+
 protected:
 	CInfClassGameController *m_pGameController = nullptr;
 	CInfClassPlayerClass *m_pClass = nullptr;

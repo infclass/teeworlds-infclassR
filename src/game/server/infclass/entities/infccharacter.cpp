@@ -42,12 +42,19 @@ CInfClassCharacter::CInfClassCharacter(CInfClassGameController *pGameController)
 
 CInfClassCharacter::~CInfClassCharacter()
 {
+	ResetClassObject();
+}
+
+void CInfClassCharacter::ResetClassObject()
+{
 	if(m_pClass)
 	{
 		// Ideally we would reset the Class character on `CPlayer::m_pCharacter = 0`
 		// but it would be hard to hook there.
 		m_pClass->SetCharacter(nullptr);
 	}
+
+	m_pClass = nullptr;
 }
 
 void CInfClassCharacter::OnCharacterSpawned(const SpawnContext &Context)
@@ -150,15 +157,7 @@ void CInfClassCharacter::OnWhiteHoleSpawned(const CWhiteHole *pWhiteHole)
 
 void CInfClassCharacter::Destroy()
 {
-	if(m_pClass)
-	{
-		// Ideally we would reset the Class character on `CPlayer::m_pCharacter = 0`
-		// but it would be hard to hook there.
-		m_pClass->SetCharacter(nullptr);
-	}
-
-	m_pClass = nullptr;
-
+	ResetClassObject();
 	CCharacter::Destroy();
 }
 
