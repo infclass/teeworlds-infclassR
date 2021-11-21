@@ -139,13 +139,13 @@ void CInfClassCharacter::OnCharacterInBonusZoneTick()
 	{
 		m_BonusTick = 0;
 
-		GameServer()->SendChatTarget_Localization(m_pPlayer->GetCID(), CHATCATEGORY_SCORE, _("You have held a bonus area for one minute, +5 points"), NULL);
-		GameServer()->SendEmoticon(m_pPlayer->GetCID(), EMOTICON_MUSIC);
+		GameServer()->SendChatTarget_Localization(GetCID(), CHATCATEGORY_SCORE, _("You have held a bonus area for one minute, +5 points"), NULL);
+		GameServer()->SendEmoticon(GetCID(), EMOTICON_MUSIC);
 		SetEmote(EMOTE_HAPPY, Server()->Tick() + Server()->TickSpeed());
 		GiveGift(GIFT_HEROFLAG);
 
-		Server()->RoundStatistics()->OnScoreEvent(m_pPlayer->GetCID(), SCOREEVENT_BONUS, GetPlayerClass(), Server()->ClientName(m_pPlayer->GetCID()), Console());
-		GameServer()->SendScoreSound(m_pPlayer->GetCID());
+		Server()->RoundStatistics()->OnScoreEvent(GetCID(), SCOREEVENT_BONUS, GetPlayerClass(), Server()->ClientName(GetCID()), Console());
+		GameServer()->SendScoreSound(GetCID());
 	}
 }
 
@@ -179,7 +179,7 @@ void CInfClassCharacter::Tick()
 
 void CInfClassCharacter::Snap(int SnappingClient)
 {
-	int ID = m_pPlayer->GetCID();
+	int ID = GetCID();
 
 	if(!Server()->Translate(ID, SnappingClient))
 		return;
@@ -224,7 +224,7 @@ void CInfClassCharacter::SpecialSnapForClient(int SnappingClient, bool *pDoSnap)
 		pFlag->m_Team = TEAM_RED;
 	}
 
-	if(m_Armor < 10 && SnappingClient != m_pPlayer->GetCID() && IsHuman() && GetPlayerClass() != PLAYERCLASS_HERO)
+	if(m_Armor < 10 && SnappingClient != GetCID() && IsHuman() && GetPlayerClass() != PLAYERCLASS_HERO)
 	{
 		if(pDestClient && pDestClient->GetClass() == PLAYERCLASS_MEDIC)
 		{
@@ -241,7 +241,7 @@ void CInfClassCharacter::SpecialSnapForClient(int SnappingClient, bool *pDoSnap)
 			pP->m_Subtype = 0;
 		}
 	}
-	else if((m_Armor + m_Health) < 10 && SnappingClient != m_pPlayer->GetCID() && IsZombie() && pDestClient && pDestClient->IsZombie())
+	else if((m_Armor + m_Health) < 10 && SnappingClient != GetCID() && IsZombie() && pDestClient && pDestClient->IsZombie())
 	{
 		CNetObj_Pickup *pP = static_cast<CNetObj_Pickup *>(Server()->SnapNewItem(NETOBJTYPE_PICKUP, m_HeartID, sizeof(CNetObj_Pickup)));
 		if(!pP)
@@ -259,7 +259,7 @@ void CInfClassCharacter::SpecialSnapForClient(int SnappingClient, bool *pDoSnap)
 		CEngineerWall* pCurrentWall = NULL;
 		for(CEngineerWall *pWall = (CEngineerWall*) GameWorld()->FindFirst(CGameWorld::ENTTYPE_ENGINEER_WALL); pWall; pWall = (CEngineerWall*) pWall->TypeNext())
 		{
-			if(pWall->GetOwner() == m_pPlayer->GetCID())
+			if(pWall->GetOwner() == GetCID())
 			{
 				pCurrentWall = pWall;
 				break;
@@ -285,7 +285,7 @@ void CInfClassCharacter::SpecialSnapForClient(int SnappingClient, bool *pDoSnap)
 		CLooperWall* pCurrentWall = NULL;
 		for(CLooperWall *pWall = (CLooperWall*) GameWorld()->FindFirst(CGameWorld::ENTTYPE_LOOPER_WALL); pWall; pWall = (CLooperWall*) pWall->TypeNext())
 		{
-			if(pWall->GetOwner() == m_pPlayer->GetCID())
+			if(pWall->GetOwner() == GetCID())
 			{
 				pCurrentWall = pWall;
 				break;
@@ -685,15 +685,15 @@ void CInfClassCharacter::GiveNinjaBuf()
 	{
 		case 0: //Velocity Buff
 			m_NinjaVelocityBuff++;
-			GameServer()->SendChatTarget_Localization(m_pPlayer->GetCID(), CHATCATEGORY_SCORE, _("Sword velocity increased"), NULL);
+			GameServer()->SendChatTarget_Localization(GetCID(), CHATCATEGORY_SCORE, _("Sword velocity increased"), NULL);
 			break;
 		case 1: //Strength Buff
 			m_NinjaStrengthBuff++;
-			GameServer()->SendChatTarget_Localization(m_pPlayer->GetCID(), CHATCATEGORY_SCORE, _("Sword strength increased"), NULL);
+			GameServer()->SendChatTarget_Localization(GetCID(), CHATCATEGORY_SCORE, _("Sword strength increased"), NULL);
 			break;
 		case 2: //Ammo Buff
 			m_NinjaAmmoBuff++;
-			GameServer()->SendChatTarget_Localization(m_pPlayer->GetCID(), CHATCATEGORY_SCORE, _("Grenade limit increased"), NULL);
+			GameServer()->SendChatTarget_Localization(GetCID(), CHATCATEGORY_SCORE, _("Grenade limit increased"), NULL);
 			break;
 	}
 }
@@ -806,7 +806,7 @@ void CInfClassCharacter::OnHammerFired(WeaponFireContext *pFireContext)
 	{
 		for(CEngineerWall *pWall = (CEngineerWall*) GameWorld()->FindFirst(CGameWorld::ENTTYPE_ENGINEER_WALL); pWall; pWall = (CEngineerWall*) pWall->TypeNext())
 		{
-			if(pWall->GetOwner() == m_pPlayer->GetCID())
+			if(pWall->GetOwner() == GetCID())
 				GameWorld()->DestroyEntity(pWall);
 		}
 
@@ -831,7 +831,7 @@ void CInfClassCharacter::OnHammerFired(WeaponFireContext *pFireContext)
 			if(isAccepted)
 			{
 				m_FirstShot = true;
-				new CEngineerWall(GameServer(), m_FirstShotCoord, GetPos(), m_pPlayer->GetCID());
+				new CEngineerWall(GameServer(), m_FirstShotCoord, GetPos(), GetCID());
 				GameServer()->CreateSound(GetPos(), SOUND_LASER_FIRE);
 			}
 		}
@@ -841,7 +841,7 @@ void CInfClassCharacter::OnHammerFired(WeaponFireContext *pFireContext)
 		//Potential variable name conflicts with engineers wall (for example *pWall is used twice for both Looper and Engineer)
 		for(CLooperWall *pWall = (CLooperWall*) GameWorld()->FindFirst(CGameWorld::ENTTYPE_LOOPER_WALL); pWall; pWall = (CLooperWall*) pWall->TypeNext())
 		{
-			if(pWall->GetOwner() == m_pPlayer->GetCID())
+			if(pWall->GetOwner() == GetCID())
 				GameWorld()->DestroyEntity(pWall);
 		}
 
@@ -867,7 +867,7 @@ void CInfClassCharacter::OnHammerFired(WeaponFireContext *pFireContext)
 			{
 				m_FirstShot = true;
 				
-				new CLooperWall(GameServer(), m_FirstShotCoord, GetPos(), m_pPlayer->GetCID());
+				new CLooperWall(GameServer(), m_FirstShotCoord, GetPos(), GetCID());
 				
 				GameServer()->CreateSound(GetPos(), SOUND_LASER_FIRE);
 			}
@@ -879,18 +879,18 @@ void CInfClassCharacter::OnHammerFired(WeaponFireContext *pFireContext)
 		{
 			if (g_Config.m_InfTurretEnableLaser)
 			{
-				new CTurret(GameServer(), GetPos(), m_pPlayer->GetCID(), Direction, CTurret::LASER);
+				new CTurret(GameServer(), GetPos(), GetCID(), Direction, CTurret::LASER);
 			}
 			else if (g_Config.m_InfTurretEnablePlasma)
 			{
-				new CTurret(GameServer(), GetPos(), m_pPlayer->GetCID(), Direction, CTurret::PLASMA);
+				new CTurret(GameServer(), GetPos(), GetCID(), Direction, CTurret::PLASMA);
 			}
 
 			GameServer()->CreateSound(GetPos(), SOUND_GRENADE_FIRE);
 			m_TurretCount--;
 			char aBuf[256];
 			str_format(aBuf, sizeof(aBuf), "placed turret, %i left", m_TurretCount);
-			GameServer()->SendChatTarget_Localization(m_pPlayer->GetCID(), CHATCATEGORY_SCORE, aBuf, NULL);
+			GameServer()->SendChatTarget_Localization(GetCID(), CHATCATEGORY_SCORE, aBuf, NULL);
 		}
 		else
 		{
@@ -910,7 +910,7 @@ void CInfClassCharacter::OnHammerFired(WeaponFireContext *pFireContext)
 		CMercenaryBomb* pCurrentBomb = NULL;
 		for(CMercenaryBomb *pBomb = (CMercenaryBomb*) GameWorld()->FindFirst(CGameWorld::ENTTYPE_MERCENARY_BOMB); pBomb; pBomb = (CMercenaryBomb*) pBomb->TypeNext())
 		{
-			if(pBomb->GetOwner() == m_pPlayer->GetCID())
+			if(pBomb->GetOwner() == GetCID())
 			{
 				pCurrentBomb = pBomb;
 				break;
@@ -929,7 +929,7 @@ void CInfClassCharacter::OnHammerFired(WeaponFireContext *pFireContext)
 		}
 		else
 		{
-			new CMercenaryBomb(GameServer(), GetPos(), m_pPlayer->GetCID());
+			new CMercenaryBomb(GameServer(), GetPos(), GetCID());
 			GameServer()->CreateSound(GetPos(), SOUND_PICKUP_ARMOR);
 		}
 
@@ -949,7 +949,7 @@ void CInfClassCharacter::OnHammerFired(WeaponFireContext *pFireContext)
 		{
 			float d = distance(p->GetPos(), ProjStartPos);
 			
-			if(p->GetOwner() == m_pPlayer->GetCID())
+			if(p->GetOwner() == GetCID())
 			{
 				if(OlderMineTick > p->m_StartTick)
 				{
@@ -979,7 +979,7 @@ void CInfClassCharacter::OnHammerFired(WeaponFireContext *pFireContext)
 			else if(NbMine >= g_Config.m_InfMineLimit && pOlderMine)
 				GameWorld()->DestroyEntity(pOlderMine);
 			
-			new CScientistMine(GameServer(), ProjStartPos, m_pPlayer->GetCID());
+			new CScientistMine(GameServer(), ProjStartPos, GetCID());
 			
 			m_ReloadTimer = Server()->TickSpeed()/2;
 		}
@@ -1005,7 +1005,7 @@ void CInfClassCharacter::OnHammerFired(WeaponFireContext *pFireContext)
 	{
 		if(!IsFrozen() && !IsInLove())
 		{
-			Die(m_pPlayer->GetCID(), WEAPON_SELF);
+			Die(GetCID(), WEAPON_SELF);
 		}
 	}
 	else
@@ -1096,7 +1096,7 @@ void CInfClassCharacter::OnHammerFired(WeaponFireContext *pFireContext)
 					if (pTarget->IsZombie())
 					{
 						pTarget->TakeDamage(vec2(0.f, -1.f) + normalize(Dir + vec2(0.f, -1.1f)) * 10.0f, 20, 
-								m_pPlayer->GetCID(), m_ActiveWeapon, TAKEDAMAGEMODE_NOINFECTION);
+								GetCID(), m_ActiveWeapon, TAKEDAMAGEMODE_NOINFECTION);
 					}
 				}
 				else if(GetPlayerClass() == PLAYERCLASS_MEDIC)
@@ -1104,7 +1104,7 @@ void CInfClassCharacter::OnHammerFired(WeaponFireContext *pFireContext)
 					if (pTarget->IsZombie())
 					{
 						pTarget->TakeDamage(vec2(0.f, -1.f) + normalize(Dir + vec2(0.f, -1.1f)) * 10.0f, 20, 
-								m_pPlayer->GetCID(), m_ActiveWeapon, TAKEDAMAGEMODE_NOINFECTION);
+								GetCID(), m_ActiveWeapon, TAKEDAMAGEMODE_NOINFECTION);
 					}
 					else
 					{
@@ -1125,7 +1125,7 @@ void CInfClassCharacter::OnHammerFired(WeaponFireContext *pFireContext)
 				else
 				{
 					pTarget->TakeDamage(vec2(0.f, -1.f) + normalize(Dir + vec2(0.f, -1.1f)) * 10.0f, g_pData->m_Weapons.m_Hammer.m_pBase->m_Damage,
-						m_pPlayer->GetCID(), m_ActiveWeapon, TAKEDAMAGEMODE_NOINFECTION);
+						GetCID(), m_ActiveWeapon, TAKEDAMAGEMODE_NOINFECTION);
 				}
 /* INFECTION MODIFICATION END *****************************************/
 				Hits++;
@@ -1162,7 +1162,7 @@ void CInfClassCharacter::OnHammerFired(WeaponFireContext *pFireContext)
 						// Replenish the slime
 						if(pSlime->GetMaxLifeSpan() - pSlime->GetLifeSpan() > Server()->TickSpeed())
 						{
-							pSlime->Replenish(m_pPlayer->GetCID());
+							pSlime->Replenish(GetCID());
 							ShowAttackAnimation = true;
 							break;
 						}
@@ -1172,7 +1172,7 @@ void CInfClassCharacter::OnHammerFired(WeaponFireContext *pFireContext)
 				if(DistanceToTheNearestSlime > MinDistance)
 				{
 					ShowAttackAnimation = true;
-					new CSlugSlime(GameServer(), CheckPos, m_pPlayer->GetCID());
+					new CSlugSlime(GameServer(), CheckPos, GetCID());
 				}
 			}
 		}
@@ -1198,7 +1198,7 @@ void CInfClassCharacter::OnGunFired(WeaponFireContext *pFireContext)
 	if(GetPlayerClass() == PLAYERCLASS_MERCENARY)
 	{
 		CProjectile *pProj = new CProjectile(GameWorld(), WEAPON_GUN,
-			m_pPlayer->GetCID(),
+			GetCID(),
 			ProjStartPos,
 			Direction,
 			(int)(Server()->TickSpeed()*GameServer()->Tuning()->m_GunLifetime),
@@ -1213,7 +1213,7 @@ void CInfClassCharacter::OnGunFired(WeaponFireContext *pFireContext)
 		for(unsigned i = 0; i < sizeof(CNetObj_Projectile)/sizeof(int); i++)
 			Msg.AddInt(((int *)&p)[i]);
 
-		Server()->SendMsg(&Msg, MSGFLAG_VITAL, m_pPlayer->GetCID());
+		Server()->SendMsg(&Msg, MSGFLAG_VITAL, GetCID());
 		
 		float MaxSpeed = GameServer()->Tuning()->m_GroundControlSpeed*1.7f;
 		vec2 Recoil = Direction*(-MaxSpeed/5.0f);
@@ -1224,7 +1224,7 @@ void CInfClassCharacter::OnGunFired(WeaponFireContext *pFireContext)
 	else
 	{
 		CProjectile *pProj = new CProjectile(GameWorld(), WEAPON_GUN,
-			m_pPlayer->GetCID(),
+			GetCID(),
 			ProjStartPos,
 			Direction,
 			(int)(Server()->TickSpeed()*GameServer()->Tuning()->m_GunLifetime),
@@ -1239,7 +1239,7 @@ void CInfClassCharacter::OnGunFired(WeaponFireContext *pFireContext)
 		for(unsigned i = 0; i < sizeof(CNetObj_Projectile)/sizeof(int); i++)
 			Msg.AddInt(((int *)&p)[i]);
 
-		Server()->SendMsg(&Msg, MSGFLAG_VITAL, m_pPlayer->GetCID());
+		Server()->SendMsg(&Msg, MSGFLAG_VITAL, GetCID());
 
 		GameServer()->CreateSound(GetPos(), SOUND_GUN_FIRE);
 	}
@@ -1276,7 +1276,7 @@ void CInfClassCharacter::OnShotgunFired(WeaponFireContext *pFireContext)
 
 		if(GetPlayerClass() == PLAYERCLASS_BIOLOGIST)
 		{
-			CBouncingBullet *pProj = new CBouncingBullet(GameServer(), m_pPlayer->GetCID(), ProjStartPos, vec2(cosf(a), sinf(a))*Speed);
+			CBouncingBullet *pProj = new CBouncingBullet(GameServer(), GetCID(), ProjStartPos, vec2(cosf(a), sinf(a))*Speed);
 
 			// pack the Projectile and send it to the client Directly
 			CNetObj_Projectile p;
@@ -1287,7 +1287,7 @@ void CInfClassCharacter::OnShotgunFired(WeaponFireContext *pFireContext)
 		else
 		{
 			CProjectile *pProj = new CProjectile(GameWorld(), WEAPON_SHOTGUN,
-				m_pPlayer->GetCID(),
+				GetCID(),
 				ProjStartPos,
 				vec2(cosf(a), sinf(a))*Speed,
 				(int)(Server()->TickSpeed()*LifeTime),
@@ -1301,7 +1301,7 @@ void CInfClassCharacter::OnShotgunFired(WeaponFireContext *pFireContext)
 		}
 	}
 
-	Server()->SendMsg(&Msg, MSGFLAG_VITAL, m_pPlayer->GetCID());
+	Server()->SendMsg(&Msg, MSGFLAG_VITAL, GetCID());
 
 	GameServer()->CreateSound(GetPos(), SOUND_SHOTGUN_FIRE);
 }
@@ -1344,8 +1344,7 @@ void CInfClassCharacter::OnGrenadeFired(WeaponFireContext *pFireContext)
 			m_Core.m_HookState = HOOK_RETRACTED;
 			m_Core.m_HookPos = m_Core.m_Pos;
 			if(g_Config.m_InfScientistTpSelfharm > 0) {
-				auto pScientist = GetPlayer()->GetCharacter();
-				pScientist->TakeDamage(vec2(0.0f, 0.0f), g_Config.m_InfScientistTpSelfharm * 2, GetCID(), WEAPON_HAMMER, TAKEDAMAGEMODE_SELFHARM);
+				TakeDamage(vec2(0.0f, 0.0f), g_Config.m_InfScientistTpSelfharm * 2, GetCID(), WEAPON_HAMMER, TAKEDAMAGEMODE_SELFHARM);
 			}
 			GameServer()->CreateDeath(OldPos, GetCID());
 			GameServer()->CreateDeath(PortalPos, GetCID());
@@ -1360,7 +1359,7 @@ void CInfClassCharacter::OnGrenadeFired(WeaponFireContext *pFireContext)
 	else
 	{
 		CProjectile *pProj = new CProjectile(GameWorld(), WEAPON_GRENADE,
-											 m_pPlayer->GetCID(),
+											 GetCID(),
 											 ProjStartPos,
 											 Direction,
 											 (int)(Server()->TickSpeed()*GameServer()->Tuning()->m_GrenadeLifetime),
@@ -1380,7 +1379,7 @@ void CInfClassCharacter::OnGrenadeFired(WeaponFireContext *pFireContext)
 		Msg.AddInt(1);
 		for(unsigned i = 0; i < sizeof(CNetObj_Projectile)/sizeof(int); i++)
 			Msg.AddInt(((int *)&p)[i]);
-		Server()->SendMsg(&Msg, MSGFLAG_VITAL, m_pPlayer->GetCID());
+		Server()->SendMsg(&Msg, MSGFLAG_VITAL, GetCID());
 
 		GameServer()->CreateSound(GetPos(), SOUND_GRENADE_FIRE);
 	}
@@ -1408,20 +1407,20 @@ void CInfClassCharacter::OnLaserFired(WeaponFireContext *pFireContext)
 			Damage = 30;
 		else
 			Damage = random_int(10, 13);
-		new CInfClassLaser(GameServer(), GetPos(), Direction, GameServer()->Tuning()->m_LaserReach, m_pPlayer->GetCID(), Damage);
+		new CInfClassLaser(GameServer(), GetPos(), Direction, GameServer()->Tuning()->m_LaserReach, GetCID(), Damage);
 		GameServer()->CreateSound(GetPos(), SOUND_LASER_FIRE);
 	}
 	else if(GetPlayerClass() == PLAYERCLASS_SCIENTIST)
 	{
 		//white hole activation in scientist-laser
 		
-		new CScientistLaser(GameServer(), GetPos(), Direction, GameServer()->Tuning()->m_LaserReach*0.6f, m_pPlayer->GetCID(), Damage);
+		new CScientistLaser(GameServer(), GetPos(), Direction, GameServer()->Tuning()->m_LaserReach*0.6f, GetCID(), Damage);
 		GameServer()->CreateSound(GetPos(), SOUND_LASER_FIRE);
 	}
 	else if (GetPlayerClass() == PLAYERCLASS_LOOPER) 
 	{
 		Damage = 5;
-		new CInfClassLaser(GameServer(), GetPos(), Direction, GameServer()->Tuning()->m_LaserReach*0.7f, m_pPlayer->GetCID(), Damage);
+		new CInfClassLaser(GameServer(), GetPos(), Direction, GameServer()->Tuning()->m_LaserReach*0.7f, GetCID(), Damage);
 		GameServer()->CreateSound(GetPos(), SOUND_LASER_FIRE);
 	}
 	else if(GetPlayerClass() == PLAYERCLASS_MERCENARY)
@@ -1429,7 +1428,7 @@ void CInfClassCharacter::OnLaserFired(WeaponFireContext *pFireContext)
 		CMercenaryBomb* pCurrentBomb = nullptr;
 		for(CMercenaryBomb *pBomb = (CMercenaryBomb*) GameWorld()->FindFirst(CGameWorld::ENTTYPE_MERCENARY_BOMB); pBomb; pBomb = (CMercenaryBomb*) pBomb->TypeNext())
 		{
-			if(pBomb->GetOwner() == m_pPlayer->GetCID())
+			if(pBomb->GetOwner() == GetCID())
 			{
 				pCurrentBomb = pBomb;
 				break;
@@ -1438,7 +1437,7 @@ void CInfClassCharacter::OnLaserFired(WeaponFireContext *pFireContext)
 
 		if(!pCurrentBomb)
 		{
-			GameServer()->SendBroadcast_Localization(m_pPlayer->GetCID(), BROADCAST_PRIORITY_WEAPONSTATE, 60, "Bomb needed");
+			GameServer()->SendBroadcast_Localization(GetCID(), BROADCAST_PRIORITY_WEAPONSTATE, 60, "Bomb needed");
 			pFireContext->FireAccepted = false;
 		}
 		else
@@ -1449,7 +1448,7 @@ void CInfClassCharacter::OnLaserFired(WeaponFireContext *pFireContext)
 	}
 	else
 	{
-		new CInfClassLaser(GameServer(), GetPos(), Direction, GameServer()->Tuning()->m_LaserReach, m_pPlayer->GetCID(), Damage);
+		new CInfClassLaser(GameServer(), GetPos(), Direction, GameServer()->Tuning()->m_LaserReach, GetCID(), Damage);
 		GameServer()->CreateSound(GetPos(), SOUND_LASER_FIRE);
 	}
 }
@@ -1467,7 +1466,7 @@ void CInfClassCharacter::OnMercGrenadeFired(WeaponFireContext *pFireContext)
 	bool BombFound = false;
 	for(CScatterGrenade *pGrenade = (CScatterGrenade*) GameWorld()->FindFirst(CGameWorld::ENTTYPE_SCATTER_GRENADE); pGrenade; pGrenade = (CScatterGrenade*) pGrenade->TypeNext())
 	{
-		if(pGrenade->GetOwner() != m_pPlayer->GetCID())
+		if(pGrenade->GetOwner() != GetCID())
 			continue;
 		pGrenade->Explode();
 		BombFound = true;
@@ -1492,7 +1491,7 @@ void CInfClassCharacter::OnMercGrenadeFired(WeaponFireContext *pFireContext)
 	{
 		float a = BaseAngle + random_float()/3.0f;
 
-		CScatterGrenade *pProj = new CScatterGrenade(GameServer(), m_pPlayer->GetCID(), GetPos(), vec2(cosf(a), sinf(a)));
+		CScatterGrenade *pProj = new CScatterGrenade(GameServer(), GetCID(), GetPos(), vec2(cosf(a), sinf(a)));
 
 		// pack the Projectile and send it to the client Directly
 		CNetObj_Projectile p;
@@ -1500,7 +1499,7 @@ void CInfClassCharacter::OnMercGrenadeFired(WeaponFireContext *pFireContext)
 
 		for(unsigned i = 0; i < sizeof(CNetObj_Projectile)/sizeof(int); i++)
 			Msg.AddInt(((int *)&p)[i]);
-		Server()->SendMsg(&Msg, MSGFLAG_VITAL, m_pPlayer->GetCID());
+		Server()->SendMsg(&Msg, MSGFLAG_VITAL, GetCID());
 	}
 
 	GameServer()->CreateSound(GetPos(), SOUND_GRENADE_FIRE);
@@ -1516,7 +1515,7 @@ void CInfClassCharacter::OnMedicGrenadeFired(WeaponFireContext *pFireContext)
 	bool BombFound = false;
 	for(CMedicGrenade *pGrenade = (CMedicGrenade*) GameWorld()->FindFirst(CGameWorld::ENTTYPE_MEDIC_GRENADE); pGrenade; pGrenade = (CMedicGrenade*) pGrenade->TypeNext())
 	{
-		if(pGrenade->GetOwner() != m_pPlayer->GetCID()) continue;
+		if(pGrenade->GetOwner() != GetCID()) continue;
 		pGrenade->Explode();
 		BombFound = true;
 	}
@@ -1540,7 +1539,7 @@ void CInfClassCharacter::OnMedicGrenadeFired(WeaponFireContext *pFireContext)
 	{
 		float a = BaseAngle + random_float()/5.0f;
 
-		CMedicGrenade *pProj = new CMedicGrenade(GameServer(), m_pPlayer->GetCID(), GetPos(), vec2(cosf(a), sinf(a)));
+		CMedicGrenade *pProj = new CMedicGrenade(GameServer(), GetCID(), GetPos(), vec2(cosf(a), sinf(a)));
 
 		// pack the Projectile and send it to the client Directly
 		CNetObj_Projectile p;
@@ -1548,7 +1547,7 @@ void CInfClassCharacter::OnMedicGrenadeFired(WeaponFireContext *pFireContext)
 
 		for(unsigned i = 0; i < sizeof(CNetObj_Projectile)/sizeof(int); i++)
 			Msg.AddInt(((int *)&p)[i]);
-		Server()->SendMsg(&Msg, MSGFLAG_VITAL, m_pPlayer->GetCID());
+		Server()->SendMsg(&Msg, MSGFLAG_VITAL, GetCID());
 	}
 
 	GameServer()->CreateSound(GetPos(), SOUND_GRENADE_FIRE);
@@ -1567,7 +1566,7 @@ void CInfClassCharacter::OnBiologistLaserFired(WeaponFireContext *pFireContext)
 
 	for(CBiologistMine* pMine = (CBiologistMine*) GameWorld()->FindFirst(CGameWorld::ENTTYPE_BIOLOGIST_MINE); pMine; pMine = (CBiologistMine*) pMine->TypeNext())
 	{
-		if(pMine->GetOwner() != m_pPlayer->GetCID()) continue;
+		if(pMine->GetOwner() != GetCID()) continue;
 			GameWorld()->DestroyEntity(pMine);
 	}
 
@@ -1575,7 +1574,7 @@ void CInfClassCharacter::OnBiologistLaserFired(WeaponFireContext *pFireContext)
 	vec2 To = GetPos() + GetDirection() * BigLaserMaxLength;
 	if(GameServer()->Collision()->IntersectLine(GetPos(), To, 0x0, &To))
 	{
-		new CBiologistMine(GameServer(), GetPos(), To, m_pPlayer->GetCID());
+		new CBiologistMine(GameServer(), GetPos(), To, GetCID());
 		GameServer()->CreateSound(GetPos(), SOUND_LASER_FIRE);
 		pFireContext->AmmoConsumed = pFireContext->AmmoAvailable;
 	}
@@ -1594,7 +1593,7 @@ void CInfClassCharacter::OpenClassChooser()
 		return;
 	}
 
-	if(!Server()->IsClassChooserEnabled() || Server()->GetClientAlwaysRandom(m_pPlayer->GetCID()))
+	if(!Server()->IsClassChooserEnabled() || Server()->GetClientAlwaysRandom(GetCID()))
 	{
 		m_pPlayer->SetClass(GameController()->ChooseHumanClass(m_pPlayer));
 		if(Server()->IsClassChooserEnabled())
@@ -1625,7 +1624,7 @@ void CInfClassCharacter::HandleMapMenu()
 			int HoveredMenuItem = ((int)((Angle+AngleStep/2.0f)/AngleStep))%CMapConverter::NUM_MENUCLASS;
 			if(HoveredMenuItem == CMapConverter::MENUCLASS_RANDOM)
 			{
-				GameServer()->SendBroadcast_Localization(m_pPlayer->GetCID(),
+				GameServer()->SendBroadcast_Localization(GetCID(),
 					BROADCAST_PRIORITY_INTERFACE, BROADCAST_DURATION_REALTIME, _("Random choice"), NULL);
 				pPlayer->m_MapMenuItem = HoveredMenuItem;
 			}
@@ -1638,20 +1637,20 @@ void CInfClassCharacter::HandleMapMenu()
 					case CLASS_AVAILABILITY::AVAILABLE:
 					{
 						const char *pClassName = CInfClassGameController::GetClassDisplayName(NewClass);
-						GameServer()->SendBroadcast_Localization(m_pPlayer->GetCID(),
+						GameServer()->SendBroadcast_Localization(GetCID(),
 							BROADCAST_PRIORITY_INTERFACE, BROADCAST_DURATION_REALTIME,
 							pClassName, NULL);
 					}
 						break;
 					case CLASS_AVAILABILITY::DISABLED:
-						GameServer()->SendBroadcast_Localization(m_pPlayer->GetCID(),
+						GameServer()->SendBroadcast_Localization(GetCID(),
 							BROADCAST_PRIORITY_INTERFACE, BROADCAST_DURATION_REALTIME,
 							_("The class is disabled"), NULL);
 						break;
 					case CLASS_AVAILABILITY::NEED_MORE_PLAYERS:
 					{
 						int MinPlayers = GameController()->GetMinPlayersForClass(NewClass);
-						GameServer()->SendBroadcast_Localization_P(m_pPlayer->GetCID(),
+						GameServer()->SendBroadcast_Localization_P(GetCID(),
 							BROADCAST_PRIORITY_INTERFACE, BROADCAST_DURATION_REALTIME,
 							MinPlayers,
 							_P("Need at least {int:MinPlayers} player",
@@ -1661,7 +1660,7 @@ void CInfClassCharacter::HandleMapMenu()
 					}
 						break;
 					case CLASS_AVAILABILITY::LIMIT_EXCEEDED:
-						GameServer()->SendBroadcast_Localization(m_pPlayer->GetCID(),
+						GameServer()->SendBroadcast_Localization(GetCID(),
 							BROADCAST_PRIORITY_INTERFACE, BROADCAST_DURATION_REALTIME,
 							_("The class limit exceeded"), NULL);
 						break;
@@ -1680,7 +1679,7 @@ void CInfClassCharacter::HandleMapMenu()
 		else
 		{
 			pPlayer->m_MapMenuItem = -1;
-			GameServer()->SendBroadcast_Localization(m_pPlayer->GetCID(),
+			GameServer()->SendBroadcast_Localization(GetCID(),
 				BROADCAST_PRIORITY_INTERFACE, BROADCAST_DURATION_REALTIME,
 				_("Choose your class"), NULL);
 
@@ -1711,7 +1710,7 @@ void CInfClassCharacter::HandleMapMenu()
 				
 				char aBuf[256];
 				str_format(aBuf, sizeof(aBuf), "choose_class player='%s' class='%d' random='%d'",
-					Server()->ClientName(m_pPlayer->GetCID()), NewClass, Bonus);
+					Server()->ClientName(GetCID()), NewClass, Bonus);
 				GameServer()->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "game", aBuf);
 
 				if(Bonus)
@@ -1777,7 +1776,7 @@ void CInfClassCharacter::HandleHookDraining()
 				if(m_HookDmgTick + Server()->TickSpeed()*Rate < Server()->Tick())
 				{
 					m_HookDmgTick = Server()->Tick();
-					VictimChar->TakeDamage(vec2(0.0f,0.0f), Damage, m_pPlayer->GetCID(), WEAPON_NINJA, TAKEDAMAGEMODE_NOINFECTION);
+					VictimChar->TakeDamage(vec2(0.0f,0.0f), Damage, GetCID(), WEAPON_NINJA, TAKEDAMAGEMODE_NOINFECTION);
 					if((GetPlayerClass() == PLAYERCLASS_SMOKER || GetPlayerClass() == PLAYERCLASS_BAT) && VictimChar->IsHuman())
 						IncreaseOverallHp(2);
 				}
@@ -1818,7 +1817,7 @@ void CInfClassCharacter::HandleIndirectKillerCleanup()
 void CInfClassCharacter::Die(int Killer, int Weapon)
 {
 /* INFECTION MODIFICATION START ***************************************/
-	if(GetPlayerClass() == PLAYERCLASS_UNDEAD && Killer != m_pPlayer->GetCID())
+	if(GetPlayerClass() == PLAYERCLASS_UNDEAD && Killer != GetCID())
 	{
 		Freeze(10.0, Killer, FREEZEREASON_UNDEAD);
 		return;
@@ -1834,7 +1833,7 @@ void CInfClassCharacter::Die(int Killer, int Weapon)
 	DestroyChildEntities();
 /* INFECTION MODIFICATION END *****************************************/
 
-	if(((Weapon == WEAPON_WORLD) || (Weapon == WEAPON_SELF)) && Killer == m_pPlayer->GetCID())
+	if(((Weapon == WEAPON_WORLD) || (Weapon == WEAPON_SELF)) && Killer == GetCID())
 	{
 		GetIndirectKiller(&Killer, &Weapon);
 	}
@@ -1852,8 +1851,8 @@ void CInfClassCharacter::Die(int Killer, int Weapon)
 
 	m_Alive = false;
 	GameWorld()->RemoveEntity(this);
-	GameWorld()->m_Core.m_apCharacters[m_pPlayer->GetCID()] = 0;
-	GameServer()->CreateDeath(GetPos(), m_pPlayer->GetCID());
+	GameWorld()->m_Core.m_apCharacters[GetCID()] = 0;
+	GameServer()->CreateDeath(GetPos(), GetCID());
 }
 
 void CInfClassCharacter::SetActiveWeapon(int Weapon)
@@ -2065,8 +2064,8 @@ void CInfClassCharacter::CheckSuperWeaponAccess()
 					//create an indicator object
 					if (m_HasIndicator == false) {
 						m_HasIndicator = true;
-						GameServer()->SendChatTarget_Localization(m_pPlayer->GetCID(), CHATCATEGORY_SCORE, _("White hole found, adjusting scientific parameters..."), NULL);
-						new CSuperWeaponIndicator(GameServer(), GetPos(), m_pPlayer->GetCID());
+						GameServer()->SendChatTarget_Localization(GetCID(), CHATCATEGORY_SCORE, _("White hole found, adjusting scientific parameters..."), NULL);
+						new CSuperWeaponIndicator(GameServer(), GetPos(), GetCID());
 					}
 				} 
 			} 
@@ -2080,14 +2079,14 @@ void CInfClassCharacter::FireSoldierBomb()
 
 	for(CSoldierBomb *pBomb = (CSoldierBomb*) GameWorld()->FindFirst(CGameWorld::ENTTYPE_SOLDIER_BOMB); pBomb; pBomb = (CSoldierBomb*) pBomb->TypeNext())
 	{
-		if(pBomb->GetOwner() == m_pPlayer->GetCID())
+		if(pBomb->GetOwner() == GetCID())
 		{
 			pBomb->Explode();
 			return;
 		}
 	}
 
-	new CSoldierBomb(GameServer(), ProjStartPos, m_pPlayer->GetCID());
+	new CSoldierBomb(GameServer(), ProjStartPos, GetCID());
 	GameServer()->CreateSound(GetPos(), SOUND_GRENADE_FIRE);
 }
 
