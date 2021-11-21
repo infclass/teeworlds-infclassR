@@ -1902,6 +1902,11 @@ int CInfClassCharacter::GetCID() const
 	return -1;
 }
 
+CInfClassPlayer *CInfClassCharacter::GetPlayer()
+{
+	return static_cast<CInfClassPlayer*>(m_pPlayer);
+}
+
 void CInfClassCharacter::SetClass(CInfClassPlayerClass *pClass)
 {
 	m_pClass = pClass;

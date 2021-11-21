@@ -5,6 +5,7 @@
 
 class CGameContext;
 class CInfClassGameController;
+class CInfClassPlayer;
 class CInfClassPlayerClass;
 class CWhiteHole;
 
@@ -95,6 +96,8 @@ public:
 	void AddAmmo(int Weapon, int Ammo);
 
 	int GetCID() const;
+
+	CInfClassPlayer *GetPlayer();
 
 	const CInfClassPlayerClass *GetClass() const { return m_pClass; }
 	CInfClassPlayerClass *GetClass() { return m_pClass; }
