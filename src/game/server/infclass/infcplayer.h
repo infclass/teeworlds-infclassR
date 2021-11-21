@@ -11,6 +11,13 @@ class CInfClassPlayerClass;
 // We actually have to include player.h after all this stuff above.
 #include <game/server/player.h>
 
+enum class DO_INFECTION
+{
+	NO,
+	REGULAR,
+	FORCED,
+};
+
 class CInfClassPlayer : public CPlayer
 {
 	MACRO_ALLOC_POOL_ID()
@@ -35,6 +42,9 @@ public:
 
 	void SetClass(int newClass) override;
 
+	void Infect(CPlayer* pInfectiousPlayer);
+	void StartInfection(bool force = false, CPlayer* pInfectiousPlayer = nullptr);
+
 	CGameContext *GameServer() const { return m_pGameServer; }
 	IServer *Server() const { return CPlayer::Server(); };
 
@@ -43,6 +53,9 @@ protected:
 
 	CInfClassGameController *m_pGameController = nullptr;
 	CInfClassPlayerClass *m_pInfcPlayerClass = nullptr;
+
+	DO_INFECTION m_DoInfection = DO_INFECTION::NO;
+	int m_InfectiousPlayerCID = -1;
 };
 
 template<int FLAGS>

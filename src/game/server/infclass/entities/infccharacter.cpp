@@ -602,7 +602,7 @@ bool CInfClassCharacter::TakeDamage(vec2 Force, int Dmg, int From, int Weapon, T
 /* INFECTION MODIFICATION START ***************************************/
 	if(Mode == TAKEDAMAGEMODE_INFECTION)
 	{
-		m_pPlayer->Infect(pKillerPlayer);
+		GetPlayer()->Infect(pKillerPlayer);
 
 		char aBuf[256];
 		str_format(aBuf, sizeof(aBuf), "kill killer='%s' victim='%s' weapon=%d",

@@ -194,6 +194,20 @@ void CInfClassPlayer::SetClass(int newClass)
 	m_pInfcPlayerClass->OnPlayerClassChanged();
 }
 
+void CInfClassPlayer::Infect(CPlayer *pInfectiousPlayer)
+{
+	StartInfection(/* force */ false, pInfectiousPlayer);
+}
+
+void CInfClassPlayer::StartInfection(bool force, CPlayer *pInfectiousPlayer)
+{
+	if(!force && IsZombie())
+		return;
+
+	m_DoInfection = force ? DO_INFECTION::FORCED : DO_INFECTION::REGULAR;
+	m_InfectiousPlayerCID = pInfectiousPlayer ? pInfectiousPlayer->GetCID() : -1;
+}
+
 const char *CInfClassPlayer::GetClan(int SnappingClient) const
 {
 	if(GetTeam() == TEAM_SPECTATORS)
