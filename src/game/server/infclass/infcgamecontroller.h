@@ -105,6 +105,10 @@ public:
 	void GetSortedTargetsInRange(const vec2 &Center, const float Radius, const ClientsArray &SkipList, ClientsArray *pOutput);
 	int GetMinimumInfected() const;
 
+protected:
+	void TickInfectionStarted();
+	void TickInfectionNotStarted();
+
 private:
 	void HandleTargetsToKill();
 

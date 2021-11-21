@@ -1096,7 +1096,6 @@ void CInfClassGameController::Tick()
 	GetPlayerCounter(-1, NumHumans, NumInfected);
 
 	const int NumPlayers = NumHumans + NumInfected;
-	const int NumFirstInfected = GetMinimumInfectedForPlayers(NumPlayers);
 
 	m_InfectedStarted = false;
 
@@ -1106,143 +1105,12 @@ void CInfClassGameController::Tick()
 		//If the infection started
 		if(IsInfectionStarted())
 		{
-			bool StartInfectionTrigger = (m_RoundStartTick + Server()->TickSpeed()*10 == Server()->Tick());
-			
-			if(StartInfectionTrigger)
-			{
-				MaybeSuggestMoreRounds();
-			}
-			EnableTargetToKill();
-			
 			m_InfectedStarted = true;
-	
-			CInfClassPlayerIterator<PLAYERITER_INGAME> Iter(GameServer()->m_apPlayers);
-			while(Iter.Next())
-			{
-				if(Iter.Player()->GetClass() == PLAYERCLASS_NONE)
-				{
-					if(StartInfectionTrigger)
-					{
-						Iter.Player()->SetClass(ChooseHumanClass(Iter.Player()));
-						CInfClassCharacter *pCharacter = Iter.Player()->GetCharacter();
-						if(pCharacter)
-						{
-							pCharacter->GiveRandomClassSelectionBonus();
-						}
-					}
-					else
-					{
-						Iter.Player()->StartInfection();
-						NumInfected++;
-						NumHumans--;
-					}
-				}
-			}
-			
-			int NumNeededInfection = NumFirstInfected;
-
-			while(NumInfected < NumNeededInfection)
-			{
-				// before infecting those who play, mark spectators as
-				// already infected. It will prevent issue causing a
-				// player getting infected several times in a row
-				CInfClassPlayerIterator<PLAYERITER_SPECTATORS> IterSpec(GameServer()->m_apPlayers);
-				while(IterSpec.Next())
-				{
-					IterSpec.Player()->SetClass(PLAYERCLASS_NONE);
-					Server()->InfecteClient(IterSpec.ClientID());
-				}
-
-				float InfectionProb = 1.0/static_cast<float>(NumHumans);
-				float random = random_float();
-				
-				//Fair infection
-				bool FairInfectionFound = false;
-				
-				Iter.Reset();
-				while(Iter.Next())
-				{
-					if(Iter.Player()->IsZombie()) continue;
-					
-					if(!Server()->IsClientInfectedBefore(Iter.ClientID()))
-					{
-						Server()->InfecteClient(Iter.ClientID());
-						Iter.Player()->StartInfection();
-						NumInfected++;
-						NumHumans--;
-						
-						GameServer()->SendChatTarget_Localization(-1, CHATCATEGORY_INFECTION,
-							_("{str:VictimName} has been infected"),
-							"VictimName", Server()->ClientName(Iter.ClientID()),
-							NULL);
-
-						FairInfectionFound = true;
-						break;
-					}
-				}
-				
-				//Unfair infection
-				if(!FairInfectionFound)
-				{
-					Iter.Reset();
-					while(Iter.Next())
-					{
-						if(Iter.Player()->IsZombie()) continue;
-						
-						if(random < InfectionProb)
-						{
-							Server()->InfecteClient(Iter.ClientID());
-							Iter.Player()->StartInfection();
-							NumInfected++;
-							NumHumans--;
-							
-							GameServer()->SendChatTarget_Localization(-1, CHATCATEGORY_INFECTION,
-								_("{str:VictimName} has been infected"),
-								"VictimName", Server()->ClientName(Iter.ClientID()),
-								NULL);
-
-							break;
-						}
-						else
-						{
-							random -= InfectionProb;
-						}
-					}
-				}
-			}
-
-			if(StartInfectionTrigger)
-			{
-				if(NumInfected == 1)
-				{
-					for(int i = 0; i < MAX_CLIENTS; ++i)
-					{
-						CInfClassPlayer *pPlayer = GetPlayer(i);
-						if(!pPlayer)
-							continue;
-
-						pPlayer->HandleInfection();
-						CInfClassCharacter *pCharacter = pPlayer->GetCharacter();
-						if(!pCharacter)
-							continue;
-
-						if(pPlayer->IsZombie())
-						{
-							pCharacter->GiveLonelyZombieBonus();
-						}
-					}
-				}
-			}
+			TickInfectionStarted();
 		}
 		else
-		{			
-			DisableTargetToKill();
-			
-			CInfClassPlayerIterator<PLAYERITER_SPECTATORS> IterSpec(GameServer()->m_apPlayers);
-			while(IterSpec.Next())
-			{
-				IterSpec.Player()->SetClass(PLAYERCLASS_NONE);
-			}
+		{
+			TickInfectionNotStarted();
 		}
 
 		DoWincheck();
@@ -1268,6 +1136,154 @@ void CInfClassGameController::Tick()
 
 		m_SuggestMoreRounds = false;
 		m_MoreRoundsSuggested = true;
+	}
+}
+
+void CInfClassGameController::TickInfectionStarted()
+{
+	bool StartInfectionTrigger = m_RoundStartTick + Server()->TickSpeed()*10 == Server()->Tick();
+
+	if(StartInfectionTrigger)
+	{
+		MaybeSuggestMoreRounds();
+	}
+	EnableTargetToKill();
+
+	int NumHumans = 0;
+	int NumInfected = 0;
+	GetPlayerCounter(-1, NumHumans, NumInfected);
+
+	const int NumPlayers = NumHumans + NumInfected;
+	const int NumFirstInfected = GetMinimumInfectedForPlayers(NumPlayers);
+
+	CInfClassPlayerIterator<PLAYERITER_INGAME> Iter(GameServer()->m_apPlayers);
+	while(Iter.Next())
+	{
+		// Set the player class if not set yet
+		if(Iter.Player()->GetClass() == PLAYERCLASS_NONE)
+		{
+			if(StartInfectionTrigger)
+			{
+				Iter.Player()->SetClass(ChooseHumanClass(Iter.Player()));
+				CInfClassCharacter *pCharacter = Iter.Player()->GetCharacter();
+				if(pCharacter)
+				{
+					pCharacter->GiveRandomClassSelectionBonus();
+				}
+			}
+			else
+			{
+				Iter.Player()->StartInfection();
+				NumInfected++;
+				NumHumans--;
+			}
+		}
+	}
+
+	int NumNeededInfection = NumFirstInfected;
+
+	while(NumInfected < NumNeededInfection)
+	{
+		// before infecting those who play, mark spectators as
+		// already infected. It will prevent issue causing a
+		// player getting infected several times in a row
+		CInfClassPlayerIterator<PLAYERITER_SPECTATORS> IterSpec(GameServer()->m_apPlayers);
+		while(IterSpec.Next())
+		{
+			IterSpec.Player()->SetClass(PLAYERCLASS_NONE);
+			Server()->InfecteClient(IterSpec.ClientID());
+		}
+
+		float InfectionProb = 1.0/static_cast<float>(NumHumans);
+		float random = random_float();
+
+		//Fair infection
+		bool FairInfectionFound = false;
+
+		Iter.Reset();
+		while(Iter.Next())
+		{
+			if(Iter.Player()->IsZombie()) continue;
+
+			if(!Server()->IsClientInfectedBefore(Iter.ClientID()))
+			{
+				Server()->InfecteClient(Iter.ClientID());
+				Iter.Player()->StartInfection();
+				NumInfected++;
+				NumHumans--;
+
+				GameServer()->SendChatTarget_Localization(-1, CHATCATEGORY_INFECTION,
+					_("{str:VictimName} has been infected"),
+					"VictimName", Server()->ClientName(Iter.ClientID()),
+					NULL);
+
+				FairInfectionFound = true;
+				break;
+			}
+		}
+
+		//Unfair infection
+		if(!FairInfectionFound)
+		{
+			Iter.Reset();
+			while(Iter.Next())
+			{
+				if(Iter.Player()->IsZombie()) continue;
+
+				if(random < InfectionProb)
+				{
+					Server()->InfecteClient(Iter.ClientID());
+					Iter.Player()->StartInfection();
+					NumInfected++;
+					NumHumans--;
+
+					GameServer()->SendChatTarget_Localization(-1, CHATCATEGORY_INFECTION,
+						_("{str:VictimName} has been infected"),
+						"VictimName", Server()->ClientName(Iter.ClientID()),
+						NULL);
+
+					break;
+				}
+				else
+				{
+					random -= InfectionProb;
+				}
+			}
+		}
+	}
+
+	if(StartInfectionTrigger)
+	{
+		if(NumInfected == 1)
+		{
+			for(int i = 0; i < MAX_CLIENTS; ++i)
+			{
+				CInfClassPlayer *pPlayer = GetPlayer(i);
+				if(!pPlayer)
+					continue;
+
+				pPlayer->HandleInfection();
+				CInfClassCharacter *pCharacter = pPlayer->GetCharacter();
+				if(!pCharacter)
+					continue;
+
+				if(pPlayer->IsZombie())
+				{
+					pCharacter->GiveLonelyZombieBonus();
+				}
+			}
+		}
+	}
+}
+
+void CInfClassGameController::TickInfectionNotStarted()
+{
+	DisableTargetToKill();
+
+	CInfClassPlayerIterator<PLAYERITER_SPECTATORS> IterSpec(GameServer()->m_apPlayers);
+	while(IterSpec.Next())
+	{
+		IterSpec.Player()->SetClass(PLAYERCLASS_NONE);
 	}
 }
 
