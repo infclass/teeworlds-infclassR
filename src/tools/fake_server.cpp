@@ -148,8 +148,9 @@ static int Run()
 	}
 }
 
-int main(int argc, char **argv)
+int main(int argc, const char **argv)
 {
+	cmdline_fix(&argc, &argv);
 	pNet = new CNetServer;
 
 	while(argc)
@@ -208,6 +209,7 @@ int main(int argc, char **argv)
 	int RunReturn = Run();
 
 	delete pNet;
+	cmdline_free(argc, argv);
 	return RunReturn;
 }
 

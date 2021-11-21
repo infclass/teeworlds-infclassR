@@ -90,6 +90,7 @@ int DilateFile(const char *pFileName)
 
 int main(int argc, const char **argv)
 {
+	cmdline_fix(&argc, &argv);
 	dbg_logger_stdout();
 	if(argc == 1)
 	{
@@ -99,5 +100,6 @@ int main(int argc, const char **argv)
 
 	for(int i = 1; i < argc; i++)
 		DilateFile(argv[i]);
+	cmdline_free(argc, argv);
 	return 0;
 }
