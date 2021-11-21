@@ -689,7 +689,7 @@ bool CInfClassGameController::ConSetClass(IConsole::IResult *pResult)
 	int PlayerID = pResult->GetInteger(0);
 	const char *pClassName = pResult->GetString(1);
 
-	CPlayer* pPlayer = GameServer()->m_apPlayers[PlayerID];
+	CInfClassPlayer *pPlayer = GetPlayer(PlayerID);
 
 	if(!pPlayer)
 		return true;
@@ -941,12 +941,13 @@ void CInfClassGameController::StartRound()
 
 	for(int i = 0; i < MAX_CLIENTS; i++)
 	{
-		if(GameServer()->m_apPlayers[i])
+		CInfClassPlayer *pPlayer = GetPlayer(i);
+		if(pPlayer)
 		{
 			Server()->SetClientMemory(i, CLIENTMEMORY_ROUNDSTART_OR_MAPCHANGE, true);
-			GameServer()->m_apPlayers[i]->SetClass(PLAYERCLASS_NONE);
-			GameServer()->m_apPlayers[i]->m_ScoreRound = 0;
-			GameServer()->m_apPlayers[i]->m_HumanTime = 0;
+			pPlayer->SetClass(PLAYERCLASS_NONE);
+			pPlayer->m_ScoreRound = 0;
+			pPlayer->m_HumanTime = 0;
 		}
 	}
 }
@@ -1022,7 +1023,7 @@ int CInfClassGameController::GetMinimumInfected() const
 	return GetMinimumInfectedForPlayers(NumPlayers);
 }
 
-int CInfClassGameController::RandomZombieToWitch() {
+int CInfClassGameController::RandomZombieToWitch(){
 	std::vector<int> zombies_id;
 
 	m_WitchCallers.clear();
@@ -1050,7 +1051,7 @@ int CInfClassGameController::RandomZombieToWitch() {
 	str_format(aBuf, sizeof(aBuf), "going through MAX_CLIENTS=%d, zombie_count=%d, random_int=%d, id=%d", MAX_CLIENTS, static_cast<int>(zombies_id.size()), id, zombies_id[id]);
 	GameServer()->Console()->Print(IConsole::OUTPUT_LEVEL_DEBUG, "witch", aBuf);
 	/* /debug */
-	GameServer()->m_apPlayers[zombies_id[id]]->SetClass(PLAYERCLASS_WITCH);
+	GetPlayer(zombies_id[id])->SetClass(PLAYERCLASS_WITCH);
 	return zombies_id[id];
 }
 
@@ -1651,7 +1652,7 @@ void CInfClassGameController::OnCharacterSpawned(CInfClassCharacter *pCharacter)
 {
 	if(GameServer()->m_FunRound && !IsInfectionStarted() && pCharacter->GetPlayerClass() == PLAYERCLASS_NONE)
 	{
-		CPlayer *pPlayer = pCharacter->GetPlayer();
+		CInfClassPlayer *pPlayer = pCharacter->GetPlayer();
 		if(pPlayer)
 		{
 			pPlayer->SetClass(ChooseHumanClass(pPlayer));
