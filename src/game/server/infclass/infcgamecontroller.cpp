@@ -1391,6 +1391,12 @@ CPlayer *CInfClassGameController::CreatePlayer(int ClientID)
 		pPlayer = new(ClientID) CInfClassPlayer(this, ClientID, StartTeam);
 	}
 
+	if(IsInfectionStarted())
+	{
+		int c = ChooseInfectedClass(pPlayer);
+		pPlayer->SetClass(c);
+	}
+
 	return pPlayer;
 }
 

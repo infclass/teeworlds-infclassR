@@ -1429,9 +1429,6 @@ void CGameContext::OnClientConnected(int ClientID)
 	dbg_assert(!m_apPlayers[ClientID], "non-free player slot");
 	m_apPlayers[ClientID] = m_pController->CreatePlayer(ClientID);
 	
-	//Thanks to Stitch
-	if(m_pController->IsInfectionStarted())
-		m_apPlayers[ClientID]->StartInfection();
 	//players[client_id].init(client_id);
 	//players[client_id].client_id = client_id;
 
