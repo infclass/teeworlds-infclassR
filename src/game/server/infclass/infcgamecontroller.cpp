@@ -109,7 +109,7 @@ void CInfClassGameController::OnPlayerInfected(CInfClassPlayer *pPlayer, CInfCla
 	}
 
 	const int InfectedByCID = pInfectiousPlayer->GetCID();
-	if(!IsZombieClass(PreviousClass))
+	if(!IsZombieClass(PreviousClass) && (pPlayer != pInfectiousPlayer))
 	{
 		if(pInfectiousPlayer->IsHuman())
 		{
@@ -126,7 +126,7 @@ void CInfClassGameController::OnPlayerInfected(CInfClassPlayer *pPlayer, CInfCla
 				pGuiltyCharacter->SetEmote(EMOTE_PAIN, Server()->Tick() + Server()->TickSpeed() * GuiltyPlayerFreeze);
 			}
 		}
-		else if (pPlayer != pInfectiousPlayer)
+		else
 		{
 			GameServer()->SendChatTarget_Localization(pPlayer->GetCID(), CHATCATEGORY_INFECTED,
 				_("You have been infected by {str:KillerName}"),
