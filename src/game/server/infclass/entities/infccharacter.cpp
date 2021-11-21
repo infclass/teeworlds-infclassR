@@ -391,7 +391,7 @@ void CInfClassCharacter::FireWeapon()
 		WillFire = true;
 	}
 
-	if(!WillFire || m_pPlayer->MapMenu() > 0)
+	if(!WillFire || GetPlayer()->MapMenu() > 0)
 		return;
 
 	WeaponFireContext FireContext;
@@ -1590,7 +1590,7 @@ void CInfClassCharacter::OpenClassChooser()
 	if(GameServer()->m_FunRound)
 	{
 		IncreaseArmor(10);
-		m_pPlayer->CloseMapMenu();
+		GetPlayer()->CloseMapMenu();
 		return;
 	}
 
@@ -1602,16 +1602,17 @@ void CInfClassCharacter::OpenClassChooser()
 	}
 	else
 	{
-		m_pPlayer->OpenMapMenu(1);
+		GetPlayer()->OpenMapMenu(1);
 	}
 }
 
 void CInfClassCharacter::HandleMapMenu()
 {
+	CInfClassPlayer *pPlayer = GetPlayer();
 	if(GetPlayerClass() != PLAYERCLASS_NONE)
 	{
 		SetAntiFire();
-		m_pPlayer->CloseMapMenu();
+		pPlayer->CloseMapMenu();
 	}
 	else
 	{
@@ -1626,7 +1627,7 @@ void CInfClassCharacter::HandleMapMenu()
 			{
 				GameServer()->SendBroadcast_Localization(m_pPlayer->GetCID(),
 					BROADCAST_PRIORITY_INTERFACE, BROADCAST_DURATION_REALTIME, _("Random choice"), NULL);
-				m_pPlayer->m_MapMenuItem = HoveredMenuItem;
+				pPlayer->m_MapMenuItem = HoveredMenuItem;
 			}
 			else
 			{
@@ -1668,17 +1669,17 @@ void CInfClassCharacter::HandleMapMenu()
 
 				if(Availability == CLASS_AVAILABILITY::AVAILABLE)
 				{
-					m_pPlayer->m_MapMenuItem = HoveredMenuItem;
+					pPlayer->m_MapMenuItem = HoveredMenuItem;
 				}
 				else
 				{
-					m_pPlayer->m_MapMenuItem = -1;
+					pPlayer->m_MapMenuItem = -1;
 				}
 			}
 		}
 		else
 		{
-			m_pPlayer->m_MapMenuItem = -1;
+			pPlayer->m_MapMenuItem = -1;
 			GameServer()->SendBroadcast_Localization(m_pPlayer->GetCID(),
 				BROADCAST_PRIORITY_INTERFACE, BROADCAST_DURATION_REALTIME,
 				_("Choose your class"), NULL);
@@ -1686,15 +1687,15 @@ void CInfClassCharacter::HandleMapMenu()
 			return;
 		}
 
-		if(m_pPlayer->MapMenuClickable() && m_Input.m_Fire&1)
+		if(pPlayer->MapMenuClickable() && m_Input.m_Fire&1)
 		{
 			bool Bonus = false;
 
-			int MenuClass = m_pPlayer->m_MapMenuItem;
+			int MenuClass = pPlayer->m_MapMenuItem;
 			int NewClass = CInfClassGameController::MenuClassToPlayerClass(MenuClass);
 			if(NewClass == PLAYERCLASS_NONE)
 			{
-				NewClass = GameController()->ChooseHumanClass(m_pPlayer);
+				NewClass = GameController()->ChooseHumanClass(pPlayer);
 				Bonus = true;
 			}
 			if(NewClass == PLAYERCLASS_INVALID)
@@ -1705,8 +1706,8 @@ void CInfClassCharacter::HandleMapMenu()
 			if(GameController()->GetPlayerClassAvailability(NewClass) == CLASS_AVAILABILITY::AVAILABLE)
 			{
 				SetAntiFire();
-				m_pPlayer->m_MapMenuItem = 0;
-				m_pPlayer->SetClass(NewClass);
+				pPlayer->m_MapMenuItem = 0;
+				pPlayer->SetClass(NewClass);
 				
 				char aBuf[256];
 				str_format(aBuf, sizeof(aBuf), "choose_class player='%s' class='%d' random='%d'",
@@ -2219,7 +2220,7 @@ void CInfClassCharacter::PreCoreTick()
 
 void CInfClassCharacter::PostCoreTick()
 {
-	if(m_pPlayer->MapMenu() == 1)
+	if(GetPlayer()->MapMenu() == 1)
 	{
 		HandleMapMenu();
 	}

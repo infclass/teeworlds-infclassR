@@ -45,8 +45,16 @@ public:
 	void Infect(CPlayer* pInfectiousPlayer);
 	void StartInfection(bool force = false, CPlayer* pInfectiousPlayer = nullptr);
 
+	int MapMenu() { return (m_Team != TEAM_SPECTATORS) ? m_MapMenu : 0; };
+	void OpenMapMenu(int Menu);
+	void CloseMapMenu();
+	bool MapMenuClickable();
+
 	CGameContext *GameServer() const { return m_pGameServer; }
 	IServer *Server() const { return CPlayer::Server(); };
+
+public:
+	int m_MapMenuItem = -1;
 
 protected:
 	const char *GetClan(int SnappingClient = -1) const override;
@@ -56,6 +64,9 @@ protected:
 
 	DO_INFECTION m_DoInfection = DO_INFECTION::NO;
 	int m_InfectiousPlayerCID = -1;
+
+	int m_MapMenu = 0;
+	int m_MapMenuTick = -1;
 };
 
 template<int FLAGS>

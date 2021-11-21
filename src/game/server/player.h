@@ -151,9 +151,6 @@ protected:
 	int m_DefaultScoreMode;
 	char m_aLanguage[16];
 	
-	int m_MapMenu;
-	int m_MapMenuTick;
-	
 	int m_GhoulLevel;
 	int m_GhoulLevelTick;
 	
@@ -190,19 +187,13 @@ public:
 	bool m_HookProtection;
 	bool m_HookProtectionAutomatic;
 	
-	int m_MapMenuItem;
-	
 	CTuningParams m_PrevTuningParams;
 	CTuningParams m_NextTuningParams;
 	
 	void HandleTuningParams();
 	
 	bool InscoreBoard() { return m_PlayerFlags & PLAYERFLAG_SCOREBOARD; };
-	int MapMenu() { return (m_Team != TEAM_SPECTATORS) ? m_MapMenu : 0; };
-	void OpenMapMenu(int Menu);
-	void CloseMapMenu();
-	bool MapMenuClickable();
-	
+
 	float GetGhoulPercent() const;
 	void IncreaseGhoulLevel(int Diff);
 	inline int GetGhoulLevel() const { return m_GhoulLevel; }

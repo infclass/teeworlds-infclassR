@@ -67,9 +67,6 @@ void CPlayer::Reset()
 		idMap[0] = m_ClientID;
 	}
 
-	m_MapMenu = 0;
-	m_MapMenuItem = -1;
-	m_MapMenuTick = -1;
 	m_HookProtectionAutomatic = true;
 
 	m_PrevTuningParams = *m_pGameServer->Tuning();
@@ -530,22 +527,6 @@ const char* CPlayer::GetLanguage()
 void CPlayer::SetLanguage(const char* pLanguage)
 {
 	str_copy(m_aLanguage, pLanguage, sizeof(m_aLanguage));
-}
-void CPlayer::OpenMapMenu(int Menu)
-{
-	m_MapMenu = Menu;
-	m_MapMenuTick = 0;
-}
-
-void CPlayer::CloseMapMenu()
-{
-	m_MapMenu = 0;
-	m_MapMenuTick = -1;
-}
-
-bool CPlayer::MapMenuClickable()
-{
-	return (m_MapMenu > 0 && (m_MapMenuTick > Server()->TickSpeed()/2));
 }
 
 float CPlayer::GetGhoulPercent() const

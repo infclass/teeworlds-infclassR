@@ -208,6 +208,23 @@ void CInfClassPlayer::StartInfection(bool force, CPlayer *pInfectiousPlayer)
 	m_InfectiousPlayerCID = pInfectiousPlayer ? pInfectiousPlayer->GetCID() : -1;
 }
 
+void CInfClassPlayer::OpenMapMenu(int Menu)
+{
+	m_MapMenu = Menu;
+	m_MapMenuTick = 0;
+}
+
+void CInfClassPlayer::CloseMapMenu()
+{
+	m_MapMenu = 0;
+	m_MapMenuTick = -1;
+}
+
+bool CInfClassPlayer::MapMenuClickable()
+{
+	return (m_MapMenu > 0 && (m_MapMenuTick > Server()->TickSpeed()/2));
+}
+
 const char *CInfClassPlayer::GetClan(int SnappingClient) const
 {
 	if(GetTeam() == TEAM_SPECTATORS)
