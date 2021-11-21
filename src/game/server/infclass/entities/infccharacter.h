@@ -79,6 +79,7 @@ public:
 	void OnMercGrenadeFired(WeaponFireContext *pFireContext);
 	void OnMedicGrenadeFired(WeaponFireContext *pFireContext);
 	void OnBiologistLaserFired(WeaponFireContext *pFireContext);
+	void OnFKingFireCK(WeaponFireContext *pFireContext);
 
 	void OpenClassChooser();
 	void HandleMapMenu();
@@ -130,6 +131,7 @@ public:
 
 	void CheckSuperWeaponAccess();
 	void FireSoldierBomb();
+	void DoFKingPower();
 	void PlacePortal(WeaponFireContext *pFireContext);
 
 	void GiveGift(int GiftType);

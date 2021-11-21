@@ -64,6 +64,7 @@ void CScientistLaser::DoBounce()
 	}
 	
 	GameServer()->CreateExplosion(m_Pos, m_Owner, WEAPON_LASER, false, TAKEDAMAGEMODE_NOINFECTION);
+	new CGrowingExplosion(GameServer(), m_Pos, vec2(0.0, -1.0), m_Owner, 5, GROWINGEXPLOSIONEFFECT_ELECTRIC_INFECTED);
 	
 	//Create a white hole entity
 	CCharacter *pOwnerChar = GameServer()->GetPlayerChar(m_Owner);

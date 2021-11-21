@@ -24,3 +24,4 @@ src/game/generated
 /bin/server_d
 
 /bin/GeoLite2-Country.mmdb
+/build/

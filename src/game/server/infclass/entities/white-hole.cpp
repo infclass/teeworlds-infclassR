@@ -185,11 +185,12 @@ void CWhiteHole::Tick()
 	m_LifeSpan--;
 	if(m_LifeSpan < 0)
 	{
-		new CGrowingExplosion(GameServer(), m_Pos, vec2(0.0, -1.0), m_Owner, 20, GROWINGEXPLOSIONEFFECT_BOOM_INFECTED);
+		new CGrowingExplosion(GameServer(), m_Pos, vec2(0.0, -1.0), m_Owner, 20, GROWINGEXPLOSIONEFFECT_ELECTRIC_INFECTED);
 		Reset();
 	}
 	else 
 	{
+		new CGrowingExplosion(GameServer(), m_Pos, vec2(0.0, -1.0), m_Owner, 20, GROWINGEXPLOSIONEFFECT_POISON_INFECTED);
 		if (m_LifeSpan < m_ParticleStopTickTime) // shrink radius
 		{
 			m_Radius = m_LifeSpan/(float)m_ParticleStopTickTime * Config()->m_InfWhiteHoleRadius;

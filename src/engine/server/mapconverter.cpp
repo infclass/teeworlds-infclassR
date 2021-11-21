@@ -915,7 +915,7 @@ int CMapConverter::Finalize()
 
 	//Menu
 	
-	const float MenuRadius = 196.0f;
+	const float MenuRadius = 250.0f;
 	const float MenuAngleStart = -pi/2.0f;
 	
 	{
@@ -994,6 +994,8 @@ int CMapConverter::Finalize()
 						ClassMask = MASK_MEDIC;
 					else if(PlayerClass == PLAYERCLASS_HERO)
 						ClassMask = MASK_HERO;
+					else if(PlayerClass == PLAYERCLASS_FKING)
+						ClassMask = MASK_FKING;
 					else
 						ClassMask = MASK_DEFENDER; // For some reason the random class is also defender
 

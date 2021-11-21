@@ -29,6 +29,8 @@
 #include <game/server/infclass/entities/superweapon-indicator.h>
 #include <game/server/infclass/entities/turret.h>
 #include <game/server/infclass/entities/white-hole.h>
+#include <game/server/infclass/entities/fking-power.h>
+#include <game/server/infclass/entities/fking-CK.h>
 #include <game/server/infclass/infcgamecontroller.h>
 #include <game/server/infclass/infcplayer.h>
 
@@ -907,6 +909,10 @@ void CInfClassCharacter::OnHammerFired(WeaponFireContext *pFireContext)
 	{
 		FireSoldierBomb();
 	}
+	else if(GetPlayerClass() == PLAYERCLASS_FKING)
+	{
+		DoFKingPower();
+	}
 	else if(GetPlayerClass() == PLAYERCLASS_SNIPER)
 	{
 		if(GetPos().y > -600.0)
@@ -1336,6 +1342,12 @@ void CInfClassCharacter::OnGrenadeFired(WeaponFireContext *pFireContext)
 		return;
 	}
 
+	if(GetPlayerClass() == PLAYERCLASS_FKING)
+	{
+		OnFKingFireCK(pFireContext);
+		return;
+	}
+
 	if(pFireContext->NoAmmo)
 	{
 		return;
@@ -1427,7 +1439,7 @@ void CInfClassCharacter::OnLaserFired(WeaponFireContext *pFireContext)
 		new CInfClassLaser(GameServer(), GetPos(), Direction, GameServer()->Tuning()->m_LaserReach, m_pPlayer->GetCID(), Damage);
 		GameServer()->CreateSound(GetPos(), SOUND_LASER_FIRE);
 	}
-	else if(GetPlayerClass() == PLAYERCLASS_SCIENTIST)
+	else if(GetPlayerClass() == PLAYERCLASS_SCIENTIST || GetPlayerClass() == PLAYERCLASS_FKING)
 	{
 		//white hole activation in scientist-laser
 		
@@ -1557,6 +1569,54 @@ void CInfClassCharacter::OnMedicGrenadeFired(WeaponFireContext *pFireContext)
 		float a = BaseAngle + random_float()/5.0f;
 
 		CMedicGrenade *pProj = new CMedicGrenade(GameServer(), m_pPlayer->GetCID(), GetPos(), vec2(cosf(a), sinf(a)));
+
+		// pack the Projectile and send it to the client Directly
+		CNetObj_Projectile p;
+		pProj->FillInfo(&p);
+
+		for(unsigned i = 0; i < sizeof(CNetObj_Projectile)/sizeof(int); i++)
+			Msg.AddInt(((int *)&p)[i]);
+		Server()->SendMsg(&Msg, MSGFLAG_VITAL, m_pPlayer->GetCID());
+	}
+
+	GameServer()->CreateSound(GetPos(), SOUND_GRENADE_FIRE);
+
+	m_ReloadTimer = Server()->TickSpeed()/4;
+}
+
+void CInfClassCharacter::OnFKingFireCK(WeaponFireContext *pFireContext)
+{
+	float BaseAngle = GetAngle(GetDirection());
+
+	//Find bomb
+	bool BombFound = false;
+	for(CFCK *pGrenade = (CFCK*) GameWorld()->FindFirst(CGameWorld::ENTTYPE_FK_CK); pGrenade; pGrenade = (CFCK*) pGrenade->TypeNext())
+	{
+		if(pGrenade->GetOwner() != m_pPlayer->GetCID()) continue;
+		pGrenade->Explode();
+		BombFound = true;
+	}
+
+	if(BombFound)
+	{
+		pFireContext->AmmoConsumed = 0;
+		pFireContext->NoAmmo = false;
+		return;
+	}
+
+	if(pFireContext->NoAmmo)
+		return;
+
+	int ShotSpread = 0;
+
+	CMsgPacker Msg(NETMSGTYPE_SV_EXTRAPROJECTILE);
+	Msg.AddInt(ShotSpread*2+1);
+
+	for(int i = -ShotSpread; i <= ShotSpread; ++i)
+	{
+		float a = BaseAngle + random_float()/5.0f;
+
+		CFCK *pProj = new CFCK(GameServer(), m_pPlayer->GetCID(), GetPos(), vec2(cosf(a), sinf(a)));
 
 		// pack the Projectile and send it to the client Directly
 		CNetObj_Projectile p;
@@ -2089,7 +2149,7 @@ void CInfClassCharacter::CheckSuperWeaponAccess()
 	int kills = m_pPlayer->GetNumberKills();
 
 	//Only scientists can receive white holes
-	if(GetPlayerClass() == PLAYERCLASS_SCIENTIST)
+	if(GetPlayerClass() == PLAYERCLASS_SCIENTIST || GetPlayerClass() == PLAYERCLASS_FKING)
 	{
 		if (!m_HasWhiteHole) // Can't receive a white hole while having one available
 		{
@@ -2129,6 +2189,23 @@ void CInfClassCharacter::FireSoldierBomb()
 	GameServer()->CreateSound(GetPos(), SOUND_GRENADE_FIRE);
 }
 
+void CInfClassCharacter::DoFKingPower()
+{
+	vec2 ProjStartPos = GetPos()+GetDirection()*GetProximityRadius()*0.75f;
+
+	for(CFKingPower *pP = (CFKingPower*) GameWorld()->FindFirst(CGameWorld::ENTTYPE_FKING_POWER); pP; pP = (CFKingPower*) pP->TypeNext())
+	{
+		if(pP->GetOwner() == m_pPlayer->GetCID())
+		{
+			pP->Explode();
+			return;
+		}
+	}
+
+	new CFKingPower(GameServer(), ProjStartPos, m_pPlayer->GetCID());
+	GameServer()->CreateSound(GetPos(), SOUND_GRENADE_FIRE);
+}
+
 void CInfClassCharacter::GiveGift(int GiftType)
 {
 	IncreaseHealth(1);
@@ -2159,6 +2236,12 @@ void CInfClassCharacter::GiveGift(int GiftType)
 			GiveWeapon(WEAPON_GRENADE, -1);
 			break;
 		case PLAYERCLASS_MEDIC:
+			GiveWeapon(WEAPON_GUN, -1);
+			GiveWeapon(WEAPON_SHOTGUN, -1);
+			GiveWeapon(WEAPON_GRENADE, -1);
+			GiveWeapon(WEAPON_LASER, -1);
+			break;
+		case PLAYERCLASS_FKING:
 			GiveWeapon(WEAPON_GUN, -1);
 			GiveWeapon(WEAPON_SHOTGUN, -1);
 			GiveWeapon(WEAPON_GRENADE, -1);

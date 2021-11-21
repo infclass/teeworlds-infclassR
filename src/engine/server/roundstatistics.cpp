@@ -77,6 +77,9 @@ int CRoundStatistics::CPlayer::OnScoreEvent(int EventType, int Class)
 		case PLAYERCLASS_HERO:
 			m_HeroScore += Points;
 			break;
+		case PLAYERCLASS_FKING:
+			m_FKingScore += Points;
+			break;
 		case PLAYERCLASS_NINJA:
 			m_NinjaScore += Points;
 			break;

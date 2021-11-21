@@ -13,6 +13,7 @@
 #include <game/server/infclass/entities/white-hole.h>
 #include <game/server/infclass/infcgamecontroller.h>
 #include <game/server/infclass/infcplayer.h>
+#include <game/server/infclass/entities/fking-power.h>
 #include <game/server/teeinfo.h>
 
 MACRO_ALLOC_POOL_ID_IMPL(CInfClassHuman, MAX_CLIENTS)
@@ -186,6 +187,14 @@ void CInfClassHuman::GiveClassAttributes()
 			m_pCharacter->GiveWeapon(WEAPON_LASER, -1);
 			m_pCharacter->SetActiveWeapon(WEAPON_SHOTGUN);
 			break;
+		case PLAYERCLASS_FKING:
+			m_pCharacter->GiveWeapon(WEAPON_HAMMER, -1);
+			m_pCharacter->GiveWeapon(WEAPON_GUN, -1);
+			m_pCharacter->GiveWeapon(WEAPON_SHOTGUN, -1);
+			m_pCharacter->GiveWeapon(WEAPON_GRENADE, -1);
+			m_pCharacter->GiveWeapon(WEAPON_LASER, -1);
+			m_pCharacter->SetActiveWeapon(WEAPON_HAMMER);
+			break;
 		case PLAYERCLASS_HERO:
 			if(GameController()->AreTurretsEnabled())
 				m_pCharacter->GiveWeapon(WEAPON_HAMMER, -1);
@@ -255,6 +264,12 @@ bool CInfClassHuman::SetupSkin(int PlayerClass, CTeeInfo *output)
 			output->m_UseCustomColor = 1;
 			output->m_ColorBody = 255;
 			output->m_ColorFeet = 0;
+			break;
+		case PLAYERCLASS_FKING:
+			output->SetSkinName("saddo");
+			output->m_UseCustomColor = 1;
+			output->m_ColorBody = 218321;
+			output->m_ColorFeet = 218321;
 			break;
 		default:
 			output->SetSkinName("default");
@@ -368,7 +383,27 @@ void CInfClassHuman::BroadcastWeaponState()
 			);
 		}
 	}
-	else if(GetPlayerClass() == PLAYERCLASS_SCIENTIST)
+	else if(GetPlayerClass() == PLAYERCLASS_FKING)
+	{
+		int NumP = 0;
+		for(CFKingPower *pP = (CFKingPower*) GameWorld()->FindFirst(CGameWorld::ENTTYPE_FKING_POWER); pP; pP = (CFKingPower*) pP->TypeNext())
+		{
+			if(pP->GetOwner() == m_pPlayer->GetCID())
+				NumP += pP->GetNbP();
+		}
+
+		if(NumP)
+		{
+			GameServer()->SendBroadcast_Localization_P(GetPlayer()->GetCID(),
+				BROADCAST_PRIORITY_WEAPONSTATE, BROADCAST_DURATION_REALTIME,
+				NumP,
+				_P("One power left", "{int:NumP} powers left"),
+				"NumP", &NumP,
+				NULL
+			);
+		}
+	}
+	else if(GetPlayerClass() == PLAYERCLASS_SCIENTIST || GetPlayerClass() == PLAYERCLASS_FKING)
 	{
 		int NumMines = 0;
 		for(CScientistMine *pMine = (CScientistMine*) GameWorld()->FindFirst(CGameWorld::ENTTYPE_SCIENTIST_MINE); pMine; pMine = (CScientistMine*) pMine->TypeNext())

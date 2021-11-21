@@ -589,6 +589,9 @@ int CServer::Init()
 	SetFireDelay(INFWEAPON_MERCENARY_GRENADE, GetFireDelay(INFWEAPON_GRENADE));
 	SetFireDelay(INFWEAPON_MERCENARY_GUN, 50);
 	SetFireDelay(INFWEAPON_MERCENARY_LASER, 250);
+	SetFireDelay(INFWEAPON_FKING_GRENADE, 400);
+	SetFireDelay(INFWEAPON_FKING_LASER, 400);
+	SetFireDelay(INFWEAPON_FKING_SHOTGUN, 400);
 	
 	SetAmmoRegenTime(INFWEAPON_NONE, 0);
 	SetAmmoRegenTime(INFWEAPON_HAMMER, 0);
@@ -618,6 +621,9 @@ int CServer::Init()
 	SetAmmoRegenTime(INFWEAPON_BIOLOGIST_SHOTGUN, 675);
 	SetAmmoRegenTime(INFWEAPON_LOOPER_LASER, 500);
 	SetAmmoRegenTime(INFWEAPON_LOOPER_GRENADE, 5000);
+	SetAmmoRegenTime(INFWEAPON_FKING_GRENADE, 4000);
+	SetAmmoRegenTime(INFWEAPON_FKING_LASER, 50000);
+	SetAmmoRegenTime(INFWEAPON_FKING_SHOTGUN, 750);
 	
 	SetMaxAmmo(INFWEAPON_NONE, -1);
 	SetMaxAmmo(INFWEAPON_HAMMER, -1);
@@ -646,6 +652,9 @@ int CServer::Init()
 	SetMaxAmmo(INFWEAPON_BIOLOGIST_SHOTGUN, 10);
 	SetMaxAmmo(INFWEAPON_LOOPER_LASER, 20);
 	SetMaxAmmo(INFWEAPON_LOOPER_GRENADE, 10);
+	SetMaxAmmo(INFWEAPON_FKING_GRENADE, 10);
+	SetMaxAmmo(INFWEAPON_FKING_LASER, 1);
+	SetMaxAmmo(INFWEAPON_FKING_SHOTGUN, 10);
 	
 	SetClassAvailability(PLAYERCLASS_ENGINEER, 2);
 	SetClassAvailability(PLAYERCLASS_SOLDIER, 2);
@@ -657,6 +666,7 @@ int CServer::Init()
 	SetClassAvailability(PLAYERCLASS_SCIENTIST, 2);
 	SetClassAvailability(PLAYERCLASS_BIOLOGIST, 2);
 	SetClassAvailability(PLAYERCLASS_LOOPER, 2);
+	SetClassAvailability(PLAYERCLASS_FKING, 2);
 	
 	SetClassAvailability(PLAYERCLASS_SMOKER, 1);
 	SetClassAvailability(PLAYERCLASS_HUNTER, 1);
@@ -3260,6 +3270,9 @@ void CServer::SetPlayerClassEnabled(int PlayerClass, bool Enabled)
 			break;
 		case PLAYERCLASS_LOOPER:
 			g_Config.m_InfEnableLooper = Value;
+			break;
+		case PLAYERCLASS_FKING:
+			g_Config.m_InfEnableFKing = Value;
 			break;
 		default:
 			m_pConsole->Print(IConsole::OUTPUT_LEVEL_STANDARD, "server", "WARNING: Invalid SetPlayerClassEnabled() call");

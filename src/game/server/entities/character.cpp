@@ -27,6 +27,8 @@
 #include <game/server/infclass/entities/scientist-mine.h>
 #include <game/server/infclass/entities/slug-slime.h>
 #include <game/server/infclass/entities/soldier-bomb.h>
+#include <game/server/infclass/entities/fking-power.h>
+#include <game/server/infclass/entities/fking-CK.h>
 #include <game/server/infclass/entities/superweapon-indicator.h>
 #include <game/server/infclass/entities/turret.h>
 #include <game/server/infclass/entities/white-hole.h>
@@ -76,8 +78,12 @@ m_pConsole(pConsole)
 	m_NinjaVelocityBuff = 0;
 	m_NinjaStrengthBuff = 0;
 	m_NinjaAmmoBuff = 0;
-	m_HasWhiteHole = false;
-	m_HasIndicator = false;
+	if(GetPlayerClass() == PLAYERCLASS_FKING){
+		m_HasWhiteHole = true;
+	}
+	else{
+		m_HasWhiteHole = true;
+	}
 	m_TurretCount = 0;
 	m_BroadcastWhiteHoleReady = -100;
 	m_pHeroFlag = nullptr;
@@ -1283,12 +1289,22 @@ void CCharacter::DestroyChildEntities()
 		if(pBomb->GetOwner() != m_pPlayer->GetCID()) continue;
 			GameServer()->m_World.DestroyEntity(pBomb);
 	}
+	for(CFKingPower *pP = (CFKingPower*) GameWorld()->FindFirst(CGameWorld::ENTTYPE_FKING_POWER); pP; pP = (CFKingPower*) pP->TypeNext())
+	{
+		if(pP->GetOwner() != m_pPlayer->GetCID()) continue;
+			GameServer()->m_World.DestroyEntity(pP);
+	}
 	for(CScatterGrenade* pGrenade = (CScatterGrenade*) GameWorld()->FindFirst(CGameWorld::ENTTYPE_SCATTER_GRENADE); pGrenade; pGrenade = (CScatterGrenade*) pGrenade->TypeNext())
 	{
 		if(pGrenade->GetOwner() != m_pPlayer->GetCID()) continue;
 			GameServer()->m_World.DestroyEntity(pGrenade);
 	}
 	for(CMedicGrenade* pGrenade = (CMedicGrenade*) GameWorld()->FindFirst(CGameWorld::ENTTYPE_MEDIC_GRENADE); pGrenade; pGrenade = (CMedicGrenade*) pGrenade->TypeNext())
+	{
+		if(pGrenade->GetOwner() != m_pPlayer->GetCID()) continue;
+			GameServer()->m_World.DestroyEntity(pGrenade);
+	}
+	for(CFCK* pGrenade = (CFCK*) GameWorld()->FindFirst(CGameWorld::ENTTYPE_FK_CK); pGrenade; pGrenade = (CFCK*) pGrenade->TypeNext())
 	{
 		if(pGrenade->GetOwner() != m_pPlayer->GetCID()) continue;
 			GameServer()->m_World.DestroyEntity(pGrenade);
@@ -1450,6 +1466,7 @@ int CCharacter::GetInfWeaponID(int WID) const
 		switch(GetPlayerClass())
 		{
 			case PLAYERCLASS_MERCENARY:
+			case PLAYERCLASS_FKING:
 				return INFWEAPON_MERCENARY_GUN;
 			default:
 				return INFWEAPON_GUN;
@@ -1466,6 +1483,8 @@ int CCharacter::GetInfWeaponID(int WID) const
 				return INFWEAPON_HERO_SHOTGUN;
 			case PLAYERCLASS_BIOLOGIST:
 				return INFWEAPON_BIOLOGIST_SHOTGUN;
+			case PLAYERCLASS_FKING:
+				return INFWEAPON_FKING_SHOTGUN;
 			default:
 				return INFWEAPON_SHOTGUN;
 		}
@@ -1488,6 +1507,8 @@ int CCharacter::GetInfWeaponID(int WID) const
 				return INFWEAPON_HERO_GRENADE;
 			case PLAYERCLASS_LOOPER:
 				return INFWEAPON_LOOPER_GRENADE;
+			case PLAYERCLASS_FKING:
+				return INFWEAPON_FKING_GRENADE;
 			default:
 				return INFWEAPON_GRENADE;
 		}
@@ -1512,6 +1533,8 @@ int CCharacter::GetInfWeaponID(int WID) const
 				return INFWEAPON_MEDIC_LASER;
 			case PLAYERCLASS_MERCENARY:
 				return INFWEAPON_MERCENARY_LASER;
+			case PLAYERCLASS_FKING:
+				return INFWEAPON_FKING_LASER;
 			default:
 				return INFWEAPON_LASER;
 		}

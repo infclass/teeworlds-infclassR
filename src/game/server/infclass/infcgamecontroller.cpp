@@ -430,6 +430,8 @@ const char *CInfClassGameController::GetClassName(int PlayerClass)
 			return "biologist";
 		case PLAYERCLASS_LOOPER:
 			return "looper";
+		case PLAYERCLASS_FKING:
+			return "FKing";
 
 		case PLAYERCLASS_SMOKER:
 			return "smoker";
@@ -483,6 +485,8 @@ const char *CInfClassGameController::GetClassPluralName(int PlayerClass)
 			return "biologists";
 		case PLAYERCLASS_LOOPER:
 			return "loopers";
+		case PLAYERCLASS_FKING:
+			return "fkings";
 
 		case PLAYERCLASS_SMOKER:
 			return "smokers";
@@ -536,6 +540,8 @@ const char *CInfClassGameController::GetClassDisplayName(int PlayerClass, const 
 			return _("Biologist");
 		case PLAYERCLASS_LOOPER:
 			return _("Looper");
+		case PLAYERCLASS_FKING:
+			return _("FKing");
 
 		case PLAYERCLASS_SMOKER:
 			return _("Smoker");
@@ -599,6 +605,8 @@ const char *CInfClassGameController::GetClassPluralDisplayName(int PlayerClass)
 			return _("Biologists");
 		case PLAYERCLASS_LOOPER:
 			return _("Loopers");
+		case PLAYERCLASS_FKING:
+			return _("FKings");
 
 		case PLAYERCLASS_SMOKER:
 			return _("Smokers");
@@ -665,6 +673,9 @@ int CInfClassGameController::MenuClassToPlayerClass(int MenuClass)
 			break;
 		case CMapConverter::MENUCLASS_LOOPER:
 			PlayerClass = PLAYERCLASS_LOOPER;
+			break;
+		case CMapConverter::MENUCLASS_FKING:
+			PlayerClass = PLAYERCLASS_FKING;
 			break;
 	}
 
@@ -1413,6 +1424,7 @@ void CInfClassGameController::SnapMapMenu(int SnappingClient, CNetObj_GameInfo *
 		int Medic = 0;
 		int Hero = 0;
 		int Support = 0;
+		int Fking = 0;
 
 		CInfClassPlayerIterator<PLAYERITER_INGAME> Iter(GameServer()->m_apPlayers);
 		while(Iter.Next())
@@ -1439,6 +1451,9 @@ void CInfClassGameController::SnapMapMenu(int SnappingClient, CNetObj_GameInfo *
 				case PLAYERCLASS_LOOPER:
 					Defender++;
 					break;
+				case PLAYERCLASS_FKING:
+					Fking++;
+					break;
 					
 			}
 		}
@@ -1451,6 +1466,8 @@ void CInfClassGameController::SnapMapMenu(int SnappingClient, CNetObj_GameInfo *
 			ClassMask |= CMapConverter::MASK_HERO;
 		if(Support < Config()->m_InfSupportLimit)
 			ClassMask |= CMapConverter::MASK_SUPPORT;
+		if(Support < Config()->m_InfFKingLimit)
+			ClassMask |= CMapConverter::MASK_FKING;
 	}
 
 	int Item = pPlayer->m_MapMenuItem;
@@ -1975,6 +1992,8 @@ bool CInfClassGameController::GetPlayerClassEnabled(int PlayerClass) const
 			return g_Config.m_InfEnableSniper;
 		case PLAYERCLASS_LOOPER:
 			return g_Config.m_InfEnableLooper;
+		case PLAYERCLASS_FKING:
+			return g_Config.m_InfEnableFKing;
 		default:
 			return false;
 	}
@@ -2001,6 +2020,8 @@ int CInfClassGameController::GetClassPlayerLimit(int PlayerClass) const
 			return g_Config.m_InfHeroLimit;
 		case PLAYERCLASS_WITCH:
 			return g_Config.m_InfWitchLimit;
+		case PLAYERCLASS_FKING:
+			return g_Config.m_InfFKingLimit;
 		default:
 			return g_Config.m_SvMaxClients;
 	}
