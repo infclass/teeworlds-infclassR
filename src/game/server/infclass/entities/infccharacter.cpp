@@ -720,6 +720,14 @@ bool CInfClassCharacter::GetIndirectKiller(int *pKillerId, int *pWeaponId)
 		return true;
 	}
 
+	if(*pWeaponId == WEAPON_SELF)
+	{
+		if(GetPlayerClass() == PLAYERCLASS_BOOMER)
+		{
+			return false;
+		}
+	}
+
 	// if hooked
 	{
 		int CurrentHookerCID = -1;
