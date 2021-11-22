@@ -96,6 +96,9 @@ void CInfClassGameController::OnClientDrop(int ClientID, int Type)
 
 void CInfClassGameController::OnPlayerInfected(CInfClassPlayer *pPlayer, CInfClassPlayer *pInfectiousPlayer, int PreviousClass)
 {
+	int c = ChooseInfectedClass(pPlayer);
+	pPlayer->SetClass(c);
+
 	if(!pInfectiousPlayer)
 	{
 		if(pPlayer->GetCharacter())

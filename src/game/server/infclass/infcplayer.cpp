@@ -100,13 +100,11 @@ void CInfClassPlayer::HandleInfection()
 	}
 
 	const int PreviousClass = GetClass();
-	int c = GameController()->ChooseInfectedClass(this);
 	CInfClassPlayer *pInfectiousPlayer = GameController()->GetPlayer(m_InfectiousPlayerCID);
 
 	m_DoInfection = DO_INFECTION::NO;
 	m_InfectiousPlayerCID = -1;
 
-	SetClass(c);
 	GameController()->OnPlayerInfected(this, pInfectiousPlayer, PreviousClass);
 }
 
