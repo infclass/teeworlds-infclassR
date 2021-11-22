@@ -1854,20 +1854,10 @@ void CInfClassCharacter::Die(int Killer, int Weapon)
 		GetIndirectKiller(&Killer, &Weapon);
 	}
 
-	CInfClassCharacter *pKillerCharacter = GameController()->GetCharacter(Killer);
-
 	// we got to wait 0.5 secs before respawning
 	m_pPlayer->m_RespawnTick = Server()->Tick()+Server()->TickSpeed()/2;
-	CInfClassPlayer* pKillerPlayer = GameController()->GetPlayer(Killer);
-	int ModeSpecial = GameController()->OnCharacterDeath(this, pKillerPlayer, Weapon);
-
-	char aBuf[256];
-	str_format(aBuf, sizeof(aBuf), "kill killer='%s' victim='%s' weapon=%d",
-		Server()->ClientName(Killer),
-		Server()->ClientName(m_pPlayer->GetCID()), Weapon);
-	GameServer()->Console()->Print(IConsole::OUTPUT_LEVEL_DEBUG, "game", aBuf);
-
-	GameServer()->SendKillMessage(Killer, m_pPlayer->GetCID(), Weapon, ModeSpecial);
+	CInfClassPlayer *pKillerPlayer = GameController()->GetPlayer(Killer);
+	GameController()->OnCharacterDeath(this, pKillerPlayer, Weapon);
 
 	// a nice sound
 	GameServer()->CreateSound(GetPos(), SOUND_PLAYER_DIE);
@@ -1879,30 +1869,6 @@ void CInfClassCharacter::Die(int Killer, int Weapon)
 	GameWorld()->RemoveEntity(this);
 	GameWorld()->m_Core.m_apCharacters[m_pPlayer->GetCID()] = 0;
 	GameServer()->CreateDeath(GetPos(), m_pPlayer->GetCID());
-
-	GetClass()->OnCharacterDeath(Weapon);
-/* INFECTION MODIFICATION START ***************************************/
-
-	if(GetPlayerClass() == PLAYERCLASS_WITCH)
-	{
-		m_pPlayer->StartInfection(true, pKillerPlayer);
-		GameServer()->SendBroadcast_Localization(-1, BROADCAST_PRIORITY_GAMEANNOUNCE, BROADCAST_DURATION_GAMEANNOUNCE, _("The witch is dead"), NULL);
-		GameServer()->CreateSoundGlobal(SOUND_CTF_RETURN);
-	}
-	else if(GetPlayerClass() == PLAYERCLASS_UNDEAD)
-	{
-		m_pPlayer->StartInfection(true, pKillerPlayer);
-		GameServer()->SendBroadcast_Localization(-1, BROADCAST_PRIORITY_GAMEANNOUNCE, BROADCAST_DURATION_GAMEANNOUNCE, _("The undead is finally dead"), NULL);
-		GameServer()->CreateSoundGlobal(SOUND_CTF_RETURN);
-	}
-	else
-	{
-		m_pPlayer->Infect(pKillerPlayer);
-	}
-	if (m_Core.m_Passenger) {
-		m_Core.SetPassenger(nullptr);
-	}
-/* INFECTION MODIFICATION END *****************************************/
 }
 
 void CInfClassCharacter::SetActiveWeapon(int Weapon)

@@ -1585,7 +1585,40 @@ int CInfClassGameController::OnCharacterDeath(class CCharacter *pAbstractVictim,
 	
 	if(Weapon == WEAPON_SELF)
 		pVictim->GetPlayer()->m_RespawnTick = Server()->Tick()+Server()->TickSpeed()*3.0f;
-		
+
+	// It is important to SendKillMessage before GetClass()->OnCharacterDeath() to keep the correct kill order
+	int Killer = pKiller ? pKiller->GetCID() : -1;
+	char aBuf[256];
+	str_format(aBuf, sizeof(aBuf), "kill killer='%s' victim='%s' weapon=%d",
+		Server()->ClientName(Killer),
+		Server()->ClientName(pVictim->GetCID()), Weapon);
+	GameServer()->Console()->Print(IConsole::OUTPUT_LEVEL_DEBUG, "game", aBuf);
+
+	const int ModeSpecial = 0;
+	GameServer()->SendKillMessage(Killer, pVictim->GetCID(), Weapon, ModeSpecial);
+
+	pVictim->GetClass()->OnCharacterDeath(Weapon);
+
+	if(pVictim->GetPlayerClass() == PLAYERCLASS_WITCH)
+	{
+		pVictim->GetPlayer()->StartInfection(true, pKiller);
+		GameServer()->SendBroadcast_Localization(-1, BROADCAST_PRIORITY_GAMEANNOUNCE, BROADCAST_DURATION_GAMEANNOUNCE, _("The witch is dead"), NULL);
+		GameServer()->CreateSoundGlobal(SOUND_CTF_RETURN);
+	}
+	else if(pVictim->GetPlayerClass() == PLAYERCLASS_UNDEAD)
+	{
+		pVictim->GetPlayer()->StartInfection(true, pKiller);
+		GameServer()->SendBroadcast_Localization(-1, BROADCAST_PRIORITY_GAMEANNOUNCE, BROADCAST_DURATION_GAMEANNOUNCE, _("The undead is finally dead"), NULL);
+		GameServer()->CreateSoundGlobal(SOUND_CTF_RETURN);
+	}
+	else
+	{
+		pVictim->GetPlayer()->Infect(pKiller);
+	}
+	if (pVictim->m_Core.m_Passenger) {
+		pVictim->m_Core.SetPassenger(nullptr);
+	}
+
 	return 0;
 }
 
