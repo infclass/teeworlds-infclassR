@@ -1203,18 +1203,22 @@ void CInfClassGameController::TickInfectionStarted()
 		Iter.Reset();
 		while(Iter.Next())
 		{
-			if(Iter.Player()->IsZombie()) continue;
+			CInfClassPlayer *pPlayer = Iter.Player();
+			if(pPlayer->IsZombie())
+				continue;
 
-			if(!Server()->IsClientInfectedBefore(Iter.ClientID()))
+			if(!Server()->IsClientInfectedBefore(pPlayer->GetCID()))
 			{
-				Server()->InfecteClient(Iter.ClientID());
-				Iter.Player()->StartInfection();
+				Server()->InfecteClient(pPlayer->GetCID());
+				pPlayer->KillCharacter(); // Infect the player
+				pPlayer->StartInfection();
+				pPlayer->m_DieTick = m_RoundStartTick;
 				NumInfected++;
 				NumHumans--;
 
 				GameServer()->SendChatTarget_Localization(-1, CHATCATEGORY_INFECTION,
 					_("{str:VictimName} has been infected"),
-					"VictimName", Server()->ClientName(Iter.ClientID()),
+					"VictimName", Server()->ClientName(pPlayer->GetCID()),
 					NULL);
 
 				FairInfectionFound = true;
@@ -1228,18 +1232,23 @@ void CInfClassGameController::TickInfectionStarted()
 			Iter.Reset();
 			while(Iter.Next())
 			{
-				if(Iter.Player()->IsZombie()) continue;
+				CInfClassPlayer *pPlayer = Iter.Player();
+				if(pPlayer->IsZombie())
+					continue;
 
 				if(random < InfectionProb)
 				{
-					Server()->InfecteClient(Iter.ClientID());
-					Iter.Player()->StartInfection();
+					Server()->InfecteClient(pPlayer->GetCID());
+					pPlayer->KillCharacter(); // Infect the player
+					pPlayer->StartInfection();
+					pPlayer->m_DieTick = m_RoundStartTick;
+
 					NumInfected++;
 					NumHumans--;
 
 					GameServer()->SendChatTarget_Localization(-1, CHATCATEGORY_INFECTION,
 						_("{str:VictimName} has been infected"),
-						"VictimName", Server()->ClientName(Iter.ClientID()),
+						"VictimName", Server()->ClientName(pPlayer->GetCID()),
 						NULL);
 
 					break;
@@ -1247,29 +1256,6 @@ void CInfClassGameController::TickInfectionStarted()
 				else
 				{
 					random -= InfectionProb;
-				}
-			}
-		}
-	}
-
-	if(StartInfectionTrigger)
-	{
-		if(NumInfected == 1)
-		{
-			for(int i = 0; i < MAX_CLIENTS; ++i)
-			{
-				CInfClassPlayer *pPlayer = GetPlayer(i);
-				if(!pPlayer)
-					continue;
-
-				pPlayer->HandleInfection();
-				CInfClassCharacter *pCharacter = pPlayer->GetCharacter();
-				if(!pCharacter)
-					continue;
-
-				if(pPlayer->IsZombie())
-				{
-					pCharacter->GiveLonelyZombieBonus();
 				}
 			}
 		}
