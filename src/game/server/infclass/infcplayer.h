@@ -50,6 +50,10 @@ public:
 	void CloseMapMenu();
 	bool MapMenuClickable();
 
+	float GetGhoulPercent() const;
+	void IncreaseGhoulLevel(int Diff);
+	int GetGhoulLevel() const { return m_GhoulLevel; }
+
 	CGameContext *GameServer() const { return m_pGameServer; }
 	IServer *Server() const { return CPlayer::Server(); };
 
@@ -67,6 +71,9 @@ protected:
 
 	int m_MapMenu = 0;
 	int m_MapMenuTick = -1;
+
+	int m_GhoulLevel = 0;
+	int m_GhoulLevelTick = 0;
 };
 
 template<int FLAGS>

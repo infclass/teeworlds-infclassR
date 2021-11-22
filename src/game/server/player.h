@@ -150,10 +150,7 @@ protected:
 	int m_ScoreMode;
 	int m_DefaultScoreMode;
 	char m_aLanguage[16];
-	
-	int m_GhoulLevel;
-	int m_GhoulLevelTick;
-	
+
 	int m_NumberKills;
 
 public:
@@ -194,10 +191,6 @@ public:
 	
 	bool InscoreBoard() { return m_PlayerFlags & PLAYERFLAG_SCOREBOARD; };
 
-	float GetGhoulPercent() const;
-	void IncreaseGhoulLevel(int Diff);
-	inline int GetGhoulLevel() const { return m_GhoulLevel; }
-	
 	int m_LastHumanClasses[2];
 
 /* INFECTION MODIFICATION END *****************************************/

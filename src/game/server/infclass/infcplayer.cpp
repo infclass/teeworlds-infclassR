@@ -225,6 +225,17 @@ bool CInfClassPlayer::MapMenuClickable()
 	return (m_MapMenu > 0 && (m_MapMenuTick > Server()->TickSpeed()/2));
 }
 
+float CInfClassPlayer::GetGhoulPercent() const
+{
+	return clamp(m_GhoulLevel/static_cast<float>(g_Config.m_InfGhoulStomachSize), 0.0f, 1.0f);
+}
+
+void CInfClassPlayer::IncreaseGhoulLevel(int Diff)
+{
+	int NewGhoulLevel = m_GhoulLevel + Diff;
+	m_GhoulLevel = clamp(NewGhoulLevel, 0, g_Config.m_InfGhoulStomachSize);
+}
+
 const char *CInfClassPlayer::GetClan(int SnappingClient) const
 {
 	if(GetTeam() == TEAM_SPECTATORS)

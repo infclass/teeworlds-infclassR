@@ -529,15 +529,4 @@ void CPlayer::SetLanguage(const char* pLanguage)
 	str_copy(m_aLanguage, pLanguage, sizeof(m_aLanguage));
 }
 
-float CPlayer::GetGhoulPercent() const
-{
-	return clamp(m_GhoulLevel/static_cast<float>(g_Config.m_InfGhoulStomachSize), 0.0f, 1.0f);
-}
-
-void CPlayer::IncreaseGhoulLevel(int Diff)
-{
-	int NewGhoulLevel = m_GhoulLevel + Diff;
-	m_GhoulLevel = clamp(NewGhoulLevel, 0, g_Config.m_InfGhoulStomachSize);
-}
-
 /* INFECTION MODIFICATION END *****************************************/
