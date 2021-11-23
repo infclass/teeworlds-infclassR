@@ -1847,7 +1847,15 @@ bool CInfClassGameController::TryRespawn(CInfClassPlayer *pPlayer, SpawnContext 
 	// spectators can't spawn
 	if(pPlayer->GetTeam() == TEAM_SPECTATORS)
 		return false;
-	
+
+	// Deny any spawns during the World ResetRequested because the new Characters
+	// are going to be destroyed during this IGameServer::Tick().
+	// (and it may break the auto class selection)
+	if(GameServer()->m_World.m_ResetRequested)
+	{
+		return false;
+	}
+
 	if(m_InfectedStarted)
 		pPlayer->StartInfection();
 		
