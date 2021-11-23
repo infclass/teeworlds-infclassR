@@ -36,8 +36,8 @@ struct SpawnContext
 		WitchSpawn,
 	};
 
-	vec2 SpawnPos;
-	SPAWN_TYPE SpawnType;
+	vec2 SpawnPos = vec2(0, 0);
+	SPAWN_TYPE SpawnType = MapSpawn;
 };
 
 class CInfClassCharacter : public CCharacter
