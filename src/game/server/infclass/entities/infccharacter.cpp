@@ -111,21 +111,8 @@ void CInfClassCharacter::OnCharacterInInfectionZone()
 
 		CInfClassPlayer *pKiller = GameController()->GetPlayer(Killer);
 
-		if(pKiller)
-		{
-			int ModeSpecial = GameController()->OnCharacterDeath(this, pKiller, Weapon);
-
-			char aBuf[256];
-			str_format(aBuf, sizeof(aBuf), "kill killer='%s' victim='%s' weapon=%d",
-				Server()->ClientName(Killer),
-				Server()->ClientName(m_pPlayer->GetCID()), Weapon);
-			GameServer()->Console()->Print(IConsole::OUTPUT_LEVEL_DEBUG, "game", aBuf);
-
-			GameServer()->SendKillMessage(Killer, m_pPlayer->GetCID(), Weapon, ModeSpecial);
-
-			// a nice sound
-			GameServer()->CreateSound(GetPos(), SOUND_PLAYER_DIE);
-		}
+		GameController()->OnCharacterDeath(this, pKiller, Weapon);
+		GameServer()->CreateSound(GetPos(), SOUND_PLAYER_DIE);
 
 		GetPlayer()->Infect(pKiller);
 
