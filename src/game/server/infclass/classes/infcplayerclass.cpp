@@ -290,6 +290,11 @@ void CInfClassPlayerClass::OnFloatingPointCollected(int Points)
 
 void CInfClassPlayerClass::GiveClassAttributes()
 {
+	if(!m_pCharacter)
+	{
+		return;
+	}
+
 	m_pCharacter->TakeAllWeapons();
 }
 

@@ -128,6 +128,11 @@ void CInfClassHuman::OnCharacterSnap(int SnappingClient)
 
 void CInfClassHuman::GiveClassAttributes()
 {
+	if(!m_pCharacter)
+	{
+		return;
+	}
+
 	CInfClassPlayerClass::GiveClassAttributes();
 
 	switch(GetPlayerClass())

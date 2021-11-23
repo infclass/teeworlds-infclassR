@@ -145,6 +145,11 @@ void CInfClassInfected::OnCharacterDeath(int Weapon)
 
 void CInfClassInfected::GiveClassAttributes()
 {
+	if(!m_pCharacter)
+	{
+		return;
+	}
+
 	CInfClassPlayerClass::GiveClassAttributes();
 
 	m_pCharacter->GiveWeapon(WEAPON_HAMMER, -1);
