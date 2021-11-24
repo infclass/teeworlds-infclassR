@@ -1,5 +1,3 @@
-import sys
-
 GlobalIdCounter = 0
 def GetID():
 	global GlobalIdCounter
@@ -22,10 +20,10 @@ def FixCasing(Str):
 				NewStr += c.lower()
 	return NewStr
 
-def FormatName(type, name):
-	if "*" in type:
+def FormatName(typ, name):
+	if "*" in typ:
 		return "m_p" + FixCasing(name)
-	if "[]" in type:
+	if "[]" in typ:
 		return "m_a" + FixCasing(name)
 	return "m_" + FixCasing(name)
 
@@ -35,17 +33,21 @@ class BaseType:
 		self._target_name = "INVALID"
 		self._id = GetID() # this is used to remember what order the members have in structures etc
 
-	def Identifyer(self): return "x"+str(self._id)
-	def TargetName(self): return self._target_name
-	def TypeName(self): return self._type_name
-	def ID(self): return self._id;
+	def Identifyer(self):
+		return "x"+str(self._id)
+	def TargetName(self):
+		return self._target_name
+	def TypeName(self):
+		return self._type_name
+	def ID(self):
+		return self._id
 
 	def EmitDeclaration(self, name):
 		return ["%s %s;"%(self.TypeName(), FormatName(self.TypeName(), name))]
 	def EmitPreDefinition(self, target_name):
 		self._target_name = target_name
 		return []
-	def EmitDefinition(self, name):
+	def EmitDefinition(self, _name):
 		return []
 
 class MemberType:
@@ -64,15 +66,10 @@ class Struct(BaseType):
 			if name[0] == "_":
 				continue
 			m += [MemberType(name, self.__dict__[name])]
-		try:
-			m.sort(key = sorter)
-		except:
-			for v in m:
-				print(v.name, v.var)
-			sys.exit(-1)
+		m.sort(key = sorter)
 		return m
 
-	def EmitTypeDeclaration(self, name):
+	def EmitTypeDeclaration(self, _name):
 		lines = []
 		lines += ["struct " + self.TypeName()]
 		lines += ["{"]
@@ -87,7 +84,7 @@ class Struct(BaseType):
 		for member in self.Members():
 			lines += member.var.EmitPreDefinition(target_name+"."+member.name)
 		return lines
-	def EmitDefinition(self, name):
+	def EmitDefinition(self, _name):
 		lines = ["/* %s */ {" % self.TargetName()]
 		for member in self.Members():
 			lines += ["\t" + " ".join(member.var.EmitDefinition("")) + ","]
@@ -95,13 +92,13 @@ class Struct(BaseType):
 		return lines
 
 class Array(BaseType):
-	def __init__(self, type):
-		BaseType.__init__(self, type.TypeName())
-		self.type = type
+	def __init__(self, typ):
+		BaseType.__init__(self, typ.TypeName())
+		self.type = typ
 		self.items = []
 	def Add(self, instance):
 		if instance.TypeName() != self.type.TypeName():
-			error("bah")
+			raise "bah"
 		self.items += [instance]
 	def EmitDeclaration(self, name):
 		return ["int m_Num%s;"%(FixCasing(name)),
@@ -115,7 +112,7 @@ class Array(BaseType):
 			lines += item.EmitPreDefinition("%s[%d]"%(self.Identifyer(), i))
 			i += 1
 
-		if len(self.items):
+		if self.items:
 			lines += ["static %s %s[] = {"%(self.TypeName(), self.Identifyer())]
 			for item in self.items:
 				itemlines = item.EmitDefinition("")
@@ -125,7 +122,7 @@ class Array(BaseType):
 			lines += ["static %s *%s = 0;"%(self.TypeName(), self.Identifyer())]
 
 		return lines
-	def EmitDefinition(self, name):
+	def EmitDefinition(self, _name):
 		return [str(len(self.items))+","+self.Identifyer()]
 
 # Basic Types
@@ -136,7 +133,7 @@ class Int(BaseType):
 		self.value = value
 	def Set(self, value):
 		self.value = value
-	def EmitDefinition(self, name):
+	def EmitDefinition(self, _name):
 		return ["%d"%self.value]
 		#return ["%d /* %s */"%(self.value, self._target_name)]
 
@@ -146,8 +143,8 @@ class Float(BaseType):
 		self.value = value
 	def Set(self, value):
 		self.value = value
-	def EmitDefinition(self, name):
-		return ["%f"%self.value]
+	def EmitDefinition(self, _name):
+		return ["%ff"%self.value]
 		#return ["%d /* %s */"%(self.value, self._target_name)]
 
 class String(BaseType):
@@ -156,17 +153,23 @@ class String(BaseType):
 		self.value = value
 	def Set(self, value):
 		self.value = value
-	def EmitDefinition(self, name):
+	def EmitDefinition(self, _name):
 		return ['"'+self.value+'"']
 
 class Pointer(BaseType):
-	def __init__(self, type, target):
-		BaseType.__init__(self, "%s*"%type().TypeName())
+	def __init__(self, typ, target):
+		BaseType.__init__(self, "%s*"%typ().TypeName())
 		self.target = target
 	def Set(self, target):
 		self.target = target
-	def EmitDefinition(self, name):
+	def EmitDefinition(self, _name):
 		return ["&"+self.target.TargetName()]
+
+class TextureHandle(BaseType):
+	def __init__(self):
+		BaseType.__init__(self, "IGraphics::CTextureHandle")
+	def EmitDefinition(self, _name):
+		return ["IGraphics::CTextureHandle()"]
 
 # helper functions
 
@@ -198,7 +201,7 @@ class Flags:
 		self.values = values
 
 class NetObject:
-	def __init__(self, name, variables, ex=None):
+	def __init__(self, name, variables, ex=None, validate_size=True):
 		l = name.split(":")
 		self.name = l[0]
 		self.base = ""
@@ -209,6 +212,7 @@ class NetObject:
 		self.enum_name = "NETOBJTYPE_%s" % self.name.upper()
 		self.variables = variables
 		self.ex = ex
+		self.validate_size = validate_size
 	def emit_declaration(self):
 		if self.base:
 			lines = ["struct %s : public %s"%(self.struct_name,self.base_struct_name), "{"]
@@ -221,14 +225,17 @@ class NetObject:
 	def emit_validate(self):
 		lines = ["case %s:" % self.enum_name]
 		lines += ["{"]
-		lines += ["\t%s *pObj = (%s *)pData;"%(self.struct_name, self.struct_name)]
-		lines += ["\tif((int)sizeof(*pObj) > Size) return -1;"]
+		if self.validate_size:
+			lines += ["\t%s *pObj = (%s *)pData;"%(self.struct_name, self.struct_name)]
+			lines += ["\tif((int)sizeof(*pObj) > Size) return -1;"]
+		prev_len = len(lines)
 		for v in self.variables:
 			lines += ["\t"+line for line in v.emit_validate()]
+		if not self.validate_size and prev_len != len(lines):
+			raise ValueError("Can't use members that need validation in a struct whose size isn't validated")
 		lines += ["\treturn 0;"]
 		lines += ["}"]
 		return lines
-
 
 class NetEvent(NetObject):
 	def __init__(self, name, variables, ex=None):
@@ -243,6 +250,7 @@ class NetMessage(NetObject):
 		self.base_struct_name = "CNetMsg_%s" % self.base
 		self.struct_name = "CNetMsg_%s" % self.name
 		self.enum_name = "NETMSGTYPE_%s" % self.name.upper()
+		self.teehistorian = teehistorian
 	def emit_unpack(self):
 		lines = []
 		lines += ["case %s:" % self.enum_name]
@@ -273,15 +281,15 @@ class NetMessage(NetObject):
 		return lines
 
 class NetObjectEx(NetObject):
-	def __init__(self, name, ex, variables):
-		NetObject.__init__(self, name, variables, ex=ex)
+	def __init__(self, name, ex, variables, validate_size=True):
+		NetObject.__init__(self, name, variables, ex=ex, validate_size=validate_size)
 
 class NetEventEx(NetEvent):
 	def __init__(self, name, ex, variables):
 		NetEvent.__init__(self, name, variables, ex=ex)
 
 class NetMessageEx(NetMessage):
-	def __init__(self, name, ex, variables):
+	def __init__(self, name, ex, variables, teehistorian=True):
 		NetMessage.__init__(self, name, variables, ex=ex)
 
 
@@ -332,12 +340,12 @@ class NetIntAny(NetVariable):
 		return ["pPacker->AddInt(%s);" % self.name]
 
 class NetIntRange(NetIntAny):
-	def __init__(self, name, min, max):
+	def __init__(self, name, min_val, max_val):
 		NetIntAny.__init__(self,name)
-		self.min = str(min)
-		self.max = str(max)
+		self.min = str(min_val)
+		self.max = str(max_val)
 	def emit_validate(self):
-		return ["ClampInt(\"%s\", pObj->%s, %s, %s);"%(self.name,self.name, self.min, self.max)]
+		return ["pObj->%s = ClampInt(\"%s\", pObj->%s, %s, %s);"%(self.name, self.name, self.name, self.min, self.max)]
 	def emit_unpack_check(self):
 		return ["if(pMsg->%s < %s || pMsg->%s > %s) { m_pMsgFailedOn = \"%s\"; break; }" % (self.name, self.min, self.name, self.max, self.name)]
 
@@ -345,6 +353,6 @@ class NetBool(NetIntRange):
 	def __init__(self, name):
 		NetIntRange.__init__(self,name,0,1)
 
-class NetTick(NetIntRange):
+class NetTick(NetIntAny):
 	def __init__(self, name):
-		NetIntRange.__init__(self,name,0,'max_int')
+		NetIntAny.__init__(self,name)
