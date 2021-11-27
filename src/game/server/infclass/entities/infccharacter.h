@@ -48,8 +48,8 @@ public:
 	CInfClassCharacter(CInfClassGameController *pGameController);
 	~CInfClassCharacter() override;
 
-	static const CInfClassCharacter *fromCharacter(const CCharacter *pCharacter);
-	static CInfClassCharacter *fromCharacter(CCharacter *pCharacter);
+	static const CInfClassCharacter *GetInstance(const CCharacter *pCharacter);
+	static CInfClassCharacter *GetInstance(CCharacter *pCharacter);
 
 	void OnCharacterSpawned(const SpawnContext &Context);
 	void OnCharacterInInfectionZone();
@@ -177,12 +177,12 @@ protected:
 	bool m_PositionLocked = false;
 };
 
-inline const CInfClassCharacter *CInfClassCharacter::fromCharacter(const CCharacter *pCharacter)
+inline const CInfClassCharacter *CInfClassCharacter::GetInstance(const CCharacter *pCharacter)
 {
 	return static_cast<const CInfClassCharacter *>(pCharacter);
 }
 
-inline CInfClassCharacter *CInfClassCharacter::fromCharacter(CCharacter *pCharacter)
+inline CInfClassCharacter *CInfClassCharacter::GetInstance(CCharacter *pCharacter)
 {
 	return static_cast<CInfClassCharacter *>(pCharacter);
 }

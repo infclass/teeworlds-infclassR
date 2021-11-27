@@ -187,7 +187,7 @@ bool CInfClassGameController::OnEntity(const char* pName, vec2 Pivot, vec2 P0, v
 
 void CInfClassGameController::HandleCharacterTiles(CCharacter *pChr)
 {
-	CInfClassCharacter *pCharacter = CInfClassCharacter::fromCharacter(pChr);
+	CInfClassCharacter *pCharacter = CInfClassCharacter::GetInstance(pChr);
 	int Index0 = GetDamageZoneValueAt(vec2(pChr->GetPos().x + pChr->GetProximityRadius() / 3.f, pChr->GetPos().y - pChr->GetProximityRadius() / 3.f));
 	int Index1 = GetDamageZoneValueAt(vec2(pChr->GetPos().x + pChr->GetProximityRadius() / 3.f, pChr->GetPos().y + pChr->GetProximityRadius() / 3.f));
 	int Index2 = GetDamageZoneValueAt(vec2(pChr->GetPos().x - pChr->GetProximityRadius() / 3.f, pChr->GetPos().y - pChr->GetProximityRadius() / 3.f));
@@ -1635,7 +1635,7 @@ void CInfClassGameController::RewardTheKiller(CInfClassCharacter *pVictim, CInfC
 
 int CInfClassGameController::OnCharacterDeath(class CCharacter *pAbstractVictim, class CPlayer *pAbstractKiller, int Weapon)
 {
-	CInfClassCharacter *pVictim = CInfClassCharacter::fromCharacter(pAbstractVictim);
+	CInfClassCharacter *pVictim = CInfClassCharacter::GetInstance(pAbstractVictim);
 	CInfClassPlayer *pKiller = static_cast<CInfClassPlayer *>(pAbstractKiller);
 	RewardTheKiller(pVictim, pKiller, Weapon);
 
