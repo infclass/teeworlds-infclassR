@@ -55,7 +55,7 @@ public:
 	int GetGhoulLevel() const { return m_GhoulLevel; }
 
 	CGameContext *GameServer() const { return m_pGameServer; }
-	IServer *Server() const { return CPlayer::Server(); };
+	IServer *Server() const { return CPlayer::Server(); }
 
 public:
 	int m_MapMenuItem = -1;

@@ -69,9 +69,9 @@ protected:
 	int m_TimeShiftUnit;
 
 protected:	
-	IEngineMap* Map() { return m_pMap; };
-	IStorage* Storage() { return m_pStorage; };
-	IConsole* Console() { return m_pConsole; };
+	IEngineMap* Map() { return m_pMap; }
+	IStorage* Storage() { return m_pStorage; }
+	IConsole* Console() { return m_pConsole; }
 	
 	void InitQuad(CQuad* pQuad);
 	void InitQuad(CQuad* pQuad, vec2 Pos, vec2 Size);

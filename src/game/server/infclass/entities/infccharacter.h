@@ -156,7 +156,7 @@ public:
 
 	bool GetIndirectKiller(int *pKillerId, int *pWeaponId);
 
-	int GetLastHooker() const { return m_LastHooker; };
+	int GetLastHooker() const { return m_LastHooker; }
 	void UpdateLastHooker(int ClientID, int HookerTick);
 
 	void UpdateLastEnforcer(int ClientID, float Force, int Weapon, int Tick);

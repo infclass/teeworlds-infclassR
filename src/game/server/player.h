@@ -189,8 +189,6 @@ public:
 	
 	void HandleTuningParams();
 	
-	bool InscoreBoard() { return m_PlayerFlags & PLAYERFLAG_SCOREBOARD; };
-
 	int m_LastHumanClasses[2];
 
 /* INFECTION MODIFICATION END *****************************************/
