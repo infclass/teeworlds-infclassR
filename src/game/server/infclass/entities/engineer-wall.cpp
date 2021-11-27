@@ -134,37 +134,39 @@ void CEngineerWall::Snap(int SnappingClient)
 
 void CEngineerWall::OnZombieHit(CInfClassCharacter *pZombie)
 {
+	if(!pZombie->CanDie())
+	{
+		return;
+	}
+
 	if(pZombie->GetPlayer())
 	{
-		if(pZombie->CanDie())
+		for(CInfClassCharacter *pHook = (CInfClassCharacter*) GameWorld()->FindFirst(CGameWorld::ENTTYPE_CHARACTER); pHook; pHook = (CInfClassCharacter *)pHook->TypeNext())
 		{
-			for(CInfClassCharacter *pHook = (CInfClassCharacter*) GameWorld()->FindFirst(CGameWorld::ENTTYPE_CHARACTER); pHook; pHook = (CInfClassCharacter *)pHook->TypeNext())
+			if(
+				pHook->GetPlayer() &&
+				pHook->IsHuman() &&
+				pHook->GetHookedPlayer() == pZombie->GetCID() &&
+				pHook->GetCID() != m_Owner && //The engineer will get the point when the infected dies
+				pZombie->m_LastFreezer != pHook->GetCID() //The ninja will get the point when the infected dies
+			)
 			{
-				if(
-					pHook->GetPlayer() &&
-					pHook->IsHuman() &&
-					pHook->GetHookedPlayer() == pZombie->GetCID() &&
-					pHook->GetCID() != m_Owner && //The engineer will get the point when the infected dies
-					pZombie->m_LastFreezer != pHook->GetCID() //The ninja will get the point when the infected dies
-				)
-				{
-					int ClientID = pHook->GetCID();
-					Server()->RoundStatistics()->OnScoreEvent(ClientID, SCOREEVENT_HELP_HOOK_BARRIER, pHook->GetPlayerClass(), Server()->ClientName(ClientID), GameServer()->Console());
-					GameServer()->SendScoreSound(pHook->GetCID());
-				}
+				int ClientID = pHook->GetCID();
+				Server()->RoundStatistics()->OnScoreEvent(ClientID, SCOREEVENT_HELP_HOOK_BARRIER, pHook->GetPlayerClass(), Server()->ClientName(ClientID), GameServer()->Console());
+				GameServer()->SendScoreSound(pHook->GetCID());
 			}
-
-			int LifeSpanReducer = ((Server()->TickSpeed()*Config()->m_InfBarrierTimeReduce)/100);
-			m_WallFlashTicks = 10;
-
-			if(pZombie->GetPlayerClass() == PLAYERCLASS_GHOUL)
-			{
-				float Factor = pZombie->GetClass()->GetGhoulPercent();
-				LifeSpanReducer += Server()->TickSpeed() * 5.0f * Factor;
-			}
-
-			m_LifeSpan -= LifeSpanReducer;
 		}
+
+		int LifeSpanReducer = ((Server()->TickSpeed()*Config()->m_InfBarrierTimeReduce)/100);
+		m_WallFlashTicks = 10;
+
+		if(pZombie->GetPlayerClass() == PLAYERCLASS_GHOUL)
+		{
+			float Factor = pZombie->GetClass()->GetGhoulPercent();
+			LifeSpanReducer += Server()->TickSpeed() * 5.0f * Factor;
+		}
+
+		m_LifeSpan -= LifeSpanReducer;
 	}
 
 	pZombie->Die(m_Owner, WEAPON_HAMMER);
