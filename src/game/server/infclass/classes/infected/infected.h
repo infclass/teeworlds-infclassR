@@ -17,6 +17,7 @@ public:
 	bool IsHuman() const final { return false; }
 	int GetDefaultEmote() const override;
 	bool CanDie() const override;
+	bool CanBeUnfreezed() const;
 
 	void OnCharacterPreCoreTick() override;
 	void OnCharacterTick() override;
@@ -25,6 +26,7 @@ public:
 
 	void OnSlimeEffect(int Owner) override;
 	void OnFloatingPointCollected(int Points) override;
+	void OnLaserWall();
 
 	float GetGhoulPercent() const override;
 	void IncreaseGhoulLevel(int Diff);
@@ -40,6 +42,7 @@ protected:
 	void SetHookOnLimit(bool OnLimit);
 
 	int m_SlimeHealTick = 0;
+	int m_LaserWallTick = 0;
 
 	int m_VoodooTimeAlive = 0;
 	int m_VoodooKiller; // Save killer + weapon for delayed kill message

@@ -9,6 +9,7 @@
 
 #include <game/server/entities/projectile.h>
 
+#include <game/server/infclass/classes/infected/infected.h>
 #include <game/server/infclass/entities/biologist-mine.h>
 #include <game/server/infclass/entities/bouncing-bullet.h>
 #include <game/server/infclass/entities/engineer-wall.h>
@@ -518,11 +519,12 @@ bool CInfClassCharacter::TakeDamage(vec2 Force, int Dmg, int From, int Weapon, T
 				//Heal and unfreeze
 				if(pKillerPlayer->GetClass() == PLAYERCLASS_BOOMER && Weapon == WEAPON_HAMMER)
 				{
-					IncreaseOverallHp(8+random_int(0, 10));
-					if(IsFrozen())
-						Unfreeze();
-
-					SetEmote(EMOTE_HAPPY, Server()->Tick() + Server()->TickSpeed());
+					TryUnfreeze();
+					if(!IsFrozen())
+					{
+						IncreaseOverallHp(8+random_int(0, 10));
+						SetEmote(EMOTE_HAPPY, Server()->Tick() + Server()->TickSpeed());
+					}
 				}
 				return false;
 			}
@@ -1060,7 +1062,7 @@ void CInfClassCharacter::OnHammerFired(WeaponFireContext *pFireContext)
 					{
 						if(pTarget->IsFrozen())
 						{
-							pTarget->Unfreeze();
+							pTarget->TryUnfreeze();
 						}
 						else
 						{
@@ -2035,6 +2037,20 @@ bool CInfClassCharacter::IsInvincible() const
 bool CInfClassCharacter::HasHallucination() const
 {
 	return m_HallucinationTick > 0;
+}
+
+void CInfClassCharacter::TryUnfreeze()
+{
+	if(!IsFrozen())
+		return;
+
+	CInfClassInfected *pInfected = CInfClassInfected::GetInstance(this);
+	if(pInfected && !pInfected->CanBeUnfreezed())
+	{
+		return;
+	}
+
+	Unfreeze();
 }
 
 float CInfClassCharacter::WebHookLength() const

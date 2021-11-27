@@ -5,6 +5,7 @@
 #include <game/generated/protocol.h>
 #include <game/server/gamecontext.h>
 #include <game/server/infclass/classes/infcplayerclass.h>
+#include <game/server/infclass/classes/infected/infected.h>
 #include <engine/server/roundstatistics.h>
 #include <engine/shared/config.h>
 
@@ -139,8 +140,12 @@ void CEngineerWall::OnZombieHit(CInfClassCharacter *pZombie)
 		return;
 	}
 
-	if(pZombie->GetPlayer())
+	CInfClassInfected *pInfected = CInfClassInfected::GetInstance(pZombie);
+
+	if(pZombie->GetPlayer() && pInfected)
 	{
+		pInfected->OnLaserWall();
+
 		for(CInfClassCharacter *pHook = (CInfClassCharacter*) GameWorld()->FindFirst(CGameWorld::ENTTYPE_CHARACTER); pHook; pHook = (CInfClassCharacter *)pHook->TypeNext())
 		{
 			if(
@@ -162,7 +167,7 @@ void CEngineerWall::OnZombieHit(CInfClassCharacter *pZombie)
 
 		if(pZombie->GetPlayerClass() == PLAYERCLASS_GHOUL)
 		{
-			float Factor = pZombie->GetClass()->GetGhoulPercent();
+			float Factor = pInfected->GetGhoulPercent();
 			LifeSpanReducer += Server()->TickSpeed() * 5.0f * Factor;
 		}
 

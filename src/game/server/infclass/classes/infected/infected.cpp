@@ -62,6 +62,11 @@ bool CInfClassInfected::CanDie() const
 	return true;
 }
 
+bool CInfClassInfected::CanBeUnfreezed() const
+{
+	return Server()->Tick() > m_LaserWallTick + 1;
+}
+
 void CInfClassInfected::OnCharacterPreCoreTick()
 {
 	CInfClassPlayerClass::OnCharacterPreCoreTick();
@@ -128,6 +133,7 @@ void CInfClassInfected::OnCharacterSpawned(const SpawnContext &Context)
 	CInfClassPlayerClass::OnCharacterSpawned(Context);
 
 	m_SlimeHealTick = 0;
+	m_LaserWallTick = 0;
 
 	if(Context.SpawnType == SpawnContext::MapSpawn)
 	{
@@ -318,6 +324,11 @@ void CInfClassInfected::OnFloatingPointCollected(int Points)
 
 	m_pCharacter->IncreaseOverallHp(4);
 	IncreaseGhoulLevel(Points);
+}
+
+void CInfClassInfected::OnLaserWall()
+{
+	m_LaserWallTick = Server()->Tick();
 }
 
 float CInfClassInfected::GetGhoulPercent() const

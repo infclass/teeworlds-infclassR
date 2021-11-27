@@ -237,6 +237,7 @@ public:
 	bool IsInSlowMotion() const; //LooperClass changes here
 	void SlowMotionEffect(float duration);	//LooperClass changes here
 	void Unfreeze();
+	virtual void TryUnfreeze() = 0;
 	bool IsInLove() const;
 	void LoveEffect();
 	void HallucinationEffect();
