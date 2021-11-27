@@ -68,7 +68,7 @@ public:
 	CInfClassGameController *GameController() const;
 	CConfig *Config();
 	const CConfig *Config() const;
-	IServer *Server();
+	IServer *Server() const;
 	CInfClassPlayer *GetPlayer();
 	const CInfClassPlayer *GetPlayer() const;
 	int GetCID();

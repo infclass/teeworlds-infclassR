@@ -58,7 +58,7 @@ const CConfig *CInfClassPlayerClass::Config() const
 	return nullptr;
 }
 
-IServer *CInfClassPlayerClass::Server()
+IServer *CInfClassPlayerClass::Server() const
 {
 	if(m_pPlayer)
 		return m_pPlayer->Server();
