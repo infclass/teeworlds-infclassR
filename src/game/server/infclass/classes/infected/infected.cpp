@@ -14,6 +14,17 @@ CInfClassInfected::CInfClassInfected(CInfClassPlayer *pPlayer)
 {
 }
 
+CInfClassInfected *CInfClassInfected::GetInstance(CInfClassCharacter *pCharacter)
+{
+	CInfClassPlayerClass *pClass = pCharacter ? pCharacter->GetClass() : nullptr;
+	if(pClass && pClass->IsZombie())
+	{
+		return static_cast<CInfClassInfected*>(pClass);
+	}
+	
+	return nullptr;
+}
+
 int CInfClassInfected::GetDefaultEmote() const
 {
 	int EmoteNormal = EMOTE_ANGRY;

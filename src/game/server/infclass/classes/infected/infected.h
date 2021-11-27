@@ -12,6 +12,8 @@ class CInfClassInfected : public CInfClassPlayerClass
 public:
 	CInfClassInfected(CInfClassPlayer *pPlayer);
 
+	static CInfClassInfected *GetInstance(CInfClassCharacter *pCharacter);
+
 	bool IsHuman() const final { return false; }
 	int GetDefaultEmote() const override;
 	bool CanDie() const override;
