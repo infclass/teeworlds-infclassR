@@ -1,3 +1,9 @@
+InfclassR v1.3.0
+- Undead now can't be unfreezed on an EngineerWall
+- Fixed died passenger still spawns on the taxi driver
+- Fixed death zone on infc_warehouse2
+- Fixed flag position on infc_floatingislands
+
 InfclassR v1.3.0_rc4
 - Implemented DDNet-specific /w support
 - Infection 'by the game' now kills

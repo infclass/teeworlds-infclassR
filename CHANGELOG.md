@@ -1,13 +1,13 @@
 # Changelog
 
-## InfclassR v1.3.0 - 2021-xx-xx (unreleased)
+## InfclassR v1.3.0 - 2021-11-27
 
 General:
 - Added initial support for the Entities View (Infclass game tiles converted to DDNet tiles)
 - Added a broadcast message to Class Menu on a disabled class hovered (suggested by ipoopi)
 - Added a message on an infected hooked human to inf zone
 - Added a message on a human (self) infected by the zone
-- Added a message to the infected player ("You have been infected by...")
+- Added a message for the infected player ("You have been infected by...")
 - Added /lang shortcut for /language chat command
 - Added freeze indicator
 - Updated help pages (big thanks to ipoopi)
@@ -22,7 +22,8 @@ General:
 - Re-enabled infected hammer force effect on Soldier (noticeable on Bat damage)
 - Spider feet are now colored in dark red on web hook length limit reached
 - Base HP increase on a ninja killed a target replaced with overall HP increase (now ninja can get an armor)
-- Undeads and Voodoos now reduce EngineerWall lifespan
+- Undeads and Voodoos now reduce Engineer Wall lifespan
+- Undead now can not be healed/unfreezed on an Engineer Wall
 - Ghoul leveling rebalanced (effectively capped at the value of previous 50%)
 - Removed Ghouls bonus to hook damage
 - Removed (random) stun grenades from Soldier and Looper arsenal
@@ -39,25 +40,28 @@ General:
 - Witch death speciality turned off for fun rounds
 - Stunned characters now express EMOTE_BLINK
 - Fixed sniper position unlock on a jump
-- Fixed utf8 ban reasons (from DDNet)
+- Fixed UTF-8 ban reasons (from DDNet)
 - Fixed InfClass zones sensitivity (only the right top point of the Tee was checked previously)
 - Fixed the player skin sometimes showed as default if the character is not in the game world
 - Fixed Scientist ammo wasting on not allowed teleportation attempts
 - Fixed Scientist kills during a white hole effect allowed to place another white hole
+- Fixed Scientist broadcast message for the case with active white hole and mines
 - Fixed the lonely infection HP bonus (sometimes given by a mistake)
 - Fixed ninja (freezer) reward if the player ID is 0
 - Fixed joining specs with 3 first infected
 - Fixed missing hook protection until the player class is set
 - Fixed ServerInfo compatibility with DDNet 15.5+
 - Fixed spawn delay on Voodoo selfkill
-- Fixed ninja target update on the target revival
+- Fixed Ninja target update on the target revival
 - Fixed Mercenary (laser rifle) reward on kills
 - Fixed '/alwaysrandom 1' armor bonus (big thanks to breton)
+- Fixed died passenger still spawns on the taxi driver
 
 Maps:
 - infc_headquarter: The graphics cleaned up (no gamelayer changes)
 - infc_k9f_small: Removed an invisible hookable tile on the bottom left
-- infc_floatingislands: Update to a remapped version (by FluffyTee)
+- infc_floatingislands: Updated to a remapped version (by FluffyTee), fixed flags position
+- infc_warehouse2: Fixed the bottom 'death' tiles
 
 Maintenance:
 - Added `sci` shortcut for the Scientist class
@@ -73,6 +77,7 @@ Maintenance:
 - Deprecated variables:
 - `inf_stun_grenade_minimal_kills` (does nothing, remove it)
 - `inf_stun_grenade_probability` (does nothing, remove it)
+- `queue_map` is verbose now
 - In case of internal failure the server process now will return the actual error code (port from DDNet)
 - Now the server will refuse to generate maps if the needed skins are missing
 - Data files moved from `bin/data` to the correct `data/` dir
@@ -81,6 +86,7 @@ Maintenance:
 - CMake: Minimum version fixed to 3.7 (needed for FindICU module)
 - CMake: Removed unused requirements
 - CMake: `storage.cfg` now installed as `storage.cfg.example` to simplify data customization
+- CMake: MaxMindDB is a soft dependency now
 
 ## InfclassR v1.2.1 - 2021-07-14
 
