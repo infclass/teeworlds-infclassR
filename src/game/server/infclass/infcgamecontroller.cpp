@@ -1286,7 +1286,11 @@ void CInfClassGameController::TickInfectionStarted()
 		{
 			CInfClassPlayer *pPlayer = Iter.Player();
 			if(pPlayer->IsZombie())
+			{
+				pPlayer->KillCharacter(); // Infect the player
+				pPlayer->m_DieTick = m_RoundStartTick;
 				continue;
+			}
 
 			if(!Server()->IsClientInfectedBefore(pPlayer->GetCID()))
 			{
