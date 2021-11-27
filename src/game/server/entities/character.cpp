@@ -1390,6 +1390,10 @@ void CCharacter::Unfreeze()
 		m_Health = 10.0;
 	}
 	
+	if(m_pPlayer)
+	{
+		GameServer()->ClearBroadcast(m_pPlayer->GetCID(), BROADCAST_PRIORITY_EFFECTSTATE);
+	}
 	GameServer()->CreatePlayerSpawn(GetPos());
 }
 

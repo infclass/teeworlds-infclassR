@@ -1061,7 +1061,6 @@ void CInfClassCharacter::OnHammerFired(WeaponFireContext *pFireContext)
 						if(pTarget->IsFrozen())
 						{
 							pTarget->Unfreeze();
-							GameServer()->ClearBroadcast(pTarget->GetCID(), BROADCAST_PRIORITY_EFFECTSTATE);
 						}
 						else
 						{
