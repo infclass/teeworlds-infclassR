@@ -189,6 +189,12 @@ void CInfClassCharacter::Tick()
 		m_Core.m_Vel = vec2(0.0f, 0.0f);
 		m_Core.m_Pos = PrevPos;
 	}
+
+	//NeedHeal
+	if(m_Armor >= 10)
+	{
+		m_NeedFullHeal = false;
+	}
 }
 
 void CInfClassCharacter::Snap(int SnappingClient)
@@ -804,6 +810,70 @@ void CInfClassCharacter::UpdateLastEnforcer(int ClientID, float Force, int Weapo
 	m_LastEnforcer = ClientID;
 	m_LastEnforcerWeapon = Weapon;
 	m_LastEnforcerTick = Tick;
+}
+
+void CInfClassCharacter::SaturateVelocity(vec2 Force, float MaxSpeed)
+{
+	if(length(Force) < 0.00001)
+		return;
+
+	float Speed = length(m_Core.m_Vel);
+	vec2 VelDir = normalize(m_Core.m_Vel);
+	if(Speed < 0.00001)
+	{
+		VelDir = normalize(Force);
+	}
+	vec2 OrthoVelDir = vec2(-VelDir.y, VelDir.x);
+	float VelDirFactor = dot(Force, VelDir);
+	float OrthoVelDirFactor = dot(Force, OrthoVelDir);
+
+	vec2 NewVel = m_Core.m_Vel;
+	if(Speed < MaxSpeed || VelDirFactor < 0.0f)
+	{
+		NewVel += VelDir*VelDirFactor;
+		float NewSpeed = length(NewVel);
+		if(NewSpeed > MaxSpeed)
+		{
+			if(VelDirFactor > 0.f)
+				NewVel = VelDir*MaxSpeed;
+			else
+				NewVel = -VelDir*MaxSpeed;
+		}
+	}
+
+	NewVel += OrthoVelDir * OrthoVelDirFactor;
+
+	m_Core.m_Vel = NewVel;
+}
+
+bool CInfClassCharacter::HasPassenger() const
+{
+	return m_Core.m_Passenger;
+}
+
+CCharacter *CInfClassCharacter::GetPassenger()
+{
+	if(!m_Core.m_Passenger)
+	{
+		return nullptr;
+	}
+
+	for(int i = 0; i < MAX_CLIENTS; i++)
+	{
+		CCharacterCore *pCharCore = GameServer()->m_World.m_Core.m_apCharacters[i];
+		if(pCharCore == m_Core.m_Passenger)
+			return GameServer()->GetPlayerChar(i);
+	}
+
+	return nullptr;
+}
+
+int CInfClassCharacter::GetInfZoneTick() // returns how many ticks long a player is already in InfZone
+{
+	if(m_InfZoneTick < 0)
+		return 0;
+
+	return Server()->Tick()-m_InfZoneTick;
 }
 
 void CInfClassCharacter::OnHammerFired(WeaponFireContext *pFireContext)

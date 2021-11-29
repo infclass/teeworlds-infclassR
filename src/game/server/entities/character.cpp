@@ -8,7 +8,6 @@
 #include <engine/server/roundstatistics.h>
 #include <game/server/gamecontext.h>
 #include <game/server/player.h>
-#include <game/mapitems.h>
 #include <iostream>
 
 #include "character.h"
@@ -368,62 +367,6 @@ void CCharacter::FireWeapon()
 {
 }
 
-void CCharacter::SaturateVelocity(vec2 Force, float MaxSpeed)
-{
-	if(length(Force) < 0.00001)
-		return;
-	
-	float Speed = length(m_Core.m_Vel);
-	vec2 VelDir = normalize(m_Core.m_Vel);
-	if(Speed < 0.00001)
-	{
-		VelDir = normalize(Force);
-	}
-	vec2 OrthoVelDir = vec2(-VelDir.y, VelDir.x);
-	float VelDirFactor = dot(Force, VelDir);
-	float OrthoVelDirFactor = dot(Force, OrthoVelDir);
-	
-	vec2 NewVel = m_Core.m_Vel;
-	if(Speed < MaxSpeed || VelDirFactor < 0.0f)
-	{
-		NewVel += VelDir*VelDirFactor;
-		float NewSpeed = length(NewVel);
-		if(NewSpeed > MaxSpeed)
-		{
-			if(VelDirFactor > 0.f)
-				NewVel = VelDir*MaxSpeed;
-			else
-				NewVel = -VelDir*MaxSpeed;
-		}
-	}
-	
-	NewVel += OrthoVelDir * OrthoVelDirFactor;
-	
-	m_Core.m_Vel = NewVel;
-}
-
-bool CCharacter::HasPassenger() const
-{
-	return m_Core.m_Passenger;
-}
-
-CCharacter *CCharacter::GetPassenger()
-{
-	if(!m_Core.m_Passenger)
-	{
-		return nullptr;
-	}
-
-	for(int i = 0; i < MAX_CLIENTS; i++)
-	{
-		CCharacterCore *pCharCore = GameServer()->m_World.m_Core.m_apCharacters[i];
-		if(pCharCore == m_Core.m_Passenger)
-			return GameServer()->GetPlayerChar(i);
-	}
-
-	return nullptr;
-}
-
 void CCharacter::HandleWeapons()
 {
 	if(IsFrozen())
@@ -614,10 +557,6 @@ void CCharacter::Tick()
 			m_ProtectionTick = 0;
 		}
 	}
-	
-	//NeedHeal
-	if(m_Armor >= 10)
-		m_NeedFullHeal = false;
 
 	//Ghost
 	if(GetPlayerClass() == PLAYERCLASS_GHOST)
@@ -1458,14 +1397,6 @@ int CCharacter::GetInfWeaponID(int WID) const
 	{
 		return INFWEAPON_NONE;
 	}
-}
-
-int CCharacter::GetInfZoneTick() // returns how many ticks long a player is already in InfZone
-{
-	if(m_InfZoneTick < 0)
-		return 0;
-
-	return Server()->Tick()-m_InfZoneTick;
 }
 
 /* INFECTION MODIFICATION END *****************************************/

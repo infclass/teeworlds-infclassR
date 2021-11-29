@@ -116,9 +116,6 @@ protected:
 	int m_ReloadTimer;
 	int m_AttackTick;
 
-	bool m_NeedFullHeal;
-	int m_DamageTaken;
-
 	int m_EmoteType;
 	int m_EmoteStop;
 
@@ -243,11 +240,6 @@ public:
 	int GetInfWeaponID(int WID) const;
 	bool FindPortalPosition(vec2 Pos, vec2& Res);
 	bool FindWitchSpawnPosition(vec2& Res);
-	void SaturateVelocity(vec2 Force, float MaxSpeed);
-	bool HasPassenger() const;
-	CCharacter *GetPassenger();
-	int GetInfZoneTick();
-
 /* INFECTION MODIFICATION END *****************************************/
 
 	CCharacterCore *Core() { return &m_Core; }

@@ -162,6 +162,11 @@ public:
 
 	void UpdateLastEnforcer(int ClientID, float Force, int Weapon, int Tick);
 
+	void SaturateVelocity(vec2 Force, float MaxSpeed);
+	bool HasPassenger() const;
+	CCharacter *GetPassenger();
+	int GetInfZoneTick();
+
 protected:
 	void PreCoreTick() override;
 	void PostCoreTick() override;
@@ -175,6 +180,8 @@ protected:
 	CInfClassGameController *m_pGameController = nullptr;
 	CInfClassPlayerClass *m_pClass = nullptr;
 
+	int m_DamageTaken = 0;
+	bool m_NeedFullHeal = false;
 	bool m_PositionLocked = false;
 };
 
