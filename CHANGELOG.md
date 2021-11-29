@@ -1,13 +1,16 @@
 # Changelog
 
-## InfclassR v1.3.1 - 2021-xx-xx (unreleased)
+## InfclassR v1.3.1 - 2021-12-09
 
+General:
 - Improved Taxi responsiveness
 - Merc laser now collides only with the owner bomb
-- Fixed crash on a new round if a Voodoo finished the previous round on a death tile
 - Returned the notorious 'whoosh' sound effect for "vs witches" fun rounds
 - Slug slime effect reworked to appear approximately 4x less times (should improve the performance).
-- Add missing NetworkClipping to a number of 'traps' (biologist mine, looper wall, scientist mine, turret, white hole)
+- Added missing NetworkClipping to a number of 'traps' (biologist mine, looper wall, scientist mine, turret, white hole)
+
+Maintenance:
+- Fixed a crash on a new round if a Voodoo finished the previous round on a death tile
 - CMake: Add missing CONF_DEBUG processing
 
 ## InfclassR v1.3.0 - 2021-11-27
