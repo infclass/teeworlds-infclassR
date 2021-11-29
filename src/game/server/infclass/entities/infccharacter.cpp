@@ -172,7 +172,12 @@ void CInfClassCharacter::Tick()
 	else
 		m_BonusTick = 0;
 
-	GameController()->HandleCharacterTiles(this);
+	if(m_pClass)
+	{
+		// On the very first tick of a new round when the Reset is not complete yet,
+		// The character can (still) be in a special zone while still have no class assigned.
+		GameController()->HandleCharacterTiles(this);
+	}
 
 	CCharacter::Tick();
 
