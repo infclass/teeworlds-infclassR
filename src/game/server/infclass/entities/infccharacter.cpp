@@ -166,6 +166,14 @@ void CInfClassCharacter::Tick()
 {
 	const vec2 PrevPos = m_Core.m_Pos;
 
+	if(IsHuman() && IsAlive() && GameController()->IsInfectionStarted())
+	{
+	}
+	else
+		m_BonusTick = 0;
+
+	GameController()->HandleCharacterTiles(this);
+
 	CCharacter::Tick();
 
 	if(m_pClass)

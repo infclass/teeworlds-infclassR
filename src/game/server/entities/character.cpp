@@ -574,14 +574,6 @@ void CCharacter::Tick()
 	//~ else
 		//~ m_InWater = 0;
 
-	if(IsHuman() && IsAlive() && GameServer()->m_pController->IsInfectionStarted())
-	{
-	}
-	else
-		m_BonusTick = 0;
-
-	GameServer()->m_pController->HandleCharacterTiles(this);
-
 	--m_FrozenTime;
 	if(m_IsFrozen)
 	{

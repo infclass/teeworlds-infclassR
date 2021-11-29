@@ -140,10 +140,6 @@ bool IGameController::OnEntity(const char* pName, vec2 Pivot, vec2 P0, vec2 P1, 
 	return false;
 }
 
-void IGameController::HandleCharacterTiles(CCharacter *pChr)
-{
-}
-
 double IGameController::GetTime()
 {
 	return static_cast<double>(Server()->Tick() - m_RoundStartTick)/Server()->TickSpeed();

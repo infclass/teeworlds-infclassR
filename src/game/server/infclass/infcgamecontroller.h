@@ -40,7 +40,7 @@ public:
 	CPlayer *CreatePlayer(int ClientID) override;
 
 	bool OnEntity(const char* pName, vec2 Pivot, vec2 P0, vec2 P1, vec2 P2, vec2 P3, int PosEnv) override;
-	void HandleCharacterTiles(class CCharacter *pChr) override;
+	void HandleCharacterTiles(class CCharacter *pChr);
 	void HandleLastHookers();
 
 	int GetZoneValueAt(int ZoneHandle, const vec2 &Pos) const;
@@ -68,7 +68,7 @@ public:
 	bool CanVote() override;
 	void OnClientDrop(int ClientID, int Type) override;
 	void OnPlayerInfected(CInfClassPlayer *pPlayer, CInfClassPlayer *pInfectiousPlayer, int PreviousClass);
-	bool IsInfectionStarted() override;
+	bool IsInfectionStarted() const;
 	bool CanJoinTeam(int Team, int ClientID) override;
 	bool AreTurretsEnabled() const;
 

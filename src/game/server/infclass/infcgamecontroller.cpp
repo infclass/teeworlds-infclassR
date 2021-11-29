@@ -1358,7 +1358,7 @@ void CInfClassGameController::TickInfectionNotStarted()
 	}
 }
 
-bool CInfClassGameController::IsInfectionStarted()
+bool CInfClassGameController::IsInfectionStarted() const
 {
 	return (m_RoundStartTick + Server()->TickSpeed()*10 <= Server()->Tick());
 }
