@@ -2,6 +2,7 @@
 
 ## InfclassR v1.3.1 - 2021-xx-xx (unreleased)
 
+- Merc laser now collides only with the owner bomb
 - Fixed crash on a new round if a Voodoo finished the previous round on a death tile
 
 ## InfclassR v1.3.0 - 2021-11-27
