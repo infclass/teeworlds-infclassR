@@ -265,6 +265,37 @@ void CGameWorld::Tick()
 	UpdatePlayerMaps();
 }
 
+CEntity *CGameWorld::IntersectEntity(vec2 Pos0, vec2 Pos1, float Radius, vec2 *NewPos, int EntityType, EntityFilter FilterFunction)
+{
+	float ClosestLen = distance(Pos0, Pos1) * 100.0f;
+
+	CEntity *pClosest = nullptr;
+	CEntity *p = FindFirst(EntityType);
+	for(; p; p = p->TypeNext())
+	{
+		if(FilterFunction && !FilterFunction(p))
+			continue;
+
+		vec2 IntersectPos = closest_point_on_line(Pos0, Pos1, p->m_Pos);
+		float Len = distance(p->m_Pos, IntersectPos);
+		if(Len < p->m_ProximityRadius+Radius)
+		{
+			Len = distance(Pos0, IntersectPos);
+			if(Len < ClosestLen)
+			{
+				if(NewPos)
+				{
+					*NewPos = IntersectPos;
+				}
+				ClosestLen = Len;
+				pClosest = p;
+			}
+		}
+	}
+
+	return pClosest;
+}
+
 // TODO: should be more general
 CCharacter *CGameWorld::IntersectCharacter(vec2 Pos0, vec2 Pos1, float Radius, vec2& NewPos, CEntity *pNotThis)
 {
