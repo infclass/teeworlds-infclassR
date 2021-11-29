@@ -444,18 +444,6 @@ void CCharacter::HandleWeapons()
 }
 
 /* INFECTION MODIFICATION START ***************************************/
-void CCharacter::RemoveAllGun()
-{
-	m_aWeapons[WEAPON_GUN].m_Got = false;
-	m_aWeapons[WEAPON_GUN].m_Ammo = 0;
-	m_aWeapons[WEAPON_LASER].m_Got = false;
-	m_aWeapons[WEAPON_LASER].m_Ammo = 0;
-	m_aWeapons[WEAPON_GRENADE].m_Got = false;
-	m_aWeapons[WEAPON_GRENADE].m_Ammo = 0;
-	m_aWeapons[WEAPON_SHOTGUN].m_Got = false;
-	m_aWeapons[WEAPON_SHOTGUN].m_Ammo = 0;
-}
-
 void CCharacter::SetAntiFire()
 {
 	m_AntiFireTime = Server()->TickSpeed() * Config()->m_InfAntiFireTime / 1000;

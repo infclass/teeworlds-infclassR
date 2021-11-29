@@ -229,7 +229,6 @@ public:
 
 	bool IsZombie() const;
 	bool IsHuman() const;
-	void RemoveAllGun();
 	void SetAntiFire();
 	void Freeze(float Time, int Player, FREEZEREASON Reason);
 	bool IsFrozen() const;
