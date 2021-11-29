@@ -166,6 +166,7 @@ protected:
 	void PreCoreTick() override;
 	void PostCoreTick() override;
 
+	void ClassSpawnAttributes();
 	void UpdateTuningParam();
 
 	void ResetClassObject();

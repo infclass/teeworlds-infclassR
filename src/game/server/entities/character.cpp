@@ -30,7 +30,6 @@
 #include <game/server/infclass/entities/superweapon-indicator.h>
 #include <game/server/infclass/entities/turret.h>
 #include <game/server/infclass/entities/white-hole.h>
-#include <game/server/infclass/infcgamecontroller.h>
 
 MACRO_ALLOC_POOL_ID_IMPL(CCharacter, MAX_CLIENTS)
 
@@ -1166,39 +1165,6 @@ int CCharacter::GetPlayerClass() const
 		return PLAYERCLASS_NONE;
 	else
 		return m_pPlayer->GetClass();
-}
-
-void CCharacter::ClassSpawnAttributes()
-{
-	m_Health = 10;
-	m_IsInvisible = false;
-
-	const int PlayerClass = GetPlayerClass();
-	const bool isHuman = PlayerClass < END_HUMANCLASS; // PLAYERCLASS_NONE is also a human (not infected) class
-	if(isHuman)
-	{
-		m_pPlayer->m_InfectionTick = -1;
-	}
-	else
-	{
-		m_Armor = 0;
-	}
-
-	if(PlayerClass == PLAYERCLASS_HERO)
-	{
-		m_pHeroFlag = nullptr;
-	}
-
-	if(PlayerClass != PLAYERCLASS_NONE)
-	{
-		GameServer()->SendBroadcast_ClassIntro(m_pPlayer->GetCID(), PlayerClass);
-		if(!m_pPlayer->IsKnownClass(PlayerClass))
-		{
-			const char *className = CInfClassGameController::GetClassName(PlayerClass);
-			GameServer()->SendChatTarget_Localization(m_pPlayer->GetCID(), CHATCATEGORY_DEFAULT, _("Type “/help {str:ClassName}” for more information about your class"), "ClassName", className, NULL);
-			m_pPlayer->m_knownClass[PlayerClass] = true;
-		}
-	}
 }
 
 void CCharacter::DestroyChildEntities()
