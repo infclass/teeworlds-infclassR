@@ -541,11 +541,26 @@ void CCharacterCore::UpdateTaxiPassengers()
 		SetPassenger(nullptr);
 	}
 
-	if(m_Passenger) {
-		m_Passenger->m_Vel = m_Vel;
-		if(abs(m_Passenger->m_Vel.y) <= 1.0f)
-			m_Passenger->m_Vel.y = 0.0f;
-		m_Passenger->m_Pos.x = m_Pos.x;
-		m_Passenger->m_Pos.y = m_Pos.y + PassengerYOffset;
+	if(m_IsPassenger)
+	{
+		// Do nothing
+	}
+	else
+	{
+		int PassengerNumber = 0;
+		CCharacterCore *pPassenger = m_Passenger;
+		while(pPassenger)
+		{
+			++PassengerNumber;
+
+			pPassenger->m_Vel = m_Vel;
+			if(abs(pPassenger->m_Vel.y) <= 1.0f)
+				pPassenger->m_Vel.y = 0.0f;
+
+			pPassenger->m_Pos.x = m_Pos.x;
+			pPassenger->m_Pos.y = m_Pos.y + PassengerYOffset * PassengerNumber;
+
+			pPassenger = pPassenger->m_Passenger;
+		}
 	}
 }
