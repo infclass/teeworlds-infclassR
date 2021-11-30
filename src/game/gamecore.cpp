@@ -107,8 +107,6 @@ void CCharacterCore::Tick(bool UseInput, CParams* pParams)
 	float Accel = Grounded ? pTuningParams->m_GroundControlAccel : pTuningParams->m_AirControlAccel;
 	float Friction = Grounded ? pTuningParams->m_GroundFriction : pTuningParams->m_AirFriction;
 
-	UpdateTaxiPassengers();
-
 	if (m_ProbablyStucked) {
 		m_Pos.y += 1;
 		if (!Stucked) {
@@ -401,6 +399,8 @@ void CCharacterCore::Tick(bool UseInput, CParams* pParams)
 	// clamp the velocity to something sane
 	if(length(m_Vel) > 6000)
 		m_Vel = normalize(m_Vel) * 6000;
+
+	UpdateTaxiPassengers();
 }
 
 void CCharacterCore::Move(CParams* pParams)
