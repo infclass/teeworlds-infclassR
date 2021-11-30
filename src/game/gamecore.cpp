@@ -107,19 +107,7 @@ void CCharacterCore::Tick(bool UseInput, CParams* pParams)
 	float Accel = Grounded ? pTuningParams->m_GroundControlAccel : pTuningParams->m_AirControlAccel;
 	float Friction = Grounded ? pTuningParams->m_GroundFriction : pTuningParams->m_AirFriction;
 
-	// InfClassR taxi mode, todo: cleanup & move out from core
-	if (m_Passenger && ((m_Passenger->m_Input.m_Jump > 0) || (!m_Passenger->m_IsPassenger)))
-	{
-		SetPassenger(nullptr);
-	}
-
-	if (m_Passenger) {
-		m_Passenger->m_Vel = m_Vel;
-		if (abs(m_Passenger->m_Vel.y) <= 1.0f)
-			m_Passenger->m_Vel.y = 0.0f;
-		m_Passenger->m_Pos.x = m_Pos.x;
-		m_Passenger->m_Pos.y = m_Pos.y + PassengerYOffset;
-	}
+	UpdateTaxiPassengers();
 
 	if (m_ProbablyStucked) {
 		m_Pos.y += 1;
@@ -543,4 +531,21 @@ void CCharacterCore::SetPassenger(CCharacterCore *pPassenger)
 void CCharacterCore::EnableJump()
 {
 	m_Jumped &= ~2;
+}
+
+void CCharacterCore::UpdateTaxiPassengers()
+{
+	// InfClassR taxi mode, todo: cleanup & move out from core
+	if(m_Passenger && ((m_Passenger->m_Input.m_Jump > 0) || (!m_Passenger->m_IsPassenger)))
+	{
+		SetPassenger(nullptr);
+	}
+
+	if(m_Passenger) {
+		m_Passenger->m_Vel = m_Vel;
+		if(abs(m_Passenger->m_Vel.y) <= 1.0f)
+			m_Passenger->m_Vel.y = 0.0f;
+		m_Passenger->m_Pos.x = m_Pos.x;
+		m_Passenger->m_Pos.y = m_Pos.y + PassengerYOffset;
+	}
 }

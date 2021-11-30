@@ -259,6 +259,9 @@ public:
 	bool IsRecursePassenger(CCharacterCore *pMaybePassenger) const;
 	void SetPassenger(CCharacterCore *pPassenger);
 	void EnableJump();
+
+protected:
+	void UpdateTaxiPassengers();
 };
 
 //input count
