@@ -1,6 +1,8 @@
 #include "events-director.h"
 
 #include <engine/shared/config.h>
+
+#include <game/server/classes.h>
 #include <game/server/skininfo.h>
 
 #include <vector>
@@ -51,10 +53,14 @@ void EventsDirector::SetupSkin(const CSkinContext &Context, CWeakSkinInfo *pOutp
 	{
 		// The skins added in PR: https://github.com/ddnet/ddnet/pull/1218
 		bool ClientHasSantaSkins = DDNetVersion >= 11031;
-		if(ClientHasSantaSkins)
+
+		const bool IsHumanSkin = Context.PlayerClass < END_HUMANCLASS;
+		const bool Customize = IsHumanSkin || (Context.PlayerClass == PLAYERCLASS_WITCH);
+
+		if(ClientHasSantaSkins && Customize)
 		{
 			static const std::vector<const char *> SkinsWithSanta = {
-				"santa_bluekitty", // Looper skin
+				"santa_bluekitty",
 				"santa_bluestripe",
 				"santa_brownbear",
 				"santa_cammo",
