@@ -2,6 +2,8 @@
 /* If you are missing that file, acquire a complete release at teeworlds.com.				*/
 #include "infcgamecontroller.h"
 
+#include "events-director.h"
+
 #include <game/server/gamecontext.h>
 #include <game/server/infclass/classes/infcplayerclass.h>
 #include <game/server/infclass/damage_type.h>
@@ -906,6 +908,7 @@ void CInfClassGameController::RegisterChatCommands(IConsole *pConsole)
 	pConsole->Register("inf_set_class", "i<clientid> s<classname>", CFGFLAG_SERVER, ConSetClass, this, "Set the class of a player");
 
 	pConsole->Register("witch", "", CFGFLAG_CHAT|CFGFLAG_USER, ChatWitch, this, "Call Witch");
+	pConsole->Register("santa", "", CFGFLAG_CHAT|CFGFLAG_USER, ChatWitch, this, "Call the Santa");
 }
 
 bool CInfClassGameController::ConSetClientName(IConsole::IResult *pResult, void *pUserData)
@@ -967,8 +970,21 @@ bool CInfClassGameController::ChatWitch(IConsole::IResult *pResult)
 
 	Console()->Print(IConsole::OUTPUT_LEVEL_DEBUG, "conwitch", "ChatWitch() called");
 
-	if(GameServer()->GetZombieCount(PLAYERCLASS_WITCH) >= GetClassPlayerLimit(PLAYERCLASS_WITCH))
+	int MaxWitches = GetClassPlayerLimit(PLAYERCLASS_WITCH);
+	const bool Winter = EventsDirector::IsWinter();
+	if(Winter)
 	{
+		// Santa is a new Witch; allow only one Santa at time.
+		MaxWitches = 1;
+	}
+	if(GameServer()->GetZombieCount(PLAYERCLASS_WITCH) >= MaxWitches)
+	{
+		if(Winter)
+		{
+			GameServer()->SendChatTarget_Localization(ClientID, CHATCATEGORY_DEFAULT, _("The Santa is already here"), nullptr);
+			return true;
+		}
+
 		GameServer()->SendChatTarget_Localization(ClientID, CHATCATEGORY_DEFAULT, _("All witches are already here"), nullptr);
 		return true;
 	}
@@ -979,11 +995,23 @@ bool CInfClassGameController::ChatWitch(IConsole::IResult *pResult)
 
 	if(Humans + Infected < REQUIRED_CALLERS_COUNT)
 	{
+		if(Winter)
+		{
+			GameServer()->SendChatTarget_Localization(ClientID, CHATCATEGORY_DEFAULT, _("Too few players to call the Santa"), nullptr);
+			return true;
+		}
+
 		GameServer()->SendChatTarget_Localization(ClientID, CHATCATEGORY_DEFAULT, _("Too few players to call a witch"), nullptr);
 		return true;
 	}
 	if(Infected < MIN_ZOMBIES)
 	{
+		if(Winter)
+		{
+			GameServer()->SendChatTarget_Localization(ClientID, CHATCATEGORY_DEFAULT, _("Too few infected to call the Santa"), nullptr);
+			return true;
+		}
+
 		GameServer()->SendChatTarget_Localization(ClientID, CHATCATEGORY_DEFAULT, _("Too few infected to call a witch"), nullptr);
 		return true;
 	}
@@ -995,6 +1023,12 @@ bool CInfClassGameController::ChatWitch(IConsole::IResult *pResult)
 	{
 		if(m_WitchCallers.Contains(ClientID))
 		{
+			if(Winter)
+			{
+				GameServer()->SendChatTarget_Localization(ClientID, CHATCATEGORY_DEFAULT, _("You have called the Santa once again"), nullptr);
+				return true;
+			}
+
 			GameServer()->SendChatTarget_Localization(ClientID, CHATCATEGORY_DEFAULT, _("You can't call witch twice"), nullptr);
 			return true;
 		}
@@ -1005,6 +1039,16 @@ bool CInfClassGameController::ChatWitch(IConsole::IResult *pResult)
 		int PrintableCallers = m_WitchCallers.Size();
 		if(m_WitchCallers.Size() == 1)
 		{
+			if(Winter)
+			{
+				GameServer()->SendChatTarget_Localization(ClientID, CHATCATEGORY_DEFAULT,
+					_("{str:PlayerName} is calling for Santa! (1/{int:RequiredCallers}) To call the Santa write: /santa"),
+					"PlayerName", Server()->ClientName(ClientID),
+					"RequiredCallers", &PrintableRequiredCallers,
+					nullptr);
+				return true;
+			}
+
 			GameServer()->SendChatTarget_Localization(ClientID, CHATCATEGORY_DEFAULT,
 				_("{str:PlayerName} is calling for Witch! (1/{int:RequiredCallers}) To call witch write: /witch"),
 				"PlayerName", Server()->ClientName(ClientID),
@@ -1013,11 +1057,22 @@ bool CInfClassGameController::ChatWitch(IConsole::IResult *pResult)
 		}
 		else if(m_WitchCallers.Size() < REQUIRED_CALLERS_COUNT)
 		{
-			GameServer()->SendChatTarget_Localization(ClientID, CHATCATEGORY_DEFAULT,
-				_("Witch ({int:Callers}/{int:RequiredCallers})"),
-				"Callers", &PrintableCallers,
-				"RequiredCallers", &PrintableRequiredCallers,
-				nullptr);
+			if(Winter)
+			{
+				GameServer()->SendChatTarget_Localization(ClientID, CHATCATEGORY_DEFAULT,
+					_("Santa ({int:Callers}/{int:RequiredCallers})"),
+					"Callers", &PrintableCallers,
+					"RequiredCallers", &PrintableRequiredCallers,
+					nullptr);
+			}
+			else
+			{
+				GameServer()->SendChatTarget_Localization(ClientID, CHATCATEGORY_DEFAULT,
+					_("Witch ({int:Callers}/{int:RequiredCallers})"),
+					"Callers", &PrintableCallers,
+					"RequiredCallers", &PrintableRequiredCallers,
+					nullptr);
+			}
 		}
 	}
 
@@ -1026,12 +1081,28 @@ bool CInfClassGameController::ChatWitch(IConsole::IResult *pResult)
 		int WitchId = RandomZombieToWitch();
 		if(WitchId < 0)
 		{
+			if(Winter)
+			{
+				GameServer()->SendChatTarget_Localization(ClientID, CHATCATEGORY_DEFAULT,
+					_("The Santa is already here"),
+					nullptr);
+				return true;
+			}
 			GameServer()->SendChatTarget_Localization(ClientID, CHATCATEGORY_DEFAULT,
 				_("All witches are already here"),
 				nullptr);
 		}
 		else
 		{
+			if(Winter)
+			{
+				GameServer()->SendChatTarget_Localization(ClientID, CHATCATEGORY_DEFAULT,
+					_("Santa {str:PlayerName} has arrived!"),
+					"PlayerName", Server()->ClientName(WitchId),
+					nullptr);
+				return true;
+			}
+
 			GameServer()->SendChatTarget_Localization(ClientID, CHATCATEGORY_DEFAULT,
 				_("Witch {str:PlayerName} has arrived!"),
 				"PlayerName", Server()->ClientName(WitchId),
