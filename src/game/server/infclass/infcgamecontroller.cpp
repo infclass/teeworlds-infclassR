@@ -801,59 +801,83 @@ bool CInfClassGameController::ChatWitch(IConsole::IResult *pResult, void *pUserD
 bool CInfClassGameController::ChatWitch(IConsole::IResult *pResult)
 {
 	int ClientID = pResult->GetClientID();
-	int callers_count = m_WitchCallers.size();
 	const int REQUIRED_CALLERS_COUNT = 5;
 	const int MIN_ZOMBIES = 2;
 
-	char aBuf[256];
-	str_format(aBuf, sizeof(aBuf), "ConWitch() called");
-	GameServer()->Console()->Print(IConsole::OUTPUT_LEVEL_DEBUG, "conwitch", aBuf);
+	GameServer()->Console()->Print(IConsole::OUTPUT_LEVEL_DEBUG, "conwitch", "ChatWitch() called");
 
-	if (GameServer()->GetZombieCount(PLAYERCLASS_WITCH) >= GetClassPlayerLimit(PLAYERCLASS_WITCH)) {
-		str_format(aBuf, sizeof(aBuf), "All witches are already here");
-		GameServer()->SendChatTarget(ClientID, aBuf);
-		return true;
-	}
-	if (GameServer()->GetZombieCount() <= MIN_ZOMBIES) {
-		str_format(aBuf, sizeof(aBuf), "Too few zombies");
-		GameServer()->SendChatTarget(ClientID, aBuf);
+	if(GameServer()->GetZombieCount(PLAYERCLASS_WITCH) >= GetClassPlayerLimit(PLAYERCLASS_WITCH))
+	{
+		GameServer()->SendChatTarget_Localization(ClientID, CHATCATEGORY_DEFAULT, _("All witches are already here"), nullptr);
 		return true;
 	}
 
-	if (callers_count < REQUIRED_CALLERS_COUNT) {
-		auto& wc = m_WitchCallers;
-		if(!(std::find(wc.begin(), wc.end(), ClientID) != wc.end()))
+	int Humans = 0;
+	int Infected = 0;
+	GetPlayerCounter(-1, Humans, Infected);
+
+	if(Humans + Infected < REQUIRED_CALLERS_COUNT)
+	{
+		GameServer()->SendChatTarget_Localization(ClientID, CHATCATEGORY_DEFAULT, _("Too few players to call a witch"), nullptr);
+		return true;
+	}
+	if(Infected < MIN_ZOMBIES)
+	{
+		GameServer()->SendChatTarget_Localization(ClientID, CHATCATEGORY_DEFAULT, _("Too few infected to call a witch"), nullptr);
+		return true;
+	}
+
+	// It is possible that we had the needed callers but all witches already were there.
+	// In that case even if the caller is already in the list, we still want to spawn
+	// a new one without a message to the caller.
+	if(m_WitchCallers.Size() < REQUIRED_CALLERS_COUNT)
+	{
+		if(m_WitchCallers.Contains(ClientID))
 		{
-			wc.push_back(ClientID); // add to witch callers vector
-			callers_count += 1;
-			if (callers_count == 1)
-				str_format(aBuf, sizeof(aBuf), "%s is calling for Witch! (%d/%d) To call witch write: /witch",
-						Server()->ClientName(ClientID), callers_count, REQUIRED_CALLERS_COUNT);
-			else
-				str_format(aBuf, sizeof(aBuf), "Witch (%d/%d)", callers_count, REQUIRED_CALLERS_COUNT);
-		}
-		else
-		{
-			str_format(aBuf, sizeof(aBuf), "You can't call witch twice");
-			GameServer()->SendChatTarget(ClientID, aBuf);
+			GameServer()->SendChatTarget_Localization(ClientID, CHATCATEGORY_DEFAULT, _("You can't call witch twice"), nullptr);
 			return true;
 		}
+
+		m_WitchCallers.Add(ClientID);
+
+		int PrintableRequiredCallers = REQUIRED_CALLERS_COUNT;
+		int PrintableCallers = m_WitchCallers.Size();
+		if(m_WitchCallers.Size() == 1)
+		{
+			GameServer()->SendChatTarget_Localization(ClientID, CHATCATEGORY_DEFAULT,
+				_("{str:PlayerName} is calling for Witch! (1/{int:RequiredCallers}) To call witch write: /witch"),
+				"PlayerName", Server()->ClientName(ClientID),
+				"RequiredCallers", &PrintableRequiredCallers,
+				nullptr);
+		}
+		else if(m_WitchCallers.Size() < REQUIRED_CALLERS_COUNT)
+		{
+			GameServer()->SendChatTarget_Localization(ClientID, CHATCATEGORY_DEFAULT,
+				_("Witch ({int:Callers}/{int:RequiredCallers})"),
+				"Callers", &PrintableCallers,
+				"RequiredCallers", &PrintableRequiredCallers,
+				nullptr);
+		}
 	}
 
-	if (callers_count >= REQUIRED_CALLERS_COUNT)
+	if(m_WitchCallers.Size() >= REQUIRED_CALLERS_COUNT)
 	{
 		int WitchId = RandomZombieToWitch();
 		if(WitchId < 0)
 		{
-			str_format(aBuf, sizeof(aBuf), "All witches are already here");
+			GameServer()->SendChatTarget_Localization(ClientID, CHATCATEGORY_DEFAULT,
+				_("All witches are already here"),
+				nullptr);
 		}
 		else
 		{
-			str_format(aBuf, sizeof(aBuf), "Witch %s has arrived!", Server()->ClientName(WitchId));
+			GameServer()->SendChatTarget_Localization(ClientID, CHATCATEGORY_DEFAULT,
+				_("Witch {str:PlayerName} has arrived!"),
+				"PlayerName", Server()->ClientName(WitchId),
+				nullptr);
 		}
 	}
 
-	GameServer()->SendChatTarget(-1, aBuf);
 	return true;
 }
 
@@ -1104,10 +1128,11 @@ int CInfClassGameController::GetMinimumInfected() const
 	return GetMinimumInfectedForPlayers(NumPlayers);
 }
 
-int CInfClassGameController::RandomZombieToWitch(){
-	std::vector<int> zombies_id;
+int CInfClassGameController::RandomZombieToWitch()
+{
+	ClientsArray zombies_id;
 
-	m_WitchCallers.clear();
+	m_WitchCallers.Clear();
 
 	for(int i = 0; i < MAX_CLIENTS; i++)
 	{
@@ -1116,20 +1141,20 @@ int CInfClassGameController::RandomZombieToWitch(){
 		if(GameServer()->m_apPlayers[i]->GetClass() == PLAYERCLASS_WITCH)
 			continue;
 		if(GameServer()->m_apPlayers[i]->IsActuallyZombie()) {
-			zombies_id.push_back(i);
+			zombies_id.Add(i);
 		}
 	}
 
-	if(zombies_id.empty())
+	if(zombies_id.IsEmpty())
 	{
 		GameServer()->Console()->Print(IConsole::OUTPUT_LEVEL_DEBUG, "witch", "Unable to find any suitable player");
 		return -1;
 	}
 
-	int id = random_int(0, zombies_id.size() - 1);
+	int id = random_int(0, zombies_id.Size() - 1);
 	char aBuf[512];
 	/* debug */
-	str_format(aBuf, sizeof(aBuf), "going through MAX_CLIENTS=%d, zombie_count=%d, random_int=%d, id=%d", MAX_CLIENTS, static_cast<int>(zombies_id.size()), id, zombies_id[id]);
+	str_format(aBuf, sizeof(aBuf), "going through MAX_CLIENTS=%d, zombie_count=%d, random_int=%d, id=%d", MAX_CLIENTS, static_cast<int>(zombies_id.Size()), id, zombies_id[id]);
 	GameServer()->Console()->Print(IConsole::OUTPUT_LEVEL_DEBUG, "witch", aBuf);
 	/* /debug */
 	GetPlayer(zombies_id[id])->SetClass(PLAYERCLASS_WITCH);

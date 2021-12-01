@@ -128,7 +128,7 @@ private:
 	int GetMinimumInfectedForPlayers(int PlayersNumber) const;
 
 	int RandomZombieToWitch();
-	std::vector<int> m_WitchCallers;
+	ClientsArray m_WitchCallers;
 
 private:
 	int m_MapWidth;
