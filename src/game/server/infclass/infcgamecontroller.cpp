@@ -1750,6 +1750,14 @@ int CInfClassGameController::OnCharacterDeath(class CCharacter *pAbstractVictim,
 				break;
 		}
 	}
+	else
+	{
+		// Still send the traditional 'whoosh' sound
+		if(pVictim->GetPlayerClass() == PLAYERCLASS_WITCH)
+		{
+			GameServer()->CreateSoundGlobal(SOUND_CTF_RETURN);
+		}
+	}
 	pVictim->GetPlayer()->StartInfection(ForceInfection, pKiller);
 
 	return 0;

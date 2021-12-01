@@ -5,6 +5,7 @@
 - Improved Taxi responsiveness
 - Merc laser now collides only with the owner bomb
 - Fixed crash on a new round if a Voodoo finished the previous round on a death tile
+- Returned the notorious 'whoosh' sound effect for "vs witches" fun rounds
 
 ## InfclassR v1.3.0 - 2021-11-27
 
