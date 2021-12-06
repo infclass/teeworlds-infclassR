@@ -3,9 +3,9 @@
 # FindICU introduced in CMake 3.7
 cmake_minimum_required(VERSION 3.7)
 project(InfclassR
-    VERSION 1.3.1
+    VERSION 1.4.0
 )
-set(VERSION_SUFFIX "")
+set(VERSION_SUFFIX "_alpha0")
 
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
