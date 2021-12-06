@@ -32,6 +32,8 @@ protected:
 	void SetupSkin(CTeeInfo *output) override;
 	void BroadcastWeaponState() override;
 
+	void OnBlindingLaserFired(WeaponFireContext *pFireContext);
+
 	bool PositionLockAvailable() const;
 
 private:

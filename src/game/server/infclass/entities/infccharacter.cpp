@@ -1,3 +1,4 @@
+#include "blinding-laser.h"
 #include "infccharacter.h"
 
 #include <engine/server/mapconverter.h>

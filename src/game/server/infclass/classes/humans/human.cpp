@@ -652,6 +652,16 @@ void CInfClassHuman::BroadcastWeaponState()
 	}
 }
 
+void CInfClassHuman::OnBlindingLaserFired(WeaponFireContext *pFireContext)
+{
+	if(pFireContext->NoAmmo)
+	{
+		return;
+	}
+
+	new CBlindingLaser(GameContext(), GetPos(), GetDirection(), GetCID());
+}
+
 bool CInfClassHuman::PositionLockAvailable() const
 {
 	const int TickSpeed = GameContext()->Server()->TickSpeed();
