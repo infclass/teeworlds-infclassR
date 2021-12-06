@@ -1232,6 +1232,36 @@ int CInfClassGameController::GetMinimumInfected() const
 	return GetMinimumInfectedForPlayers(NumPlayers);
 }
 
+void CInfClassGameController::SendKillMessage(int Victim, DAMAGE_TYPE DamageType, int Killer, int Assistant)
+{
+	int DamageTypeInt = static_cast<int>(DamageType);
+	int VanillaWeapon = DamageTypeToWeapon(DamageType);
+
+	dbg_msg("inf-proto", "Sent kill message victim=%d, damage_type=%d, killer=%d, assistant=%d", Victim, DamageTypeInt, Killer, Assistant);
+
+	CNetMsg_Sv_KillMsg VanillaMsg;
+	VanillaMsg.m_Killer = Killer;
+	VanillaMsg.m_Victim = Victim;
+	VanillaMsg.m_Weapon = VanillaWeapon;
+	VanillaMsg.m_ModeSpecial = 0;
+
+	CMsgPacker VanillaPacker(VanillaMsg.MsgID(), false);
+	VanillaMsg.Pack(&VanillaPacker);
+
+	for(int i = 0; i < MAX_CLIENTS; i++)
+	{
+		if(Server()->ClientIngame(i))
+		{
+			IServer::CClientInfo Info;
+			Server()->GetClientInfo(i, &Info);
+
+			Server()->SendMsg(&VanillaPacker, MSGFLAG_VITAL|MSGFLAG_NORECORD, i);
+		}
+	}
+
+	Server()->SendMsg(&VanillaPacker, MSGFLAG_VITAL|MSGFLAG_NOSEND, -1);
+}
+
 int CInfClassGameController::RandomZombieToWitch()
 {
 	ClientsArray zombies_id;
