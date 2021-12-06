@@ -13,7 +13,6 @@ CSlugSlime::CSlugSlime(CGameContext *pGameContext, vec2 Pos, int Owner)
 {
 	m_LifeSpan = Server()->TickSpeed()*Config()->m_InfSlimeDuration;
 	GameWorld()->InsertEntity(this);
-	m_HealTick = 0;
 }
 
 void CSlugSlime::Tick()

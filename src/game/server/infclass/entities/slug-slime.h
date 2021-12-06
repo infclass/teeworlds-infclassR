@@ -18,7 +18,6 @@ public:
 
 public:
 	int m_LifeSpan;
-	int m_HealTick;
 };
 
 #endif
