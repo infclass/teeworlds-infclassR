@@ -183,6 +183,16 @@ void CInfClassCharacter::Tick()
 
 	CCharacter::Tick();
 
+	if(m_BlindnessTicks > 0)
+	{
+		--m_BlindnessTicks;
+		int EffectSec = 1 + (m_BlindnessTicks / Server()->TickSpeed());
+		GameServer()->SendBroadcast_Localization(m_pPlayer->GetCID(), BROADCAST_PRIORITY_EFFECTSTATE, BROADCAST_DURATION_REALTIME,
+			_("You are blinded: {sec:EffectDuration}"),
+			"EffectDuration", &EffectSec,
+			nullptr);
+	}
+
 	if(m_pClass)
 		m_pClass->OnCharacterTick();
 
@@ -196,6 +206,20 @@ void CInfClassCharacter::Tick()
 	if(m_Armor >= 10)
 	{
 		m_NeedFullHeal = false;
+	}
+}
+
+void CInfClassCharacter::TickDefered()
+{
+	int Events = m_Core.m_TriggeredEvents;
+
+	CCharacter::TickDefered();
+
+	const int64_t MaskOnlyBlind = GameController()->GetBlindCharactersMask(GetCID());
+	if(MaskOnlyBlind)
+	{
+		if(Events & COREEVENT_AIR_JUMP)
+			GameServer()->CreateSound(GetPos(), SOUND_PLAYER_AIRJUMP, MaskOnlyBlind);
 	}
 }
 
@@ -226,6 +250,13 @@ void CInfClassCharacter::Snap(int SnappingClient)
 void CInfClassCharacter::SpecialSnapForClient(int SnappingClient, bool *pDoSnap)
 {
 	CInfClassPlayer* pDestClient = GameController()->GetPlayer(SnappingClient);
+
+	CInfClassCharacter *pDestCharacter = GameController()->GetCharacter(SnappingClient);
+	if((GetCID() != SnappingClient) && pDestCharacter && pDestCharacter->IsBlind())
+	{
+		*pDoSnap = false;
+		return;
+	}
 
 	if(GetPlayerClass() == PLAYERCLASS_GHOST)
 	{
@@ -2341,6 +2372,14 @@ void CInfClassCharacter::TryUnfreeze()
 	}
 
 	Unfreeze();
+}
+
+void CInfClassCharacter::MakeBlind(int ClientID, float Duration)
+{
+	m_BlindnessTicks = Server()->TickSpeed() * Duration;
+	m_LastBlinder = ClientID;
+
+	GameServer()->SendEmoticon(GetCID(), EMOTICON_QUESTION);
 }
 
 float CInfClassCharacter::WebHookLength() const

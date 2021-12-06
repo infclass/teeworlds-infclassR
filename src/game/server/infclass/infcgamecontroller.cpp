@@ -292,6 +292,27 @@ void CInfClassGameController::HandleLastHookers()
 	}
 }
 
+int64_t CInfClassGameController::GetBlindCharactersMask(int ExcludeCID) const
+{
+	int64_t Mask = 0;
+
+	for(int i = 0; i < MAX_CLIENTS; ++i)
+	{
+		if(i == ExcludeCID)
+			continue;
+
+		const CInfClassCharacter *pTarget = GetCharacter(i);
+		if(!pTarget)
+			continue;
+		if(!pTarget->IsBlind())
+			continue;
+
+		Mask |= 1LL << i;
+	}
+
+	return Mask;
+}
+
 int CInfClassGameController::GetZoneValueAt(int ZoneHandle, const vec2 &Pos) const
 {
 	return GameServer()->Collision()->GetZoneValueAt(ZoneHandle, Pos);

@@ -61,6 +61,7 @@ public:
 
 	void Destroy() override;
 	void Tick() override;
+	void TickDefered() override;
 	void Snap(int SnappingClient) override;
 	void SpecialSnapForClient(int SnappingClient, bool *pDoSnap);
 
@@ -137,6 +138,9 @@ public:
 	void TryUnfreeze() override;
 	FREEZEREASON GetFreezeReason() const { return m_FreezeReason; }
 
+	bool IsBlind() const { return m_BlindnessTicks > 0; }
+	void MakeBlind(int ClientID, float Duration);
+
 	float WebHookLength() const;
 
 	void CheckSuperWeaponAccess();
@@ -184,6 +188,9 @@ protected:
 protected:
 	CInfClassGameController *m_pGameController = nullptr;
 	CInfClassPlayerClass *m_pClass = nullptr;
+
+	int m_BlindnessTicks = 0;
+	int m_LastBlinder = -1;
 
 	int m_DamageTaken = 0;
 	bool m_NeedFullHeal = false;

@@ -30,6 +30,9 @@ int CInfClassInfected::GetDefaultEmote() const
 {
 	int EmoteNormal = EMOTE_ANGRY;
 
+	if(m_pCharacter->IsBlind())
+		EmoteNormal = EMOTE_BLINK;
+
 	if(m_pCharacter->IsInvisible())
 		EmoteNormal = EMOTE_BLINK;
 

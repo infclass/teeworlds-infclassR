@@ -44,6 +44,8 @@ public:
 	void HandleCharacterTiles(class CCharacter *pChr);
 	void HandleLastHookers();
 
+	int64_t GetBlindCharactersMask(int ExcludeCID) const;
+
 	int GetZoneValueAt(int ZoneHandle, const vec2 &Pos) const;
 	int GetDamageZoneValueAt(const vec2 &Pos) const;
 	int GetBonusZoneValueAt(const vec2 &Pos) const;
