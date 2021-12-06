@@ -34,7 +34,7 @@ void CSlugSlime::Tick()
 		p->GetClass()->OnSlimeEffect(m_Owner);
 	}
 	
-	if(random_prob(0.2f))
+	if((m_LifeSpan % 20) == 0)
 	{
 		GameServer()->CreateDeath(m_Pos, m_Owner);
 	}

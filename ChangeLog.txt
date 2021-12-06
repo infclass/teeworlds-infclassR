@@ -2,6 +2,7 @@ InfclassR v1.3.1
 - Improved Taxi responsiveness
 - Merc laser now collides only with the owner bomb
 - Fixed a crash on voodoo ended round on death tiles
+- Slightly improved performance of slug slime effect
 
 InfclassR v1.3.0
 - Undead now can't be unfreezed on an EngineerWall
