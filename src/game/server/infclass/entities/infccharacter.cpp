@@ -1740,6 +1740,11 @@ void CInfClassCharacter::OnLaserFired(WeaponFireContext *pFireContext)
 			GameServer()->CreateSound(GetPos(), SOUND_LASER_FIRE);
 		}
 	}
+	else if (GetPlayerClass() == PLAYERCLASS_NINJA)
+	{
+		// Do nothing, the processing is done in CInfClassHuman::OnLaserFired()
+		return;
+	}
 	else
 	{
 		new CInfClassLaser(GameServer(), GetPos(), Direction, GameServer()->Tuning()->m_LaserReach, GetCID(), Damage, DAMAGE_TYPE::LASER);
@@ -2492,6 +2497,7 @@ void CInfClassCharacter::GiveGift(int GiftType)
 		case PLAYERCLASS_NINJA:
 			GiveWeapon(WEAPON_GUN, -1);
 			GiveWeapon(WEAPON_GRENADE, -1);
+			GiveWeapon(WEAPON_LASER, -1);
 			break;
 		case PLAYERCLASS_SNIPER:
 			GiveWeapon(WEAPON_GUN, -1);

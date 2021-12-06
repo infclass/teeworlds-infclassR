@@ -5,6 +5,7 @@
 #include <game/server/gamecontext.h>
 #include <game/server/infclass/damage_type.h>
 #include <game/server/infclass/entities/biologist-mine.h>
+#include <game/server/infclass/entities/blinding-laser.h>
 #include <game/server/infclass/entities/engineer-wall.h>
 #include <game/server/infclass/entities/infccharacter.h>
 #include <game/server/infclass/entities/looper-wall.h>
@@ -147,6 +148,18 @@ void CInfClassHuman::OnHammerFired(WeaponFireContext *pFireContext)
 	}
 }
 
+void CInfClassHuman::OnLaserFired(WeaponFireContext *pFireContext)
+{
+	switch(GetPlayerClass())
+	{
+		case PLAYERCLASS_NINJA:
+			OnBlindingLaserFired(pFireContext);
+			break;
+		default:
+			break;
+	}
+}
+
 void CInfClassHuman::GiveClassAttributes()
 {
 	if(!m_pCharacter)
@@ -225,6 +238,7 @@ void CInfClassHuman::GiveClassAttributes()
 			m_pCharacter->GiveWeapon(WEAPON_HAMMER, -1);
 			m_pCharacter->GiveWeapon(WEAPON_GUN, -1);
 			m_pCharacter->GiveWeapon(WEAPON_GRENADE, -1);
+			m_pCharacter->GiveWeapon(WEAPON_LASER, -1);
 			m_pCharacter->SetActiveWeapon(WEAPON_HAMMER);
 			break;
 		case PLAYERCLASS_NONE:

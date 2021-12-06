@@ -3641,6 +3641,8 @@ bool CGameContext::ConHelp(IConsole::IResult *pResult)
 			NULL
 		);
 		Buffer.append("\n\n");
+		Server()->Localization()->Format_L(Buffer, pLanguage, _("They also have a laser rifle that blinds the target for a short period of time."), NULL);
+		Buffer.append("\n\n");
 		Server()->Localization()->Format_L(Buffer, pLanguage, _("Ninja gets special targets. For killing a target, extra points and abilities are awarded."), NULL);
 	}
 	else if(str_comp_nocase(pHelpPage, "mercenary") == 0)

@@ -21,6 +21,7 @@ public:
 	void OnCharacterSnap(int SnappingClient) override;
 
 	void OnHammerFired(WeaponFireContext *pFireContext) override;
+	void OnLaserFired(WeaponFireContext *pFireContext) override;
 
 	void OnSlimeEffect(int Owner) override;
 
