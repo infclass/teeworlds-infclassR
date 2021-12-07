@@ -1095,35 +1095,35 @@ void CServer::SendMap(int ClientID)
 
 void CServer::SendMapData(int ClientID, int Chunk)
 {
- 	unsigned int ChunkSize = 1024-128;
- 	unsigned int Offset = Chunk * ChunkSize;
- 	int Last = 0;
- 
- 	// drop faulty map data requests
- 	if(Chunk < 0 || Offset > m_CurrentMapSize)
- 		return;
- 
- 	if(Offset+ChunkSize >= m_CurrentMapSize)
- 	{
- 		ChunkSize = m_CurrentMapSize-Offset;
- 		Last = 1;
- 	}
- 
- 	CMsgPacker Msg(NETMSG_MAP_DATA);
- 	Msg.AddInt(Last);
- 	Msg.AddInt(m_CurrentMapCrc);
- 	Msg.AddInt(Chunk);
- 	Msg.AddInt(ChunkSize);
- 	Msg.AddRaw(&m_pCurrentMapData[Offset], ChunkSize);
- 	SendMsgEx(&Msg, MSGFLAG_VITAL|MSGFLAG_FLUSH, ClientID, true);
- 
- 	if(g_Config.m_Debug)
- 	{
- 		char aBuf[256];
- 		str_format(aBuf, sizeof(aBuf), "sending chunk %d with size %d", Chunk, ChunkSize);
- 		Console()->Print(IConsole::OUTPUT_LEVEL_DEBUG, "server", aBuf);
- 	}
- }
+	unsigned int ChunkSize = 1024-128;
+	unsigned int Offset = Chunk * ChunkSize;
+	int Last = 0;
+
+	// drop faulty map data requests
+	if(Chunk < 0 || Offset > m_CurrentMapSize)
+		return;
+
+	if(Offset+ChunkSize >= m_CurrentMapSize)
+	{
+		ChunkSize = m_CurrentMapSize-Offset;
+		Last = 1;
+	}
+
+	CMsgPacker Msg(NETMSG_MAP_DATA);
+	Msg.AddInt(Last);
+	Msg.AddInt(m_CurrentMapCrc);
+	Msg.AddInt(Chunk);
+	Msg.AddInt(ChunkSize);
+	Msg.AddRaw(&m_pCurrentMapData[Offset], ChunkSize);
+	SendMsgEx(&Msg, MSGFLAG_VITAL|MSGFLAG_FLUSH, ClientID, true);
+
+	if(g_Config.m_Debug)
+	{
+		char aBuf[256];
+		str_format(aBuf, sizeof(aBuf), "sending chunk %d with size %d", Chunk, ChunkSize);
+		Console()->Print(IConsole::OUTPUT_LEVEL_DEBUG, "server", aBuf);
+	}
+}
 
 void CServer::SendConnectionReady(int ClientID)
 {
