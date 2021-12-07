@@ -775,7 +775,7 @@ int CServer::SendMsgEx(CMsgPacker *pMsg, int Flags, int ClientID, bool System)
 		return -1;
 
 	// drop packet to dummy client
-	if(0 <= ClientID && ClientID < MAX_CLIENTS && GameServer()->IsClientBot(ClientID))
+	if(ClientID >= 0 && ClientID < MAX_CLIENTS && GameServer()->IsClientBot(ClientID))
 		return 0;
 
 	mem_zero(&Packet, sizeof(CNetChunk));
@@ -794,26 +794,30 @@ int CServer::SendMsgEx(CMsgPacker *pMsg, int Flags, int ClientID, bool System)
 	if(Flags&MSGFLAG_FLUSH)
 		Packet.m_Flags |= NETSENDFLAG_FLUSH;
 
-	// write message to demo recorder
-	if(!(Flags&MSGFLAG_NORECORD))
-		m_DemoRecorder.RecordMessage(pMsg->Data(), pMsg->Size());
-
-	if(!(Flags&MSGFLAG_NOSEND))
+	if(ClientID < 0)
 	{
-		if(ClientID == -1)
+		// write message to demo recorder
+		if(!(Flags&MSGFLAG_NORECORD))
+			m_DemoRecorder.RecordMessage(pMsg->Data(), pMsg->Size());
+
+		if(!(Flags & MSGFLAG_NOSEND))
 		{
-			// broadcast
-			int i;
-			for(i = 0; i < MAX_CLIENTS; i++)
+			for(int i = 0; i < MAX_CLIENTS; i++)
+			{
 				if(m_aClients[i].m_State == CClient::STATE_INGAME)
 				{
 					Packet.m_ClientID = i;
 					m_NetServer.Send(&Packet);
 				}
+			}
 		}
-		else
+	}
+	else
+	{
+		if(!(Flags & MSGFLAG_NOSEND))
 			m_NetServer.Send(&Packet);
 	}
+
 	return 0;
 }
 
