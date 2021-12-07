@@ -764,6 +764,23 @@ int CServer::MaxClients() const
 	return m_NetServer.MaxClients();
 }
 
+static inline bool RepackMsg(const CMsgPacker *pMsg, CPacker &Packer)
+{
+	Packer.Reset();
+	if(pMsg->m_MsgID < OFFSET_UUID)
+	{
+		Packer.AddInt((pMsg->m_MsgID << 1) | (pMsg->m_System ? 1 : 0));
+	}
+	else
+	{
+		Packer.AddInt((0 << 1) | (pMsg->m_System ? 1 : 0)); // NETMSG_EX, NETMSGTYPE_EX
+		g_UuidManager.PackUuid(pMsg->m_MsgID, &Packer);
+	}
+	Packer.AddRaw(pMsg->Data(), pMsg->Size());
+
+	return false;
+}
+
 int CServer::SendMsg(CMsgPacker *pMsg, int Flags, int ClientID)
 {
 	CNetChunk Packet;
@@ -775,9 +792,6 @@ int CServer::SendMsg(CMsgPacker *pMsg, int Flags, int ClientID)
 		return 0;
 
 	mem_zero(&Packet, sizeof(CNetChunk));
-	Packet.m_ClientID = ClientID;
-	Packet.m_pData = pMsg->Data();
-	Packet.m_DataSize = pMsg->Size();
 
 	if(Flags&MSGFLAG_VITAL)
 		Packet.m_Flags |= NETSENDFLAG_VITAL;
@@ -786,9 +800,13 @@ int CServer::SendMsg(CMsgPacker *pMsg, int Flags, int ClientID)
 
 	if(ClientID < 0)
 	{
+		CPacker Pack6;
+		if(RepackMsg(pMsg, Pack6))
+			return -1;
+
 		// write message to demo recorder
 		if(!(Flags&MSGFLAG_NORECORD))
-			m_DemoRecorder.RecordMessage(pMsg->Data(), pMsg->Size());
+			m_DemoRecorder.RecordMessage(Pack6.Data(), Pack6.Size());
 
 		if(!(Flags & MSGFLAG_NOSEND))
 		{
@@ -796,6 +814,9 @@ int CServer::SendMsg(CMsgPacker *pMsg, int Flags, int ClientID)
 			{
 				if(m_aClients[i].m_State == CClient::STATE_INGAME)
 				{
+					CPacker *pPack = &Pack6;
+					Packet.m_pData = pPack->Data();
+					Packet.m_DataSize = pPack->Size();
 					Packet.m_ClientID = i;
 					m_NetServer.Send(&Packet);
 				}
@@ -804,6 +825,19 @@ int CServer::SendMsg(CMsgPacker *pMsg, int Flags, int ClientID)
 	}
 	else
 	{
+		CPacker Pack;
+		if(RepackMsg(pMsg, Pack))
+			return -1;
+
+		Packet.m_ClientID = ClientID;
+		Packet.m_pData = Pack.Data();
+		Packet.m_DataSize = Pack.Size();
+
+		if(!(Flags & MSGFLAG_NORECORD))
+		{
+			m_DemoRecorder.RecordMessage(Pack.Data(), Pack.Size());
+		}
+
 		if(!(Flags & MSGFLAG_NOSEND))
 			m_NetServer.Send(&Packet);
 	}

@@ -16,15 +16,6 @@ public:
 		m_MsgID(Type), m_System(System), m_NoTranslate(NoTranslate)
 	{
 		Reset();
-		if(Type < OFFSET_UUID)
-		{
-			AddInt(Type);
-		}
-		else
-		{
-			AddInt(0); // NETMSG_EX, NETMSGTYPE_EX
-			g_UuidManager.PackUuid(Type, this);
-		}
 	}
 };
 
