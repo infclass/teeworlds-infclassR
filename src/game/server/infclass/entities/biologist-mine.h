@@ -3,9 +3,9 @@
 #ifndef GAME_SERVER_ENTITIES_BIOLOGIST_MINE_H
 #define GAME_SERVER_ENTITIES_BIOLOGIST_MINE_H
 
-#include "infcentity.h"
+#include "infc-placed-object.h"
 
-class CBiologistMine : public CInfCEntity
+class CBiologistMine : public CPlacedObject
 {
 public:
 	enum

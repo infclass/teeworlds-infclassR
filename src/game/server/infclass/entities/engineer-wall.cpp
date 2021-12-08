@@ -16,7 +16,7 @@ const float g_BarrierMaxLength = 300.0;
 const float g_BarrierRadius = 0.0;
 
 CEngineerWall::CEngineerWall(CGameContext *pGameContext, vec2 Pos1, vec2 Pos2, int Owner)
-	: CInfCEntity(pGameContext, CGameWorld::ENTTYPE_ENGINEER_WALL, Pos1, Owner)
+	: CPlacedObject(pGameContext, CGameWorld::ENTTYPE_ENGINEER_WALL, Pos1, Owner)
 {
 	if(distance(Pos1, Pos2) > g_BarrierMaxLength)
 	{

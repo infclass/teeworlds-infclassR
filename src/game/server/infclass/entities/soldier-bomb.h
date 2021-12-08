@@ -3,11 +3,11 @@
 #ifndef GAME_SERVER_ENTITIES_SOLDIER_BOMB_H
 #define GAME_SERVER_ENTITIES_SOLDIER_BOMB_H
 
-#include "infcentity.h"
+#include "infc-placed-object.h"
 
 #include <base/tl/array.h>
 
-class CSoldierBomb : public CInfCEntity
+class CSoldierBomb : public CPlacedObject
 {
 public:
 	CSoldierBomb(CGameContext *pGameContext, vec2 Pos, int Owner);

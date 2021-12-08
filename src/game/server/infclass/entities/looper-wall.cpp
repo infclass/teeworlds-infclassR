@@ -10,7 +10,7 @@
 #include "infccharacter.h"
 
 CLooperWall::CLooperWall(CGameContext *pGameContext, vec2 Pos1, vec2 Pos2, int Owner)
-	: CInfCEntity(pGameContext, CGameWorld::ENTTYPE_LOOPER_WALL, Pos1, Owner)
+	: CPlacedObject(pGameContext, CGameWorld::ENTTYPE_LOOPER_WALL, Pos1, Owner)
 {
 	if(distance(Pos1, Pos2) > g_BarrierMaxLength)
 	{

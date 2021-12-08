@@ -13,7 +13,7 @@
 #include "plasma.h"
 
 CTurret::CTurret(CGameContext *pGameContext, vec2 Pos, int Owner, vec2 Direction, CTurret::Type Type)
-	: CInfCEntity(pGameContext, CGameWorld::ENTTYPE_TURRET, Pos, Owner)
+	: CPlacedObject(pGameContext, CGameWorld::ENTTYPE_TURRET, Pos, Owner)
 {
 	m_Dir = Direction;
 	m_StartTick = Server()->Tick();

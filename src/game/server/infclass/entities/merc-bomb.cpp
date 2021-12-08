@@ -9,7 +9,7 @@
 #include "infccharacter.h"
 
 CMercenaryBomb::CMercenaryBomb(CGameContext *pGameContext, vec2 Pos, int Owner)
-	: CInfCEntity(pGameContext, CGameWorld::ENTTYPE_MERCENARY_BOMB, Pos, Owner)
+	: CPlacedObject(pGameContext, CGameWorld::ENTTYPE_MERCENARY_BOMB, Pos, Owner)
 {
 	GameWorld()->InsertEntity(this);
 	m_LoadingTick = Server()->TickSpeed();

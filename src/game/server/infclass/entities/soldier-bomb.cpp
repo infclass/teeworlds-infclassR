@@ -9,7 +9,7 @@
 #include <cmath>
 
 CSoldierBomb::CSoldierBomb(CGameContext *pGameContext, vec2 Pos, int Owner)
-	: CInfCEntity(pGameContext, CGameWorld::ENTTYPE_SOLDIER_BOMB, Pos, Owner)
+	: CPlacedObject(pGameContext, CGameWorld::ENTTYPE_SOLDIER_BOMB, Pos, Owner)
 {
 	GameWorld()->InsertEntity(this);
 	m_DetectionRadius = 60.0f;

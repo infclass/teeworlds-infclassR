@@ -8,7 +8,7 @@
 #include "infccharacter.h"
 
 CBiologistMine::CBiologistMine(CGameContext *pGameContext, vec2 Pos, vec2 EndPos, int Owner)
-	: CInfCEntity(pGameContext, CGameWorld::ENTTYPE_BIOLOGIST_MINE, Pos, Owner)
+	: CPlacedObject(pGameContext, CGameWorld::ENTTYPE_BIOLOGIST_MINE, Pos, Owner)
 {
 	m_EndPos = EndPos;
 	GameWorld()->InsertEntity(this);

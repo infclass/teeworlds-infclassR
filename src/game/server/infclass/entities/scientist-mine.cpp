@@ -9,7 +9,7 @@
 #include "growingexplosion.h"
 
 CScientistMine::CScientistMine(CGameContext *pGameContext, vec2 Pos, int Owner)
-	: CInfCEntity(pGameContext, CGameWorld::ENTTYPE_SCIENTIST_MINE, Pos, Owner)
+	: CPlacedObject(pGameContext, CGameWorld::ENTTYPE_SCIENTIST_MINE, Pos, Owner)
 {
 	GameWorld()->InsertEntity(this);
 	m_DetectionRadius = 60.0f;
