@@ -86,6 +86,9 @@ void CWhiteHole::StartVisualEffect()
 // Draw ParticleEffect
 void CWhiteHole::Snap(int SnappingClient)
 {
+	if(!DoSnapForClient(SnappingClient))
+		return;
+
 	// Draw AntiPing white hole effect
 	if (Server()->GetClientAntiPing(SnappingClient)) {	
 		int NumSide = 6;

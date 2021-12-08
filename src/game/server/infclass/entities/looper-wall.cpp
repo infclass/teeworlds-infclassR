@@ -109,7 +109,10 @@ void CLooperWall::TickPaused()
 }
 
 void CLooperWall::Snap(int SnappingClient)
-{	
+{
+	if(!DoSnapForClient(SnappingClient))
+		return;
+
 	// Laser dieing animation
 	int LifeDiff = 0;
 	if (m_LifeSpan < 1*Server()->TickSpeed())
@@ -127,9 +130,6 @@ void CLooperWall::Snap(int SnappingClient)
 
 	for(int i=0; i<2; i++) 
 	{
-		if(NetworkClipped(SnappingClient))
-			return;
-
 		if (i == 1)
 		{
 			dirVecT.x = -dirVecT.x;

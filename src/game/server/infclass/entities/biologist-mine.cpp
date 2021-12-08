@@ -41,6 +41,9 @@ void CBiologistMine::Explode()
 
 void CBiologistMine::Snap(int SnappingClient)
 {
+	if(!DoSnapForClient(SnappingClient))
+		return;
+
 	float AngleStep = 2.0f * pi / CBiologistMine::NUM_SIDE;
 	float Radius = 32.0f;
 	for(int i=0; i<CBiologistMine::NUM_SIDE; i++)

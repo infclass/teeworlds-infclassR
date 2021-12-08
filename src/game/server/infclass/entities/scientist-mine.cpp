@@ -51,6 +51,9 @@ void CScientistMine::Explode(int DetonatedBy)
 
 void CScientistMine::Snap(int SnappingClient)
 {
+	if(!DoSnapForClient(SnappingClient))
+		return;
+
 	float Radius = Config()->m_InfMineRadius;
 	
 	int NumSide = CScientistMine::NUM_SIDE;

@@ -91,15 +91,15 @@ void CSoldierBomb::ChargeBomb(float time)
 
 void CSoldierBomb::Snap(int SnappingClient)
 {
+	if(!DoSnapForClient(SnappingClient))
+		return;
+
 	float time = (Server()->Tick()-m_StartTick)/(float)Server()->TickSpeed();
 	float angle = fmodf(time*pi/2, 2.0f*pi);
 	ChargeBomb(time);
 
 	for(int i=0; i<m_nbBomb; i++)
 	{
-		if(NetworkClipped(SnappingClient))
-			return;
-		
 		float shiftedAngle = angle + 2.0*pi*static_cast<float>(i)/static_cast<float>(m_IDBomb.size());
 		
 		CNetObj_Projectile *pProj = static_cast<CNetObj_Projectile *>(Server()->SnapNewItem(NETOBJTYPE_PROJECTILE, m_IDBomb[i], sizeof(CNetObj_Projectile)));

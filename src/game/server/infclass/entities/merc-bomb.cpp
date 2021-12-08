@@ -82,7 +82,7 @@ bool CMercenaryBomb::ReadyToExplode()
 
 void CMercenaryBomb::Snap(int SnappingClient)
 {
-	if(NetworkClipped(SnappingClient))
+	if(!DoSnapForClient(SnappingClient))
 		return;
 
 	//CPlayer* pClient = GameServer()->m_apPlayers[SnappingClient];

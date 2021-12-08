@@ -7,6 +7,7 @@
 - Fixed crash on a new round if a Voodoo finished the previous round on a death tile
 - Returned the notorious 'whoosh' sound effect for "vs witches" fun rounds
 - Slug slime effect reworked to appear approximately 4x less times (should improve the performance).
+- Add missing NetworkClipping to a number of 'traps' (biologist mine, looper wall, scientist mine, turret, white hole)
 
 ## InfclassR v1.3.0 - 2021-11-27
 

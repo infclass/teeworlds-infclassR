@@ -180,6 +180,9 @@ void CTurret::Reload()
 
 void CTurret::Snap(int SnappingClient)
 {
+	if(!DoSnapForClient(SnappingClient))
+		return;
+
 	// Draw AntiPing  effect
 	if(Server()->GetClientAntiPing(SnappingClient))
 	{
