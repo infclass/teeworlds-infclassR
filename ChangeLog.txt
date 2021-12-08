@@ -1,3 +1,6 @@
+InfclassR v1.4.0_alpha1
+- New blinding laser is given to Ninja
+
 InfclassR v1.3.1
 - Improved Taxi responsiveness
 - Merc laser now collides only with the owner bomb
