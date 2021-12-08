@@ -605,6 +605,8 @@ set_glob(GAME_SERVER GLOB_RECURSE src/game/server
   infclass/entities/hero-flag.h
   infclass/entities/infc-laser.cpp
   infclass/entities/infc-laser.h
+  infclass/entities/infc-placed-object.cpp
+  infclass/entities/infc-placed-object.h
   infclass/entities/infccharacter.cpp
   infclass/entities/infccharacter.h
   infclass/entities/infcentity.cpp
