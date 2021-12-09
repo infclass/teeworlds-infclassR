@@ -15,6 +15,7 @@ struct CNetObj_GameInfo;
 struct SpawnContext;
 
 enum class TAKEDAMAGEMODE;
+enum class DAMAGE_TYPE;
 
 using ClientsArray = array_on_stack<int, 64>; // MAX_CLIENTS
 
@@ -91,6 +92,7 @@ public:
 	static const char *GetClanForClass(int PlayerClass, const char *pDefaultText = nullptr);
 	static const char *GetClassPluralDisplayName(int PlayerClass);
 	static int MenuClassToPlayerClass(int MenuClass);
+	static int DamageTypeToWeapon(DAMAGE_TYPE DamageType, TAKEDAMAGEMODE *pMode = nullptr);
 
 	void RegisterChatCommands(class IConsole *pConsole) override;
 

@@ -606,6 +606,7 @@ set_glob(GAME_SERVER GLOB_RECURSE src/game/server
   infclass/classes/infcplayerclass.h
   infclass/classes/infected/infected.cpp
   infclass/classes/infected/infected.h
+  infclass/damage_type.h
   infclass/entities/biologist-laser.cpp
   infclass/entities/biologist-laser.h
   infclass/entities/biologist-mine.cpp

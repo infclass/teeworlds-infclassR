@@ -4,6 +4,7 @@
 
 #include <game/server/gamecontext.h>
 #include <game/server/infclass/classes/infcplayerclass.h>
+#include <game/server/infclass/damage_type.h>
 #include <game/server/infclass/entities/flyingpoint.h>
 #include <game/server/infclass/entities/infccharacter.h>
 #include <game/server/infclass/infcplayer.h>
@@ -750,6 +751,90 @@ int CInfClassGameController::MenuClassToPlayerClass(int MenuClass)
 	}
 
 	return PlayerClass;
+}
+
+int CInfClassGameController::DamageTypeToWeapon(DAMAGE_TYPE DamageType, TAKEDAMAGEMODE *pMode)
+{
+	int Weapon = WEAPON_GAME;
+	TAKEDAMAGEMODE LocalMode = TAKEDAMAGEMODE::NOINFECTION;
+	if(!pMode)
+	{
+		pMode = &LocalMode;
+	}
+
+	switch(DamageType)
+	{
+	case DAMAGE_TYPE::INVALID:
+		break;
+	case DAMAGE_TYPE::NO_DAMAGE:
+		break;
+
+	case DAMAGE_TYPE::HAMMER:
+	case DAMAGE_TYPE::BITE:
+	case DAMAGE_TYPE::LASER_WALL:
+	case DAMAGE_TYPE::BIOLOGIST_MINE:
+	case DAMAGE_TYPE::TURRET_DESTRUCTION:
+	case DAMAGE_TYPE::TURRET_LASER:
+	case DAMAGE_TYPE::TURRET_PLASMA:
+	case DAMAGE_TYPE::WHITE_HOLE:
+	case DAMAGE_TYPE::SLUG_SLIME:
+		Weapon = WEAPON_HAMMER;
+		break;
+	case DAMAGE_TYPE::SOLDIER_BOMB:
+	case DAMAGE_TYPE::MERCENARY_BOMB:
+	case DAMAGE_TYPE::SCIENTIST_MINE:
+	case DAMAGE_TYPE::SCIENTIST_TELEPORT:
+		*pMode = TAKEDAMAGEMODE::SELFHARM;
+		Weapon = WEAPON_HAMMER;
+		break;
+	case DAMAGE_TYPE::INFECTION_HAMMER:
+	case DAMAGE_TYPE::BOOMER_EXPLOSION:
+		*pMode = TAKEDAMAGEMODE::INFECTION;
+		Weapon = WEAPON_HAMMER;
+		break;
+	case DAMAGE_TYPE::GUN:
+	case DAMAGE_TYPE::MERCENARY_GUN:
+		Weapon = WEAPON_GUN;
+		break;
+	case DAMAGE_TYPE::SHOTGUN:
+	case DAMAGE_TYPE::MEDIC_SHOTGUN:
+	case DAMAGE_TYPE::BIOLOGIST_SHOTGUN:
+		Weapon = WEAPON_SHOTGUN;
+		break;
+	case DAMAGE_TYPE::GRENADE:
+	case DAMAGE_TYPE::STUNNING_GRENADE:
+	case DAMAGE_TYPE::MERCENARY_GRENADE:
+		Weapon = WEAPON_GRENADE;
+		break;
+	case DAMAGE_TYPE::LASER:
+	case DAMAGE_TYPE::SNIPER_RIFLE:
+	case DAMAGE_TYPE::SCIENTIST_LASER:
+	case DAMAGE_TYPE::LOOPER_LASER:
+		Weapon = WEAPON_LASER;
+		break;
+	case DAMAGE_TYPE::NINJA:
+	case DAMAGE_TYPE::DRYING_HOOK:
+		Weapon = WEAPON_NINJA;
+		break;
+
+	case DAMAGE_TYPE::DEATH_TILE:
+	case DAMAGE_TYPE::INFECTION_TILE:
+		Weapon = WEAPON_WORLD;
+		break;
+	case DAMAGE_TYPE::GAME:
+		Weapon = WEAPON_GAME;
+		break;
+	case DAMAGE_TYPE::KILL_COMMAND:
+		Weapon = WEAPON_SELF;
+		break;
+	case DAMAGE_TYPE::GAME_FINAL_EXPLOSION:
+	case DAMAGE_TYPE::GAME_INFECTION:
+		// This is how the infection world work
+		Weapon = WEAPON_WORLD;
+		break;
+	}
+
+	return Weapon;
 }
 
 void CInfClassGameController::RegisterChatCommands(IConsole *pConsole)
