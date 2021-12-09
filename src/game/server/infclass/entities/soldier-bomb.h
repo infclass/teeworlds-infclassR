@@ -11,24 +11,24 @@ class CSoldierBomb : public CPlacedObject
 {
 public:
 	CSoldierBomb(CGameContext *pGameContext, vec2 Pos, int Owner);
-	virtual ~CSoldierBomb();
+	~CSoldierBomb() override;
 
-	virtual void Snap(int SnappingClient);
-	void Tick();
-	virtual void TickPaused();
+	void Snap(int SnappingClient) override;
+	void Tick() override;
+	void TickPaused() override;
+
 	void Explode();
 	bool AddBomb();
-	int GetNbBombs() { return m_nbBomb; }
+	int GetNbBombs() const { return m_nbBomb; }
 
 private:
-	virtual void ChargeBomb(float time);
+	void ChargeBomb(float time);
+
 	int m_StartTick;
 	float m_Angle = 0;
 	array<int> m_IDBomb;
 	int m_nbBomb;
-	int charged_bomb;
-	
-public:
+	int m_ChargedBomb;
 	float m_DetectionRadius;
 };
 
