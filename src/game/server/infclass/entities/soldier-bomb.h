@@ -14,6 +14,7 @@ public:
 	virtual ~CSoldierBomb();
 
 	virtual void Snap(int SnappingClient);
+	void Tick();
 	virtual void TickPaused();
 	void Explode();
 	bool AddBomb();
@@ -22,6 +23,7 @@ public:
 private:
 	virtual void ChargeBomb(float time);
 	int m_StartTick;
+	float m_Angle = 0;
 	array<int> m_IDBomb;
 	int m_nbBomb;
 	int charged_bomb;

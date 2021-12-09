@@ -94,13 +94,9 @@ void CSoldierBomb::Snap(int SnappingClient)
 	if(!DoSnapForClient(SnappingClient))
 		return;
 
-	float time = (Server()->Tick()-m_StartTick)/(float)Server()->TickSpeed();
-	float angle = fmodf(time*pi/2, 2.0f*pi);
-	ChargeBomb(time);
-
 	for(int i=0; i<m_nbBomb; i++)
 	{
-		float shiftedAngle = angle + 2.0*pi*static_cast<float>(i)/static_cast<float>(m_IDBomb.size());
+		float shiftedAngle = m_Angle + 2.0*pi*static_cast<float>(i)/static_cast<float>(m_IDBomb.size());
 		
 		CNetObj_Projectile *pProj = static_cast<CNetObj_Projectile *>(Server()->SnapNewItem(NETOBJTYPE_PROJECTILE, m_IDBomb[i], sizeof(CNetObj_Projectile)));
 		pProj->m_X = (int)(m_Pos.x + m_DetectionRadius*cos(shiftedAngle));
@@ -110,6 +106,13 @@ void CSoldierBomb::Snap(int SnappingClient)
 		pProj->m_StartTick = Server()->Tick();
 		pProj->m_Type = WEAPON_GRENADE;
 	}
+}
+
+void CSoldierBomb::Tick()
+{
+	float time = (Server()->Tick()-m_StartTick)/(float)Server()->TickSpeed();
+	ChargeBomb(time);
+	m_Angle = fmodf(time*pi/2, 2.0f*pi);
 }
 
 void CSoldierBomb::TickPaused()
