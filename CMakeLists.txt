@@ -824,3 +824,11 @@ install(
   DESTINATION
     "${CMAKE_INSTALL_PREFIX}"
 )
+
+########################################################################
+# COMPILER-SPECIFICS
+########################################################################
+
+foreach(target ${TARGETS_OWN})
+  target_compile_definitions(${target} PRIVATE $<$<CONFIG:Debug>:CONF_DEBUG>)
+endforeach()
