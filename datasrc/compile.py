@@ -1,5 +1,5 @@
-import os, imp, sys
-from datatypes import *
+import sys
+from datatypes import EmitDefinition, EmitTypeDeclaration
 import content
 import network
 
