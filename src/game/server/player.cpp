@@ -37,7 +37,6 @@ void CPlayer::Reset()
 	m_LastActionTick = Server()->Tick();
 	m_LastActionMoveTick = Server()->Tick();
 	m_TeamChangeTick = Server()->Tick();
-	m_ClientVersion = 0;
 
 	m_LastEyeEmote = 0;
 	m_DefEmote = EMOTE_NORMAL;
@@ -374,6 +373,11 @@ void CPlayer::OnDirectInput(CNetObj_PlayerInput *NewInput)
 		if (NewInput->m_Direction || NewInput->m_Jump || NewInput->m_Hook)
 			m_LastActionMoveTick = Server()->Tick();
 	}
+}
+
+int CPlayer::GetClientVersion() const
+{
+	return m_pGameServer->GetClientVersion(m_ClientID);
 }
 
 CCharacter *CPlayer::GetCharacter()

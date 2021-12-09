@@ -327,6 +327,7 @@ void CServer::CClient::Reset(bool ResetScore)
 	m_Quitting = false;
 	m_SnapRate = CClient::SNAPRATE_INIT;
 	m_NextMapChunk = 0;
+	m_DDNetVersion = VERSION_NONE;
 	
 	if(ResetScore)
 	{
@@ -696,10 +697,21 @@ int CServer::GetClientInfo(int ClientID, CClientInfo *pInfo) const
 	{
 		pInfo->m_pName = ClientName(ClientID);
 		pInfo->m_Latency = m_aClients[ClientID].m_Latency;
+		pInfo->m_DDNetVersion = m_aClients[ClientID].m_DDNetVersion >= 0 ? m_aClients[ClientID].m_DDNetVersion : VERSION_VANILLA;
 		pInfo->m_CustClt = m_aClients[ClientID].m_CustClt;
 		return 1;
 	}
 	return 0;
+}
+
+void CServer::SetClientDDNetVersion(int ClientID, int DDNetVersion)
+{
+	dbg_assert(ClientID >= 0 && ClientID < MAX_CLIENTS, "client_id is not valid");
+
+	if(m_aClients[ClientID].m_State == CClient::STATE_INGAME)
+	{
+		m_aClients[ClientID].m_DDNetVersion = DDNetVersion;
+	}
 }
 
 void CServer::GetClientAddr(int ClientID, char *pAddrStr, int Size) const
@@ -1020,7 +1032,7 @@ int CServer::NewClientCallback(int ClientID, void *pUser)
 		pThis->GameServer()->OnClientDrop(ClientID, CLIENTDROPTYPE_KICK, "removing dummy");
 	}
 
-	pThis->m_aClients[ClientID].m_State = CClient::STATE_AUTH;
+	pThis->m_aClients[ClientID].m_State = CClient::STATE_PREAUTH;
 	pThis->m_aClients[ClientID].m_SupportsMapSha256 = false;
 	pThis->m_aClients[ClientID].m_aName[0] = 0;
 	pThis->m_aClients[ClientID].m_aClan[0] = 0;
@@ -1360,9 +1372,28 @@ void CServer::ProcessClientPacket(CNetChunk *pPacket)
 	if(Sys)
 	{
 		// system message
-		if(Msg == NETMSG_INFO)
+		if(Msg == NETMSG_CLIENTVER)
 		{
-			if((pPacket->m_Flags&NET_CHUNKFLAG_VITAL) != 0 && m_aClients[ClientID].m_State == CClient::STATE_AUTH)
+			if((pPacket->m_Flags & NET_CHUNKFLAG_VITAL) != 0 && m_aClients[ClientID].m_State == CClient::STATE_PREAUTH)
+			{
+				CUuid *pConnectionID = (CUuid *)Unpacker.GetRaw(sizeof(*pConnectionID));
+				int DDNetVersion = Unpacker.GetInt();
+				const char *pDDNetVersionStr = Unpacker.GetString(CUnpacker::SANITIZE_CC);
+				if(Unpacker.Error() || !str_utf8_check(pDDNetVersionStr) || DDNetVersion < 0)
+				{
+					return;
+				}
+				m_aClients[ClientID].m_ConnectionID = *pConnectionID;
+				m_aClients[ClientID].m_DDNetVersion = DDNetVersion;
+				str_copy(m_aClients[ClientID].m_aDDNetVersionStr, pDDNetVersionStr, sizeof(m_aClients[ClientID].m_aDDNetVersionStr));
+				m_aClients[ClientID].m_DDNetVersionSettled = true;
+				m_aClients[ClientID].m_GotDDNetVersionPacket = true;
+				m_aClients[ClientID].m_State = CClient::STATE_AUTH;
+			}
+		}
+		else if(Msg == NETMSG_INFO)
+		{
+			if((pPacket->m_Flags&NET_CHUNKFLAG_VITAL) != 0 && (m_aClients[ClientID].m_State == CClient::STATE_PREAUTH || m_aClients[ClientID].m_State == CClient::STATE_AUTH))
 			{
 				const char *pVersion = Unpacker.GetString(CUnpacker::SANITIZE_CC);
 				if(str_comp(pVersion, "0.6 626fce9a778df4d4") != 0 && str_comp(pVersion, GameServer()->NetVersion()) != 0)
@@ -2660,7 +2691,7 @@ bool CServer::ConStatus(IConsole::IResult *pResult, void *pUser)
 					pThis->IsClientLogged(i),
 					AuthLevel,
 					aAddrStr,
-					pThis->GameServer()->GetClientVersion(i)
+					pThis->m_aClients[i].m_DDNetVersion
 				);
 			}
 			else

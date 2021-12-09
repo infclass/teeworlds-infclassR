@@ -118,6 +118,7 @@ public:
 	{
 		const char *m_pName;
 		int m_Latency;
+		int m_DDNetVersion;
 		bool m_CustClt;
 	};
 	
@@ -156,6 +157,7 @@ public:
 	virtual int ClientCountry(int ClientID) const = 0;
 	virtual bool ClientIngame(int ClientID) const = 0;
 	virtual int GetClientInfo(int ClientID, CClientInfo *pInfo) const = 0;
+	virtual void SetClientDDNetVersion(int ClientID, int DDNetVersion) = 0;
 	virtual void GetClientAddr(int ClientID, char *pAddrStr, int Size) const = 0;
 	virtual std::string GetClientIP(int ClientID) const = 0;
 
@@ -419,7 +421,6 @@ public:
 	virtual int GetHeroGiftCoolDown() = 0;
 	virtual void FlagCollected() = 0;
 /* INFECTION MODIFICATION END *****************************************/
-	virtual int GetClientVersion(int ClientID) const = 0;
 };
 
 extern IGameServer *CreateGameServer();

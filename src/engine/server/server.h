@@ -108,6 +108,7 @@ public:
 		enum
 		{
 			STATE_EMPTY = 0,
+			STATE_PREAUTH,
 			STATE_AUTH,
 			STATE_CONNECTING,
 			STATE_READY,
@@ -176,6 +177,12 @@ public:
 		// DDRace
 
 		NETADDR m_Addr;
+		bool m_GotDDNetVersionPacket;
+		bool m_DDNetVersionSettled;
+		int m_DDNetVersion;
+		char m_aDDNetVersionStr[64];
+		CUuid m_ConnectionID;
+
 		bool m_CustClt;
 	};
 
@@ -240,6 +247,7 @@ public:
 	void SetRconCID(int ClientID);
 	int GetAuthedState(int ClientID) const;
 	int GetClientInfo(int ClientID, CClientInfo *pInfo) const;
+	void SetClientDDNetVersion(int ClientID, int DDNetVersion);
 	void GetClientAddr(int ClientID, char *pAddrStr, int Size) const;
 	std::string GetClientIP(int ClientID) const;
 	const char *ClientName(int ClientID) const;

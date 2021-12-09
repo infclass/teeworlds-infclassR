@@ -38,6 +38,7 @@ public:
 	void SetTeam(int Team, bool DoChatMsg=true);
 	int GetTeam() const { return m_Team; };
 	int GetCID() const { return m_ClientID; };
+	int GetClientVersion() const;
 	virtual bool IsBot() const { return false; }
 
 	virtual void Tick();
@@ -86,8 +87,6 @@ public:
 	int m_LastEmote;
 	int m_LastKill;
 	int m_LastWhisperTo;
-
-	int m_ClientVersion;
 
 	CTeeInfo m_TeeInfos;
 

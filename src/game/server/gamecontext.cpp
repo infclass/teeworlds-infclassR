@@ -1643,15 +1643,16 @@ void CGameContext::OnMessage(int MsgID, CUnpacker *pUnpacker, int ClientID)
 	
 	if (pPlayer && MsgID == (NETMSGTYPE_CL_CALLVOTE + 1)) 
 	{
-		int Version = pUnpacker->GetInt();
+		int DDNetVersion = pUnpacker->GetInt();
 
-		if(g_Config.m_SvBannedVersions[0] != '\0' && IsVersionBanned(Version))
+		if(g_Config.m_SvBannedVersions[0] != '\0' && IsVersionBanned(DDNetVersion))
 		{
 			Server()->Kick(ClientID, "unsupported client");
 		}
 
-		pPlayer->m_ClientVersion = Version;
+		Server()->SetClientDDNetVersion(ClientID, DDNetVersion);
 	}
+
 	//HACK: DDNet Client did something wrong that we can detect
 	//Round and Score conditions are here only to prevent false-positif
 	if(!pPlayer && Server()->GetClientNbRound(ClientID) == 0)
@@ -4478,9 +4479,10 @@ bool CGameContext::IsVersionBanned(int Version)
 
 int CGameContext::GetClientVersion(int ClientID) const
 {
-	return m_apPlayers[ClientID]->m_ClientVersion;
+	IServer::CClientInfo Info = {0};
+	Server()->GetClientInfo(ClientID, &Info);
+	return Info.m_DDNetVersion;
 }
-
 
 bool CGameContext::RateLimitPlayerVote(int ClientID)
 {
