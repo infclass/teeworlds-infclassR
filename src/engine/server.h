@@ -119,6 +119,7 @@ public:
 		const char *m_pName;
 		int m_Latency;
 		int m_DDNetVersion;
+		int m_InfClassVersion;
 		bool m_CustClt;
 	};
 	

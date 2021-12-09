@@ -328,6 +328,7 @@ void CServer::CClient::Reset(bool ResetScore)
 	m_SnapRate = CClient::SNAPRATE_INIT;
 	m_NextMapChunk = 0;
 	m_DDNetVersion = VERSION_NONE;
+	m_InfClassVersion = 0;
 	
 	if(ResetScore)
 	{
@@ -698,6 +699,7 @@ int CServer::GetClientInfo(int ClientID, CClientInfo *pInfo) const
 		pInfo->m_pName = ClientName(ClientID);
 		pInfo->m_Latency = m_aClients[ClientID].m_Latency;
 		pInfo->m_DDNetVersion = m_aClients[ClientID].m_DDNetVersion >= 0 ? m_aClients[ClientID].m_DDNetVersion : VERSION_VANILLA;
+		pInfo->m_InfClassVersion = m_aClients[ClientID].m_InfClassVersion;
 		pInfo->m_CustClt = m_aClients[ClientID].m_CustClt;
 		return 1;
 	}
@@ -1389,6 +1391,18 @@ void CServer::ProcessClientPacket(CNetChunk *pPacket)
 				m_aClients[ClientID].m_DDNetVersionSettled = true;
 				m_aClients[ClientID].m_GotDDNetVersionPacket = true;
 				m_aClients[ClientID].m_State = CClient::STATE_AUTH;
+			}
+		}
+		if(Msg == NETMSG_CLIENTVER_INFCLASS)
+		{
+			if((pPacket->m_Flags & NET_CHUNKFLAG_VITAL) != 0 && m_aClients[ClientID].m_State == CClient::STATE_AUTH)
+			{
+				int InfClassVersion = Unpacker.GetInt();
+				if(Unpacker.Error() || InfClassVersion < 0)
+				{
+					return;
+				}
+				m_aClients[ClientID].m_InfClassVersion = InfClassVersion;
 			}
 		}
 		else if(Msg == NETMSG_INFO)
@@ -2684,14 +2698,15 @@ bool CServer::ConStatus(IConsole::IResult *pResult, void *pUser)
 				int AuthLevel = pThis->m_aClients[i].m_Authed == CServer::AUTHED_ADMIN ? 2 :
 										pThis->m_aClients[i].m_Authed == CServer::AUTHED_MOD ? 1 : 0;
 				
-				str_format(aBuf, sizeof(aBuf), "(#%02i) %s: [antispoof=%d] [login=%d] [level=%d] [ip=%s] [version=%d]",
+				str_format(aBuf, sizeof(aBuf), "(#%02i) %s: [antispoof=%d] [login=%d] [level=%d] [ip=%s] [version=%d] [inf=%d]",
 					i,
 					aBufName,
 					pThis->m_NetServer.HasSecurityToken(i),
 					pThis->IsClientLogged(i),
 					AuthLevel,
 					aAddrStr,
-					pThis->m_aClients[i].m_DDNetVersion
+					pThis->m_aClients[i].m_DDNetVersion,
+					pThis->m_aClients[i].m_InfClassVersion
 				);
 			}
 			else

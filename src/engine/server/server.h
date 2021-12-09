@@ -183,6 +183,7 @@ public:
 		char m_aDDNetVersionStr[64];
 		CUuid m_ConnectionID;
 
+		int m_InfClassVersion;
 		bool m_CustClt;
 	};
 
