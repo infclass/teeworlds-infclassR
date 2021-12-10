@@ -10,7 +10,7 @@
 #include "projectile.h"
 
 CProjectile::CProjectile(CGameContext *pGameContext, int Type, int Owner, vec2 Pos, vec2 Dir, int Span,
-		int Damage, bool Explosive, float Force, int SoundImpact, int Weapon, TAKEDAMAGEMODE TakeDamageMode)
+		int Damage, bool Explosive, float Force, int SoundImpact, DAMAGE_TYPE DamageType)
 : CInfCEntity(pGameContext, CGameWorld::ENTTYPE_PROJECTILE, Pos, Owner)
 {
 	m_Type = Type;
@@ -19,7 +19,7 @@ CProjectile::CProjectile(CGameContext *pGameContext, int Type, int Owner, vec2 P
 	m_Force = Force;
 	m_Damage = Damage;
 	m_SoundImpact = SoundImpact;
-	m_Weapon = Weapon;
+	m_DamageType = DamageType;
 	m_StartTick = Server()->Tick();
 	m_Explosive = Explosive;
 
@@ -28,7 +28,7 @@ CProjectile::CProjectile(CGameContext *pGameContext, int Type, int Owner, vec2 P
 /* INFECTION MODIFICATION START ***************************************/
 	m_IsFlashGrenade = false;
 	m_StartPos = Pos;
-	m_TakeDamageMode = TakeDamageMode;
+	m_Weapon = CInfClassGameController::DamageTypeToWeapon(DamageType, &m_TakeDamageMode);
 /* INFECTION MODIFICATION END *****************************************/
 }
 

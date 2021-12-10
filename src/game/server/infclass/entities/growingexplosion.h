@@ -10,6 +10,8 @@
 #include <game/server/entity.h>
 #include <game/server/entities/character.h>
 
+enum class DAMAGE_TYPE;
+
 enum
 {
 	GROWINGEXPLOSIONEFFECT_FREEZE_INFECTED=0,
@@ -23,7 +25,8 @@ enum
 class CGrowingExplosion : public CInfCEntity
 {
 public:
-	CGrowingExplosion(CGameContext *pGameContext, vec2 Pos, vec2 Dir, int Owner, int Radius, int ExplosionEffect, TAKEDAMAGEMODE TakeDamageMode = TAKEDAMAGEMODE::NOINFECTION);
+	CGrowingExplosion(CGameContext *pGameContext, vec2 Pos, vec2 Dir, int Owner, int Radius, int ExplosionEffect);
+	CGrowingExplosion(CGameContext *pGameContext, vec2 Pos, vec2 Dir, int Owner, int Radius, DAMAGE_TYPE DamageType);
 	virtual ~CGrowingExplosion();
 
 	virtual void Tick();
@@ -36,7 +39,7 @@ private:
 	int m_MaxGrowing;
 	int m_GrowingMap_Length;
 	int m_GrowingMap_Size;
-	TAKEDAMAGEMODE m_TakeDamageMode;
+	TAKEDAMAGEMODE m_TakeDamageMode = TAKEDAMAGEMODE::NOINFECTION;
 	
 	vec2 m_SeedPos;
 	int m_SeedX;

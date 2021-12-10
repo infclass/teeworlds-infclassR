@@ -1375,7 +1375,7 @@ void CInfClassCharacter::OnGunFired(WeaponFireContext *pFireContext)
 			ProjStartPos,
 			Direction,
 			(int)(Server()->TickSpeed()*GameServer()->Tuning()->m_GunLifetime),
-			1, 0, 0, -1, WEAPON_GUN, TAKEDAMAGEMODE::NOINFECTION);
+			1, 0, 0, -1, DAMAGE_TYPE::MERCENARY_GUN);
 
 		// pack the Projectile and send it to the client Directly
 		CNetObj_Projectile p;
@@ -1401,7 +1401,7 @@ void CInfClassCharacter::OnGunFired(WeaponFireContext *pFireContext)
 			ProjStartPos,
 			Direction,
 			(int)(Server()->TickSpeed()*GameServer()->Tuning()->m_GunLifetime),
-			1, 0, 0, -1, WEAPON_GUN, TAKEDAMAGEMODE::NOINFECTION);
+			1, 0, 0, -1, DAMAGE_TYPE::GUN);
 
 		// pack the Projectile and send it to the client Directly
 		CNetObj_Projectile p;
@@ -1464,7 +1464,7 @@ void CInfClassCharacter::OnShotgunFired(WeaponFireContext *pFireContext)
 				ProjStartPos,
 				vec2(cosf(a), sinf(a))*Speed,
 				(int)(Server()->TickSpeed()*LifeTime),
-				1, 0, Force, -1, WEAPON_SHOTGUN, TAKEDAMAGEMODE::NOINFECTION);
+				1, 0, Force, -1, DAMAGE_TYPE::SHOTGUN);
 
 			// pack the Projectile and send it to the client Directly
 			CNetObj_Projectile p;
@@ -1536,7 +1536,7 @@ void CInfClassCharacter::OnGrenadeFired(WeaponFireContext *pFireContext)
 			ProjStartPos,
 			Direction,
 			(int)(Server()->TickSpeed()*GameServer()->Tuning()->m_GrenadeLifetime),
-			1, true, 0, SOUND_GRENADE_EXPLODE, WEAPON_GRENADE, TAKEDAMAGEMODE::NOINFECTION);
+			1, true, 0, SOUND_GRENADE_EXPLODE, DAMAGE_TYPE::GRENADE);
 
 		if(GetPlayerClass() == PLAYERCLASS_NINJA)
 		{

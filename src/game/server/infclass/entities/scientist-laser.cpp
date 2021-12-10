@@ -4,6 +4,7 @@
 #include <game/server/gamecontext.h>
 #include "scientist-laser.h"
 
+#include <game/server/infclass/damage_type.h>
 #include <game/server/infclass/infcgamecontroller.h>
 
 #include "white-hole.h"
@@ -70,7 +71,7 @@ void CScientistLaser::DoBounce()
 	CCharacter *pOwnerChar = GameServer()->GetPlayerChar(m_Owner);
 	if(pOwnerChar && pOwnerChar->m_HasWhiteHole)
 	{
-		new CGrowingExplosion(GameServer(), m_Pos, vec2(0.0, -1.0), m_Owner, 5, GROWINGEXPLOSIONEFFECT_BOOM_INFECTED);
+		new CGrowingExplosion(GameServer(), m_Pos, vec2(0.0, -1.0), m_Owner, 5, DAMAGE_TYPE::WHITE_HOLE);
 		new CWhiteHole(GameServer(), To, m_Owner);
 		
 		//Make it unavailable

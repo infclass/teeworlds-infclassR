@@ -7,6 +7,8 @@
 #include <game/generated/protocol.h>
 #include <game/server/gamecontext.h>
 
+#include <game/server/infclass/damage_type.h>
+
 #include "growingexplosion.h"
 
 CScatterGrenade::CScatterGrenade(CGameContext *pGameContext, int Owner, vec2 Pos, vec2 Dir)
@@ -135,11 +137,11 @@ void CScatterGrenade::Explode()
 {
 	if(m_IsFlashGrenade)
 	{
-		new CGrowingExplosion(GameServer(), m_ActualPos, m_ActualDir, m_Owner, 4, GROWINGEXPLOSIONEFFECT_FREEZE_INFECTED);
+		new CGrowingExplosion(GameServer(), m_ActualPos, m_ActualDir, m_Owner, 4, DAMAGE_TYPE::STUNNING_GRENADE);
 	}
 	else
 	{
-		new CGrowingExplosion(GameServer(), m_ActualPos, m_ActualDir, m_Owner, 4, GROWINGEXPLOSIONEFFECT_POISON_INFECTED);
+		new CGrowingExplosion(GameServer(), m_ActualPos, m_ActualDir, m_Owner, 4, DAMAGE_TYPE::MERCENARY_GRENADE);
 	}
 	
 	GameServer()->m_World.DestroyEntity(this);

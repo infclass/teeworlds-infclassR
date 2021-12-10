@@ -10,12 +10,43 @@
 
 #include "infccharacter.h"
 
-CGrowingExplosion::CGrowingExplosion(CGameContext *pGameContext, vec2 Pos, vec2 Dir, int Owner, int Radius, int ExplosionEffect, TAKEDAMAGEMODE TakeDamageMode)
+CGrowingExplosion::CGrowingExplosion(CGameContext *pGameContext, vec2 Pos, vec2 Dir, int Owner, int Radius, int ExplosionEffect) :
+	CGrowingExplosion(pGameContext, Pos, Dir, Owner, Radius, DAMAGE_TYPE::NO_DAMAGE)
+{
+	m_ExplosionEffect = ExplosionEffect;
+}
+
+CGrowingExplosion::CGrowingExplosion(CGameContext *pGameContext, vec2 Pos, vec2 Dir, int Owner, int Radius, DAMAGE_TYPE DamageType)
 		: CInfCEntity(pGameContext, CGameWorld::ENTTYPE_GROWINGEXPLOSION, Pos, Owner),
-		m_TakeDamageMode(TakeDamageMode),
 		m_pGrowingMap(NULL),
 		m_pGrowingMapVec(NULL)
 {
+	CInfClassGameController::DamageTypeToWeapon(DamageType, &m_TakeDamageMode);
+
+	switch(DamageType)
+	{
+		case DAMAGE_TYPE::STUNNING_GRENADE:
+			m_ExplosionEffect = GROWINGEXPLOSIONEFFECT_FREEZE_INFECTED;
+			break;
+		case DAMAGE_TYPE::MERCENARY_GRENADE:
+			m_ExplosionEffect = GROWINGEXPLOSIONEFFECT_POISON_INFECTED;
+			break;
+		case DAMAGE_TYPE::MERCENARY_BOMB:
+			m_ExplosionEffect = GROWINGEXPLOSIONEFFECT_BOOM_INFECTED;
+			break;
+		case DAMAGE_TYPE::SCIENTIST_LASER:
+			m_ExplosionEffect = GROWINGEXPLOSIONEFFECT_BOOM_INFECTED;
+			break;
+		case DAMAGE_TYPE::SCIENTIST_MINE:
+			m_ExplosionEffect = GROWINGEXPLOSIONEFFECT_ELECTRIC_INFECTED;
+			break;
+		case DAMAGE_TYPE::WHITE_HOLE:
+			m_ExplosionEffect = GROWINGEXPLOSIONEFFECT_BOOM_INFECTED;
+			break;
+		default:
+			break;
+	}
+
 	m_MaxGrowing = Radius;
 	m_GrowingMap_Length = (2*m_MaxGrowing+1);
 	m_GrowingMap_Size = (m_GrowingMap_Length*m_GrowingMap_Length);
@@ -25,7 +56,6 @@ CGrowingExplosion::CGrowingExplosion(CGameContext *pGameContext, vec2 Pos, vec2 
 
 	m_StartTick = Server()->Tick();
 
-	m_ExplosionEffect = ExplosionEffect;
 	
 	mem_zero(m_Hit, sizeof(m_Hit));
 
@@ -303,7 +333,7 @@ void CGrowingExplosion::Tick()
 						int Damage = GetActualDamage();
 						if(Damage)
 						{
-							p->TakeDamage(normalize(p->m_Pos - m_SeedPos)*10.0f, Damage, m_Owner, WEAPON_HAMMER, m_TakeDamageMode);
+							p->TakeDamage(normalize(p->m_Pos - m_SeedPos)*10.0f, Damage, m_Owner, m_DamageType);
 						}
 						m_Hit[p->GetCID()] = true;
 						break;
