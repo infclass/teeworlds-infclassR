@@ -1517,7 +1517,7 @@ void CInfClassCharacter::OnGrenadeFired(WeaponFireContext *pFireContext)
 			m_Core.m_HookState = HOOK_RETRACTED;
 			m_Core.m_HookPos = m_Core.m_Pos;
 			if(g_Config.m_InfScientistTpSelfharm > 0) {
-				TakeDamage(vec2(0.0f, 0.0f), g_Config.m_InfScientistTpSelfharm * 2, GetCID(), WEAPON_HAMMER, TAKEDAMAGEMODE::SELFHARM);
+				TakeDamage(vec2(0.0f, 0.0f), g_Config.m_InfScientistTpSelfharm * 2, GetCID(), DAMAGE_TYPE::SCIENTIST_TELEPORT);
 			}
 			GameServer()->CreateDeath(OldPos, GetCID());
 			GameServer()->CreateDeath(PortalPos, GetCID());
