@@ -17,9 +17,14 @@
 #include <game/mapitems.h>
 #include <time.h>
 
+#include <engine/message.h>
+#include <game/generated/protocol.h>
+
 #include <algorithm>
 #include <iostream>
 #include <map>
+
+const int InfClassModeSpecialSkip = 0x100;
 
 CInfClassGameController::CInfClassGameController(class CGameContext *pGameServer)
 : IGameController(pGameServer)
@@ -1239,11 +1244,21 @@ void CInfClassGameController::SendKillMessage(int Victim, DAMAGE_TYPE DamageType
 
 	dbg_msg("inf-proto", "Sent kill message victim=%d, damage_type=%d, killer=%d, assistant=%d", Victim, DamageTypeInt, Killer, Assistant);
 
+	CNetMsg_Inf_KillMsg InfClassMsg;
+	InfClassMsg.m_Killer = Killer;
+	InfClassMsg.m_Victim = Victim;
+	InfClassMsg.m_Assistant = Assistant;
+	InfClassMsg.m_InfDamageType = DamageTypeInt;
+	InfClassMsg.m_Weapon = VanillaWeapon;
+
+	CMsgPacker InfCPacker(InfClassMsg.MsgID(), false);
+	InfClassMsg.Pack(&InfCPacker);
+
 	CNetMsg_Sv_KillMsg VanillaMsg;
-	VanillaMsg.m_Killer = Killer;
+	VanillaMsg.m_Killer = Killer >= 0 ? Killer : Victim;
 	VanillaMsg.m_Victim = Victim;
 	VanillaMsg.m_Weapon = VanillaWeapon;
-	VanillaMsg.m_ModeSpecial = 0;
+	VanillaMsg.m_ModeSpecial = InfClassModeSpecialSkip;
 
 	CMsgPacker VanillaPacker(VanillaMsg.MsgID(), false);
 	VanillaMsg.Pack(&VanillaPacker);
@@ -1255,10 +1270,15 @@ void CInfClassGameController::SendKillMessage(int Victim, DAMAGE_TYPE DamageType
 			IServer::CClientInfo Info;
 			Server()->GetClientInfo(i, &Info);
 
+			if(Info.m_InfClassVersion)
+			{
+				Server()->SendMsg(&InfCPacker, MSGFLAG_VITAL|MSGFLAG_NORECORD, i);
+			}
 			Server()->SendMsg(&VanillaPacker, MSGFLAG_VITAL|MSGFLAG_NORECORD, i);
 		}
 	}
 
+	Server()->SendMsg(&InfCPacker, MSGFLAG_VITAL|MSGFLAG_NOSEND, -1);
 	Server()->SendMsg(&VanillaPacker, MSGFLAG_VITAL|MSGFLAG_NOSEND, -1);
 }
 
