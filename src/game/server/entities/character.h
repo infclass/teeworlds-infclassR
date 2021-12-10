@@ -61,7 +61,7 @@ public:
 	void DoWeaponSwitch();
 
 	void HandleWeapons();
-	void HandleNinja();
+	virtual void HandleNinja() = 0;
 	void HandleWaterJump();
 
 	void OnPredictedInput(CNetObj_PlayerInput *pNewInput);
