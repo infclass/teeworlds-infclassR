@@ -5,6 +5,7 @@
 #include <engine/shared/config.h>
 
 #include <game/server/gamecontext.h>
+#include <game/server/infclass/damage_type.h>
 #include <game/server/infclass/infcgamecontroller.h>
 
 #include <cmath>
@@ -41,11 +42,11 @@ void CSoldierBomb::Explode()
 	vec2 dir = normalize(pOwnerChar->m_Pos - m_Pos);
 
 	GameServer()->CreateSound(m_Pos, SOUND_GRENADE_EXPLODE);
-	GameController()->CreateExplosion(m_Pos, m_Owner, WEAPON_HAMMER, TAKEDAMAGEMODE::SELFHARM);
+	GameController()->CreateExplosion(m_Pos, m_Owner, DAMAGE_TYPE::SOLDIER_BOMB);
 	if(m_ChargedBomb <= m_nbBomb)
 	{
 		/*
-		 * Charged bomb makes a big explosion.
+		 * Charged bomb makes bigger explosions.
 		 *
 		 * there are m_nbBomb bombs. Firstly, bomb #m_nbBomb explodes. Then
 		 * #m_nbBomb-1. Then #m_nbBomb-2. If there are 3 bombs, bomb #3 explodes
@@ -57,7 +58,7 @@ void CSoldierBomb::Explode()
 		{
 			float angle = static_cast<float>(i) * 2.0 * pi / 6.0;
 			vec2 expPos = m_Pos + vec2(90.0 * cos(angle), 90.0 * sin(angle));
-			GameController()->CreateExplosion(expPos, m_Owner, WEAPON_HAMMER, TAKEDAMAGEMODE::SELFHARM);
+			GameController()->CreateExplosion(expPos, m_Owner, DAMAGE_TYPE::SOLDIER_BOMB);
 		}
 		for(int i = 0; i < 12; i++)
 		{
@@ -65,7 +66,7 @@ void CSoldierBomb::Explode()
 			vec2 expPos = vec2(180.0 * cos(angle), 180.0 * sin(angle));
 			if(dot(expPos, dir) <= 0)
 			{
-				GameController()->CreateExplosion(m_Pos + expPos, m_Owner, WEAPON_HAMMER, TAKEDAMAGEMODE::SELFHARM);
+				GameController()->CreateExplosion(m_Pos + expPos, m_Owner, DAMAGE_TYPE::SOLDIER_BOMB);
 			}
 		}
 	}

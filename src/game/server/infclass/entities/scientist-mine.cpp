@@ -37,16 +37,18 @@ void CScientistMine::Explode(int DetonatedBy)
 	GameServer()->m_World.DestroyEntity(this);
 	
 	//Self damage
-	CCharacter *OwnerChar = GameServer()->GetPlayerChar(m_Owner);
+	CInfClassCharacter *OwnerChar = GetOwnerCharacter();
 	if(OwnerChar)
 	{
 		float Dist = distance(m_Pos, OwnerChar->GetPos());
 		if(Dist < OwnerChar->GetProximityRadius()+Config()->m_InfMineRadius)
-			OwnerChar->TakeDamage(vec2(0.0f, 0.0f), 4, DetonatedBy, WEAPON_HAMMER, TAKEDAMAGEMODE::SELFHARM);
+		{
+			OwnerChar->TakeDamage(vec2(0.0f, 0.0f), 4, DetonatedBy, DAMAGE_TYPE::SCIENTIST_MINE);
+		}
 		else if(Dist < OwnerChar->GetProximityRadius()+2*Config()->m_InfMineRadius)
 		{
 			float Alpha = (Dist - Config()->m_InfMineRadius-OwnerChar->GetProximityRadius())/Config()->m_InfMineRadius;
-			OwnerChar->TakeDamage(vec2(0.0f, 0.0f), 4*Alpha, DetonatedBy, WEAPON_HAMMER, TAKEDAMAGEMODE::SELFHARM);
+			OwnerChar->TakeDamage(vec2(0.0f, 0.0f), 4*Alpha, DetonatedBy, DAMAGE_TYPE::SCIENTIST_MINE);
 		}
 	}
 }

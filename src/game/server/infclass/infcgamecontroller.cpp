@@ -302,10 +302,11 @@ int CInfClassGameController::GetBonusZoneValueAt(const vec2 &Pos) const
 	return GetZoneValueAt(GameServer()->m_ZoneHandle_icBonus, Pos);
 }
 
-void CInfClassGameController::CreateExplosion(const vec2 &Pos, int Owner, int Weapon, TAKEDAMAGEMODE TakeDamageMode, float DamageFactor)
+void CInfClassGameController::CreateExplosion(const vec2 &Pos, int Owner, DAMAGE_TYPE DamageType, float DamageFactor)
 {
+	int Weapon = WEAPON_WORLD;
 	GameServer()->CreateExplosion(Pos, Owner, Weapon);
-	
+
 	if(DamageFactor != 0)
 	{
 		// deal damage
@@ -335,7 +336,7 @@ void CInfClassGameController::CreateExplosion(const vec2 &Pos, int Owner, int We
 			float Dmg = 6 * l * DamageFactor;
 			if((int)Dmg)
 			{
-				apEnts[i]->TakeDamage(ForceDir*Dmg*2, (int)Dmg, Owner, Weapon, TakeDamageMode);
+				apEnts[i]->TakeDamage(ForceDir*Dmg*2, (int)Dmg, Owner, DamageType);
 			}
 		}
 	}
@@ -1956,7 +1957,7 @@ void CInfClassGameController::DoWincheck()
 					{
 						vec2 TilePos = vec2(16.0f, 16.0f) + vec2(i*32.0f, j*32.0f);
 						static const int Damage = 0;
-						CreateExplosion(TilePos, -1, WEAPON_GAME, TAKEDAMAGEMODE::NOINFECTION, Damage);
+						CreateExplosion(TilePos, -1, DAMAGE_TYPE::NO_DAMAGE, Damage);
 						GameServer()->CreateSound(TilePos, SOUND_GRENADE_EXPLODE);
 					}
 				}

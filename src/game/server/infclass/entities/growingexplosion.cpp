@@ -21,6 +21,7 @@ CGrowingExplosion::CGrowingExplosion(CGameContext *pGameContext, vec2 Pos, vec2 
 		m_pGrowingMap(NULL),
 		m_pGrowingMapVec(NULL)
 {
+	m_DamageType = DamageType;
 	CInfClassGameController::DamageTypeToWeapon(DamageType, &m_TakeDamageMode);
 
 	switch(DamageType)
@@ -199,7 +200,7 @@ void CGrowingExplosion::Tick()
 						case GROWINGEXPLOSIONEFFECT_BOOM_INFECTED:
 							if(random_prob(0.2f))
 							{
-								GameController()->CreateExplosion(TileCenter, m_Owner, WEAPON_HAMMER, m_TakeDamageMode);
+								GameController()->CreateExplosion(TileCenter, m_Owner, m_DamageType);
 							}
 							break;
 						case GROWINGEXPLOSIONEFFECT_ELECTRIC_INFECTED:

@@ -141,13 +141,15 @@ void CTurret::AttackTargets()
 
 			switch(m_Type)
 			{
-				// m_Type == LASER ? DAMAGE_TYPE::TURRET_LASER : DAMAGE_TYPE::TURRET_PLASMA);
 				case LASER:
-					new CInfClassLaser(GameServer(), m_Pos, Direction, GameServer()->Tuning()->m_LaserReach, m_Owner, Config()->m_InfTurretDmgHealthLaser);
+					new CInfClassLaser(GameServer(), m_Pos, Direction, GameServer()->Tuning()->m_LaserReach, m_Owner, Config()->m_InfTurretDmgHealthLaser, DAMAGE_TYPE::TURRET_LASER);
 					m_ammunition--;
 					break;
 				case PLASMA:
-					new CPlasma(GameServer(), m_Pos, m_Owner, pChr->GetCID() , Direction, 0, 1);
+				{
+					CPlasma *pPlasma = new CPlasma(GameServer(), m_Pos, m_Owner, pChr->GetCID() , Direction, 0, 1);
+					pPlasma->SetDamageType(DAMAGE_TYPE::TURRET_PLASMA);
+				}
 					m_ammunition--;
 					break;
 			}

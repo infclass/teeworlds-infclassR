@@ -33,12 +33,14 @@ public:
 	virtual void TickPaused();
 
 	void SetDamage(int Damage);
+	void SetDamageType(DAMAGE_TYPE Type);
 	int GetActualDamage();
 
 private:
 	int m_MaxGrowing;
 	int m_GrowingMap_Length;
 	int m_GrowingMap_Size;
+	DAMAGE_TYPE m_DamageType;
 	TAKEDAMAGEMODE m_TakeDamageMode = TAKEDAMAGEMODE::NOINFECTION;
 	
 	vec2 m_SeedPos;

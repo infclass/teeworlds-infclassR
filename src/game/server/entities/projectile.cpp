@@ -4,7 +4,9 @@
 #include <base/vmath.h>
 #include <game/generated/protocol.h>
 #include <game/server/gamecontext.h>
+
 #include <game/server/infclass/entities/growingexplosion.h>
+#include <game/server/infclass/entities/infccharacter.h>
 #include <game/server/infclass/infcgamecontroller.h>
 
 #include "projectile.h"
@@ -68,7 +70,7 @@ void CProjectile::Tick()
 	int Collide = GameServer()->Collision()->IntersectLine(PrevPos, CurPos, &CurPos, 0);
 	const float ProjectileRadius = 6.0f;
 	CCharacter *OwnerChar = GameServer()->GetPlayerChar(m_Owner);
-	CCharacter *TargetChr = GameServer()->m_World.IntersectCharacter(PrevPos, CurPos, ProjectileRadius, CurPos, OwnerChar);
+	CInfClassCharacter *TargetChr = CInfClassCharacter::GetInstance(GameServer()->m_World.IntersectCharacter(PrevPos, CurPos, ProjectileRadius, CurPos, OwnerChar));
 
 	m_LifeSpan--;
 	
@@ -87,7 +89,7 @@ void CProjectile::Tick()
 		}
 		else if(m_Explosive)
 		{
-			GameController()->CreateExplosion(CurPos, m_Owner, m_Weapon, m_TakeDamageMode);
+			GameController()->CreateExplosion(CurPos, m_Owner, m_DamageType);
 		}
 		else if(TargetChr)
 		{
@@ -95,11 +97,11 @@ void CProjectile::Tick()
 			{
 				if(OwnerChar->IsHuman() && TargetChr->IsHuman())
 				{
-					TargetChr->TakeDamage(m_Direction * 0.001f, m_Damage, m_Owner, m_Weapon, m_TakeDamageMode);
+					TargetChr->TakeDamage(m_Direction * 0.001f, m_Damage, m_Owner, m_DamageType);
 				}
 				else
 				{
-					TargetChr->TakeDamage(m_Direction * maximum(0.001f, m_Force), m_Damage, m_Owner, m_Weapon, m_TakeDamageMode);
+					TargetChr->TakeDamage(m_Direction * maximum(0.001f, m_Force), m_Damage, m_Owner,m_DamageType);
 				}
 			}
 		}

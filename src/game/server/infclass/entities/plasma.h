@@ -4,6 +4,8 @@
 
 #include "infcentity.h"
 
+enum class DAMAGE_TYPE;
+
 class CPlasma: public CInfCEntity
 {
 	
@@ -12,6 +14,8 @@ public:
 
 	virtual void Tick();
 	virtual void Snap(int SnappingClient);
+
+	void SetDamageType(DAMAGE_TYPE Type);
 
 private:
 	void Explode();
@@ -23,6 +27,7 @@ private:
 	float m_Speed;
 	int m_Freeze;
 	bool m_Explosive;
+	DAMAGE_TYPE m_DamageType;
 	int m_TrackedPlayer;
 	float m_InitialAmount;
 };

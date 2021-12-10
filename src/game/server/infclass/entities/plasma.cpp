@@ -6,12 +6,15 @@
 #include <engine/shared/config.h>
 #include <game/generated/protocol.h>
 #include <game/server/gamecontext.h>
+
+#include <game/server/infclass/damage_type.h>
 #include <game/server/infclass/infcgamecontroller.h>
 
 CPlasma::CPlasma(CGameContext *pGameContext, vec2 Pos, int Owner, int TrackedPlayer, vec2 Direction, bool Freeze, bool Explosive)
 	: CInfCEntity(pGameContext, CGameWorld::ENTTYPE_PLASMA, Pos, Owner)
 {
 	m_Freeze = Freeze;
+	m_DamageType = DAMAGE_TYPE::NO_DAMAGE;
 	m_TrackedPlayer = TrackedPlayer;
 	m_Dir = Direction;
 	m_Explosive = Explosive;
@@ -69,12 +72,17 @@ void CPlasma::Tick()
 	
 }
 
+void CPlasma::SetDamageType(DAMAGE_TYPE Type)
+{
+	m_DamageType = Type;
+}
+
 void CPlasma::Explode() 
 {
 	//GameServer()->CreateSound(CurPos, m_SoundImpact);
 	if (m_Explosive) 
 	{
-		GameController()->CreateExplosion(m_Pos, m_Owner, WEAPON_GRENADE, TAKEDAMAGEMODE::NOINFECTION, Config()->m_InfTurretDmgFactor*0.1f);
+		GameController()->CreateExplosion(m_Pos, m_Owner, m_DamageType, Config()->m_InfTurretDmgFactor*0.1f);
 	}
 	Reset();
 }
