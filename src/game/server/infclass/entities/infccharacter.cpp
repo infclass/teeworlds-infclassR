@@ -1251,16 +1251,16 @@ void CInfClassCharacter::OnHammerFired(WeaponFireContext *pFireContext)
 							}
 						}
 						int Damage = g_pData->m_Weapons.m_Hammer.m_pBase->m_Damage;
-						TAKEDAMAGEMODE DamageMode = TAKEDAMAGEMODE::INFECTION;
+						DAMAGE_TYPE DamageType = DAMAGE_TYPE::INFECTION_HAMMER;
 
 						if(GetPlayerClass() == PLAYERCLASS_BAT)
 						{
 							Damage = g_Config.m_InfBatDamage;
-							DamageMode = TAKEDAMAGEMODE::NOINFECTION;
+							DamageType = DAMAGE_TYPE::BITE;
 						}
 
 						pTarget->TakeDamage(vec2(0.f, -1.f) + normalize(Dir + vec2(0.f, -1.1f)) * 10.0f, Damage,
-							GetCID(), m_ActiveWeapon, DamageMode);
+							GetCID(), DamageType);
 					}
 				}
 				else if(GetPlayerClass() == PLAYERCLASS_BIOLOGIST || GetPlayerClass() == PLAYERCLASS_MERCENARY)
