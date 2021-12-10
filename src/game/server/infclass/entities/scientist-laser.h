@@ -11,8 +11,8 @@ public:
 	CScientistLaser(CGameContext *pGameContext, vec2 Pos, vec2 Direction, float StartEnergy, int Owner, int Dmg);
 
 protected:
-	bool HitCharacter(vec2 From, vec2 To) override;
-	void DoBounce() override;
+	bool HitCharacter(vec2 From, vec2 To) final;
+	void DoBounce() final;
 	void CreateWhiteHole(vec2 CenterPos);
 
 };
