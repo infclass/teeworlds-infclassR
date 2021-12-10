@@ -55,18 +55,14 @@ void CBouncingBullet::Tick()
 	m_LifeSpan--;
 	
 	const float ProjectileRadius = 6.0f;
-	CCharacter *OwnerChar = GameServer()->GetPlayerChar(m_Owner);
-	CCharacter *TargetChr = GameServer()->m_World.IntersectCharacter(PrevPos, CurPos, ProjectileRadius, CurPos, OwnerChar);
+	CCharacter *pTargetChr = GameServer()->m_World.IntersectCharacter(PrevPos, CurPos, ProjectileRadius, CurPos);
 
-	if(TargetChr)
+	if(pTargetChr)
 	{
 		int Damage = random_prob(0.33f) ? 2 : 1;
-		if(OwnerChar && TargetChr)
+		if(pTargetChr)
 		{
-			if(OwnerChar->IsHuman() && TargetChr->IsHuman())
-				TargetChr->TakeDamage(m_Direction * 0.001f, Damage, m_Owner, WEAPON_SHOTGUN, TAKEDAMAGEMODE::NOINFECTION);
-			else
-				TargetChr->TakeDamage(m_Direction * maximum(0.001f, 2.0f), Damage, m_Owner, WEAPON_SHOTGUN, TAKEDAMAGEMODE::NOINFECTION);
+			pTargetChr->TakeDamage(m_Direction * 2, Damage, m_Owner, WEAPON_SHOTGUN, TAKEDAMAGEMODE::NOINFECTION);
 		}
 
 		GameServer()->m_World.DestroyEntity(this);
