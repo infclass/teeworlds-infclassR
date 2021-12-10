@@ -1179,7 +1179,7 @@ void CInfClassCharacter::OnHammerFired(WeaponFireContext *pFireContext)
 	{
 		if(!IsFrozen() && !IsInLove())
 		{
-			Die(GetCID(), WEAPON_SELF);
+			Die(GetCID(), DAMAGE_TYPE::BOOMER_EXPLOSION);
 		}
 	}
 	else
