@@ -1764,8 +1764,14 @@ void CInfClassGameController::RewardTheKiller(CInfClassCharacter *pVictim, CInfC
 
 int CInfClassGameController::OnCharacterDeath(class CCharacter *pAbstractVictim, class CPlayer *pAbstractKiller, int Weapon)
 {
-	CInfClassCharacter *pVictim = CInfClassCharacter::GetInstance(pAbstractVictim);
-	CInfClassPlayer *pKiller = static_cast<CInfClassPlayer *>(pAbstractKiller);
+	dbg_msg("server", "CRITICAL ERROR: CInfClassGameController::OnCharacterDeath(class CCharacter *, class CPlayer *, int) must never be called");
+	return 0;
+}
+
+void CInfClassGameController::OnCharacterDeath(CInfClassCharacter *pVictim, DAMAGE_TYPE DamageType, int Killer, int Assistant)
+{
+	CInfClassPlayer *pKiller = GetPlayer(Killer);
+	int Weapon = DamageTypeToWeapon(DamageType);
 	RewardTheKiller(pVictim, pKiller, Weapon);
 
 	//Add bonus point for ninja
@@ -1778,13 +1784,13 @@ int CInfClassGameController::OnCharacterDeath(class CCharacter *pAbstractVictim,
 			{
 				Server()->RoundStatistics()->OnScoreEvent(pFreezer->GetCID(), SCOREEVENT_HELP_FREEZE, pFreezer->GetClass(), Server()->ClientName(pFreezer->GetCID()), GameServer()->Console());
 				GameServer()->SendScoreSound(pFreezer->GetCID());
-				
+
 				if(pVictim->GetCID() == GetTargetToKill())
 				{
 					GameServer()->SendChatTarget_Localization(pFreezer->GetCID(), CHATCATEGORY_SCORE, _("You have eliminated your target, +2 points"), NULL);
 					Server()->RoundStatistics()->OnScoreEvent(pFreezer->GetCID(), SCOREEVENT_KILL_TARGET, pFreezer->GetClass(), Server()->ClientName(pFreezer->GetCID()), GameServer()->Console());
 					TargetKilled();
-					
+
 					if(pFreezer->GetCharacter())
 					{
 						pFreezer->GetCharacter()->GiveNinjaBuf();
@@ -1795,7 +1801,7 @@ int CInfClassGameController::OnCharacterDeath(class CCharacter *pAbstractVictim,
 			}
 		}
 	}
-	
+
 	//Find the nearest ghoul
 	{
 		for(CInfClassCharacter *p = (CInfClassCharacter*) GameWorld()->FindFirst(CGameWorld::ENTTYPE_CHARACTER); p; p = (CInfClassCharacter *)p->TypeNext())
@@ -1804,7 +1810,7 @@ int CInfClassGameController::OnCharacterDeath(class CCharacter *pAbstractVictim,
 			if(p->GetPlayer() && p->GetClass()->GetGhoulPercent() >= 1.0f) continue;
 
 			float Len = distance(p->m_Pos, pVictim->m_Pos);
-			
+
 			if(p && Len < 800.0f)
 			{
 				int Points = (pVictim->IsZombie() ? 8 : 14);
@@ -1812,20 +1818,18 @@ int CInfClassGameController::OnCharacterDeath(class CCharacter *pAbstractVictim,
 			}
 		}
 	}
-	
+
 	if(Weapon == WEAPON_SELF)
 		pVictim->GetPlayer()->m_RespawnTick = Server()->Tick()+Server()->TickSpeed()*3.0f;
 
 	// It is important to SendKillMessage before GetClass()->OnCharacterDeath() to keep the correct kill order
-	int Killer = pKiller ? pKiller->GetCID() : -1;
 	char aBuf[256];
 	str_format(aBuf, sizeof(aBuf), "kill killer='%s' victim='%s' weapon=%d",
 		Server()->ClientName(Killer),
 		Server()->ClientName(pVictim->GetCID()), Weapon);
 	GameServer()->Console()->Print(IConsole::OUTPUT_LEVEL_DEBUG, "game", aBuf);
 
-	const int ModeSpecial = 0;
-	GameServer()->SendKillMessage(Killer, pVictim->GetCID(), Weapon, ModeSpecial);
+	SendKillMessage(pVictim->GetCID(), DamageType, Killer, Assistant);
 
 	pVictim->GetClass()->OnCharacterDeath(Weapon);
 
@@ -1863,8 +1867,6 @@ int CInfClassGameController::OnCharacterDeath(class CCharacter *pAbstractVictim,
 		}
 	}
 	pVictim->GetPlayer()->StartInfection(ForceInfection, pKiller);
-
-	return 0;
 }
 
 void CInfClassGameController::OnCharacterSpawned(CInfClassCharacter *pCharacter)

@@ -52,6 +52,7 @@ public:
 	void CreateExplosionDisk(vec2 Pos, float InnerRadius, float DamageRadius, int Damage, float Force, int Owner, DAMAGE_TYPE DamageType);
 
 	int OnCharacterDeath(class CCharacter *pVictim, class CPlayer *pKiller, int Weapon) override;
+	void OnCharacterDeath(CInfClassCharacter *pVictim, DAMAGE_TYPE DamageType, int Killer, int Assistant);
 	void OnCharacterSpawned(CInfClassCharacter *pCharacter);
 	void OnPlayerInfoChange(class CPlayer *pP) override;
 	void DoWincheck() override;

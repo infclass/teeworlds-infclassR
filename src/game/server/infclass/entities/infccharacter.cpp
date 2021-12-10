@@ -117,7 +117,10 @@ void CInfClassCharacter::OnCharacterInInfectionZone()
 
 		CInfClassPlayer *pKiller = GameController()->GetPlayer(Killer);
 
-		GameController()->OnCharacterDeath(this, pKiller, Weapon);
+		DAMAGE_TYPE DamageType = DAMAGE_TYPE::INFECTION_TILE;
+		int Assistant = -1;
+
+		GameController()->OnCharacterDeath(this, DamageType, Killer, Assistant);
 		GameServer()->CreateSound(GetPos(), SOUND_PLAYER_DIE);
 
 		GetPlayer()->Infect(pKiller);
