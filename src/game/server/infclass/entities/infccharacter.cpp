@@ -1995,17 +1995,13 @@ void CInfClassCharacter::HandleIndirectKillerCleanup()
 
 void CInfClassCharacter::Die(int Killer, DAMAGE_TYPE DamageType)
 {
-	int Weapon = CInfClassGameController::DamageTypeToWeapon(DamageType);
-	Die(Killer, Weapon);
-}
-
-void CInfClassCharacter::Die(int Killer, int Weapon)
-{
 	if(!IsAlive())
 	{
 		return;
 	}
-/* INFECTION MODIFICATION START ***************************************/
+
+	int Weapon = CInfClassGameController::DamageTypeToWeapon(DamageType);
+
 	if(GetPlayerClass() == PLAYERCLASS_UNDEAD && Killer != GetCID())
 	{
 		Freeze(10.0, Killer, FREEZEREASON_UNDEAD);
@@ -2022,6 +2018,7 @@ void CInfClassCharacter::Die(int Killer, int Weapon)
 	DestroyChildEntities();
 /* INFECTION MODIFICATION END *****************************************/
 
+	int Assistant = -1;
 	if(((Weapon == WEAPON_WORLD) || (Weapon == WEAPON_SELF)) && Killer == GetCID())
 	{
 		GetIndirectKiller(&Killer, &Weapon);
@@ -2029,8 +2026,7 @@ void CInfClassCharacter::Die(int Killer, int Weapon)
 
 	// we got to wait 0.5 secs before respawning
 	m_pPlayer->m_RespawnTick = Server()->Tick()+Server()->TickSpeed()/2;
-	CInfClassPlayer *pKillerPlayer = GameController()->GetPlayer(Killer);
-	GameController()->OnCharacterDeath(this, pKillerPlayer, Weapon);
+	GameController()->OnCharacterDeath(this, DamageType, Killer, Assistant);
 
 	// a nice sound
 	GameServer()->CreateSound(GetPos(), SOUND_PLAYER_DIE);
@@ -2042,6 +2038,24 @@ void CInfClassCharacter::Die(int Killer, int Weapon)
 	GameWorld()->RemoveEntity(this);
 	GameWorld()->m_Core.m_apCharacters[GetCID()] = 0;
 	GameServer()->CreateDeath(GetPos(), GetCID());
+}
+
+void CInfClassCharacter::Die(int Killer, int Weapon)
+{
+	DAMAGE_TYPE DamageType = DAMAGE_TYPE::INVALID;
+	switch(Weapon)
+	{
+	case WEAPON_SELF:
+		DamageType = DAMAGE_TYPE::KILL_COMMAND;
+		break;
+	case WEAPON_GAME:
+		DamageType = DAMAGE_TYPE::GAME;
+		break;
+	default:
+		dbg_msg("infclass", "Invalid Die() event: victim=%d, killer=%d, weapon=%d", GetCID(), Killer, Weapon);
+	}
+
+	Die(Killer, DamageType);
 }
 
 void CInfClassCharacter::SetActiveWeapon(int Weapon)
