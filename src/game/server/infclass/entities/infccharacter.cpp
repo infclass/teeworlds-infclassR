@@ -517,24 +517,19 @@ void CInfClassCharacter::FireWeapon()
 	}
 }
 
-bool CInfClassCharacter::TakeDamage(vec2 Force, float Dmg, int From, DAMAGE_TYPE DamageType)
+bool CInfClassCharacter::TakeDamage(vec2 Force, float FloatDmg, int From, DAMAGE_TYPE DamageType)
 {
-	int WholeDmg = Dmg;
-	if(Dmg != WholeDmg)
+	int Dmg = FloatDmg;
+	if(FloatDmg != Dmg)
 	{
-		int ExtraDmg = random_prob(Dmg - WholeDmg) ? 1 : 0;
-		WholeDmg += ExtraDmg;
+		int ExtraDmg = random_prob(FloatDmg - Dmg) ? 1 : 0;
+		Dmg += ExtraDmg;
 	}
 
 	TAKEDAMAGEMODE Mode = TAKEDAMAGEMODE::NOINFECTION;
 	int Weapon = CInfClassGameController::DamageTypeToWeapon(DamageType, &Mode);
 
-	return TakeDamage(Force, Dmg, From, Weapon, Mode);
-}
-
-bool CInfClassCharacter::TakeDamage(vec2 Force, int Dmg, int From, int Weapon, TAKEDAMAGEMODE Mode)
-{
-/* INFECTION MODIFICATION START ***************************************/
+	/* INFECTION MODIFICATION START ***************************************/
 
 	//KillerPlayer
 	CInfClassPlayer *pKillerPlayer = GameController()->GetPlayer(From);
@@ -564,7 +559,7 @@ bool CInfClassCharacter::TakeDamage(vec2 Force, int Dmg, int From, int Weapon, T
 		Mode = TAKEDAMAGEMODE::NOINFECTION;
 	}
 
-	if((GetPlayerClass() == PLAYERCLASS_HUNTER) && (Weapon == WEAPON_SHOTGUN))
+	if((GetPlayerClass() == PLAYERCLASS_HUNTER) && (DamageType == DAMAGE_TYPE::MEDIC_SHOTGUN))
 	{
 		// Hunters are immune to shotgun force
 		Force = vec2(0, 0);
@@ -700,7 +695,7 @@ bool CInfClassCharacter::TakeDamage(vec2 Force, int Dmg, int From, int Weapon, T
 	// check for death
 	if(m_Health <= 0)
 	{
-		Die(From, Weapon);
+		Die(From, DamageType);
 		return false;
 	}
 
@@ -715,7 +710,7 @@ bool CInfClassCharacter::TakeDamage(vec2 Force, int Dmg, int From, int Weapon, T
 			Server()->ClientName(GetCID()), Weapon);
 		GameServer()->Console()->Print(IConsole::OUTPUT_LEVEL_DEBUG, "game", aBuf);
 
-		GameServer()->SendKillMessage(From, GetCID(), WEAPON_HAMMER, 0);
+		GameController()->SendKillMessage(GetCID(), DamageType, From);
 	}
 /* INFECTION MODIFICATION END *****************************************/
 
@@ -727,6 +722,12 @@ bool CInfClassCharacter::TakeDamage(vec2 Force, int Dmg, int From, int Weapon, T
 	SetEmote(EMOTE_PAIN, Server()->Tick() + 500 * Server()->TickSpeed() / 1000);
 
 	return true;
+}
+
+bool CInfClassCharacter::TakeDamage(vec2 Force, int Dmg, int From, int Weapon, TAKEDAMAGEMODE Mode)
+{
+	DAMAGE_TYPE DamageType = DAMAGE_TYPE::INVALID;
+	return TakeDamage(Force, Dmg, From, DamageType);
 }
 
 void CInfClassCharacter::OnWeaponFired(WeaponFireContext *pFireContext)
