@@ -2,6 +2,7 @@
 
 #include <engine/shared/config.h>
 #include <game/server/gamecontext.h>
+#include <game/server/infclass/damage_type.h>
 #include <game/server/infclass/entities/infccharacter.h>
 #include <game/server/infclass/infcgamecontroller.h>
 #include <game/server/infclass/infcplayer.h>
@@ -156,7 +157,7 @@ void CInfClassInfected::OnCharacterDeath(int Weapon)
 		if(!m_pCharacter->IsFrozen() && Weapon != WEAPON_GAME && !(m_pCharacter->IsInLove() && Weapon == WEAPON_SELF))
 		{
 			GameServer()->CreateSound(GetPos(), SOUND_GRENADE_EXPLODE);
-			GameController()->CreateExplosionDisk(GetPos(), 60.0f, 80.5f, 14, 52.0f, m_pPlayer->GetCID(), WEAPON_HAMMER, TAKEDAMAGEMODE::INFECTION);
+			GameController()->CreateExplosionDisk(GetPos(), 60.0f, 80.5f, 14, 52.0f, m_pPlayer->GetCID(), DAMAGE_TYPE::BOOMER_EXPLOSION);
 		}
 	}
 }

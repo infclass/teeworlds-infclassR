@@ -49,7 +49,7 @@ public:
 	int GetBonusZoneValueAt(const vec2 &Pos) const;
 
 	void CreateExplosion(const vec2 &Pos, int Owner, DAMAGE_TYPE DamageType, float DamageFactor = 1.0f);
-	void CreateExplosionDisk(vec2 Pos, float InnerRadius, float DamageRadius, int Damage, float Force, int Owner, int Weapon, TAKEDAMAGEMODE TakeDamageMode);
+	void CreateExplosionDisk(vec2 Pos, float InnerRadius, float DamageRadius, int Damage, float Force, int Owner, DAMAGE_TYPE DamageType);
 
 	int OnCharacterDeath(class CCharacter *pVictim, class CPlayer *pKiller, int Weapon) override;
 	void OnCharacterSpawned(CInfClassCharacter *pCharacter);

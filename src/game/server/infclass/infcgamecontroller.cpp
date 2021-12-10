@@ -343,14 +343,15 @@ void CInfClassGameController::CreateExplosion(const vec2 &Pos, int Owner, DAMAGE
 }
 
 // Thanks to Stitch for the idea
-void CInfClassGameController::CreateExplosionDisk(vec2 Pos, float InnerRadius, float DamageRadius, int Damage, float Force, int Owner, int Weapon, TAKEDAMAGEMODE TakeDamageMode)
+void CInfClassGameController::CreateExplosionDisk(vec2 Pos, float InnerRadius, float DamageRadius, int Damage, float Force, int Owner, DAMAGE_TYPE DamageType)
 {
+	int Weapon = WEAPON_WORLD;
 	GameServer()->CreateExplosion(Pos, Owner, Weapon);
 
 	if(Damage > 0)
 	{
 		// deal damage
-		CCharacter *apEnts[MAX_CLIENTS];
+		CInfClassCharacter *apEnts[MAX_CLIENTS];
 		int Num = GameWorld()->FindEntities(Pos, DamageRadius, (CEntity**)apEnts, MAX_CLIENTS, CGameWorld::ENTTYPE_CHARACTER);
 		for(int i = 0; i < Num; i++)
 		{
@@ -365,7 +366,7 @@ void CInfClassGameController::CreateExplosionDisk(vec2 Pos, float InnerRadius, f
 				ForceDir = normalize(Diff);
 			
 			float DamageToDeal = 1 + ((Damage - 1) * len);
-			apEnts[i]->TakeDamage(ForceDir*Force*len, DamageToDeal, Owner, Weapon, TakeDamageMode);
+			apEnts[i]->TakeDamage(ForceDir*Force*len, DamageToDeal, Owner, DamageType);
 		}
 	}
 	
