@@ -202,15 +202,15 @@ void CInfClassGameController::HandleCharacterTiles(CCharacter *pChr)
 
 	if(Indices.Contains(ZONE_DAMAGE_DEATH))
 	{
-		pCharacter->Die(pCharacter->GetCID(), WEAPON_WORLD);
+		pCharacter->Die(pCharacter->GetCID(), DAMAGE_TYPE::DEATH_TILE);
 	}
 	else if(pCharacter->GetPlayerClass() != PLAYERCLASS_UNDEAD && Indices.Contains(ZONE_DAMAGE_DEATH_NOUNDEAD))
 	{
-		pCharacter->Die(pCharacter->GetCID(), WEAPON_WORLD);
+		pCharacter->Die(pCharacter->GetCID(), DAMAGE_TYPE::DEATH_TILE);
 	}
 	else if(pCharacter->IsZombie() && Indices.Contains(ZONE_DAMAGE_DEATH_INFECTED))
 	{
-		pCharacter->Die(pCharacter->GetCID(), WEAPON_WORLD);
+		pCharacter->Die(pCharacter->GetCID(), DAMAGE_TYPE::DEATH_TILE);
 	}
 	else if(pCharacter->IsAlive() && Indices.Contains(ZONE_DAMAGE_INFECTION))
 	{
