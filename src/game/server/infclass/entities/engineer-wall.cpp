@@ -6,6 +6,7 @@
 #include <game/server/gamecontext.h>
 #include <game/server/infclass/classes/infcplayerclass.h>
 #include <game/server/infclass/classes/infected/infected.h>
+#include <game/server/infclass/damage_type.h>
 #include <engine/server/roundstatistics.h>
 #include <engine/shared/config.h>
 
@@ -174,5 +175,5 @@ void CEngineerWall::OnZombieHit(CInfClassCharacter *pZombie)
 		m_LifeSpan -= LifeSpanReducer;
 	}
 
-	pZombie->Die(m_Owner, WEAPON_HAMMER);
+	pZombie->Die(m_Owner, DAMAGE_TYPE::LASER_WALL);
 }

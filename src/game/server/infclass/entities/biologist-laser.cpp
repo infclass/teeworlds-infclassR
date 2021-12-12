@@ -2,6 +2,10 @@
 /* If you are missing that file, acquire a complete release at teeworlds.com.                */
 #include <game/generated/protocol.h>
 #include <game/server/gamecontext.h>
+
+#include <game/server/infclass/damage_type.h>
+#include <game/server/infclass/entities/infccharacter.h>
+
 #include "biologist-laser.h"
 
 CBiologistLaser::CBiologistLaser(CGameContext *pGameContext, vec2 Pos, vec2 Direction, int Owner, int Dmg)
@@ -19,15 +23,16 @@ CBiologistLaser::CBiologistLaser(CGameContext *pGameContext, vec2 Pos, vec2 Dire
 
 void CBiologistLaser::HitCharacter(vec2 From, vec2 To)
 {
-	for(CCharacter *p = (CCharacter*) GameWorld()->FindFirst(CGameWorld::ENTTYPE_CHARACTER); p; p = (CCharacter *)p->TypeNext())
+	for(CInfClassCharacter *p = (CInfClassCharacter*) GameWorld()->FindFirst(CGameWorld::ENTTYPE_CHARACTER); p; p = (CInfClassCharacter *)p->TypeNext())
 	{
-		if(p->IsHuman()) continue;
+		if(p->IsHuman())
+			continue;
 
 		vec2 IntersectPos = closest_point_on_line(From, To, p->m_Pos);
 		float Len = distance(p->m_Pos, IntersectPos);
 		if(Len < p->m_ProximityRadius)
 		{
-			p->TakeDamage(vec2(0.f, 0.f), m_Dmg, m_Owner, WEAPON_LASER, TAKEDAMAGEMODE::NOINFECTION);
+			p->TakeDamage(vec2(0.f, 0.f), m_Dmg, m_Owner, DAMAGE_TYPE::BIOLOGIST_MINE);
 			break;
 		}
 	}

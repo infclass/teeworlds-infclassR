@@ -3,6 +3,7 @@
 #include <engine/shared/config.h>
 #include <game/server/classes.h>
 #include <game/server/gamecontext.h>
+#include <game/server/infclass/damage_type.h>
 #include <game/server/infclass/entities/biologist-mine.h>
 #include <game/server/infclass/entities/engineer-wall.h>
 #include <game/server/infclass/entities/infccharacter.h>
@@ -679,5 +680,5 @@ bool CInfClassHuman::PositionLockAvailable() const
 void CInfClassHuman::OnSlimeEffect(int Owner)
 {
 	int Count = Config()->m_InfSlimePoisonDuration;
-	Poison(Count, Owner);
+	Poison(Count, Owner, DAMAGE_TYPE::SLUG_SLIME);
 }

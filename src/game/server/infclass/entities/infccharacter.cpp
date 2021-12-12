@@ -10,6 +10,7 @@
 #include <game/server/entities/projectile.h>
 
 #include <game/server/infclass/classes/infected/infected.h>
+#include <game/server/infclass/damage_type.h>
 #include <game/server/infclass/entities/biologist-mine.h>
 #include <game/server/infclass/entities/bouncing-bullet.h>
 #include <game/server/infclass/entities/engineer-wall.h>
@@ -511,6 +512,21 @@ void CInfClassCharacter::FireWeapon()
 	{
 		m_ReloadTimer = Server()->GetFireDelay(GetInfWeaponID(m_ActiveWeapon)) * Server()->TickSpeed() / 1000;
 	}
+}
+
+bool CInfClassCharacter::TakeDamage(vec2 Force, float Dmg, int From, DAMAGE_TYPE DamageType)
+{
+	int WholeDmg = Dmg;
+	if(Dmg != WholeDmg)
+	{
+		int ExtraDmg = random_prob(Dmg - WholeDmg) ? 1 : 0;
+		WholeDmg += ExtraDmg;
+	}
+
+	TAKEDAMAGEMODE Mode = TAKEDAMAGEMODE::NOINFECTION;
+	int Weapon = CInfClassGameController::DamageTypeToWeapon(DamageType, &Mode);
+
+	return TakeDamage(Force, Dmg, From, Weapon, Mode);
 }
 
 bool CInfClassCharacter::TakeDamage(vec2 Force, int Dmg, int From, int Weapon, TAKEDAMAGEMODE Mode)
@@ -1918,7 +1934,7 @@ void CInfClassCharacter::HandleHookDraining()
 	{
 		if(m_Core.m_HookedPlayer >= 0)
 		{
-			CCharacter *VictimChar = GameServer()->GetPlayerChar(m_Core.m_HookedPlayer);
+			CInfClassCharacter *VictimChar = GameController()->GetCharacter(m_Core.m_HookedPlayer);
 			if(VictimChar)
 			{
 				float Rate = 1.0f;
@@ -1933,9 +1949,11 @@ void CInfClassCharacter::HandleHookDraining()
 				if(m_HookDmgTick + Server()->TickSpeed()*Rate < Server()->Tick())
 				{
 					m_HookDmgTick = Server()->Tick();
-					VictimChar->TakeDamage(vec2(0.0f,0.0f), Damage, GetCID(), WEAPON_NINJA, TAKEDAMAGEMODE::NOINFECTION);
+					VictimChar->TakeDamage(vec2(0.0f,0.0f), Damage, GetCID(), DAMAGE_TYPE::DRYING_HOOK);
 					if((GetPlayerClass() == PLAYERCLASS_SMOKER || GetPlayerClass() == PLAYERCLASS_BAT) && VictimChar->IsHuman())
+					{
 						IncreaseOverallHp(2);
+					}
 				}
 			}
 		}
@@ -1969,6 +1987,12 @@ void CInfClassCharacter::HandleIndirectKillerCleanup()
 			m_LastHookerTick = -1;
 		}
 	}
+}
+
+void CInfClassCharacter::Die(int Killer, DAMAGE_TYPE DamageType)
+{
+	int Weapon = CInfClassGameController::DamageTypeToWeapon(DamageType);
+	Die(Killer, Weapon);
 }
 
 void CInfClassCharacter::Die(int Killer, int Weapon)

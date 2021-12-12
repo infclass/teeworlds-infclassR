@@ -18,6 +18,8 @@ struct SpawnContext;
 struct WeaponFireContext;
 struct WeaponRegenParams;
 
+enum class DAMAGE_TYPE;
+
 class CInfClassPlayerClass
 {
 public:
@@ -41,7 +43,7 @@ public:
 	void OnPlayerClassChanged();
 
 	virtual void PrepareToDie(int Killer, int Weapon, bool *pRefusedToDie);
-	void Poison(int Count, int From);
+	void Poison(int Count, int From, DAMAGE_TYPE DamageType);
 
 	// Events
 	virtual void OnCharacterPreCoreTick();
@@ -88,6 +90,7 @@ protected:
 	int m_Poison = 0;
 	int m_PoisonTick = 0;
 	int m_PoisonFrom = 0;
+	DAMAGE_TYPE m_PoisonDamageType;
 };
 
 #endif // GAME_SERVER_INFCLASS_CLASSES_PLAYER_CLASS_H

@@ -8,6 +8,8 @@
 #include <game/server/gamecontext.h>
 #include <engine/server/roundstatistics.h>
 
+#include <game/server/infclass/damage_type.h>
+
 #include "infc-laser.h"
 #include "infccharacter.h"
 #include "plasma.h"
@@ -62,7 +64,7 @@ void CTurret::Tick()
 		// selfdestruction
 		if(Len < pChr->GetProximityRadius() + 4.0f )
 		{
-			pChr->TakeDamage(vec2(0.f, 0.f), Config()->m_InfTurretSelfDestructDmg, m_Owner, WEAPON_LASER, TAKEDAMAGEMODE::NOINFECTION);
+			pChr->TakeDamage(vec2(0.f, 0.f), Config()->m_InfTurretSelfDestructDmg, m_Owner, DAMAGE_TYPE::TURRET_DESTRUCTION);
 			GameServer()->CreateSound(m_Pos, SOUND_LASER_FIRE);
 			int ClientID = pChr->GetCID();
 			char aBuf[64];
@@ -139,6 +141,7 @@ void CTurret::AttackTargets()
 
 			switch(m_Type)
 			{
+				// m_Type == LASER ? DAMAGE_TYPE::TURRET_LASER : DAMAGE_TYPE::TURRET_PLASMA);
 				case LASER:
 					new CInfClassLaser(GameServer(), m_Pos, Direction, GameServer()->Tuning()->m_LaserReach, m_Owner, Config()->m_InfTurretDmgHealthLaser);
 					m_ammunition--;

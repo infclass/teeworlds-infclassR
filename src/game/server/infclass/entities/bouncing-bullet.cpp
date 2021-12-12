@@ -5,7 +5,11 @@
 #include <game/generated/protocol.h>
 #include <game/server/gamecontext.h>
 
+#include <game/server/infclass/damage_type.h>
+#include <game/server/infclass/infcgamecontroller.h>
+
 #include "bouncing-bullet.h"
+#include "infccharacter.h"
 
 CBouncingBullet::CBouncingBullet(CGameContext *pGameContext, int Owner, vec2 Pos, vec2 Dir)
 	: CInfCEntity(pGameContext, CGameWorld::ENTTYPE_BOUNCING_BULLET, Pos, Owner)
@@ -55,14 +59,14 @@ void CBouncingBullet::Tick()
 	m_LifeSpan--;
 	
 	const float ProjectileRadius = 6.0f;
-	CCharacter *pTargetChr = GameServer()->m_World.IntersectCharacter(PrevPos, CurPos, ProjectileRadius, CurPos);
+	CInfClassCharacter *pTargetChr = CInfClassCharacter::GetInstance(GameServer()->m_World.IntersectCharacter(PrevPos, CurPos, ProjectileRadius, CurPos));
 
 	if(pTargetChr)
 	{
-		int Damage = random_prob(0.33f) ? 2 : 1;
+		const float Damage = 1.33f;
 		if(pTargetChr)
 		{
-			pTargetChr->TakeDamage(m_Direction * 2, Damage, m_Owner, WEAPON_SHOTGUN, TAKEDAMAGEMODE::NOINFECTION);
+			pTargetChr->TakeDamage(m_Direction * 2, Damage, m_Owner, DAMAGE_TYPE::BIOLOGIST_SHOTGUN);
 		}
 
 		GameServer()->m_World.DestroyEntity(this);

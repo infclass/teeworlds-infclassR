@@ -18,11 +18,13 @@ CInfClassLaser::CInfClassLaser(CGameContext *pGameContext, vec2 Pos, vec2 Direct
 	m_Dmg = Dmg;
 	m_Energy = StartEnergy;
 	m_Dir = Direction;
+	m_DamageType = DAMAGE_TYPE::NO_DAMAGE;
 }
 
-CInfClassLaser::CInfClassLaser(CGameContext *pGameContext, vec2 Pos, vec2 Direction, float StartEnergy, int Owner, int Dmg)
+CInfClassLaser::CInfClassLaser(CGameContext *pGameContext, vec2 Pos, vec2 Direction, float StartEnergy, int Owner, int Dmg, DAMAGE_TYPE DamageType)
 	: CInfClassLaser(pGameContext, Pos, Direction, StartEnergy, Owner, Dmg, CGameWorld::ENTTYPE_LASER)
 {
+	m_DamageType = DamageType;
 	GameWorld()->InsertEntity(this);
 	DoBounce();
 }
@@ -79,14 +81,15 @@ bool CInfClassLaser::HitCharacter(vec2 From, vec2 To)
 		return true;
 	}
 
-	pHit->TakeDamage(vec2(0.f, 0.f), m_Dmg, m_Owner, WEAPON_LASER, TAKEDAMAGEMODE::NOINFECTION);
+	pHit->TakeDamage(vec2(0.f, 0.f), m_Dmg, m_Owner, m_DamageType);
 
-	if(pOwnerChar && pOwnerChar->GetPlayerClass() == PLAYERCLASS_LOOPER)
+	if(m_DamageType == DAMAGE_TYPE::LOOPER_LASER)
 	{
 		pHit->SlowMotionEffect(g_Config.m_InfSlowMotionGunDuration, GetOwner());
 		if(Config()->m_InfSlowMotionGunDuration != 0)
 			GameServer()->SendEmoticon(pHit->GetCID(), EMOTICON_EXCLAMATION);
 	}
+
 	return true;
 }
 

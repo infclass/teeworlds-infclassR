@@ -9,6 +9,8 @@ class CInfClassPlayer;
 class CInfClassPlayerClass;
 class CWhiteHole;
 
+enum class DAMAGE_TYPE;
+
 enum
 {
 	GIFT_HEROFLAG=0,
@@ -67,6 +69,7 @@ public:
 
 	void FireWeapon() override;
 
+	bool TakeDamage(vec2 Force, float Dmg, int From, DAMAGE_TYPE DamageType);
 	bool TakeDamage(vec2 Force, int Dmg, int From, int Weapon, TAKEDAMAGEMODE Mode) override;
 
 	void OnWeaponFired(WeaponFireContext *pFireContext);
@@ -88,6 +91,7 @@ public:
 	void HandleHookDraining();
 	void HandleIndirectKillerCleanup();
 
+	void Die(int Killer, DAMAGE_TYPE DamageType);
 	void Die(int Killer, int Weapon) override;
 
 	void SetActiveWeapon(int Weapon);

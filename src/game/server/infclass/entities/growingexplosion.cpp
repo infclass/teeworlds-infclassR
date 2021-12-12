@@ -5,6 +5,7 @@
 
 #include <game/server/gamecontext.h>
 #include <game/server/infclass/classes/infcplayerclass.h>
+#include <game/server/infclass/damage_type.h>
 #include <game/server/infclass/infcgamecontroller.h>
 
 #include "infccharacter.h"
@@ -278,7 +279,7 @@ void CGrowingExplosion::Tick()
 						m_Hit[p->GetCID()] = true;
 						break;
 					case GROWINGEXPLOSIONEFFECT_POISON_INFECTED:
-						p->GetClass()->Poison(Config()->m_InfPoisonDamage, m_Owner);
+						p->GetClass()->Poison(Config()->m_InfPoisonDamage, m_Owner, DAMAGE_TYPE::MERCENARY_GRENADE);
 						GameServer()->SendEmoticon(p->GetCID(), EMOTICON_DROP);
 						m_Hit[p->GetCID()] = true;
 						break;
