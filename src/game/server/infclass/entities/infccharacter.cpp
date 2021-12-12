@@ -1269,7 +1269,7 @@ void CInfClassCharacter::OnHammerFired(WeaponFireContext *pFireContext)
 					if (pTarget->IsZombie())
 					{
 						pTarget->TakeDamage(vec2(0.f, -1.f) + normalize(Dir + vec2(0.f, -1.1f)) * 10.0f, 20, 
-								GetCID(), m_ActiveWeapon, TAKEDAMAGEMODE::NOINFECTION);
+								GetCID(), DAMAGE_TYPE::HAMMER);
 					}
 				}
 				else if(GetPlayerClass() == PLAYERCLASS_MEDIC)
@@ -1277,7 +1277,7 @@ void CInfClassCharacter::OnHammerFired(WeaponFireContext *pFireContext)
 					if (pTarget->IsZombie())
 					{
 						pTarget->TakeDamage(vec2(0.f, -1.f) + normalize(Dir + vec2(0.f, -1.1f)) * 10.0f, 20, 
-								GetCID(), m_ActiveWeapon, TAKEDAMAGEMODE::NOINFECTION);
+								GetCID(), DAMAGE_TYPE::HAMMER);
 					}
 					else
 					{
@@ -1298,7 +1298,7 @@ void CInfClassCharacter::OnHammerFired(WeaponFireContext *pFireContext)
 				else
 				{
 					pTarget->TakeDamage(vec2(0.f, -1.f) + normalize(Dir + vec2(0.f, -1.1f)) * 10.0f, g_pData->m_Weapons.m_Hammer.m_pBase->m_Damage,
-						GetCID(), m_ActiveWeapon, TAKEDAMAGEMODE::NOINFECTION);
+						GetCID(), DAMAGE_TYPE::HAMMER);
 				}
 /* INFECTION MODIFICATION END *****************************************/
 				Hits++;
