@@ -202,6 +202,7 @@ public:
 	int m_HallucinationTick;
 	int m_SlipperyTick;
 	int m_SlowMotionTick; //LooperClass changes here
+	int m_SlowEffectApplicant;
 	int m_LastFreezer;
 	int m_LastHooker;
 	int m_LastHookerTick;
@@ -230,7 +231,7 @@ public:
 	void Freeze(float Time, int Player, FREEZEREASON Reason);
 	bool IsFrozen() const;
 	bool IsInSlowMotion() const; //LooperClass changes here
-	void SlowMotionEffect(float duration);	//LooperClass changes here
+	void SlowMotionEffect(float Duration, int FromCID);
 	void Unfreeze();
 	virtual void TryUnfreeze() = 0;
 	bool IsInLove() const;

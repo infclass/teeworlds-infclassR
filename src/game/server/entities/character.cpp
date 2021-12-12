@@ -1227,14 +1227,16 @@ bool CCharacter::IsInSlowMotion() const
 }
 
 // duration in centiSec (10 == 1 second)
-void CCharacter::SlowMotionEffect(float duration)
+void CCharacter::SlowMotionEffect(float Duration, int FromCID)
 {
-	if(duration == 0)
+	if(Duration == 0)
 		return;
-	duration *= 0.1f;
+	Duration *= 0.1f;
+	int NewSlowTick = Server()->TickSpeed()*Duration;
 	if(m_SlowMotionTick <= 0)
 	{
-		m_SlowMotionTick = Server()->TickSpeed()*duration;
+		m_SlowMotionTick = NewSlowTick;
+		m_SlowEffectApplicant = FromCID;
 		m_IsInSlowMotion = true;
 		m_Core.m_Vel *= 0.4;
 	}

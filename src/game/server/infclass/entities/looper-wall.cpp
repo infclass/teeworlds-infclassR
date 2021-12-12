@@ -95,7 +95,7 @@ void CLooperWall::Tick()
 				//Slow-Motion modification here
 				if (!p->IsInSlowMotion())
 				{
-					p->SlowMotionEffect(Config()->m_InfSlowMotionWallDuration);
+					p->SlowMotionEffect(Config()->m_InfSlowMotionWallDuration, GetOwner());
 					GameServer()->SendEmoticon(p->GetCID(), EMOTICON_EXCLAMATION);
 				}
 			}

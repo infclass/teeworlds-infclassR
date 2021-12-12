@@ -83,7 +83,7 @@ bool CInfClassLaser::HitCharacter(vec2 From, vec2 To)
 
 	if(pOwnerChar && pOwnerChar->GetPlayerClass() == PLAYERCLASS_LOOPER)
 	{
-		pHit->SlowMotionEffect(g_Config.m_InfSlowMotionGunDuration);
+		pHit->SlowMotionEffect(g_Config.m_InfSlowMotionGunDuration, GetOwner());
 		if(Config()->m_InfSlowMotionGunDuration != 0)
 			GameServer()->SendEmoticon(pHit->GetCID(), EMOTICON_EXCLAMATION);
 	}
