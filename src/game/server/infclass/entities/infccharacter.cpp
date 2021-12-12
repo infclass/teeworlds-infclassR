@@ -896,6 +896,11 @@ void CInfClassCharacter::GetActualKillers(int GivenKiller, DAMAGE_TYPE GivenWeap
 //		}
 //	}
 
+	if(IsInSlowMotion())
+	{
+		AddKiller(m_SlowEffectApplicant);
+	}
+
 	const float LastEnforcerTimeoutInSeconds = Config()->m_InfLastEnforcerTimeMs / 1000.0f;
 	if(m_LastEnforcer >= 0 && (m_LastEnforcerTick > m_LastHookerTick))
 	{
