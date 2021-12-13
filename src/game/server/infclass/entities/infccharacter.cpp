@@ -111,14 +111,12 @@ void CInfClassCharacter::OnCharacterInInfectionZone()
 	}
 	else
 	{
-		int Killer = GetCID();
-		int Weapon = WEAPON_WORLD;
-		GetIndirectKiller(&Killer, &Weapon);
+		int Killer = -1;
+		int Assistant = -1;
+		DAMAGE_TYPE DamageType = DAMAGE_TYPE::INFECTION_TILE;
+		GetActualKillers(GetCID(), DamageType, &Killer);
 
 		CInfClassPlayer *pKiller = GameController()->GetPlayer(Killer);
-
-		DAMAGE_TYPE DamageType = DAMAGE_TYPE::INFECTION_TILE;
-		int Assistant = -1;
 
 		GameController()->OnCharacterDeath(this, DamageType, Killer, Assistant);
 		GameServer()->CreateSound(GetPos(), SOUND_PLAYER_DIE);
@@ -809,79 +807,105 @@ int CInfClassCharacter::GetFlagCoolDown()
 	return m_pHeroFlag ? m_pHeroFlag->GetCoolDown() : 0;
 }
 
-bool CInfClassCharacter::GetIndirectKiller(int *pKillerId, int *pWeaponId)
+void CInfClassCharacter::GetActualKillers(int GivenKiller, DAMAGE_TYPE GivenWeapon, int *pKillerId)
 {
-	//Search for the real killer
-	if(IsFrozen())
+	switch(GivenWeapon)
 	{
-		*pKillerId = m_LastFreezer;
-		if(m_FreezeReason == FREEZEREASON_FLASH)
-		{
-			*pWeaponId = WEAPON_GRENADE;
-		}
-		else
-		{
-			*pWeaponId = WEAPON_NINJA;
-		}
-		return true;
+	case DAMAGE_TYPE::GAME:
+	case DAMAGE_TYPE::GAME_FINAL_EXPLOSION:
+	case DAMAGE_TYPE::GAME_INFECTION:
+		return;
+	default:
+		break;
 	}
 
-	if(*pWeaponId == WEAPON_SELF)
+	if(GivenWeapon == DAMAGE_TYPE::BOOMER_EXPLOSION)
 	{
 		if(GetPlayerClass() == PLAYERCLASS_BOOMER)
 		{
-			return false;
+			return;
 		}
 	}
 
-	// if hooked
+	int Killer = -1;
+
+	const auto AddKiller = [&Killer](int ExtraKiller)
 	{
-		int CurrentHookerCID = -1;
-		for(CInfClassCharacter *pHooker = (CInfClassCharacter*) GameWorld()->FindFirst(CGameWorld::ENTTYPE_CHARACTER);
-			pHooker;
-			pHooker = (CInfClassCharacter *)pHooker->TypeNext())
+		if(Killer < 0)
 		{
-			if(pHooker->GetPlayer() && pHooker->GetHookedPlayer() == GetCID())
-			{
-				if(CurrentHookerCID < 0)
-				{
-					CurrentHookerCID = pHooker->GetCID();
-				}
-				else
-				{
-					// More than one player hooked this victim
-					// We don't support cooperative killing.
-					// Break this loop and check for the freezer instead.
-					CurrentHookerCID = -1;
-					break;
-				}
-			}
+			Killer = ExtraKiller;
+			return;
 		}
 
-		if(CurrentHookerCID >= 0)
+		if(Killer == ExtraKiller)
 		{
-			*pKillerId = CurrentHookerCID;
-			*pWeaponId = WEAPON_NINJA;
-			return true;
+			return;
 		}
+	};
+
+	if(GivenKiller != GetCID())
+	{
+		AddKiller(GivenKiller);
 	}
+
+	if(IsFrozen())
+	{
+		if(m_FreezeReason == FREEZEREASON_FLASH)
+		{
+			// DAMAGE_TYPE::STUNNING_GRENADE
+		}
+		AddKiller(m_LastFreezer);
+	}
+
+//	// if hooked
+//	{
+//		int CurrentHookerCID = -1;
+//		for(CInfClassCharacter *pHooker = (CInfClassCharacter*) GameWorld()->FindFirst(CGameWorld::ENTTYPE_CHARACTER);
+//			pHooker;
+//			pHooker = (CInfClassCharacter *)pHooker->TypeNext())
+//		{
+//			if(pHooker->GetPlayer() && pHooker->GetHookedPlayer() == GetCID())
+//			{
+//				if(CurrentHookerCID < 0)
+//				{
+//					CurrentHookerCID = pHooker->GetCID();
+//				}
+//				else
+//				{
+//					// More than one player hooked this victim
+//					// We don't support cooperative killing.
+//					// Break this loop and check for the freezer instead.
+//					CurrentHookerCID = -1;
+//					break;
+//				}
+//			}
+//		}
+
+//		if(CurrentHookerCID >= 0)
+//		{
+//			*pKillerId = CurrentHookerCID;
+//			*pWeaponId = WEAPON_NINJA;
+//			return true;
+//		}
+//	}
 
 	const float LastEnforcerTimeoutInSeconds = Config()->m_InfLastEnforcerTimeMs / 1000.0f;
 	if(m_LastEnforcer >= 0 && (m_LastEnforcerTick > m_LastHookerTick))
 	{
-		*pKillerId = m_LastEnforcer;
-		*pWeaponId = m_LastEnforcerWeapon;
-		return true;
+		AddKiller(m_LastEnforcer);
 	}
 
 	if(m_LastHooker >= 0)
 	{
-		*pKillerId = m_LastHooker;
-		*pWeaponId = WEAPON_NINJA;
-		return true;
+		AddKiller(m_LastHooker);
 	}
 
-	return false;
+	if(Killer < 0)
+	{
+		Killer = GivenKiller;
+	}
+
+	*pKillerId = Killer;
 }
 
 void CInfClassCharacter::UpdateLastHooker(int ClientID, int HookerTick)
@@ -2019,10 +2043,7 @@ void CInfClassCharacter::Die(int Killer, DAMAGE_TYPE DamageType)
 /* INFECTION MODIFICATION END *****************************************/
 
 	int Assistant = -1;
-	if(((Weapon == WEAPON_WORLD) || (Weapon == WEAPON_SELF)) && Killer == GetCID())
-	{
-		GetIndirectKiller(&Killer, &Weapon);
-	}
+	GetActualKillers(Killer, DamageType, &Killer);
 
 	// we got to wait 0.5 secs before respawning
 	m_pPlayer->m_RespawnTick = Server()->Tick()+Server()->TickSpeed()/2;
