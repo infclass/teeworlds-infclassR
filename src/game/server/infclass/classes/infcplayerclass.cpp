@@ -174,7 +174,7 @@ void CInfClassPlayerClass::OnPlayerClassChanged()
 	m_pPlayer->HookProtection(true);
 }
 
-void CInfClassPlayerClass::PrepareToDie(int Killer, int Weapon, bool *pRefusedToDie)
+void CInfClassPlayerClass::PrepareToDie(int Killer, DAMAGE_TYPE DamageType, bool *pRefusedToDie)
 {
 }
 

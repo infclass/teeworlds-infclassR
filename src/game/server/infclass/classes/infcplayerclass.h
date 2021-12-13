@@ -42,7 +42,7 @@ public:
 	int GetPlayerClass() const;
 	void OnPlayerClassChanged();
 
-	virtual void PrepareToDie(int Killer, int Weapon, bool *pRefusedToDie);
+	virtual void PrepareToDie(int Killer, DAMAGE_TYPE DamageType, bool *pRefusedToDie);
 	void Poison(int Count, int From, DAMAGE_TYPE DamageType);
 
 	// Events

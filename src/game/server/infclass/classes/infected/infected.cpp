@@ -112,7 +112,7 @@ void CInfClassInfected::OnCharacterTick()
 		if (m_VoodooTimeAlive > 0)
 			m_VoodooTimeAlive-=1000;
 		else
-			m_pCharacter->Die(m_VoodooKiller, m_VoodooWeapon);
+			m_pCharacter->Die(m_VoodooKiller, m_VoodooDamageType);
 
 		// Display time left to live
 		int Time = m_VoodooTimeAlive/Server()->TickSpeed();
@@ -347,9 +347,9 @@ int CInfClassInfected::GetGhoulLevel() const
 	return GetPlayer()->GetGhoulLevel();
 }
 
-void CInfClassInfected::PrepareToDie(int Killer, int Weapon, bool *pRefusedToDie)
+void CInfClassInfected::PrepareToDie(int Killer, DAMAGE_TYPE DamageType, bool *pRefusedToDie)
 {
-	if((Killer == GetCID()) && (Weapon == WEAPON_SELF))
+	if(DamageType == DAMAGE_TYPE::KILL_COMMAND)
 	{
 		// Accept the death to go with the default self kill routine
 		return;
@@ -368,7 +368,7 @@ void CInfClassInfected::PrepareToDie(int Killer, int Weapon, bool *pRefusedToDie
 		{
 			m_VoodooAboutToDie = true;
 			m_VoodooKiller = Killer;
-			m_VoodooWeapon = Weapon;
+			m_VoodooDamageType = DamageType;
 			UpdateSkin();
 
 			*pRefusedToDie = true;

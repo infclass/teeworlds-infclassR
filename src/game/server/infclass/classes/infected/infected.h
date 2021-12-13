@@ -32,7 +32,7 @@ public:
 	void IncreaseGhoulLevel(int Diff);
 	int GetGhoulLevel() const;
 
-	void PrepareToDie(int Killer, int Weapon, bool *pRefusedToDie) override;
+	void PrepareToDie(int Killer, DAMAGE_TYPE DamageType, bool *pRefusedToDie) override;
 
 protected:
 	void GiveClassAttributes() override;
@@ -46,7 +46,7 @@ protected:
 
 	int m_VoodooTimeAlive = 0;
 	int m_VoodooKiller; // Save killer + weapon for delayed kill message
-	int m_VoodooWeapon = 0;
+	DAMAGE_TYPE m_VoodooDamageType;
 	bool m_VoodooAboutToDie = false;
 
 	bool m_HookOnTheLimit = false;
