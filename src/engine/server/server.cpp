@@ -1395,7 +1395,7 @@ void CServer::ProcessClientPacket(CNetChunk *pPacket)
 		}
 		if(Msg == NETMSG_CLIENTVER_INFCLASS)
 		{
-			if((pPacket->m_Flags & NET_CHUNKFLAG_VITAL) != 0 && m_aClients[ClientID].m_State == CClient::STATE_AUTH)
+			if((pPacket->m_Flags & NET_CHUNKFLAG_VITAL) != 0) // Ignore STATE_AUTH for now, see ddnet#4445 // && m_aClients[ClientID].m_State == CClient::STATE_AUTH)
 			{
 				int InfClassVersion = Unpacker.GetInt();
 				if(Unpacker.Error() || InfClassVersion < 0)
