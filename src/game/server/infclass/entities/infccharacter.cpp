@@ -114,7 +114,7 @@ void CInfClassCharacter::OnCharacterInInfectionZone()
 		int Killer = -1;
 		int Assistant = -1;
 		DAMAGE_TYPE DamageType = DAMAGE_TYPE::INFECTION_TILE;
-		GetActualKillers(GetCID(), DamageType, &Killer);
+		GetActualKillers(GetCID(), DamageType, &Killer, &Assistant);
 
 		CInfClassPlayer *pKiller = GameController()->GetPlayer(Killer);
 
@@ -807,7 +807,7 @@ int CInfClassCharacter::GetFlagCoolDown()
 	return m_pHeroFlag ? m_pHeroFlag->GetCoolDown() : 0;
 }
 
-void CInfClassCharacter::GetActualKillers(int GivenKiller, DAMAGE_TYPE GivenWeapon, int *pKillerId)
+void CInfClassCharacter::GetActualKillers(int GivenKiller, DAMAGE_TYPE GivenWeapon, int *pKillerId, int *pAssistant)
 {
 	switch(GivenWeapon)
 	{
@@ -828,8 +828,9 @@ void CInfClassCharacter::GetActualKillers(int GivenKiller, DAMAGE_TYPE GivenWeap
 	}
 
 	int Killer = -1;
+	int Assistant = -1;
 
-	const auto AddKiller = [&Killer](int ExtraKiller)
+	const auto AddKiller = [&Killer, &Assistant](int ExtraKiller)
 	{
 		if(Killer < 0)
 		{
@@ -839,6 +840,12 @@ void CInfClassCharacter::GetActualKillers(int GivenKiller, DAMAGE_TYPE GivenWeap
 
 		if(Killer == ExtraKiller)
 		{
+			return;
+		}
+
+		if(Assistant < 0)
+		{
+			Assistant = ExtraKiller;
 			return;
 		}
 	};
@@ -906,6 +913,7 @@ void CInfClassCharacter::GetActualKillers(int GivenKiller, DAMAGE_TYPE GivenWeap
 	}
 
 	*pKillerId = Killer;
+	*pAssistant = Assistant;
 }
 
 void CInfClassCharacter::UpdateLastHooker(int ClientID, int HookerTick)
@@ -2043,7 +2051,7 @@ void CInfClassCharacter::Die(int Killer, DAMAGE_TYPE DamageType)
 /* INFECTION MODIFICATION END *****************************************/
 
 	int Assistant = -1;
-	GetActualKillers(Killer, DamageType, &Killer);
+	GetActualKillers(Killer, DamageType, &Killer, &Assistant);
 
 	// we got to wait 0.5 secs before respawning
 	m_pPlayer->m_RespawnTick = Server()->Tick()+Server()->TickSpeed()/2;
