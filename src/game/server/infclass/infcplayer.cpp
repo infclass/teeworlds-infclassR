@@ -92,6 +92,12 @@ void CInfClassPlayer::SnapClientInfo(int SnappingClient)
 	StrToInts(&pClientInfo->m_Clan0, 3, GetClan(SnappingClient));
 	pClientInfo->m_Country = Server()->ClientCountry(m_ClientID);
 
+	IServer::CClientInfo SnappingClientInfo = {0};
+	if(SnappingClient != DemoClientID)
+	{
+		Server()->GetClientInfo(SnappingClient, &SnappingClientInfo);
+	}
+
 	if(
 		GameServer()->GetPlayer(SnappingClient) && IsHuman() &&
 		(
@@ -110,6 +116,20 @@ void CInfClassPlayer::SnapClientInfo(int SnappingClient)
 	pClientInfo->m_UseCustomColor = m_TeeInfos.m_UseCustomColor;
 	pClientInfo->m_ColorBody = m_TeeInfos.m_ColorBody;
 	pClientInfo->m_ColorFeet = m_TeeInfos.m_ColorFeet;
+
+	if(SnappingClientInfo.m_InfClassVersion || (SnappingClient == DemoClientID))
+	{
+		CNetObj_InfClassPlayer *pInfClassPlayer = static_cast<CNetObj_InfClassPlayer *>(Server()->SnapNewItem(NETOBJTYPE_INFCLASSPLAYER, m_ClientID, sizeof(CNetObj_InfClassPlayer)));
+		if(!pInfClassPlayer)
+			return;
+
+		pInfClassPlayer->m_Class = m_class;
+		pInfClassPlayer->m_Flags = 0;
+		if(IsZombie())
+		{
+			pInfClassPlayer->m_Flags |= INFCLASS_PLAYER_FLAG_INFECTED;
+		}
+	}
 }
 
 void CInfClassPlayer::HandleInfection()
