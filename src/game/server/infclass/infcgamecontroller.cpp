@@ -1242,6 +1242,11 @@ void CInfClassGameController::SendKillMessage(int Victim, DAMAGE_TYPE DamageType
 	int DamageTypeInt = static_cast<int>(DamageType);
 	int VanillaWeapon = DamageTypeToWeapon(DamageType);
 
+	if(Killer < 0)
+	{
+		Killer = Victim;
+	}
+
 	dbg_msg("inf-proto", "Sent kill message victim=%d, damage_type=%d, killer=%d, assistant=%d", Victim, DamageTypeInt, Killer, Assistant);
 
 	CNetMsg_Inf_KillMsg InfClassMsg;
@@ -1255,7 +1260,7 @@ void CInfClassGameController::SendKillMessage(int Victim, DAMAGE_TYPE DamageType
 	InfClassMsg.Pack(&InfCPacker);
 
 	CNetMsg_Sv_KillMsg VanillaMsg;
-	VanillaMsg.m_Killer = Killer >= 0 ? Killer : Victim;
+	VanillaMsg.m_Killer = Killer;
 	VanillaMsg.m_Victim = Victim;
 	VanillaMsg.m_Weapon = VanillaWeapon;
 	VanillaMsg.m_ModeSpecial = InfClassModeSpecialSkip;
