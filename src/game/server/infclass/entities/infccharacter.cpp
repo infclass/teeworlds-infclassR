@@ -2037,6 +2037,8 @@ void CInfClassCharacter::Die(int Killer, DAMAGE_TYPE DamageType)
 		return;
 	}
 
+	dbg_msg("server", "CInfClassCharacter::Die: victim: %d, killer: %d, DT: %d", GetCID(), Killer, static_cast<int>(DamageType));
+
 	int Weapon = CInfClassGameController::DamageTypeToWeapon(DamageType);
 
 	if(GetPlayerClass() == PLAYERCLASS_UNDEAD && Killer != GetCID())

@@ -1825,6 +1825,8 @@ int CInfClassGameController::OnCharacterDeath(class CCharacter *pAbstractVictim,
 
 void CInfClassGameController::OnCharacterDeath(CInfClassCharacter *pVictim, DAMAGE_TYPE DamageType, int Killer, int Assistant)
 {
+	dbg_msg("server", "OnCharacterDeath: victim: %d, DT: %d, killer: %d, assistant: %d", pVictim->GetCID(), static_cast<int>(DamageType), Killer, Assistant);
+
 	CInfClassPlayer *pKiller = GetPlayer(Killer);
 	int Weapon = DamageTypeToWeapon(DamageType);
 	RewardTheKiller(pVictim, pKiller, Weapon);
