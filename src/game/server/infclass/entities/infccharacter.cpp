@@ -1908,6 +1908,10 @@ void CInfClassCharacter::HandleIndirectKillerCleanup()
 
 void CInfClassCharacter::Die(int Killer, int Weapon)
 {
+	if(!IsAlive())
+	{
+		return;
+	}
 /* INFECTION MODIFICATION START ***************************************/
 	if(GetPlayerClass() == PLAYERCLASS_UNDEAD && Killer != GetCID())
 	{
