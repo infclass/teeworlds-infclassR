@@ -2091,7 +2091,7 @@ CGameContext *CInfClassCharacter::GameContext() const
 
 bool CInfClassCharacter::CanDie() const
 {
-	return m_pClass && m_pClass->CanDie();
+	return IsAlive() && m_pClass && m_pClass->CanDie();
 }
 
 bool CInfClassCharacter::CanJump() const
