@@ -986,6 +986,11 @@ void CInfClassCharacter::GetActualKillers(int GivenKiller, DAMAGE_TYPE GivenWeap
 		Killer = GivenKiller;
 	}
 
+	if(IsBlind())
+	{
+		AddAssistant(m_LastBlinder);
+	}
+
 	*pKillerId = Killer;
 	*pAssistant = Assistant;
 }
