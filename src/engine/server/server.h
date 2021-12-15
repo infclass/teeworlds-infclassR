@@ -275,6 +275,7 @@ public:
 
 	void PumpNetwork();
 
+	bool GetMapReload() const override { return m_MapReload; }
 	void ChangeMap(const char *pMap) override;
 	char *GetMapName();
 	int LoadMap(const char *pMapName);
