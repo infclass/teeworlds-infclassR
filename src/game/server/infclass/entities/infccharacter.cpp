@@ -864,52 +864,73 @@ void CInfClassCharacter::GetActualKillers(int GivenKiller, DAMAGE_TYPE GivenWeap
 		AddKiller(m_LastFreezer);
 	}
 
-//	// if hooked
-//	{
-//		int CurrentHookerCID = -1;
-//		for(CInfClassCharacter *pHooker = (CInfClassCharacter*) GameWorld()->FindFirst(CGameWorld::ENTTYPE_CHARACTER);
-//			pHooker;
-//			pHooker = (CInfClassCharacter *)pHooker->TypeNext())
-//		{
-//			if(pHooker->GetPlayer() && pHooker->GetHookedPlayer() == GetCID())
-//			{
-//				if(CurrentHookerCID < 0)
-//				{
-//					CurrentHookerCID = pHooker->GetCID();
-//				}
-//				else
-//				{
-//					// More than one player hooked this victim
-//					// We don't support cooperative killing.
-//					// Break this loop and check for the freezer instead.
-//					CurrentHookerCID = -1;
-//					break;
-//				}
-//			}
-//		}
-
-//		if(CurrentHookerCID >= 0)
-//		{
-//			*pKillerId = CurrentHookerCID;
-//			*pWeaponId = WEAPON_NINJA;
-//			return true;
-//		}
-//	}
-
-	if(IsInSlowMotion())
-	{
-		AddKiller(m_SlowEffectApplicant);
+	bool DamageIsPassive = false;
+	switch(GivenWeapon) {
+	case DAMAGE_TYPE::DEATH_TILE:
+	case DAMAGE_TYPE::INFECTION_TILE:
+	case DAMAGE_TYPE::LASER_WALL:
+		DamageIsPassive = true;
+	default:
+		break;
 	}
 
-	const float LastEnforcerTimeoutInSeconds = Config()->m_InfLastEnforcerTimeMs / 1000.0f;
+	ClientsArray Killers;
+	ClientsArray Assistants;
+
+	ClientsArray &Enforcers = DamageIsPassive ? Killers : Assistants;
+	// if hooked
+	{
+		for(CInfClassCharacter *pHooker = (CInfClassCharacter*) GameWorld()->FindFirst(CGameWorld::ENTTYPE_CHARACTER);
+			pHooker;
+			pHooker = (CInfClassCharacter *)pHooker->TypeNext())
+		{
+			if(pHooker->GetPlayer() && pHooker->GetHookedPlayer() == GetCID())
+			{
+				Enforcers.Add(pHooker->GetCID());
+			}
+		}
+
+		if(Enforcers.Size() > 1)
+		{
+			GameController()->SortCharactersByDistance(Enforcers, &Enforcers, GetPos());
+		}
+	}
+
 	if(m_LastEnforcer >= 0 && (m_LastEnforcerTick > m_LastHookerTick))
 	{
-		AddKiller(m_LastEnforcer);
+		if(!Enforcers.Contains(m_LastEnforcer))
+		{
+			Enforcers.Add(m_LastEnforcer);
+		}
 	}
 
 	if(m_LastHooker >= 0)
 	{
-		AddKiller(m_LastHooker);
+		if(!Enforcers.Contains(m_LastHooker))
+		{
+			Enforcers.Add(m_LastHooker);
+		}
+	}
+
+	if(DamageIsPassive)
+	{
+		for(int i = 0; i < Enforcers.Size(); ++i)
+		{
+			AddKiller(Enforcers.At(i));
+		}
+	}
+
+	if(IsInSlowMotion())
+	{
+		AddAssistant(m_SlowEffectApplicant);
+	}
+
+	if(!DamageIsPassive)
+	{
+		for(int i = 0; i < Enforcers.Size(); ++i)
+		{
+			AddAssistant(Enforcers.At(i));
+		}
 	}
 
 	if(Killer < 0)
