@@ -512,8 +512,11 @@ void IGameController::Tick()
 			}
 			
 			CycleMap();
-			StartRound();
-			IncreaseCurrentRoundCounter();
+			if(!Server()->GetMapReload())
+			{
+				StartRound();
+				IncreaseCurrentRoundCounter();
+			}
 		}
 		else
 		{
