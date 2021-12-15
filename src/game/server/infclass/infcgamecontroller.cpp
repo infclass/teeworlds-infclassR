@@ -904,7 +904,7 @@ int CInfClassGameController::GetPlayerOwnCursorID(int ClientID) const
 	return m_PlayerOwnCursorID;
 }
 
-void CInfClassGameController::GetSortedTargetsInRange(const vec2 &Center, const float Radius, const ClientsArray &SkipList, ClientsArray *pOutput)
+void CInfClassGameController::SortCharactersByDistance(const ClientsArray &Input, ClientsArray *pInput, const vec2 &Center, const float MaxDistance)
 {
 	struct DistanceItem
 	{
@@ -926,6 +926,34 @@ void CInfClassGameController::GetSortedTargetsInRange(const vec2 &Center, const 
 
 	array_on_stack<DistanceItem, MAX_CLIENTS> Distances;
 
+	for(int i = 0; i < Input.Size(); ++i)
+	{
+		int ClientID = Input.At(i);
+		const CCharacter *pChar = GetCharacter(ClientID);
+		if(!pChar)
+			continue;
+
+		const vec2 &CharPos = pChar->GetPos();
+		const float Distance = distance(CharPos, Center);
+		if(MaxDistance && (Distance > MaxDistance))
+			continue;
+
+		Distances.Add(DistanceItem(ClientID, Distance));
+
+		std::sort(Distances.begin(), Distances.end());
+	}
+
+	pInput->Clear();
+	for(const DistanceItem &DistanceItem : Distances)
+	{
+		pInput->Add(DistanceItem.ClientID);
+	}
+}
+
+void CInfClassGameController::GetSortedTargetsInRange(const vec2 &Center, const float Radius, const ClientsArray &SkipList, ClientsArray *pOutput)
+{
+	ClientsArray PossibleCIDs;
+
 	for(int ClientID = 0; ClientID < MAX_CLIENTS; ++ClientID)
 	{
 		if(SkipList.Contains(ClientID))
@@ -935,21 +963,10 @@ void CInfClassGameController::GetSortedTargetsInRange(const vec2 &Center, const 
 		if(!pChar)
 			continue;
 
-		const vec2 &CharPos = pChar->GetPos();
-		const float Distance = distance(CharPos, Center);
-		if(Distance > Radius)
-			continue;
-
-		Distances.Add(DistanceItem(ClientID, Distance));
-
-		std::sort(Distances.begin(), Distances.end());
+		PossibleCIDs.Add(ClientID);
 	}
 
-	pOutput->Clear();
-	for(const DistanceItem &DistanceItem : Distances)
-	{
-		pOutput->Add(DistanceItem.ClientID);
-	}
+	SortCharactersByDistance(PossibleCIDs, pOutput, Center, Radius);
 }
 
 void CInfClassGameController::HandleTargetsToKill()
