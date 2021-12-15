@@ -849,6 +849,23 @@ void CInfClassCharacter::GetActualKillers(int GivenKiller, DAMAGE_TYPE GivenWeap
 			return;
 		}
 	};
+	const auto AddAssistant = [&Killer, &Assistant](int ExtraKiller)
+	{
+		if(Killer < 0)
+		{
+			return;
+		}
+
+		if((Killer == ExtraKiller) || (Assistant == ExtraKiller))
+		{
+			return;
+		}
+
+		if(Assistant < 0)
+		{
+			Assistant = ExtraKiller;
+		}
+	};
 
 	if(GivenKiller != GetCID())
 	{
