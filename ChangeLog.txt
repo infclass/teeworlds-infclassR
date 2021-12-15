@@ -1,4 +1,6 @@
 InfclassR v1.4.0_alpha1
+- Implemented kill assistance (custom client)
+- Implemented damage type (custom client)
 - New blinding laser is given to Ninja
 
 InfclassR v1.3.1
