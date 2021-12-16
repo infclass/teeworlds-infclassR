@@ -81,6 +81,37 @@ void CInfClassPlayer::Tick()
 	HandleTuningParams();
 }
 
+void CInfClassPlayer::SnapClientInfo(int SnappingClient)
+{
+	CNetObj_ClientInfo *pClientInfo = static_cast<CNetObj_ClientInfo *>(Server()->SnapNewItem(NETOBJTYPE_CLIENTINFO, m_ClientID, sizeof(CNetObj_ClientInfo)));
+
+	if(!pClientInfo)
+		return;
+
+	StrToInts(&pClientInfo->m_Name0, 4, Server()->ClientName(m_ClientID));
+	StrToInts(&pClientInfo->m_Clan0, 3, GetClan(SnappingClient));
+	pClientInfo->m_Country = Server()->ClientCountry(m_ClientID);
+
+	if(
+		GameServer()->GetPlayer(SnappingClient) && IsHuman() &&
+		(
+			(Server()->GetClientCustomSkin(SnappingClient) == 1 && SnappingClient == GetCID()) ||
+			(Server()->GetClientCustomSkin(SnappingClient) == 2)
+		)
+	)
+	{
+		StrToInts(&pClientInfo->m_Skin0, 6, m_TeeInfos.m_CustomSkinName);
+	}
+	else
+	{
+		StrToInts(&pClientInfo->m_Skin0, 6, m_TeeInfos.m_SkinName);
+	}
+
+	pClientInfo->m_UseCustomColor = m_TeeInfos.m_UseCustomColor;
+	pClientInfo->m_ColorBody = m_TeeInfos.m_ColorBody;
+	pClientInfo->m_ColorFeet = m_TeeInfos.m_ColorFeet;
+}
+
 void CInfClassPlayer::HandleInfection()
 {
 	if(m_DoInfection == DO_INFECTION::NO)
