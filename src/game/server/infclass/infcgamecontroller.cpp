@@ -1895,9 +1895,6 @@ void CInfClassGameController::OnCharacterDeath(CInfClassCharacter *pVictim, DAMA
 		}
 	}
 
-	if(Weapon == WEAPON_SELF)
-		pVictim->GetPlayer()->m_RespawnTick = Server()->Tick()+Server()->TickSpeed()*3.0f;
-
 	// It is important to SendKillMessage before GetClass()->OnCharacterDeath() to keep the correct kill order
 	char aBuf[256];
 	str_format(aBuf, sizeof(aBuf), "kill killer='%s' victim='%s' weapon=%d",
