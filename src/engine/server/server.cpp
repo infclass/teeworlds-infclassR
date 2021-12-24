@@ -3195,6 +3195,9 @@ void CServer::InfecteClient(int ClientID)
 
 int CServer::GetClientAntiPing(int ClientID)
 {
+	if(ClientID < 0)
+		return 0;
+
 	return m_aClients[ClientID].m_AntiPing;
 }
 
@@ -3206,6 +3209,9 @@ void CServer::SetClientAntiPing(int ClientID, int Value)
 
 int CServer::GetClientCustomSkin(int ClientID)
 {
+	if(ClientID < 0)
+		return 0;
+
 	return m_aClients[ClientID].m_CustomSkin;
 }
 
