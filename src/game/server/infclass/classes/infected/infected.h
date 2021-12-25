@@ -21,6 +21,7 @@ public:
 
 	void OnCharacterPreCoreTick() override;
 	void OnCharacterTick() override;
+	void OnCharacterSnap(int SnappingClient) override;
 	void OnCharacterSpawned(const SpawnContext &Context) override;
 	void OnCharacterDeath(int Weapon) override;
 

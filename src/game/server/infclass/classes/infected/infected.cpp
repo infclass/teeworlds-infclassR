@@ -129,6 +129,31 @@ void CInfClassInfected::OnCharacterTick()
 	}
 }
 
+void CInfClassInfected::OnCharacterSnap(int SnappingClient)
+{
+	if(SnappingClient == m_pPlayer->GetCID())
+	{
+		switch(GetPlayerClass())
+		{
+			case PLAYERCLASS_WITCH:
+			{
+				if(m_pCharacter->GetActiveWeapon() == WEAPON_HAMMER)
+				{
+					vec2 SpawnPos;
+					if(m_pCharacter->FindWitchSpawnPosition(SpawnPos))
+					{
+						const int CursorID = GameController()->GetPlayerOwnCursorID(GetCID());
+						GameController()->SendHammerDot(SpawnPos, CursorID);
+					}
+				}
+			}
+				break;
+			default:
+				break;
+		}
+	}
+}
+
 void CInfClassInfected::OnCharacterSpawned(const SpawnContext &Context)
 {
 	CInfClassPlayerClass::OnCharacterSpawned(Context);

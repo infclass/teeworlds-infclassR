@@ -866,24 +866,7 @@ void CCharacter::Snap(int SnappingClient)
 
 	if(SnappingClient == m_pPlayer->GetCID())
 	{
-		if((GetPlayerClass() == PLAYERCLASS_WITCH) && ((m_ActiveWeapon == WEAPON_LASER) || ((m_ActiveWeapon == WEAPON_HAMMER))))
-		{
-			vec2 SpawnPos;
-			if(FindWitchSpawnPosition(SpawnPos))
-			{
-				CNetObj_Projectile *pObj = static_cast<CNetObj_Projectile *>(Server()->SnapNewItem(NETOBJTYPE_PROJECTILE, m_CursorID, sizeof(CNetObj_Projectile)));
-				if(!pObj)
-					return;
-
-				pObj->m_X = (int)SpawnPos.x;
-				pObj->m_Y = (int)SpawnPos.y;
-				pObj->m_VelX = 0;
-				pObj->m_VelY = 0;
-				pObj->m_StartTick = Server()->Tick();
-				pObj->m_Type = WEAPON_HAMMER;
-			}
-		}
-		else if(GetPlayerClass() == PLAYERCLASS_HERO && g_Config.m_InfHeroFlagIndicator && m_pHeroFlag) 
+		if(GetPlayerClass() == PLAYERCLASS_HERO && g_Config.m_InfHeroFlagIndicator && m_pHeroFlag)
 		{
 			CHeroFlag *pFlag = m_pHeroFlag;
 
