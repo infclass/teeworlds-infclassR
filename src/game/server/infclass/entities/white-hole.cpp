@@ -6,6 +6,7 @@
 #include <engine/shared/config.h>
 
 #include <game/server/infclass/damage_type.h>
+#include <game/server/infclass/infcgamecontroller.h>
 
 #include "growingexplosion.h"
 #include "infccharacter.h"
@@ -117,18 +118,10 @@ void CWhiteHole::Snap(int SnappingClient)
 	// Draw full particle effect - if anti ping is not set to true
 	for(int i=0; i<m_NumParticles; i++)
 	{
-		if (!isDieing && distance(m_ParticlePos[i], m_Pos) > m_Radius) continue; // start animation
+		if(!isDieing && distance(m_ParticlePos[i], m_Pos) > m_Radius)
+			continue; // start animation
 
-		CNetObj_Projectile *pObj = static_cast<CNetObj_Projectile *>(Server()->SnapNewItem(NETOBJTYPE_PROJECTILE, m_IDs[i], sizeof(CNetObj_Projectile)));
-		if(pObj)
-		{
-			pObj->m_X = (int)m_ParticlePos[i].x;
-			pObj->m_Y = (int)m_ParticlePos[i].y;
-			pObj->m_VelX = 0;
-			pObj->m_VelY = 0;
-			pObj->m_StartTick = Server()->Tick();
-			pObj->m_Type = WEAPON_HAMMER;
-		}
+		GameController()->SendHammerDot(m_ParticlePos[i], m_IDs[i]);
 	}
 }
 

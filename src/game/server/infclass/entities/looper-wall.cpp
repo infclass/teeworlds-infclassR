@@ -3,7 +3,10 @@
 #include <base/vmath.h>
 #include <game/generated/protocol.h>
 #include <game/server/gamecontext.h>
+
 #include <game/server/infclass/classes/infcplayerclass.h>
+#include <game/server/infclass/infcgamecontroller.h>
+
 #include <engine/server/roundstatistics.h>
 #include <engine/shared/config.h>
 #include "looper-wall.h"
@@ -176,18 +179,9 @@ void CLooperWall::Snap(int SnappingClient)
 		int particleCount = length(dirVec)/g_BarrierMaxLength*NUM_PARTICLES;
 		for(int i=0; i<particleCount; i++)
 		{
-			CNetObj_Projectile *pObj = static_cast<CNetObj_Projectile *>(Server()->SnapNewItem(NETOBJTYPE_PROJECTILE, m_ParticleIDs[i], sizeof(CNetObj_Projectile)));
-			if(pObj)
-			{
-				float fRandom1 = random_float();
-				float fRandom2 = random_float();
-				pObj->m_X = (int)startPos.x + fRandom1*dirVec.x + fRandom2*dirVecT.x;
-				pObj->m_Y = (int)startPos.y + fRandom1*dirVec.y + fRandom2*dirVecT.y;
-				pObj->m_VelX = 0;
-				pObj->m_VelY = 0;
-				pObj->m_StartTick = Server()->Tick();
-				pObj->m_Type = WEAPON_HAMMER;
-			}
+			float fRandom1 = random_float();
+			float fRandom2 = random_float();
+			GameController()->SendHammerDot(startPos + dirVec * fRandom1 + dirVecT * fRandom2, m_ParticleIDs[i]);
 		}
 	}
 }

@@ -387,6 +387,21 @@ void CInfClassGameController::CreateExplosionDisk(vec2 Pos, float InnerRadius, f
 	}
 }
 
+void CInfClassGameController::SendHammerDot(const vec2 &Pos, int SnapID)
+{
+	CNetObj_Projectile *pObj = static_cast<CNetObj_Projectile *>(Server()->SnapNewItem(NETOBJTYPE_PROJECTILE, SnapID, sizeof(CNetObj_Projectile)));
+
+	if(!pObj)
+		return;;
+
+	pObj->m_X = Pos.x;
+	pObj->m_Y = Pos.y;
+	pObj->m_VelX = 0;
+	pObj->m_VelY = 0;
+	pObj->m_Type = WEAPON_HAMMER;
+	pObj->m_StartTick = Server()->Tick();
+}
+
 void CInfClassGameController::ResetFinalExplosion()
 {
 	m_ExplosionStarted = false;

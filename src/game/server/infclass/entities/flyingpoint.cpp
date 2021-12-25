@@ -41,14 +41,5 @@ void CFlyingPoint::Tick()
 
 void CFlyingPoint::Snap(int SnappingClient)
 {
-	CNetObj_Projectile *pObj = static_cast<CNetObj_Projectile *>(Server()->SnapNewItem(NETOBJTYPE_PROJECTILE, m_ID, sizeof(CNetObj_Projectile)));
-	if(pObj)
-	{
-		pObj->m_X = (int)m_Pos.x;
-		pObj->m_Y = (int)m_Pos.y;
-		pObj->m_VelX = 0;
-		pObj->m_VelY = 0;
-		pObj->m_StartTick = Server()->Tick();
-		pObj->m_Type = WEAPON_HAMMER;
-	}
+	GameController()->SendHammerDot(GetPos(), m_ID);
 }

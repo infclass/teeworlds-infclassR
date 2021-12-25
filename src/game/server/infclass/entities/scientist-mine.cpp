@@ -4,6 +4,7 @@
 #include <engine/shared/config.h>
 
 #include <game/server/infclass/damage_type.h>
+#include <game/server/infclass/infcgamecontroller.h>
 
 #include "scientist-mine.h"
 
@@ -89,17 +90,7 @@ void CScientistMine::Snap(int SnappingClient)
 			float RandomRadius = random_float()*(Radius-4.0f);
 			float RandomAngle = 2.0f * pi * random_float();
 			vec2 ParticlePos = m_Pos + vec2(RandomRadius * cos(RandomAngle), RandomRadius * sin(RandomAngle));
-			
-			CNetObj_Projectile *pObj = static_cast<CNetObj_Projectile *>(Server()->SnapNewItem(NETOBJTYPE_PROJECTILE, m_IDs[CScientistMine::NUM_SIDE+i], sizeof(CNetObj_Projectile)));
-			if(pObj)
-			{
-				pObj->m_X = (int)ParticlePos.x;
-				pObj->m_Y = (int)ParticlePos.y;
-				pObj->m_VelX = 0;
-				pObj->m_VelY = 0;
-				pObj->m_StartTick = Server()->Tick();
-				pObj->m_Type = WEAPON_HAMMER;
-			}
+			GameController()->SendHammerDot(ParticlePos, m_IDs[CScientistMine::NUM_SIDE+i]);
 		}
 	}
 }

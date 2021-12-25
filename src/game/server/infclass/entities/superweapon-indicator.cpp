@@ -4,6 +4,8 @@
 #include <engine/shared/config.h>
 #include "superweapon-indicator.h"
 
+#include <game/server/infclass/infcgamecontroller.h>
+
 CSuperWeaponIndicator::CSuperWeaponIndicator(CGameContext *pGameContext, vec2 Pos, int Owner)
 	: CInfCEntity(pGameContext, CGameWorld::ENTTYPE_SUPERWEAPON_INDICATOR, Pos, Owner)
 {
@@ -40,14 +42,9 @@ void CSuperWeaponIndicator::Snap(int SnappingClient)
 	for(int i=0; i<m_IDs.size(); i++)
 	{	
 		float shiftedAngle = angle + 2.0*pi*static_cast<float>(i)/static_cast<float>(m_IDs.size());
-		
-		CNetObj_Projectile *pProj = static_cast<CNetObj_Projectile *>(Server()->SnapNewItem(NETOBJTYPE_PROJECTILE, m_IDs[i], sizeof(CNetObj_Projectile)));
-		pProj->m_X = (int)(m_Pos.x + m_Radius*cos(shiftedAngle));
-		pProj->m_Y = (int)(m_Pos.y + m_Radius*sin(shiftedAngle));
-		pProj->m_VelX = 0;
-		pProj->m_VelY = 0;
-		pProj->m_StartTick = Server()->Tick();
-		pProj->m_Type = WEAPON_HAMMER;
+		vec2 ParticlePos = m_Pos + vec2(cos(shiftedAngle), sin(shiftedAngle)) * m_Radius;
+
+		GameController()->SendHammerDot(ParticlePos, m_IDs[i]);
 	}
 }
 

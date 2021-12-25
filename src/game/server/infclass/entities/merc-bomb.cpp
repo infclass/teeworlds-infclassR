@@ -6,6 +6,7 @@
 #include "merc-bomb.h"
 
 #include <game/server/infclass/damage_type.h>
+#include <game/server/infclass/infcgamecontroller.h>
 
 #include "growingexplosion.h"
 #include "infccharacter.h"
@@ -115,17 +116,7 @@ void CMercenaryBomb::Snap(int SnappingClient)
 		for(int i=0; i<CMercenaryBomb::NUM_SIDE; i++)
 		{
 			vec2 PosStart = m_Pos + vec2(R * cos(AngleStart + AngleStep*i), R * sin(AngleStart + AngleStep*i));
-			
-			CNetObj_Projectile *pObj = static_cast<CNetObj_Projectile *>(Server()->SnapNewItem(NETOBJTYPE_PROJECTILE, m_IDs[CMercenaryBomb::NUM_SIDE+i], sizeof(CNetObj_Projectile)));
-			if(pObj)
-			{
-				pObj->m_X = (int)PosStart.x;
-				pObj->m_Y = (int)PosStart.y;
-				pObj->m_VelX = 0;
-				pObj->m_VelY = 0;
-				pObj->m_StartTick = Server()->Tick();
-				pObj->m_Type = WEAPON_HAMMER;
-			}
+			GameController()->SendHammerDot(PosStart, m_IDs[CMercenaryBomb::NUM_SIDE+i]);
 		}
 	}
 }

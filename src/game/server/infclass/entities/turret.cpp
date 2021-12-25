@@ -9,6 +9,7 @@
 #include <engine/server/roundstatistics.h>
 
 #include <game/server/infclass/damage_type.h>
+#include <game/server/infclass/infcgamecontroller.h>
 
 #include "infc-laser.h"
 #include "infccharacter.h"
@@ -207,17 +208,7 @@ void CTurret::Snap(int SnappingClient)
 	for(int i = 0; i < Dots; i++)
 	{
 		float shiftedAngle = angle + 2.0 * pi * i / static_cast<float>(Dots);
-
-		CNetObj_Projectile *pObj = static_cast<CNetObj_Projectile *>(Server()->SnapNewItem(NETOBJTYPE_PROJECTILE,  m_IDs[1 + i], sizeof(CNetObj_Projectile)));
-
-		if(!pObj)
-			continue;
-
-		pObj->m_X = (int)(m_Pos.x + m_Radius*cos(shiftedAngle));
-		pObj->m_Y = (int)(m_Pos.y + m_Radius*sin(shiftedAngle));
-		pObj->m_VelX = 0;
-		pObj->m_VelY = 0;
-
-		pObj->m_StartTick = Server()->Tick();
+		vec2 Direction = vec2(cos(shiftedAngle), sin(shiftedAngle));
+		GameController()->SendHammerDot(m_Pos + Direction * m_Radius, m_IDs[1 + i]);
 	}
 }

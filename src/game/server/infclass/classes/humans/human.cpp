@@ -118,16 +118,7 @@ void CInfClassHuman::OnCharacterSnap(int SnappingClient)
 					if(m_pCharacter->FindPortalPosition(GetPos() + PortalShift, PortalPos))
 					{
 						const int CursorID = GameController()->GetPlayerOwnCursorID(GetCID());
-						CNetObj_Projectile *pObj = static_cast<CNetObj_Projectile *>(Server()->SnapNewItem(NETOBJTYPE_PROJECTILE, CursorID, sizeof(CNetObj_Projectile)));
-						if(!pObj)
-							return;
-
-						pObj->m_X = (int)PortalPos.x;
-						pObj->m_Y = (int)PortalPos.y;
-						pObj->m_VelX = 0;
-						pObj->m_VelY = 0;
-						pObj->m_StartTick = Server()->Tick();
-						pObj->m_Type = WEAPON_HAMMER;
+						GameController()->SendHammerDot(PortalPos, CursorID);
 					}
 				}
 			}
