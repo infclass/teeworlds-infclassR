@@ -2078,8 +2078,6 @@ void CInfClassCharacter::Die(int Killer, DAMAGE_TYPE DamageType)
 
 	dbg_msg("server", "CInfClassCharacter::Die: victim: %d, killer: %d, DT: %d", GetCID(), Killer, static_cast<int>(DamageType));
 
-	int Weapon = CInfClassGameController::DamageTypeToWeapon(DamageType);
-
 	if(GetPlayerClass() == PLAYERCLASS_UNDEAD && Killer != GetCID())
 	{
 		Freeze(10.0, Killer, FREEZEREASON_UNDEAD);
