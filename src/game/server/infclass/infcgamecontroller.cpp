@@ -2067,7 +2067,7 @@ void CInfClassGameController::DoWincheck()
 
 			if(m_GrowingMap[tileY*m_MapWidth+tileX] & 2 && p->GetPlayer())
 			{
-				p->Die(p->GetCID(), WEAPON_GAME);
+				p->Die(p->GetCID(), DAMAGE_TYPE::GAME_FINAL_EXPLOSION);
 			}
 		}
 
