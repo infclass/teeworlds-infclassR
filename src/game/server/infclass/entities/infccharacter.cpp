@@ -708,6 +708,8 @@ bool CInfClassCharacter::TakeDamage(vec2 Force, float FloatDmg, int From, DAMAGE
 /* INFECTION MODIFICATION START ***************************************/
 	if(Dmg)
 	{
+		HandleDamage(From, Dmg, DamageType);
+
 		if(m_Armor)
 		{
 			if(Dmg <= m_Armor)
@@ -771,6 +773,33 @@ bool CInfClassCharacter::TakeDamage(vec2 Force, int Dmg, int From, int Weapon, T
 {
 	DAMAGE_TYPE DamageType = DAMAGE_TYPE::INVALID;
 	return TakeDamage(Force, Dmg, From, DamageType);
+}
+
+void CInfClassCharacter::HandleDamage(int From, int Damage, DAMAGE_TYPE DamageType)
+{
+	if(!m_TakenDamageDetails.IsEmpty())
+	{
+		CDamagePoint *pLastHit = &m_TakenDamageDetails.Last();
+
+		if((pLastHit->From == From) && (pLastHit->DamageType == DamageType))
+		{
+			pLastHit->Amount += Damage;
+			pLastHit->Tick = Server()->Tick();
+			return;
+		}
+	}
+
+	CDamagePoint Hit;
+	Hit.Amount = Damage;
+	Hit.From = From;
+	Hit.DamageType = DamageType;
+	Hit.Tick = Server()->Tick();
+
+	if(m_TakenDamageDetails.Size() == m_TakenDamageDetails.Capacity())
+	{
+		m_TakenDamageDetails.RemoveAt(0);
+	}
+	m_TakenDamageDetails.Add(Hit);
 }
 
 void CInfClassCharacter::OnWeaponFired(WeaponFireContext *pFireContext)
@@ -934,6 +963,40 @@ void CInfClassCharacter::GetActualKillers(int GivenKiller, DAMAGE_TYPE GivenWeap
 		DamageIsPassive = true;
 	default:
 		break;
+	}
+
+	if(!m_TakenDamageDetails.IsEmpty())
+	{
+		bool InevitableDeath  = m_TakenDamageDetails.Last().From != GivenKiller || m_TakenDamageDetails.Last().DamageType != GivenWeapon;
+		if(InevitableDeath)
+		{
+			// This a direct die() call without damage dealt first.
+			// It means that the dealt damage does not matter.
+		}
+		else
+		{
+			// Consider only the last N seconds
+			float MaxTime = 5;
+
+			int MinAcceptableTick = Server()->Tick() - MaxTime * Server()->TickSpeed();
+
+			const CDamagePoint *pPoint = nullptr;
+			for(int i = m_TakenDamageDetails.Size() - 1; i >= 0; --i) {
+				if(m_TakenDamageDetails.At(i).From == Killer)
+					continue;
+
+				if(m_TakenDamageDetails.At(i).Tick < MinAcceptableTick)
+				{
+					// Too old
+					break;
+				}
+				pPoint = &m_TakenDamageDetails.At(i);
+			}
+			if(pPoint)
+			{
+				AddKiller(pPoint->From);
+			}
+		}
 	}
 
 	ClientsArray Killers;
@@ -2221,6 +2284,7 @@ void CInfClassCharacter::SetClass(CInfClassPlayerClass *pClass)
 
 	m_QueuedWeapon = -1;
 	m_NeedFullHeal = false;
+	m_TakenDamageDetails.Clear();
 
 	GameServer()->CreatePlayerSpawn(GetPos());
 

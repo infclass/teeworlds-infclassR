@@ -1,6 +1,7 @@
 #ifndef GAME_SERVER_INFCLASS_ENTITIES_CHARACTER_H
 #define GAME_SERVER_INFCLASS_ENTITIES_CHARACTER_H
 
+#include <base/tl/array_on_stack.h>
 #include <game/server/entities/character.h>
 
 class CGameContext;
@@ -14,6 +15,14 @@ enum class DAMAGE_TYPE;
 enum
 {
 	GIFT_HEROFLAG=0,
+};
+
+struct CDamagePoint
+{
+	DAMAGE_TYPE DamageType;
+	int From = 0;
+	int Amount = 0;
+	int Tick = 0;
 };
 
 struct WeaponFireContext
@@ -189,6 +198,7 @@ protected:
 	void UpdateTuningParam();
 
 	void ResetClassObject();
+	void HandleDamage(int From, int Damage, DAMAGE_TYPE DamageType);
 
 protected:
 	CInfClassGameController *m_pGameController = nullptr;
@@ -202,6 +212,7 @@ protected:
 	DAMAGE_TYPE m_LastEnforcerDamageType;
 
 	int m_DamageTaken = 0;
+	array_on_stack<CDamagePoint, 4> m_TakenDamageDetails;
 	bool m_NeedFullHeal = false;
 	bool m_PositionLocked = false;
 };
