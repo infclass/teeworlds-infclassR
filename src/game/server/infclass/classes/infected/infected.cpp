@@ -374,10 +374,16 @@ int CInfClassInfected::GetGhoulLevel() const
 
 void CInfClassInfected::PrepareToDie(int Killer, DAMAGE_TYPE DamageType, bool *pRefusedToDie)
 {
-	if(DamageType == DAMAGE_TYPE::KILL_COMMAND)
+	switch (DamageType)
 	{
+	case DAMAGE_TYPE::GAME:
+	case DAMAGE_TYPE::KILL_COMMAND:
+	case DAMAGE_TYPE::GAME_FINAL_EXPLOSION:
+		break;
 		// Accept the death to go with the default self kill routine
 		return;
+	default:
+		break;
 	}
 
 	if(m_pCharacter->IsInvincible())
