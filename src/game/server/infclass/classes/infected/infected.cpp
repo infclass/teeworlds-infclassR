@@ -386,6 +386,11 @@ void CInfClassInfected::PrepareToDie(int Killer, DAMAGE_TYPE DamageType, bool *p
 		break;
 	}
 
+	if(Killer == GetCID())
+	{
+		return;
+	}
+
 	if(m_pCharacter->IsInvincible())
 	{
 		*pRefusedToDie = true;
