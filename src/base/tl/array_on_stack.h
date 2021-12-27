@@ -83,9 +83,9 @@ public:
 
 	void RemoveAt(int Index)
 	{
-		if(Index < m_Size - 1)
+		for(int i = Index; i < m_Size - 1; ++i)
 		{
-			m_Data[Index] = Last();
+			m_Data[i] = m_Data[i + 1];
 		}
 		--m_Size;
 	}
