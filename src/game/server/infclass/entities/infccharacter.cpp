@@ -1514,8 +1514,12 @@ void CInfClassCharacter::OnShotgunFired(WeaponFireContext *pFireContext)
 	Msg.AddInt(ShotSpread*2+1);
 
 	float Force = 2.0f;
+	DAMAGE_TYPE DamageType = DAMAGE_TYPE::SHOTGUN;
 	if(GetPlayerClass() == PLAYERCLASS_MEDIC)
+	{
 		Force = 10.0f;
+		DamageType = DAMAGE_TYPE::MEDIC_SHOTGUN;
+	}
 
 	for(int i = -ShotSpread; i <= ShotSpread; ++i)
 	{
@@ -1544,7 +1548,7 @@ void CInfClassCharacter::OnShotgunFired(WeaponFireContext *pFireContext)
 				ProjStartPos,
 				vec2(cosf(a), sinf(a))*Speed,
 				(int)(Server()->TickSpeed()*LifeTime),
-				1, 0, Force, -1, DAMAGE_TYPE::SHOTGUN);
+				1, 0, Force, -1, DamageType);
 
 			// pack the Projectile and send it to the client Directly
 			CNetObj_Projectile p;
