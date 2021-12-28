@@ -787,6 +787,7 @@ int CInfClassGameController::DamageTypeToWeapon(DAMAGE_TYPE DamageType, TAKEDAMA
 	switch(DamageType)
 	{
 	case DAMAGE_TYPE::INVALID:
+	case DAMAGE_TYPE::UNUSED1:
 		break;
 	case DAMAGE_TYPE::NO_DAMAGE:
 		break;
@@ -853,6 +854,10 @@ int CInfClassGameController::DamageTypeToWeapon(DAMAGE_TYPE DamageType, TAKEDAMA
 	case DAMAGE_TYPE::GAME_INFECTION:
 		// This is how the infection world work
 		Weapon = WEAPON_WORLD;
+		break;
+	case DAMAGE_TYPE::MEDIC_REVIVAL:
+		Weapon = WEAPON_LASER;
+		*pMode = TAKEDAMAGEMODE::SELFHARM;
 		break;
 	}
 

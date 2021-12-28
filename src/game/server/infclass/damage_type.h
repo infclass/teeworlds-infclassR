@@ -6,7 +6,7 @@ enum class DAMAGE_TYPE
 {
 	INVALID,
 
-	NO_DAMAGE, // Sometimes we need DAMAGE_TYPE for the API and INVALID value does not fit
+	UNUSED1,
 
 	// Standard weapons
 	HAMMER, // The damage from hammer resulted in death
@@ -54,6 +54,9 @@ enum class DAMAGE_TYPE
 	KILL_COMMAND, // Self kill command
 	GAME_FINAL_EXPLOSION,
 	GAME_INFECTION,
+
+	NO_DAMAGE, // Sometimes we need DAMAGE_TYPE for the API and INVALID value does not fit
+	MEDIC_REVIVAL,
 };
 
 #endif // INFCLASS_DAMAGE_TYPE_H

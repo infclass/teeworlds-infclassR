@@ -70,7 +70,7 @@ bool CInfClassLaser::HitCharacter(vec2 From, vec2 To)
 			pInfected->GetPlayer()->SetClass(LastHumanClass);
 			pInfected->SetHealthArmor(1, 0);
 			pInfected->Unfreeze();
-			pMedic->TakeDamage(vec2(0.f, 0.f), DAMAGE_ON_REVIVE * 2, m_Owner, WEAPON_LASER, TAKEDAMAGEMODE::SELFHARM);
+			pMedic->TakeDamage(vec2(0.f, 0.f), DAMAGE_ON_REVIVE * 2, m_Owner, DAMAGE_TYPE::MEDIC_REVIVAL);
 			str_format(aBuf, sizeof(aBuf), "Medic %s revived %s",
 				Server()->ClientName(pMedic->GetCID()),
 				Server()->ClientName(pInfected->GetCID()));
