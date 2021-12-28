@@ -164,7 +164,7 @@ public:
 	CHeroFlag *GetHeroFlag() { return m_pHeroFlag; }
 	int GetFlagCoolDown();
 
-	void GetActualKillers(int GivenKiller, DAMAGE_TYPE GivenWeapon, int *pKillerId, int *pAssistant);
+	void GetActualKillers(int GivenKiller, DAMAGE_TYPE GivenWeapon, int *pKillerId, int *pAssistant) const;
 
 	int GetLastHooker() const { return m_LastHooker; }
 	void UpdateLastHooker(int ClientID, int HookerTick);

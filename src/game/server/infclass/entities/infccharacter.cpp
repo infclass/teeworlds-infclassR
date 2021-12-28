@@ -839,7 +839,7 @@ int CInfClassCharacter::GetFlagCoolDown()
 	return m_pHeroFlag ? m_pHeroFlag->GetCoolDown() : 0;
 }
 
-void CInfClassCharacter::GetActualKillers(int GivenKiller, DAMAGE_TYPE GivenWeapon, int *pKillerId, int *pAssistant)
+void CInfClassCharacter::GetActualKillers(int GivenKiller, DAMAGE_TYPE GivenWeapon, int *pKillerId, int *pAssistant) const
 {
 	switch(GivenWeapon)
 	{
