@@ -103,26 +103,28 @@ CGrowingExplosion::CGrowingExplosion(CGameContext *pGameContext, vec2 Pos, vec2 
 	
 	switch(m_ExplosionEffect)
 	{
-		case GROWING_EXPLOSION_EFFECT::FREEZE_INFECTED:
-			if(random_prob(0.1f))
-			{
-				GameServer()->CreateHammerHit(m_SeedPos);
-			}
-			break;
-		case GROWING_EXPLOSION_EFFECT::POISON_INFECTED:
-			if(random_prob(0.1f))
-			{
-				GameServer()->CreateDeath(m_SeedPos, m_Owner);
-			}
-			break;
-		case GROWING_EXPLOSION_EFFECT::ELECTRIC_INFECTED:
-			{
-				//~ GameServer()->CreateHammerHit(m_SeedPos);
-					
-				vec2 EndPoint = m_SeedPos + vec2(-16.0f + random_float()*32.0f, -16.0f + random_float()*32.0f);
-				m_pGrowingMapVec[m_MaxGrowing*m_GrowingMap_Length+m_MaxGrowing] = EndPoint;
-			}					
-			break;
+	case GROWING_EXPLOSION_EFFECT::FREEZE_INFECTED:
+		if(random_prob(0.1f))
+		{
+			GameServer()->CreateHammerHit(m_SeedPos);
+		}
+		break;
+	case GROWING_EXPLOSION_EFFECT::POISON_INFECTED:
+		if(random_prob(0.1f))
+		{
+			GameServer()->CreateDeath(m_SeedPos, m_Owner);
+		}
+		break;
+	case GROWING_EXPLOSION_EFFECT::ELECTRIC_INFECTED:
+	{
+		//~ GameServer()->CreateHammerHit(m_SeedPos);
+
+		vec2 EndPoint = m_SeedPos + vec2(-16.0f + random_float()*32.0f, -16.0f + random_float()*32.0f);
+		m_pGrowingMapVec[m_MaxGrowing*m_GrowingMap_Length+m_MaxGrowing] = EndPoint;
+	}
+		break;
+	default:
+		break;
 	}
 }
 
@@ -173,78 +175,80 @@ void CGrowingExplosion::Tick()
 					vec2 TileCenter = m_SeedPos + vec2(32.0f*(i-m_MaxGrowing) - 16.0f + random_float()*32.0f, 32.0f*(j-m_MaxGrowing) - 16.0f + random_float()*32.0f);
 					switch(m_ExplosionEffect)
 					{
-						case GROWING_EXPLOSION_EFFECT::FREEZE_INFECTED:
-							if(random_prob(0.1f))
-							{
-								GameServer()->CreateHammerHit(TileCenter);
-							}
-							break;
-						case GROWING_EXPLOSION_EFFECT::POISON_INFECTED:
-							if(random_prob(0.1f))
-							{
-								GameServer()->CreateDeath(TileCenter, m_Owner);
-							}
-							break;
-						case GROWING_EXPLOSION_EFFECT::HEAL_HUMANS:
-							if(random_prob(0.1f))
-							{
-								GameServer()->CreateDeath(TileCenter, m_Owner);
-							}
-							break;
-						case GROWING_EXPLOSION_EFFECT::LOVE_INFECTED:
-							if(random_prob(0.2f))
-							{
-								GameServer()->CreateLoveEvent(TileCenter);
-							}
-							break;
-						case GROWING_EXPLOSION_EFFECT::BOOM_INFECTED:
-							if(random_prob(0.2f))
-							{
-								GameController()->CreateExplosion(TileCenter, m_Owner, m_DamageType);
-							}
-							break;
-						case GROWING_EXPLOSION_EFFECT::ELECTRIC_INFECTED:
-							{
-								vec2 EndPoint = m_SeedPos + vec2(32.0f*(i-m_MaxGrowing) - 16.0f + random_float()*32.0f, 32.0f*(j-m_MaxGrowing) - 16.0f + random_float()*32.0f);
-								m_pGrowingMapVec[j*m_GrowingMap_Length+i] = EndPoint;
-								
-								int NumPossibleStartPoint = 0;
-								vec2 PossibleStartPoint[4];
-								
-								if(FromLeft)
-								{
-									PossibleStartPoint[NumPossibleStartPoint] = m_pGrowingMapVec[j*m_GrowingMap_Length+i-1];
-									NumPossibleStartPoint++;
-								}
-								if(FromRight)
-								{
-									PossibleStartPoint[NumPossibleStartPoint] = m_pGrowingMapVec[j*m_GrowingMap_Length+i+1];
-									NumPossibleStartPoint++;
-								}
-								if(FromTop)
-								{
-									PossibleStartPoint[NumPossibleStartPoint] = m_pGrowingMapVec[(j-1)*m_GrowingMap_Length+i];
-									NumPossibleStartPoint++;
-								}
-								if(FromBottom)
-								{
-									PossibleStartPoint[NumPossibleStartPoint] = m_pGrowingMapVec[(j+1)*m_GrowingMap_Length+i];
-									NumPossibleStartPoint++;
-								}
-								
-								if(NumPossibleStartPoint > 0)
-								{
-									int randNb = random_int(0, NumPossibleStartPoint-1);
-									vec2 StartPoint = PossibleStartPoint[randNb];
-									GameServer()->CreateLaserDotEvent(StartPoint, EndPoint, Server()->TickSpeed()/6);
-								}
-								
-								if(random_prob(0.1f))
-								{
-									GameServer()->CreateSound(EndPoint, SOUND_LASER_BOUNCE);
-								}
-							}
-							break;
+					case GROWING_EXPLOSION_EFFECT::FREEZE_INFECTED:
+						if(random_prob(0.1f))
+						{
+							GameServer()->CreateHammerHit(TileCenter);
+						}
+						break;
+					case GROWING_EXPLOSION_EFFECT::POISON_INFECTED:
+						if(random_prob(0.1f))
+						{
+							GameServer()->CreateDeath(TileCenter, m_Owner);
+						}
+						break;
+					case GROWING_EXPLOSION_EFFECT::HEAL_HUMANS:
+						if(random_prob(0.1f))
+						{
+							GameServer()->CreateDeath(TileCenter, m_Owner);
+						}
+						break;
+					case GROWING_EXPLOSION_EFFECT::LOVE_INFECTED:
+						if(random_prob(0.2f))
+						{
+							GameServer()->CreateLoveEvent(TileCenter);
+						}
+						break;
+					case GROWING_EXPLOSION_EFFECT::BOOM_INFECTED:
+						if(random_prob(0.2f))
+						{
+							GameController()->CreateExplosion(TileCenter, m_Owner, m_DamageType);
+						}
+						break;
+					case GROWING_EXPLOSION_EFFECT::ELECTRIC_INFECTED:
+					{
+						vec2 EndPoint = m_SeedPos + vec2(32.0f*(i-m_MaxGrowing) - 16.0f + random_float()*32.0f, 32.0f*(j-m_MaxGrowing) - 16.0f + random_float()*32.0f);
+						m_pGrowingMapVec[j*m_GrowingMap_Length+i] = EndPoint;
+
+						int NumPossibleStartPoint = 0;
+						vec2 PossibleStartPoint[4];
+
+						if(FromLeft)
+						{
+							PossibleStartPoint[NumPossibleStartPoint] = m_pGrowingMapVec[j*m_GrowingMap_Length+i-1];
+							NumPossibleStartPoint++;
+						}
+						if(FromRight)
+						{
+							PossibleStartPoint[NumPossibleStartPoint] = m_pGrowingMapVec[j*m_GrowingMap_Length+i+1];
+							NumPossibleStartPoint++;
+						}
+						if(FromTop)
+						{
+							PossibleStartPoint[NumPossibleStartPoint] = m_pGrowingMapVec[(j-1)*m_GrowingMap_Length+i];
+							NumPossibleStartPoint++;
+						}
+						if(FromBottom)
+						{
+							PossibleStartPoint[NumPossibleStartPoint] = m_pGrowingMapVec[(j+1)*m_GrowingMap_Length+i];
+							NumPossibleStartPoint++;
+						}
+
+						if(NumPossibleStartPoint > 0)
+						{
+							int randNb = random_int(0, NumPossibleStartPoint-1);
+							vec2 StartPoint = PossibleStartPoint[randNb];
+							GameServer()->CreateLaserDotEvent(StartPoint, EndPoint, Server()->TickSpeed()/6);
+						}
+
+						if(random_prob(0.1f))
+						{
+							GameServer()->CreateSound(EndPoint, SOUND_LASER_BOUNCE);
+						}
+					}
+						break;
+					default:
+						break;
 					}
 				}
 			}
@@ -255,12 +259,14 @@ void CGrowingExplosion::Tick()
 	{
 		switch(m_ExplosionEffect)
 		{
-			case GROWING_EXPLOSION_EFFECT::POISON_INFECTED:
-				if(random_prob(0.1f))
-				{
-					GameServer()->CreateSound(m_Pos, SOUND_PLAYER_DIE);
-				}
-				break;
+		case GROWING_EXPLOSION_EFFECT::POISON_INFECTED:
+			if(random_prob(0.1f))
+			{
+				GameServer()->CreateSound(m_Pos, SOUND_PLAYER_DIE);
+			}
+			break;
+		default:
+			break;
 		}
 	}
 	
@@ -284,13 +290,15 @@ void CGrowingExplosion::Tick()
 			{
 				switch(m_ExplosionEffect)
 				{
-					case GROWING_EXPLOSION_EFFECT::HEAL_HUMANS:
-						if(p->IncreaseArmor(1))
-						{
-							GameServer()->SendEmoticon(p->GetCID(), EMOTICON_EYES);
-						}
-						m_Hit[p->GetCID()] = true;
-						break;
+				case GROWING_EXPLOSION_EFFECT::HEAL_HUMANS:
+					if(p->IncreaseArmor(1))
+					{
+						GameServer()->SendEmoticon(p->GetCID(), EMOTICON_EYES);
+					}
+					m_Hit[p->GetCID()] = true;
+					break;
+				default:
+					break;
 				}
 			}
 		}
@@ -304,41 +312,43 @@ void CGrowingExplosion::Tick()
 			{
 				switch(m_ExplosionEffect)
 				{
-					case GROWING_EXPLOSION_EFFECT::FREEZE_INFECTED:
-						p->Freeze(3.0f, m_Owner, FREEZEREASON_FLASH);
-						GameServer()->SendEmoticon(p->GetCID(), EMOTICON_QUESTION);
-						m_Hit[p->GetCID()] = true;
-						break;
-					case GROWING_EXPLOSION_EFFECT::POISON_INFECTED:
-						p->GetClass()->Poison(Config()->m_InfPoisonDamage, m_Owner, DAMAGE_TYPE::MERCENARY_GRENADE);
-						GameServer()->SendEmoticon(p->GetCID(), EMOTICON_DROP);
-						m_Hit[p->GetCID()] = true;
-						break;
-					case GROWING_EXPLOSION_EFFECT::HEAL_HUMANS:
-						// empty
-						break;
-					case GROWING_EXPLOSION_EFFECT::BOOM_INFECTED:
+				case GROWING_EXPLOSION_EFFECT::FREEZE_INFECTED:
+					p->Freeze(3.0f, m_Owner, FREEZEREASON_FLASH);
+					GameServer()->SendEmoticon(p->GetCID(), EMOTICON_QUESTION);
+					m_Hit[p->GetCID()] = true;
+					break;
+				case GROWING_EXPLOSION_EFFECT::POISON_INFECTED:
+					p->GetClass()->Poison(Config()->m_InfPoisonDamage, m_Owner, DAMAGE_TYPE::MERCENARY_GRENADE);
+					GameServer()->SendEmoticon(p->GetCID(), EMOTICON_DROP);
+					m_Hit[p->GetCID()] = true;
+					break;
+				case GROWING_EXPLOSION_EFFECT::HEAL_HUMANS:
+					// empty
+					break;
+				case GROWING_EXPLOSION_EFFECT::BOOM_INFECTED:
+				{
+					// m_Hit[p->GetCID()] = true;
+					break;
+				}
+				case GROWING_EXPLOSION_EFFECT::LOVE_INFECTED:
+				{
+					p->LoveEffect();
+					GameServer()->SendEmoticon(p->GetCID(), EMOTICON_HEARTS);
+					m_Hit[p->GetCID()] = true;
+					break;
+				}
+				case GROWING_EXPLOSION_EFFECT::ELECTRIC_INFECTED:
+				{
+					int Damage = GetActualDamage();
+					if(Damage)
 					{
-						// m_Hit[p->GetCID()] = true;
-						break;
+						p->TakeDamage(normalize(p->m_Pos - m_SeedPos)*10.0f, Damage, m_Owner, m_DamageType);
 					}
-					case GROWING_EXPLOSION_EFFECT::LOVE_INFECTED:
-					{
-						p->LoveEffect();
-						GameServer()->SendEmoticon(p->GetCID(), EMOTICON_HEARTS);
-						m_Hit[p->GetCID()] = true;
-						break;
-					}
-					case GROWING_EXPLOSION_EFFECT::ELECTRIC_INFECTED:
-					{
-						int Damage = GetActualDamage();
-						if(Damage)
-						{
-							p->TakeDamage(normalize(p->m_Pos - m_SeedPos)*10.0f, Damage, m_Owner, m_DamageType);
-						}
-						m_Hit[p->GetCID()] = true;
-						break;
-					}
+					m_Hit[p->GetCID()] = true;
+					break;
+				}
+				default:
+					break;
 				}
 			}
 		}
