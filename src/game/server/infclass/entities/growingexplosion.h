@@ -14,6 +14,7 @@ enum class DAMAGE_TYPE;
 
 enum class GROWING_EXPLOSION_EFFECT
 {
+	INVALID,
 	FREEZE_INFECTED,
 	POISON_INFECTED,
 	ELECTRIC_INFECTED,
@@ -49,7 +50,7 @@ private:
 	int m_StartTick;
 	int* m_pGrowingMap;
 	vec2* m_pGrowingMapVec;
-	GROWING_EXPLOSION_EFFECT m_ExplosionEffect;
+	GROWING_EXPLOSION_EFFECT m_ExplosionEffect = GROWING_EXPLOSION_EFFECT::INVALID;
 	bool m_Hit[MAX_CLIENTS];
 	int m_Damage = -1;
 };
