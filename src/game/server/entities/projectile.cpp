@@ -5,6 +5,7 @@
 #include <game/generated/protocol.h>
 #include <game/server/gamecontext.h>
 
+#include <game/server/infclass/damage_type.h>
 #include <game/server/infclass/entities/growingexplosion.h>
 #include <game/server/infclass/entities/infccharacter.h>
 #include <game/server/infclass/infcgamecontroller.h>
@@ -85,7 +86,7 @@ void CProjectile::Tick()
 			vec2 Dir = normalize(PrevPos - CurPos);
 			if(length(Dir) > 1.1) Dir = normalize(m_StartPos - CurPos);
 			
-			new CGrowingExplosion(GameServer(), CurPos, Dir, m_Owner, m_FlashRadius, GROWINGEXPLOSIONEFFECT_FREEZE_INFECTED);
+			new CGrowingExplosion(GameServer(), CurPos, Dir, m_Owner, m_FlashRadius, DAMAGE_TYPE::STUNNING_GRENADE);
 		}
 		else if(m_Explosive)
 		{
