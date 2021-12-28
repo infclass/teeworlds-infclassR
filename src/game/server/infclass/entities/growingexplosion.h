@@ -12,20 +12,20 @@
 
 enum class DAMAGE_TYPE;
 
-enum
+enum class GROWING_EXPLOSION_EFFECT
 {
-	GROWINGEXPLOSIONEFFECT_FREEZE_INFECTED=0,
-	GROWINGEXPLOSIONEFFECT_POISON_INFECTED,
-	GROWINGEXPLOSIONEFFECT_ELECTRIC_INFECTED,
-	GROWINGEXPLOSIONEFFECT_LOVE_INFECTED,
-	GROWINGEXPLOSIONEFFECT_BOOM_INFECTED,
-	GROWINGEXPLOSIONEFFECT_HEAL_HUMANS,
+	FREEZE_INFECTED,
+	POISON_INFECTED,
+	ELECTRIC_INFECTED,
+	LOVE_INFECTED,
+	BOOM_INFECTED,
+	HEAL_HUMANS,
 };
 
 class CGrowingExplosion : public CInfCEntity
 {
 public:
-	CGrowingExplosion(CGameContext *pGameContext, vec2 Pos, vec2 Dir, int Owner, int Radius, int ExplosionEffect);
+	CGrowingExplosion(CGameContext *pGameContext, vec2 Pos, vec2 Dir, int Owner, int Radius, GROWING_EXPLOSION_EFFECT ExplosionEffect);
 	CGrowingExplosion(CGameContext *pGameContext, vec2 Pos, vec2 Dir, int Owner, int Radius, DAMAGE_TYPE DamageType);
 	virtual ~CGrowingExplosion();
 
@@ -49,7 +49,7 @@ private:
 	int m_StartTick;
 	int* m_pGrowingMap;
 	vec2* m_pGrowingMapVec;
-	int m_ExplosionEffect;
+	GROWING_EXPLOSION_EFFECT m_ExplosionEffect;
 	bool m_Hit[MAX_CLIENTS];
 	int m_Damage = -1;
 };
