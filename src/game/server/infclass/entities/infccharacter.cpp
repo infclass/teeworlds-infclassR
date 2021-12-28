@@ -1073,6 +1073,16 @@ int CInfClassCharacter::GetInfZoneTick() // returns how many ticks long a player
 	return Server()->Tick()-m_InfZoneTick;
 }
 
+CGameWorld *CInfClassCharacter::GameWorld() const
+{
+	return m_pGameController->GameWorld();
+}
+
+const IServer *CInfClassCharacter::Server() const
+{
+	return m_pGameController->GameWorld()->Server();
+}
+
 void CInfClassCharacter::OnHammerFired(WeaponFireContext *pFireContext)
 {
 	vec2 Direction = GetDirection();

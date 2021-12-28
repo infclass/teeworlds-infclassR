@@ -176,6 +176,11 @@ public:
 	CCharacter *GetPassenger();
 	int GetInfZoneTick();
 
+	using CCharacter::GameWorld;
+	using CCharacter::Server;
+
+	CGameWorld *GameWorld() const;
+	const IServer *Server() const;
 protected:
 	void PreCoreTick() override;
 	void PostCoreTick() override;
