@@ -35,6 +35,7 @@ public:
 	int GetDefaultEmote() const override;
 
 	void HandleInfection();
+	void KillCharacter(int Weapon = WEAPON_GAME) override;
 
 	CInfClassCharacter *GetCharacter();
 	CInfClassPlayerClass *GetCharacterClass() { return m_pInfcPlayerClass; }
@@ -69,6 +70,8 @@ protected:
 
 	DO_INFECTION m_DoInfection = DO_INFECTION::NO;
 	int m_InfectiousPlayerCID = -1;
+
+	int m_SelfKillAttemptTick = -1;
 
 	int m_MapMenu = 0;
 	int m_MapMenuTick = -1;

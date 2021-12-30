@@ -50,7 +50,7 @@ public:
 	void OnPredictedInput(CNetObj_PlayerInput *NewInput);
 	void OnDisconnect(int Type, const char *pReason);
 
-	void KillCharacter(int Weapon = WEAPON_GAME);
+	virtual void KillCharacter(int Weapon = WEAPON_GAME);
 	CCharacter *GetCharacter();
 
 /* INFECTION MODIFICATION START ***************************************/

@@ -159,6 +159,25 @@ void CInfClassPlayer::HandleInfection()
 	GameController()->OnPlayerInfected(this, pInfectiousPlayer, PreviousClass);
 }
 
+void CInfClassPlayer::KillCharacter(int Weapon)
+{
+	if((Weapon == WEAPON_SELF) && IsHuman())
+	{
+		static const float SelfKillConfirmationTime = 3;
+		if(Server()->Tick() > m_SelfKillAttemptTick + Server()->TickSpeed() * SelfKillConfirmationTime)
+		{
+			GameServer()->SendChatTarget_Localization(GetCID(), CHATCATEGORY_PLAYER,
+				_("Self kill attempt prevented. Trigger self kill again to confirm."));
+			m_SelfKillAttemptTick = Server()->Tick();
+			// Reset last kill tick:
+			m_LastKill = -1; // This could be done in the GameContext but let's keep it here to avoid conflicts
+			return;
+		}
+	}
+
+	CPlayer::KillCharacter(Weapon);
+}
+
 int CInfClassPlayer::GetDefaultEmote() const
 {
 	if(m_pInfcPlayerClass)
