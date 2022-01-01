@@ -44,6 +44,13 @@ void CBiologistMine::Snap(int SnappingClient)
 	if(!DoSnapForClient(SnappingClient))
 		return;
 
+	if(Server()->GetClientInfclassVersion(SnappingClient))
+	{
+		CNetObj_InfClassObject *pInfClassObject = SnapInfClassObject();
+		if(!pInfClassObject)
+			return;
+	}
+
 	float AngleStep = 2.0f * pi / CBiologistMine::NUM_SIDE;
 	float Radius = 32.0f;
 	for(int i=0; i<CBiologistMine::NUM_SIDE; i++)

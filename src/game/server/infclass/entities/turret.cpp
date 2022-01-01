@@ -189,6 +189,13 @@ void CTurret::Snap(int SnappingClient)
 	if(!DoSnapForClient(SnappingClient))
 		return;
 
+	if(Server()->GetClientInfclassVersion(SnappingClient))
+	{
+		CNetObj_InfClassObject *pInfClassObject = SnapInfClassObject();
+		if(!pInfClassObject)
+			return;
+	}
+
 	float time = (Server()->Tick()-m_StartTick)/(float)Server()->TickSpeed();
 	float angle = fmodf(time*pi/2, 2.0f*pi);
 

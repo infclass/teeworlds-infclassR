@@ -116,6 +116,19 @@ void CLooperWall::Snap(int SnappingClient)
 	if(!DoSnapForClient(SnappingClient))
 		return;
 
+	if(Server()->GetClientInfclassVersion(SnappingClient))
+	{
+		CNetObj_InfClassObject *pInfClassObject = SnapInfClassObject();
+		if(!pInfClassObject)
+			return;
+
+		pInfClassObject->m_Flags = INFCLASS_OBJECT_FLAG_HAS_SECOND_POSITION;
+		pInfClassObject->m_LifeSpan = m_LifeSpan;
+
+		pInfClassObject->m_X2 = m_Pos2.x;
+		pInfClassObject->m_Y2 = m_Pos2.y;
+	}
+
 	// Laser dieing animation
 	int LifeDiff = 0;
 	if (m_LifeSpan < 1*Server()->TickSpeed())

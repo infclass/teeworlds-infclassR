@@ -92,13 +92,20 @@ void CMercenaryBomb::Snap(int SnappingClient)
 	//if(pClient->IsZombie()) // invisible for zombies
 	//	return;
 
+	if(Server()->GetClientInfclassVersion(SnappingClient))
+	{
+		CNetObj_InfClassObject *pInfClassObject = SnapInfClassObject();
+		if(!pInfClassObject)
+			return;
+	}
+
 	float AngleStart = (2.0f * pi * Server()->Tick()/static_cast<float>(Server()->TickSpeed()))/10.0f;
 	float AngleStep = 2.0f * pi / CMercenaryBomb::NUM_SIDE;
 	float R = 50.0f*static_cast<float>(m_Damage)/Config()->m_InfMercBombs;
 	for(int i=0; i<CMercenaryBomb::NUM_SIDE; i++)
 	{
 		vec2 PosStart = m_Pos + vec2(R * cos(AngleStart + AngleStep*i), R * sin(AngleStart + AngleStep*i));
-			
+
 		CNetObj_Pickup *pP = static_cast<CNetObj_Pickup *>(Server()->SnapNewItem(NETOBJTYPE_PICKUP, m_IDs[i], sizeof(CNetObj_Pickup)));
 		if(!pP)
 			return;
@@ -108,7 +115,7 @@ void CMercenaryBomb::Snap(int SnappingClient)
 		pP->m_Type = POWERUP_HEALTH;
 		pP->m_Subtype = 0;
 	}
-	
+
 	if(SnappingClient == m_Owner && m_LoadingTick > 0)
 	{
 		R = 80.0f;

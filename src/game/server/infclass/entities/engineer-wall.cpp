@@ -78,6 +78,19 @@ void CEngineerWall::Snap(int SnappingClient)
 	if(!DoSnapForClient(SnappingClient))
 		return;
 
+	if(Server()->GetClientInfclassVersion(SnappingClient))
+	{
+		CNetObj_InfClassObject *pInfClassObject = SnapInfClassObject();
+		if(!pInfClassObject)
+			return;
+
+		pInfClassObject->m_Flags = INFCLASS_OBJECT_FLAG_HAS_SECOND_POSITION;
+		pInfClassObject->m_LifeSpan = m_LifeSpan;
+
+		pInfClassObject->m_X2 = m_Pos2.x;
+		pInfClassObject->m_Y2 = m_Pos2.y;
+	}
+
 	// Laser dieing animation
 	int LifeDiff = 0;
 	if (m_WallFlashTicks > 0) // flash laser for a few ticks when zombie jumps
@@ -106,7 +119,7 @@ void CEngineerWall::Snap(int SnappingClient)
 		LifeDiff = (random_prob(5.0f/6.0f)) ? -1 : -Server()->TickSpeed()*2;
 	else
 		LifeDiff = -Server()->TickSpeed()*2;
-	
+
 	{
 		CNetObj_Laser *pObj = static_cast<CNetObj_Laser *>(Server()->SnapNewItem(NETOBJTYPE_LASER, m_ID, sizeof(CNetObj_Laser)));
 		if(!pObj)

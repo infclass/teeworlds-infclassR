@@ -98,6 +98,13 @@ void CSoldierBomb::Snap(int SnappingClient)
 	if(!DoSnapForClient(SnappingClient))
 		return;
 
+	if(Server()->GetClientInfclassVersion(SnappingClient))
+	{
+		CNetObj_InfClassObject *pInfClassObject = SnapInfClassObject();
+		if(!pInfClassObject)
+			return;
+	}
+
 	for(int i = 0; i < m_nbBomb; i++)
 	{
 		float shiftedAngle = m_Angle + 2.0 * pi * static_cast<float>(i) / static_cast<float>(m_IDBomb.size());

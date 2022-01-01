@@ -60,7 +60,14 @@ void CScientistMine::Snap(int SnappingClient)
 		return;
 
 	float Radius = Config()->m_InfMineRadius;
-	
+
+	if(Server()->GetClientInfclassVersion(SnappingClient))
+	{
+		CNetObj_InfClassObject *pInfClassObject = SnapInfClassObject();
+		if(!pInfClassObject)
+			return;
+	}
+
 	int NumSide = CScientistMine::NUM_SIDE;
 	if(Server()->GetClientAntiPing(SnappingClient))
 		NumSide = std::min(6, NumSide);
