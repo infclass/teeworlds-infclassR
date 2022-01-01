@@ -9,9 +9,16 @@ class CPlacedObject : public CInfCEntity
 {
 public:
 	CPlacedObject(CGameContext *pGameContext, int ObjectType, vec2 Pos = vec2(), int Owner = -1, int ProximityRadius=0);
+	~CPlacedObject() override;
 
 protected:
 	bool DoSnapForClient(int SnappingClient) override;
+
+	CNetObj_InfClassObject *SnapInfClassObject();
+
+protected:
+	vec2 m_Pos2;
+	int m_InfclassObjectID = -1;
 };
 
 #endif // GAME_SERVER_ENTITIES_INFC_PLACED_OBJECT_H
