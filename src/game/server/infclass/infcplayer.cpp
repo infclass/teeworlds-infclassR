@@ -129,6 +129,10 @@ void CInfClassPlayer::SnapClientInfo(int SnappingClient)
 		{
 			pInfClassPlayer->m_Flags |= INFCLASS_PLAYER_FLAG_INFECTED;
 		}
+		if(!HookProtectionEnabled())
+		{
+			pInfClassPlayer->m_Flags |= INFCLASS_PLAYER_FLAG_HOOK_PROTECTION_OFF;
+		}
 	}
 }
 
