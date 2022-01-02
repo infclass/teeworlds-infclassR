@@ -273,7 +273,6 @@ private:
 #endif
 	static bool ConHelp(IConsole::IResult *pResult, void *pUserData);
 	bool ConHelp(IConsole::IResult *pResult);
-	static bool ConCustomSkin(IConsole::IResult *pResult, void *pUserData);
 	static bool ConAlwaysRandom(IConsole::IResult *pResult, void *pUserData);
 	static bool ConAntiPing(IConsole::IResult *pResult, void *pUserData);
 	static bool ConLanguage(IConsole::IResult *pResult, void *pUserData);

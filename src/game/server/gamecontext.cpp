@@ -3896,26 +3896,6 @@ bool CGameContext::ConAntiPing(IConsole::IResult *pResult, void *pUserData)
 	return true;
 }
 
-bool CGameContext::ConCustomSkin(IConsole::IResult *pResult, void *pUserData)
-{
-	CGameContext *pSelf = (CGameContext *)pUserData;
-	int ClientID = pResult->GetClientID();
-	
-	const char *pArg = pResult->GetString(0);
-
-	if(pArg)
-	{
-		if(str_comp_nocase(pArg, "all") == 0)
-			pSelf->Server()->SetClientCustomSkin(ClientID, 2);
-		else if(str_comp_nocase(pArg, "me") == 0)
-			pSelf->Server()->SetClientCustomSkin(ClientID, 1);
-		else if(str_comp_nocase(pArg, "none") == 0)
-			pSelf->Server()->SetClientCustomSkin(ClientID, 0);
-	}
-	
-	return true;
-}
-
 bool CGameContext::ConAlwaysRandom(IConsole::IResult *pResult, void *pUserData)
 {
 	CGameContext *pSelf = (CGameContext *)pUserData;
@@ -4188,7 +4168,6 @@ void CGameContext::OnConsoleInit()
 	Console()->Register("help", "?s<page>", CFGFLAG_CHAT|CFGFLAG_USER, ConHelp, this, "Display help");
 	Console()->Register("reload_changelog", "?i<page>", CFGFLAG_SERVER, ConReloadChangeLog, this, "Reload the changelog file");
 	Console()->Register("changelog", "?i<page>", CFGFLAG_CHAT|CFGFLAG_USER, ConChangeLog, this, "Display a changelog page");
-	Console()->Register("customskin", "s<all|me|none>", CFGFLAG_CHAT|CFGFLAG_USER, ConCustomSkin, this, "Display information about the mod");
 	Console()->Register("alwaysrandom", "i<0|1>", CFGFLAG_CHAT|CFGFLAG_USER, ConAlwaysRandom, this, "Display information about the mod");
 	Console()->Register("antiping", "i<0|1>", CFGFLAG_CHAT|CFGFLAG_USER, ConAntiPing, this, "Try to improve your ping");
 	Console()->Register("language", "s<en|fr|nl|de|bg|sr-Latn|hr|cs|pl|uk|ru|el|la|it|es|pt|hu|ar|tr|sah|fa|tl|zh-CN|ja>", CFGFLAG_CHAT|CFGFLAG_USER, ConLanguage, this, "Set the language");

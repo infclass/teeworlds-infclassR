@@ -98,21 +98,7 @@ void CInfClassPlayer::SnapClientInfo(int SnappingClient)
 		Server()->GetClientInfo(SnappingClient, &SnappingClientInfo);
 	}
 
-	if(
-		GameServer()->GetPlayer(SnappingClient) && IsHuman() &&
-		(
-			(Server()->GetClientCustomSkin(SnappingClient) == 1 && SnappingClient == GetCID()) ||
-			(Server()->GetClientCustomSkin(SnappingClient) == 2)
-		)
-	)
-	{
-		StrToInts(&pClientInfo->m_Skin0, 6, m_TeeInfos.m_CustomSkinName);
-	}
-	else
-	{
-		StrToInts(&pClientInfo->m_Skin0, 6, m_TeeInfos.m_SkinName);
-	}
-
+	StrToInts(&pClientInfo->m_Skin0, 6, m_TeeInfos.m_SkinName);
 	pClientInfo->m_UseCustomColor = m_TeeInfos.m_UseCustomColor;
 	pClientInfo->m_ColorBody = m_TeeInfos.m_ColorBody;
 	pClientInfo->m_ColorFeet = m_TeeInfos.m_ColorFeet;

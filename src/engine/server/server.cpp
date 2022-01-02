@@ -343,7 +343,6 @@ void CServer::CClient::Reset(bool ResetScore)
 		m_LogInstance = -1;
 		
 		m_AntiPing = 0;
-		m_CustomSkin = 0;
 		m_AlwaysRandom = 0;
 		m_DefaultScoreMode = PLAYERSCOREMODE_SCORE;
 		str_copy(m_aLanguage, "en", sizeof(m_aLanguage));
@@ -2655,13 +2654,12 @@ bool CServer::ConOptionStatus(IConsole::IResult *pResult, void *pUser)
 	{
 		if(pThis->m_aClients[i].m_State == CClient::STATE_INGAME)
 		{
-			str_format(aBuf, sizeof(aBuf), "(#%02i) %s: [lang=%s] [antiping=%d] [alwaysrandom=%d] [customskin=%d]",
+			str_format(aBuf, sizeof(aBuf), "(#%02i) %s: [lang=%s] [antiping=%d] [alwaysrandom=%d]",
 				i,
 				pThis->ClientName(i),
 				pThis->m_aClients[i].m_aLanguage,
 				pThis->GetClientAntiPing(i),
-				pThis->GetClientAlwaysRandom(i),
-				pThis->GetClientCustomSkin(i)
+				pThis->GetClientAlwaysRandom(i)
 			);
 			
 			pThis->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "Server", aBuf);
@@ -3254,19 +3252,6 @@ void CServer::SetClientAntiPing(int ClientID, int Value)
 {
 	dbg_msg("server", "set_antiping ClientID=%d antiping=%d", ClientID, Value);
 	m_aClients[ClientID].m_AntiPing = Value;
-}
-
-int CServer::GetClientCustomSkin(int ClientID)
-{
-	if(ClientID < 0)
-		return 0;
-
-	return m_aClients[ClientID].m_CustomSkin;
-}
-
-void CServer::SetClientCustomSkin(int ClientID, int Value)
-{
-	m_aClients[ClientID].m_CustomSkin = Value;
 }
 
 int CServer::GetClientAlwaysRandom(int ClientID)

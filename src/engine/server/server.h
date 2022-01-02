@@ -155,7 +155,6 @@ public:
 		int m_NbRound;
 		
 		int m_AntiPing;
-		int m_CustomSkin;
 		int m_AlwaysRandom;
 		int m_DefaultScoreMode;
 		char m_aLanguage[16];
@@ -345,9 +344,6 @@ public:
 	
 	virtual int GetClientAntiPing(int ClientID);
 	virtual void SetClientAntiPing(int ClientID, int Value);
-	
-	virtual int GetClientCustomSkin(int ClientID);
-	virtual void SetClientCustomSkin(int ClientID, int Value);
 	
 	virtual int GetClientAlwaysRandom(int ClientID);
 	virtual void SetClientAlwaysRandom(int ClientID, int Value);
