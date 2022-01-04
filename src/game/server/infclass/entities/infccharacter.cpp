@@ -649,7 +649,7 @@ bool CInfClassCharacter::TakeDamage(vec2 Force, float FloatDmg, int From, DAMAGE
 			if(pKillerPlayer->IsZombie())
 			{
 				//Heal and unfreeze
-				if(pKillerPlayer->GetClass() == PLAYERCLASS_BOOMER && Weapon == WEAPON_HAMMER)
+				if(DamageType == DAMAGE_TYPE::BOOMER_EXPLOSION)
 				{
 					TryUnfreeze();
 					if(!IsFrozen())
