@@ -87,6 +87,27 @@ void CInfClassPlayer::Snap(int SnappingClient)
 		return;
 
 	CPlayer::Snap(SnappingClient);
+
+	int InfClassVersion = Server()->GetClientInfclassVersion(SnappingClient);
+	if(!InfClassVersion)
+		return;
+
+	{
+		CNetObj_InfClassPlayer *pInfClassPlayer = static_cast<CNetObj_InfClassPlayer *>(Server()->SnapNewItem(NETOBJTYPE_INFCLASSPLAYER, m_ClientID, sizeof(CNetObj_InfClassPlayer)));
+		if(!pInfClassPlayer)
+			return;
+
+		pInfClassPlayer->m_Class = m_class;
+		pInfClassPlayer->m_Flags = 0;
+		if(IsZombie())
+		{
+			pInfClassPlayer->m_Flags |= INFCLASS_PLAYER_FLAG_INFECTED;
+		}
+		if(!HookProtectionEnabled())
+		{
+			pInfClassPlayer->m_Flags |= INFCLASS_PLAYER_FLAG_HOOK_PROTECTION_OFF;
+		}
+	}
 }
 
 void CInfClassPlayer::SnapClientInfo(int SnappingClient)
@@ -110,24 +131,6 @@ void CInfClassPlayer::SnapClientInfo(int SnappingClient)
 	pClientInfo->m_UseCustomColor = m_TeeInfos.m_UseCustomColor;
 	pClientInfo->m_ColorBody = m_TeeInfos.m_ColorBody;
 	pClientInfo->m_ColorFeet = m_TeeInfos.m_ColorFeet;
-
-	if(SnappingClientInfo.m_InfClassVersion || (SnappingClient == DemoClientID))
-	{
-		CNetObj_InfClassPlayer *pInfClassPlayer = static_cast<CNetObj_InfClassPlayer *>(Server()->SnapNewItem(NETOBJTYPE_INFCLASSPLAYER, m_ClientID, sizeof(CNetObj_InfClassPlayer)));
-		if(!pInfClassPlayer)
-			return;
-
-		pInfClassPlayer->m_Class = m_class;
-		pInfClassPlayer->m_Flags = 0;
-		if(IsZombie())
-		{
-			pInfClassPlayer->m_Flags |= INFCLASS_PLAYER_FLAG_INFECTED;
-		}
-		if(!HookProtectionEnabled())
-		{
-			pInfClassPlayer->m_Flags |= INFCLASS_PLAYER_FLAG_HOOK_PROTECTION_OFF;
-		}
-	}
 }
 
 void CInfClassPlayer::HandleInfection()
