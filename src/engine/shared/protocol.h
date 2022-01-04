@@ -74,6 +74,12 @@ enum
 	NUM_NETMSGS,
 };
 
+enum
+{
+	VERSION_INFC_100 = 100,
+	VERSION_INFC_FORCED_SPEC = 120,
+};
+
 // this should be revised
 enum
 {

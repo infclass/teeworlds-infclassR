@@ -236,6 +236,11 @@ void CInfClassPlayerClass::OnCharacterDeath(int Weapon)
 		m_pCharacter->m_Core.SetPassenger(nullptr);
 	}
 
+	if(m_pPlayer)
+	{
+		m_pPlayer->ResetTheTargetToFollow();
+	}
+
 	DestroyChildEntities();
 }
 

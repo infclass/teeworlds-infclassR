@@ -79,6 +79,38 @@ void CInfClassPlayer::Tick()
 	}
 
 	HandleTuningParams();
+
+	if(!GameServer()->m_World.m_Paused)
+	{
+		if(m_FollowTargetTicks > 0)
+		{
+			--m_FollowTargetTicks;
+			if(m_FollowTargetTicks == 0)
+			{
+				m_FollowTargetId = -1;
+			}
+
+			if(IsForcedToSpectate() && (Server()->GetClientInfclassVersion(GetCID()) >= VERSION_INFC_FORCED_SPEC))
+			{
+				const CCharacter *pFollowedCharacter = GameController()->GetCharacter(TargetToFollow());
+				if(pFollowedCharacter)
+				{
+					m_ViewPos = pFollowedCharacter->GetPos();
+				}
+				else
+				{
+					m_FollowTargetId = -1;
+				}
+			}
+		}
+	}
+	else
+	{
+		if(m_FollowTargetTicks > 0)
+		{
+			++m_FollowTargetTicks;
+		}
+	}
 }
 
 void CInfClassPlayer::Snap(int SnappingClient)
@@ -91,6 +123,8 @@ void CInfClassPlayer::Snap(int SnappingClient)
 	int InfClassVersion = Server()->GetClientInfclassVersion(SnappingClient);
 	if(!InfClassVersion)
 		return;
+
+	const bool IsForcedToSpec = IsForcedToSpectate();
 
 	{
 		CNetObj_InfClassPlayer *pInfClassPlayer = static_cast<CNetObj_InfClassPlayer *>(Server()->SnapNewItem(NETOBJTYPE_INFCLASSPLAYER, m_ClientID, sizeof(CNetObj_InfClassPlayer)));
@@ -107,6 +141,21 @@ void CInfClassPlayer::Snap(int SnappingClient)
 		{
 			pInfClassPlayer->m_Flags |= INFCLASS_PLAYER_FLAG_HOOK_PROTECTION_OFF;
 		}
+		if(IsForcedToSpec)
+		{
+			pInfClassPlayer->m_Flags |= INFCLASS_PLAYER_FLAG_FORCED_TO_SPECTATE;
+		}
+	}
+
+	if(InfClassVersion >= VERSION_INFC_FORCED_SPEC && IsForcedToSpec)
+	{
+		CNetObj_SpectatorInfo *pSpectatorInfo = static_cast<CNetObj_SpectatorInfo *>(Server()->SnapNewItem(NETOBJTYPE_SPECTATORINFO, m_ClientID, sizeof(CNetObj_SpectatorInfo)));
+		if(!pSpectatorInfo)
+			return;
+
+		pSpectatorInfo->m_SpectatorID = TargetToFollow();
+		pSpectatorInfo->m_X = m_ViewPos.x;
+		pSpectatorInfo->m_Y = m_ViewPos.y;
 	}
 }
 
@@ -299,6 +348,29 @@ bool CInfClassPlayer::MapMenuClickable()
 	return (m_MapMenu > 0 && (m_MapMenuTick > Server()->TickSpeed()/2));
 }
 
+void CInfClassPlayer::ResetTheTargetToFollow()
+{
+	SetFollowTarget(-1, 0);
+}
+
+void CInfClassPlayer::SetFollowTarget(int ClientID, float Duration)
+{
+	m_FollowTargetId = ClientID;
+	if(m_FollowTargetId < 0)
+	{
+		m_FollowTargetTicks = 0;
+	}
+	else
+	{
+		m_FollowTargetTicks = Duration * Server()->TickSpeed();
+	}
+}
+
+int CInfClassPlayer::TargetToFollow() const
+{
+	return m_FollowTargetTicks > 0 ? m_FollowTargetId : -1;
+}
+
 float CInfClassPlayer::GetGhoulPercent() const
 {
 	return clamp(m_GhoulLevel/static_cast<float>(g_Config.m_InfGhoulStomachSize), 0.0f, 1.0f);
@@ -341,4 +413,9 @@ const char *CInfClassPlayer::GetClan(int SnappingClient) const
 
 	// This is not thread-safe but we don't have threads.
 	return aBuf;
+}
+
+bool CInfClassPlayer::IsForcedToSpectate() const
+{
+	return !IsSpectator() && (!m_pCharacter || !m_pCharacter->IsAlive()) && TargetToFollow() >= 0;
 }

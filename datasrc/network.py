@@ -34,7 +34,7 @@ ProjectileFlags = ["CLIENTID_BIT{}".format(i) for i in range(8)] + [
 
 Emoticons = ["OOP", "EXCLAMATION", "HEARTS", "DROP", "DOTDOT", "MUSIC", "SORRY", "GHOST", "SUSHI", "SPLATTEE", "DEVILTEE", "ZOMG", "ZZZ", "WTF", "EYES", "QUESTION"]
 
-InfClassPlayerFlags = ["INFECTED", "HOOK_PROTECTION_OFF"]
+InfClassPlayerFlags = ["INFECTED", "HOOK_PROTECTION_OFF", "FORCED_TO_SPECTATE"]
 
 InfClassObjectFlags = ["HAS_SECOND_POSITION"]
 

@@ -54,6 +54,10 @@ public:
 	void CloseMapMenu();
 	bool MapMenuClickable();
 
+	void ResetTheTargetToFollow();
+	void SetFollowTarget(int ClientID, float Duration);
+	int TargetToFollow() const;
+
 	float GetGhoulPercent() const;
 	void IncreaseGhoulLevel(int Diff);
 	int GetGhoulLevel() const { return m_GhoulLevel; }
@@ -67,6 +71,8 @@ public:
 protected:
 	const char *GetClan(int SnappingClient = -1) const override;
 
+	bool IsForcedToSpectate() const;
+
 	CInfClassGameController *m_pGameController = nullptr;
 	CInfClassPlayerClass *m_pInfcPlayerClass = nullptr;
 
@@ -74,6 +80,9 @@ protected:
 	int m_InfectiousPlayerCID = -1;
 
 	int m_SelfKillAttemptTick = -1;
+
+	int m_FollowTargetId = -1;
+	int m_FollowTargetTicks = 0;
 
 	int m_MapMenu = 0;
 	int m_MapMenuTick = -1;
