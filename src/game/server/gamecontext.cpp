@@ -3667,11 +3667,12 @@ bool CGameContext::WriteClassHelpPage(dynamic_string *pOutput, const char *pLang
 
 	case PLAYERCLASS_MERCENARY:
 		AddLine(_C("Mercenary", "The Mercenary can fly in the air using their machine gun."));
-		AddLine(_C("Mercenary", "They can create powerful bombs with their hammer."));
+		AddLine(_C("Mercenary", "They can also create a powerful bomb with their hammer that can"
+								" be charged by hitting it or with a laser rifle."));
 		AddLine_Plural(g_Config.m_InfPoisonDamage,
-					   _CP("Mercenary",
-						   "Mercenary can also throw poison grenades that each deal one damage point.",
-						   "Mercenary can also throw poison grenades that each deal {int:NumDamagePoints} damage points."),
+					_CP("Mercenary",
+						   "Mercenary can also throw poison grenades that deal one damage point.",
+						   "Mercenary can also throw poison grenades that deal {int:NumDamagePoints} damage points."),
 					   "NumDamagePoints", &g_Config.m_InfPoisonDamage);
 		break;
 	case PLAYERCLASS_MEDIC:
