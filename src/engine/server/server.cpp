@@ -3102,6 +3102,21 @@ void CServer::SnapSetStaticsize(int ItemType, int Size)
 	m_SnapshotDelta.SetStaticsize(ItemType, Size);
 }
 
+int CServer::GetClientInfclassVersion(int ClientID) const
+{
+	if(ClientID == DemoClientID)
+	{
+		return 1000;
+	}
+
+	if(m_aClients[ClientID].m_State == CClient::STATE_INGAME)
+	{
+		return m_aClients[ClientID].m_InfClassVersion;
+	}
+
+	return 0;
+}
+
 static CServer *CreateServer() { return new CServer(); }
 
 int main(int argc, const char **argv) // ignore_convention

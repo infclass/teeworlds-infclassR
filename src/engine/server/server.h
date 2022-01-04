@@ -339,6 +339,8 @@ public:
 	int m_InfClassAvailability[NB_PLAYERCLASS];
 
 public:
+	int GetClientInfclassVersion(int ClientID) const override;
+
 	virtual int IsClientInfectedBefore(int ClientID);
 	virtual void InfecteClient(int ClientID);
 	

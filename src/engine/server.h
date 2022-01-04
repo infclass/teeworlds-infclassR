@@ -288,6 +288,8 @@ public:
 	virtual void GetClientAddr(int ClientID, NETADDR *pAddr) = 0;
 
 /* INFECTION MODIFICATION START ***************************************/
+	virtual int GetClientInfclassVersion(int ClientID) const = 0;
+
 	virtual int IsClientInfectedBefore(int ClientID) = 0;
 	virtual void InfecteClient(int ClientID) = 0;
 	
