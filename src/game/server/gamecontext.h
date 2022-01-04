@@ -273,6 +273,7 @@ private:
 #endif
 	static bool ConHelp(IConsole::IResult *pResult, void *pUserData);
 	bool ConHelp(IConsole::IResult *pResult);
+	bool WriteClassHelpPage(dynamic_string *pOutput, const char *pLanguage, PLAYERCLASS PlayerClass);
 	static bool ConAlwaysRandom(IConsole::IResult *pResult, void *pUserData);
 	static bool ConAntiPing(IConsole::IResult *pResult, void *pUserData);
 	static bool ConLanguage(IConsole::IResult *pResult, void *pUserData);

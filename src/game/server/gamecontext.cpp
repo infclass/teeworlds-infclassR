@@ -3526,259 +3526,6 @@ bool CGameContext::ConHelp(IConsole::IResult *pResult)
 		Buffer.append("\n\n");
 		Server()->Localization()->Format_L(Buffer, pLanguage, Config()->m_AboutTranslationUrl, NULL);
 	}
-	else if(str_comp_nocase(pHelpPage, "engineer") == 0)
-	{
-		Buffer.append("~~ ");
-		Server()->Localization()->Format_L(Buffer, pLanguage, _("Engineer"), NULL);
-		Buffer.append(" ~~\n\n");
-		Server()->Localization()->Format_L(Buffer, pLanguage, _C("Engineer", "The Engineer can build walls with the hammer to block the infected."), NULL);
-		Buffer.append("\n\n");
-		Server()->Localization()->Format_L(Buffer, pLanguage, _C("Engineer", "When an infected touches the wall, it dies."), NULL);
-		Buffer.append("\n\n");
-		Server()->Localization()->Format_L(Buffer, pLanguage, _C("Engineer", "The lifespan of a wall is {sec:LifeSpan}, and walls are limited to one per player at the same time."), "LifeSpan", &g_Config.m_InfBarrierLifeSpan, NULL);
-	}
-	else if(str_comp_nocase(pHelpPage, "soldier") == 0)
-	{
-		Buffer.append("~~ ");
-		Server()->Localization()->Format_L(Buffer, pLanguage, _("Soldier"), NULL);
-		Buffer.append(" ~~\n\n");
-		Server()->Localization()->Format_L(Buffer, pLanguage, _C("Soldier", "The Soldier creates floating bombs with the hammer."), NULL);
-		Buffer.append("\n\n");
-		Server()->Localization()->Format_LP(
-			Buffer, pLanguage, g_Config.m_InfSoldierBombs,
-			_CP("Soldier",
-				"Each bomb can explode one time.",
-				"Each bomb can explode {int:NumBombs} times."),
-			"NumBombs", &g_Config.m_InfSoldierBombs,
-			NULL
-		);
-		Buffer.append("\n\n");
-		Server()->Localization()->Format_L(Buffer, pLanguage, _("Use the hammer to place the bomb and explode it multiple times."), NULL);
-	}
-	else if(str_comp_nocase(pHelpPage, "scientist") == 0)
-	{
-		Buffer.append("~~ ");
-		Server()->Localization()->Format_L(Buffer, pLanguage, _("Scientist"), NULL);
-		Buffer.append(" ~~\n\n");
-		Server()->Localization()->Format_L(Buffer, pLanguage, _C("Scientist", "The Scientist can pose floating mines with the hammer."), NULL);
-		Buffer.append("\n\n");
-		Server()->Localization()->Format_LP(
-			Buffer, pLanguage, g_Config.m_InfMineLimit,
-			_CP("Scientist",
-				"Mines are limited to one per player at the same time.",
-				"Mines are limited to {int:NumMines} per player at the same time."),
-			"NumMines", &g_Config.m_InfMineLimit,
-			NULL
-		);
-		Buffer.append("\n\n");
-		Server()->Localization()->Format_L(Buffer, pLanguage, _C("Scientist", "Scientist has also grenades that teleport them."), NULL);
-		Buffer.append("\n\n");
-		Server()->Localization()->Format_L(Buffer, pLanguage, _C("Scientist", "A lucky Scientist devoted to killing can get a white hole that sucks the infected in which can be placed with the laser rifle."), NULL);
-	}
-	else if(str_comp_nocase(pHelpPage, "biologist") == 0)
-	{
-
-		Buffer.append("~~ ");
-		Server()->Localization()->Format_L(Buffer, pLanguage, _("Biologist"), NULL);
-		Buffer.append(" ~~\n\n");
-		Server()->Localization()->Format_L(Buffer, pLanguage, _C("Biologist", "The Biologist has a shotgun with bouncing bullets and can create a spring laser trap by shooting with the laser rifle."), NULL);
-	}
-	else if(str_comp_nocase(pHelpPage, "looper") == 0)
-	{
-		Buffer.append("~~ ");
-		Server()->Localization()->Format_L(Buffer, pLanguage, _("Looper"), NULL);
-		Buffer.append(" ~~\n\n");
-		Server()->Localization()->Format_L(Buffer, pLanguage, _C("Looper", "The Looper has a laser wall that slows down the infected and a low-range laser rifle with a high fire rate."), NULL);
-		Buffer.append("\n\n");
-		Server()->Localization()->Format_L(Buffer, pLanguage, _C("Looper", "They can also jump two times in the air."), NULL);
-	}
-	else if(str_comp_nocase(pHelpPage, "medic") == 0)
-	{
-		Buffer.append("~~ ");
-		Server()->Localization()->Format_L(Buffer, pLanguage, _("Medic"), NULL);
-		Buffer.append(" ~~\n\n");
-		Server()->Localization()->Format_L(Buffer, pLanguage, _C("Medic", "The Medic can protect humans with the hammer by giving them armor."), NULL);
-		Buffer.append("\n\n");
-		Server()->Localization()->Format_L(Buffer, pLanguage, _C("Medic", "Grenades with medicine give armor to everybody in their range, including Heroes and the Medic themself."), NULL);
-		Buffer.append("\n\n");
-		Server()->Localization()->Format_L(Buffer, pLanguage, _C("Medic", "Laser rifle revives the infected, but at the cost of 17 hp and armor."), NULL);
-		Buffer.append("\n\n");
-		Server()->Localization()->Format_L(Buffer, pLanguage, _C("Medic", "Medic also has a powerful shotgun that can knock back the infected."), NULL);
-	}
-	else if(str_comp_nocase(pHelpPage, "hero") == 0)
-	{
-		Buffer.append("~~ ");
-		Server()->Localization()->Format_L(Buffer, pLanguage, _("Hero"), NULL);
-		Buffer.append(" ~~\n\n");
-		Server()->Localization()->Format_L(Buffer, pLanguage, _C("Hero", "The Hero has all standard weapons."), NULL);
-		Buffer.append("\n\n");
-		Server()->Localization()->Format_L(Buffer, pLanguage, _C("Hero", "The Hero has to find a flag only visible to them. Stand still to be pointed towards it."), NULL);
-		Buffer.append(" ");
-		static const int NumArmorGift = 4;
-		Server()->Localization()->Format_L(Buffer, pLanguage, _C("Hero", "The flag gifts a health point, {int:NumArmorGift} armor and full ammo to all humans."),
-			"NumArmorGift", &NumArmorGift,
-			NULL);
-		Buffer.append(" ");
-		Server()->Localization()->Format_L(Buffer, pLanguage, _C("Hero", "It fully heals the Hero and it can grant a turret which you can place down with the hammer."), NULL);
-		Buffer.append(" ");
-		Server()->Localization()->Format_L(Buffer, pLanguage, _C("Hero", "The gift to all humans is only applied when the flag is surrounded by hearts and armor."), NULL);
-		Buffer.append("\n\n");
-		Server()->Localization()->Format_L(Buffer, pLanguage, _C("Hero", "The Hero cannot be healed by a Medic, but it can withstand a hit from an infected."), NULL);
-	}
-	else if(str_comp_nocase(pHelpPage, "ninja") == 0)
-	{
-		Buffer.append("~~ ");
-		Server()->Localization()->Format_L(Buffer, pLanguage, _("Ninja"), NULL);
-		Buffer.append(" ~~\n\n");
-		Server()->Localization()->Format_L(Buffer, pLanguage, _C("Ninja", "The Ninja can throw flash grenades that can freeze the infected for three seconds."), NULL);
-		Buffer.append("\n\n");
-		Server()->Localization()->Format_LP(
-			Buffer, pLanguage, g_Config.m_InfNinjaJump,
-			_CP("Ninja",
-				"Their hammer is replaced with a katana, allowing them to dash {int:NinjaJump} time before touching the ground.",
-				"Their hammer is replaced with a katana, allowing them to dash {int:NinjaJump} times before touching the ground."),
-			"NinjaJump", &g_Config.m_InfNinjaJump,
-			NULL
-		);
-		Buffer.append("\n\n");
-		Server()->Localization()->Format_L(Buffer, pLanguage, _("They also have a laser rifle that blinds the target for a short period of time."), NULL);
-		Buffer.append("\n\n");
-		Server()->Localization()->Format_L(Buffer, pLanguage, _("Ninja gets special targets. For killing a target, extra points and abilities are awarded."), NULL);
-	}
-	else if(str_comp_nocase(pHelpPage, "mercenary") == 0)
-	{
-		Buffer.append("~~ ");
-		Server()->Localization()->Format_L(Buffer, pLanguage, _("Mercenary"), NULL);
-		Buffer.append(" ~~\n\n");
-		Server()->Localization()->Format_L(Buffer, pLanguage, _C("Mercenary", "The Mercenary can fly in the air using their machine gun."), NULL);
-		Buffer.append("\n\n");
-		Server()->Localization()->Format_L(Buffer, pLanguage, _C("Mercenary", "They can create powerful bombs with their hammer."), NULL);
-		Buffer.append("\n\n");
-		Server()->Localization()->Format_LP(
-			Buffer, pLanguage, g_Config.m_InfPoisonDamage,
-			_CP("Mercenary",
-				"Mercenary can also throw poison grenades that each deal one damage point.",
-				"Mercenary can also throw poison grenades that each deal {int:NumDamagePoints} damage points."),
-			"NumDamagePoints", &g_Config.m_InfPoisonDamage,
-			NULL
-		);
-	}
-	else if(str_comp_nocase(pHelpPage, "sniper") == 0)
-	{
-		Buffer.append("~~ ");
-		Server()->Localization()->Format_L(Buffer, pLanguage, _("Sniper"), NULL);
-		Buffer.append(" ~~\n\n");
-		Server()->Localization()->Format_L(Buffer, pLanguage, _C("Sniper", "The Sniper can lock the position in mid-air for 15 seconds with the hammer."), NULL);
-		Buffer.append("\n\n");
-		Server()->Localization()->Format_L(Buffer, pLanguage, _C("Sniper", "The locked position increases the Sniper's rifle damage from usual 10-13 to 20 damage points."), NULL);
-		Buffer.append("\n\n");
-		Server()->Localization()->Format_L(Buffer, pLanguage, _C("Sniper", "They can also jump two times in the air."), NULL);
-	}
-	else if(str_comp_nocase(pHelpPage, "smoker") == 0)
-	{
-		Buffer.append("~~ ");
-		Server()->Localization()->Format_L(Buffer, pLanguage, _("Smoker"), NULL);
-		Buffer.append(" ~~\n\n");
-		Server()->Localization()->Format_L(Buffer, pLanguage, _C("Smoker", "Smoker has a powerful hook that hurts humans and sucks their blood, restoring the Smoker's health."), NULL);
-		Buffer.append("\n\n");
-		Server()->Localization()->Format_L(Buffer, pLanguage, _C("Smoker", "It can also infect humans and heal the infected with the hammer."), NULL);
-	}
-	else if(str_comp_nocase(pHelpPage, "boomer") == 0)
-	{
-		Buffer.append("~~ ");
-		Server()->Localization()->Format_L(Buffer, pLanguage, _("Boomer"), NULL);
-		Buffer.append(" ~~\n\n");
-		Server()->Localization()->Format_L(Buffer, pLanguage, _C("Boomer", "The Boomer explodes when it attacks."), NULL);
-		Buffer.append("\n\n");
-		Server()->Localization()->Format_L(Buffer, pLanguage, _C("Boomer", "All humans affected by the explosion become infected."), NULL);
-		Buffer.append("\n\n");
-		Server()->Localization()->Format_L(Buffer, pLanguage, _C("Boomer", "It can also inflict 1 damage point per second by hooking humans."), NULL);
-	}
-	else if(str_comp_nocase(pHelpPage, "hunter") == 0)
-	{
-		Buffer.append("~~ ");
-		Server()->Localization()->Format_L(Buffer, pLanguage, _("Hunter"), NULL);
-		Buffer.append(" ~~\n\n");
-		Server()->Localization()->Format_L(Buffer, pLanguage, _C("Hunter", "The Hunter can jump two times in the air and has some resistance to knock-backs."), NULL);
-		Buffer.append("\n\n");
-		Server()->Localization()->Format_L(Buffer, pLanguage, _C("Hunter", "It can infect humans and heal the infected with the hammer."), NULL);
-		Buffer.append("\n\n");
-		Server()->Localization()->Format_L(Buffer, pLanguage, _C("Hunter", "It can also inflict 1 damage point per second by hooking humans."), NULL);
-	}
-	else if(str_comp_nocase(pHelpPage, "bat") == 0)
-	{
-		Buffer.append("~~ ");
-		Server()->Localization()->Format_L(Buffer, pLanguage, _("Bat"), NULL);
-		Buffer.append(" ~~\n\n");
-		Server()->Localization()->Format_L(Buffer, pLanguage, _C("Bat", "Bat can jump endlessly in the air but it cannot infect humans."), NULL);
-		Buffer.append("\n\n");
-		Server()->Localization()->Format_L(Buffer, pLanguage, _C("Bat", "Instead, it can hammer humans to reduce their health or even kill them."), NULL);
-		Buffer.append("\n\n");
-		Server()->Localization()->Format_L(Buffer, pLanguage, _C("Bat", "The hammer is also useful for healing the infected."), NULL);
-		Buffer.append("\n\n");
-		Server()->Localization()->Format_L(Buffer, pLanguage, _C("Bat", "It can also inflict 1 damage point per second by hooking humans, which sucks their blood, restoring the Bat's health."), NULL);
-	}
-	else if(str_comp_nocase(pHelpPage, "ghost") == 0)
-	{
-		Buffer.append("~~ ");
-		Server()->Localization()->Format_L(Buffer, pLanguage, _("Ghost"), NULL);
-		Buffer.append(" ~~\n\n");
-		Server()->Localization()->Format_L(Buffer, pLanguage, _C("Ghost", "The Ghost is invisible until a human comes nearby, it takes damage, or it uses the hammer."), NULL);
-		Buffer.append("\n\n");
-		Server()->Localization()->Format_L(Buffer, pLanguage, _C("Ghost", "It can infect humans and heal the infected with the hammer."), NULL);
-		Buffer.append("\n\n");
-		Server()->Localization()->Format_L(Buffer, pLanguage, _C("Ghost", "It can also inflict 1 damage point per second by hooking humans."), NULL);
-	}
-	else if(str_comp_nocase(pHelpPage, "spider") == 0)
-	{
-		Buffer.append("~~ ");
-		Server()->Localization()->Format_L(Buffer, pLanguage, _("Spider"), NULL);
-		Buffer.append(" ~~\n\n");
-		Server()->Localization()->Format_L(Buffer, pLanguage, _C("Spider", "The Spider has a web hook that automatically grabs any human touching it."), NULL);
-		Buffer.append("\n\n");
-		Server()->Localization()->Format_L(Buffer, pLanguage, _C("Spider", "The web hook mode can be toggled by switching the weapon."), NULL);
-		Buffer.append("\n\n");
-		Server()->Localization()->Format_L(Buffer, pLanguage, _C("Spider", "In both modes the hook inflicts 1 damage point per second and can grab a human for longer."), NULL);
-	}
-	else if(str_comp_nocase(pHelpPage, "ghoul") == 0)
-	{
-		Buffer.append("~~ ");
-		Server()->Localization()->Format_L(Buffer, pLanguage, _("Ghoul"), NULL);
-		Buffer.append(" ~~\n\n");
-		Server()->Localization()->Format_L(Buffer, pLanguage, _C("Ghoul", "The Ghoul can devour anything that has died nearby, which makes it stronger, faster and more resistant."), NULL);
-		Buffer.append("\n\n");
-		Server()->Localization()->Format_L(Buffer, pLanguage, _C("Ghoul", "It digests the fodder over time, going back to the normal state. Some nourishment is also lost on death."), NULL);
-		Buffer.append("\n\n");
-		Server()->Localization()->Format_L(Buffer, pLanguage, _C("Ghoul", "Ghoul can infect humans and heal the infected with the hammer."), NULL);
-		Buffer.append("\n\n");
-		Server()->Localization()->Format_L(Buffer, pLanguage, _C("Ghoul", "It can also inflict 1 damage point per second by hooking humans."), NULL);
-	}
-	else if(str_comp_nocase(pHelpPage, "slug") == 0)
-	{
-		Buffer.append("~~ ");
-		Server()->Localization()->Format_L(Buffer, pLanguage, _("Slug"), NULL);
-		Buffer.append(" ~~\n\n");
-		Server()->Localization()->Format_L(Buffer, pLanguage, _C("Slug", "The Slug can make the ground and walls toxic by spreading slime with the hammer."), NULL);
-		Buffer.append("\n\n");
-		Server()->Localization()->Format_L(Buffer, pLanguage, _C("Slug", "The slime heals the infected and deals damage to humans."), NULL);
-		Buffer.append("\n\n");
-		Server()->Localization()->Format_L(Buffer, pLanguage, _C("Slug", "Slug can infect humans and heal the infected with the hammer."), NULL);
-		Buffer.append("\n\n");
-		Server()->Localization()->Format_L(Buffer, pLanguage, _C("Slug", "It can also inflict 1 damage point per second by hooking humans."), NULL);
-	}
-	else if(str_comp_nocase(pHelpPage, "voodoo") == 0)
-	{
-		Buffer.append("~~ ");
-		Server()->Localization()->Format_L(Buffer, pLanguage, _("Voodoo"), NULL);
-		Buffer.append(" ~~\n\n");
-		Server()->Localization()->Format_L(Buffer, pLanguage, _C("Voodoo", "The Voodoo does not die immediately when killed but instead enters Spirit mode for a short time."), NULL);
-		Buffer.append("\n\n");
-		Server()->Localization()->Format_L(Buffer, pLanguage, _C("Voodoo", "While in Spirit mode it cannot be killed. When the time is up it finally dies."), NULL);
-		Buffer.append("\n\n");
-		Server()->Localization()->Format_L(Buffer, pLanguage, _C("Voodoo", "Voodoo can infect humans and heal the infected with the hammer."), NULL);
-		Buffer.append("\n\n");
-		Server()->Localization()->Format_L(Buffer, pLanguage, _C("Voodoo", "It can also inflict 1 damage point per second by hooking humans."), NULL);
-	}
 	else if(str_comp_nocase(pHelpPage, "whitehole") == 0)
 	{
 		Buffer.append("~~ ");
@@ -3793,33 +3540,6 @@ bool CGameContext::ConHelp(IConsole::IResult *pResult)
 				"NumKills", &g_Config.m_InfWhiteHoleMinimalKills, NULL);
 		Buffer.append("\n\n");
 		Server()->Localization()->Format_L(Buffer, pLanguage, _C("White hole", "Use the laser rifle to place it."), NULL);
-	}
-	else if(str_comp_nocase(pHelpPage, "undead") == 0)
-	{
-		Buffer.append("~~ ");
-		Server()->Localization()->Format_L(Buffer, pLanguage, _("Undead"), NULL);
-		Buffer.append(" ~~\n\n");
-		Server()->Localization()->Format_L(Buffer, pLanguage, _C("Undead", "The Undead cannot die. Instead of dying, it gets frozen for 10 seconds."), NULL);
-		Buffer.append("\n\n");
-		Server()->Localization()->Format_L(Buffer, pLanguage, _C("Undead", "If an infected heals it, the freeze effect disappears."), NULL);
-		Buffer.append("\n\n");
-		Server()->Localization()->Format_L(Buffer, pLanguage, _C("Undead", "Undead can infect humans and heal the infected with the hammer."), NULL);
-		Buffer.append("\n\n");
-		Server()->Localization()->Format_L(Buffer, pLanguage, _C("Undead", "It can also inflict 1 damage point per second by hooking humans."), NULL);
-	}
-	else if(str_comp_nocase(pHelpPage, "witch") == 0)
-	{
-		Buffer.append("~~ ");
-		Server()->Localization()->Format_L(Buffer, pLanguage, _("Witch"));
-		Buffer.append(" ~~\n\n");
-		Buffer.append("\n\n");
-		Server()->Localization()->Format_L(Buffer, pLanguage, _C("Witch", "The Witch can provide a spawn point for the infected."), NULL);
-		Buffer.append("\n\n");
-		Server()->Localization()->Format_L(Buffer, pLanguage, _C("Witch", "If the Witch dies, it disappears and is replaced by another class."), NULL);
-		Buffer.append("\n\n");
-		Server()->Localization()->Format_L(Buffer, pLanguage, _C("Witch", "Witch can infect humans and heal the infected with the hammer."), NULL);
-		Buffer.append("\n\n");
-		Server()->Localization()->Format_L(Buffer, pLanguage, _C("Witch", "It can also inflict 1 damage point per second by hooking humans."), NULL);
 	}
 	else if(str_comp_nocase(pHelpPage, "msg") == 0)
 	{
@@ -3859,6 +3579,15 @@ bool CGameContext::ConHelp(IConsole::IResult *pResult)
 		Buffer.append("\n\n");
 		Server()->Localization()->Format_L(Buffer, pLanguage, _("To get off the taxi, jump. To drop off your passengers, enable hook protection (usually, with F3)."), NULL);
 	}
+	else
+	{
+		bool Ok = true;
+		int PlayerClass = CInfClassGameController::GetClassByName(pHelpPage, &Ok);
+		if(Ok)
+		{
+			WriteClassHelpPage(&Buffer, pLanguage, static_cast<PLAYERCLASS>(PlayerClass));
+		}
+	}
 
 	if(Buffer.empty())
 	{
@@ -3876,6 +3605,218 @@ bool CGameContext::ConHelp(IConsole::IResult *pResult)
 	else
 	{
 		SendMOTD(ClientID, Buffer.buffer());
+	}
+
+	return true;
+}
+
+bool CGameContext::WriteClassHelpPage(dynamic_string *pOutput, const char *pLanguage, PLAYERCLASS PlayerClass)
+{
+	dynamic_string &Buffer = *pOutput;
+
+	Buffer.append("~~ ");
+	Server()->Localization()->Format_L(Buffer, pLanguage, CInfClassGameController::GetClassDisplayName(PlayerClass), nullptr);
+	Buffer.append(" ~~");
+
+	auto AddText = [this, &Buffer, pLanguage](const char *pSeparator, const char *pText, const char *pArgName = nullptr, const void *pArgValue = nullptr) {
+		Buffer.append(pSeparator);
+
+		if(pArgName && pArgValue)
+		{
+			Server()->Localization()->Format_L(Buffer, pLanguage, pText, pArgName, pArgValue, nullptr);
+		}
+		else
+		{
+			Server()->Localization()->Format_L(Buffer, pLanguage, pText, nullptr);
+		}
+	};
+
+	auto AddText_Plural = [this, &Buffer, pLanguage](const char *pSeparator, int Number, const char *pText, const char *pArgName, const void *pArgValue) {
+		Buffer.append(pSeparator);
+
+		Server()->Localization()->Format_LP(Buffer, pLanguage, Number, pText, pArgName, pArgValue, nullptr);
+	};
+
+	auto AddLine = [AddText](const char *pText, const char *pArgName = nullptr, const void *pArgValue = nullptr) {
+		AddText("\n\n", pText, pArgName, pArgValue);
+	};
+
+	auto AddLine_Plural = [AddText_Plural](int Number, const char *pText, const char *pArgName, const void *pArgValue) {
+		AddText_Plural("\n\n", Number, pText, pArgName, pArgValue);
+	};
+
+	auto ConLine = [AddText](const char *pText, const char *pArgName = nullptr, const void *pArgValue = nullptr) {
+		AddText(" ", pText, pArgName, pArgValue);
+	};
+
+	static const int HeroNumArmorGift = 4;
+
+	switch(PlayerClass)
+	{
+	case PLAYERCLASS_INVALID:
+	case PLAYERCLASS_NONE:
+	case NB_PLAYERCLASS:
+	case START_INFECTEDCLASS:
+	case END_INFECTEDCLASS:
+	// case NB_INFECTEDCLASS:
+	case START_HUMANCLASS:
+	case END_HUMANCLASS:
+	// case NB_HUMANCLASS:
+		return false;
+		break;
+
+	case PLAYERCLASS_MERCENARY:
+		AddLine(_C("Mercenary", "The Mercenary can fly in the air using their machine gun."));
+		AddLine(_C("Mercenary", "They can create powerful bombs with their hammer."));
+		AddLine_Plural(g_Config.m_InfPoisonDamage,
+					   _CP("Mercenary",
+						   "Mercenary can also throw poison grenades that each deal one damage point.",
+						   "Mercenary can also throw poison grenades that each deal {int:NumDamagePoints} damage points."),
+					   "NumDamagePoints", &g_Config.m_InfPoisonDamage);
+		break;
+	case PLAYERCLASS_MEDIC:
+		AddLine(_C("Medic", "The Medic can protect humans with the hammer by giving them armor."));
+		AddLine(_C("Medic", "Grenades with medicine give armor to everybody in their range,"
+							" including Heroes and the Medic themself."));
+		AddLine(_C("Medic", "Laser rifle revives the infected, but at the cost of 17 hp and armor."));
+		AddLine(_C("Medic", "Medic also has a powerful shotgun that can knock back the infected."));
+		break;
+	case PLAYERCLASS_HERO:
+		AddLine(_C("Hero", "The Hero has all standard weapons."));
+		AddLine(_C("Hero", "The Hero has to find a flag only visible to them. Stand still to be pointed towards it."));
+		ConLine(_C("Hero", "The flag gifts a health point, {int:NumArmorGift} armor and full ammo to all humans."),
+				"NumArmorGift", &HeroNumArmorGift);
+		ConLine(_C("Hero", "It fully heals the Hero and it can grant a turret which you can place down with the hammer."));
+		ConLine(_C("Hero", "The gift to all humans is only applied when the flag is surrounded by hearts and armor."));
+		ConLine(_C("Hero", "The Hero cannot be healed by a Medic, but it can withstand a hit from an infected."));
+		break;
+	case PLAYERCLASS_ENGINEER:
+		AddLine(_C("Engineer", "The Engineer can build walls with the hammer to block the infected."));
+		AddLine(_C("Engineer", "When an infected touches the wall, it dies."));
+		AddLine(_C("Engineer", "The lifespan of a wall is {sec:LifeSpan}, and walls are limited to"
+							   " one per player at the same time."),
+				"LifeSpan", &g_Config.m_InfBarrierLifeSpan);
+		break;
+	case PLAYERCLASS_SOLDIER:
+		AddLine(_C("Soldier", "The Soldier creates floating bombs with the hammer."));
+		AddLine_Plural(g_Config.m_InfSoldierBombs,
+					   _CP("Soldier",
+						   "Each bomb can explode one time.",
+						   "Each bomb can explode {int:NumBombs} times."),
+					   "NumBombs", &g_Config.m_InfSoldierBombs);
+
+		AddLine(_("Use the hammer to place the bomb and explode it multiple times."));
+		break;
+	case PLAYERCLASS_NINJA:
+		AddLine(_C("Ninja", "The Ninja can throw flash grenades that can freeze the infected for"
+							" three seconds."));
+		AddLine_Plural(
+					g_Config.m_InfNinjaJump,
+					_CP("Ninja",
+						"Their hammer is replaced with a katana, allowing them to dash {int:NinjaJump}"
+						" time before touching the ground.",
+						"Their hammer is replaced with a katana, allowing them to dash {int:NinjaJump}"
+						" times before touching the ground."),
+					"NinjaJump", &g_Config.m_InfNinjaJump);
+		AddLine(_("They also have a laser rifle that blinds the target for a short period of time."));
+		AddLine(_("Ninja gets special targets. For killing a target, extra points and abilities"
+				  " are awarded."));
+		break;
+	case PLAYERCLASS_SNIPER:
+		AddLine(_C("Sniper", "The Sniper can lock the position in mid-air for 15 seconds with the"
+							 " hammer."));
+		AddLine(_C("Sniper", "The locked position increases the Sniper's rifle damage from usual"
+							 " 10-13 to 20 damage points."));
+		AddLine(_C("Sniper", "They can also jump two times in the air."));
+		break;
+	case PLAYERCLASS_SCIENTIST:
+		AddLine(_C("Scientist", "The Scientist can pose floating mines with the hammer."));
+		AddLine_Plural(g_Config.m_InfMineLimit,
+					   _CP("Scientist",
+						   "Mines are limited to one per player at the same time.",
+						   "Mines are limited to {int:NumMines} per player at the same time."),
+					   "NumMines", &g_Config.m_InfMineLimit);
+		AddLine(_C("Scientist", "Scientist has also grenades that teleport them."));
+		AddLine(_C("Scientist", "A lucky Scientist devoted to killing can get a white hole that"
+								" sucks the infected in which can be placed with the laser rifle."));
+		break;
+	case PLAYERCLASS_BIOLOGIST:
+		AddLine(_C("Biologist", "The Biologist has a shotgun with bouncing bullets and can create a"
+								" spring laser trap by shooting with the laser rifle."));
+		break;
+	case PLAYERCLASS_LOOPER:
+		AddLine(_C("Looper", "The Looper has a laser wall that slows down the infected and a"
+							 " low-range laser rifle with a high fire rate."));
+		AddLine(_C("Looper", "They can also jump two times in the air."));
+		break;
+	case PLAYERCLASS_SMOKER:
+		AddLine(_C("Smoker", "Smoker has a powerful hook that hurts humans and sucks their blood,"
+							 " restoring the Smoker's health."));
+		AddLine(_C("Smoker", "It can also infect humans and heal the infected with the hammer."));
+		break;
+	case PLAYERCLASS_BOOMER:
+		AddLine(_C("Boomer", "The Boomer explodes when it attacks."));
+		AddLine(_C("Boomer", "All humans affected by the explosion become infected."));
+		AddLine(_C("Boomer", "It can also inflict 1 damage point per second by hooking humans."));
+		break;
+	case PLAYERCLASS_HUNTER:
+		AddLine(_C("Hunter", "The Hunter can jump two times in the air and has some resistance to"
+							 " knock-backs."));
+		AddLine(_C("Hunter", "It can infect humans and heal the infected with the hammer."));
+		AddLine(_C("Hunter", "It can also inflict 1 damage point per second by hooking humans."));
+		break;
+	case PLAYERCLASS_BAT:
+		AddLine(_C("Bat", "Bat can jump endlessly in the air but it cannot infect humans."));
+		AddLine(_C("Bat", "Instead, it can hammer humans to reduce their health or even kill them."));
+		AddLine(_C("Bat", "The hammer is also useful for healing the infected."));
+		AddLine(_C("Bat", "It can also inflict 1 damage point per second by hooking humans, which"
+						  " sucks their blood, restoring the Bat's health."));
+		break;
+	case PLAYERCLASS_GHOST:
+		AddLine(_C("Ghost", "The Ghost is invisible until a human comes nearby, it takes damage,"
+							" or it uses the hammer."));
+		AddLine(_C("Ghost", "It can infect humans and heal the infected with the hammer."));
+		AddLine(_C("Ghost", "It can also inflict 1 damage point per second by hooking humans."));
+		break;
+	case PLAYERCLASS_SPIDER:
+		AddLine(_C("Spider", "The Spider has a web hook that automatically grabs any human touching it."));
+		AddLine(_C("Spider", "The web hook mode can be toggled by switching the weapon."));
+		AddLine(_C("Spider", "In both modes the hook inflicts 1 damage point per second and can"
+							 " grab a human for longer."));
+		break;
+	case PLAYERCLASS_GHOUL:
+		AddLine(_C("Ghoul", "The Ghoul can devour anything that has died nearby, which makes it"
+							" stronger, faster and more resistant."));
+		AddLine(_C("Ghoul", "It digests the fodder over time, going back to the normal state."
+							" Some nourishment is also lost on death."));
+		AddLine(_C("Ghoul", "Ghoul can infect humans and heal the infected with the hammer."));
+		AddLine(_C("Ghoul", "It can also inflict 1 damage point per second by hooking humans."));
+		break;
+	case PLAYERCLASS_SLUG:
+		AddLine(_C("Slug", "The Slug can make the ground and walls toxic by spreading slime with the hammer."));
+		AddLine(_C("Slug", "The slime heals the infected and deals damage to humans."));
+		AddLine(_C("Slug", "Slug can infect humans and heal the infected with the hammer."));
+		AddLine(_C("Slug", "It can also inflict 1 damage point per second by hooking humans."));
+		break;
+	case PLAYERCLASS_VOODOO:
+		AddLine(_C("Voodoo", "The Voodoo does not die immediately when killed but instead enters"
+							 " Spirit mode for a short time."));
+		AddLine(_C("Voodoo", "While in Spirit mode it cannot be killed. When the time is up it finally dies."));
+		AddLine(_C("Voodoo", "Voodoo can infect humans and heal the infected with the hammer."));
+		AddLine(_C("Voodoo", "It can also inflict 1 damage point per second by hooking humans."));
+		break;
+	case PLAYERCLASS_WITCH:
+		AddLine(_C("Witch", "The Witch can provide a spawn point for the infected."));
+		AddLine(_C("Witch", "If the Witch dies, it disappears and is replaced by another class."));
+		AddLine(_C("Witch", "Witch can infect humans and heal the infected with the hammer."));
+		AddLine(_C("Witch", "It can also inflict 1 damage point per second by hooking humans."));
+		break;
+	case PLAYERCLASS_UNDEAD:
+		AddLine(_C("Undead", "The Undead cannot die. Instead of dying, it gets frozen for 10 seconds."));
+		AddLine(_C("Undead", "If an infected heals it, the freeze effect disappears."));
+		AddLine(_C("Undead", "Undead can infect humans and heal the infected with the hammer."));
+		AddLine(_C("Undead", "It can also inflict 1 damage point per second by hooking humans."));
+		break;
 	}
 
 	return true;
