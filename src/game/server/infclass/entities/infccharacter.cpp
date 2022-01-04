@@ -549,11 +549,6 @@ void CInfClassCharacter::FireWeapon()
 
 bool CInfClassCharacter::TakeDamage(vec2 Force, float FloatDmg, int From, DAMAGE_TYPE DamageType)
 {
-	if(m_Health <= 0)
-	{
-		return false;
-	}
-
 	int Dmg = FloatDmg;
 	if(FloatDmg != Dmg)
 	{
@@ -624,6 +619,11 @@ bool CInfClassCharacter::TakeDamage(vec2 Force, float FloatDmg, int From, DAMAGE
 	}
 
 	m_Core.m_Vel += Force;
+
+	if(m_Health <= 0)
+	{
+		return false;
+	}
 
 	if(GetPlayerClass() == PLAYERCLASS_GHOUL)
 	{
