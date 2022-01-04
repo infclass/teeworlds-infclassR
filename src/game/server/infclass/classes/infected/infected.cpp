@@ -184,8 +184,7 @@ void CInfClassInfected::OnCharacterDeath(int Weapon)
 	{
 		if(!m_pCharacter->IsFrozen() && Weapon != WEAPON_GAME && !(m_pCharacter->IsInLove() && Weapon == WEAPON_SELF))
 		{
-			GameServer()->CreateSound(GetPos(), SOUND_GRENADE_EXPLODE);
-			GameController()->CreateExplosionDisk(GetPos(), 60.0f, 80.5f, 14, 52.0f, m_pPlayer->GetCID(), DAMAGE_TYPE::BOOMER_EXPLOSION);
+			DoBoomerExplosion();
 		}
 	}
 }
@@ -321,6 +320,60 @@ void CInfClassInfected::BroadcastWeaponState()
 				NULL
 			);
 		}
+	}
+}
+
+void CInfClassInfected::DoBoomerExplosion()
+{
+	float InnerRadius = 60.0f;
+	float DamageRadius = 80.5f;
+	int Damage = 14;
+	float Force = 52;
+
+	CInfClassCharacter *pBestBFTarget = nullptr;
+
+	{
+		CInfClassCharacter *apEnts[MAX_CLIENTS];
+		int Num = GameWorld()->FindEntities(GetPos(), DamageRadius, (CEntity**)apEnts, MAX_CLIENTS, CGameWorld::ENTTYPE_CHARACTER);
+		float ClosestCharacterDistance = DamageRadius * 2;
+
+		for(int i = 0; i < Num; i++)
+		{
+			CInfClassCharacter *pTarget = apEnts[i];
+			if(pTarget == m_pCharacter)
+				continue;
+
+			vec2 Diff = pTarget->GetPos() - GetPos();
+			if (Diff.x == 0.0f && Diff.y == 0.0f)
+				Diff.y = -0.5f;
+			vec2 ForceDir(0,1);
+			float Length = length(Diff);
+			if(pTarget->IsZombie() && (Length < DamageRadius))
+			{
+				if(Length < ClosestCharacterDistance)
+				{
+					pBestBFTarget = pTarget;
+					ClosestCharacterDistance = Length;
+				}
+			}
+
+			Length = 1-clamp((Length-InnerRadius)/(DamageRadius-InnerRadius), 0.0f, 1.0f);
+
+			if(Length)
+				ForceDir = normalize(Diff);
+
+			float DamageToDeal = 1 + ((Damage - 1) * Length);
+			pTarget->TakeDamage(ForceDir*Force*Length, DamageToDeal, GetCID(), DAMAGE_TYPE::BOOMER_EXPLOSION);
+		}
+	}
+
+	GameServer()->CreateSound(GetPos(), SOUND_GRENADE_EXPLODE);
+	GameController()->CreateExplosionDiskGfx(GetPos(), InnerRadius, DamageRadius, m_pPlayer->GetCID());
+
+	if(pBestBFTarget)
+	{
+		m_pPlayer->SetFollowTarget(pBestBFTarget->GetCID(), 5.0);
+		m_pPlayer->m_DieTick = Server()->Tick() + Server()->TickSpeed() * 10;
 	}
 }
 

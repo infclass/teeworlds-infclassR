@@ -40,6 +40,8 @@ protected:
 	void SetupSkin(CTeeInfo *output) override;
 	void BroadcastWeaponState() override;
 
+	void DoBoomerExplosion();
+
 	void SetHookOnLimit(bool OnLimit);
 
 	int m_SlimeHealTick = 0;
