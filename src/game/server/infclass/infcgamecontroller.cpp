@@ -373,8 +373,7 @@ void CInfClassGameController::CreateExplosion(const vec2 &Pos, int Owner, DAMAGE
 // Thanks to Stitch for the idea
 void CInfClassGameController::CreateExplosionDisk(vec2 Pos, float InnerRadius, float DamageRadius, int Damage, float Force, int Owner, DAMAGE_TYPE DamageType)
 {
-	int Weapon = WEAPON_WORLD;
-	GameServer()->CreateExplosion(Pos, Owner, Weapon);
+	CreateExplosionDiskGfx(Pos, InnerRadius, DamageRadius, Owner);
 
 	if(Damage > 0)
 	{
@@ -397,7 +396,13 @@ void CInfClassGameController::CreateExplosionDisk(vec2 Pos, float InnerRadius, f
 			apEnts[i]->TakeDamage(ForceDir*Force*len, DamageToDeal, Owner, DamageType);
 		}
 	}
-	
+}
+
+void CInfClassGameController::CreateExplosionDiskGfx(vec2 Pos, float InnerRadius, float DamageRadius, int Owner)
+{
+	int Weapon = WEAPON_WORLD;
+	GameServer()->CreateExplosion(Pos, Owner, Weapon);
+
 	float CircleLength = 2.0*pi*maximum(DamageRadius-135.0f, 0.0f);
 	int NumSuroundingExplosions = CircleLength/32.0f;
 	float AngleStart = random_float()*pi*2.0f;
