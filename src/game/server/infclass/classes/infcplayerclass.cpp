@@ -180,9 +180,8 @@ void CInfClassPlayerClass::PrepareToDie(int Killer, DAMAGE_TYPE DamageType, bool
 
 void CInfClassPlayerClass::Poison(int Count, int From, DAMAGE_TYPE DamageType)
 {
-	if(m_Poison <= 0)
+	if(Count > m_Poison)
 	{
-		m_PoisonTick = 0;
 		m_Poison = Count;
 		m_PoisonFrom = From;
 		m_PoisonDamageType = DamageType;
