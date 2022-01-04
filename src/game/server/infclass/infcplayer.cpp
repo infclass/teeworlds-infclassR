@@ -81,6 +81,14 @@ void CInfClassPlayer::Tick()
 	HandleTuningParams();
 }
 
+void CInfClassPlayer::Snap(int SnappingClient)
+{
+	if(!Server()->ClientIngame(m_ClientID))
+		return;
+
+	CPlayer::Snap(SnappingClient);
+}
+
 void CInfClassPlayer::SnapClientInfo(int SnappingClient)
 {
 	CNetObj_ClientInfo *pClientInfo = static_cast<CNetObj_ClientInfo *>(Server()->SnapNewItem(NETOBJTYPE_CLIENTINFO, m_ClientID, sizeof(CNetObj_ClientInfo)));

@@ -31,6 +31,7 @@ public:
 	void TryRespawn() override;
 
 	void Tick() override;
+	void Snap(int SnappingClient) override;
 	void SnapClientInfo(int SnappingClient) override;
 	int GetDefaultEmote() const override;
 
