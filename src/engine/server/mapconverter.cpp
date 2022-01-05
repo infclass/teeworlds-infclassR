@@ -10,6 +10,8 @@
 
 #include <pnglite.h>
 
+#include <limits>
+
 enum class DDNET_TILE
 {
 	TILE_AIR = 0,
@@ -331,6 +333,9 @@ bool CMapConverter::Load()
 		pEnvPoints = (CEnvPoint *)Map()->GetItem(Start, 0, 0);
 	}
 					
+	const int MenuItemSyncMagic = TIMESHIFT_MENUCLASS * 1000;
+	long long AnimationCircle = m_AnimationCycle;
+	long long TimeShiftUnit = 0;
 	if(pEnvPoints)
 	{
 		int Start, Num;
@@ -343,19 +348,36 @@ bool CMapConverter::Load()
 				int Duration = pEnvPoints[pItem->m_StartPoint + pItem->m_NumPoints - 1].m_Time - pEnvPoints[pItem->m_StartPoint].m_Time;
 				if(Duration)
 				{
-					dbg_msg("DEBUG", "Duration found: %d", Duration);
-					m_AnimationCycle *= Duration;
-					dbg_msg("DEBUG", "New AnimationCycle: %d", m_AnimationCycle);
+					dbg_msg("MapConverter", "Duration found: %d", Duration);
+					AnimationCircle *= Duration;
+					dbg_msg("MapConverter", "New AnimationCycle: %lld", AnimationCircle);
 				}
 			}
 		}
-		
-		if(m_AnimationCycle)
-			m_TimeShiftUnit = m_AnimationCycle*((60*1000 / m_AnimationCycle)+1);
+
+		dbg_msg("MapConverter", "Final AnimationCycle: %lld", AnimationCircle);
+		if(AnimationCircle)
+			TimeShiftUnit = AnimationCircle*((MenuItemSyncMagic / AnimationCircle)+1);
 		else
-			m_TimeShiftUnit = 60*1000;
+			TimeShiftUnit = MenuItemSyncMagic;
 	}
-	
+
+	int Multiplier = 1 + TIMESHIFT_MENUCLASS + 3 * ((MASK_ALL + 1) * TIMESHIFT_MENUCLASS_MASK);
+	long long MaxUsedAnimationTime = Multiplier * TimeShiftUnit;
+	long long MaxAvailable = std::numeric_limits<int>::max();
+
+	if(MaxUsedAnimationTime > MaxAvailable)
+	{
+		char aBuf[128];
+		str_format(aBuf, sizeof(aBuf), "WARNING! The animation duration is off the limit: %lld/%lld", MaxUsedAnimationTime, MaxAvailable);
+		Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "MapConverter", aBuf);
+	}
+	else
+	{
+		dbg_msg("MapConverter", "The animation duration is within the limits: %lld/%lld", MaxUsedAnimationTime, MaxAvailable);
+	}
+	m_TimeShiftUnit = TimeShiftUnit;
+
 	return true;
 }
 
