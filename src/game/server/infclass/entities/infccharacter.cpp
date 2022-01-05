@@ -394,38 +394,36 @@ void CInfClassCharacter::HandleNinja()
 
 		// check if we Hit anything along the way
 		{
-			CInfClassCharacter *aEnts[MAX_CLIENTS];
-			vec2 Dir = GetPos() - OldPos;
-			float Radius = m_ProximityRadius * 2.0f;
-			vec2 Center = OldPos + Dir * 0.5f;
-			int Num = GameServer()->m_World.FindEntities(Center, Radius, (CEntity**)aEnts, MAX_CLIENTS, CGameWorld::ENTTYPE_CHARACTER);
-
-			for (int i = 0; i < Num; ++i)
+			// Find other players
+			for(CInfClassCharacter *pTarget = (CInfClassCharacter*) GameWorld()->FindFirst(CGameWorld::ENTTYPE_CHARACTER); pTarget; pTarget = (CInfClassCharacter *)pTarget->TypeNext())
 			{
-				if(aEnts[i] == this)
+				if(pTarget->IsHuman())
 					continue;
 
 				// make sure we haven't Hit this object before
 				bool bAlreadyHit = false;
 				for (int j = 0; j < m_NumObjectsHit; j++)
 				{
-					if(m_apHitObjects[j] == aEnts[i])
+					if(m_apHitObjects[j] == pTarget)
 						bAlreadyHit = true;
 				}
 				if(bAlreadyHit)
 					continue;
 
-				// check so we are sufficiently close
-				if(distance(aEnts[i]->GetPos(), GetPos()) > (m_ProximityRadius * 2.0f))
+				vec2 IntersectPos = closest_point_on_line(OldPos, m_Core.m_Pos, pTarget->GetPos());
+				float Len = distance(pTarget->GetPos(), IntersectPos);
+				if(Len >= pTarget->GetProximityRadius() / 2 + GetProximityRadius() / 2)
+				{
 					continue;
+				}
 
 				// Hit a player, give him damage and stuffs...
-				GameServer()->CreateSound(aEnts[i]->GetPos(), SOUND_NINJA_HIT);
+				GameServer()->CreateSound(pTarget->GetPos(), SOUND_NINJA_HIT);
 				// set his velocity to fast upward (for now)
 				if(m_NumObjectsHit < 10)
-					m_apHitObjects[m_NumObjectsHit++] = aEnts[i];
+					m_apHitObjects[m_NumObjectsHit++] = pTarget;
 
-				aEnts[i]->TakeDamage(vec2(0, -10.0f), minimum(g_pData->m_Weapons.m_Ninja.m_pBase->m_Damage + m_NinjaStrengthBuff, 20), m_pPlayer->GetCID(), DAMAGE_TYPE::NINJA);
+				pTarget->TakeDamage(vec2(0, -10.0f), minimum(g_pData->m_Weapons.m_Ninja.m_pBase->m_Damage + m_NinjaStrengthBuff, 20), GetCID(), DAMAGE_TYPE::NINJA);
 			}
 		}
 	}
