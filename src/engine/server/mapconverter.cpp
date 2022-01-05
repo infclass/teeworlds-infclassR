@@ -259,6 +259,24 @@ CMapConverter::~CMapConverter()
 		delete[] m_pTiles;
 }
 
+// Work with 'long long' to properly handle overflows (later)
+static inline long long gcd_long(long long a, long long b)
+{
+	while(b != 0)
+	{
+		long long c = a % b;
+		a = b;
+		b = c;
+	}
+	return a;
+}
+
+// Function to return LCM of two numbers
+static inline long long lcm(long long a, long long b)
+{
+	return (a / gcd_long(a, b)) * b;
+}
+
 bool CMapConverter::Load()
 {
 	m_AnimationCycle = 1;
@@ -349,7 +367,7 @@ bool CMapConverter::Load()
 				if(Duration)
 				{
 					dbg_msg("MapConverter", "Duration found: %d", Duration);
-					AnimationCircle *= Duration;
+					AnimationCircle = lcm(AnimationCircle, Duration);
 					dbg_msg("MapConverter", "New AnimationCycle: %lld", AnimationCircle);
 				}
 			}
