@@ -618,11 +618,6 @@ bool CInfClassCharacter::TakeDamage(vec2 Force, float FloatDmg, int From, DAMAGE
 
 	m_Core.m_Vel += Force;
 
-	if(m_Health <= 0)
-	{
-		return false;
-	}
-
 	if(GetPlayerClass() == PLAYERCLASS_GHOUL)
 	{
 		int DamageAccepted = 0;
@@ -679,6 +674,11 @@ bool CInfClassCharacter::TakeDamage(vec2 Force, float FloatDmg, int From, DAMAGE
 			Dmg = maximum(1, Dmg/2);
 		else
 			return false;
+	}
+
+	if(m_Health <= 0)
+	{
+		return false;
 	}
 
 	m_DamageTaken++;
