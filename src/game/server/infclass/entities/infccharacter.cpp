@@ -585,6 +585,10 @@ bool CInfClassCharacter::TakeDamage(vec2 Force, float FloatDmg, int From, DAMAGE
 	{
 		Dmg = 0;
 		Mode = TAKEDAMAGEMODE::NOINFECTION;
+		if(!IsZombie())
+		{
+			Force *= 0.1;
+		}
 
 		GameContext()->SendEmoticon(pKillerChar->GetCID(), EMOTICON_HEARTS);
 	}
