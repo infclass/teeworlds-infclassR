@@ -332,7 +332,7 @@ void CGrowingExplosion::Tick()
 				}
 				case GROWING_EXPLOSION_EFFECT::LOVE_INFECTED:
 				{
-					p->LoveEffect();
+					p->LoveEffect(5);
 					GameServer()->SendEmoticon(p->GetCID(), EMOTICON_HEARTS);
 					m_Hit[p->GetCID()] = true;
 					break;

@@ -1152,10 +1152,10 @@ bool CCharacter::IsInLove() const
 	return m_LoveTick > 0;
 }
 
-void CCharacter::LoveEffect()
+void CCharacter::LoveEffect(float Time)
 {
 	if(m_LoveTick <= 0)
-		m_LoveTick = Server()->TickSpeed()*5;
+		m_LoveTick = Server()->TickSpeed() * Time;
 }
 
 void CCharacter::HallucinationEffect()

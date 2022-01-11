@@ -235,7 +235,7 @@ public:
 	void Unfreeze();
 	virtual void TryUnfreeze() = 0;
 	bool IsInLove() const;
-	void LoveEffect();
+	void LoveEffect(float Time);
 	void HallucinationEffect();
 	void SlipperyEffect();
 	int GetInfWeaponID(int WID) const;
