@@ -1,3 +1,14 @@
+InfclassR v1.4.0_alpha3
+- HAPPY is now the default emote for lovers
+- Early infected now fall in love
+
+InfclassR v1.4.0_alpha2
+- Fixed boomer explosion effect on freezed undeads
+- Fixed ninja katana collisions on higher speeds
+- Adjusted the Mercenary help page
+- Class help pages now have shortcuts
+- Fixed force not applied to freezed undeads
+
 InfclassR v1.4.0_alpha1
 - Added self-kill protection for humans
 - Implemented kill assistance (custom client)
