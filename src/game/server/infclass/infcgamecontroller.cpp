@@ -1549,7 +1549,7 @@ void CInfClassGameController::TickInfectionStarted()
 			while(Iter.Next())
 			{
 				CInfClassPlayer *pPlayer = Iter.Player();
-				if(pPlayer->IsZombie())
+				if(pPlayer->IsZombie() || pPlayer->IsInfectionStarted())
 					continue;
 
 				if(random < InfectionProb)
@@ -1573,6 +1573,21 @@ void CInfClassGameController::TickInfectionStarted()
 				{
 					random -= InfectionProb;
 				}
+			}
+		}
+	}
+
+	if(StartInfectionTrigger)
+	{
+		Iter.Reset();
+		while(Iter.Next())
+		{
+			CInfClassPlayer *pPlayer = Iter.Player();
+			if(pPlayer->IsZombie() || pPlayer->IsInfectionStarted())
+			{
+				pPlayer->KillCharacter(); // Infect the player
+				pPlayer->m_DieTick = m_RoundStartTick;
+				continue;
 			}
 		}
 	}
