@@ -1,8 +1,15 @@
 InfclassR v1.4.0_alpha3
-- HAPPY is now the default emote for lovers
+- Poison effect now can be replenished
+- The 'lovers' now apply less force on humans
+- The 'lovers' can't hook humans anymore
+- Early infected now reliably killed on round start
 - Early infected now fall in love
+- HAPPY is now the default emote for lovers
 
 InfclassR v1.4.0_alpha2
+- Boomer camera now follows BFed target (infc client)
+- Added FORCED_TO_SPECTATE camera mode (infc client)
+- Implemented infc structs info (infc client)
 - Fixed boomer explosion effect on freezed undeads
 - Fixed ninja katana collisions on higher speeds
 - Adjusted the Mercenary help page
