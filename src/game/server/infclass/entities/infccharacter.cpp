@@ -585,6 +585,8 @@ bool CInfClassCharacter::TakeDamage(vec2 Force, float FloatDmg, int From, DAMAGE
 	{
 		Dmg = 0;
 		Mode = TAKEDAMAGEMODE::NOINFECTION;
+
+		GameContext()->SendEmoticon(pKillerChar->GetCID(), EMOTICON_HEARTS);
 	}
 
 	if((GetPlayerClass() == PLAYERCLASS_HUNTER) && (DamageType == DAMAGE_TYPE::MEDIC_SHOTGUN))
