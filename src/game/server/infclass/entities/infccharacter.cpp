@@ -972,7 +972,7 @@ void CInfClassCharacter::GetActualKillers(int GivenKiller, DAMAGE_TYPE GivenWeap
 		}
 	}
 
-	if(IsInSlowMotion())
+	if(IsInSlowMotion() && (m_SlowEffectApplicant >= 0))
 	{
 		AddAssistant(m_SlowEffectApplicant);
 	}
