@@ -266,6 +266,11 @@ void CInfClassPlayer::StartInfection(bool force, CPlayer *pInfectiousPlayer)
 	m_InfectiousPlayerCID = pInfectiousPlayer ? pInfectiousPlayer->GetCID() : -1;
 }
 
+bool CInfClassPlayer::IsInfectionStarted() const
+{
+	return m_DoInfection != DO_INFECTION::NO;
+}
+
 void CInfClassPlayer::OpenMapMenu(int Menu)
 {
 	m_MapMenu = Menu;

@@ -46,6 +46,7 @@ public:
 
 	void Infect(CPlayer* pInfectiousPlayer);
 	void StartInfection(bool force = false, CPlayer* pInfectiousPlayer = nullptr);
+	bool IsInfectionStarted() const;
 
 	int MapMenu() const { return (m_Team != TEAM_SPECTATORS) ? m_MapMenu : 0; }
 	void OpenMapMenu(int Menu);
