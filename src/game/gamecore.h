@@ -234,6 +234,7 @@ public:
 	int m_HookedPlayer;
 	bool m_HookProtected;
 	bool m_Infected;
+	bool m_InLove;
 	// InfClassR
 	static const float PassengerYOffset;
 	CCharacterCore* m_Passenger;

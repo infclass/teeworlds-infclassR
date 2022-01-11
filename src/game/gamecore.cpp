@@ -239,6 +239,8 @@ void CCharacterCore::Tick(bool UseInput, CParams* pParams)
 					continue;
 				if(!pCharCore || pCharCore == this || (pCharCore->m_HookProtected && (m_Infected == pCharCore->m_Infected)) || m_IsPassenger || m_Passenger == pCharCore)
 					continue;
+				if(m_InLove)
+					continue;
 
 				vec2 ClosestPoint = closest_point_on_line(m_HookPos, NewPos, pCharCore->m_Pos);
 				if(distance(pCharCore->m_Pos, ClosestPoint) < PhysicalSize+2.0f)
