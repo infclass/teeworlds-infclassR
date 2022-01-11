@@ -105,6 +105,8 @@ void CInfClassGameController::OnPlayerInfected(CInfClassPlayer *pPlayer, CInfCla
 	int c = ChooseInfectedClass(pPlayer);
 	pPlayer->SetClass(c);
 
+	FallInLoveIfInfectedEarly(pPlayer->GetCharacter());
+
 	if(!pInfectiousPlayer)
 	{
 		if(pPlayer->GetCharacter() && pPlayer->GetCharacter()->IsAlive())
@@ -1787,6 +1789,21 @@ void CInfClassGameController::SnapMapMenu(int SnappingClient, CNetObj_GameInfo *
 	pGameInfoObj->m_TimeLimit += (TimeShift/Server()->TickSpeed())/60;
 }
 
+void CInfClassGameController::FallInLoveIfInfectedEarly(CInfClassCharacter *pCharacter)
+{
+	if(!pCharacter)
+		return;
+
+	if(IsInfectionStarted())
+		return;
+
+	const int WarmupDuration = 10;
+	const int RemainingTicks = m_RoundStartTick + Server()->TickSpeed() * WarmupDuration - Server()->Tick();
+	float LoveDuration = RemainingTicks / static_cast<float>(Server()->TickSpeed()) + 0.25;
+
+	pCharacter->LoveEffect(LoveDuration);
+}
+
 void CInfClassGameController::RewardTheKiller(CInfClassCharacter *pVictim, CInfClassPlayer *pKiller, int Weapon)
 {
 	// do scoreing
@@ -1981,6 +1998,8 @@ void CInfClassGameController::OnCharacterSpawned(CInfClassCharacter *pCharacter)
 
 	if(pCharacter->IsZombie())
 	{
+		FallInLoveIfInfectedEarly(pCharacter);
+
 		if((GetMinimumInfected() == 1) && (GameServer()->GetZombieCount() == 1))
 		{
 			pCharacter->GiveLonelyZombieBonus();

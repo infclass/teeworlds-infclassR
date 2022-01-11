@@ -132,6 +132,7 @@ private:
 
 	void MaybeSuggestMoreRounds();
 	void SnapMapMenu(int SnappingClient, CNetObj_GameInfo *pGameInfoObj);
+	void FallInLoveIfInfectedEarly(CInfClassCharacter *pCharacter);
 	void RewardTheKiller(CInfClassCharacter *pVictim, CInfClassPlayer *pKiller, int Weapon);
 	bool IsSpawnable(vec2 Pos, int TeleZoneIndex) override;
 	void GetPlayerCounter(int ClientException, int& NumHumans, int& NumInfected);
