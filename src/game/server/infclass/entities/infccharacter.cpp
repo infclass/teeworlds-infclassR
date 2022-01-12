@@ -2447,6 +2447,9 @@ void CInfClassCharacter::FireSoldierBomb()
 
 void CInfClassCharacter::PlaceSlugSlime(WeaponFireContext *pFireContext)
 {
+	if(IsInLove())
+		return;
+
 	vec2 CheckPos = GetPos() + GetDirection() * 64.0f;
 	if(GameServer()->Collision()->IntersectLine(GetPos(), CheckPos, 0x0, &CheckPos))
 	{
