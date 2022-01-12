@@ -1809,50 +1809,13 @@ void CInfClassCharacter::OnMercGrenadeFired(WeaponFireContext *pFireContext)
 
 void CInfClassCharacter::OnMedicGrenadeFired(WeaponFireContext *pFireContext)
 {
-	float BaseAngle = GetAngle(GetDirection());
-
-	//Find bomb
-	bool BombFound = false;
-	for(CMedicGrenade *pGrenade = (CMedicGrenade*) GameWorld()->FindFirst(CGameWorld::ENTTYPE_MEDIC_GRENADE); pGrenade; pGrenade = (CMedicGrenade*) pGrenade->TypeNext())
-	{
-		if(pGrenade->GetOwner() != GetCID()) continue;
-		pGrenade->Explode();
-		BombFound = true;
-	}
-
-	if(BombFound)
-	{
-		pFireContext->AmmoConsumed = 0;
-		pFireContext->NoAmmo = false;
-		return;
-	}
-
 	if(pFireContext->NoAmmo)
 		return;
 
-	int ShotSpread = 0;
-
-	CMsgPacker Msg(NETMSGTYPE_SV_EXTRAPROJECTILE);
-	Msg.AddInt(ShotSpread*2+1);
-
-	for(int i = -ShotSpread; i <= ShotSpread; ++i)
-	{
-		float a = BaseAngle + random_float()/5.0f;
-
-		CMedicGrenade *pProj = new CMedicGrenade(GameServer(), GetCID(), GetPos(), vec2(cosf(a), sinf(a)));
-
-		// pack the Projectile and send it to the client Directly
-		CNetObj_Projectile p;
-		pProj->FillInfo(&p);
-
-		for(unsigned i = 0; i < sizeof(CNetObj_Projectile)/sizeof(int); i++)
-			Msg.AddInt(((int *)&p)[i]);
-		Server()->SendMsg(&Msg, MSGFLAG_VITAL, GetCID());
-	}
+	int HealingExplosionRadius = 4;
+	new CGrowingExplosion(GameServer(), GetPos(), GetDirection(), GetCID(), HealingExplosionRadius, GROWING_EXPLOSION_EFFECT::HEAL_HUMANS);
 
 	GameServer()->CreateSound(GetPos(), SOUND_GRENADE_FIRE);
-
-	m_ReloadTimer = Server()->TickSpeed()/4;
 }
 
 void CInfClassCharacter::OnBiologistLaserFired(WeaponFireContext *pFireContext)

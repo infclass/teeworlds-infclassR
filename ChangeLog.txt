@@ -1,4 +1,6 @@
 InfclassR v1.4.0_alpha3
+- Medic grenade launcher now creates the healing
+  explosion right away
 - Bypass inf zone emotions for invisible ghosts
 - Slug in love now can't place a slime
 - Poison effect now can be replenished
