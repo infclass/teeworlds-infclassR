@@ -1447,6 +1447,11 @@ void CInfClassCharacter::OnHammerFired(WeaponFireContext *pFireContext)
 			}
 		}
 
+		if(!ShowAttackAnimation)
+		{
+			pFireContext->FireAccepted = false;
+		}
+
 		// if we Hit anything, we have to wait for the reload
 		if(Hits)
 		{
@@ -1454,45 +1459,13 @@ void CInfClassCharacter::OnHammerFired(WeaponFireContext *pFireContext)
 		}
 		else if(GetPlayerClass() == PLAYERCLASS_SLUG)
 		{
-			vec2 CheckPos = GetPos() + Direction * 64.0f;
-			if(GameServer()->Collision()->IntersectLine(GetPos(), CheckPos, 0x0, &CheckPos))
-			{
-				static const float MinDistance = 84.0f;
-				float DistanceToTheNearestSlime = MinDistance * 2;
-				for(CSlugSlime* pSlime = (CSlugSlime*) GameWorld()->FindFirst(CGameWorld::ENTTYPE_SLUG_SLIME); pSlime; pSlime = (CSlugSlime*) pSlime->TypeNext())
-				{
-					const float d = distance(pSlime->GetPos(), GetPos());
-					if(d < DistanceToTheNearestSlime)
-					{
-						DistanceToTheNearestSlime = d;
-					}
-					if (d <= MinDistance / 2)
-					{
-						// Replenish the slime
-						if(pSlime->GetMaxLifeSpan() - pSlime->GetLifeSpan() > Server()->TickSpeed())
-						{
-							pSlime->Replenish(GetCID());
-							ShowAttackAnimation = true;
-							break;
-						}
-					}
-				}
-
-				if(DistanceToTheNearestSlime > MinDistance)
-				{
-					ShowAttackAnimation = true;
-					new CSlugSlime(GameServer(), CheckPos, GetCID());
-				}
-			}
+			PlaceSlugSlime(pFireContext);
 		}
 
-		if(!ShowAttackAnimation)
+		if(pFireContext->FireAccepted)
 		{
-			pFireContext->FireAccepted = false;
-			return;
+			GameServer()->CreateSound(GetPos(), SOUND_HAMMER_FIRE);
 		}
-
-		GameServer()->CreateSound(GetPos(), SOUND_HAMMER_FIRE);
 	}
 }
 
@@ -2470,6 +2443,40 @@ void CInfClassCharacter::FireSoldierBomb()
 
 	new CSoldierBomb(GameServer(), ProjStartPos, GetCID());
 	GameServer()->CreateSound(GetPos(), SOUND_GRENADE_FIRE);
+}
+
+void CInfClassCharacter::PlaceSlugSlime(WeaponFireContext *pFireContext)
+{
+	vec2 CheckPos = GetPos() + GetDirection() * 64.0f;
+	if(GameServer()->Collision()->IntersectLine(GetPos(), CheckPos, 0x0, &CheckPos))
+	{
+		static const float MinDistance = 84.0f;
+		float DistanceToTheNearestSlime = MinDistance * 2;
+		for(CSlugSlime* pSlime = (CSlugSlime*) GameWorld()->FindFirst(CGameWorld::ENTTYPE_SLUG_SLIME); pSlime; pSlime = (CSlugSlime*) pSlime->TypeNext())
+		{
+			const float d = distance(pSlime->GetPos(), GetPos());
+			if(d < DistanceToTheNearestSlime)
+			{
+				DistanceToTheNearestSlime = d;
+			}
+			if (d <= MinDistance / 2)
+			{
+				// Replenish the slime
+				if(pSlime->GetMaxLifeSpan() - pSlime->GetLifeSpan() > Server()->TickSpeed())
+				{
+					pSlime->Replenish(GetCID());
+					pFireContext->FireAccepted = true;
+					break;
+				}
+			}
+		}
+
+		if(DistanceToTheNearestSlime > MinDistance)
+		{
+			new CSlugSlime(GameServer(), CheckPos, GetCID());
+			pFireContext->FireAccepted = true;
+		}
+	}
 }
 
 void CInfClassCharacter::GiveGift(int GiftType)

@@ -145,6 +145,7 @@ public:
 
 	void CheckSuperWeaponAccess();
 	void FireSoldierBomb();
+	void PlaceSlugSlime(WeaponFireContext *pFireContext);
 
 	void GiveGift(int GiftType);
 	void GiveRandomClassSelectionBonus();
