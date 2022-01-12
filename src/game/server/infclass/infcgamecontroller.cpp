@@ -1669,6 +1669,15 @@ bool CInfClassGameController::MercBombsEnabled() const
 	return GetRoundType() != ROUND_TYPE::FUN;
 }
 
+float CInfClassGameController::GetTimeLimit() const
+{
+	switch(GetRoundType())
+	{
+	default:
+		return Config()->m_SvTimelimit;
+	}
+}
+
 int CInfClassGameController::GetTargetToKill() const
 {
 	return m_TargetToKill;
@@ -1704,7 +1713,7 @@ void CInfClassGameController::Snap(int SnappingClient)
 	pGameInfoObj->m_WarmupTimer = m_Warmup;
 
 	pGameInfoObj->m_ScoreLimit = g_Config.m_SvScorelimit;
-	pGameInfoObj->m_TimeLimit = g_Config.m_SvTimelimit;
+	pGameInfoObj->m_TimeLimit = GetTimeLimit();
 
 	pGameInfoObj->m_RoundNum = (str_length(g_Config.m_SvMaprotation) && g_Config.m_SvRoundsPerMap) ? g_Config.m_SvRoundsPerMap : 0;
 	pGameInfoObj->m_RoundCurrent = m_RoundCount+1;
@@ -2071,7 +2080,7 @@ void CInfClassGameController::DoWincheck()
 	}
 
 	//Start the final explosion if the time is over
-	if(m_InfectedStarted && !m_ExplosionStarted && g_Config.m_SvTimelimit > 0 && Seconds >= g_Config.m_SvTimelimit*60)
+	if(m_InfectedStarted && !m_ExplosionStarted && GetTimeLimit() > 0 && Seconds >= GetTimeLimit() * 60)
 	{
 		for(CInfClassCharacter *p = (CInfClassCharacter*) GameServer()->m_World.FindFirst(CGameWorld::ENTTYPE_CHARACTER); p; p = (CInfClassCharacter *)p->TypeNext())
 		{

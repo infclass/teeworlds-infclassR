@@ -88,6 +88,8 @@ public:
 	bool AreTurretsEnabled() const;
 	bool MercBombsEnabled() const;
 
+	float GetTimeLimit() const;
+
 	int GetTargetToKill() const;
 	void TargetKilled();
 	void EnableTargetToKill() { m_TargetToKill = (m_TargetToKill < 0 ? -1 : m_TargetToKill); }
