@@ -2111,25 +2111,6 @@ void CInfClassCharacter::Die(int Killer, DAMAGE_TYPE DamageType)
 	m_pPlayer->m_RespawnTick = Server()->Tick()+Server()->TickSpeed()/2;
 	GameController()->OnCharacterDeath(this, DamageType, Killer, Assistant);
 
-	bool SelfKill = false;
-	switch (DamageType)
-	{
-	case DAMAGE_TYPE::TURRET_DESTRUCTION:
-	case DAMAGE_TYPE::DEATH_TILE:
-	case DAMAGE_TYPE::KILL_COMMAND:
-		SelfKill = true;
-		break;
-	default:
-		SelfKill = Killer == GetCID();
-		break;
-	}
-
-	if(SelfKill)
-	{
-		// Wait 3.0 secs in a case of selfkill
-		m_pPlayer->m_RespawnTick = Server()->Tick()+Server()->TickSpeed()*3.0f;
-	}
-
 	// a nice sound
 	GameServer()->CreateSound(GetPos(), SOUND_PLAYER_DIE);
 

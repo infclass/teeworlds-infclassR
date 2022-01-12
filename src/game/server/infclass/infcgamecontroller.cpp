@@ -2024,6 +2024,32 @@ void CInfClassGameController::OnCharacterDeath(CInfClassCharacter *pVictim, DAMA
 		}
 	}
 	pVictim->GetPlayer()->StartInfection(ForceInfection, pKiller);
+
+	bool SelfKill = false;
+	switch (DamageType)
+	{
+	case DAMAGE_TYPE::TURRET_DESTRUCTION:
+	case DAMAGE_TYPE::DEATH_TILE:
+	case DAMAGE_TYPE::KILL_COMMAND:
+		SelfKill = true;
+		break;
+	default:
+		SelfKill = Killer == pVictim->GetCID();
+		break;
+	}
+
+	int RespawnDelay = 0;
+	if(SelfKill)
+	{
+		// Wait 3.0 secs in a case of selfkill
+		RespawnDelay = Server()->TickSpeed() * 3.0f;
+	}
+	else
+	{
+		RespawnDelay = Server()->TickSpeed() * 0.5f;
+	}
+
+	pVictim->GetPlayer()->m_RespawnTick = Server()->Tick() + RespawnDelay;
 }
 
 void CInfClassGameController::OnCharacterSpawned(CInfClassCharacter *pCharacter)
