@@ -741,7 +741,7 @@ foreach(PO_LANG ${PO_LANGS})
   set(PO_LANG_FILE "${CMAKE_CURRENT_SOURCE_DIR}/other/po/${PO_LANG}/infclass.po")
   add_custom_command(
     TARGET dev-update-po-files
-    BYPRODUCTS ${PO_LANG_FILE}
+    # BYPRODUCTS ${PO_LANG_FILE}
     COMMAND ${GETTEXT_MSGMERGE_EXECUTABLE} --sort-output --update --backup=off --width=200 ${PO_LANG_FILE} ${PO_TEMPlATE}
     WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
     DEPENDS ${PO_TEMPlATE}
