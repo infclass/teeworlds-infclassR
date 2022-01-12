@@ -148,7 +148,7 @@ void CInfClassGameController::OnPlayerInfected(CInfClassPlayer *pPlayer, CInfCla
 				"VictimName", Server()->ClientName(pPlayer->GetCID()),
 				nullptr);
 			Server()->RoundStatistics()->OnScoreEvent(InfectedByCID, SCOREEVENT_INFECTION,
-				pInfectiousPlayer->GetClass(), Server()->ClientName(InfectedByCID), GameServer()->Console());
+				pInfectiousPlayer->GetClass(), Server()->ClientName(InfectedByCID), Console());
 			GameServer()->SendScoreSound(InfectedByCID);
 		}
 	}
@@ -162,7 +162,7 @@ void CInfClassGameController::OnPlayerInfected(CInfClassPlayer *pPlayer, CInfCla
 			pHook->GetCID() != InfectedByCID
 		)
 		{
-			Server()->RoundStatistics()->OnScoreEvent(pHook->GetCID(), SCOREEVENT_HELP_HOOK_INFECTION, pHook->GetPlayerClass(), Server()->ClientName(pHook->GetCID()), GameServer()->Console());
+			Server()->RoundStatistics()->OnScoreEvent(pHook->GetCID(), SCOREEVENT_HELP_HOOK_INFECTION, pHook->GetPlayerClass(), Server()->ClientName(pHook->GetCID()), Console());
 			GameServer()->SendScoreSound(pHook->GetCID());
 		}
 	}
@@ -928,7 +928,7 @@ bool CInfClassGameController::ConSetClass(IConsole::IResult *pResult)
 		return true;
 	}
 
-	GameServer()->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "inf_set_class", "Unknown class");
+	Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "inf_set_class", "Unknown class");
 	return true;
 }
 
@@ -944,7 +944,7 @@ bool CInfClassGameController::ChatWitch(IConsole::IResult *pResult)
 	const int REQUIRED_CALLERS_COUNT = 5;
 	const int MIN_ZOMBIES = 2;
 
-	GameServer()->Console()->Print(IConsole::OUTPUT_LEVEL_DEBUG, "conwitch", "ChatWitch() called");
+	Console()->Print(IConsole::OUTPUT_LEVEL_DEBUG, "conwitch", "ChatWitch() called");
 
 	if(GameServer()->GetZombieCount(PLAYERCLASS_WITCH) >= GetClassPlayerLimit(PLAYERCLASS_WITCH))
 	{
@@ -1021,7 +1021,7 @@ bool CInfClassGameController::ChatWitch(IConsole::IResult *pResult)
 	return true;
 }
 
-IConsole *CInfClassGameController::Console()
+IConsole *CInfClassGameController::Console() const
 {
 	return GameServer()->Console();
 }
@@ -1358,7 +1358,7 @@ int CInfClassGameController::RandomZombieToWitch()
 
 	if(zombies_id.IsEmpty())
 	{
-		GameServer()->Console()->Print(IConsole::OUTPUT_LEVEL_DEBUG, "witch", "Unable to find any suitable player");
+		Console()->Print(IConsole::OUTPUT_LEVEL_DEBUG, "witch", "Unable to find any suitable player");
 		return -1;
 	}
 
@@ -1366,7 +1366,7 @@ int CInfClassGameController::RandomZombieToWitch()
 	char aBuf[512];
 	/* debug */
 	str_format(aBuf, sizeof(aBuf), "going through MAX_CLIENTS=%d, zombie_count=%d, random_int=%d, id=%d", MAX_CLIENTS, static_cast<int>(zombies_id.Size()), id, zombies_id[id]);
-	GameServer()->Console()->Print(IConsole::OUTPUT_LEVEL_DEBUG, "witch", aBuf);
+	Console()->Print(IConsole::OUTPUT_LEVEL_DEBUG, "witch", aBuf);
 	/* /debug */
 	GetPlayer(zombies_id[id])->SetClass(PLAYERCLASS_WITCH);
 	return zombies_id[id];
@@ -1852,7 +1852,7 @@ void CInfClassGameController::RewardTheKiller(CInfClassCharacter *pVictim, CInfC
 	{
 		if(pKiller == pVictim->GetPlayer())
 		{
-			Server()->RoundStatistics()->OnScoreEvent(pKiller->GetCID(), SCOREEVENT_HUMAN_SUICIDE, pKiller->GetClass(), Server()->ClientName(pKiller->GetCID()), GameServer()->Console());
+			Server()->RoundStatistics()->OnScoreEvent(pKiller->GetCID(), SCOREEVENT_HUMAN_SUICIDE, pKiller->GetClass(), Server()->ClientName(pKiller->GetCID()), Console());
 		}
 		else
 		{
@@ -1877,14 +1877,14 @@ void CInfClassGameController::RewardTheKiller(CInfClassCharacter *pVictim, CInfC
 					}
 				}
 
-				Server()->RoundStatistics()->OnScoreEvent(pKiller->GetCID(), ScoreEvent, pKiller->GetClass(), Server()->ClientName(pKiller->GetCID()), GameServer()->Console());
+				Server()->RoundStatistics()->OnScoreEvent(pKiller->GetCID(), ScoreEvent, pKiller->GetClass(), Server()->ClientName(pKiller->GetCID()), Console());
 				GameServer()->SendScoreSound(pKiller->GetCID());
 			}
 		
 			if(pKiller->GetClass() == PLAYERCLASS_NINJA && pVictim->GetCID() == GetTargetToKill())
 			{
 				GameServer()->SendChatTarget_Localization(pKiller->GetCID(), CHATCATEGORY_SCORE, _("You have eliminated your target, +2 points"), NULL);
-				Server()->RoundStatistics()->OnScoreEvent(pKiller->GetCID(), SCOREEVENT_KILL_TARGET, pKiller->GetClass(), Server()->ClientName(pKiller->GetCID()), GameServer()->Console());
+				Server()->RoundStatistics()->OnScoreEvent(pKiller->GetCID(), SCOREEVENT_KILL_TARGET, pKiller->GetClass(), Server()->ClientName(pKiller->GetCID()), Console());
 				TargetKilled();
 				
 				if(pKiller->GetCharacter())
@@ -1921,13 +1921,13 @@ void CInfClassGameController::OnCharacterDeath(CInfClassCharacter *pVictim, DAMA
 		{
 			if (pFreezer->GetClass() == PLAYERCLASS_NINJA)
 			{
-				Server()->RoundStatistics()->OnScoreEvent(pFreezer->GetCID(), SCOREEVENT_HELP_FREEZE, pFreezer->GetClass(), Server()->ClientName(pFreezer->GetCID()), GameServer()->Console());
+				Server()->RoundStatistics()->OnScoreEvent(pFreezer->GetCID(), SCOREEVENT_HELP_FREEZE, pFreezer->GetClass(), Server()->ClientName(pFreezer->GetCID()), Console());
 				GameServer()->SendScoreSound(pFreezer->GetCID());
 
 				if(pVictim->GetCID() == GetTargetToKill())
 				{
 					GameServer()->SendChatTarget_Localization(pFreezer->GetCID(), CHATCATEGORY_SCORE, _("You have eliminated your target, +2 points"), NULL);
-					Server()->RoundStatistics()->OnScoreEvent(pFreezer->GetCID(), SCOREEVENT_KILL_TARGET, pFreezer->GetClass(), Server()->ClientName(pFreezer->GetCID()), GameServer()->Console());
+					Server()->RoundStatistics()->OnScoreEvent(pFreezer->GetCID(), SCOREEVENT_KILL_TARGET, pFreezer->GetClass(), Server()->ClientName(pFreezer->GetCID()), Console());
 					TargetKilled();
 
 					if(pFreezer->GetCharacter())
@@ -1963,7 +1963,7 @@ void CInfClassGameController::OnCharacterDeath(CInfClassCharacter *pVictim, DAMA
 	str_format(aBuf, sizeof(aBuf), "kill killer='%s' victim='%s' weapon=%d",
 		Server()->ClientName(Killer),
 		Server()->ClientName(pVictim->GetCID()), Weapon);
-	GameServer()->Console()->Print(IConsole::OUTPUT_LEVEL_DEBUG, "game", aBuf);
+	Console()->Print(IConsole::OUTPUT_LEVEL_DEBUG, "game", aBuf);
 
 	SendKillMessage(pVictim->GetCID(), DamageType, Killer, Assistant);
 
@@ -2053,7 +2053,7 @@ void CInfClassGameController::DoWincheck()
 
 		char aBuf[512];
 		str_format(aBuf, sizeof(aBuf), "round_end winner='zombies' survivors='0' duration='%d' round='%d of %d' type='%s'", Seconds, m_RoundCount+1, g_Config.m_SvRoundsPerMap, RoundType);
-		GameServer()->Console()->Print(IConsole::OUTPUT_LEVEL_DEBUG, "game", aBuf);
+		Console()->Print(IConsole::OUTPUT_LEVEL_DEBUG, "game", aBuf);
 
 		EndRound();
 	}
@@ -2145,7 +2145,7 @@ void CInfClassGameController::DoWincheck()
 
 				char aBuf[512];
 				str_format(aBuf, sizeof(aBuf), "round_end winner='humans' survivors='%d' duration='%d' round='%d of %d' type='%s'", NumHumans, Seconds, m_RoundCount+1, g_Config.m_SvRoundsPerMap, RoundType);
-				GameServer()->Console()->Print(IConsole::OUTPUT_LEVEL_DEBUG, "game", aBuf);
+				Console()->Print(IConsole::OUTPUT_LEVEL_DEBUG, "game", aBuf);
 
 					CInfClassPlayerIterator<PLAYERITER_INGAME> Iter(GameServer()->m_apPlayers);
 				while(Iter.Next())
@@ -2153,7 +2153,7 @@ void CInfClassGameController::DoWincheck()
 					if(Iter.Player()->IsHuman())
 					{
 						//TAG_SCORE
-						Server()->RoundStatistics()->OnScoreEvent(Iter.ClientID(), SCOREEVENT_HUMAN_SURVIVE, Iter.Player()->GetClass(), Server()->ClientName(Iter.ClientID()), GameServer()->Console());
+						Server()->RoundStatistics()->OnScoreEvent(Iter.ClientID(), SCOREEVENT_HUMAN_SURVIVE, Iter.Player()->GetClass(), Server()->ClientName(Iter.ClientID()), Console());
 						Server()->RoundStatistics()->SetPlayerAsWinner(Iter.ClientID());
 						GameServer()->SendScoreSound(Iter.ClientID());
 						Iter.Player()->m_WinAsHuman++;
@@ -2161,7 +2161,7 @@ void CInfClassGameController::DoWincheck()
 						GameServer()->SendChatTarget_Localization(Iter.ClientID(), CHATCATEGORY_SCORE, _("You have survived, +5 points"), NULL);
 							char aBuf[256];
 						str_format(aBuf, sizeof(aBuf), "survived player='%s'", Server()->ClientName(Iter.ClientID()));
-						GameServer()->Console()->Print(IConsole::OUTPUT_LEVEL_DEBUG, "game", aBuf);
+						Console()->Print(IConsole::OUTPUT_LEVEL_DEBUG, "game", aBuf);
 						}
 				}
 			}
@@ -2250,7 +2250,7 @@ bool CInfClassGameController::TryRespawn(CInfClassPlayer *pPlayer, SpawnContext 
 
 	if(m_SpawnPoints[Type].size() == 0)
 	{
-		GameServer()->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "Server", "The map has no spawn points");
+		Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "Server", "The map has no spawn points");
 		return false;
 	}
 
@@ -2386,7 +2386,7 @@ int CInfClassGameController::ChooseInfectedClass(const CPlayer *pPlayer) const
 	char aBuf[256];
 	str_format(aBuf, sizeof(aBuf), "infected victim='%s' duration='%d' class='%d'", 
 		Server()->ClientName(pPlayer->GetCID()), Seconds, Class);
-	GameServer()->Console()->Print(IConsole::OUTPUT_LEVEL_DEBUG, "game", aBuf);
+	Console()->Print(IConsole::OUTPUT_LEVEL_DEBUG, "game", aBuf);
 
 	return Class;
 }
@@ -2473,7 +2473,7 @@ int CInfClassGameController::GetPlayerClassProbability(int PlayerClass) const
 		case PLAYERCLASS_UNDEAD:
 			return g_Config.m_InfProbaUndead;
 		default:
-			GameServer()->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "server", "WARNING: Invalid GetPlayerClassProbability() call");
+			Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "server", "WARNING: Invalid GetPlayerClassProbability() call");
 			return false;
 	}
 }

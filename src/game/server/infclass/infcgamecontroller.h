@@ -110,7 +110,7 @@ public:
 
 	using IGameController::GameServer;
 	CGameWorld *GameWorld();
-	IConsole *Console();
+	IConsole *Console() const;
 	CInfClassPlayer *GetPlayer(int ClientID) const;
 	CInfClassCharacter *GetCharacter(int ClientID) const;
 	int GetPlayerOwnCursorID(int ClientID) const;
