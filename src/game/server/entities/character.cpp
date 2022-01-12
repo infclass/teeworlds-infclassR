@@ -487,7 +487,10 @@ void CCharacter::Tick()
 		// Player left spawn before protection ran out
 		if(m_InfZoneTick == -1)
 		{
-			SetEmote(EMOTE_NORMAL, Server()->Tick() + Server()->TickSpeed());
+			if(!m_IsInvisible)
+			{
+				SetEmote(EMOTE_NORMAL, Server()->Tick() + Server()->TickSpeed());
+			}
 			m_ProtectionTick = 0;
 		}
 	}
