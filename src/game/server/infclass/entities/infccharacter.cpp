@@ -520,6 +520,17 @@ void CInfClassCharacter::FireWeapon()
 
 	OnWeaponFired(&FireContext);
 
+	if(IsInLove() && FireContext.FireAccepted)
+	{
+		const int LastEmoteTick = GetPlayer()->m_LastEmote;
+		const int EmoteDuration = 3;
+		if(!LastEmoteTick || (Server()->Tick() > LastEmoteTick + Server()->TickSpeed() * EmoteDuration))
+		{
+			GetPlayer()->m_LastEmote = Server()->Tick();
+			GameContext()->SendEmoticon(GetCID(), EMOTICON_HEARTS);
+		}
+	}
+
 	if(FireContext.NoAmmo)
 	{
 		NoAmmo();
@@ -589,8 +600,6 @@ bool CInfClassCharacter::TakeDamage(vec2 Force, float FloatDmg, int From, DAMAGE
 		{
 			Force *= 0.1;
 		}
-
-		GameContext()->SendEmoticon(pKillerChar->GetCID(), EMOTICON_HEARTS);
 	}
 
 	if((GetPlayerClass() == PLAYERCLASS_HUNTER) && (DamageType == DAMAGE_TYPE::MEDIC_SHOTGUN))
