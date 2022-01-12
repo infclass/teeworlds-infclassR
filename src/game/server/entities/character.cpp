@@ -13,22 +13,7 @@
 #include "character.h"
 #include "projectile.h"
 
-#include <game/server/infclass/entities/biologist-mine.h>
-#include <game/server/infclass/entities/engineer-wall.h>
-#include <game/server/infclass/entities/growingexplosion.h>
 #include <game/server/infclass/entities/hero-flag.h>
-#include <game/server/infclass/entities/infc-laser.h>
-#include <game/server/infclass/entities/looper-wall.h>
-#include <game/server/infclass/entities/medic-grenade.h>
-#include <game/server/infclass/entities/merc-bomb.h>
-#include <game/server/infclass/entities/plasma.h>
-#include <game/server/infclass/entities/scatter-grenade.h>
-#include <game/server/infclass/entities/scientist-mine.h>
-#include <game/server/infclass/entities/slug-slime.h>
-#include <game/server/infclass/entities/soldier-bomb.h>
-#include <game/server/infclass/entities/superweapon-indicator.h>
-#include <game/server/infclass/entities/turret.h>
-#include <game/server/infclass/entities/white-hole.h>
 
 MACRO_ALLOC_POOL_ID_IMPL(CCharacter, MAX_CLIENTS)
 
@@ -1019,86 +1004,34 @@ void CCharacter::DestroyChildEntities()
 	m_NinjaVelocityBuff = 0;
 	m_NinjaStrengthBuff = 0;
 	m_NinjaAmmoBuff = 0;
-	
-	for(CProjectile *pProjectile = (CProjectile*) GameWorld()->FindFirst(CGameWorld::ENTTYPE_PROJECTILE); pProjectile; pProjectile = (CProjectile*) pProjectile->TypeNext())
-	{
-		if(pProjectile->GetOwner() != m_pPlayer->GetCID()) continue;
-			GameServer()->m_World.DestroyEntity(pProjectile);
-	}
-	for(CEngineerWall *pWall = (CEngineerWall*) GameWorld()->FindFirst(CGameWorld::ENTTYPE_ENGINEER_WALL); pWall; pWall = (CEngineerWall*) pWall->TypeNext())
-	{
-		if(pWall->GetOwner() != m_pPlayer->GetCID()) continue;
-			GameServer()->m_World.DestroyEntity(pWall);
-	}
-	for(CLooperWall *pWall = (CLooperWall*) GameWorld()->FindFirst(CGameWorld::ENTTYPE_LOOPER_WALL); pWall; pWall = (CLooperWall*) pWall->TypeNext())
-	{
-		if(pWall->GetOwner() != m_pPlayer->GetCID()) continue;
-			GameServer()->m_World.DestroyEntity(pWall);
-	}
-	for(CSoldierBomb *pBomb = (CSoldierBomb*) GameWorld()->FindFirst(CGameWorld::ENTTYPE_SOLDIER_BOMB); pBomb; pBomb = (CSoldierBomb*) pBomb->TypeNext())
-	{
-		if(pBomb->GetOwner() != m_pPlayer->GetCID()) continue;
-			GameServer()->m_World.DestroyEntity(pBomb);
-	}
-	for(CScatterGrenade* pGrenade = (CScatterGrenade*) GameWorld()->FindFirst(CGameWorld::ENTTYPE_SCATTER_GRENADE); pGrenade; pGrenade = (CScatterGrenade*) pGrenade->TypeNext())
-	{
-		if(pGrenade->GetOwner() != m_pPlayer->GetCID()) continue;
-			GameServer()->m_World.DestroyEntity(pGrenade);
-	}
-	for(CMedicGrenade* pGrenade = (CMedicGrenade*) GameWorld()->FindFirst(CGameWorld::ENTTYPE_MEDIC_GRENADE); pGrenade; pGrenade = (CMedicGrenade*) pGrenade->TypeNext())
-	{
-		if(pGrenade->GetOwner() != m_pPlayer->GetCID()) continue;
-			GameServer()->m_World.DestroyEntity(pGrenade);
-	}
-	for(CMercenaryBomb *pBomb = (CMercenaryBomb*) GameWorld()->FindFirst(CGameWorld::ENTTYPE_MERCENARY_BOMB); pBomb; pBomb = (CMercenaryBomb*) pBomb->TypeNext())
-	{
-		if(pBomb->GetOwner() != m_pPlayer->GetCID()) continue;
-			GameServer()->m_World.DestroyEntity(pBomb);
-	}
-	for(CScientistMine* pMine = (CScientistMine*) GameWorld()->FindFirst(CGameWorld::ENTTYPE_SCIENTIST_MINE); pMine; pMine = (CScientistMine*) pMine->TypeNext())
-	{
-		if(pMine->GetOwner() != m_pPlayer->GetCID()) continue;
-			GameServer()->m_World.DestroyEntity(pMine);
-	}
-	for(CBiologistMine* pMine = (CBiologistMine*) GameWorld()->FindFirst(CGameWorld::ENTTYPE_BIOLOGIST_MINE); pMine; pMine = (CBiologistMine*) pMine->TypeNext())
-	{
-		if(pMine->GetOwner() != m_pPlayer->GetCID()) continue;
-			GameServer()->m_World.DestroyEntity(pMine);
-	}
-	for(CSlugSlime* pSlime = (CSlugSlime*) GameWorld()->FindFirst(CGameWorld::ENTTYPE_SLUG_SLIME); pSlime; pSlime = (CSlugSlime*) pSlime->TypeNext())
-	{
-		if(pSlime->GetOwner() != m_pPlayer->GetCID()) continue;
-			GameServer()->m_World.DestroyEntity(pSlime);
-	}
-	for(CGrowingExplosion* pGrowiExpl = (CGrowingExplosion*) GameWorld()->FindFirst(CGameWorld::ENTTYPE_GROWINGEXPLOSION); pGrowiExpl; pGrowiExpl = (CGrowingExplosion*) pGrowiExpl->TypeNext())
-	{
-		if(pGrowiExpl->GetOwner() != m_pPlayer->GetCID()) continue;
-			GameServer()->m_World.DestroyEntity(pGrowiExpl);
-	}
-	for(CWhiteHole* pWhiteHole = (CWhiteHole*) GameWorld()->FindFirst(CGameWorld::ENTTYPE_WHITE_HOLE); pWhiteHole; pWhiteHole = (CWhiteHole*) pWhiteHole->TypeNext())
-	{
-		if(pWhiteHole->GetOwner() != m_pPlayer->GetCID()) continue;
-			GameServer()->m_World.DestroyEntity(pWhiteHole);
-	}
-	for(CSuperWeaponIndicator* pIndicator = (CSuperWeaponIndicator*) GameWorld()->FindFirst(CGameWorld::ENTTYPE_SUPERWEAPON_INDICATOR); pIndicator; pIndicator = (CSuperWeaponIndicator*) pIndicator->TypeNext())
-	{
-		if(pIndicator->GetOwner() != m_pPlayer->GetCID()) continue;
-			GameServer()->m_World.DestroyEntity(pIndicator);
-	}
-	for(CTurret* pTurret = (CTurret*) GameWorld()->FindFirst(CGameWorld::ENTTYPE_TURRET); pTurret; pTurret = (CTurret*) pTurret->TypeNext())
-	{
-		if(pTurret->GetOwner() != m_pPlayer->GetCID()) continue;
-		GameServer()->m_World.DestroyEntity(pTurret);
-	}
-	for(CPlasma* pPlasma = (CPlasma*) GameWorld()->FindFirst(CGameWorld::ENTTYPE_PLASMA); pPlasma; pPlasma = (CPlasma*) pPlasma->TypeNext())
-	{
-		if(pPlasma->GetOwner() != m_pPlayer->GetCID()) continue;
-		GameServer()->m_World.DestroyEntity(pPlasma);
-	}
-	for(CHeroFlag* pFlag = (CHeroFlag*) GameWorld()->FindFirst(CGameWorld::ENTTYPE_HERO_FLAG); pFlag; pFlag = (CHeroFlag*) pFlag->TypeNext())
-	{
-		if(pFlag->GetOwner() != m_pPlayer->GetCID()) continue;
-		GameServer()->m_World.DestroyEntity(pFlag);
+
+	static const auto InfCEntities = {
+		CGameWorld::ENTTYPE_PROJECTILE,
+		CGameWorld::ENTTYPE_ENGINEER_WALL,
+		CGameWorld::ENTTYPE_LOOPER_WALL,
+		CGameWorld::ENTTYPE_SOLDIER_BOMB,
+		CGameWorld::ENTTYPE_SCATTER_GRENADE,
+		CGameWorld::ENTTYPE_MEDIC_GRENADE,
+		CGameWorld::ENTTYPE_MERCENARY_BOMB,
+		CGameWorld::ENTTYPE_SCIENTIST_MINE,
+		CGameWorld::ENTTYPE_BIOLOGIST_MINE,
+		CGameWorld::ENTTYPE_SLUG_SLIME,
+		CGameWorld::ENTTYPE_GROWINGEXPLOSION,
+		CGameWorld::ENTTYPE_WHITE_HOLE,
+		CGameWorld::ENTTYPE_SUPERWEAPON_INDICATOR,
+		CGameWorld::ENTTYPE_TURRET,
+		CGameWorld::ENTTYPE_PLASMA,
+		CGameWorld::ENTTYPE_HERO_FLAG,
+	};
+
+	for(const auto EntityType : InfCEntities) {
+		for(CInfCEntity *p = (CInfCEntity*) GameWorld()->FindFirst(EntityType); p; p = (CInfCEntity*) p->TypeNext())
+		{
+			if(p->GetOwner() != m_pPlayer->GetCID())
+				continue;
+
+			GameServer()->m_World.DestroyEntity(p);
+		}
 	}
 
 	m_FirstShot = true;
