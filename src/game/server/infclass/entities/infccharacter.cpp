@@ -1223,7 +1223,7 @@ void CInfClassCharacter::OnHammerFired(WeaponFireContext *pFireContext)
 	{
 		// Moved to CInfClassHuman::OnHammerFired()
 	}
-	else if(GetPlayerClass() == PLAYERCLASS_MERCENARY && g_Config.m_InfMercLove && !GameServer()->m_FunRound)
+	else if(GetPlayerClass() == PLAYERCLASS_MERCENARY && GameController()->MercBombsEnabled())
 	{
 		CMercenaryBomb* pCurrentBomb = NULL;
 		for(CMercenaryBomb *pBomb = (CMercenaryBomb*) GameWorld()->FindFirst(CGameWorld::ENTTYPE_MERCENARY_BOMB); pBomb; pBomb = (CMercenaryBomb*) pBomb->TypeNext())
@@ -1849,7 +1849,7 @@ void CInfClassCharacter::OnBiologistLaserFired(WeaponFireContext *pFireContext)
 
 void CInfClassCharacter::OpenClassChooser()
 {
-	if(GameServer()->m_FunRound)
+	if(GameController()->GetRoundType() == ROUND_TYPE::FUN)
 	{
 		IncreaseArmor(10);
 		GetPlayer()->CloseMapMenu();

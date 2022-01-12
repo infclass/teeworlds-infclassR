@@ -19,6 +19,12 @@ enum class DAMAGE_TYPE;
 
 using ClientsArray = array_on_stack<int, 64>; // MAX_CLIENTS
 
+enum class ROUND_TYPE
+{
+	NORMAL,
+	FUN,
+};
+
 enum class CLASS_AVAILABILITY
 {
 	AVAILABLE,
@@ -71,6 +77,8 @@ public:
 	int GetClassPlayerLimit(int PlayerClass) const;
 	int GetPlayerClassProbability(int PlayerClass) const;
 
+	ROUND_TYPE GetRoundType() const;
+
 	CLASS_AVAILABILITY GetPlayerClassAvailability(int PlayerClass) const;
 	bool CanVote() override;
 	void OnClientDrop(int ClientID, int Type) override;
@@ -78,6 +86,7 @@ public:
 	bool IsInfectionStarted() const;
 	bool CanJoinTeam(int Team, int ClientID) override;
 	bool AreTurretsEnabled() const;
+	bool MercBombsEnabled() const;
 
 	int GetTargetToKill() const;
 	void TargetKilled();
@@ -152,6 +161,8 @@ private:
 	int m_TargetToKillCoolDown;
 
 	int m_PlayerOwnCursorID = -1;
+
+	ROUND_TYPE m_RoundType = ROUND_TYPE::NORMAL;
 	
 	bool m_InfectedStarted;
 	bool m_RoundStarted = false;

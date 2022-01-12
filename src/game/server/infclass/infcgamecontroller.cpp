@@ -1223,8 +1223,14 @@ void CInfClassGameController::EndRound()
 	MaybeSendStatistics();
 	Server()->OnRoundIsOver();
 
-	if (GameServer()->m_FunRound)
+	switch(GetRoundType())
+	{
+	case ROUND_TYPE::NORMAL:
+		break;
+	case ROUND_TYPE::FUN:
 		GameServer()->EndFunRound();
+		break;
+	}
 
 	m_RoundStarted = false;
 }
@@ -1658,6 +1664,11 @@ bool CInfClassGameController::AreTurretsEnabled() const
 	return Server()->GetActivePlayerCount() >= Config()->m_InfMinPlayersForTurrets;
 }
 
+bool CInfClassGameController::MercBombsEnabled() const
+{
+	return GetRoundType() != ROUND_TYPE::FUN;
+}
+
 int CInfClassGameController::GetTargetToKill() const
 {
 	return m_TargetToKill;
@@ -1859,7 +1870,7 @@ void CInfClassGameController::RewardTheKiller(CInfClassCharacter *pVictim, CInfC
 			if(pVictim->IsZombie())
 			{
 				int ScoreEvent = SCOREEVENT_KILL_INFECTED;
-				bool ClassSpecialProcessingEnabled = !GameServer()->m_FunRound || (GetPlayerClassProbability(pVictim->GetPlayerClass()) == 0);
+				bool ClassSpecialProcessingEnabled = (GetRoundType() != ROUND_TYPE::FUN) || (GetPlayerClassProbability(pVictim->GetPlayerClass()) == 0);
 				if(ClassSpecialProcessingEnabled)
 				{
 					switch(pVictim->GetPlayerClass())
@@ -1971,7 +1982,8 @@ void CInfClassGameController::OnCharacterDeath(CInfClassCharacter *pVictim, DAMA
 
 	bool ForceInfection = false;
 	bool ClassSpecialProcessingEnabled = true;
-	if(GameServer()->m_FunRound && !pVictim->IsHuman() && GetPlayerClassProbability(pVictim->GetPlayerClass()))
+
+	if((GetRoundType() == ROUND_TYPE::FUN) && !pVictim->IsHuman() && GetPlayerClassProbability(pVictim->GetPlayerClass()))
 	{
 		ClassSpecialProcessingEnabled = false;
 	}
@@ -2007,7 +2019,7 @@ void CInfClassGameController::OnCharacterDeath(CInfClassCharacter *pVictim, DAMA
 
 void CInfClassGameController::OnCharacterSpawned(CInfClassCharacter *pCharacter)
 {
-	if(GameServer()->m_FunRound && !IsInfectionStarted() && pCharacter->GetPlayerClass() == PLAYERCLASS_NONE)
+	if((GetRoundType() == ROUND_TYPE::FUN) && !IsInfectionStarted() && pCharacter->GetPlayerClass() == PLAYERCLASS_NONE)
 	{
 		CInfClassPlayer *pPlayer = pCharacter->GetPlayer();
 		if(pPlayer)
@@ -2298,7 +2310,7 @@ int CInfClassGameController::ChooseHumanClass(const CPlayer *pPlayer) const
 	{
 		double &ClassProbability = Probability[PlayerClass - START_HUMANCLASS - 1];
 		ClassProbability = GetPlayerClassEnabled(PlayerClass) ? 1.0f : 0.0f;
-		if (GameServer()->m_FunRound)
+		if(GetRoundType() == ROUND_TYPE::FUN)
 		{
 			// We care only about the class enablement
 			continue;
@@ -2312,7 +2324,7 @@ int CInfClassGameController::ChooseHumanClass(const CPlayer *pPlayer) const
 	}
 
 	//Random is not fair enough. We keep the last two classes took by the player, and avoid to give him those again
-	if(!GameServer()->m_FunRound) { // if normal round is being played
+	if(GetRoundType() != ROUND_TYPE::FUN) { // if normal round is being played
 		for(unsigned int i=0; i<sizeof(pPlayer->m_LastHumanClasses)/sizeof(int); i++)
 		{
 			if(pPlayer->m_LastHumanClasses[i] > START_HUMANCLASS && pPlayer->m_LastHumanClasses[i] < END_HUMANCLASS)
@@ -2350,7 +2362,7 @@ int CInfClassGameController::ChooseInfectedClass(const CPlayer *pPlayer) const
 	{
 		double &ClassProbability = Probability[PlayerClass - START_INFECTEDCLASS - 1];
 		ClassProbability = Server()->GetClassAvailability(PlayerClass) ? GetPlayerClassProbability(PlayerClass) : 0;
-		if (GameServer()->m_FunRound)
+		if(GetRoundType() == ROUND_TYPE::FUN)
 		{
 			// We care only about the class enablement
 			continue;
@@ -2476,6 +2488,14 @@ int CInfClassGameController::GetPlayerClassProbability(int PlayerClass) const
 			Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "server", "WARNING: Invalid GetPlayerClassProbability() call");
 			return false;
 	}
+}
+
+ROUND_TYPE CInfClassGameController::GetRoundType() const
+{
+	if(GameServer()->m_FunRound)
+		return ROUND_TYPE::FUN;
+
+	return m_RoundType;
 }
 
 CLASS_AVAILABILITY CInfClassGameController::GetPlayerClassAvailability(int PlayerClass) const

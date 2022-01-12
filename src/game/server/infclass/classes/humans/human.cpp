@@ -187,7 +187,7 @@ void CInfClassHuman::GiveClassAttributes()
 			m_pCharacter->GiveWeapon(WEAPON_HAMMER, -1);
 			m_pCharacter->GiveWeapon(WEAPON_GRENADE, -1);
 			m_pCharacter->GiveWeapon(WEAPON_GUN, -1);
-			if(!GameServer()->m_FunRound)
+			if(GameController()->MercBombsEnabled())
 				m_pCharacter->GiveWeapon(WEAPON_LASER, -1);
 			m_pCharacter->SetActiveWeapon(WEAPON_GUN);
 			break;
