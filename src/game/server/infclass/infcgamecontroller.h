@@ -140,6 +140,7 @@ protected:
 	void TickInfectionNotStarted();
 
 	void MaybeSendStatistics();
+	void AnnounceTheWinner(int NumHumans, int Seconds);
 
 private:
 	void HandleTargetsToKill();

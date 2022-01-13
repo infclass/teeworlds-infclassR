@@ -1649,6 +1649,51 @@ void CInfClassGameController::MaybeSendStatistics()
 	Server()->SendStatistics();
 }
 
+void CInfClassGameController::AnnounceTheWinner(int NumHumans, int Seconds)
+{
+	const char *pWinnerTeam = NumHumans > 0 ? "humans" : "zombies";
+	const char *pRoundType = toString(GetRoundType());
+
+	char aBuf[512];
+	str_format(aBuf, sizeof(aBuf), "round_end winner='%s' survivors='%d' duration='%d' round='%d of %d' type='%s'",
+		pWinnerTeam,
+		NumHumans, Seconds, m_RoundCount+1, g_Config.m_SvRoundsPerMap, pRoundType);
+	Console()->Print(IConsole::OUTPUT_LEVEL_DEBUG, "game", aBuf);
+
+	if(NumHumans)
+	{
+		GameServer()->SendChatTarget_Localization_P(-1, CHATCATEGORY_HUMANS, NumHumans,
+			_P("One human won the round",
+			   "{int:NumHumans} humans won the round"),
+			"NumHumans", &NumHumans,
+			nullptr);
+
+		char aBuf[256];
+		CInfClassPlayerIterator<PLAYERITER_INGAME> Iter(GameServer()->m_apPlayers);
+		while(Iter.Next())
+		{
+			if(Iter.Player()->IsHuman())
+			{
+				//TAG_SCORE
+				Server()->RoundStatistics()->OnScoreEvent(Iter.ClientID(), SCOREEVENT_HUMAN_SURVIVE, Iter.Player()->GetClass(), Server()->ClientName(Iter.ClientID()), Console());
+				Server()->RoundStatistics()->SetPlayerAsWinner(Iter.ClientID());
+				GameServer()->SendScoreSound(Iter.ClientID());
+				Iter.Player()->m_WinAsHuman++;
+
+				GameServer()->SendChatTarget_Localization(Iter.ClientID(), CHATCATEGORY_SCORE, _("You have survived, +5 points"), NULL);
+				str_format(aBuf, sizeof(aBuf), "survived player='%s'", Server()->ClientName(Iter.ClientID()));
+				Console()->Print(IConsole::OUTPUT_LEVEL_DEBUG, "game", aBuf);
+			}
+		}
+	}
+	else
+	{
+		GameServer()->SendChatTarget_Localization(-1, CHATCATEGORY_INFECTED, _("Infected won the round in {sec:RoundDuration}"), "RoundDuration", &Seconds, NULL);
+	}
+
+	EndRound();
+}
+
 bool CInfClassGameController::IsInfectionStarted() const
 {
 	return (m_RoundStartTick + Server()->TickSpeed()*10 <= Server()->Tick());
@@ -2127,19 +2172,12 @@ void CInfClassGameController::DoWincheck()
 	int NumInfected = 0;
 	GetPlayerCounter(-1, NumHumans, NumInfected);
 
-	const char *pRoundType = toString(GetRoundType());
-
 	//Win check
 	const int Seconds = (Server()->Tick()-m_RoundStartTick)/((float)Server()->TickSpeed());
 	if(m_InfectedStarted && NumHumans == 0 && NumInfected > 1)
 	{
-		GameServer()->SendChatTarget_Localization(-1, CHATCATEGORY_INFECTED, _("Infected won the round in {sec:RoundDuration}"), "RoundDuration", &Seconds, NULL);
-
-		char aBuf[512];
-		str_format(aBuf, sizeof(aBuf), "round_end winner='zombies' survivors='0' duration='%d' round='%d of %d' type='%s'", Seconds, m_RoundCount+1, g_Config.m_SvRoundsPerMap, pRoundType);
-		Console()->Print(IConsole::OUTPUT_LEVEL_DEBUG, "game", aBuf);
-
-		EndRound();
+		AnnounceTheWinner(NumHumans, Seconds);
+		return;
 	}
 
 	//Start the final explosion if the time is over
@@ -2223,38 +2261,7 @@ void CInfClassGameController::DoWincheck()
 		//If no more explosions, game over, decide who win
 		if(!NewExplosion)
 		{
-			if(NumHumans)
-			{
-				GameServer()->SendChatTarget_Localization_P(-1, CHATCATEGORY_HUMANS, NumHumans, _P("One human won the round", "{int:NumHumans} humans won the round"), "NumHumans", &NumHumans, NULL);
-
-				char aBuf[512];
-				str_format(aBuf, sizeof(aBuf), "round_end winner='humans' survivors='%d' duration='%d' round='%d of %d' type='%s'", NumHumans, Seconds, m_RoundCount+1, g_Config.m_SvRoundsPerMap, pRoundType);
-				Console()->Print(IConsole::OUTPUT_LEVEL_DEBUG, "game", aBuf);
-
-					CInfClassPlayerIterator<PLAYERITER_INGAME> Iter(GameServer()->m_apPlayers);
-				while(Iter.Next())
-				{
-					if(Iter.Player()->IsHuman())
-					{
-						//TAG_SCORE
-						Server()->RoundStatistics()->OnScoreEvent(Iter.ClientID(), SCOREEVENT_HUMAN_SURVIVE, Iter.Player()->GetClass(), Server()->ClientName(Iter.ClientID()), Console());
-						Server()->RoundStatistics()->SetPlayerAsWinner(Iter.ClientID());
-						GameServer()->SendScoreSound(Iter.ClientID());
-						Iter.Player()->m_WinAsHuman++;
-
-						GameServer()->SendChatTarget_Localization(Iter.ClientID(), CHATCATEGORY_SCORE, _("You have survived, +5 points"), NULL);
-							char aBuf[256];
-						str_format(aBuf, sizeof(aBuf), "survived player='%s'", Server()->ClientName(Iter.ClientID()));
-						Console()->Print(IConsole::OUTPUT_LEVEL_DEBUG, "game", aBuf);
-						}
-				}
-			}
-			else
-			{
-				GameServer()->SendChatTarget_Localization(-1, CHATCATEGORY_INFECTED, _("Infected won the round in {sec:RoundDuration}"), "RoundDuration", &Seconds, NULL);
-			}
-
-			EndRound();
+			AnnounceTheWinner(NumHumans, Seconds);
 		}
 	}
 }
