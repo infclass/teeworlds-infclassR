@@ -3557,6 +3557,16 @@ bool CGameContext::ConHelp(IConsole::IResult *pResult)
 		Buffer.append("\n\n");
 		Server()->Localization()->Format_L(Buffer, pLanguage, _("To get off the taxi, jump. To drop off your passengers, enable hook protection (usually, with F3)."), NULL);
 	}
+	else if(str_comp_nocase(pHelpPage, "fast_round") == 0)
+	{
+		Buffer.append("~~ ");
+		Server()->Localization()->Format_L(Buffer, pLanguage, _("Fast round"), NULL);
+		Buffer.append(" ~~\n\n");
+		Server()->Localization()->Format_L(Buffer, pLanguage,
+			_("In the fast rounds *more* humans become infected initially, "
+			  "the spawning rate is increased and the round time limit is decreased. "
+			  "White hole is also disabled."), NULL);
+	}
 	else
 	{
 		bool Ok = true;

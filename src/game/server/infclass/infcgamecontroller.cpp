@@ -36,6 +36,8 @@ const char *toString(ROUND_TYPE RoundType)
 		return "classic";
 	case ROUND_TYPE::FUN:
 		return "fun";
+	case ROUND_TYPE::FAST:
+		return "fast";
 	}
 
 	dbg_msg("Controller", "toString(ROUND_TYPE %d): out of range!", static_cast<int>(RoundType));
@@ -906,6 +908,8 @@ void CInfClassGameController::RegisterChatCommands(IConsole *pConsole)
 {
 	pConsole->Register("set_client_name", "i<clientid> s<name>", CFGFLAG_SERVER, ConSetClientName, this, "Set the name of a player");
 	pConsole->Register("inf_set_class", "i<clientid> s<classname>", CFGFLAG_SERVER, ConSetClass, this, "Set the class of a player");
+	pConsole->Register("start_fast_round", "", CFGFLAG_SERVER, ConStartFastRound, this, "Start a faster gameplay round");
+	pConsole->Register("queue_fast_round", "", CFGFLAG_SERVER, ConQueueFastRound, this, "Queue a faster gameplay round");
 
 	pConsole->Register("witch", "", CFGFLAG_CHAT|CFGFLAG_USER, ChatWitch, this, "Call Witch");
 	pConsole->Register("santa", "", CFGFLAG_CHAT|CFGFLAG_USER, ChatWitch, this, "Call the Santa");
@@ -953,6 +957,22 @@ bool CInfClassGameController::ConSetClass(IConsole::IResult *pResult)
 	}
 
 	Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "inf_set_class", "Unknown class");
+	return true;
+}
+
+bool CInfClassGameController::ConStartFastRound(IConsole::IResult *pResult, void *pUserData)
+{
+	CInfClassGameController *pSelf = (CInfClassGameController *)pUserData;
+	pSelf->m_QueuedRoundType = ROUND_TYPE::FAST;
+	pSelf->StartRound();
+
+	return true;
+}
+
+bool CInfClassGameController::ConQueueFastRound(IConsole::IResult *pResult, void *pUserData)
+{
+	CInfClassGameController *pSelf = (CInfClassGameController *)pUserData;
+	pSelf->m_QueuedRoundType = ROUND_TYPE::FAST;
 	return true;
 }
 
@@ -1291,7 +1311,12 @@ void CInfClassGameController::StartRound()
 	switch(GetRoundType())
 	{
 	case ROUND_TYPE::NORMAL:
+		break;
 	case ROUND_TYPE::FUN:
+		break;
+	case ROUND_TYPE::FAST:
+		GameServer()->CreateSoundGlobal(SOUND_CTF_CAPTURE);
+		GameServer()->SendChatTarget(-1, "Starting the 'fast' round. Good luck everyone!");
 		break;
 	}
 
@@ -1328,6 +1353,7 @@ void CInfClassGameController::EndRound()
 	switch(GetRoundType())
 	{
 	case ROUND_TYPE::NORMAL:
+	case ROUND_TYPE::FAST:
 		break;
 	case ROUND_TYPE::FUN:
 		GameServer()->EndFunRound();
@@ -1387,6 +1413,17 @@ void CInfClassGameController::GetPlayerCounter(int ClientException, int& NumHuma
 
 int CInfClassGameController::GetMinimumInfectedForPlayers(int PlayersNumber) const
 {
+	if(GetRoundType() == ROUND_TYPE::FAST)
+	{
+		//  7 | 3 vs 4 | 3.01
+		//  8 | 3 vs 5 | 3.44
+		//  9 | 3 vs 6 | 3.87
+		// 10 | 4 vs 6 | 4.30
+		// 11 | 4 vs 7 | 4.73
+		// 12 | 5 vs 7 | 5.16
+		return PlayersNumber * 0.43;
+	}
+
 	int NumFirstInfected = 0;
 
 	if(PlayersNumber > 20)
@@ -1864,6 +1901,9 @@ bool CInfClassGameController::MercBombsEnabled() const
 
 bool CInfClassGameController::WhiteHoleEnabled() const
 {
+	if(GetRoundType() == ROUND_TYPE::FAST)
+		return false;
+
 	return Config()->m_InfWhiteHoleProbability > 0;
 }
 
@@ -1875,6 +1915,8 @@ float CInfClassGameController::GetTimeLimit() const
 	{
 	case ROUND_TYPE::FUN:
 		return minimum<float>(BaseTimeLimit, Config()->m_FunRoundDuration);
+	case ROUND_TYPE::FAST:
+		return clamp<float>(BaseTimeLimit * 0.5, 1, 3);
 	default:
 		return BaseTimeLimit;
 	}
@@ -2273,6 +2315,11 @@ void CInfClassGameController::OnCharacterDeath(CInfClassCharacter *pVictim, DAMA
 	else
 	{
 		RespawnDelay = Server()->TickSpeed() * 0.5f;
+	}
+
+	if(GetRoundType() == ROUND_TYPE::FAST)
+	{
+		RespawnDelay *= 0.5;
 	}
 
 	pVictim->GetPlayer()->m_RespawnTick = Server()->Tick() + RespawnDelay;

@@ -23,6 +23,7 @@ enum class ROUND_TYPE
 {
 	NORMAL,
 	FUN,
+	FAST,
 };
 
 enum class CLASS_AVAILABILITY
@@ -121,6 +122,9 @@ public:
 	static bool ConSetClientName(IConsole::IResult *pResult, void *pUserData);
 	static bool ConSetClass(IConsole::IResult *pResult, void *pUserData);
 	bool ConSetClass(IConsole::IResult *pResult);
+
+	static bool ConStartFastRound(IConsole::IResult *pResult, void *pUserData);
+	static bool ConQueueFastRound(IConsole::IResult *pResult, void *pUserData);
 
 	static bool ChatWitch(IConsole::IResult *pResult, void *pUserData);
 	bool ChatWitch(IConsole::IResult *pResult);
