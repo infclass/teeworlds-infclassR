@@ -147,8 +147,7 @@ public:
 	virtual int ChooseInfectedClass(const CPlayer* pPlayer) const = 0;
 	virtual bool IsSpawnable(vec2 Position, int TeleZoneIndex) = 0;
 	virtual void OnClientDrop(int ClientID, int Type) {};
-	
-	void MaybeSendStatistics();
+
 	int GetRoundId() { return m_RoundId; }
 /* INFECTION MODIFICATION END *****************************************/
 

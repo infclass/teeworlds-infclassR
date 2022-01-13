@@ -137,6 +137,8 @@ protected:
 	void TickInfectionStarted();
 	void TickInfectionNotStarted();
 
+	void MaybeSendStatistics();
+
 private:
 	void HandleTargetsToKill();
 

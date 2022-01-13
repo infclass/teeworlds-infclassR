@@ -106,28 +106,6 @@ void IGameController::DoActivityCheck()
 	}
 }
 
-/* INFECTION MODIFICATION START ***************************************/
-void IGameController::MaybeSendStatistics()
-{
-	// skip some maps that are not very fair
-	if (
-			str_comp(g_Config.m_SvMap, "infc_toilet") == 0 ||
-			str_comp(g_Config.m_SvMap, "infc_toilet_old") == 0) {
-		return;
-	}
-
-	if (Server()->GetActivePlayerCount() < 6) {
-		return;
-	}
-
-	if (GameServer()->m_FunRound)
-		return;
-
-	Server()->SendStatistics();
-}
-/* INFECTION MODIFICATION END *****************************************/
-
-
 bool IGameController::OnEntity(const char* pName, vec2 Pivot, vec2 P0, vec2 P1, vec2 P2, vec2 P3, int PosEnv)
 {
 	vec2 Pos = (P0 + P1 + P2 + P3)/4.0f;

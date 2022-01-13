@@ -1615,6 +1615,25 @@ void CInfClassGameController::TickInfectionNotStarted()
 	}
 }
 
+void CInfClassGameController::MaybeSendStatistics()
+{
+	// skip some maps that are not very fair
+	if (
+			str_comp(g_Config.m_SvMap, "infc_toilet") == 0 ||
+			str_comp(g_Config.m_SvMap, "infc_toilet_old") == 0) {
+		return;
+	}
+
+	if (Server()->GetActivePlayerCount() < 6) {
+		return;
+	}
+
+	if (GameServer()->m_FunRound)
+		return;
+
+	Server()->SendStatistics();
+}
+
 bool CInfClassGameController::IsInfectionStarted() const
 {
 	return (m_RoundStartTick + Server()->TickSpeed()*10 <= Server()->Tick());
