@@ -33,6 +33,8 @@ enum class CLASS_AVAILABILITY
 	LIMIT_EXCEEDED,
 };
 
+static const char *toString(ROUND_TYPE RoundType);
+
 class CInfClassGameController : public IGameController
 {
 public:

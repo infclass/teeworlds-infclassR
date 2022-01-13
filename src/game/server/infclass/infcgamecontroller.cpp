@@ -26,6 +26,21 @@
 
 const int InfClassModeSpecialSkip = 0x100;
 
+const char *toString(ROUND_TYPE RoundType)
+{
+	switch(RoundType)
+	{
+	case ROUND_TYPE::NORMAL:
+		return "classic";
+	case ROUND_TYPE::FUN:
+		return "fun";
+	}
+
+	dbg_msg("Controller", "toString(ROUND_TYPE %d): out of range!", static_cast<int>(RoundType));
+
+	return "invalid";
+}
+
 CInfClassGameController::CInfClassGameController(class CGameContext *pGameServer)
 : IGameController(pGameServer)
 {
@@ -2112,18 +2127,16 @@ void CInfClassGameController::DoWincheck()
 	int NumInfected = 0;
 	GetPlayerCounter(-1, NumHumans, NumInfected);
 
-	static const char *ClassicRound = "classic";
-	const char *RoundType = ClassicRound;
+	const char *pRoundType = toString(GetRoundType());
 
 	//Win check
 	const int Seconds = (Server()->Tick()-m_RoundStartTick)/((float)Server()->TickSpeed());
 	if(m_InfectedStarted && NumHumans == 0 && NumInfected > 1)
 	{
-
 		GameServer()->SendChatTarget_Localization(-1, CHATCATEGORY_INFECTED, _("Infected won the round in {sec:RoundDuration}"), "RoundDuration", &Seconds, NULL);
 
 		char aBuf[512];
-		str_format(aBuf, sizeof(aBuf), "round_end winner='zombies' survivors='0' duration='%d' round='%d of %d' type='%s'", Seconds, m_RoundCount+1, g_Config.m_SvRoundsPerMap, RoundType);
+		str_format(aBuf, sizeof(aBuf), "round_end winner='zombies' survivors='0' duration='%d' round='%d of %d' type='%s'", Seconds, m_RoundCount+1, g_Config.m_SvRoundsPerMap, pRoundType);
 		Console()->Print(IConsole::OUTPUT_LEVEL_DEBUG, "game", aBuf);
 
 		EndRound();
@@ -2215,7 +2228,7 @@ void CInfClassGameController::DoWincheck()
 				GameServer()->SendChatTarget_Localization_P(-1, CHATCATEGORY_HUMANS, NumHumans, _P("One human won the round", "{int:NumHumans} humans won the round"), "NumHumans", &NumHumans, NULL);
 
 				char aBuf[512];
-				str_format(aBuf, sizeof(aBuf), "round_end winner='humans' survivors='%d' duration='%d' round='%d of %d' type='%s'", NumHumans, Seconds, m_RoundCount+1, g_Config.m_SvRoundsPerMap, RoundType);
+				str_format(aBuf, sizeof(aBuf), "round_end winner='humans' survivors='%d' duration='%d' round='%d of %d' type='%s'", NumHumans, Seconds, m_RoundCount+1, g_Config.m_SvRoundsPerMap, pRoundType);
 				Console()->Print(IConsole::OUTPUT_LEVEL_DEBUG, "game", aBuf);
 
 					CInfClassPlayerIterator<PLAYERITER_INGAME> Iter(GameServer()->m_apPlayers);
