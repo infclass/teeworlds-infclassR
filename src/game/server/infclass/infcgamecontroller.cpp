@@ -1669,6 +1669,11 @@ bool CInfClassGameController::MercBombsEnabled() const
 	return GetRoundType() != ROUND_TYPE::FUN;
 }
 
+bool CInfClassGameController::WhiteHoleEnabled() const
+{
+	return Config()->m_InfWhiteHoleProbability > 0;
+}
+
 float CInfClassGameController::GetTimeLimit() const
 {
 	switch(GetRoundType())

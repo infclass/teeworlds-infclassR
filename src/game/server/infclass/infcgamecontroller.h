@@ -87,6 +87,7 @@ public:
 	bool CanJoinTeam(int Team, int ClientID) override;
 	bool AreTurretsEnabled() const;
 	bool MercBombsEnabled() const;
+	bool WhiteHoleEnabled() const;
 
 	float GetTimeLimit() const;
 

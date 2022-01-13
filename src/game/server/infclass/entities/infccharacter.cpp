@@ -2360,7 +2360,7 @@ void CInfClassCharacter::CheckSuperWeaponAccess()
 	//Only scientists can receive white holes
 	if(GetPlayerClass() == PLAYERCLASS_SCIENTIST)
 	{
-		if (!m_HasWhiteHole) // Can't receive a white hole while having one available
+		if(GameController()->WhiteHoleEnabled() && !m_HasWhiteHole) // Can't receive a white hole while having one available
 		{
 			// enable white hole probabilities
 			if (kills > g_Config.m_InfWhiteHoleMinimalKills) 
