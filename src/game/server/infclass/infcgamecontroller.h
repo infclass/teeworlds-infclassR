@@ -174,6 +174,7 @@ private:
 	int m_PlayerOwnCursorID = -1;
 
 	ROUND_TYPE m_RoundType = ROUND_TYPE::NORMAL;
+	ROUND_TYPE m_QueuedRoundType = ROUND_TYPE::NORMAL;
 	
 	bool m_InfectedStarted;
 	bool m_RoundStarted = false;

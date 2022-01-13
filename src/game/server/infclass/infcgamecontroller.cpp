@@ -1215,6 +1215,16 @@ CGameWorld *CInfClassGameController::GameWorld()
 
 void CInfClassGameController::StartRound()
 {
+	m_RoundType = m_QueuedRoundType;
+	m_QueuedRoundType = ROUND_TYPE::NORMAL;
+
+	switch(GetRoundType())
+	{
+	case ROUND_TYPE::NORMAL:
+	case ROUND_TYPE::FUN:
+		break;
+	}
+
 	SaveRoundRules();
 
 	m_RoundStarted = true;
