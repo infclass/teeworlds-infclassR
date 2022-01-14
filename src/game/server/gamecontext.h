@@ -152,7 +152,6 @@ public:
 	void EndFunRound();
 	bool m_FunRound;
 	int m_FunRoundsPassed;
-	int m_DefaultTimelimit;
 	std::vector<int> m_DefaultAvailabilities, m_DefaultProbabilities;
 	void SetAvailabilities(std::vector<int> value);
 	void SetProbabilities(std::vector<int> value);

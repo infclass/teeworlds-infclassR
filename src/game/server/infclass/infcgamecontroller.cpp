@@ -1750,6 +1750,8 @@ float CInfClassGameController::GetTimeLimit() const
 {
 	switch(GetRoundType())
 	{
+	case ROUND_TYPE::FUN:
+		return minimum(Config()->m_SvTimelimit, Config()->m_FunRoundDuration);
 	default:
 		return Config()->m_SvTimelimit;
 	}

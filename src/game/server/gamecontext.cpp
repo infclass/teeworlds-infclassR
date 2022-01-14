@@ -2741,9 +2741,6 @@ bool CGameContext::StartFunRound(const FunRoundConfiguration &Configuration)
 	SetProbabilities(std::vector<int>());
 	SetAvailabilities(std::vector<int>());
 	g_Config.m_InfGhoulStomachSize = g_Config.m_FunRoundGhoulStomachSize;
-	m_DefaultTimelimit = g_Config.m_SvTimelimit;
-	if (g_Config.m_SvTimelimit > g_Config.m_FunRoundDuration)
-		g_Config.m_SvTimelimit = g_Config.m_FunRoundDuration;
 
 	Server()->SetPlayerClassEnabled(Configuration.HumanClass, true);
 	Server()->SetPlayerClassProbability(Configuration.InfectedClass, 100);
@@ -2777,7 +2774,6 @@ void CGameContext::EndFunRound()
 	SetProbabilities(m_DefaultProbabilities);
 	m_FunRound = false;
 	m_FunRoundsPassed++;
-	g_Config.m_SvTimelimit = m_DefaultTimelimit;
 }
 
 bool CGameContext::ConchainSpecialMotdupdate(IConsole::IResult *pResult, void *pUserData, IConsole::FCommandCallback pfnCallback, void *pCallbackUserData)
