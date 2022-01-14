@@ -34,11 +34,16 @@ CMercenaryBomb::~CMercenaryBomb()
 	}
 }
 
-void CMercenaryBomb::IncreaseDamage(int weapon)
+void CMercenaryBomb::Upgrade(float Points)
 {
-	m_Damage = weapon == WEAPON_HAMMER ? m_Damage + 2 : m_Damage + 1.5;
-	if(m_Damage > Config()->m_InfMercBombs)
-		m_Damage = Config()->m_InfMercBombs;
+	float MaxDamage = Config()->m_InfMercBombs;
+	float NewDamage = minimum(MaxDamage, m_Damage + Points);
+	if(NewDamage <= m_Damage)
+	{
+		return;
+	}
+
+	m_Damage = NewDamage;
 
 	GameServer()->CreateSound(GetPos(), SOUND_PICKUP_ARMOR);
 }

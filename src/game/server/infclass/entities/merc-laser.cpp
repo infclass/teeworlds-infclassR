@@ -39,7 +39,7 @@ bool CMercenaryLaser::HitCharacter(vec2 From, vec2 To)
 	if(pHitMercBomb)
 	{
 		CMercenaryBomb *pBomb = static_cast<CMercenaryBomb*>(pHitMercBomb);
-		pBomb->IncreaseDamage(WEAPON_LASER);
+		pBomb->Upgrade(1.5);
 
 		m_From = From;
 		m_Pos = At;

@@ -22,7 +22,7 @@ public:
 	virtual void Snap(int SnappingClient);
 	virtual void Tick();
 	void Explode();
-	void IncreaseDamage(int weapon);
+	void Upgrade(float Points);
 	bool ReadyToExplode();
 	static float GetMaxRadius();
 

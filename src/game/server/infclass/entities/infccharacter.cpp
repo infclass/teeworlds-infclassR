@@ -1230,7 +1230,7 @@ void CInfClassCharacter::OnHammerFired(WeaponFireContext *pFireContext)
 				pCurrentBomb->Explode();
 			else
 			{
-				pCurrentBomb->IncreaseDamage(WEAPON_HAMMER);
+				pCurrentBomb->Upgrade(2);
 			}
 		}
 		else
