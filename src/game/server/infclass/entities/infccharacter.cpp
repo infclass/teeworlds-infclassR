@@ -1226,7 +1226,7 @@ void CInfClassCharacter::OnHammerFired(WeaponFireContext *pFireContext)
 
 		if(pCurrentBomb)
 		{
-			if(pCurrentBomb->ReadyToExplode() || distance(pCurrentBomb->GetPos(), GetPos()) > 80.0f)
+			if(pCurrentBomb->ReadyToExplode() || distance(pCurrentBomb->GetPos(), GetPos()) > CMercenaryBomb::GetMaxRadius())
 				pCurrentBomb->Explode();
 			else
 			{

@@ -54,7 +54,7 @@ void CMercenaryBomb::Tick()
 		if(!p->CanDie()) continue;
 
 		float Len = distance(p->m_Pos, m_Pos);
-		if(Len < p->m_ProximityRadius+80.0f)
+		if(Len < p->m_ProximityRadius + GetMaxRadius())
 		{
 			MustExplode = true;
 			break;
@@ -81,6 +81,11 @@ void CMercenaryBomb::Explode()
 bool CMercenaryBomb::ReadyToExplode()
 {
 	return m_LoadingTick <= 0;
+}
+
+float CMercenaryBomb::GetMaxRadius()
+{
+	return 80;
 }
 
 void CMercenaryBomb::Snap(int SnappingClient)
@@ -118,7 +123,7 @@ void CMercenaryBomb::Snap(int SnappingClient)
 
 	if(SnappingClient == m_Owner && m_LoadingTick > 0)
 	{
-		R = 80.0f;
+		R = GetMaxRadius();
 		AngleStart = AngleStart*2.0f;
 		for(int i=0; i<CMercenaryBomb::NUM_SIDE; i++)
 		{

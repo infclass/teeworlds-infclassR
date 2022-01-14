@@ -24,6 +24,7 @@ public:
 	void Explode();
 	void IncreaseDamage(int weapon);
 	bool ReadyToExplode();
+	static float GetMaxRadius();
 
 private:
 	int m_IDs[NUM_IDS];
