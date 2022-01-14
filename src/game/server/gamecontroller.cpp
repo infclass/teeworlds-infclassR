@@ -382,7 +382,7 @@ void IGameController::CycleMap(bool Forced)
 
 	char aBufMsg[256];
 	str_format(aBufMsg, sizeof(aBufMsg), "rotating map to %s", aBuf);
-	GameServer()->Console()->Print(IConsole::OUTPUT_LEVEL_DEBUG, "game", aBuf);
+	GameServer()->Console()->Print(IConsole::OUTPUT_LEVEL_DEBUG, "game", aBufMsg);
 	Server()->ChangeMap(aBuf);
 }
 
