@@ -92,6 +92,7 @@ public:
 	bool WhiteHoleEnabled() const;
 
 	float GetTimeLimit() const;
+	float GetInfectionDelay() const;
 
 	int GetTargetToKill() const;
 	void TargetKilled();

@@ -1472,7 +1472,7 @@ void CInfClassGameController::Tick()
 
 void CInfClassGameController::TickInfectionStarted()
 {
-	bool StartInfectionTrigger = m_RoundStartTick + Server()->TickSpeed()*10 == Server()->Tick();
+	bool StartInfectionTrigger = m_RoundStartTick + Server()->TickSpeed() * GetInfectionDelay() == Server()->Tick();
 
 	if(StartInfectionTrigger)
 	{
@@ -1689,7 +1689,7 @@ void CInfClassGameController::AnnounceTheWinner(int NumHumans, int Seconds)
 
 bool CInfClassGameController::IsInfectionStarted() const
 {
-	return (m_RoundStartTick + Server()->TickSpeed()*10 <= Server()->Tick());
+	return (m_RoundStartTick + Server()->TickSpeed() * GetInfectionDelay() <= Server()->Tick());
 }
 
 bool CInfClassGameController::CanJoinTeam(int Team, int ClientID)
@@ -1757,6 +1757,11 @@ float CInfClassGameController::GetTimeLimit() const
 	default:
 		return BaseTimeLimit;
 	}
+}
+
+float CInfClassGameController::GetInfectionDelay() const
+{
+	return Config()->m_InfInitialInfectionDelay;
 }
 
 int CInfClassGameController::GetTargetToKill() const
@@ -1926,8 +1931,7 @@ void CInfClassGameController::FallInLoveIfInfectedEarly(CInfClassCharacter *pCha
 	if(IsInfectionStarted())
 		return;
 
-	const int WarmupDuration = 10;
-	const int RemainingTicks = m_RoundStartTick + Server()->TickSpeed() * WarmupDuration - Server()->Tick();
+	const int RemainingTicks = m_RoundStartTick + Server()->TickSpeed() * GetInfectionDelay() - Server()->Tick();
 	float LoveDuration = RemainingTicks / static_cast<float>(Server()->TickSpeed()) + 0.25;
 
 	pCharacter->LoveEffect(LoveDuration);

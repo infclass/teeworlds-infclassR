@@ -9,6 +9,7 @@ MACRO_CONFIG_STR(AboutContactsMatrix, about_contacts_matrix, 128, "https://infcl
 MACRO_CONFIG_INT(SvTimelimitInSeconds, sv_timelimit_in_seconds, 0, 0, 10000, CFGFLAG_SERVER, "Time limit in seconds (0 means 'fallback to sv_timelimit')")
 MACRO_CONFIG_INT(InfInactiveHumansKickTime, inf_inactive_humans_kick_time, 180, 0, 10000, CFGFLAG_SERVER, "How many seconds to wait before taking care of inactive humans")
 MACRO_CONFIG_INT(InfInactiveInfectedKickTime, inf_inactive_infected_kick_time, 30, 0, 10000, CFGFLAG_SERVER, "How many seconds to wait before taking care of inactive infected")
+MACRO_CONFIG_INT(InfInitialInfectionDelay, inf_initial_infection_delay, 10, 0, 10000, CFGFLAG_SERVER, "The number of seconds until the game infect the first humans in the round")
 
 MACRO_CONFIG_INT(InfMinPlayers, inf_min_players, 2, 0, 64, CFGFLAG_SERVER, "Minimum number of players to start the round")
 MACRO_CONFIG_INT(InfChallenge, inf_challenge, 0, 0, 1, CFGFLAG_SERVER, "Enable challenges")
