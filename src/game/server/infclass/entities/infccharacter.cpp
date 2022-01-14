@@ -517,13 +517,7 @@ void CInfClassCharacter::FireWeapon()
 
 	if(IsInLove() && FireContext.FireAccepted)
 	{
-		const int LastEmoteTick = GetPlayer()->m_LastEmote;
-		const int EmoteDuration = 3;
-		if(!LastEmoteTick || (Server()->Tick() > LastEmoteTick + Server()->TickSpeed() * EmoteDuration))
-		{
-			GetPlayer()->m_LastEmote = Server()->Tick();
-			GameContext()->SendEmoticon(GetCID(), EMOTICON_HEARTS);
-		}
+		GameServer()->CreateLoveEvent(GetPos());
 	}
 
 	if(FireContext.NoAmmo)
