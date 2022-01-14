@@ -1226,11 +1226,16 @@ void CInfClassCharacter::OnHammerFired(WeaponFireContext *pFireContext)
 
 		if(pCurrentBomb)
 		{
-			if(pCurrentBomb->ReadyToExplode() || distance(pCurrentBomb->GetPos(), GetPos()) > CMercenaryBomb::GetMaxRadius())
+			float Distance = distance(pCurrentBomb->GetPos(), GetPos());
+			const float SafeDistance = 16;
+			if(pCurrentBomb->ReadyToExplode() || Distance > CMercenaryBomb::GetMaxRadius() + SafeDistance)
+			{
 				pCurrentBomb->Explode();
+			}
 			else
 			{
-				pCurrentBomb->Upgrade(2);
+				const float UpgradePoints = Distance <= CMercenaryBomb::GetMaxRadius() ? 2 : 0.5;
+				pCurrentBomb->Upgrade(UpgradePoints);
 			}
 		}
 		else
