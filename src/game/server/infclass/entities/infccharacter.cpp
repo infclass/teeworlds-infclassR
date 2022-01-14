@@ -1231,13 +1231,11 @@ void CInfClassCharacter::OnHammerFired(WeaponFireContext *pFireContext)
 			else
 			{
 				pCurrentBomb->IncreaseDamage(WEAPON_HAMMER);
-				GameServer()->CreateSound(GetPos(), SOUND_PICKUP_ARMOR);
 			}
 		}
 		else
 		{
 			new CMercenaryBomb(GameServer(), GetPos(), GetCID());
-			GameServer()->CreateSound(GetPos(), SOUND_PICKUP_ARMOR);
 		}
 
 		m_ReloadTimer = Server()->TickSpeed()/4;

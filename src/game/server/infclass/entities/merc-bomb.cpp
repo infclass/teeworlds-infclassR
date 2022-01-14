@@ -22,6 +22,8 @@ CMercenaryBomb::CMercenaryBomb(CGameContext *pGameContext, vec2 Pos, int Owner)
 	{
 		m_IDs[i] = Server()->SnapNewID();
 	}
+
+	GameServer()->CreateSound(GetPos(), SOUND_PICKUP_ARMOR);
 }
 
 CMercenaryBomb::~CMercenaryBomb()
@@ -37,6 +39,8 @@ void CMercenaryBomb::IncreaseDamage(int weapon)
 	m_Damage = weapon == WEAPON_HAMMER ? m_Damage + 2 : m_Damage + 1.5;
 	if(m_Damage > Config()->m_InfMercBombs)
 		m_Damage = Config()->m_InfMercBombs;
+
+	GameServer()->CreateSound(GetPos(), SOUND_PICKUP_ARMOR);
 }
 
 void CMercenaryBomb::Tick()

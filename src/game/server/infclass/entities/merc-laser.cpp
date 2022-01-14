@@ -40,7 +40,6 @@ bool CMercenaryLaser::HitCharacter(vec2 From, vec2 To)
 	{
 		CMercenaryBomb *pBomb = static_cast<CMercenaryBomb*>(pHitMercBomb);
 		pBomb->IncreaseDamage(WEAPON_LASER);
-		GameServer()->CreateSound(GetPos(), SOUND_PICKUP_ARMOR);
 
 		m_From = From;
 		m_Pos = At;
