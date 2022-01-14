@@ -2157,19 +2157,26 @@ void CServer::ChangeMap(const char *pMap)
 int CServer::LoadMap(const char *pMapName)
 {
 /* INFECTION MODIFICATION START ***************************************/
-	const char *pEventMapName = EventsDirector::GetEventMapName(pMapName);
+	const char *pMapFileName = EventsDirector::GetEventMapName(pMapName);
 
 	char aBuf[512];
-	str_format(aBuf, sizeof(aBuf), "maps/%s.map", pEventMapName);
+	str_format(aBuf, sizeof(aBuf), "maps/%s.map", pMapFileName);
 
-	if(!GenerateClientMap(aBuf, pEventMapName))
+	if(!GenerateClientMap(aBuf, pMapFileName))
 	{
-		str_format(aBuf, sizeof(aBuf), "maps/%s.map", pMapName);
+		if(str_comp(pMapFileName, pMapName) == 0)
+			return 0;
 
-		if(!GenerateClientMap(aBuf, pMapName))
+		pMapFileName = pMapName;
+		str_format(aBuf, sizeof(aBuf), "maps/%s.map", pMapFileName);
+
+		if(!GenerateClientMap(aBuf, pMapFileName))
 			return 0;
 	}
 /* INFECTION MODIFICATION END *****************************************/
+
+	str_format(aBuf, sizeof(aBuf), "map_loaded name='%s' file='maps/%s.map'", pMapName, pMapFileName);
+	Console()->Print(IConsole::OUTPUT_LEVEL_ADDINFO, "server", aBuf);
 
 	// stop recording when we change map
 	m_DemoRecorder.Stop();
