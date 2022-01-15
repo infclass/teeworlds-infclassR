@@ -6,6 +6,9 @@ MACRO_CONFIG_STR(AboutContactsDiscord, about_contacts_discord, 128, "https://inf
 MACRO_CONFIG_STR(AboutContactsTelegram, about_contacts_telegram, 128, "", CFGFLAG_SERVER, "Telegram URL or ID")
 MACRO_CONFIG_STR(AboutContactsMatrix, about_contacts_matrix, 128, "https://infclass.github.io/matrix", CFGFLAG_SERVER, "Matrix room URL")
 
+MACRO_CONFIG_INT(InfInactiveHumansKickTime, inf_inactive_humans_kick_time, 180, 0, 10000, CFGFLAG_SERVER, "How many seconds to wait before taking care of inactive humans")
+MACRO_CONFIG_INT(InfInactiveInfectedKickTime, inf_inactive_infected_kick_time, 30, 0, 10000, CFGFLAG_SERVER, "How many seconds to wait before taking care of inactive infected")
+
 MACRO_CONFIG_INT(InfMinPlayers, inf_min_players, 2, 0, 64, CFGFLAG_SERVER, "Minimum number of players to start the round")
 MACRO_CONFIG_INT(InfChallenge, inf_challenge, 0, 0, 1, CFGFLAG_SERVER, "Enable challenges")
 MACRO_CONFIG_INT(InfAccusationThreshold, inf_accusation_threshold, 4, 0, 8, CFGFLAG_SERVER, "Number of accusations needed to start a banvote")

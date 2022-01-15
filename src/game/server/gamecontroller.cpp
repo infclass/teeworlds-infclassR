@@ -48,6 +48,9 @@ void IGameController::DoActivityCheck()
 	if(g_Config.m_SvInactiveKickTime == 0)
 		return;
 
+	int HumanMaxInactiveTime = Config()->m_InfInactiveHumansKickTime ? Config()->m_InfInactiveHumansKickTime : Config()->m_SvInactiveKickTime;
+	int InfectedMaxInactiveTime = Config()->m_InfInactiveInfectedKickTime ? Config()->m_InfInactiveInfectedKickTime : Config()->m_SvInactiveKickTime;
+
 	unsigned int nbPlayers=0;
 	CPlayerIterator<PLAYERITER_INGAME> Iter(GameServer()->m_apPlayers);
 	while(Iter.Next())
@@ -72,7 +75,10 @@ void IGameController::DoActivityCheck()
 #endif
 		if(GameServer()->m_apPlayers[i] && GameServer()->m_apPlayers[i]->GetTeam() != TEAM_SPECTATORS && (Server()->GetAuthedState(i) == IServer::AUTHED_NO))
 		{
-			if(Server()->Tick() > GameServer()->m_apPlayers[i]->m_LastActionTick + g_Config.m_SvInactiveKickTime * Server()->TickSpeed() * 60)
+			CPlayer *pPlayerI = GameServer()->m_apPlayers[i];
+			float PlayerMaxInactiveTime = pPlayerI->IsHuman() ? HumanMaxInactiveTime : InfectedMaxInactiveTime;
+
+			if(Server()->Tick() > pPlayerI->m_LastActionTick + PlayerMaxInactiveTime * Server()->TickSpeed())
 			{
 				switch(g_Config.m_SvInactiveKick)
 				{
