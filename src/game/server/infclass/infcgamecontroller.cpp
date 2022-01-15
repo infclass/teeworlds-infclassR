@@ -1748,12 +1748,14 @@ bool CInfClassGameController::WhiteHoleEnabled() const
 
 float CInfClassGameController::GetTimeLimit() const
 {
+	float BaseTimeLimit = Config()->m_SvTimelimitInSeconds ? Config()->m_SvTimelimitInSeconds / 60.0 : Config()->m_SvTimelimit;
+
 	switch(GetRoundType())
 	{
 	case ROUND_TYPE::FUN:
-		return minimum(Config()->m_SvTimelimit, Config()->m_FunRoundDuration);
+		return minimum<float>(BaseTimeLimit, Config()->m_FunRoundDuration);
 	default:
-		return Config()->m_SvTimelimit;
+		return BaseTimeLimit;
 	}
 }
 
