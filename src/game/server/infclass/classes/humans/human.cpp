@@ -57,8 +57,10 @@ void CInfClassHuman::OnCharacterPreCoreTick()
 			if(m_pCharacter->PositionIsLocked())
 			{
 				--m_PositionLockTicksRemaining;
-				if(m_PositionLockTicksRemaining <= 0)
+				if((m_PositionLockTicksRemaining <= 0) || m_pCharacter->m_Core.m_IsPassenger)
+				{
 					m_pCharacter->UnlockPosition();
+				}
 			}
 
 			if(!m_pCharacter->PositionIsLocked())
@@ -685,6 +687,11 @@ bool CInfClassHuman::PositionLockAvailable() const
 	}
 
 	if(GetPos().y <= -600)
+	{
+		return false;
+	}
+
+	if(m_pCharacter->m_Core.m_IsPassenger)
 	{
 		return false;
 	}
