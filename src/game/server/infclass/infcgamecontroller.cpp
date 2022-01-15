@@ -1792,7 +1792,15 @@ void CInfClassGameController::Snap(int SnappingClient)
 	pGameInfoObj->m_WarmupTimer = m_Warmup;
 
 	pGameInfoObj->m_ScoreLimit = g_Config.m_SvScorelimit;
-	pGameInfoObj->m_TimeLimit = GetTimeLimit();
+
+	int WholeMinutes = GetTimeLimit();
+	float FractionalPart = GetTimeLimit() - WholeMinutes;
+
+	pGameInfoObj->m_TimeLimit = WholeMinutes + (FractionalPart ? 1 : 0);
+	if(FractionalPart)
+	{
+		pGameInfoObj->m_RoundStartTick -= (1 - FractionalPart) * 60 * Server()->TickSpeed();
+	}
 
 	pGameInfoObj->m_RoundNum = (str_length(g_Config.m_SvMaprotation) && g_Config.m_SvRoundsPerMap) ? g_Config.m_SvRoundsPerMap : 0;
 	pGameInfoObj->m_RoundCurrent = m_RoundCount+1;
@@ -1901,7 +1909,7 @@ void CInfClassGameController::SnapMapMenu(int SnappingClient, CNetObj_GameInfo *
 	int Page = CMapConverter::TIMESHIFT_MENUCLASS + 3*((Item+1) + ClassMask*CMapConverter::TIMESHIFT_MENUCLASS_MASK) + 1;
 
 	double PageShift = static_cast<double>(Page * Server()->GetTimeShiftUnit())/1000.0f;
-	double CycleShift = fmod(static_cast<double>(Server()->Tick() - m_RoundStartTick)/Server()->TickSpeed(), Server()->GetTimeShiftUnit()/1000.0);
+	double CycleShift = fmod(static_cast<double>(Server()->Tick() - pGameInfoObj->m_RoundStartTick)/Server()->TickSpeed(), Server()->GetTimeShiftUnit()/1000.0);
 	int TimeShift = (PageShift + CycleShift)*Server()->TickSpeed();
 
 	pGameInfoObj->m_RoundStartTick = Server()->Tick() - TimeShift;
