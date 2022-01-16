@@ -1,3 +1,13 @@
+InfclassR v1.4.0_alpha4
+- Added 'inf_initial_infection_delay' conf variable
+- Fixed zones tesselation
+- ENTITIES_OFF DDNet tile is now allowed for maps
+- Added 'sv_timelimit_in_seconds' conf variable
+- Humans inactivity time limit increased to 180 seconds
+- 'Lock position' disabled for taxi-passenger Sniper
+- 'Love effect' now used to animate lovers attacks
+- Humans won't be freezed on entering inf zone anymore
+
 InfclassR v1.4.0_alpha3
 - Medic grenade launcher now creates the healing
   explosion right away
