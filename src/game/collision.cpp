@@ -273,7 +273,12 @@ inline bool SameSide(const vec2& l0, const vec2& l1, const vec2& p0, const vec2&
 	vec2 l0l1 = l1-l0;
 	vec2 l0p0 = p0-l0;
 	vec2 l0p1 = p1-l0;
-	
+
+	// This check helps in some cases but we still have fails in some others.
+	// The fail is reproducible with infc_provence bells
+	if((l0l1 == l0p0) || (l0l1 == l0p1) || (l0p0 == l0p1))
+		return false;
+
 	return sign(l0l1.x*l0p0.y - l0l1.y*l0p0.x) == sign(l0l1.x*l0p1.y - l0l1.y*l0p1.x);
 }
 
@@ -306,13 +311,17 @@ inline bool InsideTriangle(const vec2& t0, const vec2& t1, const vec2& t2, const
     return (bary.x >= 0.0f && bary.y >= 0.0f && bary.x + bary.y < 1.0f);
 }
 
-//t0, t1 and t2 are position of quad vertices
+//q0, q1, q2 and q3 are position of quad vertices
 inline bool InsideQuad(const vec2& q0, const vec2& q1, const vec2& q2, const vec2& q3, const vec2& p)
 {
+	return InsideTriangle(q0, q1, q2, p) || InsideTriangle(q1, q2, q3, p);
+#if 0
+	// SameSide() check is broken.
 	if(SameSide(q1, q2, p, q0))
 		return InsideTriangle(q0, q1, q2, p);
 	else
 		return InsideTriangle(q1, q2, q3, p);
+#endif
 }
 
 /* TEEUNIVERSE END ****************************************************/
