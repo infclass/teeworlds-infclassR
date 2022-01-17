@@ -205,9 +205,6 @@ public:
 	int m_LastFreezer;
 	int m_LastHooker;
 	int m_LastHookerTick;
-	int m_LastEnforcer;
-	int m_LastEnforcerWeapon;
-	int m_LastEnforcerTick;
 	int m_HookMode;
 	int m_InWater;
 	int m_NinjaVelocityBuff;

@@ -169,7 +169,7 @@ public:
 	int GetLastHooker() const { return m_LastHooker; }
 	void UpdateLastHooker(int ClientID, int HookerTick);
 
-	void UpdateLastEnforcer(int ClientID, float Force, int Weapon, int Tick);
+	void UpdateLastEnforcer(int ClientID, float Force, DAMAGE_TYPE DamageType, int Tick);
 
 	void SaturateVelocity(vec2 Force, float MaxSpeed);
 	bool HasPassenger() const;
@@ -196,6 +196,10 @@ protected:
 
 	int m_BlindnessTicks = 0;
 	int m_LastBlinder = -1;
+
+	int m_LastEnforcer;
+	int m_LastEnforcerTick;
+	DAMAGE_TYPE m_LastEnforcerDamageType;
 
 	int m_DamageTaken = 0;
 	bool m_NeedFullHeal = false;
