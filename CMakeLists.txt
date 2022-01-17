@@ -533,7 +533,7 @@ find_package(ICU REQUIRED COMPONENTS uc i18n)
 
 # Libraries
 set(LIBS
-  ${ZLIB_LIBRARIES}
+  ZLIB::ZLIB
   ${PLATFORM_LIBS}
   # Add pthreads (on non-Windows) at the end, so that other libraries can depend
   # on it.
