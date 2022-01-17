@@ -10,7 +10,7 @@ class CWhiteHole : public CInfCEntity
 private:
 	void StartVisualEffect();
 	void MoveParticles();
-	void MovePlayers();
+	void MoveCharacters();
 
 public:
 	CWhiteHole(CGameContext *pGameContext, vec2 CenterPos, int Owner);

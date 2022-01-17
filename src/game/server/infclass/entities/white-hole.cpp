@@ -156,22 +156,24 @@ void CWhiteHole::MoveParticles()
 	}
 }
 
-void CWhiteHole::MovePlayers()
+void CWhiteHole::MoveCharacters()
 {
 	vec2 Dir;
 	float Distance, Intensity;
 	// Find a player to pull
-	for(CCharacter *pPlayer = (CCharacter*) GameWorld()->FindFirst(CGameWorld::ENTTYPE_CHARACTER); pPlayer; pPlayer = (CCharacter *)pPlayer->TypeNext())
+	for(CInfClassCharacter *pCharacter = (CInfClassCharacter*) GameWorld()->FindFirst(CGameWorld::ENTTYPE_CHARACTER); pCharacter; pCharacter = (CInfClassCharacter *)pCharacter->TypeNext())
 	{
-		if(!Config()->m_InfWhiteHoleAffectsHumans && pPlayer->IsHuman()) continue; // stops humans from being sucked in, if config var is set
-		
-		Dir = m_Pos - pPlayer->m_Pos;
+		if(!Config()->m_InfWhiteHoleAffectsHumans && pCharacter->IsHuman())
+			continue; // stops humans from being sucked in, if config var is set
+
+		Dir = m_Pos - pCharacter->m_Pos;
 		Distance = length(Dir);
 		if(Distance < m_Radius)
 		{
 			Intensity = clamp(1.0f-Distance/m_Radius+0.5f, 0.0f, 1.0f)*m_PlayerPullStrength;
-			pPlayer->m_Core.m_Vel += normalize(Dir)*Intensity;
-			pPlayer->m_Core.m_Vel *= m_PlayerDrag;
+			pCharacter->m_Core.m_Vel += normalize(Dir)*Intensity;
+			pCharacter->m_Core.m_Vel *= m_PlayerDrag;
+			pCharacter->UpdateLastEnforcer(GetOwner(), Intensity, DAMAGE_TYPE::WHITE_HOLE, Server()->Tick());
 		}
 	}
 }
@@ -201,7 +203,7 @@ void CWhiteHole::Tick()
 		}
 
 		MoveParticles();
-		MovePlayers();
+		MoveCharacters();
 	}
 }
 
