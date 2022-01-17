@@ -388,6 +388,7 @@ void CInfClassCharacter::HandleNinja()
 		m_Core.m_Vel = vec2(0.f, 0.f);
 
 		// check if we Hit anything along the way
+		if(m_Core.m_Pos != OldPos)
 		{
 			// Find other players
 			for(CInfClassCharacter *pTarget = (CInfClassCharacter*) GameWorld()->FindFirst(CGameWorld::ENTTYPE_CHARACTER); pTarget; pTarget = (CInfClassCharacter *)pTarget->TypeNext())
