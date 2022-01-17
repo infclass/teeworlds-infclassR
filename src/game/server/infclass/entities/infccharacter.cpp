@@ -615,7 +615,7 @@ bool CInfClassCharacter::TakeDamage(vec2 Force, float FloatDmg, int From, DAMAGE
 	{
 		const float CurrentSpeed = length(m_Core.m_Vel);
 		const float AddedForce = length(Force);
-		if(AddedForce > 3 && (AddedForce > CurrentSpeed * 0.5))
+		if(AddedForce > CurrentSpeed * 0.5)
 		{
 			UpdateLastEnforcer(From, AddedForce, DamageType, Server()->Tick());
 		}
@@ -1012,6 +1012,9 @@ void CInfClassCharacter::UpdateLastHooker(int ClientID, int HookerTick)
 
 void CInfClassCharacter::UpdateLastEnforcer(int ClientID, float Force, DAMAGE_TYPE DamageType, int Tick)
 {
+	if(Force < 3)
+		return;
+
 	m_LastEnforcer = ClientID;
 	m_LastEnforcerDamageType = DamageType;
 	m_LastEnforcerTick = Tick;
