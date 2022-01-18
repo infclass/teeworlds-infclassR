@@ -73,8 +73,7 @@ void CInfClassCharacter::OnCharacterSpawned(const SpawnContext &Context)
 	m_LastFreezer = -1;
 	m_LastHooker = -1;
 	m_LastHookerTick = -1;
-	m_LastEnforcer = -1;
-	m_LastEnforcerTick = -1;
+	m_EnforcersInfo.Clear();
 
 	ClassSpawnAttributes();
 	DestroyChildEntities();
@@ -1021,11 +1020,14 @@ void CInfClassCharacter::GetActualKillers(int GivenKiller, DAMAGE_TYPE GivenWeap
 		}
 	}
 
-	if(m_LastEnforcer >= 0 && (m_LastEnforcerTick > m_LastHookerTick))
+	for(const EnforcerInfo &info : m_EnforcersInfo)
 	{
-		if(!Enforcers.Contains(m_LastEnforcer))
+		if(info.m_Tick > m_LastHookerTick)
 		{
-			Enforcers.Add(m_LastEnforcer);
+			if(!Enforcers.Contains(info.m_CID))
+			{
+				Enforcers.Add(info.m_CID);
+			}
 		}
 	}
 
@@ -1083,9 +1085,26 @@ void CInfClassCharacter::UpdateLastEnforcer(int ClientID, float Force, DAMAGE_TY
 	if(Force < 3)
 		return;
 
-	m_LastEnforcer = ClientID;
-	m_LastEnforcerDamageType = DamageType;
-	m_LastEnforcerTick = Tick;
+	if(m_EnforcersInfo.Size() == m_EnforcersInfo.Capacity())
+	{
+		m_EnforcersInfo.RemoveAt(0);
+	}
+
+	if(!m_EnforcersInfo.IsEmpty())
+	{
+		if(m_EnforcersInfo.Last().m_CID == ClientID)
+		{
+			m_EnforcersInfo.Last().m_Tick = Tick;
+			return;
+		}
+	}
+
+	EnforcerInfo Info;
+	Info.m_CID = ClientID;
+	Info.m_DamageType = DamageType;
+	Info.m_Tick = Tick;
+
+	m_EnforcersInfo.Add(Info);
 }
 
 void CInfClassCharacter::SaturateVelocity(vec2 Force, float MaxSpeed)
@@ -2131,12 +2150,28 @@ void CInfClassCharacter::HandleIndirectKillerCleanup()
 	}
 
 	const float LastEnforcerTimeoutInSeconds = Config()->m_InfLastEnforcerTimeMs / 1000.0f;
-	if(m_LastEnforcer >= 0)
+	while(!m_EnforcersInfo.IsEmpty())
 	{
-		if(Server()->Tick() > m_LastEnforcerTick + Server()->TickSpeed() * LastEnforcerTimeoutInSeconds)
+		const EnforcerInfo &info = m_EnforcersInfo.First();
+		if(Server()->Tick() > info.m_Tick + Server()->TickSpeed() * LastEnforcerTimeoutInSeconds)
 		{
-			m_LastEnforcer = -1;
-			m_LastEnforcerTick = -1;
+			m_EnforcersInfo.RemoveAt(0);
+		}
+		else
+		{
+			break;
+		}
+	}
+
+	if(!m_EnforcersInfo.IsEmpty())
+	{
+		for(EnforcerInfo &info : m_EnforcersInfo)
+		{
+			if(Server()->Tick() > info.m_Tick + Server()->TickSpeed() * LastEnforcerTimeoutInSeconds)
+			{
+				info.m_CID = -1;
+				info.m_Tick = -1;
+			}
 		}
 	}
 

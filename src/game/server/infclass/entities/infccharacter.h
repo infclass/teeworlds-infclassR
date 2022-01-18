@@ -25,6 +25,13 @@ struct CDamagePoint
 	int Tick = 0;
 };
 
+struct EnforcerInfo
+{
+	int m_CID;
+	int m_Tick;
+	DAMAGE_TYPE m_DamageType;
+};
+
 struct WeaponFireContext
 {
 	int Weapon = 0;
@@ -207,9 +214,7 @@ protected:
 	int m_BlindnessTicks = 0;
 	int m_LastBlinder = -1;
 
-	int m_LastEnforcer;
-	int m_LastEnforcerTick;
-	DAMAGE_TYPE m_LastEnforcerDamageType;
+	array_on_stack<EnforcerInfo, 4> m_EnforcersInfo;
 
 	int m_DamageTaken = 0;
 	array_on_stack<CDamagePoint, 4> m_TakenDamageDetails;
