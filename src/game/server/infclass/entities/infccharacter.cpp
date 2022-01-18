@@ -2687,7 +2687,7 @@ void CInfClassCharacter::PostCoreTick()
 
 void CInfClassCharacter::ClassSpawnAttributes()
 {
-	m_Health = 10;
+	int Armor = m_Armor;
 	m_IsInvisible = false;
 
 	const int PlayerClass = GetPlayerClass();
@@ -2698,8 +2698,10 @@ void CInfClassCharacter::ClassSpawnAttributes()
 	}
 	else
 	{
-		m_Armor = 0;
+		Armor = 0;
 	}
+
+	SetHealthArmor(10, Armor);
 
 	if(PlayerClass == PLAYERCLASS_HERO)
 	{

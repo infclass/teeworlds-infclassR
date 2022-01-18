@@ -57,8 +57,7 @@ void CHeroFlag::SetCoolDown()
 
 void CHeroFlag::GiveGift(CInfClassCharacter* pHero)
 {
-	pHero->IncreaseHealth(10);
-	pHero->IncreaseArmor(10);
+	pHero->SetHealthArmor(10, 10);
 	pHero->GiveWeapon(WEAPON_SHOTGUN, -1);
 	pHero->GiveWeapon(WEAPON_GRENADE, -1);
 	pHero->GiveWeapon(WEAPON_LASER, -1);
