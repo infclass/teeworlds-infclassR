@@ -71,14 +71,16 @@ void CHeroFlag::GiveGift(CInfClassCharacter* pHero)
 	{
 		if(pHero->m_TurretCount < Config()->m_InfTurretMaxPerPlayer)
 		{
-			if (pHero->m_TurretCount == 0)
-			pHero->GiveWeapon(WEAPON_HAMMER, -1);
+			if(pHero->m_TurretCount == 0)
+				pHero->GiveWeapon(WEAPON_HAMMER, -1);
 
 			pHero->m_TurretCount += Config()->m_InfTurretGive;
 
-			char aBuf[256];
-			str_format(aBuf, sizeof(aBuf), "you gained a turret (%i), place it with the hammer", pHero->m_TurretCount);
-			GameServer()->SendChatTarget_Localization(pHero->GetCID(), CHATCATEGORY_SCORE, aBuf, NULL);
+			GameServer()->SendChatTarget_Localization_P(pHero->GetCID(), CHATCATEGORY_SCORE, pHero->m_TurretCount,
+				_P("You have {int:NumTurrets} turret available, use the Hammer to place it",
+				   "You have {int:NumTurrets} turrets available, use the Hammer to place it"),
+				"NumTurrets", &pHero->m_TurretCount,
+				nullptr);
 		}
 	}
 		
