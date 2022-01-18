@@ -45,8 +45,7 @@ public:
 	const vector2_base &operator /=(const vector2_base &v) { x /= v.x; y /= v.y; return *this; }
 
 	bool operator ==(const vector2_base &v) const { return x == v.x && y == v.y; } //TODO: do this with an eps instead
-
-	operator const T* () { return &x; }
+	bool operator!=(const vector2_base &v) const { return x != v.x || y != v.y; }
 };
 
 template<typename T>
