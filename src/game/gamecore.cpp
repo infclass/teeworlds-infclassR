@@ -288,13 +288,9 @@ void CCharacterCore::Tick(bool UseInput, CParams* pParams)
 				m_HookState = HOOK_RETRACTED;
 				m_HookPos = m_Pos;
 			}
-
-			// keep players hooked for a max of 1.5sec
-			//if(Server()->Tick() > hook_tick+(Server()->TickSpeed()*3)/2)
-				//release_hooked();
 		}
 
-		// don't do this hook rutine when we are hook to a player
+		// don't do this hook routine when we are hook to a player
 		if(m_HookedPlayer == -1 && distance(m_HookPos, m_Pos) > 46.0f)
 		{
 			vec2 HookVel = normalize(m_HookPos-m_Pos)*pTuningParams->m_HookDragAccel;
@@ -314,8 +310,9 @@ void CCharacterCore::Tick(bool UseInput, CParams* pParams)
 
 			// check if we are under the legal limit for the hook
 			if(length(NewVel) < pTuningParams->m_HookDragSpeed || length(NewVel) < length(m_Vel))
+			{
 				m_Vel = NewVel; // no problem. apply
-
+			}
 		}
 
 		// release hook (max hook time is 1.25)

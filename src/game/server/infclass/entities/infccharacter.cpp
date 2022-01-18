@@ -969,7 +969,7 @@ void CInfClassCharacter::GetActualKillers(int GivenKiller, DAMAGE_TYPE GivenWeap
 		bool InevitableDeath  = m_TakenDamageDetails.Last().From != GivenKiller || m_TakenDamageDetails.Last().DamageType != GivenWeapon;
 		if(InevitableDeath)
 		{
-			// This a direct die() call without damage dealt first.
+			// This is a direct die() call without damage dealt first.
 			// It means that the dealt damage does not matter.
 		}
 		else
@@ -1839,6 +1839,7 @@ void CInfClassCharacter::OnLaserFired(WeaponFireContext *pFireContext)
 void CInfClassCharacter::OnNinjaFired(WeaponFireContext *pFireContext)
 {
 	// The design of ninja supposes different implementation (not via FireWeapon)
+	// See HandleNinja() for details.
 }
 
 void CInfClassCharacter::OnMercGrenadeFired(WeaponFireContext *pFireContext)
