@@ -1490,12 +1490,13 @@ void CInfClassGameController::TickInfectionStarted()
 	CInfClassPlayerIterator<PLAYERITER_INGAME> Iter(GameServer()->m_apPlayers);
 	while(Iter.Next())
 	{
+		CInfClassPlayer *pPlayer = Iter.Player();
 		// Set the player class if not set yet
-		if(Iter.Player()->GetClass() == PLAYERCLASS_NONE)
+		if(pPlayer->GetClass() == PLAYERCLASS_NONE)
 		{
 			if(StartInfectionTrigger)
 			{
-				Iter.Player()->SetClass(ChooseHumanClass(Iter.Player()));
+				pPlayer->SetClass(ChooseHumanClass(pPlayer));
 				CInfClassCharacter *pCharacter = Iter.Player()->GetCharacter();
 				if(pCharacter)
 				{
@@ -1504,7 +1505,9 @@ void CInfClassGameController::TickInfectionStarted()
 			}
 			else
 			{
-				Iter.Player()->StartInfection();
+				pPlayer->KillCharacter(); // Infect the player
+				pPlayer->StartInfection();
+				pPlayer->m_DieTick = m_RoundStartTick;
 				NumInfected++;
 				NumHumans--;
 			}
@@ -1537,8 +1540,6 @@ void CInfClassGameController::TickInfectionStarted()
 			CInfClassPlayer *pPlayer = Iter.Player();
 			if(pPlayer->IsZombie())
 			{
-				pPlayer->KillCharacter(); // Infect the player
-				pPlayer->m_DieTick = m_RoundStartTick;
 				continue;
 			}
 
