@@ -93,6 +93,7 @@ void CInfClassInfected::OnCharacterPreCoreTick()
 					{
 						m_pCharacter->SetHookedPlayer(p->GetCID());
 						m_pCharacter->m_HookMode = 0;
+						m_pCharacter->m_Core.m_HookTick = 0;
 
 						break;
 					}
