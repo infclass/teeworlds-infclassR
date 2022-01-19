@@ -2063,7 +2063,7 @@ void CInfClassGameController::RewardTheKiller(CInfClassCharacter *pVictim, CInfC
 					pKiller->GetCharacter()->GiveNinjaBuf();
 					pKiller->GetCharacter()->SetEmote(EMOTE_HAPPY, Server()->Tick() + Server()->TickSpeed());
 					GameServer()->SendEmoticon(pKiller->GetCID(), EMOTICON_MUSIC);
-					pKiller->GetCharacter()->IncreaseOverallHp(4);
+					pKiller->GetCharacter()->Heal(4);
 				}
 			}
 		}

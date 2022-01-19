@@ -291,10 +291,7 @@ void CGrowingExplosion::Tick()
 				switch(m_ExplosionEffect)
 				{
 				case GROWING_EXPLOSION_EFFECT::HEAL_HUMANS:
-					if(p->IncreaseArmor(1))
-					{
-						GameServer()->SendEmoticon(p->GetCID(), EMOTICON_EYES);
-					}
+					p->GiveArmor(1, GetOwner());
 					m_Hit[p->GetCID()] = true;
 					break;
 				default:

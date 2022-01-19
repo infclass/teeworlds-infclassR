@@ -97,7 +97,7 @@ void CInfClassCharacter::OnCharacterInInfectionZone()
 			if((GameController()->GetMinimumInfected() == 1) && (GameServer()->GetZombieCount() == 1))
 			{
 				// See also: Character::GiveArmorIfLonely()
-				IncreaseOverallHp(1);
+				Heal(1);
 			}
 			else
 			{
@@ -657,8 +657,7 @@ bool CInfClassCharacter::TakeDamage(vec2 Force, float FloatDmg, int From, DAMAGE
 					TryUnfreeze();
 					if(!IsFrozen())
 					{
-						IncreaseOverallHp(8+random_int(0, 10));
-						SetEmote(EMOTE_HAPPY, Server()->Tick() + Server()->TickSpeed());
+						Heal(8+random_int(0, 10), From);
 					}
 				}
 				return false;
@@ -772,6 +771,30 @@ bool CInfClassCharacter::TakeDamage(vec2 Force, int Dmg, int From, int Weapon, T
 {
 	DAMAGE_TYPE DamageType = DAMAGE_TYPE::INVALID;
 	return TakeDamage(Force, Dmg, From, DamageType);
+}
+
+bool CInfClassCharacter::Heal(int HitPoints, int FromCID)
+{
+	bool Healed = IncreaseOverallHp(HitPoints);
+
+	if(Healed)
+	{
+		SetEmote(EMOTE_HAPPY, Server()->Tick() + Server()->TickSpeed());
+	}
+
+	return Healed;
+}
+
+bool CInfClassCharacter::GiveArmor(int HitPoints, int FromCID)
+{
+	bool Armored = IncreaseArmor(HitPoints);
+
+	if(Armored)
+	{
+		SetEmote(EMOTE_HAPPY, Server()->Tick() + Server()->TickSpeed());
+	}
+
+	return Armored;
 }
 
 void CInfClassCharacter::HandleDamage(int From, int Damage, DAMAGE_TYPE DamageType)
@@ -1466,10 +1489,9 @@ void CInfClassCharacter::OnHammerFired(WeaponFireContext *pFireContext)
 						}
 						else
 						{
-							if(pTarget->IncreaseOverallHp(4))
+							if(pTarget->Heal(4, GetCID()))
 							{
-								IncreaseOverallHp(1);
-								pTarget->SetEmote(EMOTE_HAPPY, Server()->Tick() + Server()->TickSpeed());
+								Heal(1);
 							}
 
 							if(!pTarget->GetPlayer()->HookProtectionEnabled())
@@ -1519,7 +1541,7 @@ void CInfClassCharacter::OnHammerFired(WeaponFireContext *pFireContext)
 					{
 						if(pTarget->GetPlayerClass() != PLAYERCLASS_HERO)
 						{
-							pTarget->IncreaseArmor(4);
+							pTarget->GiveArmor(4, GetCID());
 							if(pTarget->m_Armor == 10 && pTarget->m_NeedFullHeal)
 							{
 								Server()->RoundStatistics()->OnScoreEvent(GetCID(), SCOREEVENT_HUMAN_HEALING, GetPlayerClass(), Server()->ClientName(GetCID()), Console());
@@ -1527,7 +1549,6 @@ void CInfClassCharacter::OnHammerFired(WeaponFireContext *pFireContext)
 								pTarget->m_NeedFullHeal = false;
 								m_aWeapons[WEAPON_GRENADE].m_Ammo++;
 							}
-							pTarget->SetEmote(EMOTE_HAPPY, Server()->Tick() + Server()->TickSpeed());
 						}
 					}
 				}
@@ -2141,7 +2162,7 @@ void CInfClassCharacter::HandleHookDraining()
 					VictimChar->TakeDamage(vec2(0.0f,0.0f), Damage, GetCID(), DAMAGE_TYPE::DRYING_HOOK);
 					if((GetPlayerClass() == PLAYERCLASS_SMOKER || GetPlayerClass() == PLAYERCLASS_BAT) && VictimChar->IsHuman())
 					{
-						IncreaseOverallHp(2);
+						Heal(2);
 					}
 				}
 			}
@@ -2557,7 +2578,7 @@ void CInfClassCharacter::PlaceSlugSlime(WeaponFireContext *pFireContext)
 void CInfClassCharacter::GiveGift(int GiftType)
 {
 	IncreaseHealth(1);
-	IncreaseArmor(4);
+	GiveArmor(4);
 
 	switch(GetPlayerClass())
 	{

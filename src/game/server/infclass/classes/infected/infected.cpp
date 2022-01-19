@@ -432,7 +432,7 @@ void CInfClassInfected::OnSlimeEffect(int Owner)
 	{
 		if(m_pCharacter->GetHealthArmorSum() < Config()->m_InfSlimeMaxHeal)
 		{
-			m_pCharacter->IncreaseOverallHp(1);
+			m_pCharacter->Heal(1, GetCID());
 		}
 		m_SlimeHealTick = Server()->Tick();
 	}
@@ -443,7 +443,7 @@ void CInfClassInfected::OnFloatingPointCollected(int Points)
 	if(GetPlayerClass() != PLAYERCLASS_GHOUL)
 		return;
 
-	m_pCharacter->IncreaseOverallHp(4);
+	m_pCharacter->Heal(4);
 	IncreaseGhoulLevel(Points);
 }
 

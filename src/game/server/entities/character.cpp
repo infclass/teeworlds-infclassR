@@ -811,8 +811,9 @@ bool CCharacter::IncreaseArmor(int Amount)
 bool CCharacter::IncreaseOverallHp(int Amount)
 {
 	int MissingHealth = 10 - m_Health;
+	int MissingArmor = 10 - m_Armor;
 	int ExtraHealthAmount = clamp<int>(Amount, 0, MissingHealth);
-	int ExtraArmorAmount = clamp<int>(Amount - ExtraHealthAmount, 0, 10);
+	int ExtraArmorAmount = clamp<int>(Amount - ExtraHealthAmount, 0, MissingArmor);
 
 	if((ExtraHealthAmount > 0) || (ExtraArmorAmount > 0))
 	{
