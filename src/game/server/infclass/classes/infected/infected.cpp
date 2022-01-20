@@ -396,6 +396,9 @@ void CInfClassInfected::DoBoomerExplosion()
 				}
 			}
 
+			const float BoomerHelperDuration = 20;
+			pTarget->AddHelper(GetCID(), BoomerHelperDuration);
+
 			Length = 1-clamp((Length-InnerRadius)/(DamageRadius-InnerRadius), 0.0f, 1.0f);
 
 			if(Length)
