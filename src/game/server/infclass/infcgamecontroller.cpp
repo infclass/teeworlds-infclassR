@@ -908,6 +908,13 @@ int CInfClassGameController::DamageTypeToWeapon(DAMAGE_TYPE DamageType, TAKEDAMA
 	return Weapon;
 }
 
+TAKEDAMAGEMODE CInfClassGameController::DamageTypeToDamageMode(DAMAGE_TYPE DamageType)
+{
+	TAKEDAMAGEMODE Mode;
+	DamageTypeToWeapon(DamageType, &Mode);
+	return Mode;
+}
+
 void CInfClassGameController::RegisterChatCommands(IConsole *pConsole)
 {
 	pConsole->Register("set_client_name", "i<clientid> s<name>", CFGFLAG_SERVER, ConSetClientName, this, "Set the name of a player");

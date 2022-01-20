@@ -114,6 +114,7 @@ public:
 	static const char *GetClassPluralDisplayName(int PlayerClass);
 	static int MenuClassToPlayerClass(int MenuClass);
 	static int DamageTypeToWeapon(DAMAGE_TYPE DamageType, TAKEDAMAGEMODE *pMode = nullptr);
+	static TAKEDAMAGEMODE DamageTypeToDamageMode(DAMAGE_TYPE DamageType);
 
 	void RegisterChatCommands(class IConsole *pConsole) override;
 
