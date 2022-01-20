@@ -132,7 +132,7 @@ public:
 	CInfClassCharacter *GetCharacter(int ClientID) const;
 	int GetPlayerOwnCursorID(int ClientID) const;
 
-	void SortCharactersByDistance(const ClientsArray &Input, ClientsArray *pInput, const vec2 &Center, const float MaxDistance = 0);
+	void SortCharactersByDistance(const ClientsArray &Input, ClientsArray *pOutput, const vec2 &Center, const float MaxDistance = 0);
 	void GetSortedTargetsInRange(const vec2 &Center, const float Radius, const ClientsArray &SkipList, ClientsArray *pOutput);
 	int GetMinimumInfected() const;
 

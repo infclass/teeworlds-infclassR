@@ -1066,7 +1066,7 @@ int CInfClassGameController::GetPlayerOwnCursorID(int ClientID) const
 	return m_PlayerOwnCursorID;
 }
 
-void CInfClassGameController::SortCharactersByDistance(const ClientsArray &Input, ClientsArray *pInput, const vec2 &Center, const float MaxDistance)
+void CInfClassGameController::SortCharactersByDistance(const ClientsArray &Input, ClientsArray *pOutput, const vec2 &Center, const float MaxDistance)
 {
 	struct DistanceItem
 	{
@@ -1105,10 +1105,10 @@ void CInfClassGameController::SortCharactersByDistance(const ClientsArray &Input
 		std::sort(Distances.begin(), Distances.end());
 	}
 
-	pInput->Clear();
+	pOutput->Clear();
 	for(const DistanceItem &DistanceItem : Distances)
 	{
-		pInput->Add(DistanceItem.ClientID);
+		pOutput->Add(DistanceItem.ClientID);
 	}
 }
 
