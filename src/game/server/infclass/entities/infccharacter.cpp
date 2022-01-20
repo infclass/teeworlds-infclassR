@@ -780,11 +780,14 @@ bool CInfClassCharacter::Heal(int HitPoints, int FromCID)
 		return false;
 	}
 
+	bool HadFullHealth = m_Health >= 10;
 	bool Healed = IncreaseOverallHp(HitPoints);
 
 	if(Healed)
 	{
 		SetEmote(EMOTE_HAPPY, Server()->Tick() + Server()->TickSpeed());
+		int Sound = HadFullHealth ? SOUND_PICKUP_ARMOR : SOUND_PICKUP_HEALTH;
+		GameContext()->CreateSound(GetPos(), Sound, CmaskOne(GetCID()));
 	}
 
 	return Healed;
@@ -802,6 +805,8 @@ bool CInfClassCharacter::GiveArmor(int HitPoints, int FromCID)
 	if(Armored)
 	{
 		SetEmote(EMOTE_HAPPY, Server()->Tick() + Server()->TickSpeed());
+		int Sound = SOUND_PICKUP_ARMOR;
+		GameContext()->CreateSound(GetPos(), Sound, CmaskOne(GetCID()));
 	}
 
 	return Armored;
