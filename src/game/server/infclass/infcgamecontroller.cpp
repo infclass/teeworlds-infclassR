@@ -254,12 +254,8 @@ void CInfClassGameController::HandleCharacterTiles(CCharacter *pChr)
 void CInfClassGameController::HandleLastHookers()
 {
 	const int CurrentTick = Server()->Tick();
-	array_on_stack<int, MAX_CLIENTS> ActiveHooks;
-	ActiveHooks.Resize(MAX_CLIENTS);
-	for(int &HookId : ActiveHooks)
-	{
-		HookId = -1;
-	}
+	array_on_stack<ClientsArray, MAX_CLIENTS> CharacterHookedBy;
+	CharacterHookedBy.Resize(MAX_CLIENTS);
 
 	for(int i = 0; i < MAX_CLIENTS; ++i)
 	{
@@ -275,38 +271,27 @@ void CInfClassGameController::HandleLastHookers()
 			continue;
 		}
 
-		if(ActiveHooks[HookedPlayer] >= 0)
-		{
-			CInfClassCharacter *pCharacter = GetCharacter(HookedPlayer);
-			if(!pCharacter)
-			{
-				continue;
-			}
-			bool IsLastHooker = i == pCharacter->GetLastHooker();
-			if(!IsLastHooker)
-			{
-				// Only the last hooker has higher priority. Ignore the others for now.
-				continue;
-			}
-		}
-
-		ActiveHooks[HookedPlayer] = i;
+		CharacterHookedBy[HookedPlayer].Add(i);
 	}
 
-	for(int i = 0; i < ActiveHooks.Size(); ++i)
+	for(int TargetCID = 0; TargetCID < CharacterHookedBy.Size(); ++TargetCID)
 	{
-		int NewHookerCID = ActiveHooks.At(i);
-		if(NewHookerCID < 0)
+		ClientsArray &HookedBy = CharacterHookedBy[TargetCID];
+		if(HookedBy.IsEmpty())
 		{
 			continue;
 		}
-		CInfClassCharacter *pHookedCharacter = GetCharacter(i);
+		CInfClassCharacter *pHookedCharacter = GetCharacter(TargetCID);
 		if(!pHookedCharacter)
 		{
 			continue;
 		}
 
-		pHookedCharacter->UpdateLastHooker(NewHookerCID, CurrentTick);
+		if(HookedBy.Size() > 1)
+		{
+			SortCharactersByDistance(HookedBy, &HookedBy, pHookedCharacter->GetPos());
+		}
+		pHookedCharacter->UpdateLastHookers(HookedBy, CurrentTick);
 	}
 }
 

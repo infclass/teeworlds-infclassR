@@ -59,6 +59,8 @@ struct SpawnContext
 	SPAWN_TYPE SpawnType = MapSpawn;
 };
 
+using ClientsArray = array_on_stack<int, 64>; // MAX_CLIENTS
+
 class CInfClassCharacter : public CCharacter
 {
 	MACRO_ALLOC_POOL_ID()
@@ -111,8 +113,9 @@ public:
 	void HandleHookDraining();
 	void HandleIndirectKillerCleanup();
 
-	void Die(int Killer, DAMAGE_TYPE DamageType);
 	void Die(int Killer, int Weapon) override;
+	void Die(int Killer, DAMAGE_TYPE DamageType);
+	void Die(DAMAGE_TYPE DamageType, int Killer, int Assistant);
 
 	void SetActiveWeapon(int Weapon);
 	void SetLastWeapon(int Weapon);
@@ -183,10 +186,9 @@ public:
 	CHeroFlag *GetHeroFlag() { return m_pHeroFlag; }
 	int GetFlagCoolDown();
 
-	void GetActualKillers(int GivenKiller, DAMAGE_TYPE GivenWeapon, int *pKillerId, int *pAssistant) const;
+	void GetActualKillers(int GivenKiller, DAMAGE_TYPE GivenWeapon, int *pKiller, int *pAssistant) const;
 
-	int GetLastHooker() const { return m_LastHooker; }
-	void UpdateLastHooker(int ClientID, int HookerTick);
+	void UpdateLastHookers(const ClientsArray &Hookers, int HookerTick);
 
 	void UpdateLastEnforcer(int ClientID, float Force, DAMAGE_TYPE DamageType, int Tick);
 
@@ -215,6 +217,9 @@ protected:
 protected:
 	CInfClassGameController *m_pGameController = nullptr;
 	CInfClassPlayerClass *m_pClass = nullptr;
+
+	ClientsArray m_LastHookers;
+	int m_LastHookerTick = -1;
 
 	int m_BlindnessTicks = 0;
 	int m_LastBlinder = -1;

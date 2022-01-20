@@ -71,7 +71,7 @@ void CInfClassCharacter::OnCharacterSpawned(const SpawnContext &Context)
 	m_HallucinationTick = -1;
 	m_SlipperyTick = -1;
 	m_LastFreezer = -1;
-	m_LastHooker = -1;
+	m_LastHookers.Clear();
 	m_LastHookerTick = -1;
 	m_EnforcersInfo.Clear();
 
@@ -741,7 +741,11 @@ bool CInfClassCharacter::TakeDamage(vec2 Force, float FloatDmg, int From, DAMAGE
 	// check for death
 	if(m_Health <= 0)
 	{
-		Die(From, DamageType);
+		int Killer = -1;
+		int Assistant = -1;
+		GetActualKillers(From, DamageType, &Killer, &Assistant);
+
+		Die(DamageType, Killer, Assistant);
 		return false;
 	}
 
@@ -756,7 +760,11 @@ bool CInfClassCharacter::TakeDamage(vec2 Force, float FloatDmg, int From, DAMAGE
 			Server()->ClientName(GetCID()), Weapon);
 		GameServer()->Console()->Print(IConsole::OUTPUT_LEVEL_DEBUG, "game", aBuf);
 
-		GameController()->SendKillMessage(GetCID(), DamageType, From);
+		int Killer = -1;
+		int Assistant = -1;
+		GetActualKillers(From, DamageType, &Killer, &Assistant);
+
+		GameController()->SendKillMessage(GetCID(), DamageType, Killer, Assistant);
 	}
 /* INFECTION MODIFICATION END *****************************************/
 
@@ -929,9 +937,9 @@ int CInfClassCharacter::GetFlagCoolDown()
 	return m_pHeroFlag ? m_pHeroFlag->GetCoolDown() : 0;
 }
 
-void CInfClassCharacter::GetActualKillers(int GivenKiller, DAMAGE_TYPE GivenWeapon, int *pKillerId, int *pAssistant) const
+void CInfClassCharacter::GetActualKillers(int GivenKiller, DAMAGE_TYPE DamageType, int *pKiller, int *pAssistant) const
 {
-	switch(GivenWeapon)
+	switch(DamageType)
 	{
 	case DAMAGE_TYPE::GAME:
 	case DAMAGE_TYPE::GAME_FINAL_EXPLOSION:
@@ -941,7 +949,30 @@ void CInfClassCharacter::GetActualKillers(int GivenKiller, DAMAGE_TYPE GivenWeap
 		break;
 	}
 
-	if(GivenWeapon == DAMAGE_TYPE::BOOMER_EXPLOSION)
+	// Test Cases:
+	// - Soldier exploded themself while being hooked by an infected:
+	//   Message: Killed by the infected with SOLDIER_BOMB
+	// - Medic pushed an infected to spikes by a shotgun:
+	//   Medic killed the infected with DEATH_TILE
+	// - Medic pushed an infected to LaserWall by a shotgun:
+	//   Medic killed the infected with LASER_WALL
+	// - An infected was freezed by ninja and then fell on a DEATH_TILE:
+	//   Ninja killed the infected with DEATH_TILE
+	// - Inf freezed by ninja and an engi hooked the inf to make it falling down (to kill tiles):
+	//   killer=engi with assistant=ninja killed the inf with DEATH_TILE
+	// - Sniper killed a merc-poisoned inf from a locked position:
+	//   killer=sniper (insta-kill)
+	// - Sniper killed a merc-poisoned inf from unlocked position:
+	//   killer=sniper assistant=merc
+	//
+	// - Hunter hammered a med poisoned by a slug:
+	//   killer=hunter (insta kill)
+	// - Hunter hammered a hero poisoned by a slug:
+	//   killer=hunter assistant=slug
+	// - Smoker hooked a med poisoned by a slug:
+	//   killer=smoker assistant=slug
+
+	if(DamageType == DAMAGE_TYPE::BOOMER_EXPLOSION)
 	{
 		if(GetPlayerClass() == PLAYERCLASS_BOOMER)
 		{
@@ -949,88 +980,117 @@ void CInfClassCharacter::GetActualKillers(int GivenKiller, DAMAGE_TYPE GivenWeap
 		}
 	}
 
-	int Killer = -1;
-	int Assistant = -1;
-
-	const auto AddKiller = [&Killer, &Assistant](int ExtraKiller)
+	const auto AddUnique = [](int CID, ClientsArray *pArray)
 	{
-		if(Killer < 0)
-		{
-			Killer = ExtraKiller;
+		if(pArray->Contains(CID))
 			return;
-		}
 
-		if(Killer == ExtraKiller)
-		{
-			return;
-		}
-
-		if(Assistant < 0)
-		{
-			Assistant = ExtraKiller;
-			return;
-		}
-	};
-	const auto AddAssistant = [&Killer, &Assistant](int ExtraKiller)
-	{
-		if(Killer < 0)
-		{
-			return;
-		}
-
-		if((Killer == ExtraKiller) || (Assistant == ExtraKiller))
-		{
-			return;
-		}
-
-		if(Assistant < 0)
-		{
-			Assistant = ExtraKiller;
-		}
+		pArray->Add(CID);
 	};
 
-	if(GivenKiller != GetCID())
+	ClientsArray MustBeKillerOrAssistant;
+	// If killed with a LASER_WALL then the Engineer must be either the Killer orthe  Assistant
+	if(DamageType == DAMAGE_TYPE::LASER_WALL)
 	{
-		AddKiller(GivenKiller);
+		// GivenKiller is the wall owner
+		AddUnique(GivenKiller, &MustBeKillerOrAssistant);
+	}
+
+	// If the victim affected by a WhiteHole then
+	// the Scientist must be either the Killer or the Assistant
+	for(const EnforcerInfo &Enforcer : m_EnforcersInfo)
+	{
+		const float MaxSecondsAgo = 1.0;
+		if(Enforcer.m_Tick + Server()->TickSpeed() * MaxSecondsAgo < Server()->Tick())
+		{
+			continue;
+		}
+
+		if(Enforcer.m_DamageType == DAMAGE_TYPE::WHITE_HOLE)
+		{
+			AddUnique(Enforcer.m_CID, &MustBeKillerOrAssistant);
+			break;
+		}
 	}
 
 	if(IsFrozen())
 	{
-		if(m_FreezeReason == FREEZEREASON_FLASH)
-		{
-			// DAMAGE_TYPE::STUNNING_GRENADE
-		}
-		AddKiller(m_LastFreezer);
+		// The Freezer must be either the Killer or the Assistant
+		AddUnique(m_LastFreezer, &MustBeKillerOrAssistant);
 	}
 
-	bool DamageIsPassive = false;
-	switch(GivenWeapon) {
+	ClientsArray HookersRightNow = m_LastHookers;
+	if(m_LastHookerTick + 1 >= Server()->Tick())
+	{
+		// + 1 to still count hookers from the previous tick for the case if the
+		// kill happened before GameController::Tick() came to HandleLastHookers() at this Tick.
+		HookersRightNow = m_LastHookers;
+	}
+
+	bool DirectKill = true;
+	switch(DamageType) {
 	case DAMAGE_TYPE::DEATH_TILE:
 	case DAMAGE_TYPE::INFECTION_TILE:
+	case DAMAGE_TYPE::KILL_COMMAND:
 	case DAMAGE_TYPE::LASER_WALL:
-		DamageIsPassive = true;
+		DirectKill = false;
 	default:
 		break;
 	}
 
-	if(!m_TakenDamageDetails.IsEmpty())
+	ClientsArray Killers;
+	ClientsArray Assistants;
+	if(!DirectKill)
 	{
-		bool InevitableDeath  = m_TakenDamageDetails.Last().From != GivenKiller || m_TakenDamageDetails.Last().DamageType != GivenWeapon;
+		Killers = HookersRightNow;
+
+		if(m_LastFreezer >= 0)
+		{
+			Killers.Add(m_LastFreezer);
+		}
+	}
+
+	if(IsInSlowMotion() && (m_SlowEffectApplicant >= 0))
+	{
+		// The Looper should be the Assistant (if not the killer) - before any other player
+		AddUnique(m_SlowEffectApplicant, &Assistants);
+	}
+
+	if(IsBlind())
+	{
+		// The Blinder should be the Assistant (if not the killer) - before any other player
+		AddUnique(m_LastBlinder, &Assistants);
+	}
+
+	if(GivenKiller != GetCID())
+	{
+		AddUnique(GivenKiller, &Killers);
+	}
+
+	if(DirectKill && !m_TakenDamageDetails.IsEmpty())
+	{
+		TAKEDAMAGEMODE DamageMode = CInfClassGameController::DamageTypeToDamageMode(DamageType);
+
+		// DirectDieCall means that this is a direct die() call.
+		// It means that the dealt damage does not matter.
+		bool DirectDieCall = m_TakenDamageDetails.Last().From != GivenKiller || m_TakenDamageDetails.Last().DamageType != DamageType;
+
+		bool SniperOneshot = (DamageType == DAMAGE_TYPE::SNIPER_RIFLE) && (m_TakenDamageDetails.Last().From == GivenKiller) && (m_TakenDamageDetails.Last().Amount >= 20);
+		bool InevitableDeath = DirectDieCall || (DamageMode == TAKEDAMAGEMODE::INFECTION) || SniperOneshot;
+
 		if(InevitableDeath)
 		{
-			// This is a direct die() call without damage dealt first.
-			// It means that the dealt damage does not matter.
 		}
 		else
 		{
 			// Consider only the last N seconds
-			float MaxTime = 5;
+			float MaxTime = 7;
 
 			int MinAcceptableTick = Server()->Tick() - MaxTime * Server()->TickSpeed();
 
 			const CDamagePoint *pPoint = nullptr;
 			for(int i = m_TakenDamageDetails.Size() - 1; i >= 0; --i) {
-				if(m_TakenDamageDetails.At(i).From == Killer)
+				if(m_TakenDamageDetails.At(i).From == GivenKiller)
 					continue;
 
 				if(m_TakenDamageDetails.At(i).Tick < MinAcceptableTick)
@@ -1038,94 +1098,85 @@ void CInfClassCharacter::GetActualKillers(int GivenKiller, DAMAGE_TYPE GivenWeap
 					// Too old
 					break;
 				}
+
+				if(pPoint && (pPoint->Amount > m_TakenDamageDetails.At(i).Amount))
+				{
+					continue;
+				}
+
 				pPoint = &m_TakenDamageDetails.At(i);
 			}
 			if(pPoint)
 			{
-				AddKiller(pPoint->From);
+				AddUnique(pPoint->From, &Assistants);
 			}
 		}
 	}
 
-	ClientsArray Killers;
-	ClientsArray Assistants;
-
-	ClientsArray &Enforcers = DamageIsPassive ? Killers : Assistants;
-	// if hooked
+	if(DirectKill)
 	{
-		for(CInfClassCharacter *pHooker = (CInfClassCharacter*) GameWorld()->FindFirst(CGameWorld::ENTTYPE_CHARACTER);
-			pHooker;
-			pHooker = (CInfClassCharacter *)pHooker->TypeNext())
+		for(int CID : HookersRightNow)
 		{
-			if(pHooker->GetPlayer() && pHooker->GetHookedPlayer() == GetCID())
+			AddUnique(CID, &Assistants);
+		}
+	}
+
+	{
+		ClientsArray &Enforcers = DirectKill ? Killers : Assistants;
+
+		for(const EnforcerInfo &info : m_EnforcersInfo)
+		{
+			if(info.m_Tick > m_LastHookerTick)
 			{
-				Enforcers.Add(pHooker->GetCID());
+				AddUnique(info.m_CID, &Enforcers);
 			}
-		}
-
-		if(Enforcers.Size() > 1)
-		{
-			GameController()->SortCharactersByDistance(Enforcers, &Enforcers, GetPos());
 		}
 	}
 
-	for(const EnforcerInfo &info : m_EnforcersInfo)
+	int Killer = Killers.IsEmpty() ? GivenKiller : Killers.First();
+	int Assistant = -1;
+
+	if(Killers.Size() > 1)
 	{
-		if(info.m_Tick > m_LastHookerTick)
+		Assistant = Killers.At(1);
+	}
+
+	if(!MustBeKillerOrAssistant.IsEmpty())
+	{
+		int First = MustBeKillerOrAssistant.First();
+		if(Killer != First && Assistant != First)
 		{
-			if(!Enforcers.Contains(info.m_CID))
+			Assistant = First;
+		}
+		else if(MustBeKillerOrAssistant.Size() > 1)
+		{
+			int Second = MustBeKillerOrAssistant.At(1);
+			if(Killer != Second && Assistant != Second)
 			{
-				Enforcers.Add(info.m_CID);
+				Assistant = Second;
 			}
 		}
 	}
 
-	if(m_LastHooker >= 0)
+	if(Assistant < 0)
 	{
-		if(!Enforcers.Contains(m_LastHooker))
+		for(const int CID : Assistants)
 		{
-			Enforcers.Add(m_LastHooker);
+			if(CID == Killer)
+				continue;
+
+			Assistant = CID;
+			break;
 		}
 	}
 
-	if(DamageIsPassive)
-	{
-		for(int i = 0; i < Enforcers.Size(); ++i)
-		{
-			AddKiller(Enforcers.At(i));
-		}
-	}
-
-	if(IsInSlowMotion() && (m_SlowEffectApplicant >= 0))
-	{
-		AddAssistant(m_SlowEffectApplicant);
-	}
-
-	if(!DamageIsPassive)
-	{
-		for(int i = 0; i < Enforcers.Size(); ++i)
-		{
-			AddAssistant(Enforcers.At(i));
-		}
-	}
-
-	if(Killer < 0)
-	{
-		Killer = GivenKiller;
-	}
-
-	if(IsBlind())
-	{
-		AddAssistant(m_LastBlinder);
-	}
-
-	*pKillerId = Killer;
+	*pKiller = Killer;
 	*pAssistant = Assistant;
 }
 
-void CInfClassCharacter::UpdateLastHooker(int ClientID, int HookerTick)
+void CInfClassCharacter::UpdateLastHookers(const ClientsArray &Hookers, int HookerTick)
 {
-	m_LastHooker = ClientID;
+	m_LastHookers = Hookers;
 	m_LastHookerTick = HookerTick;
 }
 
@@ -2223,61 +2274,22 @@ void CInfClassCharacter::HandleIndirectKillerCleanup()
 		}
 	}
 
-	if(m_LastHooker >= 0)
+	if(!m_LastHookers.IsEmpty())
 	{
 		if(Server()->Tick() > m_LastHookerTick + Server()->TickSpeed() * LastEnforcerTimeoutInSeconds)
 		{
-			m_LastHooker = -1;
+			m_LastHookers.Clear();
 			m_LastHookerTick = -1;
 		}
 	}
-}
 
-void CInfClassCharacter::Die(int Killer, DAMAGE_TYPE DamageType)
-{
-	if(!IsAlive())
+	if(m_LastFreezer >= 0)
 	{
-		return;
+		if(!IsFrozen())
+		{
+			m_LastFreezer = -1;
+		}
 	}
-
-	dbg_msg("server", "CInfClassCharacter::Die: victim: %d, killer: %d, DT: %d", GetCID(), Killer, static_cast<int>(DamageType));
-
-	if(GetPlayerClass() == PLAYERCLASS_UNDEAD && Killer != GetCID())
-	{
-		Freeze(10.0, Killer, FREEZEREASON_UNDEAD);
-		return;
-	}
-
-	bool RefusedToDie = false;
-	if(GetClass())
-	{
-		GetClass()->PrepareToDie(Killer, DamageType, &RefusedToDie);
-	}
-	if(RefusedToDie)
-	{
-		return;
-	}
-
-	DestroyChildEntities();
-/* INFECTION MODIFICATION END *****************************************/
-
-	int Assistant = -1;
-	GetActualKillers(Killer, DamageType, &Killer, &Assistant);
-
-	// we got to wait 0.5 secs before respawning
-	m_pPlayer->m_RespawnTick = Server()->Tick()+Server()->TickSpeed()/2;
-	GameController()->OnCharacterDeath(this, DamageType, Killer, Assistant);
-
-	// a nice sound
-	GameServer()->CreateSound(GetPos(), SOUND_PLAYER_DIE);
-
-	// this is for auto respawn after 3 secs
-	m_pPlayer->m_DieTick = Server()->Tick();
-
-	m_Alive = false;
-	GameWorld()->RemoveEntity(this);
-	GameWorld()->m_Core.m_apCharacters[GetCID()] = 0;
-	GameServer()->CreateDeath(GetPos(), GetCID());
 }
 
 void CInfClassCharacter::Die(int Killer, int Weapon)
@@ -2296,6 +2308,57 @@ void CInfClassCharacter::Die(int Killer, int Weapon)
 	}
 
 	Die(Killer, DamageType);
+}
+
+void CInfClassCharacter::Die(int Killer, DAMAGE_TYPE DamageType)
+{
+	dbg_msg("server", "CInfClassCharacter::Die: victim: %d, killer: %d, DT: %d", GetCID(), Killer, static_cast<int>(DamageType));
+
+	int Assistant = -1;
+	GetActualKillers(Killer, DamageType, &Killer, &Assistant);
+
+	Die(DamageType, Killer, Assistant);
+}
+
+void CInfClassCharacter::Die(DAMAGE_TYPE DamageType, int Killer, int Assistant)
+{
+	if(!IsAlive())
+	{
+		return;
+	}
+
+	if(GetPlayerClass() == PLAYERCLASS_UNDEAD && Killer != GetCID())
+	{
+		Freeze(10.0, Killer, FREEZEREASON_UNDEAD);
+		return;
+	}
+
+	bool RefusedToDie = false;
+	if(GetClass())
+	{
+		GetClass()->PrepareToDie(Killer, DamageType, &RefusedToDie);
+	}
+	if(RefusedToDie)
+	{
+		return;
+	}
+
+	DestroyChildEntities();
+
+	// we got to wait 0.5 secs before respawning
+	m_pPlayer->m_RespawnTick = Server()->Tick()+Server()->TickSpeed()/2;
+	GameController()->OnCharacterDeath(this, DamageType, Killer, Assistant);
+
+	// a nice sound
+	GameServer()->CreateSound(GetPos(), SOUND_PLAYER_DIE);
+
+	// this is for auto respawn after 3 secs
+	m_pPlayer->m_DieTick = Server()->Tick();
+
+	m_Alive = false;
+	GameWorld()->RemoveEntity(this);
+	GameWorld()->m_Core.m_apCharacters[GetCID()] = 0;
+	GameServer()->CreateDeath(GetPos(), GetCID());
 }
 
 void CInfClassCharacter::SetActiveWeapon(int Weapon)
