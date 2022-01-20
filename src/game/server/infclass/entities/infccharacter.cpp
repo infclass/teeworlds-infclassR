@@ -801,6 +801,10 @@ void CInfClassCharacter::HandleDamage(int From, int Damage, DAMAGE_TYPE DamageTy
 	m_TakenDamageDetails.Add(Hit);
 }
 
+void CInfClassCharacter::OnTotalHealthChanged(int Difference)
+{
+}
+
 void CInfClassCharacter::OnWeaponFired(WeaponFireContext *pFireContext)
 {
 	GetClass()->OnWeaponFired(pFireContext);

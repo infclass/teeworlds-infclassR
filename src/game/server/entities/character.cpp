@@ -792,7 +792,9 @@ bool CCharacter::IncreaseHealth(int Amount)
 {
 	if(m_Health >= 10)
 		return false;
-	m_Health = clamp(m_Health+Amount, 0, 10);
+
+	SetHealthArmor(m_Health + Amount, m_Armor);
+
 	return true;
 }
 
@@ -800,32 +802,36 @@ bool CCharacter::IncreaseArmor(int Amount)
 {
 	if(m_Armor >= 10)
 		return false;
-	m_Armor = clamp(m_Armor+Amount, 0, 10);
+
+	SetHealthArmor(m_Health, m_Armor + Amount);
+
 	return true;
 }
 
 bool CCharacter::IncreaseOverallHp(int Amount)
 {
-	bool success = false;
-	if(m_Health < 10)
+	int MissingHealth = 10 - m_Health;
+	int ExtraHealthAmount = clamp<int>(Amount, 0, MissingHealth);
+	int ExtraArmorAmount = clamp<int>(Amount - ExtraHealthAmount, 0, 10);
+
+	if((ExtraHealthAmount > 0) || (ExtraArmorAmount > 0))
 	{
-		int healthDiff = 10-m_Health;
-		IncreaseHealth(Amount);
-		success = true;
-		Amount = Amount - healthDiff;
+		SetHealthArmor(m_Health + ExtraHealthAmount, m_Armor + ExtraArmorAmount);
+		return true;
 	}
-	if(Amount > 0)
-	{
-		if(IncreaseArmor(Amount))
-			success = true;
-	}
-	return success;
+
+	return false;
 }
 
 void CCharacter::SetHealthArmor(int HealthAmount, int ArmorAmount)
 {
-	m_Health = HealthAmount;
-	m_Armor = ArmorAmount;
+	m_Health = clamp<int>(HealthAmount, 0, 10);
+	m_Armor = clamp<int>(ArmorAmount, 0, 10);
+
+	int TotalBefore = m_Health + m_Armor;
+	int TotalAfter = m_Health + m_Armor;
+
+	OnTotalHealthChanged(TotalAfter - TotalBefore);
 }
 
 int CCharacter::GetHealthArmorSum()

@@ -207,6 +207,8 @@ protected:
 	void ResetClassObject();
 	void HandleDamage(int From, int Damage, DAMAGE_TYPE DamageType);
 
+	void OnTotalHealthChanged(int Difference) override;
+
 protected:
 	CInfClassGameController *m_pGameController = nullptr;
 	CInfClassPlayerClass *m_pClass = nullptr;

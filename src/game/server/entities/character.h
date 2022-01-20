@@ -164,6 +164,8 @@ private:
 
 /* INFECTION MODIFICATION START ***************************************/
 protected:
+	virtual void OnTotalHealthChanged(int Difference) = 0;
+
 	int m_AirJumpCounter;
 	bool m_FirstShot;
 	vec2 m_FirstShotCoord;
