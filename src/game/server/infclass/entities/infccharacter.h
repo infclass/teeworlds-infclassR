@@ -17,6 +17,12 @@ enum
 	GIFT_HEROFLAG=0,
 };
 
+struct CHelperInfo
+{
+	int m_CID = -1;
+	int m_Tick = 0;
+};
+
 struct CDamagePoint
 {
 	DAMAGE_TYPE DamageType;
@@ -186,6 +192,8 @@ public:
 	CHeroFlag *GetHeroFlag() { return m_pHeroFlag; }
 	int GetFlagCoolDown();
 
+	void AddHelper(int HelperCID, float Time);
+
 	void GetActualKillers(int GivenKiller, DAMAGE_TYPE GivenWeapon, int *pKiller, int *pAssistant) const;
 
 	void UpdateLastHookers(const ClientsArray &Hookers, int HookerTick);
@@ -218,6 +226,7 @@ protected:
 	CInfClassGameController *m_pGameController = nullptr;
 	CInfClassPlayerClass *m_pClass = nullptr;
 
+	CHelperInfo m_LastHelper;
 	ClientsArray m_LastHookers;
 	int m_LastHookerTick = -1;
 

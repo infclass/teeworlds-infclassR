@@ -71,6 +71,8 @@ void CInfClassCharacter::OnCharacterSpawned(const SpawnContext &Context)
 	m_HallucinationTick = -1;
 	m_SlipperyTick = -1;
 	m_LastFreezer = -1;
+	m_LastHelper.m_CID = -1;
+	m_LastHelper.m_Tick = 0;
 	m_LastHookers.Clear();
 	m_LastHookerTick = -1;
 	m_EnforcersInfo.Clear();
@@ -191,6 +193,11 @@ void CInfClassCharacter::Tick()
 			_("You are blinded: {sec:EffectDuration}"),
 			"EffectDuration", &EffectSec,
 			nullptr);
+	}
+
+	if(m_LastHelper.m_Tick > 0)
+	{
+		--m_LastHelper.m_Tick;
 	}
 
 	if(m_pClass)
@@ -937,6 +944,12 @@ int CInfClassCharacter::GetFlagCoolDown()
 	return m_pHeroFlag ? m_pHeroFlag->GetCoolDown() : 0;
 }
 
+void CInfClassCharacter::AddHelper(int HelperCID, float Time)
+{
+	m_LastHelper.m_CID = HelperCID;
+	m_LastHelper.m_Tick = Server()->TickSpeed() * Time;
+}
+
 void CInfClassCharacter::GetActualKillers(int GivenKiller, DAMAGE_TYPE DamageType, int *pKiller, int *pAssistant) const
 {
 	switch(DamageType)
@@ -1167,6 +1180,17 @@ void CInfClassCharacter::GetActualKillers(int GivenKiller, DAMAGE_TYPE DamageTyp
 
 			Assistant = CID;
 			break;
+		}
+	}
+
+	if((Killer >= 0) && (Assistant < 0) && (GetCID() != Killer))
+	{
+		const CInfClassCharacter *pKiller = GameController()->GetCharacter(Killer);
+		if(pKiller && pKiller->m_LastHelper.m_Tick > 0)
+		{
+			// Check if the helper is in game
+			const CInfClassCharacter *pKillerHelper = GameController()->GetCharacter(pKiller->m_LastHelper.m_CID);
+			Assistant = pKillerHelper ? pKillerHelper->GetCID() : -1;
 		}
 	}
 
