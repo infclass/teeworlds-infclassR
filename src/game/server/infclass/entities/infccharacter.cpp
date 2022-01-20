@@ -803,6 +803,10 @@ void CInfClassCharacter::HandleDamage(int From, int Damage, DAMAGE_TYPE DamageTy
 
 void CInfClassCharacter::OnTotalHealthChanged(int Difference)
 {
+	if(Difference > 0)
+	{
+		m_TakenDamageDetails.Clear();
+	}
 }
 
 void CInfClassCharacter::OnWeaponFired(WeaponFireContext *pFireContext)
