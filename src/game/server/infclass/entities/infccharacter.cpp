@@ -775,6 +775,11 @@ bool CInfClassCharacter::TakeDamage(vec2 Force, int Dmg, int From, int Weapon, T
 
 bool CInfClassCharacter::Heal(int HitPoints, int FromCID)
 {
+	if(GetClass() && GetClass()->IsHealingDisabled())
+	{
+		return false;
+	}
+
 	bool Healed = IncreaseOverallHp(HitPoints);
 
 	if(Healed)
@@ -787,6 +792,11 @@ bool CInfClassCharacter::Heal(int HitPoints, int FromCID)
 
 bool CInfClassCharacter::GiveArmor(int HitPoints, int FromCID)
 {
+	if(GetClass() && GetClass()->IsHealingDisabled())
+	{
+		return false;
+	}
+
 	bool Armored = IncreaseArmor(HitPoints);
 
 	if(Armored)

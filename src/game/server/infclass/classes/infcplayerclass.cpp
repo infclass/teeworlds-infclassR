@@ -188,6 +188,16 @@ void CInfClassPlayerClass::Poison(int Count, int From, DAMAGE_TYPE DamageType)
 	}
 }
 
+void CInfClassPlayerClass::DisableHealing(float Duration, int From, DAMAGE_TYPE DamageType)
+{
+	m_HealingDisabledTicks = maximum<int>(m_HealingDisabledTicks, Duration * Server()->TickSpeed());
+}
+
+bool CInfClassPlayerClass::IsHealingDisabled() const
+{
+	return m_HealingDisabledTicks > 0;
+}
+
 void CInfClassPlayerClass::OnCharacterPreCoreTick()
 {
 }
@@ -213,6 +223,11 @@ void CInfClassPlayerClass::OnCharacterTick()
 		}
 	}
 
+	if(m_HealingDisabledTicks > 0)
+	{
+		m_HealingDisabledTicks--;
+	}
+
 	BroadcastWeaponState();
 }
 
@@ -223,6 +238,7 @@ void CInfClassPlayerClass::OnCharacterSnap(int SnappingClient)
 void CInfClassPlayerClass::OnCharacterSpawned(const SpawnContext &Context)
 {
 	m_Poison = 0;
+	m_HealingDisabledTicks = 0;
 
 	UpdateSkin();
 	GiveClassAttributes();

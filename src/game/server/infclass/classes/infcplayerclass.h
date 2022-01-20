@@ -47,6 +47,9 @@ public:
 	virtual void PrepareToDie(int Killer, DAMAGE_TYPE DamageType, bool *pRefusedToDie);
 	void Poison(int Count, int From, DAMAGE_TYPE DamageType);
 
+	bool IsHealingDisabled() const;
+	void DisableHealing(float Duration, int From, DAMAGE_TYPE DamageType);
+
 	// Events
 	virtual void OnCharacterPreCoreTick();
 	virtual void OnCharacterTick();
@@ -92,6 +95,8 @@ protected:
 	int m_PoisonTick = 0;
 	int m_PoisonFrom = 0;
 	DAMAGE_TYPE m_PoisonDamageType;
+
+	int m_HealingDisabledTicks = 0;
 };
 
 #endif // GAME_SERVER_INFCLASS_CLASSES_PLAYER_CLASS_H
