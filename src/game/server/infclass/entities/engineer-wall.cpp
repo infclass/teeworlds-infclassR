@@ -149,16 +149,16 @@ void CEngineerWall::Snap(int SnappingClient)
 
 void CEngineerWall::OnZombieHit(CInfClassCharacter *pZombie)
 {
-	if(!pZombie->CanDie())
-	{
-		return;
-	}
-
 	CInfClassInfected *pInfected = CInfClassInfected::GetInstance(pZombie);
 
 	if(pZombie->GetPlayer() && pInfected)
 	{
 		pInfected->OnLaserWall();
+
+		if(!pZombie->CanDie())
+		{
+			return;
+		}
 
 		for(CInfClassCharacter *pHook = (CInfClassCharacter*) GameWorld()->FindFirst(CGameWorld::ENTTYPE_CHARACTER); pHook; pHook = (CInfClassCharacter *)pHook->TypeNext())
 		{
