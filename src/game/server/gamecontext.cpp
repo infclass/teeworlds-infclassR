@@ -1395,15 +1395,15 @@ void CGameContext::OnClientConnected(int ClientID)
 
 void CGameContext::OnClientDrop(int ClientID, int Type, const char *pReason)
 {
-	m_pController->OnClientDrop(ClientID, Type);
-	
 	AbortVoteKickOnDisconnect(ClientID);
+	m_pController->OnPlayerDisconnect(m_apPlayers[ClientID], Type, pReason);
+
 	m_apPlayers[ClientID]->OnDisconnect(Type, pReason);
 	delete m_apPlayers[ClientID];
 	m_apPlayers[ClientID] = 0;
 
 	Server()->RoundStatistics()->ResetPlayer(ClientID);
-	
+
 	(void)m_pController->CheckTeamBalance();
 	m_VoteUpdate = true;
 

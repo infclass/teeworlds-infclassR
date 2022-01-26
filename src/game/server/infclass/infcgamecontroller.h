@@ -83,7 +83,7 @@ public:
 
 	CLASS_AVAILABILITY GetPlayerClassAvailability(int PlayerClass) const;
 	bool CanVote() override;
-	void OnClientDrop(int ClientID, int Type) override;
+	void OnPlayerDisconnect(CPlayer *pPlayer, int Type, const char *pReason) override;
 	void OnPlayerInfected(CInfClassPlayer *pPlayer, CInfClassPlayer *pInfectiousPlayer, int PreviousClass);
 	bool IsInfectionStarted() const;
 	bool CanJoinTeam(int Team, int ClientID) override;

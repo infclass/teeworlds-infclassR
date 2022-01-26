@@ -93,26 +93,25 @@ void CInfClassGameController::IncreaseCurrentRoundCounter()
 	MaybeSuggestMoreRounds();
 }
 
-void CInfClassGameController::OnClientDrop(int ClientID, int Type)
+void CInfClassGameController::OnPlayerDisconnect(CPlayer *pPlayer, int Type, const char *pReason)
 {
 	if(Type == CLIENTDROPTYPE_BAN) return;
 	if(Type == CLIENTDROPTYPE_KICK) return;
 	if(Type == CLIENTDROPTYPE_SHUTDOWN) return;	
-	
-	CPlayer* pPlayer = GameServer()->m_apPlayers[ClientID];
+
 	if(pPlayer && pPlayer->IsActuallyZombie() && m_InfectedStarted)
 	{
 		int NumHumans;
 		int NumInfected;
-		GetPlayerCounter(ClientID, NumHumans, NumInfected);
+		GetPlayerCounter(pPlayer->GetCID(), NumHumans, NumInfected);
 		const int NumPlayers = NumHumans + NumInfected;
 		const int NumFirstInfected = GetMinimumInfectedForPlayers(NumPlayers);
 		
 		if(NumInfected < NumFirstInfected)
 		{
-			Server()->Ban(ClientID, 60*g_Config.m_InfLeaverBanTime, "Leaver");
+			Server()->Ban(pPlayer->GetCID(), 60 * Config()->m_InfLeaverBanTime, "Leaver");
 		}
-    }
+	}
 }
 
 void CInfClassGameController::OnPlayerInfected(CInfClassPlayer *pPlayer, CInfClassPlayer *pInfectiousPlayer, int PreviousClass)
