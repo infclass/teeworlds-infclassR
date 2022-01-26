@@ -6,6 +6,8 @@
 #include <game/generated/protocol.h>
 #include <game/server/player.h>
 
+#include <engine/shared/network.h>
+
 #include "gamecontroller.h"
 #include "gamecontext.h"
 
@@ -127,6 +129,47 @@ bool IGameController::OnEntity(const char* pName, vec2 Pivot, vec2 P0, vec2 P1, 
 double IGameController::GetTime()
 {
 	return static_cast<double>(Server()->Tick() - m_RoundStartTick)/Server()->TickSpeed();
+}
+
+void IGameController::OnPlayerDisconnect(CPlayer *pPlayer, int Type, const char *pReason)
+{
+	pPlayer->OnDisconnect();
+
+	int ClientID = pPlayer->GetCID();
+	if(Server()->ClientIngame(ClientID))
+	{
+		char aBuf[128];
+		str_format(aBuf, sizeof(aBuf), "leave player='%d:%s'", ClientID, Server()->ClientName(ClientID));
+		GameServer()->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "server", aBuf);
+
+		if(Type == CLIENTDROPTYPE_BAN)
+		{
+			GameServer()->SendChatTarget_Localization(-1, CHATCATEGORY_PLAYER, _("{str:PlayerName} has been banned ({str:Reason})"),
+				"PlayerName", Server()->ClientName(ClientID),
+				"Reason", pReason,
+				NULL);
+		}
+		else if(Type == CLIENTDROPTYPE_KICK)
+		{
+			GameServer()->SendChatTarget_Localization(-1, CHATCATEGORY_PLAYER, _("{str:PlayerName} has been kicked ({str:Reason})"),
+				"PlayerName", Server()->ClientName(ClientID),
+				"Reason", pReason,
+				NULL);
+		}
+		else if(pReason && *pReason)
+		{
+			GameServer()->SendChatTarget_Localization(-1, CHATCATEGORY_PLAYER, _("{str:PlayerName} has left the game ({str:Reason})"),
+				"PlayerName", Server()->ClientName(ClientID),
+				"Reason", pReason,
+				NULL);
+		}
+		else
+		{
+			GameServer()->SendChatTarget_Localization(-1, CHATCATEGORY_PLAYER, _("{str:PlayerName} has left the game"),
+				"PlayerName", Server()->ClientName(ClientID),
+				NULL);
+		}
+	}
 }
 
 void IGameController::EndRound()
@@ -437,7 +480,6 @@ void IGameController::OnPlayerInfoChange(class CPlayer *pP)
 		}
 	}
 }
-
 
 int IGameController::OnCharacterDeath(class CCharacter *pVictim, class CPlayer *pKiller, int Weapon)
 {

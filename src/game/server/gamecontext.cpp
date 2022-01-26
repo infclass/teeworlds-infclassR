@@ -1398,7 +1398,6 @@ void CGameContext::OnClientDrop(int ClientID, int Type, const char *pReason)
 	AbortVoteKickOnDisconnect(ClientID);
 	m_pController->OnPlayerDisconnect(m_apPlayers[ClientID], Type, pReason);
 
-	m_apPlayers[ClientID]->OnDisconnect(Type, pReason);
 	delete m_apPlayers[ClientID];
 	m_apPlayers[ClientID] = 0;
 
@@ -1415,10 +1414,6 @@ void CGameContext::OnClientDrop(int ClientID, int Type, const char *pReason)
 	}
 	// InfClassR remove spectators
 	RemoveSpectatorCID(ClientID);
-
-	char aBuf[256];
-	str_format(aBuf, sizeof(aBuf), "leave player='%d:%s'", ClientID, Server()->ClientName(ClientID));
-	Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "server", aBuf);
 
 	for(int i = 0; i < MAX_CLIENTS; i++)
 	{

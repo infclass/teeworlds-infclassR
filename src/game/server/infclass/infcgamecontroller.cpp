@@ -112,6 +112,8 @@ void CInfClassGameController::OnPlayerDisconnect(CPlayer *pPlayer, int Type, con
 			Server()->Ban(pPlayer->GetCID(), 60 * Config()->m_InfLeaverBanTime, "Leaver");
 		}
 	}
+
+	IGameController::OnPlayerDisconnect(pPlayer, Type, pReason);
 }
 
 void CInfClassGameController::OnPlayerInfected(CInfClassPlayer *pPlayer, CInfClassPlayer *pInfectiousPlayer, int PreviousClass)

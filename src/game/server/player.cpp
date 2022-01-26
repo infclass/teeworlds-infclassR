@@ -4,7 +4,6 @@
 #include <iostream>
 #include <engine/shared/config.h>
 #include "player.h"
-#include <engine/shared/network.h>
 #include <engine/server/roundstatistics.h>
 
 #include <game/server/gamecontext.h>
@@ -278,40 +277,9 @@ void CPlayer::SnapClientInfo(int SnappingClient)
 	pClientInfo->m_ColorFeet = m_TeeInfos.m_ColorFeet;
 }
 
-void CPlayer::OnDisconnect(int Type, const char *pReason)
+void CPlayer::OnDisconnect()
 {
 	KillCharacter();
-
-	if(Server()->ClientIngame(m_ClientID))
-	{
-		if(Type == CLIENTDROPTYPE_BAN)
-		{
-			GameServer()->SendChatTarget_Localization(-1, CHATCATEGORY_PLAYER, _("{str:PlayerName} has been banned ({str:Reason})"),
-				"PlayerName", Server()->ClientName(m_ClientID),
-				"Reason", pReason,
-				NULL);
-		}
-		else if(Type == CLIENTDROPTYPE_KICK)
-		{
-			GameServer()->SendChatTarget_Localization(-1, CHATCATEGORY_PLAYER, _("{str:PlayerName} has been kicked ({str:Reason})"),
-				"PlayerName", Server()->ClientName(m_ClientID),
-				"Reason", pReason,
-				NULL);
-		}
-		else if(pReason && *pReason)
-		{
-			GameServer()->SendChatTarget_Localization(-1, CHATCATEGORY_PLAYER, _("{str:PlayerName} has left the game ({str:Reason})"),
-				"PlayerName", Server()->ClientName(m_ClientID),
-				"Reason", pReason,
-				NULL);
-		}
-		else
-		{
-			GameServer()->SendChatTarget_Localization(-1, CHATCATEGORY_PLAYER, _("{str:PlayerName} has left the game"),
-				"PlayerName", Server()->ClientName(m_ClientID),
-				NULL);
-		}
-	}
 }
 
 void CPlayer::OnPredictedInput(CNetObj_PlayerInput *NewInput)
