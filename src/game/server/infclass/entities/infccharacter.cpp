@@ -2088,8 +2088,11 @@ void CInfClassCharacter::Die(int Killer, DAMAGE_TYPE DamageType)
 	}
 
 	bool RefusedToDie = false;
-	GetClass()->PrepareToDie(Killer, DamageType, &RefusedToDie);
-	if (RefusedToDie)
+	if(GetClass())
+	{
+		GetClass()->PrepareToDie(Killer, DamageType, &RefusedToDie);
+	}
+	if(RefusedToDie)
 	{
 		return;
 	}
