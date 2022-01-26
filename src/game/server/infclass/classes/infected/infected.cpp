@@ -448,6 +448,22 @@ void CInfClassInfected::PrepareToDie(int Killer, DAMAGE_TYPE DamageType, bool *p
 		return;
 	}
 
+	// Start counting down, delay killer message for later
+	if(GetPlayerClass() == PLAYERCLASS_VOODOO)
+	{
+		if(m_VoodooAboutToDie)
+		{
+			if(m_VoodooTimeAlive > 0)
+			{
+				// If about to die, yet killed again, dont kill him either
+				*pRefusedToDie = true;
+			}
+
+			// Return here to allow the death on voodoo time expired
+			return;
+		}
+	}
+
 	if(m_pCharacter->IsInvincible())
 	{
 		*pRefusedToDie = true;
@@ -457,19 +473,11 @@ void CInfClassInfected::PrepareToDie(int Killer, DAMAGE_TYPE DamageType, bool *p
 	// Start counting down, delay killer message for later
 	if(GetPlayerClass() == PLAYERCLASS_VOODOO)
 	{
-		if(!m_VoodooAboutToDie)
-		{
-			m_VoodooAboutToDie = true;
-			m_VoodooKiller = Killer;
-			m_VoodooDamageType = DamageType;
-			UpdateSkin();
+		m_VoodooAboutToDie = true;
+		m_VoodooKiller = Killer;
+		m_VoodooDamageType = DamageType;
+		UpdateSkin();
 
-			*pRefusedToDie = true;
-			// If about to die, yet killed again, dont kill him either
-		}
-		else if(m_VoodooAboutToDie && m_VoodooTimeAlive > 0)
-		{
-			*pRefusedToDie = true;
-		}
+		*pRefusedToDie = true;
 	}
 }
