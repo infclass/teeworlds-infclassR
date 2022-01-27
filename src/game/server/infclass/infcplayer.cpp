@@ -121,11 +121,9 @@ void CInfClassPlayer::Snap(int SnappingClient)
 	CPlayer::Snap(SnappingClient);
 
 	int InfClassVersion = Server()->GetClientInfclassVersion(SnappingClient);
-	if(!InfClassVersion)
-		return;
-
 	const bool IsForcedToSpec = IsForcedToSpectate();
 
+	if(InfClassVersion)
 	{
 		CNetObj_InfClassPlayer *pInfClassPlayer = static_cast<CNetObj_InfClassPlayer *>(Server()->SnapNewItem(NETOBJTYPE_INFCLASSPLAYER, m_ClientID, sizeof(CNetObj_InfClassPlayer)));
 		if(!pInfClassPlayer)
@@ -147,7 +145,7 @@ void CInfClassPlayer::Snap(int SnappingClient)
 		}
 	}
 
-	if(InfClassVersion >= VERSION_INFC_FORCED_SPEC && IsForcedToSpec)
+	if(IsForcedToSpec && (SnappingClient == m_ClientID) && (InfClassVersion >= VERSION_INFC_FORCED_SPEC))
 	{
 		CNetObj_SpectatorInfo *pSpectatorInfo = static_cast<CNetObj_SpectatorInfo *>(Server()->SnapNewItem(NETOBJTYPE_SPECTATORINFO, m_ClientID, sizeof(CNetObj_SpectatorInfo)));
 		if(!pSpectatorInfo)
