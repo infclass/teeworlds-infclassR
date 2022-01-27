@@ -1637,7 +1637,7 @@ void CGameContext::OnMessage(int MsgID, CUnpacker *pUnpacker, int ClientID)
 	void *pRawMsg = m_NetObjHandler.SecureUnpackMsg(MsgID, pUnpacker);
 	CPlayer *pPlayer = m_apPlayers[ClientID];
 	
-	if (pPlayer && MsgID == (NETMSGTYPE_CL_CALLVOTE + 1)) 
+	if(pPlayer && MsgID == NETMSGTYPE_CL_ISDDNETLEGACY)
 	{
 		int DDNetVersion = pUnpacker->GetInt();
 
