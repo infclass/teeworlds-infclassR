@@ -87,6 +87,15 @@ inline T length(const vector2_base<T> &a)
 }
 
 template<typename T>
+inline vector2_base<T> rotate(const vector2_base<T> &a, float angle)
+{
+	angle = angle * pi / 180.0f;
+	float s = sinf(angle);
+	float c = cosf(angle);
+	return vector2_base<T>((T)(c * a.x - s * a.y), (T)(s * a.x + c * a.y));
+}
+
+template<typename T>
 inline T distance(const vector2_base<T> a, const vector2_base<T> &b)
 {
 	return length(a - b);
@@ -113,14 +122,6 @@ inline float angle(const vector2_base<float> &a)
 	if(a.x < 0)
 		result = result + pi;
 	return result;
-}
-
-template<typename T>
-inline vector2_base<T> rotate(const vector2_base<T> &a, float angle)
-{
-	float s = sinf(angle);
-	float c = cosf(angle);
-	return vector2_base<T>((T)(c*a.x - s*a.y), (T)(s*a.x + c*a.y));
 }
 
 template<typename T>

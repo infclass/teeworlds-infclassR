@@ -479,7 +479,7 @@ void CMapConverter::CreateCircle(array<CQuad>* pQuads, vec2 CenterPos, float Siz
 	Quad.m_ColorEnv = Env;
 	Quad.m_ColorEnvOffset = EnvTO;
 	
-	float AngleStep = 2.0f*pi/32.0f;
+	float AngleStep = 360.0f / 32.0f;
 	float AngleIter = AngleStep;
 	vec2 RadiusVect = vec2(Size/2.0f, 0.0f);
 	vec2 LastPos = CenterPos+RadiusVect;
@@ -1066,10 +1066,10 @@ int CMapConverter::Finalize()
 	//Menu
 	
 	const float MenuRadius = 196.0f;
-	const float MenuAngleStart = -pi/2.0f;
+	const float MenuAngleStart = -90.0;
 	
 	{
-		const float MenuAngleStep = 2.0f*pi/static_cast<float>(NUM_MENUCLASS);
+		const float MenuAngleStep = 360.0f/static_cast<float>(NUM_MENUCLASS);
 		
 			//Menu Group
 		{
