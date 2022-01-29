@@ -26,7 +26,7 @@ public:
 	CInfClassPlayer(CInfClassGameController *pGameController, int ClientID, int Team);
 	~CInfClassPlayer() override;
 
-	CInfClassGameController *GameController();
+	CInfClassGameController *GameController() const;
 
 	void TryRespawn() override;
 

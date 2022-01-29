@@ -24,7 +24,7 @@ CInfClassPlayer::~CInfClassPlayer()
 	SetCharacterClass(nullptr);
 }
 
-CInfClassGameController *CInfClassPlayer::GameController()
+CInfClassGameController *CInfClassPlayer::GameController() const
 {
 	return m_pGameController;
 }
