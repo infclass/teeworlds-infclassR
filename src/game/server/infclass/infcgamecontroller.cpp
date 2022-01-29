@@ -1463,15 +1463,11 @@ void CInfClassGameController::Tick()
 					//The client already participated to this round,
 					//and he exit the game as infected.
 					//To avoid cheating, we assign to him the same class again.
-					if(
-						m_InfectedStarted &&
-						pSession->m_RoundId == m_RoundId &&
-						pSession->m_Class > END_HUMANCLASS
-					)
+					if(pSession->m_RoundId == m_RoundId)
 					{
 						Iter.Player()->SetClass(pSession->m_Class);
 					}
-					
+
 					Server()->SetClientMemory(Iter.ClientID(), CLIENTMEMORY_SESSION_PROCESSED, true);
 				}
 				
