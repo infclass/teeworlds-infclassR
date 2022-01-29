@@ -50,7 +50,7 @@ public:
 	virtual void OnCharacterTick();
 	virtual void OnCharacterSnap(int SnappingClient);
 	virtual void OnCharacterSpawned(const SpawnContext &Context);
-	virtual void OnCharacterDeath(int Weapon);
+	virtual void OnCharacterDeath(DAMAGE_TYPE DamageType);
 
 	virtual void OnWeaponFired(WeaponFireContext *pFireContext);
 

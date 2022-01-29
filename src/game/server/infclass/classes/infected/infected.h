@@ -23,7 +23,7 @@ public:
 	void OnCharacterTick() override;
 	void OnCharacterSnap(int SnappingClient) override;
 	void OnCharacterSpawned(const SpawnContext &Context) override;
-	void OnCharacterDeath(int Weapon) override;
+	void OnCharacterDeath(DAMAGE_TYPE DamageType) override;
 
 	void OnSlimeEffect(int Owner) override;
 	void OnFloatingPointCollected(int Points) override;

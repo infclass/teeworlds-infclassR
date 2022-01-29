@@ -171,9 +171,9 @@ void CInfClassInfected::OnCharacterSpawned(const SpawnContext &Context)
 	}
 }
 
-void CInfClassInfected::OnCharacterDeath(int Weapon)
+void CInfClassInfected::OnCharacterDeath(DAMAGE_TYPE DamageType)
 {
-	CInfClassPlayerClass::OnCharacterDeath(Weapon);
+	CInfClassPlayerClass::OnCharacterDeath(DamageType);
 
 	if(GetPlayerClass() == PLAYERCLASS_GHOUL)
 	{
@@ -183,7 +183,18 @@ void CInfClassInfected::OnCharacterDeath(int Weapon)
 
 	if(GetPlayerClass() == PLAYERCLASS_BOOMER)
 	{
-		if(!m_pCharacter->IsFrozen() && Weapon != WEAPON_GAME && !(m_pCharacter->IsInLove() && Weapon == WEAPON_SELF))
+		bool CanExplode = true;
+
+		if(DamageType == DAMAGE_TYPE::GAME)
+			CanExplode = false;
+
+		if(m_pCharacter->IsFrozen())
+			CanExplode = false;
+
+		if(m_pCharacter->IsInLove() && (DamageType == DAMAGE_TYPE::KILL_COMMAND))
+			CanExplode = false;
+
+		if(CanExplode)
 		{
 			DoBoomerExplosion();
 		}

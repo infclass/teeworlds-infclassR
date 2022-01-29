@@ -2098,7 +2098,7 @@ void CInfClassGameController::OnCharacterDeath(CInfClassCharacter *pVictim, DAMA
 
 	SendKillMessage(pVictim->GetCID(), DamageType, Killer, Assistant);
 
-	pVictim->GetClass()->OnCharacterDeath(Weapon);
+	pVictim->GetClass()->OnCharacterDeath(DamageType);
 
 	bool ForceInfection = false;
 	bool ClassSpecialProcessingEnabled = true;

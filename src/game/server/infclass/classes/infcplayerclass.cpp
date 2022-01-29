@@ -228,7 +228,7 @@ void CInfClassPlayerClass::OnCharacterSpawned(const SpawnContext &Context)
 	GiveClassAttributes();
 }
 
-void CInfClassPlayerClass::OnCharacterDeath(int Weapon)
+void CInfClassPlayerClass::OnCharacterDeath(DAMAGE_TYPE DamageType)
 {
 	if(m_pCharacter->m_Core.m_Passenger)
 	{
