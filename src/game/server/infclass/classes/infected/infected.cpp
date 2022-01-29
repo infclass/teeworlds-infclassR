@@ -204,7 +204,10 @@ void CInfClassInfected::OnCharacterPreCoreTick()
 					if(p->IsZombie())
 						continue;
 
-					vec2 IntersectPos = closest_point_on_line(GetPos(), m_pCharacter->GetHookPos(), p->GetPos());
+					vec2 IntersectPos;
+					if(!closest_point_on_line(GetPos(), m_pCharacter->GetHookPos(), p->GetPos(), IntersectPos))
+						continue;
+
 					float Len = distance(p->GetPos(), IntersectPos);
 					if(Len < p->GetProximityRadius())
 					{

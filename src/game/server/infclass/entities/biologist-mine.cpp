@@ -92,7 +92,10 @@ void CBiologistMine::Tick()
 		if(p->IsHuman()) continue;
 		if(!p->CanDie()) continue;
 
-		vec2 IntersectPos = closest_point_on_line(m_Pos, m_EndPos, p->m_Pos);
+		vec2 IntersectPos;
+		if(!closest_point_on_line(m_Pos, m_EndPos, p->m_Pos, IntersectPos))
+			continue;
+
 		float Len = distance(p->m_Pos, IntersectPos);
 		if(Len < p->m_ProximityRadius)
 		{

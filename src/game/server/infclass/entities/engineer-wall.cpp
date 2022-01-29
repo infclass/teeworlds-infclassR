@@ -56,9 +56,13 @@ void CEngineerWall::Tick()
 		// Find other players
 		for(CInfClassCharacter *p = (CInfClassCharacter*) GameWorld()->FindFirst(CGameWorld::ENTTYPE_CHARACTER); p; p = (CInfClassCharacter *)p->TypeNext())
 		{
-			if(p->IsHuman()) continue;
+			if(p->IsHuman())
+				continue;
 
-			vec2 IntersectPos = closest_point_on_line(m_Pos, m_Pos2, p->m_Pos);
+			vec2 IntersectPos;
+			if(!closest_point_on_line(m_Pos, m_Pos2, p->m_Pos, IntersectPos))
+				continue;
+
 			float Len = distance(p->m_Pos, IntersectPos);
 			if(Len < p->m_ProximityRadius+g_BarrierRadius)
 			{

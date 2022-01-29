@@ -410,7 +410,10 @@ void CInfClassCharacter::HandleNinja()
 				if(bAlreadyHit)
 					continue;
 
-				vec2 IntersectPos = closest_point_on_line(OldPos, m_Core.m_Pos, pTarget->GetPos());
+				vec2 IntersectPos;
+				if(!closest_point_on_line(OldPos, m_Core.m_Pos, pTarget->GetPos(), IntersectPos))
+					continue;
+
 				float Len = distance(pTarget->GetPos(), IntersectPos);
 				if(Len >= pTarget->GetProximityRadius() / 2 + GetProximityRadius() / 2)
 				{

@@ -81,12 +81,6 @@ public:
 };
 
 template<typename T>
-inline T length(const vector2_base<T> &a)
-{
-	return sqrtf(a.x*a.x + a.y*a.y);
-}
-
-template<typename T>
 inline vector2_base<T> rotate(const vector2_base<T> &a, float angle)
 {
 	angle = angle * pi / 180.0f;
@@ -125,10 +119,17 @@ inline float angle(const vector2_base<float> &a)
 }
 
 template<typename T>
-inline vector2_base<T> normalize(const vector2_base<T> &v)
+inline vector2_base<T> normalize_pre_length(const vector2_base<T> &v, T len)
 {
-	T l = (T)(1.0f/sqrtf(v.x*v.x + v.y*v.y));
-	return vector2_base<T>(v.x*l, v.y*l);
+	return vector2_base<T>(v.x / len, v.y / len);
+	float l = (float)(1.0f / sqrtf(v.x * v.x + v.y * v.y));
+	return vector2_base<float>(v.x * l, v.y * l);
+}
+
+inline vector2_base<float> normalize(const vector2_base<float> &v)
+{
+	float l = (float)(1.0f / sqrtf(v.x * v.x + v.y * v.y));
+	return vector2_base<float>(v.x * l, v.y * l);
 }
 
 inline vector2_base<float> direction(float angle)
@@ -141,18 +142,20 @@ typedef vector2_base<bool> bvec2;
 typedef vector2_base<int> ivec2;
 
 template<typename T>
-inline vector2_base<T> closest_point_on_line(vector2_base<T> line_point0, vector2_base<T> line_point1, vector2_base<T> target_point)
+inline bool closest_point_on_line(vector2_base<T> line_point0, vector2_base<T> line_point1, vector2_base<T> target_point, vector2_base<T> &out_pos)
 {
 	vector2_base<T> c = target_point - line_point0;
 	vector2_base<T> v = (line_point1 - line_point0);
-	v = normalize(v);
-	T d = length(line_point0-line_point1);
-	T t = dot(v, c)/d;
-	return mix(line_point0, line_point1, clamp(t, (T)0, (T)1));
-	/*
-	if (t < 0) t = 0;
-	if (t > 1.0f) return 1.0f;
-	return t;*/
+	T d = length(line_point0 - line_point1);
+	if(d > 0)
+	{
+		v = normalize_pre_length<T>(v, d);
+		T t = dot(v, c) / d;
+		out_pos = mix(line_point0, line_point1, clamp(t, (T)0, (T)1));
+		return true;
+	}
+	else
+		return false;
 }
 
 // ------------------------------------
@@ -237,12 +240,6 @@ public:
 };
 
 template<typename T>
-inline T length(const vector3_base<T> &a)
-{
-	return sqrtf(a.x*a.x + a.y*a.y + a.z*a.z);
-}
-
-template<typename T>
 inline T distance(const vector3_base<T> &a, const vector3_base<T> &b)
 {
 	return length(a - b);
@@ -251,14 +248,7 @@ inline T distance(const vector3_base<T> &a, const vector3_base<T> &b)
 template<typename T>
 inline T dot(const vector3_base<T> &a, const vector3_base<T> &b)
 {
-	return a.x*b.x + a.y*b.y + a.z*b.z;
-}
-
-template<typename T>
-inline vector3_base<T> normalize(const vector3_base<T> &v)
-{
-	T l = (T)(1.0f/sqrtf(v.x*v.x + v.y*v.y + v.z*v.z));
-	return vector3_base<T>(v.x*l, v.y*l, v.z*l);
+	return a.x * b.x + a.y * b.y + a.z * b.z;
 }
 
 template<typename T>
@@ -268,6 +258,18 @@ inline vector3_base<T> cross(const vector3_base<T> &a, const vector3_base<T> &b)
 		a.y * b.z - a.z * b.y,
 		a.z * b.x - a.x * b.z,
 		a.x * b.y - a.y * b.x);
+}
+
+//
+inline float length(const vector3_base<float> &a)
+{
+	return sqrtf(a.x * a.x + a.y * a.y + a.z * a.z);
+}
+
+inline vector3_base<float> normalize(const vector3_base<float> &v)
+{
+	float l = (float)(1.0f / sqrtf(v.x * v.x + v.y * v.y + v.z * v.z));
+	return vector3_base<float>(v.x * l, v.y * l, v.z * l);
 }
 
 typedef vector3_base<float> vec3;

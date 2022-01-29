@@ -276,7 +276,10 @@ CEntity *CGameWorld::IntersectEntity(vec2 Pos0, vec2 Pos1, float Radius, vec2 *N
 		if(FilterFunction && !FilterFunction(p))
 			continue;
 
-		vec2 IntersectPos = closest_point_on_line(Pos0, Pos1, p->m_Pos);
+		vec2 IntersectPos;
+		if(!closest_point_on_line(Pos0, Pos1, p->m_Pos, IntersectPos))
+			continue;
+
 		float Len = distance(p->m_Pos, IntersectPos);
 		if(Len < p->m_ProximityRadius+Radius)
 		{
@@ -309,7 +312,10 @@ CCharacter *CGameWorld::IntersectCharacter(vec2 Pos0, vec2 Pos1, float Radius, v
 		if(p == pNotThis || !p->m_Core.m_Infected)
 			continue;
 
-		vec2 IntersectPos = closest_point_on_line(Pos0, Pos1, p->m_Pos);
+		vec2 IntersectPos;
+		if(!closest_point_on_line(Pos0, Pos1, p->m_Pos, IntersectPos))
+			continue;
+
 		float Len = distance(p->m_Pos, IntersectPos);
 		if(Len < p->m_ProximityRadius+Radius)
 		{
@@ -334,7 +340,10 @@ CEntity *CGameWorld::IntersectEntity(vec2 Pos0, vec2 Pos1, float Radius, vec2 *N
 	CEntity *p = FindFirst(EntityType);
 	for(; p; p = (CEntity *)p->TypeNext())
 	{
-		vec2 IntersectPos = closest_point_on_line(Pos0, Pos1, p->m_Pos);
+		vec2 IntersectPos;
+		if(!closest_point_on_line(Pos0, Pos1, p->m_Pos, IntersectPos))
+			continue;
+
 		float Len = distance(p->m_Pos, IntersectPos);
 		if(Len < p->m_ProximityRadius+Radius)
 		{

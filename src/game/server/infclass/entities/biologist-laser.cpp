@@ -28,7 +28,10 @@ void CBiologistLaser::HitCharacter(vec2 From, vec2 To)
 		if(p->IsHuman())
 			continue;
 
-		vec2 IntersectPos = closest_point_on_line(From, To, p->m_Pos);
+		vec2 IntersectPos;
+		if(!closest_point_on_line(From, To, p->m_Pos, IntersectPos))
+			continue;
+
 		float Len = distance(p->m_Pos, IntersectPos);
 		if(Len < p->m_ProximityRadius)
 		{
