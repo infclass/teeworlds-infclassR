@@ -1291,6 +1291,12 @@ void CInfClassGameController::DoTeamChange(CPlayer *pPlayer, int Team, bool DoCh
 			GameServer()->SendChatTarget_Localization(-1, CHATCATEGORY_PLAYER, _("{str:PlayerName} joined the game"), "PlayerName", Server()->ClientName(ClientID), NULL);
 		}
 	}
+
+	if((Team != TEAM_SPECTATORS) && IsInfectionStarted() && !pPlayer->IsZombie())
+	{
+		int c = ChooseInfectedClass(pPlayer);
+		pPlayer->SetClass(c);
+	}
 }
 
 void CInfClassGameController::GetPlayerCounter(int ClientException, int& NumHumans, int& NumInfected)
@@ -1550,6 +1556,7 @@ void CInfClassGameController::TickInfectionStarted()
 			if(StartInfectionTrigger)
 			{
 				pPlayer->SetClass(ChooseHumanClass(pPlayer));
+				pPlayer->SetRandomClassChoosen();
 				CInfClassCharacter *pCharacter = Iter.Player()->GetCharacter();
 				if(pCharacter)
 				{
@@ -1669,12 +1676,6 @@ void CInfClassGameController::TickInfectionStarted()
 void CInfClassGameController::TickInfectionNotStarted()
 {
 	DisableTargetToKill();
-
-	CInfClassPlayerIterator<PLAYERITER_SPECTATORS> IterSpec(GameServer()->m_apPlayers);
-	while(IterSpec.Next())
-	{
-		IterSpec.Player()->SetClass(PLAYERCLASS_NONE);
-	}
 }
 
 void CInfClassGameController::MaybeSendStatistics()
@@ -2170,7 +2171,12 @@ void CInfClassGameController::OnCharacterDeath(CInfClassCharacter *pVictim, DAMA
 			GameServer()->CreateSoundGlobal(SOUND_CTF_RETURN);
 		}
 	}
-	pVictim->GetPlayer()->StartInfection(ForceInfection, pKiller);
+
+	if(DamageType != DAMAGE_TYPE::GAME)
+	{
+		// Do not infect on disconnect or joining spec
+		pVictim->GetPlayer()->StartInfection(ForceInfection, pKiller);
+	}
 
 	bool SelfKill = false;
 	switch (DamageType)
@@ -2201,9 +2207,14 @@ void CInfClassGameController::OnCharacterDeath(CInfClassCharacter *pVictim, DAMA
 
 void CInfClassGameController::OnCharacterSpawned(CInfClassCharacter *pCharacter)
 {
+	CInfClassPlayer *pPlayer = pCharacter->GetPlayer();
+	if(!IsInfectionStarted() && pPlayer->RandomClassChoosen())
+	{
+		pCharacter->GiveRandomClassSelectionBonus();
+	}
+
 	if((GetRoundType() == ROUND_TYPE::FUN) && !IsInfectionStarted() && pCharacter->GetPlayerClass() == PLAYERCLASS_NONE)
 	{
-		CInfClassPlayer *pPlayer = pCharacter->GetPlayer();
 		if(pPlayer)
 		{
 			pPlayer->SetClass(ChooseHumanClass(pPlayer));

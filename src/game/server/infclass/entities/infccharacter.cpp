@@ -1847,7 +1847,9 @@ void CInfClassCharacter::OpenClassChooser()
 {
 	if(GameController()->GetRoundType() == ROUND_TYPE::FUN)
 	{
-		IncreaseArmor(10);
+		GetPlayer()->SetRandomClassChoosen();
+		// Read this as "player didn't choose this class"
+		GiveRandomClassSelectionBonus();
 		GetPlayer()->CloseMapMenu();
 		return;
 	}
@@ -1855,6 +1857,8 @@ void CInfClassCharacter::OpenClassChooser()
 	if(!Server()->IsClassChooserEnabled() || Server()->GetClientAlwaysRandom(GetCID()))
 	{
 		m_pPlayer->SetClass(GameController()->ChooseHumanClass(m_pPlayer));
+		GetPlayer()->SetRandomClassChoosen();
+
 		if(Server()->IsClassChooserEnabled())
 			GiveRandomClassSelectionBonus();
 	}
@@ -1947,14 +1951,15 @@ void CInfClassCharacter::HandleMapMenu()
 
 		if(pPlayer->MapMenuClickable() && m_Input.m_Fire&1)
 		{
-			bool Bonus = false;
+			bool Random = false;
 
 			int MenuClass = pPlayer->m_MapMenuItem;
 			int NewClass = CInfClassGameController::MenuClassToPlayerClass(MenuClass);
 			if(NewClass == PLAYERCLASS_NONE)
 			{
 				NewClass = GameController()->ChooseHumanClass(pPlayer);
-				Bonus = true;
+				Random = true;
+				pPlayer->SetRandomClassChoosen();
 			}
 			if(NewClass == PLAYERCLASS_INVALID)
 			{
@@ -1969,11 +1974,13 @@ void CInfClassCharacter::HandleMapMenu()
 				
 				char aBuf[256];
 				str_format(aBuf, sizeof(aBuf), "choose_class player='%s' class='%d' random='%d'",
-					Server()->ClientName(GetCID()), NewClass, Bonus);
+					Server()->ClientName(GetCID()), NewClass, Random);
 				GameServer()->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "game", aBuf);
 
-				if(Bonus)
+				if(Random)
+				{
 					GiveRandomClassSelectionBonus();
+				}
 			}
 		}
 	}

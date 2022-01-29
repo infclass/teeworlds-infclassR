@@ -64,6 +64,9 @@ public:
 	void IncreaseGhoulLevel(int Diff);
 	int GetGhoulLevel() const { return m_GhoulLevel; }
 
+	void SetRandomClassChoosen();
+	bool RandomClassChoosen() const;
+
 	CGameContext *GameServer() const { return m_pGameServer; }
 	IServer *Server() const { return CPlayer::Server(); }
 
@@ -77,6 +80,8 @@ protected:
 
 	CInfClassGameController *m_pGameController = nullptr;
 	CInfClassPlayerClass *m_pInfcPlayerClass = nullptr;
+
+	int m_RandomClassRoundId = 0;
 
 	DO_INFECTION m_DoInfection = DO_INFECTION::NO;
 	int m_InfectiousPlayerCID = -1;

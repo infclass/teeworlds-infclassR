@@ -380,6 +380,16 @@ void CInfClassPlayer::IncreaseGhoulLevel(int Diff)
 	m_GhoulLevel = clamp(NewGhoulLevel, 0, g_Config.m_InfGhoulStomachSize);
 }
 
+void CInfClassPlayer::SetRandomClassChoosen()
+{
+	m_RandomClassRoundId = GameController()->GetRoundId();
+}
+
+bool CInfClassPlayer::RandomClassChoosen() const
+{
+	return m_RandomClassRoundId == GameController()->GetRoundId();
+}
+
 const char *CInfClassPlayer::GetClan(int SnappingClient) const
 {
 	if(GetTeam() == TEAM_SPECTATORS)
