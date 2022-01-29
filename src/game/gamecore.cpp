@@ -393,7 +393,7 @@ void CCharacterCore::Tick(bool UseInput, CParams* pParams)
 						m_Vel.y = SaturatedAdd(-DragSpeed, DragSpeed, m_Vel.y, -Accel*Dir.y*0.25f);
 
 						// InfClassR taxi mode, todo: cleanup
-						if (!pCharCore->m_Passenger && (!m_Infected && !pCharCore->m_Infected && !m_HookProtected) && !IsRecursePassenger(pCharCore)) {
+						if(g_Config.m_InfTaxi && !pCharCore->m_Passenger && (!m_Infected && !pCharCore->m_Infected && !m_HookProtected) && !IsRecursePassenger(pCharCore)) {
 							pCharCore->SetPassenger(this);
 							m_HookedPlayer = -1;
 							m_HookState = HOOK_RETRACTED;

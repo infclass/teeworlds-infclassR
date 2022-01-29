@@ -28,6 +28,7 @@ MACRO_CONFIG_INT(InfCaptcha, inf_captcha, 0, 0, 1, CFGFLAG_SERVER, "Enable captc
 MACRO_CONFIG_INT(InfShockwaveAffectHumans, inf_shock_wave_affect_humans, 1, 0, 1, CFGFLAG_SERVER, "Explosion shockwave affect humans")
 MACRO_CONFIG_INT(InfSpawnProtectionTime, inf_spawn_protection_time, 2, 0, 60, CFGFLAG_SERVER, "Time zombies stay invincible while spawning")
 MACRO_CONFIG_INT(InfAntiFireTime, inf_anti_fire_time, 700, 0, 10000, CFGFLAG_SERVER, "Time players can't attack after spawning (in ms)")
+MACRO_CONFIG_INT(InfTaxi, inf_taxi, 1, 0, 1, CFGFLAG_SERVER, "Enable Taxi")
 
 MACRO_CONFIG_INT(InfDefenderLimit, inf_defender_limit, 40, 0, 64, CFGFLAG_SERVER, "Maximum number of defenders in game")
 MACRO_CONFIG_INT(InfMedicLimit, inf_medic_limit, 20, 0, 64, CFGFLAG_SERVER, "Maximum number of medics in game")
