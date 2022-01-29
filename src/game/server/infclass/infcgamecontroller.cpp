@@ -1257,6 +1257,32 @@ void CInfClassGameController::EndRound()
 	m_RoundStarted = false;
 }
 
+void CInfClassGameController::DoTeamChange(CPlayer *pPlayer, int Team, bool DoChatMsg)
+{
+	Team = ClampTeam(Team);
+	if(Team == pPlayer->GetTeam())
+		return;
+
+	int OldTeam = pPlayer->GetTeam();
+	IGameController::DoTeamChange(pPlayer, Team, false);
+
+	int ClientID = pPlayer->GetCID();
+
+	if(DoChatMsg)
+	{
+		if(Team == TEAM_SPECTATORS)
+		{
+			GameServer()->SendChatTarget_Localization(-1, CHATCATEGORY_PLAYER, _("{str:PlayerName} joined the spectators"), "PlayerName", Server()->ClientName(ClientID), NULL);
+			GameServer()->AddSpectatorCID(ClientID);
+			Server()->InfecteClient(ClientID);
+		}
+		else
+		{
+			GameServer()->SendChatTarget_Localization(-1, CHATCATEGORY_PLAYER, _("{str:PlayerName} joined the game"), "PlayerName", Server()->ClientName(ClientID), NULL);
+		}
+	}
+}
+
 void CInfClassGameController::GetPlayerCounter(int ClientException, int& NumHumans, int& NumInfected)
 {
 	NumHumans = 0;

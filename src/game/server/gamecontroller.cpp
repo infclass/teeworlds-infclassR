@@ -198,30 +198,21 @@ void IGameController::DoTeamChange(CPlayer *pPlayer, int Team, bool DoChatMsg)
 	if(Team == pPlayer->GetTeam())
 		return;
 
-	int OldTeam = pPlayer->GetTeam();
 	pPlayer->SetTeam(Team);
-
 	int ClientID = pPlayer->GetCID();
 
+	char aBuf[128];
+	DoChatMsg = false;
 	if(DoChatMsg)
 	{
-		if(Team == TEAM_SPECTATORS)
-		{
-			GameServer()->SendChatTarget_Localization(-1, CHATCATEGORY_PLAYER, _("{str:PlayerName} joined the spectators"), "PlayerName", Server()->ClientName(ClientID), NULL);
-			GameServer()->AddSpectatorCID(ClientID);
-			Server()->InfecteClient(ClientID);
-		}
-		else
-		{
-			GameServer()->SendChatTarget_Localization(-1, CHATCATEGORY_PLAYER, _("{str:PlayerName} joined the game"), "PlayerName", Server()->ClientName(ClientID), NULL);
-		}
+		str_format(aBuf, sizeof(aBuf), "'%s' joined the %s", Server()->ClientName(ClientID), GameServer()->m_pController->GetTeamName(Team));
+		GameServer()->SendChat(-1, CGameContext::CHAT_ALL, aBuf);
 	}
 
-	char aBuf[128];
-	str_format(aBuf, sizeof(aBuf), "team_join player='%d:%s' team=%d->%d", ClientID, Server()->ClientName(ClientID), OldTeam, Team);
+	str_format(aBuf, sizeof(aBuf), "team_join player='%d:%s' m_Team=%d", ClientID, Server()->ClientName(ClientID), Team);
 	GameServer()->Console()->Print(IConsole::OUTPUT_LEVEL_DEBUG, "game", aBuf);
 
-	OnPlayerInfoChange(GameServer()->m_apPlayers[ClientID]);
+	// OnPlayerInfoChange(pPlayer);
 }
 
 const char *IGameController::GetTeamName(int Team)

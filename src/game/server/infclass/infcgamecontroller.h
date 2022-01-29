@@ -71,6 +71,7 @@ public:
 	void DoWincheck() override;
 	void StartRound() override;
 	void EndRound() override;
+	void DoTeamChange(class CPlayer *pPlayer, int Team, bool DoChatMsg = true) override;
 	bool TryRespawn(CInfClassPlayer *pPlayer, SpawnContext *pContext);
 	int ChooseHumanClass(const CPlayer *pPlayer) const;
 	int ChooseInfectedClass(const CPlayer *pPlayer) const override;
