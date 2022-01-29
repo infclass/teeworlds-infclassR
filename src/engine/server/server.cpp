@@ -564,6 +564,8 @@ int CServer::Init()
 	m_aPreviousMap[0] = 0;
 	m_aCurrentMap[0] = 0;
 
+	m_RconRestrict = -1;
+
 	SetFireDelay(INFWEAPON_NONE, 0);
 	SetFireDelay(INFWEAPON_HAMMER, 125);
 	SetFireDelay(INFWEAPON_GUN, 125);
@@ -775,9 +777,59 @@ bool CServer::ClientIngame(int ClientID) const
 	return ClientID >= 0 && ClientID < MAX_CLIENTS && m_aClients[ClientID].m_State == CServer::CClient::STATE_INGAME;
 }
 
+int CServer::Port() const
+{
+	return m_NetServer.Address().port;
+}
+
 int CServer::MaxClients() const
 {
 	return m_NetServer.MaxClients();
+}
+
+int CServer::ClientCount() const
+{
+	int ClientCount = 0;
+	for(const auto &Client : m_aClients)
+	{
+		if(Client.m_State != CClient::STATE_EMPTY)
+		{
+			ClientCount++;
+		}
+	}
+
+	return ClientCount;
+}
+
+int CServer::DistinctClientCount() const
+{
+	NETADDR aAddresses[MAX_CLIENTS];
+	for(int i = 0; i < MAX_CLIENTS; i++)
+	{
+		if(m_aClients[i].m_State != CClient::STATE_EMPTY)
+		{
+			GetClientAddr(i, &aAddresses[i]);
+		}
+	}
+
+	int ClientCount = 0;
+	for(int i = 0; i < MAX_CLIENTS; i++)
+	{
+		if(m_aClients[i].m_State != CClient::STATE_EMPTY)
+		{
+			ClientCount++;
+			for(int j = 0; j < i; j++)
+			{
+				if(!net_addr_comp_noport(&aAddresses[i], &aAddresses[j]))
+				{
+					ClientCount--;
+					break;
+				}
+			}
+		}
+	}
+
+	return ClientCount;
 }
 
 static inline bool RepackMsg(const CMsgPacker *pMsg, CPacker &Packer)
@@ -1201,7 +1253,7 @@ void CServer::SendRconLineAuthed(const char *pLine, void *pUser)
 
 	for(i = 0; i < MAX_CLIENTS; i++)
 	{
-		if(pThis->m_aClients[i].m_State != CClient::STATE_EMPTY && pThis->m_aClients[i].m_Authed >= pThis->m_RconAuthLevel)
+		if(pThis->m_aClients[i].m_State != CClient::STATE_EMPTY && pThis->m_aClients[i].m_Authed >= pThis->m_RconAuthLevel && (pThis->m_RconRestrict == -1 || pThis->m_RconRestrict == i))
 			pThis->SendRconLine(i, pLine);
 	}
 
@@ -3218,7 +3270,7 @@ int main(int argc, const char **argv) // ignore_convention
 
 // DDRace
 
-void CServer::GetClientAddr(int ClientID, NETADDR *pAddr)
+void CServer::GetClientAddr(int ClientID, NETADDR *pAddr) const
 {
 	if(ClientID >= 0 && ClientID < MAX_CLIENTS && m_aClients[ClientID].m_State == CClient::STATE_INGAME)
 	{

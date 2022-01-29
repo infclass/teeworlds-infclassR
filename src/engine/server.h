@@ -153,7 +153,10 @@ public:
 	int Tick() const { return m_CurrentGameTick; }
 	int TickSpeed() const { return m_TickSpeed; }
 
+	virtual int Port() const = 0;
 	virtual int MaxClients() const = 0;
+	virtual int ClientCount() const = 0;
+	virtual int DistinctClientCount() const = 0;
 	virtual const char *ClientName(int ClientID) const = 0;
 	virtual const char *ClientClan(int ClientID) const = 0;
 	virtual int ClientCountry(int ClientID) const = 0;
@@ -161,6 +164,8 @@ public:
 	virtual int GetClientInfo(int ClientID, CClientInfo *pInfo) const = 0;
 	virtual void SetClientDDNetVersion(int ClientID, int DDNetVersion) = 0;
 	virtual void GetClientAddr(int ClientID, char *pAddrStr, int Size) const = 0;
+	virtual void RestrictRconOutput(int ClientID) = 0;
+
 	virtual std::string GetClientIP(int ClientID) const = 0;
 
 	virtual int SendMsg(CMsgPacker *pMsg, int Flags, int ClientID) = 0;
@@ -285,7 +290,7 @@ public:
 	virtual void DemoRecorder_HandleAutoStart() = 0;
 	virtual bool DemoRecorder_IsRecording() = 0;
 
-	virtual void GetClientAddr(int ClientID, NETADDR *pAddr) = 0;
+	virtual void GetClientAddr(int ClientID, NETADDR *pAddr) const = 0;
 
 /* INFECTION MODIFICATION START ***************************************/
 	virtual int GetClientInfclassVersion(int ClientID) const = 0;

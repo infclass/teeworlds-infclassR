@@ -224,6 +224,8 @@ public:
 	CDemoRecorder m_DemoRecorder;
 	CRegister m_Register;
 
+	int m_RconRestrict;
+
 	CServer();
 	virtual ~CServer();
 
@@ -254,7 +256,10 @@ public:
 	const char *ClientClan(int ClientID) const;
 	int ClientCountry(int ClientID) const;
 	bool ClientIngame(int ClientID) const;
+	int Port() const;
 	int MaxClients() const;
+	int ClientCount() const;
+	int DistinctClientCount() const;
 
 	virtual int SendMsg(CMsgPacker *pMsg, int Flags, int ClientID);
 
@@ -455,10 +460,11 @@ public:
 	virtual int GetTimeShiftUnit() const { return m_TimeShiftUnit; } //In ms
 /* INFECTION MODIFICATION END *****************************************/
 
-	void GetClientAddr(int ClientID, NETADDR *pAddr);
+	void GetClientAddr(int ClientID, NETADDR *pAddr) const;
 	int m_aPrevStates[MAX_CLIENTS];
 	char *GetAnnouncementLine(char const *FileName);
 	unsigned m_AnnouncementLastLine;
+	void RestrictRconOutput(int ClientID) { m_RconRestrict = ClientID; }
 
 	virtual const char *GetPreviousMapName() const;
 	virtual int* GetIdMap(int ClientID);
