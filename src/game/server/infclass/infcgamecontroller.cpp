@@ -903,9 +903,22 @@ int CInfClassGameController::DamageTypeToWeapon(DAMAGE_TYPE DamageType, TAKEDAMA
 
 void CInfClassGameController::RegisterChatCommands(IConsole *pConsole)
 {
+	pConsole->Register("set_client_name", "i<clientid> s<name>", CFGFLAG_SERVER, ConSetClientName, this, "Set the name of a player");
 	pConsole->Register("inf_set_class", "i<clientid> s<classname>", CFGFLAG_SERVER, ConSetClass, this, "Set the class of a player");
 
 	pConsole->Register("witch", "", CFGFLAG_CHAT|CFGFLAG_USER, ChatWitch, this, "Call Witch");
+}
+
+bool CInfClassGameController::ConSetClientName(IConsole::IResult *pResult, void *pUserData)
+{
+	CInfClassGameController *pSelf = (CInfClassGameController *)pUserData;
+
+	int PlayerID = pResult->GetInteger(0);
+	const char *pNewName = pResult->GetString(1);
+
+	pSelf->Server()->SetClientName(PlayerID, pNewName);
+
+	return true;
 }
 
 bool CInfClassGameController::ConSetClass(IConsole::IResult *pResult, void *pUserData)
