@@ -353,6 +353,29 @@ void CCharacterCore::Tick(bool UseInput, CParams* pParams)
 			{
 				vec2 Dir = normalize(m_Pos - pCharCore->m_Pos);
 
+				bool CanCollide = true; // pTuningParams->m_PlayerCollision;
+				// handle player <-> player collision
+				if((m_Infected == pCharCore->m_Infected) && (m_HookProtected || pCharCore->m_HookProtected))
+					CanCollide = false;
+
+				// Totally disable humans body collisions
+				if(!m_Infected && !pCharCore->m_Infected)
+					CanCollide = false;
+
+				if(CanCollide && Distance < PhysicalSize * 1.25f && Distance > 0.0f)
+				{
+					float a = (PhysicalSize * 1.45f - Distance);
+					float Velocity = 0.5f;
+
+					// make sure that we don't add excess force by checking the
+					// direction against the current velocity. if not zero.
+					if(length(m_Vel) > 0.0001)
+						Velocity = 1 - (dot(normalize(m_Vel), Dir) + 1) / 2;
+
+					m_Vel += Dir * a * (Velocity * 0.75f);
+					m_Vel *= 0.85f;
+				}
+
 				// handle hook influence
 				if(m_HookedPlayer == i)
 				{
@@ -378,24 +401,6 @@ void CCharacterCore::Tick(bool UseInput, CParams* pParams)
 						}
 						// InfClassR taxi mode end
 					}
-				}
-				// handle player <-> player collision
-				if (!m_Infected && !pCharCore->m_Infected)
-					continue;
-				if ((m_Infected && pCharCore->m_Infected) && (m_HookProtected || pCharCore->m_HookProtected))
-					continue;
-				if(!pTuningParams->m_PlayerCollision && Distance < PhysicalSize*1.25f && Distance > 0.0f)
-				{
-					float a = (PhysicalSize*1.45f - Distance);
-					float Velocity = 0.5f;
-
-					// make sure that we don't add excess force by checking the
-					// direction against the current velocity. if not zero.
-					if (length(m_Vel) > 0.0001)
-						Velocity = 1-(dot(normalize(m_Vel), Dir)+1)/2;
-
-					m_Vel += Dir*a*(Velocity*0.75f);
-					m_Vel *= 0.85f;
 				}
 			}
 		}
