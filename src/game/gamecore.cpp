@@ -381,6 +381,16 @@ void CCharacterCore::Tick(bool UseInput, CParams* pParams)
 				{
 					if(Distance > PhysicalSize*1.50f) // TODO: fix tweakable variable
 					{
+						// InfClassR taxi mode, todo: cleanup
+						if(g_Config.m_InfTaxi && !pCharCore->m_Passenger && (!m_Infected && !pCharCore->m_Infected && !m_HookProtected) && !IsRecursePassenger(pCharCore)) {
+							pCharCore->SetPassenger(this);
+							m_HookedPlayer = -1;
+							m_HookState = HOOK_RETRACTED;
+							m_HookPos = m_Pos;
+							continue;
+						}
+						// InfClassR taxi mode end
+
 						float Accel = pTuningParams->m_HookDragAccel * (Distance/pTuningParams->m_HookLength);
 						float DragSpeed = pTuningParams->m_HookDragSpeed;
 
@@ -391,15 +401,6 @@ void CCharacterCore::Tick(bool UseInput, CParams* pParams)
 						// add a little bit force to the guy who has the grip
 						m_Vel.x = SaturatedAdd(-DragSpeed, DragSpeed, m_Vel.x, -Accel*Dir.x*0.25f);
 						m_Vel.y = SaturatedAdd(-DragSpeed, DragSpeed, m_Vel.y, -Accel*Dir.y*0.25f);
-
-						// InfClassR taxi mode, todo: cleanup
-						if(g_Config.m_InfTaxi && !pCharCore->m_Passenger && (!m_Infected && !pCharCore->m_Infected && !m_HookProtected) && !IsRecursePassenger(pCharCore)) {
-							pCharCore->SetPassenger(this);
-							m_HookedPlayer = -1;
-							m_HookState = HOOK_RETRACTED;
-							m_HookPos = m_Pos;
-						}
-						// InfClassR taxi mode end
 					}
 				}
 			}
