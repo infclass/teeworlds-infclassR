@@ -349,51 +349,54 @@ void CCharacterCore::Tick(bool UseInput, CParams* pParams)
 				continue; // make sure that we don't nudge our self
 
 			float Distance = distance(m_Pos, pCharCore->m_Pos);
-			vec2 Dir = normalize(m_Pos - pCharCore->m_Pos);
-
-			// handle hook influence
-			if(m_HookedPlayer == i)
+			if(Distance > 0)
 			{
-				if(Distance > PhysicalSize*1.50f) // TODO: fix tweakable variable
+				vec2 Dir = normalize(m_Pos - pCharCore->m_Pos);
+
+				// handle hook influence
+				if(m_HookedPlayer == i)
 				{
-					float Accel = pTuningParams->m_HookDragAccel * (Distance/pTuningParams->m_HookLength);
-					float DragSpeed = pTuningParams->m_HookDragSpeed;
+					if(Distance > PhysicalSize*1.50f) // TODO: fix tweakable variable
+					{
+						float Accel = pTuningParams->m_HookDragAccel * (Distance/pTuningParams->m_HookLength);
+						float DragSpeed = pTuningParams->m_HookDragSpeed;
 
-					// add force to the hooked player
-					pCharCore->m_Vel.x = SaturatedAdd(-DragSpeed, DragSpeed, pCharCore->m_Vel.x, Accel*Dir.x*1.5f);
-					pCharCore->m_Vel.y = SaturatedAdd(-DragSpeed, DragSpeed, pCharCore->m_Vel.y, Accel*Dir.y*1.5f);
+						// add force to the hooked player
+						pCharCore->m_Vel.x = SaturatedAdd(-DragSpeed, DragSpeed, pCharCore->m_Vel.x, Accel*Dir.x*1.5f);
+						pCharCore->m_Vel.y = SaturatedAdd(-DragSpeed, DragSpeed, pCharCore->m_Vel.y, Accel*Dir.y*1.5f);
 
-					// add a little bit force to the guy who has the grip
-					m_Vel.x = SaturatedAdd(-DragSpeed, DragSpeed, m_Vel.x, -Accel*Dir.x*0.25f);
-					m_Vel.y = SaturatedAdd(-DragSpeed, DragSpeed, m_Vel.y, -Accel*Dir.y*0.25f);
+						// add a little bit force to the guy who has the grip
+						m_Vel.x = SaturatedAdd(-DragSpeed, DragSpeed, m_Vel.x, -Accel*Dir.x*0.25f);
+						m_Vel.y = SaturatedAdd(-DragSpeed, DragSpeed, m_Vel.y, -Accel*Dir.y*0.25f);
 
-					// InfClassR taxi mode, todo: cleanup
-					if (!pCharCore->m_Passenger && (!m_Infected && !pCharCore->m_Infected && !m_HookProtected) && !IsRecursePassenger(pCharCore)) {
-						pCharCore->SetPassenger(this);
-						m_HookedPlayer = -1;
-						m_HookState = HOOK_RETRACTED;
-						m_HookPos = m_Pos;
+						// InfClassR taxi mode, todo: cleanup
+						if (!pCharCore->m_Passenger && (!m_Infected && !pCharCore->m_Infected && !m_HookProtected) && !IsRecursePassenger(pCharCore)) {
+							pCharCore->SetPassenger(this);
+							m_HookedPlayer = -1;
+							m_HookState = HOOK_RETRACTED;
+							m_HookPos = m_Pos;
+						}
+						// InfClassR taxi mode end
 					}
-					// InfClassR taxi mode end
 				}
-			}
-			// handle player <-> player collision
-			if (!m_Infected && !pCharCore->m_Infected)
-				continue;
-			if ((m_Infected && pCharCore->m_Infected) && (m_HookProtected || pCharCore->m_HookProtected))
-				continue;
-			if(!pTuningParams->m_PlayerCollision && Distance < PhysicalSize*1.25f && Distance > 0.0f)
-			{
-				float a = (PhysicalSize*1.45f - Distance);
-				float Velocity = 0.5f;
+				// handle player <-> player collision
+				if (!m_Infected && !pCharCore->m_Infected)
+					continue;
+				if ((m_Infected && pCharCore->m_Infected) && (m_HookProtected || pCharCore->m_HookProtected))
+					continue;
+				if(!pTuningParams->m_PlayerCollision && Distance < PhysicalSize*1.25f && Distance > 0.0f)
+				{
+					float a = (PhysicalSize*1.45f - Distance);
+					float Velocity = 0.5f;
 
-				// make sure that we don't add excess force by checking the
-				// direction against the current velocity. if not zero.
-				if (length(m_Vel) > 0.0001)
-					Velocity = 1-(dot(normalize(m_Vel), Dir)+1)/2;
+					// make sure that we don't add excess force by checking the
+					// direction against the current velocity. if not zero.
+					if (length(m_Vel) > 0.0001)
+						Velocity = 1-(dot(normalize(m_Vel), Dir)+1)/2;
 
-				m_Vel += Dir*a*(Velocity*0.75f);
-				m_Vel *= 0.85f;
+					m_Vel += Dir*a*(Velocity*0.75f);
+					m_Vel *= 0.85f;
+				}
 			}
 		}
 	}
