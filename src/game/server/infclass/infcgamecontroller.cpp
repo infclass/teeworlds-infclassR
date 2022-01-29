@@ -1053,7 +1053,7 @@ CInfClassPlayer *CInfClassGameController::GetPlayer(int ClientID) const
 	if(ClientID < 0 || ClientID >= MAX_CLIENTS)
 		return nullptr;
 
-	return static_cast<CInfClassPlayer*>(GameServer()->m_apPlayers[ClientID]);
+	return CInfClassPlayer::GetInstance(GameServer()->m_apPlayers[ClientID]);
 }
 
 CInfClassCharacter *CInfClassGameController::GetCharacter(int ClientID) const

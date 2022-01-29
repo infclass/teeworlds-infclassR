@@ -26,6 +26,8 @@ public:
 	CInfClassPlayer(CInfClassGameController *pGameController, int ClientID, int Team);
 	~CInfClassPlayer() override;
 
+	static CInfClassPlayer *GetInstance(CPlayer *pPlayer);
+
 	CInfClassGameController *GameController() const;
 
 	void TryRespawn() override;
@@ -90,6 +92,11 @@ protected:
 	int m_GhoulLevel = 0;
 	int m_GhoulLevelTick = 0;
 };
+
+inline CInfClassPlayer *CInfClassPlayer::GetInstance(CPlayer *pPlayer)
+{
+	return static_cast<CInfClassPlayer *>(pPlayer);
+}
 
 template<int FLAGS>
 class CInfClassPlayerIterator : public CPlayerIterator<FLAGS>
