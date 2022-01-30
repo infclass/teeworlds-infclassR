@@ -1,3 +1,21 @@
+InfclassR v1.4.0_alpha6
+- Scientist tele now respects the ammo amount
+- Fixed (some) cases with 10 HP regen
+- Added a taxi mode with disabled ammo regen
+- Fixed Bat sometimes could infect
+- Fixed round started up during sv_warmup
+- Merc bombs are now fully deterministic
+- Fixed compatibility with teeworlds-0.6.x
+- Taxi passengers now can't hook
+- Freezed characters now can cry
+- Ghoul flying points now depends on the death type
+- Boomer now can be an assistant
+- Added support for teleports (map entities)
+- Added a sound on character healed
+- Merc grenades now disables healing for the infected
+- Added 'healing disabled' effect
+- Added a config option to toggle taxi enablement
+
 InfclassR v1.4.0_alpha5
 - Human class now kept on reconnect or joining spec
 - White hole now gives 'assistance' role to the owner
