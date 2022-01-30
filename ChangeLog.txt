@@ -1,3 +1,16 @@
+InfclassR v1.4.0_alpha5
+- Human class now kept on reconnect or joining spec
+- White hole now gives 'assistance' role to the owner
+- Fixed spectator snap for InfClass client
+- Fixed a rare crash on a disconnect between rounds
+- Fixed voodoo death with active spawn protection
+- Fixed Engineer Wall interactions with undead
+- DEATH_TILE as a kill reason mapped to WEAPON_NINJA
+- Fixed all the infected killed on unfair infection
+- Fixed spider web hook (not) catching humans
+- Fixed ninja laser sound position
+- Fixed katana hitbox (regression since v1.4.0_alpha2)
+
 InfclassR v1.4.0_alpha4
 - Added 'inf_initial_infection_delay' conf variable
 - Fixed zones tesselation
