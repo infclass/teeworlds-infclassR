@@ -14,6 +14,9 @@ public:
 
 	bool IsHuman() const final { return true; }
 
+	SkinGetter SetupSkin(CSkinContext *pOutput) const override;
+	static bool SetupSkin(const CSkinContext &Context, CWeakSkinInfo *pOutput);
+
 	void GetAmmoRegenParams(int Weapon, WeaponRegenParams *pParams) override;
 
 	void OnCharacterPreCoreTick() override;
@@ -25,12 +28,9 @@ public:
 
 	void OnSlimeEffect(int Owner) override;
 
-	static bool SetupSkin(int PlayerClass, CTeeInfo *output);
-
 protected:
 	void GiveClassAttributes() override;
 	void DestroyChildEntities() override;
-	void SetupSkin(CTeeInfo *output) override;
 	void BroadcastWeaponState() override;
 
 	void OnBlindingLaserFired(WeaponFireContext *pFireContext);

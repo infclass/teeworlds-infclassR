@@ -312,17 +312,14 @@ void CInfClassPlayerClass::DestroyChildEntities()
 {
 }
 
-void CInfClassPlayerClass::SetupSkin(CTeeInfo *output)
-{
-	output->m_UseCustomColor = 0;
-	output->SetSkinName("default");
-}
-
 void CInfClassPlayerClass::BroadcastWeaponState()
 {
 }
 
 void CInfClassPlayerClass::UpdateSkin()
 {
-	SetupSkin(&m_pPlayer->m_TeeInfos);
+	if(!m_pPlayer)
+		return;
+
+	m_pPlayer->UpdateSkin();
 }

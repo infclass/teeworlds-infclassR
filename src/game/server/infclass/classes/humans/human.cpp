@@ -26,6 +26,74 @@ CInfClassHuman::CInfClassHuman(CInfClassPlayer *pPlayer)
 {
 }
 
+SkinGetter CInfClassHuman::SetupSkin(CSkinContext *pOutput) const
+{
+	pOutput->PlayerClass = GetPlayerClass();
+	pOutput->ExtraData1 = 0;
+
+	return CInfClassHuman::SetupSkin;
+}
+
+bool CInfClassHuman::SetupSkin(const CSkinContext &Context, CWeakSkinInfo *pOutput)
+{
+	switch(Context.PlayerClass)
+	{
+	case PLAYERCLASS_ENGINEER:
+		pOutput->UseCustomColor = 0;
+		pOutput->pSkinName = "limekitty";
+		break;
+	case PLAYERCLASS_SOLDIER:
+		pOutput->pSkinName = "brownbear";
+		pOutput->UseCustomColor = 0;
+		break;
+	case PLAYERCLASS_SNIPER:
+		pOutput->pSkinName = "warpaint";
+		pOutput->UseCustomColor = 0;
+		break;
+	case PLAYERCLASS_MERCENARY:
+		pOutput->pSkinName = "bluestripe";
+		pOutput->UseCustomColor = 0;
+		break;
+	case PLAYERCLASS_SCIENTIST:
+		pOutput->pSkinName = "toptri";
+		pOutput->UseCustomColor = 0;
+		break;
+	case PLAYERCLASS_BIOLOGIST:
+		pOutput->pSkinName = "twintri";
+		pOutput->UseCustomColor = 0;
+		break;
+	case PLAYERCLASS_LOOPER:
+		pOutput->pSkinName = "bluekitty";
+		pOutput->UseCustomColor = 1;
+		pOutput->ColorBody = 255;
+		pOutput->ColorFeet = 0;
+		break;
+	case PLAYERCLASS_MEDIC:
+		pOutput->pSkinName = "twinbop";
+		pOutput->UseCustomColor = 0;
+		break;
+	case PLAYERCLASS_HERO:
+		pOutput->pSkinName = "redstripe";
+		pOutput->UseCustomColor = 0;
+		break;
+	case PLAYERCLASS_NINJA:
+		pOutput->pSkinName = "default";
+		pOutput->UseCustomColor = 1;
+		pOutput->ColorBody = 255;
+		pOutput->ColorFeet = 0;
+		break;
+	case PLAYERCLASS_NONE:
+		pOutput->pSkinName = "default";
+		pOutput->UseCustomColor = 0;
+		break;
+	default:
+		return false;
+	}
+
+	return true;
+}
+
+
 void CInfClassHuman::GetAmmoRegenParams(int Weapon, WeaponRegenParams *pParams)
 {
 	int InfWID = m_pCharacter->GetInfWeaponID(Weapon);
@@ -269,68 +337,6 @@ void CInfClassHuman::DestroyChildEntities()
 
 	m_PositionLockTicksRemaining = 0;
 	m_pCharacter->UnlockPosition();
-}
-
-bool CInfClassHuman::SetupSkin(int PlayerClass, CTeeInfo *output)
-{
-	switch(PlayerClass)
-	{
-		case PLAYERCLASS_ENGINEER:
-			output->m_UseCustomColor = 0;
-			output->SetSkinName("limekitty");
-			break;
-		case PLAYERCLASS_SOLDIER:
-			output->SetSkinName("brownbear");
-			output->m_UseCustomColor = 0;
-			break;
-		case PLAYERCLASS_SNIPER:
-			output->SetSkinName("warpaint");
-			output->m_UseCustomColor = 0;
-			break;
-		case PLAYERCLASS_MERCENARY:
-			output->SetSkinName("bluestripe");
-			output->m_UseCustomColor = 0;
-			break;
-		case PLAYERCLASS_SCIENTIST:
-			output->SetSkinName("toptri");
-			output->m_UseCustomColor = 0;
-			break;
-		case PLAYERCLASS_BIOLOGIST:
-			output->SetSkinName("twintri");
-			output->m_UseCustomColor = 0;
-			break;
-		case PLAYERCLASS_LOOPER:
-			output->SetSkinName("bluekitty");
-			output->m_UseCustomColor = 1;
-			output->m_ColorBody = 255;
-			output->m_ColorFeet = 0;
-			break;
-		case PLAYERCLASS_MEDIC:
-			output->SetSkinName("twinbop");
-			output->m_UseCustomColor = 0;
-			break;
-		case PLAYERCLASS_HERO:
-			output->SetSkinName("redstripe");
-			output->m_UseCustomColor = 0;
-			break;
-		case PLAYERCLASS_NINJA:
-			output->SetSkinName("default");
-			output->m_UseCustomColor = 1;
-			output->m_ColorBody = 255;
-			output->m_ColorFeet = 0;
-			break;
-		default:
-			output->SetSkinName("default");
-			output->m_UseCustomColor = 0;
-			return false;
-	}
-
-	return true;
-}
-
-void CInfClassHuman::SetupSkin(CTeeInfo *output)
-{
-	SetupSkin(GetPlayerClass(), output);
 }
 
 void CInfClassHuman::BroadcastWeaponState()

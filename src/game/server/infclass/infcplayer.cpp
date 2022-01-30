@@ -168,16 +168,26 @@ void CInfClassPlayer::SnapClientInfo(int SnappingClient)
 	StrToInts(&pClientInfo->m_Clan0, 3, GetClan(SnappingClient));
 	pClientInfo->m_Country = Server()->ClientCountry(m_ClientID);
 
-	IServer::CClientInfo SnappingClientInfo = {0};
+	IServer::CClientInfo ClientInfo = {0};
 	if(SnappingClient != DemoClientID)
 	{
-		Server()->GetClientInfo(SnappingClient, &SnappingClientInfo);
+		Server()->GetClientInfo(SnappingClient, &ClientInfo);
 	}
 
-	StrToInts(&pClientInfo->m_Skin0, 6, m_TeeInfos.m_SkinName);
-	pClientInfo->m_UseCustomColor = m_TeeInfos.m_UseCustomColor;
-	pClientInfo->m_ColorBody = m_TeeInfos.m_ColorBody;
-	pClientInfo->m_ColorFeet = m_TeeInfos.m_ColorFeet;
+	CWeakSkinInfo SkinInfo;
+	if(m_SkinGetter)
+	{
+		m_SkinGetter(m_SkinContext, &SkinInfo);
+	}
+	else
+	{
+		SkinInfo.pSkinName = "default";
+	}
+
+	StrToInts(&pClientInfo->m_Skin0, 6, SkinInfo.pSkinName);
+	pClientInfo->m_UseCustomColor = SkinInfo.UseCustomColor;
+	pClientInfo->m_ColorBody = SkinInfo.ColorBody;
+	pClientInfo->m_ColorFeet = SkinInfo.ColorFeet;
 }
 
 void CInfClassPlayer::HandleInfection()
@@ -308,6 +318,11 @@ void CInfClassPlayer::SetClass(int newClass)
 		m_pInfcPlayerClass->SetCharacter(GetCharacter());
 	}
 	m_pInfcPlayerClass->OnPlayerClassChanged();
+}
+
+void CInfClassPlayer::UpdateSkin()
+{
+	m_SkinGetter = m_pInfcPlayerClass ? m_pInfcPlayerClass->SetupSkin(&m_SkinContext) : nullptr;
 }
 
 void CInfClassPlayer::Infect(CPlayer *pInfectiousPlayer)

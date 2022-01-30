@@ -3,6 +3,7 @@
 
 #include <base/vmath.h>
 #include <game/server/entity.h>
+#include <game/server/skininfo.h>
 
 class CConfig;
 class CGameContext;
@@ -11,7 +12,6 @@ class CInfClassCharacter;
 class CInfClassGameContext;
 class CInfClassGameController;
 class CInfClassPlayer;
-class CTeeInfo;
 class IServer;
 
 struct SpawnContext;
@@ -30,6 +30,8 @@ public:
 
 	virtual bool IsHuman() const = 0;
 	bool IsZombie() const;
+
+	virtual SkinGetter SetupSkin(CSkinContext *pOutput) const = 0;
 
 	virtual int GetDefaultEmote() const;
 	virtual void GetAmmoRegenParams(int Weapon, WeaponRegenParams *pParams);
@@ -81,7 +83,6 @@ public:
 protected:
 	virtual void GiveClassAttributes();
 	virtual void DestroyChildEntities();
-	virtual void SetupSkin(CTeeInfo *output);
 	virtual void BroadcastWeaponState();
 
 	CInfClassPlayer *m_pPlayer = nullptr;

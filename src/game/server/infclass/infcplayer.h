@@ -10,6 +10,7 @@ class CInfClassPlayerClass;
 
 // We actually have to include player.h after all this stuff above.
 #include <game/server/player.h>
+#include <game/server/skininfo.h>
 
 enum class DO_INFECTION
 {
@@ -46,6 +47,7 @@ public:
 	void SetCharacterClass(CInfClassPlayerClass *pClass);
 
 	void SetClass(int newClass) override;
+	void UpdateSkin();
 
 	void Infect(CPlayer* pInfectiousPlayer);
 	void StartInfection(bool force = false, CPlayer* pInfectiousPlayer = nullptr);
@@ -77,6 +79,9 @@ protected:
 	const char *GetClan(int SnappingClient = -1) const override;
 
 	bool IsForcedToSpectate() const;
+
+	CSkinContext m_SkinContext;
+	SkinGetter m_SkinGetter;
 
 	CInfClassGameController *m_pGameController = nullptr;
 	CInfClassPlayerClass *m_pInfcPlayerClass = nullptr;

@@ -536,7 +536,7 @@ void CMapConverter::AddImageQuad(const char* pName, int ImageID, int GridX, int 
 	m_DataFile.AddItem(MAPITEMTYPE_LAYER, m_NumLayers++, sizeof(Item), &Item);
 }
 
-void CMapConverter::AddTeeLayer(const char* pName, int ImageID, vec2 Pos, float Size, int Env, bool Black, const CTeeInfo *pTeeInfo)
+void CMapConverter::AddTeeLayer(const char* pName, int ImageID, vec2 Pos, float Size, int Env, bool Black, const CWeakSkinInfo &SkinInfo)
 {
 	array<CQuad> aQuads;
 	CQuad Quad;
@@ -586,9 +586,9 @@ void CMapConverter::AddTeeLayer(const char* pName, int ImageID, vec2 Pos, float 
 		Quad.m_aTexcoords[1].x = Quad.m_aTexcoords[3].x = 1024.0f*96.0f/256.0f;
 		Quad.m_aTexcoords[0].y = Quad.m_aTexcoords[1].y = 0;
 		Quad.m_aTexcoords[2].y = Quad.m_aTexcoords[3].y = 1024.0f*96.0f/128.0f;
-		if(pTeeInfo && pTeeInfo->m_UseCustomColor)
+		if(SkinInfo.UseCustomColor)
 		{
-			SetQuadColor(&Quad, pTeeInfo->m_ColorBody);
+			SetQuadColor(&Quad, SkinInfo.ColorBody);
 		}
 		aQuads.add(Quad);
 		
@@ -599,9 +599,9 @@ void CMapConverter::AddTeeLayer(const char* pName, int ImageID, vec2 Pos, float 
 		Quad.m_aTexcoords[1].x = Quad.m_aTexcoords[3].x = 1024.0f;
 		Quad.m_aTexcoords[0].y = Quad.m_aTexcoords[1].y = 1024.0f*32.0f/128.0f;
 		Quad.m_aTexcoords[2].y = Quad.m_aTexcoords[3].y = 1024.0f*64.0f/128.0f;
-		if(pTeeInfo && pTeeInfo->m_UseCustomColor)
+		if(SkinInfo.UseCustomColor)
 		{
-			SetQuadColor(&Quad, pTeeInfo->m_ColorFeet);
+			SetQuadColor(&Quad, SkinInfo.ColorFeet);
 		}
 		aQuads.add(Quad);
 		
@@ -1016,29 +1016,32 @@ int CMapConverter::AddEmbeddedImage(const char *pImageName, int Width, int Heigh
 int CMapConverter::Finalize()
 {
 	int ClassImageID[NUM_MENUCLASS];
+
+	CSkinContext SkinContext;
 	for(int ClassIndex = 0; ClassIndex < NUM_MENUCLASS; ++ClassIndex)
 	{
-		CTeeInfo ClassTeeInfo;
+		SkinContext.PlayerClass = CInfClassGameController::MenuClassToPlayerClass(ClassIndex);
+
+		CWeakSkinInfo ClassTeeInfo;
 		if(ClassIndex == MENUCLASS_RANDOM)
 		{
-			ClassTeeInfo.SetSkinName("warpaint");
+			ClassTeeInfo.pSkinName = "warpaint";
 		}
 		else if(ClassIndex == MENUCLASS_NINJA)
 		{
 			// Special case
-			ClassTeeInfo.SetSkinName("x_ninja");
+			ClassTeeInfo.pSkinName = "x_ninja";
 		}
 		else
 		{
-			int PlayerClass = CInfClassGameController::MenuClassToPlayerClass(ClassIndex);
-			CInfClassHuman::SetupSkin(PlayerClass, &ClassTeeInfo);
+			CInfClassHuman::SetupSkin(SkinContext, &ClassTeeInfo);
 		}
 
 		char SkinPath[96];
-		str_format(SkinPath, sizeof(SkinPath), "../skins/%s", ClassTeeInfo.SkinName());
+		str_format(SkinPath, sizeof(SkinPath), "../skins/%s", ClassTeeInfo.pSkinName);
 
 		int ImageID = 0;
-		if(ClassTeeInfo.m_UseCustomColor)
+		if(ClassTeeInfo.UseCustomColor)
 		{
 			bool GrayScale = true;
 			ImageID = AddEmbeddedImage(SkinPath, 256, 128, GrayScale);
@@ -1263,19 +1266,19 @@ int CMapConverter::Finalize()
 					}
 					else
 					{
+						CWeakSkinInfo SkinInfo;
 						vec2 Pos = m_MenuPosition+rotate(vec2(MenuRadius, 0.0f), MenuAngleStart+MenuAngleStep*i);
 						if(i == MENUCLASS_RANDOM)
 						{
-							AddTeeLayer("Random", ClassImageID[i], Pos, 64.0f, m_NumEnvs-1, true);
+							AddTeeLayer("Random", ClassImageID[i], Pos, 64.0f, m_NumEnvs-1, true, SkinInfo);
 						}
 						else
 						{
 							int PlayerClass = CInfClassGameController::MenuClassToPlayerClass(i);
 							const char *pClassName = CInfClassGameController::GetClassDisplayName(PlayerClass);
-							CTeeInfo TeeInfo;
-							CInfClassHuman::SetupSkin(PlayerClass, &TeeInfo);
+							CInfClassHuman::SetupSkin(SkinContext, &SkinInfo);
 							bool Black = false;
-							AddTeeLayer(pClassName, ClassImageID[i], Pos, 64.0f, m_NumEnvs-1, Black, &TeeInfo);
+							AddTeeLayer(pClassName, ClassImageID[i], Pos, 64.0f, m_NumEnvs-1, Black, SkinInfo);
 						}
 					}
 				}

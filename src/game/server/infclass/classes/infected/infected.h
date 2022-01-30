@@ -15,6 +15,10 @@ public:
 	static CInfClassInfected *GetInstance(CInfClassCharacter *pCharacter);
 
 	bool IsHuman() const final { return false; }
+
+	SkinGetter SetupSkin(CSkinContext *output) const override;
+	static bool SetupSkin(const CSkinContext &Context, CWeakSkinInfo *pOutput);
+
 	int GetDefaultEmote() const override;
 	bool CanDie() const override;
 	bool CanBeUnfreezed() const;
@@ -37,7 +41,6 @@ public:
 
 protected:
 	void GiveClassAttributes() override;
-	void SetupSkin(CTeeInfo *output) override;
 	void BroadcastWeaponState() override;
 
 	void DoBoomerExplosion();

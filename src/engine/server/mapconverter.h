@@ -9,7 +9,7 @@
 #include <game/mapitems.h>
 #include <game/gamecore.h>
 
-class CTeeInfo;
+class CWeakSkinInfo;
 
 class CMapConverter
 {
@@ -91,7 +91,7 @@ protected:
 	void CopyAnimations();
 	
 	void AddImageQuad(const char* pName, int ImageID, int GridX, int GridY, int X, int Y, int Width, int Height, vec2 Pos, vec2 Size, vec4 Color, int Env);
-	void AddTeeLayer(const char* pName, int ImageID, vec2 Pos, float Size, int Env=-1, bool Black=false, const CTeeInfo *pTeeInfo = nullptr);
+	void AddTeeLayer(const char* pName, int ImageID, vec2 Pos, float Size, int Env, bool Black, const CWeakSkinInfo &SkinInfo);
 	int AddExternalImage(const char* pImageName, int Width, int Height);
 	int AddEmbeddedImage(const char* pImageName, int Width, int Height, bool GrayScale);
 	

@@ -26,6 +26,123 @@ CInfClassInfected *CInfClassInfected::GetInstance(CInfClassCharacter *pCharacter
 	return nullptr;
 }
 
+SkinGetter CInfClassInfected::SetupSkin(CSkinContext *output) const
+{
+	output->PlayerClass = GetPlayerClass();
+	switch(GetPlayerClass())
+	{
+	case PLAYERCLASS_SPIDER:
+		output->ExtraData1 = m_HookOnTheLimit;
+		break;
+	case PLAYERCLASS_GHOUL:
+		output->ExtraData1 = GetGhoulPercent() * 100;
+		break;
+	case PLAYERCLASS_VOODOO:
+		output->ExtraData1 = m_VoodooAboutToDie;
+		break;
+	default:
+		output->ExtraData1 = 0;
+		break;
+	}
+
+	return CInfClassInfected::SetupSkin;
+}
+
+bool CInfClassInfected::SetupSkin(const CSkinContext &Context, CWeakSkinInfo *pOutput)
+{
+	switch(Context.PlayerClass)
+	{
+		case PLAYERCLASS_SMOKER:
+			pOutput->UseCustomColor = 1;
+			pOutput->pSkinName = "cammostripes";
+			pOutput->ColorBody = 3866368;
+			pOutput->ColorFeet = 65414;
+			break;
+		case PLAYERCLASS_BOOMER:
+			pOutput->pSkinName = "saddo";
+			pOutput->UseCustomColor = 1;
+			pOutput->ColorBody = 3866368;
+			pOutput->ColorFeet = 65414;
+			break;
+		case PLAYERCLASS_HUNTER:
+			pOutput->pSkinName = "warpaint";
+			pOutput->UseCustomColor = 1;
+			pOutput->ColorBody = 3866368;
+			pOutput->ColorFeet = 65414;
+			break;
+		case PLAYERCLASS_BAT:
+			pOutput->pSkinName = "limekitty";
+			pOutput->UseCustomColor = 1;
+			pOutput->ColorBody = 3866368;
+			pOutput->ColorFeet = 2866368;
+			break;
+		case PLAYERCLASS_GHOST:
+			pOutput->pSkinName = "twintri";
+			pOutput->UseCustomColor = 1;
+			pOutput->ColorBody = 3866368;
+			pOutput->ColorFeet = 65414;
+			break;
+		case PLAYERCLASS_SPIDER:
+			pOutput->pSkinName = "pinky";
+			pOutput->UseCustomColor = 1;
+			pOutput->ColorBody = 3866368;
+			if(Context.ExtraData1)
+			{
+				pOutput->ColorFeet = 16776960; // Dark red
+			}
+			else
+			{
+				pOutput->ColorFeet = 65414;
+			}
+			break;
+		case PLAYERCLASS_GHOUL:
+			pOutput->pSkinName = "cammo";
+			pOutput->UseCustomColor = 1;
+			{
+				float Percent = Context.ExtraData1 / 100.0f;
+				int Hue = 58 * (1.0f - Percent * 0.8f);
+				pOutput->ColorBody = (Hue<<16) + (255<<8);
+			}
+			pOutput->ColorFeet = 65414;
+			break;
+		case PLAYERCLASS_SLUG:
+			pOutput->pSkinName = "coala";
+			pOutput->UseCustomColor = 1;
+			pOutput->ColorBody = 3866368;
+			pOutput->ColorFeet = 65414;
+			break;
+		case PLAYERCLASS_VOODOO:
+			pOutput->pSkinName = "bluestripe";
+			pOutput->UseCustomColor = 1;
+			if(!Context.ExtraData1)
+			{
+				pOutput->ColorBody = 3866368;
+			}
+			else
+			{
+				pOutput->ColorBody = 6183936; // grey-green
+			}
+			pOutput->ColorFeet = 65414;
+			break;
+		case PLAYERCLASS_UNDEAD:
+			pOutput->pSkinName = "redstripe";
+			pOutput->UseCustomColor = 1;
+			pOutput->ColorBody = 3014400;
+			pOutput->ColorFeet = 13168;
+			break;
+		case PLAYERCLASS_WITCH:
+			pOutput->pSkinName = "redbopp";
+			pOutput->UseCustomColor = 1;
+			pOutput->ColorBody = 16776744;
+			pOutput->ColorFeet = 13168;
+			break;
+		default:
+			return false;
+	}
+
+	return true;
+}
+
 int CInfClassInfected::GetDefaultEmote() const
 {
 	int EmoteNormal = EMOTE_ANGRY;
@@ -215,99 +332,6 @@ void CInfClassInfected::GiveClassAttributes()
 
 	m_VoodooAboutToDie = false;
 	m_VoodooTimeAlive = Server()->TickSpeed()*Config()->m_InfVoodooAliveTime;
-}
-
-void CInfClassInfected::SetupSkin(CTeeInfo *output)
-{
-	switch(GetPlayerClass())
-	{
-		case PLAYERCLASS_SMOKER:
-			output->m_UseCustomColor = 1;
-			output->SetSkinName("cammostripes");
-			output->m_ColorBody = 3866368;
-			output->m_ColorFeet = 65414;
-			break;
-		case PLAYERCLASS_BOOMER:
-			output->SetSkinName("saddo");
-			output->m_UseCustomColor = 1;
-			output->m_ColorBody = 3866368;
-			output->m_ColorFeet = 65414;
-			break;
-		case PLAYERCLASS_HUNTER:
-			output->SetSkinName("warpaint");
-			output->m_UseCustomColor = 1;
-			output->m_ColorBody = 3866368;
-			output->m_ColorFeet = 65414;
-			break;
-		case PLAYERCLASS_BAT:
-			output->SetSkinName("limekitty");
-			output->m_UseCustomColor = 1;
-			output->m_ColorBody = 3866368;
-			output->m_ColorFeet = 2866368;
-			break;
-		case PLAYERCLASS_GHOST:
-			output->SetSkinName("twintri");
-			output->m_UseCustomColor = 1;
-			output->m_ColorBody = 3866368;
-			output->m_ColorFeet = 65414;
-			break;
-		case PLAYERCLASS_SPIDER:
-			output->SetSkinName("pinky");
-			output->m_UseCustomColor = 1;
-			output->m_ColorBody = 3866368;
-			if(m_HookOnTheLimit)
-			{
-				output->m_ColorFeet = 16776960; // Dark red
-			}
-			else
-			{
-				output->m_ColorFeet = 65414;
-			}
-			break;
-		case PLAYERCLASS_GHOUL:
-			output->SetSkinName("cammo");
-			output->m_UseCustomColor = 1;
-			{
-				int Hue = 58 * (1.0f - GetGhoulPercent() * 0.8f);
-				output->m_ColorBody = (Hue<<16) + (255<<8);
-			}
-			output->m_ColorFeet = 65414;
-			break;
-		case PLAYERCLASS_SLUG:
-			output->SetSkinName("coala");
-			output->m_UseCustomColor = 1;
-			output->m_ColorBody = 3866368;
-			output->m_ColorFeet = 65414;
-			break;
-		case PLAYERCLASS_VOODOO:
-			output->SetSkinName("bluestripe");
-			output->m_UseCustomColor = 1;
-			if(!m_VoodooAboutToDie)
-			{
-				output->m_ColorBody = 3866368;
-			}
-			else
-			{
-				output->m_ColorBody = 6183936; // grey-green
-			}
-			output->m_ColorFeet = 65414;
-			break;
-		case PLAYERCLASS_UNDEAD:
-			output->SetSkinName("redstripe");
-			output->m_UseCustomColor = 1;
-			output->m_ColorBody = 3014400;
-			output->m_ColorFeet = 13168;
-			break;
-		case PLAYERCLASS_WITCH:
-			output->SetSkinName("redbopp");
-			output->m_UseCustomColor = 1;
-			output->m_ColorBody = 16776744;
-			output->m_ColorFeet = 13168;
-			break;
-		default:
-			output->m_UseCustomColor = 0;
-			output->SetSkinName("default");
-	}
 }
 
 void CInfClassInfected::BroadcastWeaponState()
