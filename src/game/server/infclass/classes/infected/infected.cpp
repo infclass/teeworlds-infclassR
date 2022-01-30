@@ -48,7 +48,7 @@ SkinGetter CInfClassInfected::SetupSkin(CSkinContext *output) const
 	return CInfClassInfected::SetupSkin;
 }
 
-bool CInfClassInfected::SetupSkin(const CSkinContext &Context, CWeakSkinInfo *pOutput)
+bool CInfClassInfected::SetupSkin(const CSkinContext &Context, CWeakSkinInfo *pOutput, int DDNetVersion, int InfClassVersion)
 {
 	switch(Context.PlayerClass)
 	{

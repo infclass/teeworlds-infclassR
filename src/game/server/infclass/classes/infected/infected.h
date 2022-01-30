@@ -17,7 +17,7 @@ public:
 	bool IsHuman() const final { return false; }
 
 	SkinGetter SetupSkin(CSkinContext *output) const override;
-	static bool SetupSkin(const CSkinContext &Context, CWeakSkinInfo *pOutput);
+	static bool SetupSkin(const CSkinContext &Context, CWeakSkinInfo *pOutput, int DDNetVersion, int InfClassVersion);
 
 	int GetDefaultEmote() const override;
 	bool CanDie() const override;

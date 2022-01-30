@@ -34,7 +34,7 @@ SkinGetter CInfClassHuman::SetupSkin(CSkinContext *pOutput) const
 	return CInfClassHuman::SetupSkin;
 }
 
-bool CInfClassHuman::SetupSkin(const CSkinContext &Context, CWeakSkinInfo *pOutput)
+bool CInfClassHuman::SetupSkin(const CSkinContext &Context, CWeakSkinInfo *pOutput, int DDNetVersion, int InfClassVersion)
 {
 	switch(Context.PlayerClass)
 	{

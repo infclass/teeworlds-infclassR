@@ -15,7 +15,7 @@ public:
 	bool IsHuman() const final { return true; }
 
 	SkinGetter SetupSkin(CSkinContext *pOutput) const override;
-	static bool SetupSkin(const CSkinContext &Context, CWeakSkinInfo *pOutput);
+	static bool SetupSkin(const CSkinContext &Context, CWeakSkinInfo *pOutput, int DDNetVersion, int InfClassVersion);
 
 	void GetAmmoRegenParams(int Weapon, WeaponRegenParams *pParams) override;
 

@@ -177,7 +177,7 @@ void CInfClassPlayer::SnapClientInfo(int SnappingClient)
 	CWeakSkinInfo SkinInfo;
 	if(m_SkinGetter)
 	{
-		m_SkinGetter(m_SkinContext, &SkinInfo);
+		m_SkinGetter(m_SkinContext, &SkinInfo, ClientInfo.m_DDNetVersion, ClientInfo.m_InfClassVersion);
 	}
 	else
 	{

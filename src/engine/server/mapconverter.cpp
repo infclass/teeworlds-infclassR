@@ -1017,6 +1017,9 @@ int CMapConverter::Finalize()
 {
 	int ClassImageID[NUM_MENUCLASS];
 
+	int DDNetVersion = 14000;
+	int InfClassVersion = 0;
+
 	CSkinContext SkinContext;
 	for(int ClassIndex = 0; ClassIndex < NUM_MENUCLASS; ++ClassIndex)
 	{
@@ -1034,7 +1037,7 @@ int CMapConverter::Finalize()
 		}
 		else
 		{
-			CInfClassHuman::SetupSkin(SkinContext, &ClassTeeInfo);
+			CInfClassHuman::SetupSkin(SkinContext, &ClassTeeInfo, DDNetVersion, InfClassVersion);
 		}
 
 		char SkinPath[96];
@@ -1276,7 +1279,7 @@ int CMapConverter::Finalize()
 						{
 							int PlayerClass = CInfClassGameController::MenuClassToPlayerClass(i);
 							const char *pClassName = CInfClassGameController::GetClassDisplayName(PlayerClass);
-							CInfClassHuman::SetupSkin(SkinContext, &SkinInfo);
+							CInfClassHuman::SetupSkin(SkinContext, &SkinInfo, DDNetVersion, InfClassVersion);
 							bool Black = false;
 							AddTeeLayer(pClassName, ClassImageID[i], Pos, 64.0f, m_NumEnvs-1, Black, SkinInfo);
 						}
