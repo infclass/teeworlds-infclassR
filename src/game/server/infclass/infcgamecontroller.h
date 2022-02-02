@@ -67,7 +67,6 @@ public:
 	int OnCharacterDeath(class CCharacter *pVictim, class CPlayer *pKiller, int Weapon) override;
 	void OnCharacterDeath(CInfClassCharacter *pVictim, DAMAGE_TYPE DamageType, int Killer, int Assistant);
 	void OnCharacterSpawned(CInfClassCharacter *pCharacter);
-	void OnPlayerInfoChange(class CPlayer *pP) override;
 	void DoWincheck() override;
 	void StartRound() override;
 	void EndRound() override;

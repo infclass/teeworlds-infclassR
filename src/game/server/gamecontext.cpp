@@ -1942,15 +1942,6 @@ void CGameContext::OnMessage(int MsgID, CUnpacker *pUnpacker, int ClientID)
 #ifndef CONF_FORCE_COUNTRY_BY_IP
 			Server()->SetClientCountry(ClientID, pMsg->m_Country);
 #endif
-			
-/* INFECTION MODIFICATION START ***************************************/
-			str_copy(pPlayer->m_TeeInfos.m_CustomSkinName, pMsg->m_pSkin, sizeof(pPlayer->m_TeeInfos.m_CustomSkinName));
-			//~ pPlayer->m_TeeInfos.m_UseCustomColor = pMsg->m_UseCustomColor;
-			//~ pPlayer->m_TeeInfos.m_ColorBody = pMsg->m_ColorBody;
-			//~ pPlayer->m_TeeInfos.m_ColorFeet = pMsg->m_ColorFeet;
-/* INFECTION MODIFICATION END *****************************************/
-
-			m_pController->OnPlayerInfoChange(pPlayer);
 		}
 		else if (MsgID == NETMSGTYPE_CL_EMOTICON && !m_World.m_Paused)
 		{
@@ -1997,12 +1988,6 @@ void CGameContext::OnMessage(int MsgID, CUnpacker *pUnpacker, int ClientID)
 #else
 			int LocatedCountry = -1;
 #endif // CONF_GEOLOCATION
-
-			str_copy(pPlayer->m_TeeInfos.m_CustomSkinName, pMsg->m_pSkin, sizeof(pPlayer->m_TeeInfos.m_CustomSkinName));
-			//~ pPlayer->m_TeeInfos.m_UseCustomColor = pMsg->m_UseCustomColor;
-			//~ pPlayer->m_TeeInfos.m_ColorBody = pMsg->m_ColorBody;
-			//~ pPlayer->m_TeeInfos.m_ColorFeet = pMsg->m_ColorFeet;
-			m_pController->OnPlayerInfoChange(pPlayer);
 			
 			if(!Server()->GetClientMemory(ClientID, CLIENTMEMORY_LANGUAGESELECTION))
 			{

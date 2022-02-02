@@ -140,7 +140,6 @@ public:
 	virtual int OnCharacterDeath(class CCharacter *pVictim, class CPlayer *pKiller, int Weapon);
 
 	virtual CPlayer *CreatePlayer(int ClientID) = 0;
-	virtual void OnPlayerInfoChange(class CPlayer *pP);
 
 	//
 /* INFECTION MODIFICATION START ***************************************/
