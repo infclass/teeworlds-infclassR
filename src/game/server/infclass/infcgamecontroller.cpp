@@ -2112,8 +2112,15 @@ void CInfClassGameController::OnCharacterDeath(CInfClassCharacter *pVictim, DAMA
 		}
 	}
 
-	//Find the nearest ghoul
+	static const array_on_stack<DAMAGE_TYPE, 4> BadReasonsToDie = {
+		DAMAGE_TYPE::GAME, // Disconnect, joining spec, etc
+		DAMAGE_TYPE::KILL_COMMAND, // Self kill
+		DAMAGE_TYPE::GAME_FINAL_EXPLOSION,
+		DAMAGE_TYPE::DEATH_TILE,
+	};
+	if(!BadReasonsToDie.Contains(DamageType))
 	{
+		//Find the nearest ghoul
 		for(CInfClassCharacter *p = (CInfClassCharacter*) GameWorld()->FindFirst(CGameWorld::ENTTYPE_CHARACTER); p; p = (CInfClassCharacter *)p->TypeNext())
 		{
 			if(p->GetPlayerClass() != PLAYERCLASS_GHOUL || p == pVictim) continue;
