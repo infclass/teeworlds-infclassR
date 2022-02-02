@@ -1446,6 +1446,7 @@ CGameContext::OPTION_VOTE_TYPE CGameContext::GetOptionVoteType(const char *pVote
 	if(str_comp_nocase(command, "change_map") == 0) return CHANGE_MAP;
 	if(str_comp_nocase(command, "skip_map") == 0) return SKIP_MAP;
 	if(str_comp_nocase(command, "adjust sv_rounds_per_map +") == 0) return PLAY_MORE_VOTE_TYPE;
+	if(str_startswith(command, "queue_")) return QUEUED_VOTE;
 	return OTHER_OPTION_VOTE_TYPE;
 }
 
