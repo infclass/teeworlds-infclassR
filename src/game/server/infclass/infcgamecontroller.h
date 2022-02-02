@@ -125,6 +125,7 @@ public:
 
 	static bool ConStartFastRound(IConsole::IResult *pResult, void *pUserData);
 	static bool ConQueueFastRound(IConsole::IResult *pResult, void *pUserData);
+	static bool ConQueueFunRound(IConsole::IResult *pResult, void *pUserData);
 
 	static bool ChatWitch(IConsole::IResult *pResult, void *pUserData);
 	bool ChatWitch(IConsole::IResult *pResult);

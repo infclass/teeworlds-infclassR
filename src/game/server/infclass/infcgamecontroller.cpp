@@ -910,6 +910,7 @@ void CInfClassGameController::RegisterChatCommands(IConsole *pConsole)
 	pConsole->Register("inf_set_class", "i<clientid> s<classname>", CFGFLAG_SERVER, ConSetClass, this, "Set the class of a player");
 	pConsole->Register("start_fast_round", "", CFGFLAG_SERVER, ConStartFastRound, this, "Start a faster gameplay round");
 	pConsole->Register("queue_fast_round", "", CFGFLAG_SERVER, ConQueueFastRound, this, "Queue a faster gameplay round");
+	pConsole->Register("queue_fun_round", "", CFGFLAG_SERVER, ConQueueFunRound, this, "Queue a fun gameplay round");
 
 	pConsole->Register("witch", "", CFGFLAG_CHAT|CFGFLAG_USER, ChatWitch, this, "Call Witch");
 	pConsole->Register("santa", "", CFGFLAG_CHAT|CFGFLAG_USER, ChatWitch, this, "Call the Santa");
@@ -973,6 +974,29 @@ bool CInfClassGameController::ConQueueFastRound(IConsole::IResult *pResult, void
 {
 	CInfClassGameController *pSelf = (CInfClassGameController *)pUserData;
 	pSelf->m_QueuedRoundType = ROUND_TYPE::FAST;
+	return true;
+}
+
+bool CInfClassGameController::ConQueueFunRound(IConsole::IResult *pResult, void *pUserData)
+{
+	CInfClassGameController *pSelf = (CInfClassGameController *)pUserData;
+
+	if(pSelf->GameServer()->m_FunRoundConfigurations.empty())
+	{
+		int ClientID = pResult->GetClientID();
+		const char *pErrorMessage = "Unable to start a fun round: rounds configuration is empty";
+		if(ClientID >= 0)
+		{
+			pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "server", pErrorMessage);
+		}
+		else
+		{
+			pSelf->GameServer()->SendChatTarget(-1, pErrorMessage);
+		}
+		return false;
+	}
+
+	pSelf->m_QueuedRoundType = ROUND_TYPE::FUN;
 	return true;
 }
 
@@ -1313,6 +1337,17 @@ void CInfClassGameController::StartRound()
 	case ROUND_TYPE::NORMAL:
 		break;
 	case ROUND_TYPE::FUN:
+	{
+		const auto Configs = GameServer()->m_FunRoundConfigurations;
+		if (Configs.empty())
+		{
+			m_RoundType = ROUND_TYPE::NORMAL;
+			break;
+		}
+		const int type = random_int(0, Configs.size() - 1);
+		const FunRoundConfiguration &Configuration = Configs[type];
+		GameServer()->StartFunRound(Configuration);
+	}
 		break;
 	case ROUND_TYPE::FAST:
 		GameServer()->CreateSoundGlobal(SOUND_CTF_CAPTURE);
