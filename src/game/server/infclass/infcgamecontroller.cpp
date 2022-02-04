@@ -145,6 +145,13 @@ void CInfClassGameController::OnPlayerInfected(CInfClassPlayer *pPlayer, CInfCla
 				"VictimName", Server()->ClientName(pPlayer->GetCID()),
 				nullptr);
 			GameServer()->SendEmoticon(pInfectiousPlayer->GetCID(), EMOTICON_SORRY);
+			CInfClassCharacter *pGuiltyCharacter = pInfectiousPlayer->GetCharacter();
+			if(pGuiltyCharacter)
+			{
+				const float GuiltyPlayerFreeze = 3;
+				pGuiltyCharacter->Freeze(GuiltyPlayerFreeze, -1, FREEZEREASON_INFECTION);
+				pGuiltyCharacter->SetEmote(EMOTE_PAIN, Server()->Tick() + Server()->TickSpeed() * GuiltyPlayerFreeze);
+			}
 		}
 		else
 		{
