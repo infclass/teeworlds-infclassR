@@ -1350,7 +1350,7 @@ bool CServer::GenerateClientMap(const char *pMapFilePath, const char *pMapName)
 
 	char aClientMapDir[256];
 	char aClientMapName[256];
-	const char *pConverterId = CMapConverter::GetConverterVersionId();
+	const char *pConverterId = g_Config.m_InfConverterId;
 	pConverterId = EventsDirector::GetMapConverterId(pConverterId);
 	str_format(aClientMapDir, sizeof(aClientMapDir), "clientmaps/%s", pConverterId);
 	str_format(aClientMapName, sizeof(aClientMapName), "%s/%s_%08x.map", aClientMapDir, pMapName, ServerMapCrc);
@@ -1363,7 +1363,7 @@ bool CServer::GenerateClientMap(const char *pMapFilePath, const char *pMapName)
 
 	CDataFileReader dfClientMap;
 	//The map is already converted
-	if(dfClientMap.Open(Storage(), aClientMapName, IStorage::TYPE_ALL))
+	if(!g_Config.m_InfConverterForceRegeneration && dfClientMap.Open(Storage(), aClientMapName, IStorage::TYPE_ALL))
 	{
 		m_CurrentMapCrc = dfClientMap.Crc();
 		m_CurrentMapSha256 = dfClientMap.Sha256();
