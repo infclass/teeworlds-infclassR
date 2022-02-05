@@ -1086,7 +1086,7 @@ bool CInfClassGameController::ChatWitch(IConsole::IResult *pResult)
 		{
 			if(Winter)
 			{
-				GameServer()->SendChatTarget_Localization(ClientID, CHATCATEGORY_DEFAULT,
+				GameServer()->SendChatTarget_Localization(-1, CHATCATEGORY_DEFAULT,
 					_("{str:PlayerName} is calling for Santa! (1/{int:RequiredCallers}) To call the Santa write: /santa"),
 					"PlayerName", Server()->ClientName(ClientID),
 					"RequiredCallers", &PrintableRequiredCallers,
@@ -1094,7 +1094,7 @@ bool CInfClassGameController::ChatWitch(IConsole::IResult *pResult)
 				return true;
 			}
 
-			GameServer()->SendChatTarget_Localization(ClientID, CHATCATEGORY_DEFAULT,
+			GameServer()->SendChatTarget_Localization(-1, CHATCATEGORY_DEFAULT,
 				_("{str:PlayerName} is calling for Witch! (1/{int:RequiredCallers}) To call witch write: /witch"),
 				"PlayerName", Server()->ClientName(ClientID),
 				"RequiredCallers", &PrintableRequiredCallers,
@@ -1104,7 +1104,7 @@ bool CInfClassGameController::ChatWitch(IConsole::IResult *pResult)
 		{
 			if(Winter)
 			{
-				GameServer()->SendChatTarget_Localization(ClientID, CHATCATEGORY_DEFAULT,
+				GameServer()->SendChatTarget_Localization(-1, CHATCATEGORY_DEFAULT,
 					_("Santa ({int:Callers}/{int:RequiredCallers})"),
 					"Callers", &PrintableCallers,
 					"RequiredCallers", &PrintableRequiredCallers,
@@ -1112,7 +1112,7 @@ bool CInfClassGameController::ChatWitch(IConsole::IResult *pResult)
 			}
 			else
 			{
-				GameServer()->SendChatTarget_Localization(ClientID, CHATCATEGORY_DEFAULT,
+				GameServer()->SendChatTarget_Localization(-1, CHATCATEGORY_DEFAULT,
 					_("Witch ({int:Callers}/{int:RequiredCallers})"),
 					"Callers", &PrintableCallers,
 					"RequiredCallers", &PrintableRequiredCallers,
@@ -1141,14 +1141,14 @@ bool CInfClassGameController::ChatWitch(IConsole::IResult *pResult)
 		{
 			if(Winter)
 			{
-				GameServer()->SendChatTarget_Localization(ClientID, CHATCATEGORY_DEFAULT,
+				GameServer()->SendChatTarget_Localization(-1, CHATCATEGORY_DEFAULT,
 					_("Santa {str:PlayerName} has arrived!"),
 					"PlayerName", Server()->ClientName(WitchId),
 					nullptr);
 				return true;
 			}
 
-			GameServer()->SendChatTarget_Localization(ClientID, CHATCATEGORY_DEFAULT,
+			GameServer()->SendChatTarget_Localization(-1, CHATCATEGORY_DEFAULT,
 				_("Witch {str:PlayerName} has arrived!"),
 				"PlayerName", Server()->ClientName(WitchId),
 				nullptr);
