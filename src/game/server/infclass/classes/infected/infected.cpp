@@ -495,6 +495,7 @@ void CInfClassInfected::PrepareToDie(int Killer, DAMAGE_TYPE DamageType, bool *p
 	if(GetPlayerClass() == PLAYERCLASS_UNDEAD)
 	{
 		m_pCharacter->Freeze(10.0, Killer, FREEZEREASON_UNDEAD);
+		m_pCharacter->SetHealthArmor(0, 0);
 		*pRefusedToDie = true;
 		return;
 	}
