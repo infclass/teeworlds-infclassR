@@ -40,6 +40,7 @@ m_pConsole(pConsole)
 		m_BarrierHintIDs[i] = Server()->SnapNewID();
 	}
 	m_AntiFireTime = 0;
+	m_PainSoundTimer = 0;
 	m_IsFrozen = false;
 	m_IsInSlowMotion = false;
 	m_FrozenTime = -1;

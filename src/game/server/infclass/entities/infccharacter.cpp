@@ -518,6 +518,12 @@ void CInfClassCharacter::FireWeapon()
 
 	if(IsFrozen())
 	{
+		// Timer stuff to avoid shrieking orchestra caused by unfreeze-plasma
+		if(m_PainSoundTimer <= 0 && !(m_LatestPrevInput.m_Fire & 1))
+		{
+			m_PainSoundTimer = 1 * Server()->TickSpeed();
+			GameServer()->CreateSound(m_Pos, SOUND_PLAYER_PAIN_LONG);
+		}
 		return;
 	}
 
@@ -2836,6 +2842,12 @@ void CInfClassCharacter::PostCoreTick()
 	HandleHookDraining();
 	HandleIndirectKillerCleanup();
 	HandleTeleports();
+
+	// Handle the pain
+	if(m_PainSoundTimer > 0)
+	{
+		m_PainSoundTimer--;
+	}
 }
 
 void CInfClassCharacter::ClassSpawnAttributes()

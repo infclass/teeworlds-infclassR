@@ -183,6 +183,7 @@ protected:
 	array<int> m_BarrierHintIDs;
 	int m_CursorID;
 	int m_AntiFireTime;
+	int m_PainSoundTimer;
 	
 	bool m_IsFrozen;
 	int m_FrozenTime;
