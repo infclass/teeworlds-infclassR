@@ -492,6 +492,13 @@ void CInfClassInfected::PrepareToDie(int Killer, DAMAGE_TYPE DamageType, bool *p
 		return;
 	}
 
+	if(GetPlayerClass() == PLAYERCLASS_UNDEAD)
+	{
+		m_pCharacter->Freeze(10.0, Killer, FREEZEREASON_UNDEAD);
+		*pRefusedToDie = true;
+		return;
+	}
+
 	// Start counting down, delay killer message for later
 	if(GetPlayerClass() == PLAYERCLASS_VOODOO)
 	{

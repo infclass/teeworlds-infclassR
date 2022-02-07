@@ -2374,12 +2374,6 @@ void CInfClassCharacter::Die(DAMAGE_TYPE DamageType, int Killer, int Assistant)
 		return;
 	}
 
-	if(GetPlayerClass() == PLAYERCLASS_UNDEAD && Killer != GetCID())
-	{
-		Freeze(10.0, Killer, FREEZEREASON_UNDEAD);
-		return;
-	}
-
 	bool RefusedToDie = false;
 	if(GetClass())
 	{
