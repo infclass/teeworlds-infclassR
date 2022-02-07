@@ -484,21 +484,14 @@ void CInfClassCharacter::HandleWeaponSwitch()
 
 void CInfClassCharacter::FireWeapon()
 {
-/* INFECTION MODIFICATION START ***************************************/
 	if(m_AntiFireTime > 0)
 		return;
 
-	if(IsFrozen())
-		return;
-/* INFECTION MODIFICATION END *****************************************/
-	
 	if(m_ReloadTimer != 0)
 		return;
 
-/* INFECTION MODIFICATION START ***************************************/
 	if((GetPlayerClass() == PLAYERCLASS_NONE) || !GetClass())
 		return;
-/* INFECTION MODIFICATION END *****************************************/
 
 	DoWeaponSwitch();
 
@@ -522,6 +515,11 @@ void CInfClassCharacter::FireWeapon()
 
 	if(!WillFire || GetPlayer()->MapMenu() > 0)
 		return;
+
+	if(IsFrozen())
+	{
+		return;
+	}
 
 	WeaponFireContext FireContext;
 	FireContext.Weapon = m_ActiveWeapon;
