@@ -200,6 +200,17 @@ bool CInfClassPlayerClass::IsHealingDisabled() const
 
 void CInfClassPlayerClass::OnCharacterPreCoreTick()
 {
+	if(m_pCharacter->IsPassenger())
+	{
+		if(m_pCharacter->m_Input.m_Jump && !m_pCharacter->m_PrevInput.m_Jump)
+		{
+			// Jump off is still in CCharacterCore::UpdateTaxiPassengers()
+		}
+		else
+		{
+			m_pCharacter->ResetMovementsInput();
+		}
+	}
 }
 
 void CInfClassPlayerClass::OnCharacterTick()
