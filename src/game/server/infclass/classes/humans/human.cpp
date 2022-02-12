@@ -114,6 +114,11 @@ void CInfClassHuman::GetAmmoRegenParams(int Weapon, WeaponRegenParams *pParams)
 			pParams->RegenInterval = 0;
 		}
 	}
+
+	if((Config()->m_InfTaxi == 1) && m_pCharacter->IsPassenger())
+	{
+		pParams->RegenInterval = 0;
+	}
 }
 
 void CInfClassHuman::OnCharacterPreCoreTick()
