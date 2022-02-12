@@ -202,6 +202,7 @@ public:
 	void UpdateLastEnforcer(int ClientID, float Force, DAMAGE_TYPE DamageType, int Tick);
 
 	void SaturateVelocity(vec2 Force, float MaxSpeed);
+	bool IsPassenger() const;
 	bool HasPassenger() const;
 	CCharacter *GetPassenger();
 	int GetInfZoneTick();

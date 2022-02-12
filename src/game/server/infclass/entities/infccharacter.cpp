@@ -1271,6 +1271,11 @@ void CInfClassCharacter::SaturateVelocity(vec2 Force, float MaxSpeed)
 	m_Core.m_Vel = NewVel;
 }
 
+bool CInfClassCharacter::IsPassenger() const
+{
+	return m_Core.m_IsPassenger;
+}
+
 bool CInfClassCharacter::HasPassenger() const
 {
 	return m_Core.m_Passenger;
