@@ -1815,8 +1815,13 @@ void CServer::SendServerInfo(const NETADDR *pAddr, int Token, int Type, bool Sen
 
 	p.Reset();
 
-	#define ADD_RAW(p, x) (p).AddRaw(x, sizeof(x))
-	#define ADD_INT(p, x) do { str_format(aBuf, sizeof(aBuf), "%d", x); (p).AddString(aBuf, 0); } while(0)
+#define ADD_RAW(p, x) (p).AddRaw(x, sizeof(x))
+#define ADD_INT(p, x) \
+	do \
+	{ \
+		str_format(aBuf, sizeof(aBuf), "%d", x); \
+		(p).AddString(aBuf, 0); \
+	} while(0)
 
 	switch(Type)
 	{
