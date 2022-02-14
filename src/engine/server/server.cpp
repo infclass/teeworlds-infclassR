@@ -1910,7 +1910,8 @@ void CServer::SendServerInfo(const NETADDR *pAddr, int Token, int Type, bool Sen
 		}
 		else
 		{
-			str_format(aBuf, sizeof(aBuf), "%s [%d/%d]", aBuf, ClientCount, m_NetServer.MaxClients());
+			char aNameBuf[64];
+			str_format(aNameBuf, sizeof(aNameBuf), "%s [%d/%d]", aBuf, ClientCount, m_NetServer.MaxClients());
 			p.AddString(aBuf, 64);
 		}
 	}
