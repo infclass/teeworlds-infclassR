@@ -1172,7 +1172,8 @@ CInfClassPlayer *CInfClassGameController::GetPlayer(int ClientID) const
 
 CInfClassCharacter *CInfClassGameController::GetCharacter(int ClientID) const
 {
-	return static_cast<CInfClassCharacter*>(GameServer()->GetPlayerChar(ClientID));
+	CInfClassPlayer *pPlayer = GetPlayer(ClientID);
+	return pPlayer ? pPlayer->GetCharacter() : nullptr;
 }
 
 int CInfClassGameController::GetPlayerOwnCursorID(int ClientID) const
