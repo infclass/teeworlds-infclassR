@@ -44,7 +44,7 @@ public:
 	virtual void Tick();
 	void PostTick();
 	virtual void Snap(int SnappingClient);
-	virtual void SnapClientInfo(int SnappingClient);
+	virtual void SnapClientInfo(int SnappingClient, int SnappingClientMappedId);
 
 	void OnDirectInput(CNetObj_PlayerInput *NewInput);
 	void OnPredictedInput(CNetObj_PlayerInput *NewInput);

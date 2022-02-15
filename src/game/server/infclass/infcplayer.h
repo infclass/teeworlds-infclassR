@@ -35,7 +35,7 @@ public:
 
 	void Tick() override;
 	void Snap(int SnappingClient) override;
-	void SnapClientInfo(int SnappingClient) override;
+	void SnapClientInfo(int SnappingClient, int SnappingClientMappedId) override;
 	int GetDefaultEmote() const override;
 
 	void HandleInfection();

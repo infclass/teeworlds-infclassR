@@ -208,7 +208,7 @@ void CPlayer::Snap(int SnappingClient)
 	if(SnappingClient != DemoClientID && !Server()->Translate(id, SnappingClient))
 		return;
 
-	SnapClientInfo(SnappingClient);
+	SnapClientInfo(SnappingClient, id);
 
 	int SnapScoreMode = PLAYERSCOREMODE_SCORE;
 	if(GameServer()->GetPlayer(SnappingClient))
@@ -262,9 +262,9 @@ void CPlayer::Snap(int SnappingClient)
 	}
 }
 
-void CPlayer::SnapClientInfo(int SnappingClient)
+void CPlayer::SnapClientInfo(int SnappingClient, int SnappingClientMappedId)
 {
-	CNetObj_ClientInfo *pClientInfo = static_cast<CNetObj_ClientInfo *>(Server()->SnapNewItem(NETOBJTYPE_CLIENTINFO, m_ClientID, sizeof(CNetObj_ClientInfo)));
+	CNetObj_ClientInfo *pClientInfo = static_cast<CNetObj_ClientInfo *>(Server()->SnapNewItem(NETOBJTYPE_CLIENTINFO, SnappingClientMappedId, sizeof(CNetObj_ClientInfo)));
 	if(!pClientInfo)
 		return;
 

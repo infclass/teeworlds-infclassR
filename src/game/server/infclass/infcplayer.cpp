@@ -158,9 +158,9 @@ void CInfClassPlayer::Snap(int SnappingClient)
 	}
 }
 
-void CInfClassPlayer::SnapClientInfo(int SnappingClient)
+void CInfClassPlayer::SnapClientInfo(int SnappingClient, int SnappingClientMappedId)
 {
-	CNetObj_ClientInfo *pClientInfo = static_cast<CNetObj_ClientInfo *>(Server()->SnapNewItem(NETOBJTYPE_CLIENTINFO, m_ClientID, sizeof(CNetObj_ClientInfo)));
+	CNetObj_ClientInfo *pClientInfo = static_cast<CNetObj_ClientInfo *>(Server()->SnapNewItem(NETOBJTYPE_CLIENTINFO, SnappingClientMappedId, sizeof(CNetObj_ClientInfo)));
 
 	if(!pClientInfo)
 		return;
