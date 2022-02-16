@@ -1,0 +1,1215 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: infectiondust\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2022-02-18 16:18+0300\n"
+"PO-Revision-Date: 2022-02-18 21:24\n"
+"Last-Translator: \n"
+"Language-Team: Portuguese, Brazilian\n"
+"Language: pt_BR\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Crowdin-Project: infectiondust\n"
+"X-Crowdin-Project-ID: 485023\n"
+"X-Crowdin-Language: pt-BR\n"
+"X-Crowdin-File: infclass.pot\n"
+"X-Crowdin-File-ID: 3\n"
+
+#: src/game/server/gamecontext.cpp:3980
+msgid "(page {int:PageNumber}/{int:PagesInTotal}, see /changelog {int:NextPage})"
+msgstr "(página {int:PageNumber}/{int:PagesInTotal}, consulte /changelog {int:NextPage})"
+
+#: src/game/server/gamecontext.cpp:3490
+msgid "10 seconds later, a few players become infected."
+msgstr "Passados 10 segundos, alguns jogadores são infectados."
+
+#: src/game/server/gamecontext.cpp:3729
+msgctxt "Scientist"
+msgid "A lucky Scientist devoted to killing can get a white hole that sucks the infected in which can be placed with the laser rifle."
+msgstr "Um cientista dedicado a matar, consegue ter um buraco branco que suga o infectado no qual pode ser colocado com o rifle laser."
+
+#: src/game/server/gamecontext.cpp:3840
+msgid "A random class will be automatically attributed to you when rounds start"
+msgstr "Uma classe aleatória será automaticamente atribuída a você quando as rodadas começarem"
+
+#: src/game/server/gamecontext.cpp:3748
+msgctxt "Boomer"
+msgid "All humans affected by the explosion become infected."
+msgstr "Todos os humanos afetados pela explosão são infectados."
+
+#: src/game/server/gamecontext.cpp:3488
+msgid "All players start as a human."
+msgstr "Todos os jogadores começam como humanos."
+
+#: src/game/server/infclass/infcgamecontroller.cpp:1032
+#: src/game/server/infclass/infcgamecontroller.cpp:1136
+msgid "All witches are already here"
+msgstr "Todas as bruxas já estão aqui"
+
+#: src/engine/server/server.cpp:3809 src/engine/server/server.cpp:3836
+#: src/engine/server/server.cpp:3855 src/engine/server/server.cpp:3894
+#: src/engine/server/server.cpp:3902
+msgid "An error occured during the creation of your account."
+msgstr "Ocorreu um erro na criação da sua conta."
+
+#: src/engine/server/server.cpp:3732
+msgid "An error occured during the operation."
+msgstr "Ocorreu um erro durante a operação."
+
+#: src/game/server/gamecontext.cpp:3584
+msgid "Available help pages: {str:PageList}"
+msgstr "Páginas de ajuda disponíveis: {str:PageList}"
+
+#: src/game/server/gamecontext.cpp:3897
+msgid "Available languages: {str:ListOfLanguage}"
+msgstr "Idiomas disponíveis: {str:ListOfLanguage}"
+
+#: src/game/server/gamecontext.cpp:2816
+msgid "Based on the concept of Infection mod by Gravity"
+msgstr "Baseado no conceito de mod de Infecção por Gravity"
+
+#: src/game/server/infclass/infcgamecontroller.cpp:684
+msgid "Bat"
+msgstr "Morcego"
+
+#: src/game/server/gamecontext.cpp:3758
+msgctxt "Bat"
+msgid "Bat can jump endlessly in the air but it cannot infect humans."
+msgstr "Morcego consegue pular infinitamente, mas não pode infectar humanos."
+
+#: src/game/server/infclass/infcgamecontroller.cpp:747
+msgid "Bats"
+msgstr "Morcegos"
+
+#: src/game/server/infclass/infcgamecontroller.cpp:673
+msgid "Biologist"
+msgstr "Biólogo"
+
+#: src/game/server/infclass/infcgamecontroller.cpp:736
+msgid "Biologists"
+msgstr "Biólogos"
+
+#: src/game/server/infclass/infcgamecontroller.cpp:680
+msgid "Boomer"
+msgstr "Boomer"
+
+#: src/game/server/infclass/infcgamecontroller.cpp:743
+msgid "Boomers"
+msgstr "Boomers"
+
+#: src/game/server/gamecontext.cpp:3947
+msgid "ChangeLog is not provided"
+msgstr "Log de Alterações não fornecido"
+
+#: src/game/server/gamecontext.cpp:3959
+msgid "ChangeLog page {int:PageNumber} is not available"
+msgstr "Página de alteração {int:PageNumber} não está disponível"
+
+#: src/game/server/gamecontext.cpp:3582
+msgid "Choose a help page with /help <page>"
+msgstr "Escolha uma página de ajuda com /help <page>"
+
+#: src/game/server/infclass/entities/infccharacter.cpp:2177
+msgid "Choose your class"
+msgstr "Escolha sua classe"
+
+#: src/game/server/gamecontext.cpp:3503
+msgid "Create an account on Crowdin and join the translation team:"
+msgstr "Crie uma conta no Crowdin e junte-se à equipe de tradução:"
+
+#: src/game/server/gamecontext.cpp:2866
+msgid "Discord: {str:Url}"
+msgstr "Discord: {str:Url}"
+
+#: src/game/server/gamecontext.cpp:3693
+msgctxt "Soldier"
+msgid "Each bomb can explode one time."
+msgid_plural "Each bomb can explode {int:NumBombs} times."
+msgstr[0] "Cada bomba pode explodir uma vez."
+msgstr[1] "Cada bomba pode explodir {int:NumBombs} vezes."
+
+#: src/game/server/infclass/infcgamecontroller.cpp:663
+msgid "Engineer"
+msgstr "Engenheiro"
+
+#: src/game/server/infclass/infcgamecontroller.cpp:726
+msgid "Engineers"
+msgstr "Engenheiros"
+
+#: src/game/server/gamecontext.cpp:3532
+msgid "Example: “/msg !medic I'm wounded!”"
+msgstr "Exemplo: \"/msg !medic estou ferido!\""
+
+#: src/game/server/gamecontext.cpp:3546
+msgid "Example: “/mute nameless tee”"
+msgstr "Exemplo: \"/mute (nick)\""
+
+#: src/game/server/infclass/classes/humans/human.cpp:585
+#: src/game/server/infclass/classes/humans/human.cpp:606
+msgctxt "Mercenary"
+msgid "Explosive yield: {percent:BombLevel}"
+msgstr "Escudo de explosão: {percent:BombLevel}"
+
+#: src/game/server/gamecontext.cpp:3563
+msgid "Fast round"
+msgstr "Rodada rápida"
+
+#: src/game/server/infclass/infcgamecontroller.cpp:686
+msgid "Ghost"
+msgstr "Fantasma"
+
+#: src/game/server/infclass/infcgamecontroller.cpp:749
+msgid "Ghosts"
+msgstr "Fantasmas"
+
+#: src/game/server/infclass/infcgamecontroller.cpp:690
+msgid "Ghoul"
+msgstr "Canibal"
+
+#: src/game/server/gamecontext.cpp:3781
+msgctxt "Ghoul"
+msgid "Ghoul can infect humans and heal the infected with the hammer."
+msgstr "Canibal pode infectar seres humanos e curar os infectados com o martelo."
+
+#: src/game/server/infclass/infcgamecontroller.cpp:753
+msgid "Ghouls"
+msgstr "Canibais"
+
+#: src/game/server/infclass/entities/infccharacter.cpp:952
+msgid "Grenade limit increased"
+msgstr "Limite de granadas aumentado"
+
+#: src/game/server/gamecontext.cpp:3668
+msgctxt "Medic"
+msgid "Grenades with medicine give armor to everybody in their range, including Heroes and the Medic themself."
+msgstr "Granadas com medicina dão armaduras a todos no seu alcance, incluindo Heróis e o próprio Médico."
+
+#: src/game/server/infclass/infcgamecontroller.cpp:661
+msgid "Hero"
+msgstr "Herói"
+
+#: src/game/server/infclass/infcgamecontroller.cpp:724
+msgid "Heroes"
+msgstr "Heróis"
+
+#: src/game/server/player.cpp:192
+msgid "Hook protection disabled"
+msgstr "Proteção de gancho desativada"
+
+#: src/game/server/player.cpp:190
+msgid "Hook protection enabled"
+msgstr "Proteção de gancho ativada"
+
+#: src/game/server/gamecontext.cpp:3501
+msgid "How to translate the mod"
+msgstr "Como traduzir o mod"
+
+#: src/game/server/gamecontext.cpp:3552
+msgid "How to use taxi mode"
+msgstr "Como usar o modo taxi"
+
+#: src/game/server/infclass/infcgamecontroller.cpp:682
+msgid "Hunter"
+msgstr "Caçador"
+
+#: src/game/server/infclass/infcgamecontroller.cpp:745
+msgid "Hunters"
+msgstr "Caçadores"
+
+#: src/game/server/gamecontext.cpp:3805
+msgctxt "Undead"
+msgid "If an infected heals it, the freeze effect disappears."
+msgstr "Se um infectado curar ele, o efeito de congelamento desaparece."
+
+#: src/game/server/gamecontext.cpp:3799
+msgctxt "Witch"
+msgid "If the Witch dies, it disappears and is replaced by another class."
+msgstr "Se a Bruxa morrer, ela desaparece e é substituída por outra classe."
+
+#: src/game/server/gamecontext.cpp:2025
+msgid "If your language is not available, you can help with translation (/help translate)."
+msgstr "Se o seu idioma não estiver disponível, você pode ajudar com a tradução (/help translate)."
+
+#: src/game/server/gamecontext.cpp:3773
+msgctxt "Spider"
+msgid "In both modes the hook inflicts 1 damage point per second and can grab a human for longer."
+msgstr "Em ambos os modos, o gancho causa 1 ponto de dano por segundo e pode agarrar um humano por mais tempo."
+
+#: src/game/server/gamecontext.cpp:3556
+msgid "In order to use it, both humans have to disable hook protection (usually, with F3). The human being hooked becomes the driver."
+msgstr "Para usá-lo, ambos os humanos devem desativar a proteção de hook (geralmente, com F3). O jogador que usou o gancho se torna o motorista."
+
+#: src/game/server/gamecontext.cpp:3566
+msgid "In the fast rounds *more* humans become infected initially, the spawning rate is increased and the round time limit is decreased. White hole is also disabled."
+msgstr "Nas rodadas rápidas *mais* humanos são infectados inicialmente, a taxa de spawn é aumentada e o limite de tempo de rodada é reduzido. Buraco branco também está desabilitado."
+
+#: src/game/server/infclass/infcgamecontroller.cpp:1878
+msgid "Infected won the round in {sec:RoundDuration}"
+msgstr "Infectados venceram a rodada em {sec:RoundDuration}"
+
+#: src/game/server/gamecontext.cpp:3486
+msgid "InfectionClass is a team game between humans and the infected."
+msgstr "InfectionClass é um jogo de equipe entre os humanos e os infectados."
+
+#: src/game/server/gamecontext.cpp:2814 src/game/server/gamecontext.cpp:2839
+msgid "InfectionClass, by necropotame (version {str:VersionCode})"
+msgstr "InfectionClass, por necropotame (versão {str:VersionCode})"
+
+#: src/game/server/gamecontext.cpp:3759
+msgctxt "Bat"
+msgid "Instead, it can hammer humans to reduce their health or even kill them."
+msgstr "Em vez disso, pode martelar os seres humanos para reduzirem a sua saúde ou mesmo matá-los."
+
+#: src/game/server/gamecontext.cpp:3744
+msgctxt "Smoker"
+msgid "It can also infect humans and heal the infected with the hammer."
+msgstr "Pode também infectar seres humanos e curar os infectados com o martelo."
+
+#: src/game/server/gamecontext.cpp:3761
+msgctxt "Bat"
+msgid "It can also inflict 1 damage point per second by hooking humans, which sucks their blood, restoring the Bat's health."
+msgstr "Ele também pode infligir 1 ponto de dano por segundo ao prender humanos, que suga seu sangue, restaurando a saúde do Morcego."
+
+#: src/game/server/gamecontext.cpp:3749
+msgctxt "Boomer"
+msgid "It can also inflict 1 damage point per second by hooking humans."
+msgstr "Também pode causar 1 ponto de dano por segundo ao segurar os humanos."
+
+#: src/game/server/gamecontext.cpp:3768
+msgctxt "Ghost"
+msgid "It can also inflict 1 damage point per second by hooking humans."
+msgstr "Também pode causar 1 ponto de dano por segundo ao segurar os humanos."
+
+#: src/game/server/gamecontext.cpp:3782
+msgctxt "Ghoul"
+msgid "It can also inflict 1 damage point per second by hooking humans."
+msgstr "Também pode causar 1 ponto de dano por segundo ao segurar os humanos."
+
+#: src/game/server/gamecontext.cpp:3755
+msgctxt "Hunter"
+msgid "It can also inflict 1 damage point per second by hooking humans."
+msgstr "Também pode causar 1 ponto de dano por segundo ao segurar os humanos."
+
+#: src/game/server/gamecontext.cpp:3788
+msgctxt "Slug"
+msgid "It can also inflict 1 damage point per second by hooking humans."
+msgstr "Também pode causar 1 ponto de dano por segundo ao segurar os humanos."
+
+#: src/game/server/gamecontext.cpp:3807
+msgctxt "Undead"
+msgid "It can also inflict 1 damage point per second by hooking humans."
+msgstr "Também pode causar 1 ponto de dano por segundo ao segurar os humanos."
+
+#: src/game/server/gamecontext.cpp:3795
+msgctxt "Voodoo"
+msgid "It can also inflict 1 damage point per second by hooking humans."
+msgstr "Também pode causar 1 ponto de dano por segundo ao segurar os humanos."
+
+#: src/game/server/gamecontext.cpp:3801
+msgctxt "Witch"
+msgid "It can also inflict 1 damage point per second by hooking humans."
+msgstr "Também pode causar 1 ponto de dano por segundo ao segurar os humanos."
+
+#: src/game/server/gamecontext.cpp:3767
+msgctxt "Ghost"
+msgid "It can infect humans and heal the infected with the hammer."
+msgstr "Pode infectar seres humanos e curar os infectados com o martelo."
+
+#: src/game/server/gamecontext.cpp:3754
+msgctxt "Hunter"
+msgid "It can infect humans and heal the infected with the hammer."
+msgstr "Pode infectar seres humanos e curar os infectados com o martelo."
+
+#: src/game/server/gamecontext.cpp:3779
+msgctxt "Ghoul"
+msgid "It digests the fodder over time, going back to the normal state. Some nourishment is also lost on death."
+msgstr "Ela digere o tempo para a forragem, voltando ao estado normal. Alguma nutrição também é perdida na morte."
+
+#: src/game/server/gamecontext.cpp:3678
+msgctxt "Hero"
+msgid "It fully heals the Hero and it can grant a turret which you can place down with the hammer."
+msgstr "Ele cura totalmente o Herói e pode conceder uma torre que você pode colocar com o martelo."
+
+#: src/game/server/gamecontext.cpp:1328
+msgid "Join our Discord server: {str:Url}"
+msgstr "Entre no nosso servidor do Discord: {str:Url}"
+
+#: src/game/server/gamecontext.cpp:1340
+msgid "Join our Matrix room: {str:Url}"
+msgstr "Entre na nossa sala Matrix: {str:Url}"
+
+#: src/game/server/gamecontext.cpp:1334
+msgid "Join our Telegram: {str:Url}"
+msgstr "Junte-se ao nosso Telegram: {str:Url}"
+
+#: src/game/server/gamecontext.cpp:3670
+msgctxt "Medic"
+msgid "Laser rifle revives the infected, but at the cost of 17 hp and armor."
+msgstr "Com o Laser, é possível reviver um infectado, o custo é 17 Hp e Armadura."
+
+#: src/game/server/infclass/classes/humans/human.cpp:361
+msgid "Laser wall: {sec:RemainingTime}"
+msgstr "Parede com laser: {sec:RemainingTime}"
+
+#: src/game/server/gamecontext.cpp:3914
+msgid "List of commands"
+msgstr "Lista de comandos"
+
+#: src/game/server/infclass/infcgamecontroller.cpp:675
+msgid "Looper"
+msgstr "Looper"
+
+#: src/game/server/infclass/classes/humans/human.cpp:414
+msgid "Looper laser wall: {sec:RemainingTime}"
+msgstr "Parede com laser do Looper: {sec:RemainingTime}"
+
+#: src/game/server/infclass/infcgamecontroller.cpp:738
+msgid "Loopers"
+msgstr "Loopers"
+
+#: src/game/server/gamecontext.cpp:2818
+msgid "Main contributors: {str:ListOfContributors}"
+msgstr "Contribuidores principais: {str:ListOfContributors}"
+
+#: src/game/server/gamecontext.cpp:2880
+msgid "Matrix room: {str:Url}"
+msgstr "Sala Matrix: {str:Url}"
+
+#: src/game/server/infclass/infcgamecontroller.cpp:659
+msgid "Medic"
+msgstr "Médico"
+
+#: src/game/server/gamecontext.cpp:3671
+msgctxt "Medic"
+msgid "Medic also has a powerful shotgun that can knock back the infected."
+msgstr "Médico também tem uma espingarda poderosa que pode empurrar os infectados."
+
+#: src/game/server/infclass/infcgamecontroller.cpp:722
+msgid "Medics"
+msgstr "Médicos"
+
+#: src/game/server/infclass/infcgamecontroller.cpp:720
+msgid "Mercenaries"
+msgstr "Mercenários"
+
+#: src/game/server/infclass/infcgamecontroller.cpp:657
+msgid "Mercenary"
+msgstr "Mercenário"
+
+#: src/game/server/gamecontext.cpp:3662
+msgctxt "Mercenary"
+msgid "Mercenary can also throw poison grenades that deal one damage point and prevent the infected from healing."
+msgid_plural "Mercenary can also throw poison grenades that deal {int:NumDamagePoints} damage points and prevent the infected from healing."
+msgstr[0] "Mercenário também pode lançar granadas venenosas que causam um ponto de dano e bloqueiam a cura dos infectados."
+msgstr[1] "Mercenário também pode lançar granadas venenosas que causam {int:NumDamagePoints} pontos de dano e bloqueiam a cura dos infectados."
+
+#: src/game/server/infclass/classes/humans/human.cpp:516
+msgctxt "Biologist"
+msgid "Mine activated"
+msgstr "Mina ativada"
+
+#: src/game/server/gamecontext.cpp:3725
+msgctxt "Scientist"
+msgid "Mines are limited to one per player at the same time."
+msgid_plural "Mines are limited to {int:NumMines} per player at the same time."
+msgstr[0] "Minas estão limitadas a um por jogador ao mesmo tempo."
+msgstr[1] "Minas estão limitadas a {int:NumMines} por jogador ao mesmo tempo."
+
+#: src/game/server/infclass/entities/infccharacter.cpp:2149
+msgid "Need at least {int:MinPlayers} player"
+msgid_plural "Need at least {int:MinPlayers} players"
+msgstr[0] "Precisa de pelo menos {int:MinPlayers} jogador"
+msgstr[1] "Precisa de pelo menos {int:MinPlayers} jogadores"
+
+#: src/game/server/infclass/classes/humans/human.cpp:669
+msgid "Next flag in {sec:RemainingTime}"
+msgstr "Próxima bandeira em {sec:RemainingTime}"
+
+#: src/game/server/infclass/classes/humans/human.cpp:531
+msgctxt "Ninja"
+msgid "Next target in {sec:RemainingTime}"
+msgstr "Próximo alvo em {sec:RemainingTime}"
+
+#: src/game/server/infclass/infcgamecontroller.cpp:667
+msgid "Ninja"
+msgstr "Ninja"
+
+#: src/game/server/gamecontext.cpp:3711
+msgid "Ninja gets special targets. For killing a target, extra points and abilities are awarded."
+msgstr "Ninja obtém alvos especiais. Ao matar um alvo, pontos extras e habilidades são concedidas."
+
+#: src/game/server/infclass/infcgamecontroller.cpp:730
+msgid "Ninjas"
+msgstr "Ninjas"
+
+#: src/game/server/gamecontext.cpp:3105
+msgid "No player was found with this name"
+msgstr "Nenhum jogador encontrado com esse nome"
+
+#: src/game/server/infclass/classes/humans/human.cpp:434
+msgctxt "Soldier"
+msgid "One bomb left"
+msgid_plural "{int:NumBombs} bombs left"
+msgstr[0] "Uma bomba restante"
+msgstr[1] "{int:NumBombs} bombas restantes"
+
+#: src/game/server/infclass/infcgamecontroller.cpp:1853
+msgid "One human won the round"
+msgid_plural "{int:NumHumans} humans won the round"
+msgstr[0] "Um humano venceu a rodada"
+msgstr[1] "{int:NumHumans} humanos venceram a rodada"
+
+#: src/game/server/infclass/classes/humans/human.cpp:471
+#: src/game/server/infclass/classes/humans/human.cpp:490
+msgid "One mine is active"
+msgid_plural "{int:NumMines} mines are active"
+msgstr[0] "Uma mina está ativa"
+msgstr[1] "{int:NumMines} minas estão ativas"
+
+#: src/game/server/gamecontext.cpp:3539
+msgid "Persistent player mute"
+msgstr "Silenciar jogador"
+
+#: src/game/server/infclass/infcgamecontroller.cpp:1659
+msgid "Play more on this map"
+msgstr "Jogue mais neste mapa"
+
+#: src/engine/server/server.cpp:3801
+msgid "Please wait 5 minutes before creating another account"
+msgstr "Por favor, aguarde 5 minutos antes de criar outra conta"
+
+#: src/game/server/infclass/classes/humans/human.cpp:553
+msgctxt "Sniper"
+msgid "Position lock: {sec:RemainingTime}"
+msgstr "Posição travada: {sec:RemainingTime}"
+
+#: src/game/server/gamecontext.cpp:3928
+msgid "Press <F3> or <F4> to enable or disable hook protection"
+msgstr "Pressione <F3> ou <F4> para ativar ou desativar a proteção de gancho"
+
+#: src/game/server/infclass/entities/infccharacter.cpp:2121
+msgid "Random choice"
+msgstr "Escolha aleatória"
+
+#: src/game/server/gamecontext.cpp:3516
+msgctxt "White hole"
+msgid "Receive it by killing at least one infected as a Scientist."
+msgid_plural "Receive it by killing at least {int:NumKills} of the infected as a Scientist."
+msgstr[0] "Receba-o matando pelo menos um infectado como Cientista."
+msgstr[1] "Receba matando pelo menos {int:NumKills} do infectado como Cientista."
+
+#: src/game/server/gamecontext.cpp:3484
+msgid "Rules of the game"
+msgstr "Regras do jogo"
+
+#: src/game/server/infclass/infcgamecontroller.cpp:1107
+msgid "Santa ({int:Callers}/{int:RequiredCallers})"
+msgstr "Papai Noel ({int:Callers}/{int:RequiredCallers})"
+
+#: src/game/server/infclass/infcgamecontroller.cpp:1144
+msgid "Santa {str:PlayerName} has arrived!"
+msgstr "O Papai Noel {str:PlayerName} chegou!"
+
+#: src/game/server/infclass/infcgamecontroller.cpp:671
+msgid "Scientist"
+msgstr "Cientista"
+
+#: src/game/server/gamecontext.cpp:3728
+msgctxt "Scientist"
+msgid "Scientist has also grenades that teleport them."
+msgstr "O cientista também tem granadas que as teletransportam."
+
+#: src/game/server/infclass/infcgamecontroller.cpp:734
+msgid "Scientists"
+msgstr "Cientistas"
+
+#: src/game/server/gamecontext.cpp:3496
+msgid "See also `/help pages`"
+msgstr "Veja também `/help pages`"
+
+#: src/game/server/gamecontext.cpp:2886
+msgid "See also: /credits"
+msgstr "Veja também: /credits"
+
+#: src/game/server/gamecontext.cpp:1323
+msgid "See also: /help, /changelog, /about"
+msgstr "Veja também: /help, /changelog, /about"
+
+#: src/game/server/infclass/infcplayer.cpp:230
+msgid "Self kill attempt prevented. Trigger self kill again to confirm."
+msgstr "Tentativa de auto-morte evitada. Caso queira aperte novamente o botão para confirmar."
+
+#: src/game/server/gamecontext.cpp:2843
+msgid "Server version from {str:ServerCompileDate} "
+msgstr "Versão do servidor de {str:ServerCompileDate} "
+
+#: src/game/server/infclass/infcgamecontroller.cpp:692
+msgid "Slug"
+msgstr "Lesma"
+
+#: src/game/server/gamecontext.cpp:3787
+msgctxt "Slug"
+msgid "Slug can infect humans and heal the infected with the hammer."
+msgstr "Lesma pode infectar seres humanos e curar com o martelo"
+
+#: src/game/server/infclass/infcgamecontroller.cpp:755
+msgid "Slugs"
+msgstr "Lesmas"
+
+#: src/game/server/infclass/infcgamecontroller.cpp:678
+msgid "Smoker"
+msgstr "Smoker"
+
+#: src/game/server/gamecontext.cpp:3742
+msgctxt "Smoker"
+msgid "Smoker has a powerful hook that hurts humans and sucks their blood, restoring the Smoker's health."
+msgstr "O Smoker tem um gancho poderoso que machuca os humanos e suga o seu sangue, restaurando a sua saúde."
+
+#: src/game/server/infclass/infcgamecontroller.cpp:741
+msgid "Smokers"
+msgstr "Smokers"
+
+#: src/game/server/infclass/infcgamecontroller.cpp:669
+msgid "Sniper"
+msgstr "Sniper"
+
+#: src/game/server/infclass/infcgamecontroller.cpp:732
+msgid "Snipers"
+msgstr "Snipers"
+
+#: src/game/server/infclass/infcgamecontroller.cpp:665
+msgid "Soldier"
+msgstr "Soldado"
+
+#: src/game/server/infclass/infcgamecontroller.cpp:728
+msgid "Soldiers"
+msgstr "Soldados"
+
+#: src/game/server/gamecontext.cpp:2857
+msgid "Sources: {str:SourceUrl} "
+msgstr "Fontes: {str:SourceUrl} "
+
+#: src/game/server/infclass/infcgamecontroller.cpp:688
+msgid "Spider"
+msgstr "Aranha"
+
+#: src/game/server/infclass/infcgamecontroller.cpp:751
+msgid "Spiders"
+msgstr "Aranhas"
+
+#: src/game/server/infclass/classes/infected/infected.cpp:244
+msgctxt "Voodoo"
+msgid "Staying alive for: {int:RemainingTime}"
+msgstr "Mantendo-se vivo por: {int:RemainingTime}"
+
+#: src/game/server/infclass/classes/infected/infected.cpp:357
+msgctxt "Ghoul"
+msgid "Stomach filled by {percent:FodderInStomach}"
+msgstr "Estômago preenchido por {percent:FodderInStomach}"
+
+#: src/game/server/gamecontext.cpp:2018
+msgid "Switch language to english?"
+msgstr "Mudar idioma para o inglês?"
+
+#: src/game/server/infclass/entities/infccharacter.cpp:948
+msgid "Sword strength increased"
+msgstr "Força da espada aumentada"
+
+#: src/game/server/infclass/entities/infccharacter.cpp:944
+msgid "Sword velocity increased"
+msgstr "Velocidade da espada aumentou"
+
+#: src/game/server/infclass/classes/humans/human.cpp:540
+msgctxt "Ninja"
+msgid "Target to eliminate: {str:PlayerName}"
+msgstr "Alvo a eliminar: {str:PlayerName}"
+
+#: src/game/server/gamecontext.cpp:3525
+msgid "Targeted chat messages"
+msgstr "Mensagens de bate-papo alvo"
+
+#: src/game/server/gamecontext.cpp:2873
+msgid "Telegram: {str:Url}"
+msgstr "Telegram: {str:Url}"
+
+#: src/game/server/gamecontext.cpp:2820
+msgid "Thanks to {str:ListOfContributors}"
+msgstr "Obrigado à {str:ListOfContributors}"
+
+#: src/game/server/gamecontext.cpp:3733
+msgctxt "Biologist"
+msgid "The Biologist has a shotgun with bouncing bullets and can create a spring laser trap by shooting with the laser rifle."
+msgstr "O Biólogo tem uma espingarda com balas saltitantes e pode criar uma armadilha de laser ao atirar com o rifle laser."
+
+#: src/game/server/gamecontext.cpp:3747
+msgctxt "Boomer"
+msgid "The Boomer explodes when it attacks."
+msgstr "O Boomer explode quando ataca."
+
+#: src/game/server/gamecontext.cpp:3683
+msgctxt "Engineer"
+msgid "The Engineer can build walls with the hammer to block the infected."
+msgstr "O Engenheiro pode construir paredes com o martelo para bloquear o infectado."
+
+#: src/game/server/gamecontext.cpp:3765
+msgctxt "Ghost"
+msgid "The Ghost is invisible until a human comes nearby, it takes damage, or it uses the hammer."
+msgstr "O Canibal fica invisível até que um humano chegue perto, sofra dano ou use o martelo."
+
+#: src/game/server/gamecontext.cpp:3777
+msgctxt "Ghoul"
+msgid "The Ghoul can devour anything that has died nearby, which makes it stronger, faster and more resistant."
+msgstr "O Canibal pode devorar qualquer coisa que tenha morrido nas proximidades, o que o torna mais forte, mais rápido e mais resistente."
+
+#: src/game/server/gamecontext.cpp:3680
+msgctxt "Hero"
+msgid "The Hero cannot be healed by a Medic, but it can withstand a hit from an infected."
+msgstr "O Herói não pode ser curado por um Medico, mas pode resistir a um acerto de um infectado."
+
+#: src/game/server/infclass/entities/hero-flag.cpp:92
+msgid "The Hero found the flag!"
+msgstr "O Herói encontrou a bandeira!"
+
+#: src/game/server/gamecontext.cpp:3674
+msgctxt "Hero"
+msgid "The Hero has all standard weapons."
+msgstr "O Herói tem todas as armas normais."
+
+#: src/game/server/gamecontext.cpp:3675
+msgctxt "Hero"
+msgid "The Hero has to find a flag only visible to them. Stand still to be pointed towards it."
+msgstr "O Herói tem que encontrar uma bandeira visível apenas para ele. Fique parado para ser apontado para ele."
+
+#: src/game/server/gamecontext.cpp:3752
+msgctxt "Hunter"
+msgid "The Hunter can jump two times in the air and has some resistance to knock-backs."
+msgstr "O Caçador pode pular duas vezes no ar e tem alguma resistência a repulsões."
+
+#: src/game/server/gamecontext.cpp:3737
+msgctxt "Looper"
+msgid "The Looper has a laser wall that slows down the infected and a low-range laser rifle with a high fire rate."
+msgstr "O Looper tem uma parede laser que consegue atrasar o infectado e um rifle laser de baixo alcance com uma alta taxa de tiro."
+
+#: src/game/server/gamecontext.cpp:3667
+msgctxt "Medic"
+msgid "The Medic can protect humans with the hammer by giving them armor."
+msgstr "O Médico pode proteger os humanos com o martelo dando-lhes armadura."
+
+#: src/game/server/gamecontext.cpp:3657
+msgctxt "Mercenary"
+msgid "The Mercenary can fly in the air using their machine gun."
+msgstr "O Mercenário pode voar no ar usando sua pistola."
+
+#: src/game/server/gamecontext.cpp:3700
+msgctxt "Ninja"
+msgid "The Ninja can throw flash grenades that can freeze the infected for three seconds."
+msgstr "O Ninja pode arremessar granadas, que congelam os infectados por três segundos."
+
+#: src/game/server/infclass/infcgamecontroller.cpp:1028
+#: src/game/server/infclass/infcgamecontroller.cpp:1131
+msgid "The Santa is already here"
+msgstr "O Papai Noel já está aqui"
+
+#: src/game/server/gamecontext.cpp:3722
+msgctxt "Scientist"
+msgid "The Scientist can pose floating mines with the hammer."
+msgstr "O Cientista pode colocar minas flutuantes com o martelo."
+
+#: src/game/server/gamecontext.cpp:3785
+msgctxt "Slug"
+msgid "The Slug can make the ground and walls toxic by spreading slime with the hammer."
+msgstr "A Lesma pode tornar o chão e as paredes tóxicos espalhando a gosma com o martelo."
+
+#: src/game/server/gamecontext.cpp:3715
+msgctxt "Sniper"
+msgid "The Sniper can lock the position in mid-air for 15 seconds with the hammer."
+msgstr "O Sniper pode se prender no meio do ar por 15 segundos com o martelo."
+
+#: src/game/server/gamecontext.cpp:3690
+msgctxt "Soldier"
+msgid "The Soldier creates floating bombs with the hammer."
+msgstr "O Soldado cria bombas flutuantes com o martelo."
+
+#: src/game/server/gamecontext.cpp:3771
+msgctxt "Spider"
+msgid "The Spider has a web hook that automatically grabs any human touching it."
+msgstr "A Aranha tem um modo gancho que automaticamente agarra qualquer ser humano tocando-o."
+
+#: src/game/server/gamecontext.cpp:3804
+msgctxt "Undead"
+msgid "The Undead cannot die. Instead of dying, it gets frozen for 10 seconds."
+msgstr "Os Mortos-vivos não podem morrer. Em vez de morrer, ficam congelados por 10 segundos."
+
+#: src/game/server/gamecontext.cpp:3791
+msgctxt "Voodoo"
+msgid "The Voodoo does not die immediately when killed but instead enters Spirit mode for a short time."
+msgstr "O Vodu não morre imediatamente quando morto, mas entra em modo Espirito por um curto período de tempo."
+
+#: src/game/server/gamecontext.cpp:3798
+msgctxt "Witch"
+msgid "The Witch can provide a spawn point for the infected."
+msgstr "A Bruxa pode fornecer um ponto de spawn para os infectados."
+
+#: src/game/server/infclass/classes/humans/human.cpp:597
+msgctxt "Mercenary"
+msgid "The bomb is fully upgraded.\n"
+"There is nothing to do with the laser."
+msgstr "A bomba foi está atualizada.\n"
+"O Laser não é mais necessário."
+
+#: src/game/server/infclass/entities/infccharacter.cpp:2141
+msgid "The class is disabled"
+msgstr "A classe está desabilitada"
+
+#: src/game/server/infclass/entities/infccharacter.cpp:2158
+msgid "The class limit exceeded"
+msgstr "Limite de classe excedido"
+
+#: src/game/server/gamecontext.cpp:3846
+msgid "The class selector will be displayed when rounds start"
+msgstr "O seletor de classe será exibido quando as rodadas começarem"
+
+#: src/game/server/gamecontext.cpp:3676
+msgctxt "Hero"
+msgid "The flag gifts a health point, {int:NumArmorGift} armor and full ammo to all humans."
+msgstr "A bandeira dá um ponto de vida, {int:NumArmorGift} armadura e munição completa para todos os humanos."
+
+#: src/game/server/gamecontext.cpp:3679
+msgctxt "Hero"
+msgid "The gift to all humans is only applied when the flag is surrounded by hearts and armor."
+msgstr "O presente para todos os seres humanos só é aplicado quando a bandeira esta cercada por corações e armaduras."
+
+#: src/game/server/gamecontext.cpp:3492
+msgid "The goal for the humans is to survive until the army cleans the map."
+msgstr "O objetivo dos humanos é sobreviver até que o exército limpe o mapa."
+
+#: src/game/server/gamecontext.cpp:3494
+msgid "The goal for the infected is to infect all humans."
+msgstr "O objectivo dos infectados é infectar todos os seres humanos."
+
+#: src/game/server/gamecontext.cpp:3760
+msgctxt "Bat"
+msgid "The hammer is also useful for healing the infected."
+msgstr "O martelo também é útil para curar os infectados."
+
+#: src/game/server/infclass/infcgamecontroller.cpp:1662
+msgid "The last round"
+msgstr "A última rodada"
+
+#: src/game/server/gamecontext.cpp:3685
+msgctxt "Engineer"
+msgid "The lifespan of a wall is {sec:LifeSpan}, and walls are limited to one per player at the same time."
+msgstr "A vida útil de uma parede é {sec:LifeSpan}, e as paredes estão limitadas a um por jogador ao mesmo tempo."
+
+#: src/game/server/gamecontext.cpp:3717
+msgctxt "Sniper"
+msgid "The locked position increases the Sniper's rifle damage from usual 10-13 to 20 damage points."
+msgstr "A posição travada aumenta o dano do rifle do Sniper de 10-13 para 20 pontos de dano."
+
+#: src/game/server/gamecontext.cpp:3786
+msgctxt "Slug"
+msgid "The slime heals the infected and deals damage to humans."
+msgstr "A geleia cura os infectados e causa dano aos humanos."
+
+#: src/game/server/infclass/infcgamecontroller.cpp:2309
+msgid "The undead is finally dead"
+msgstr "O morto-vivo finalmente está morto"
+
+#: src/game/server/gamecontext.cpp:3772
+msgctxt "Spider"
+msgid "The web hook mode can be toggled by switching the weapon."
+msgstr "O modo gancho pode ser alternado ao alternar a arma, com o SCROLL."
+
+#: src/game/server/infclass/classes/humans/human.cpp:463
+msgid "The white hole is available!"
+msgstr "O buraco branco está disponível!"
+
+#: src/game/server/infclass/entities/superweapon-indicator.cpp:68
+msgid "The white hole is ready, use the laser rifle to disrupt space-time"
+msgstr "O buraco branco está pronto, use o rifle laser para desestabilizar o espaço-tempo"
+
+#: src/game/server/infclass/infcgamecontroller.cpp:2304
+msgid "The witch is dead"
+msgstr "A bruxa está morta"
+
+#: src/game/server/gamecontext.cpp:3705
+msgctxt "Ninja"
+msgid "Their hammer is replaced with a katana, allowing them to dash {int:NinjaJump} time before touching the ground."
+msgid_plural "Their hammer is replaced with a katana, allowing them to dash {int:NinjaJump} times before touching the ground."
+msgstr[0] "O martelo deles é substituído por um katana, permitindo-lhes correr {int:NinjaJump} vez antes de tocar o chão."
+msgstr[1] "Seu martelo é substituído por um katana, permitindo-lhes correr {int:NinjaJump} vezes antes de tocar o chão."
+
+#: src/game/server/gamecontext.cpp:3710
+msgid "They also have a laser rifle that blinds the target for a short period of time."
+msgstr "Também têm um rifle laser que cega o alvo por um curto período de tempo."
+
+#: src/game/server/gamecontext.cpp:3658
+msgctxt "Mercenary"
+msgid "They can also create a powerful bomb with their hammer that can be charged by hitting it or with a laser rifle."
+msgstr "Eles também podem criar uma bomba poderosa com o seu martelo que pode ser carregada ao acertá-la ou com o rifle laser."
+
+#: src/game/server/gamecontext.cpp:3739
+msgctxt "Looper"
+msgid "They can also jump two times in the air."
+msgstr "Eles também podem pular duas vezes no ar."
+
+#: src/game/server/gamecontext.cpp:3719
+msgctxt "Sniper"
+msgid "They can also jump two times in the air."
+msgstr "Eles também podem pular duas vezes no ar."
+
+#: src/engine/server/server.cpp:3828
+msgid "This username is already taken by an existing account"
+msgstr "Este nome de usuário já está sendo usado por uma conta existente"
+
+#: src/game/server/gamecontext.cpp:3558
+msgid "To get off the taxi, jump. To drop off your passengers, enable hook protection (usually, with F3)."
+msgstr "Para sair do táxi, pule. Para soltar seus passageiros, ative a proteção de gancho (normalmente, com F3)."
+
+#: src/game/server/infclass/infcgamecontroller.cpp:1059
+msgid "Too few infected to call a witch"
+msgstr "Poucos jogadores para chamar uma bruxa"
+
+#: src/game/server/infclass/infcgamecontroller.cpp:1055
+msgid "Too few infected to call the Santa"
+msgstr "Poucos infectados para chamar o Papai Noel"
+
+#: src/game/server/infclass/infcgamecontroller.cpp:1048
+msgid "Too few players to call a witch"
+msgstr "Poucos jogadores para chamar uma bruxa"
+
+#: src/game/server/infclass/infcgamecontroller.cpp:1044
+msgid "Too few players to call the Santa"
+msgstr "Poucos jogadores para chamar o Papai Noel"
+
+#: src/game/server/infclass/classes/humans/human.cpp:389
+msgid "Too few zombies to revive anyone (less than {int:MinZombies})"
+msgstr "Muito poucos zumbis para reviver qualquer pessoa (menos de {int:MinZombies})"
+
+#: src/game/server/gamecontext.cpp:3554
+msgid "Two or more humans can form a taxi."
+msgstr "Dois ou mais humanos podem formar um táxi."
+
+#: src/game/server/infclass/entities/infccharacter.cpp:2890
+msgid "Type “/help {str:ClassName}” for more information about your class"
+msgstr "Digite “/help {str:ClassName}” para obter mais informações sobre sua classe"
+
+#: src/game/server/infclass/infcgamecontroller.cpp:698
+msgid "Undead"
+msgstr "Morto-vivo"
+
+#: src/game/server/gamecontext.cpp:3806
+msgctxt "Undead"
+msgid "Undead can infect humans and heal the infected with the hammer."
+msgstr "Mortos-vivos podem infectar seres humanos e curar os infectados com o martelo."
+
+#: src/game/server/infclass/infcgamecontroller.cpp:761
+msgid "Undeads"
+msgstr "Mortos-vivos"
+
+#: src/game/server/infclass/infcgamecontroller.cpp:702
+msgid "Unknown class"
+msgstr "Classe desconhecida"
+
+#: src/game/server/gamecontext.cpp:3884
+msgid "Unknown language"
+msgstr "Idioma desconhecido"
+
+#: src/game/server/infclass/infcgamecontroller.cpp:764
+msgid "Unknowns"
+msgstr "Desconhecidos"
+
+#: src/game/server/gamecontext.cpp:3544
+msgid "Unlike a client mute this will persist between map changes and wears off when either you or the muted player disconnects."
+msgstr "Quando o jogador estiver mutado isso persistirá entre as mudanças de mapa e desaparecerá quando você ou o jogador se desconectar."
+
+#: src/game/server/infclass/classes/humans/human.cpp:618
+msgctxt "Mercenary"
+msgid "Use the hammer to place a bomb and\n"
+"then use the laser to upgrade it"
+msgstr "Use o martelo para colocar uma bomba e\n"
+"em seguida, use o laser para melhorá-la"
+
+#: src/game/server/gamecontext.cpp:3697
+msgid "Use the hammer to place the bomb and explode it multiple times."
+msgstr "Use o martelo para colocar a bomba e explodi-la várias vezes."
+
+#: src/game/server/gamecontext.cpp:3520
+msgctxt "White hole"
+msgid "Use the laser rifle to place it."
+msgstr "Use o rifle laser para colocá-lo."
+
+#: src/game/server/infclass/classes/humans/human.cpp:581
+msgctxt "Mercenary"
+msgid "Use the laser to upgrade the bomb"
+msgstr "Use o laser para atualizar a bomba"
+
+#: src/game/server/gamecontext.cpp:3530
+msgid "Use “/msg !<ClassName> <My Message>” to send a private message to all players with a specific class."
+msgstr "Use “/msg !<NomeDaClasse> <Sua Mensagem>” para enviar uma mensagem privada a todos os jogadores com uma classe específica."
+
+#: src/game/server/gamecontext.cpp:3534
+msgid "Use “/msg !near” to send a private message to all players near you."
+msgstr "Use “/msg !near” para enviar uma mensagem privada a todos os jogadores próximos de você."
+
+#: src/game/server/gamecontext.cpp:3542
+msgid "Use “/mute <PlayerName>” to mute this player."
+msgstr "Use “/mute <NickDoJogador>” para silenciar este jogador."
+
+#: src/game/server/gamecontext.cpp:3528
+msgid "Use “/w <PlayerName> <My Message>” to send a private message to this player."
+msgstr "Use \"/w <NickDoJogador> <Sua Mensagem>\" para enviar uma mensagem privada para este jogador."
+
+#: src/game/server/infclass/infcgamecontroller.cpp:694
+msgid "Voodoo"
+msgstr "Vodu"
+
+#: src/game/server/gamecontext.cpp:3794
+msgctxt "Voodoo"
+msgid "Voodoo can infect humans and heal the infected with the hammer."
+msgstr "Vudu pode infectar seres humanos e curar os infectados com o martelo."
+
+#: src/game/server/infclass/infcgamecontroller.cpp:757
+msgid "Voodoos"
+msgstr "Vudus"
+
+#: src/game/server/infclass/classes/infected/infected.cpp:347
+msgctxt "Spider"
+msgid "Web mode enabled"
+msgstr "Modo Aranha ativado"
+
+#: src/game/server/gamecontext.cpp:3684
+msgctxt "Engineer"
+msgid "When an infected touches the wall, it dies."
+msgstr "Quando um infectado toca a parede, ele morre."
+
+#: src/game/server/gamecontext.cpp:3793
+msgctxt "Voodoo"
+msgid "While in Spirit mode it cannot be killed. When the time is up it finally dies."
+msgstr "Quando o jogador ficar no Modo Espírito, ele não pode ser morto. Quando o tempo acabar ele finalmente morre."
+
+#: src/game/server/gamecontext.cpp:3510
+msgid "White hole"
+msgstr "Buraco branco"
+
+#: src/game/server/infclass/entities/infccharacter.cpp:2651
+msgid "White hole found, adjusting scientific parameters..."
+msgstr "Buraco branco encontrado, ajustando parâmetros científicos..."
+
+#: src/game/server/gamecontext.cpp:3512
+msgctxt "White hole"
+msgid "White hole pulls the infected into its center."
+msgstr "Buraco branco puxa o infectado para dentro de seu centro."
+
+#: src/game/server/infclass/classes/humans/human.cpp:481
+#: src/game/server/infclass/classes/humans/human.cpp:496
+msgid "White hole: {sec:RemainingTime}"
+msgstr "Buraco branco: {sec:RemainingTime}"
+
+#: src/game/server/infclass/infcgamecontroller.cpp:696
+msgid "Witch"
+msgstr "Bruxa"
+
+#: src/game/server/infclass/infcgamecontroller.cpp:1115
+msgid "Witch ({int:Callers}/{int:RequiredCallers})"
+msgstr "Bruxa ({int:Callers}/{int:RequiredCallers})"
+
+#: src/game/server/gamecontext.cpp:3800
+msgctxt "Witch"
+msgid "Witch can infect humans and heal the infected with the hammer."
+msgstr "A bruxa pode infectar humanos e curar os infectados com o martelo."
+
+#: src/game/server/infclass/infcgamecontroller.cpp:1151
+msgid "Witch {str:PlayerName} has arrived!"
+msgstr "A Bruxa {str:PlayerName} chegou!"
+
+#: src/game/server/infclass/infcgamecontroller.cpp:759
+msgid "Witches"
+msgstr "Bruxas"
+
+#: src/engine/server/server.cpp:3654
+msgid "Wrong username/password."
+msgstr "Nome de usuário/senha incorretos."
+
+#: src/game/server/gamecontext.cpp:726
+msgid "You are a human: {str:ClassName}"
+msgstr "Você é um humano: {str:ClassName}"
+
+#: src/game/server/gamecontext.cpp:729
+msgid "You are an infected: {str:ClassName}"
+msgstr "Você é um infectado: {str:ClassName}"
+
+#: src/game/server/infclass/entities/infccharacter.cpp:195
+msgid "You are blinded: {sec:EffectDuration}"
+msgstr "Você está cego: {sec:EffectDuration}"
+
+#: src/game/server/entities/character.cpp:437
+msgid "You are frozen: {sec:EffectDuration}"
+msgstr "Você está congelado: {sec:EffectDuration}"
+
+#: src/game/server/gamecontext.cpp:1785 src/game/server/gamecontext.cpp:2898
+msgid "You are muted for {sec:Duration}"
+msgstr "Você foi silenciado por {sec:Duration}"
+
+#: src/game/server/entities/character.cpp:453
+msgid "You are slowed: {sec:EffectDuration}"
+msgstr "Você está lento: {sec:EffectDuration}"
+
+#: src/game/server/gamecontext.cpp:2024
+msgid "You can change the language of this mod using the command /language."
+msgstr "Você pode alterar o idioma deste mod usando o comando: /language."
+
+#: src/game/server/infclass/infcgamecontroller.cpp:1076
+msgid "You can't call witch twice"
+msgstr "Você não pode chamar a bruxa duas vezes"
+
+#: src/game/server/gamecontext.cpp:1877
+msgid "You can't join the spectators right now"
+msgstr "Você não pode se juntar aos espectadores agora"
+
+#: src/game/server/infclass/classes/humans/human.cpp:659
+msgid "You don't have a turret to place"
+msgstr "Você não tem uma torre para colocar"
+
+#: src/game/server/infclass/classes/humans/human.cpp:640
+msgid "You have a turret. Use the hammer to place it."
+msgstr "Você tem uma torre. Use o martelo para colocá-la."
+
+#: src/engine/server/server.cpp:4976
+msgid "You have already notified that {str:PlayerName} ought to be banned"
+msgstr "Você já notificou que {str:PlayerName} deve se banido"
+
+#: src/engine/server/server.cpp:5059
+msgid "You have already voted to change this map"
+msgstr "Você já votou para mudar este mapa"
+
+#: src/game/server/infclass/infcgamecontroller.cpp:163
+msgid "You have been infected by {str:KillerName}"
+msgstr "Você foi infectado por {str:KillerName}"
+
+#: src/game/server/infclass/infcgamecontroller.cpp:1072
+msgid "You have called the Santa once again"
+msgstr "Você chamou o Papai Noel mais uma vez"
+
+#: src/game/server/infclass/infcgamecontroller.cpp:2198
+#: src/game/server/infclass/infcgamecontroller.cpp:2241
+msgid "You have eliminated your target, +2 points"
+msgstr "Você eliminou seu alvo, +2 pontos"
+
+#: src/game/server/infclass/entities/infccharacter.cpp:149
+msgid "You have held a bonus area for one minute, +5 points"
+msgstr "Você segurou uma área de bônus por um minuto, +5 pontos"
+
+#: src/game/server/infclass/infcgamecontroller.cpp:167
+msgid "You have infected {str:VictimName}, +3 points"
+msgstr "Você infectou {str:VictimName}, +3 pontos"
+
+#: src/game/server/infclass/infcgamecontroller.cpp:148
+msgid "You have infected {str:VictimName}, shame on you!"
+msgstr "Você infectou {str:VictimName}, vergonha de você!"
+
+#: src/game/server/infclass/infcgamecontroller.cpp:2181
+msgid "You have killed a witch, +5 points"
+msgstr "Você matou uma bruxa, +5 pontos"
+
+#: src/game/server/infclass/infcgamecontroller.cpp:2185
+msgid "You have killed an undead! +5 points"
+msgstr "Você matou um morto! +5 pontos"
+
+#: src/game/server/infclass/infcgamecontroller.cpp:1870
+msgid "You have survived, +5 points"
+msgstr "Você sobreviveu, +5 pontos"
+
+#: src/game/server/infclass/classes/humans/human.cpp:648
+msgid "You have {int:NumTurrets} of {int:MaxTurrets} turrets. Use the hammer to place one."
+msgstr "Você tem {int:NumTurrets} de {int:MaxTurrets} torres. Use o martelo para colocar uma."
+
+#: src/game/server/infclass/entities/hero-flag.cpp:80
+msgid "You have {int:NumTurrets} turret available, use the Hammer to place it"
+msgid_plural "You have {int:NumTurrets} turrets available, use the Hammer to place it"
+msgstr[0] "Você tem {int:NumTurrets} torre disponível, use o Martelo para colocá-lo"
+msgstr[1] "Você tem {int:NumTurrets} torres disponíveis, use o Martelo para colocá-lo"
+
+#: src/engine/server/server.cpp:3747
+msgid "You must be logged for this operation"
+msgstr "Você deve estar logado para esta operação"
+
+#: src/engine/server/server.cpp:4632
+msgid "You must be logged to see stats"
+msgstr "Você precisa estar logado para ver as estatísticas"
+
+#: src/engine/server/server.cpp:4548
+msgid "You must be logged to see your goal"
+msgstr "Você deve estar logado para ver sua pontuação"
+
+#: src/engine/server/server.cpp:4464
+msgid "You must be logged to see your rank"
+msgstr "Você precisa estar logado para ver seu rank"
+
+#: src/game/server/infclass/classes/humans/human.cpp:379
+msgid "You need at least {int:MinHp} HP to revive a zombie"
+msgstr "Você precisa de pelo menos {int:MinHp} de vida para reviver um zumbi"
+
+#: src/engine/server/server.cpp:3873
+msgid "Your account has been created and you are now logged."
+msgstr "Sua conta foi criada e você está logado agora."
+
+#: src/game/server/gamecontext.cpp:1937
+msgid "{str:PlayerName} changed their name to {str:NewName}"
+msgstr "{str:PlayerName} alterou seu nome para: {str:NewName}"
+
+#: src/game/server/gamecontext.cpp:1319
+msgid "{str:PlayerName} entered and joined the game"
+msgstr "{str:PlayerName} entrou e ingressou no jogo"
+
+#: src/game/server/gamecontroller.cpp:147
+msgid "{str:PlayerName} has been banned ({str:Reason})"
+msgstr "{str:PlayerName} foi banido ({str:Reason})"
+
+#: src/game/server/gamecontroller.cpp:154
+msgid "{str:PlayerName} has been kicked ({str:Reason})"
+msgstr "{str:PlayerName} foi expulso ({str:Reason})"
+
+#: src/game/server/gamecontroller.cpp:168
+msgid "{str:PlayerName} has left the game"
+msgstr "{str:PlayerName} saiu da partida"
+
+#: src/game/server/gamecontroller.cpp:161
+msgid "{str:PlayerName} has left the game ({str:Reason})"
+msgstr "{str:PlayerName} deixou o jogo ({str:Reason})"
+
+#: src/game/server/infclass/infcgamecontroller.cpp:1089
+msgid "{str:PlayerName} is calling for Santa! (1/{int:RequiredCallers}) To call the Santa write: /santa"
+msgstr "{str:PlayerName} está chamando Papai Noel! (1/{int:RequiredCallers}) Para chamar o Papai Noel digite: /santa"
+
+#: src/game/server/infclass/infcgamecontroller.cpp:1097
+msgid "{str:PlayerName} is calling for Witch! (1/{int:RequiredCallers}) To call witch write: /witch"
+msgstr "{str:PlayerName} está chamando pela Bruxa! (1/{int:RequiredCallers}) Para chamar a bruxa, escreva no chat: /witch"
+
+#: src/game/server/infclass/infcgamecontroller.cpp:1423
+msgid "{str:PlayerName} joined the game"
+msgstr "{str:PlayerName} juntou-se ao jogo"
+
+#: src/game/server/infclass/infcgamecontroller.cpp:1417
+msgid "{str:PlayerName} joined the spectators"
+msgstr "{str:PlayerName} juntou-se aos espectadores"
+
+#: src/engine/server/server.cpp:5071
+msgid "{str:PlayerName} wants to start the vote '{str:VoteName}'"
+msgstr "{str:PlayerName} quer iniciar o voto: '{str:VoteName}'"
+
+#: src/engine/server/server.cpp:4991
+msgid "{str:PlayerName} wants {str:VictimName} to be banned ({str:Reason})"
+msgstr "{str:PlayerName} quer que {str:VictimName} seja banido ({str:Reason})"
+
+#: src/game/server/infclass/infcgamecontroller.cpp:1755
+#: src/game/server/infclass/infcgamecontroller.cpp:1785
+msgid "{str:VictimName} has been infected"
+msgstr "{str:VictimName} foi infectado"
+
+#: src/engine/server/server.cpp:2653
+msgid "{str:Victim} has been muted for {sec:Duration} ({str:Reason})"
+msgstr "{str:Victim} foi silenciado por {sec:Duration} ({str:Reason})"
+

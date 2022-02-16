@@ -97,6 +97,11 @@
 		"parent": "en"
 	},
 	{
+		"file": "pt-BR",
+		"name": "Português (Brasil)",
+		"parent": "en"
+	},
+	{
 		"file": "ru",
 		"name": "Русский",
 		"parent": "en"

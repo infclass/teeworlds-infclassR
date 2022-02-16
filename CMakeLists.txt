@@ -729,6 +729,7 @@ set(PO_LANGS
   nl
   pl
   pt
+  pt-BR
   ru
   sq
   sr-CS

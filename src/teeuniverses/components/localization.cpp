@@ -520,7 +520,6 @@ const char *CLocalization::LanguageCodeByCountryCode(int CountryCode)
 			return "pl";
 		/* pt - Portuguese ********************************/
 		case 24: //Angola
-		case 76: //Brazil
 		case 132: //Cape Verde
 		//case 226: //Equatorial Guinea: official language, but not national language
 		//case 446: //Macao: official language, but spoken by less than 1% of the population
@@ -528,6 +527,9 @@ const char *CLocalization::LanguageCodeByCountryCode(int CountryCode)
 		case 626: //Timor-Leste
 		case 678: //São Tomé and Príncipe
 			return "pt";
+		/* pt-BR - Portuguese (Brazil) ********************************/
+		case 76: //Brazil
+			return "pt-BR";
 		/* ru - Russian ***********************************/
 		case 112: //Belarus
 		case 643: //Russia
