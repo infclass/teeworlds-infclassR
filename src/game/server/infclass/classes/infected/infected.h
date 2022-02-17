@@ -37,6 +37,8 @@ public:
 	void IncreaseGhoulLevel(int Diff);
 	int GetGhoulLevel() const;
 
+	bool FindWitchSpawnPosition(vec2 &Position);
+
 	void PrepareToDie(int Killer, DAMAGE_TYPE DamageType, bool *pRefusedToDie) override;
 
 protected:

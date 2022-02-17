@@ -21,6 +21,7 @@
 
 #include <engine/message.h>
 #include <game/generated/protocol.h>
+#include <game/server/infclass/classes/infected/infected.h>
 
 #include <algorithm>
 #include <iostream>
@@ -2547,11 +2548,18 @@ bool CInfClassGameController::TryRespawn(CInfClassPlayer *pPlayer, SpawnContext 
 		CInfClassPlayerIterator<PLAYERITER_INGAME> Iter(GameServer()->m_apPlayers);
 		while(Iter.Next())
 		{
-			if(Iter.Player()->GetCID() == pPlayer->GetCID()) continue;
-			if(Iter.Player()->GetClass() != PLAYERCLASS_WITCH) continue;
-			if(!Iter.Player()->GetCharacter()) continue;
+			if(Iter.Player()->GetCID() == pPlayer->GetCID())
+				continue;
+			if(Iter.Player()->GetClass() != PLAYERCLASS_WITCH)
+				continue;
 
-			if(Iter.Player()->GetCharacter()->FindWitchSpawnPosition(pContext->SpawnPos))
+			CInfClassCharacter *pCharacter = Iter.Player()->GetCharacter();
+			if(!pCharacter)
+				continue;
+
+			CInfClassInfected *pInfected = CInfClassInfected::GetInstance(pCharacter);
+
+			if(pInfected->FindWitchSpawnPosition(pContext->SpawnPos))
 			{
 				pContext->SpawnType = SpawnContext::WitchSpawn;
 				return true;

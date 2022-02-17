@@ -264,7 +264,7 @@ void CInfClassInfected::OnCharacterSnap(int SnappingClient)
 				if(m_pCharacter->GetActiveWeapon() == WEAPON_HAMMER)
 				{
 					vec2 SpawnPos;
-					if(m_pCharacter->FindWitchSpawnPosition(SpawnPos))
+					if(FindWitchSpawnPosition(SpawnPos))
 					{
 						const int CursorID = GameController()->GetPlayerOwnCursorID(GetCID());
 						GameController()->SendHammerDot(SpawnPos, CursorID);
@@ -417,6 +417,30 @@ void CInfClassInfected::DoBoomerExplosion()
 		m_pPlayer->SetFollowTarget(pBestBFTarget->GetCID(), 5.0);
 		m_pPlayer->m_DieTick = Server()->Tick() + Server()->TickSpeed() * 10;
 	}
+}
+
+bool CInfClassInfected::FindWitchSpawnPosition(vec2 &Position)
+{
+	float Angle = atan2f(m_pCharacter->m_Input.m_TargetY, m_pCharacter->m_Input.m_TargetX);//atan2f instead of atan2
+
+	for(int i=0; i<32; i++)
+	{
+		float TestAngle;
+
+		TestAngle = Angle + i * (pi / 32.0f);
+		Position = GetPos() + vec2(cos(TestAngle), sin(TestAngle)) * 84.0f;
+
+		if(GameController()->IsSpawnable(Position, ZONE_TELE_NOWITCH))
+			return true;
+
+		TestAngle = Angle - i * (pi / 32.0f);
+		Position = GetPos() + vec2(cos(TestAngle), sin(TestAngle)) * 84.0f;
+
+		if(GameController()->IsSpawnable(Position, ZONE_TELE_NOWITCH))
+			return true;
+	}
+
+	return false;
 }
 
 void CInfClassInfected::SetHookOnLimit(bool OnLimit)

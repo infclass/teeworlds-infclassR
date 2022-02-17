@@ -95,6 +95,8 @@ public:
 	float GetTimeLimit() const;
 	float GetInfectionDelay() const;
 
+	bool IsSpawnable(vec2 Pos, int TeleZoneIndex) override;
+
 	int GetTargetToKill() const;
 	void TargetKilled();
 	void EnableTargetToKill() { m_TargetToKill = (m_TargetToKill < 0 ? -1 : m_TargetToKill); }
@@ -160,7 +162,6 @@ private:
 	void SnapMapMenu(int SnappingClient, CNetObj_GameInfo *pGameInfoObj);
 	void FallInLoveIfInfectedEarly(CInfClassCharacter *pCharacter);
 	void RewardTheKiller(CInfClassCharacter *pVictim, CInfClassPlayer *pKiller, int Weapon);
-	bool IsSpawnable(vec2 Pos, int TeleZoneIndex) override;
 	void GetPlayerCounter(int ClientException, int& NumHumans, int& NumInfected);
 	int GetMinimumInfectedForPlayers(int PlayersNumber) const;
 

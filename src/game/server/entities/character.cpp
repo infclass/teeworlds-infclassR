@@ -68,30 +68,6 @@ CCharacter::~CCharacter()
 	FreeChildSnapIDs();
 }
 
-bool CCharacter::FindWitchSpawnPosition(vec2& Pos)
-{
-	float Angle = atan2f(m_Input.m_TargetY, m_Input.m_TargetX);//atan2f instead of atan2
-	
-	for(int i=0; i<32; i++)
-	{
-		float TestAngle;
-		
-		TestAngle = Angle + i * (pi / 32.0f);
-		Pos = GetPos() + vec2(cos(TestAngle), sin(TestAngle)) * 84.0f;
-		
-		if(GameServer()->m_pController->IsSpawnable(Pos, ZONE_TELE_NOWITCH))
-			return true;
-		
-		TestAngle = Angle - i * (pi / 32.0f);
-		Pos = GetPos() + vec2(cos(TestAngle), sin(TestAngle)) * 84.0f;
-		
-		if(GameServer()->m_pController->IsSpawnable(Pos, ZONE_TELE_NOWITCH))
-			return true;
-	}
-	
-	return false;
-}
-
 bool CCharacter::FindPortalPosition(vec2 Pos, vec2& Res)
 {
 	vec2 PortalShift = Pos - GetPos();
