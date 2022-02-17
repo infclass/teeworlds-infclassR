@@ -217,6 +217,7 @@ protected:
 	void PostCoreTick() override;
 
 	void ClassSpawnAttributes();
+	void DestroyChildEntities();
 	void UpdateTuningParam();
 	void TeleToId(int TeleNumber, int TeleType);
 

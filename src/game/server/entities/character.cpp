@@ -157,7 +157,6 @@ bool CCharacter::Spawn(CPlayer *pPlayer, vec2 Pos)
 void CCharacter::Destroy()
 {	
 /* INFECTION MODIFICATION START ***************************************/
-	DestroyChildEntities();
 	FreeChildSnapIDs();
 	
 	if(m_pPlayer)
@@ -1005,45 +1004,6 @@ int CCharacter::GetPlayerClass() const
 		return PLAYERCLASS_NONE;
 	else
 		return m_pPlayer->GetClass();
-}
-
-void CCharacter::DestroyChildEntities()
-{
-	m_NinjaVelocityBuff = 0;
-	m_NinjaStrengthBuff = 0;
-	m_NinjaAmmoBuff = 0;
-
-	static const auto InfCEntities = {
-		CGameWorld::ENTTYPE_PROJECTILE,
-		CGameWorld::ENTTYPE_ENGINEER_WALL,
-		CGameWorld::ENTTYPE_LOOPER_WALL,
-		CGameWorld::ENTTYPE_SOLDIER_BOMB,
-		CGameWorld::ENTTYPE_SCATTER_GRENADE,
-		CGameWorld::ENTTYPE_MEDIC_GRENADE,
-		CGameWorld::ENTTYPE_MERCENARY_BOMB,
-		CGameWorld::ENTTYPE_SCIENTIST_MINE,
-		CGameWorld::ENTTYPE_BIOLOGIST_MINE,
-		CGameWorld::ENTTYPE_SLUG_SLIME,
-		CGameWorld::ENTTYPE_GROWINGEXPLOSION,
-		CGameWorld::ENTTYPE_WHITE_HOLE,
-		CGameWorld::ENTTYPE_SUPERWEAPON_INDICATOR,
-		CGameWorld::ENTTYPE_TURRET,
-		CGameWorld::ENTTYPE_PLASMA,
-		CGameWorld::ENTTYPE_HERO_FLAG,
-	};
-
-	for(const auto EntityType : InfCEntities) {
-		for(CInfCEntity *p = (CInfCEntity*) GameWorld()->FindFirst(EntityType); p; p = (CInfCEntity*) p->TypeNext())
-		{
-			if(p->GetOwner() != m_pPlayer->GetCID())
-				continue;
-
-			GameServer()->m_World.DestroyEntity(p);
-		}
-	}
-
-	m_FirstShot = true;
-	m_HookMode = 0;
 }
 
 void CCharacter::FreeChildSnapIDs()

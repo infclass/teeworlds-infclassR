@@ -218,7 +218,6 @@ public:
 	int m_ResetKillsTime;
 
 public:
-	void DestroyChildEntities();
 	void FreeChildSnapIDs();
 	vec2 GetDirection() const;
 	int GetPlayerClass() const;
