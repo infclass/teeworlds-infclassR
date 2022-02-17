@@ -176,26 +176,26 @@ void CInfClassHuman::OnCharacterSnap(int SnappingClient)
 	{
 		switch(GetPlayerClass())
 		{
-			case PLAYERCLASS_SCIENTIST:
+		case PLAYERCLASS_SCIENTIST:
+		{
+			if(m_pCharacter->GetActiveWeapon() == WEAPON_GRENADE)
 			{
-				if(m_pCharacter->GetActiveWeapon() == WEAPON_GRENADE)
-				{
-					vec2 PortalShift = vec2(m_pCharacter->m_Input.m_TargetX, m_pCharacter->m_Input.m_TargetY);
-					vec2 PortalDir = normalize(PortalShift);
-					if(length(PortalShift) > 500.0f)
-						PortalShift = PortalDir * 500.0f;
-					vec2 PortalPos;
+				vec2 PortalShift = vec2(m_pCharacter->m_Input.m_TargetX, m_pCharacter->m_Input.m_TargetY);
+				vec2 PortalDir = normalize(PortalShift);
+				if(length(PortalShift) > 500.0f)
+					PortalShift = PortalDir * 500.0f;
+				vec2 PortalPos;
 
-					if(m_pCharacter->FindPortalPosition(GetPos() + PortalShift, PortalPos))
-					{
-						const int CursorID = GameController()->GetPlayerOwnCursorID(GetCID());
-						GameController()->SendHammerDot(PortalPos, CursorID);
-					}
+				if(m_pCharacter->FindPortalPosition(GetPos() + PortalShift, PortalPos))
+				{
+					const int CursorID = GameController()->GetPlayerOwnCursorID(GetCID());
+					GameController()->SendHammerDot(PortalPos, CursorID);
 				}
 			}
-				break;
-			default:
-				break;
+		}
+			break;
+		default:
+			break;
 		}
 	}
 }
