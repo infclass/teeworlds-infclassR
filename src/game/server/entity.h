@@ -27,6 +27,9 @@ protected:
 	int m_ID;
 	int m_ObjType;
 public:
+
+	int GetID() const { return m_ID; }
+
 	/* Constructor */
 	CEntity(CGameWorld *pGameWorld, int Objtype, const vec2 &Pos = vec2(0,0), int ProximityRadius = 0);
 
