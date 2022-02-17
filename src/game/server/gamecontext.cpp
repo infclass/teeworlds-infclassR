@@ -1482,8 +1482,19 @@ void CGameContext::OnCallVote(void *pRawMsg, int ClientID)
 	if(RateLimitPlayerVote(ClientID))
 		return;
 
+	char aChatmsg[512] = {0};
+	char aDesc[VOTE_DESC_LENGTH] = {0};
+	char aCmd[VOTE_CMD_LENGTH] = {0};
+	char aReason[VOTE_REASON_LENGTH] = "No reason given";
 	CNetMsg_Cl_CallVote *pMsg = (CNetMsg_Cl_CallVote *)pRawMsg;
-	const char *pReason = pMsg->m_Reason[0] ? pMsg->m_Reason : "No reason given";
+	if(!str_utf8_check(pMsg->m_Type) || !str_utf8_check(pMsg->m_Reason) || !str_utf8_check(pMsg->m_Value))
+	{
+		return;
+	}
+	if(pMsg->m_Reason[0])
+	{
+		str_copy(aReason, pMsg->m_Reason, sizeof(aReason));
+	}
 
 	if(str_comp_nocase(pMsg->m_Type, "kick") == 0)
 	{
@@ -1507,7 +1518,7 @@ void CGameContext::OnCallVote(void *pRawMsg, int ClientID)
 			return;
 		}
 
-		Server()->AddAccusation(ClientID, KickID, pReason);
+		Server()->AddAccusation(ClientID, KickID, aReason);
 	}
 	else
 	{
@@ -1517,19 +1528,21 @@ void CGameContext::OnCallVote(void *pRawMsg, int ClientID)
 			return;
 		}
 
-		char aChatmsg[512] = {0};
-		char aDesc[VOTE_DESC_LENGTH] = {0};
-		char aCmd[VOTE_CMD_LENGTH] = {0};
-
 		if(str_comp_nocase(pMsg->m_Type, "option") == 0)
 		{
 			// this vote is not a kick/ban or spectate vote
 
+			int Authed = Server()->GetAuthedState(ClientID);
 			CVoteOptionServer *pOption = m_pVoteOptionFirst;
 			while(pOption) // loop through all option votes to find out which vote it is
 			{
 				if(str_comp_nocase(pMsg->m_Value, pOption->m_aDescription) == 0) // found out which vote it is
 				{
+					if(!Console()->LineIsValid(pOption->m_aCommand))
+					{
+						SendChatTarget(ClientID, "Invalid option");
+						return;
+					}
 					OPTION_VOTE_TYPE OptionVoteType = GetOptionVoteType(pOption->m_aCommand);
 					if (OptionVoteType & MAP_VOTE_BITS) // this is a map vote
 					{
@@ -1569,7 +1582,7 @@ void CGameContext::OnCallVote(void *pRawMsg, int ClientID)
 						
 						// copy information to start a vote 
 						str_format(aChatmsg, sizeof(aChatmsg), "'%s' called vote to change server option '%s' (%s)", Server()->ClientName(ClientID),
-								pOption->m_aDescription, pReason);
+								pOption->m_aDescription, aReason);
 						str_format(aDesc, sizeof(aDesc), "%s", pOption->m_aDescription);
 						str_format(aCmd, sizeof(aCmd), "%s", pOption->m_aCommand);
 						break;
@@ -1578,7 +1591,7 @@ void CGameContext::OnCallVote(void *pRawMsg, int ClientID)
 					if(OptionVoteType & MAP_VOTE_BITS)
 					{
 						// this vote is a map vote
-						Server()->AddMapVote(ClientID, pOption->m_aCommand, pReason, pOption->m_aDescription);
+						Server()->AddMapVote(ClientID, pOption->m_aCommand, aReason, pOption->m_aDescription);
 						return;
 					}
 
@@ -1590,9 +1603,18 @@ void CGameContext::OnCallVote(void *pRawMsg, int ClientID)
 
 			if(!pOption)
 			{
-				str_format(aChatmsg, sizeof(aChatmsg), "'%s' isn't an option on this server", pMsg->m_Value);
-				SendChatTarget(ClientID, aChatmsg);
-				return;
+				if(Authed != IServer::AUTHED_ADMIN) // allow admins to call any vote they want
+				{
+					str_format(aChatmsg, sizeof(aChatmsg), "'%s' isn't an option on this server", pMsg->m_Value);
+					SendChatTarget(ClientID, aChatmsg);
+					return;
+				}
+				else
+				{
+					str_format(aChatmsg, sizeof(aChatmsg), "'%s' called vote to change server option '%s'", Server()->ClientName(ClientID), pMsg->m_Value);
+					str_format(aDesc, sizeof(aDesc), "%s", pMsg->m_Value);
+					str_format(aCmd, sizeof(aCmd), "%s", pMsg->m_Value);
+				}
 			}
 		}
 		else if(str_comp_nocase(pMsg->m_Type, "spectate") == 0)
@@ -1614,8 +1636,12 @@ void CGameContext::OnCallVote(void *pRawMsg, int ClientID)
 				SendChatTarget(ClientID, "You can't move yourself");
 				return;
 			}
+			if(!Server()->ReverseTranslate(SpectateID, ClientID))
+			{
+				return;
+			}
 
-			str_format(aChatmsg, sizeof(aChatmsg), "'%s' called for vote to move '%s' to spectators (%s)", Server()->ClientName(ClientID), Server()->ClientName(SpectateID), pReason);
+			str_format(aChatmsg, sizeof(aChatmsg), "'%s' called for vote to move '%s' to spectators (%s)", Server()->ClientName(ClientID), Server()->ClientName(SpectateID), aReason);
 			str_format(aDesc, sizeof(aDesc), "move '%s' to spectators", Server()->ClientName(SpectateID));
 			str_format(aCmd, sizeof(aCmd), "set_team %d -1 %d", SpectateID, g_Config.m_SvVoteSpectateRejoindelay);
 		}
@@ -1623,7 +1649,7 @@ void CGameContext::OnCallVote(void *pRawMsg, int ClientID)
 		// Start a vote
 		if(aCmd[0])
 		{
-			CallVote(ClientID, aDesc, aCmd, pReason, aChatmsg);
+			CallVote(ClientID, aDesc, aCmd, aReason, aChatmsg);
 		}
 	}
 }
