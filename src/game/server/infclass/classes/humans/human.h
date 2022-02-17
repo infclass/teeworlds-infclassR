@@ -40,7 +40,7 @@ protected:
 
 	bool PositionLockAvailable() const;
 
-	bool FindPortalPosition(vec2 Pos, vec2& Res);
+	bool FindPortalPosition(vec2 *pPosition);
 
 private:
 	int m_PositionLockTicksRemaining = 0;

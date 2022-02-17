@@ -231,13 +231,9 @@ void CInfClassHuman::OnCharacterSnap(int SnappingClient)
 		{
 			if(m_pCharacter->GetActiveWeapon() == WEAPON_GRENADE)
 			{
-				vec2 PortalShift = vec2(m_pCharacter->m_Input.m_TargetX, m_pCharacter->m_Input.m_TargetY);
-				vec2 PortalDir = normalize(PortalShift);
-				if(length(PortalShift) > 500.0f)
-					PortalShift = PortalDir * 500.0f;
 				vec2 PortalPos;
 
-				if(FindPortalPosition(GetPos() + PortalShift, PortalPos))
+				if(FindPortalPosition(&PortalPos))
 				{
 					const int CursorID = GameController()->GetPlayerOwnCursorID(GetCID());
 					GameController()->SendHammerDot(PortalPos, CursorID);
@@ -275,13 +271,8 @@ void CInfClassHuman::OnGrenadeFired(WeaponFireContext *pFireContext)
 	{
 	case PLAYERCLASS_SCIENTIST:
 	{
-		vec2 PortalShift = vec2(m_pCharacter->m_Input.m_TargetX, m_pCharacter->m_Input.m_TargetY);
-		vec2 PortalDir = normalize(PortalShift);
-		if(length(PortalShift) > 500.0f)
-			PortalShift = PortalDir * 500.0f;
 		vec2 PortalPos;
-
-		if(FindPortalPosition(GetPos() + PortalShift, PortalPos))
+		if(FindPortalPosition(&PortalPos))
 		{
 			vec2 OldPos = GetPos();
 			m_pCharacter->m_Core.m_Pos = PortalPos;
@@ -806,9 +797,9 @@ bool CInfClassHuman::PositionLockAvailable() const
 	return true;
 }
 
-bool CInfClassHuman::FindPortalPosition(vec2 Pos, vec2 &Res)
+bool CInfClassHuman::FindPortalPosition(vec2 *pPosition)
 {
-	vec2 PortalShift = Pos - GetPos();
+	vec2 PortalShift = vec2(m_pCharacter->m_Input.m_TargetX, m_pCharacter->m_Input.m_TargetY);
 	vec2 PortalDir = normalize(PortalShift);
 	if(length(PortalShift) > 500.0f)
 		PortalShift = PortalDir * 500.0f;
@@ -821,7 +812,7 @@ bool CInfClassHuman::FindPortalPosition(vec2 Pos, vec2 &Res)
 
 		if(GameServer()->m_pController->IsSpawnable(PortalPos, ZONE_TELE_NOSCIENTIST))
 		{
-			Res = PortalPos;
+			*pPosition = PortalPos;
 			return true;
 		}
 
