@@ -1571,6 +1571,15 @@ void CGameContext::OnCallVote(void *pRawMsg, int ClientID)
 							return;
 						}
 					}
+					if((OptionVoteType == PLAY_MORE_VOTE_TYPE) || (OptionVoteType == QUEUED_VOTE))
+					{
+						// copy information to start a vote
+						str_format(aChatmsg, sizeof(aChatmsg), "'%s' called vote to change server option '%s' (%s)", Server()->ClientName(ClientID),
+								pOption->m_aDescription, aReason);
+						str_format(aDesc, sizeof(aDesc), "%s", pOption->m_aDescription);
+						str_format(aCmd, sizeof(aCmd), "%s", pOption->m_aCommand);
+						break;
+					}
 					if (g_Config.m_InfMinPlayerNumberForMapVote <= 1 || OptionVoteType == OTHER_OPTION_VOTE_TYPE)
 					{
 						// (this is not a map vote) or ("InfMinPlayerNumberForMapVote <= 1" and we keep default behaviour)
