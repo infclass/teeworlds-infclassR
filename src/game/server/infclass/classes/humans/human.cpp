@@ -9,6 +9,7 @@
 #include <game/server/infclass/entities/engineer-wall.h>
 #include <game/server/infclass/entities/hero-flag.h>
 #include <game/server/infclass/entities/infccharacter.h>
+#include <game/server/infclass/entities/laser-teleport.h>
 #include <game/server/infclass/entities/looper-wall.h>
 #include <game/server/infclass/entities/merc-bomb.h>
 #include <game/server/infclass/entities/scientist-mine.h>
@@ -236,7 +237,7 @@ void CInfClassHuman::OnCharacterSnap(int SnappingClient)
 					PortalShift = PortalDir * 500.0f;
 				vec2 PortalPos;
 
-				if(m_pCharacter->FindPortalPosition(GetPos() + PortalShift, PortalPos))
+				if(FindPortalPosition(GetPos() + PortalShift, PortalPos))
 				{
 					const int CursorID = GameController()->GetPlayerOwnCursorID(GetCID());
 					GameController()->SendHammerDot(PortalPos, CursorID);
@@ -265,6 +266,43 @@ void CInfClassHuman::OnHammerFired(WeaponFireContext *pFireContext)
 			}
 		default:
 			break;
+	}
+}
+
+void CInfClassHuman::OnGrenadeFired(WeaponFireContext *pFireContext)
+{
+	switch(GetPlayerClass())
+	{
+	case PLAYERCLASS_SCIENTIST:
+	{
+		vec2 PortalShift = vec2(m_pCharacter->m_Input.m_TargetX, m_pCharacter->m_Input.m_TargetY);
+		vec2 PortalDir = normalize(PortalShift);
+		if(length(PortalShift) > 500.0f)
+			PortalShift = PortalDir * 500.0f;
+		vec2 PortalPos;
+
+		if(FindPortalPosition(GetPos() + PortalShift, PortalPos))
+		{
+			vec2 OldPos = GetPos();
+			m_pCharacter->m_Core.m_Pos = PortalPos;
+			m_pCharacter->m_Core.m_HookedPlayer = -1;
+			m_pCharacter->m_Core.m_HookState = HOOK_RETRACTED;
+			m_pCharacter->m_Core.m_HookPos = PortalPos;
+			if(g_Config.m_InfScientistTpSelfharm > 0) {
+				m_pCharacter->TakeDamage(vec2(0.0f, 0.0f), g_Config.m_InfScientistTpSelfharm * 2, GetCID(), DAMAGE_TYPE::SCIENTIST_TELEPORT);
+			}
+			GameServer()->CreateDeath(OldPos, GetCID());
+			GameServer()->CreateDeath(PortalPos, GetCID());
+			GameServer()->CreateSound(PortalPos, SOUND_CTF_RETURN);
+			new CLaserTeleport(GameServer(), PortalPos, OldPos);
+		}
+		else
+		{
+			pFireContext->FireAccepted = false;
+		}
+	}
+	default:
+		break;
 	}
 }
 
@@ -766,6 +804,31 @@ bool CInfClassHuman::PositionLockAvailable() const
 	}
 
 	return true;
+}
+
+bool CInfClassHuman::FindPortalPosition(vec2 Pos, vec2 &Res)
+{
+	vec2 PortalShift = Pos - GetPos();
+	vec2 PortalDir = normalize(PortalShift);
+	if(length(PortalShift) > 500.0f)
+		PortalShift = PortalDir * 500.0f;
+
+	float Iterator = length(PortalShift);
+	while(Iterator > 0.0f)
+	{
+		PortalShift = PortalDir * Iterator;
+		vec2 PortalPos = GetPos() + PortalShift;
+
+		if(GameServer()->m_pController->IsSpawnable(PortalPos, ZONE_TELE_NOSCIENTIST))
+		{
+			Res = PortalPos;
+			return true;
+		}
+
+		Iterator -= 4.0f;
+	}
+
+	return false;
 }
 
 void CInfClassHuman::OnSlimeEffect(int Owner)

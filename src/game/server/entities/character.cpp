@@ -68,31 +68,6 @@ CCharacter::~CCharacter()
 	FreeChildSnapIDs();
 }
 
-bool CCharacter::FindPortalPosition(vec2 Pos, vec2& Res)
-{
-	vec2 PortalShift = Pos - GetPos();
-	vec2 PortalDir = normalize(PortalShift);
-	if(length(PortalShift) > 500.0f)
-		PortalShift = PortalDir * 500.0f;
-	
-	float Iterator = length(PortalShift);
-	while(Iterator > 0.0f)
-	{
-		PortalShift = PortalDir * Iterator;
-		vec2 PortalPos = GetPos() + PortalShift;
-	
-		if(GameServer()->m_pController->IsSpawnable(PortalPos, ZONE_TELE_NOSCIENTIST))
-		{
-			Res = PortalPos;
-			return true;
-		}
-		
-		Iterator -= 4.0f;
-	}
-	
-	return false;
-}
-
 void CCharacter::Reset()
 {	
 	Destroy();

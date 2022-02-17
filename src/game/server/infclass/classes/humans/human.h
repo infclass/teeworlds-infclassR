@@ -26,6 +26,7 @@ public:
 	void OnCharacterSnap(int SnappingClient) override;
 
 	void OnHammerFired(WeaponFireContext *pFireContext) override;
+	void OnGrenadeFired(WeaponFireContext *pFireContext) override;
 	void OnLaserFired(WeaponFireContext *pFireContext) override;
 
 	void OnSlimeEffect(int Owner) override;
@@ -38,6 +39,8 @@ protected:
 	void OnBlindingLaserFired(WeaponFireContext *pFireContext);
 
 	bool PositionLockAvailable() const;
+
+	bool FindPortalPosition(vec2 Pos, vec2& Res);
 
 private:
 	int m_PositionLockTicksRemaining = 0;

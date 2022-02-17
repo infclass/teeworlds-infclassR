@@ -232,7 +232,6 @@ public:
 	void HallucinationEffect();
 	void SlipperyEffect();
 	int GetInfWeaponID(int WID) const;
-	bool FindPortalPosition(vec2 Pos, vec2& Res);
 /* INFECTION MODIFICATION END *****************************************/
 
 	CCharacterCore *Core() { return &m_Core; }

@@ -20,7 +20,6 @@
 #include <game/server/infclass/entities/growingexplosion.h>
 #include <game/server/infclass/entities/hero-flag.h>
 #include <game/server/infclass/entities/infc-laser.h>
-#include <game/server/infclass/entities/laser-teleport.h>
 #include <game/server/infclass/entities/looper-wall.h>
 #include <game/server/infclass/entities/medic-grenade.h>
 #include <game/server/infclass/entities/merc-bomb.h>
@@ -1837,31 +1836,8 @@ void CInfClassCharacter::OnGrenadeFired(WeaponFireContext *pFireContext)
 
 	if(GetPlayerClass() == PLAYERCLASS_SCIENTIST)
 	{
-		vec2 PortalShift = vec2(m_Input.m_TargetX, m_Input.m_TargetY);
-		vec2 PortalDir = normalize(PortalShift);
-		if(length(PortalShift) > 500.0f)
-			PortalShift = PortalDir * 500.0f;
-		vec2 PortalPos;
-
-		if(FindPortalPosition(GetPos() + PortalShift, PortalPos))
-		{
-			vec2 OldPos = m_Core.m_Pos;
-			m_Core.m_Pos = PortalPos;
-			m_Core.m_HookedPlayer = -1;
-			m_Core.m_HookState = HOOK_RETRACTED;
-			m_Core.m_HookPos = m_Core.m_Pos;
-			if(g_Config.m_InfScientistTpSelfharm > 0) {
-				TakeDamage(vec2(0.0f, 0.0f), g_Config.m_InfScientistTpSelfharm * 2, GetCID(), DAMAGE_TYPE::SCIENTIST_TELEPORT);
-			}
-			GameServer()->CreateDeath(OldPos, GetCID());
-			GameServer()->CreateDeath(PortalPos, GetCID());
-			GameServer()->CreateSound(PortalPos, SOUND_CTF_RETURN);
-			new CLaserTeleport(GameServer(), PortalPos, OldPos);
-		}
-		else
-		{
-			pFireContext->FireAccepted = false;
-		}
+		// Do nothing, the processing is done in CInfClassHuman::OnLaserFired()
+		return;
 	}
 	else
 	{
