@@ -477,6 +477,7 @@ void CInfClassInfected::PrepareToDie(int Killer, DAMAGE_TYPE DamageType, bool *p
 {
 	switch (DamageType)
 	{
+	case DAMAGE_TYPE::DEATH_TILE:
 	case DAMAGE_TYPE::GAME:
 	case DAMAGE_TYPE::KILL_COMMAND:
 	case DAMAGE_TYPE::GAME_FINAL_EXPLOSION:
