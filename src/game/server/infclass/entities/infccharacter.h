@@ -190,8 +190,7 @@ public:
 
 	void GiveNinjaBuf();
 
-	CHeroFlag *GetHeroFlag() { return m_pHeroFlag; }
-	int GetFlagCoolDown();
+	int GetCursorID() const { return m_CursorID; }
 
 	void AddHelper(int HelperCID, float Time);
 

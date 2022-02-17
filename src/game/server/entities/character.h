@@ -10,8 +10,6 @@
 
 #include <game/gamecore.h>
 
-class CHeroFlag;
-
 /* INFECTION MODIFICATION START ***************************************/
 enum FREEZEREASON
 {
@@ -194,8 +192,6 @@ protected:
 	char m_GhostSearchMap[GHOST_SEARCHMAP_SIZE*GHOST_SEARCHMAP_SIZE];
 	
 	vec2 m_SpawnPosition;
-
-	CHeroFlag* m_pHeroFlag;
 
 public:
 	bool m_HasWhiteHole;

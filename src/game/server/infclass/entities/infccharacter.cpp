@@ -946,11 +946,6 @@ void CInfClassCharacter::GiveNinjaBuf()
 	}
 }
 
-int CInfClassCharacter::GetFlagCoolDown()
-{
-	return m_pHeroFlag ? m_pHeroFlag->GetCoolDown() : 0;
-}
-
 void CInfClassCharacter::AddHelper(int HelperCID, float Time)
 {
 	m_LastHelper.m_CID = HelperCID;
@@ -2867,11 +2862,6 @@ void CInfClassCharacter::ClassSpawnAttributes()
 	}
 
 	SetHealthArmor(10, Armor);
-
-	if(PlayerClass == PLAYERCLASS_HERO)
-	{
-		m_pHeroFlag = nullptr;
-	}
 
 	if(PlayerClass != PLAYERCLASS_NONE)
 	{

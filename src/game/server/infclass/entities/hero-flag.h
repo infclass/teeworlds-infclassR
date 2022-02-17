@@ -27,7 +27,7 @@ public:
 	CHeroFlag(CGameContext *pGameContext, int Owner);
 	~CHeroFlag();
 
-	int GetCoolDown() { return m_CoolDownTick; }
+	int GetCoolDown() const { return m_CoolDownTick; }
 
 	virtual void Tick();
 	virtual void FindPosition();

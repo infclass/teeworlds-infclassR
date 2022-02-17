@@ -5,6 +5,8 @@
 
 #include <game/server/alloc.h>
 
+class CHeroFlag;
+
 class CInfClassHuman : public CInfClassPlayerClass
 {
 	MACRO_ALLOC_POOL_ID()
@@ -39,6 +41,8 @@ protected:
 
 private:
 	int m_PositionLockTicksRemaining = 0;
+
+	CHeroFlag *m_pHeroFlag = nullptr;
 };
 
 #endif // GAME_SERVER_INFCLASS_CLASSES_HUMAN_H

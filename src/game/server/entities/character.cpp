@@ -13,8 +13,6 @@
 #include "character.h"
 #include "projectile.h"
 
-#include <game/server/infclass/entities/hero-flag.h>
-
 MACRO_ALLOC_POOL_ID_IMPL(CCharacter, MAX_CLIENTS)
 
 // Character, "physical" player's part
@@ -61,7 +59,6 @@ m_pConsole(pConsole)
 	m_HasIndicator = false;
 	m_TurretCount = 0;
 	m_BroadcastWhiteHoleReady = -100;
-	m_pHeroFlag = nullptr;
 	m_ResetKillsTime = 0;
 /* INFECTION MODIFICATION END *****************************************/
 }
@@ -662,11 +659,6 @@ void CCharacter::Tick()
 		}
 	}
 
-	if(GetPlayerClass() == PLAYERCLASS_HERO)
-	{
-		if(!m_pHeroFlag)
-			m_pHeroFlag = new CHeroFlag(GameServer(), m_pPlayer->GetCID());
-	}
 /* INFECTION MODIFICATION END *****************************************/
 
 	if(m_ResetKillsTime)
@@ -678,8 +670,6 @@ void CCharacter::Tick()
 
 	// Previnput
 	m_PrevInput = m_Input;
-	
-	return;
 }
 
 void CCharacter::TickDefered()
@@ -859,57 +849,6 @@ void CCharacter::Snap(int SnappingClient)
 	if(NetworkClipped(SnappingClient))
 		return;
 
-	if(SnappingClient == m_pPlayer->GetCID())
-	{
-		if(GetPlayerClass() == PLAYERCLASS_HERO && g_Config.m_InfHeroFlagIndicator && m_pHeroFlag)
-		{
-			CHeroFlag *pFlag = m_pHeroFlag;
-
-			long tickLimit = m_pPlayer->m_LastActionMoveTick+g_Config.m_InfHeroFlagIndicatorTime*Server()->TickSpeed();
-			
-			// Guide hero to flag
-			if(pFlag->GetCoolDown() <= 0 && Server()->Tick() > tickLimit)
-			{
-				CNetObj_Laser *pObj = static_cast<CNetObj_Laser *>(Server()->SnapNewItem(NETOBJTYPE_LASER, m_CursorID, sizeof(CNetObj_Laser)));
-				if(!pObj)
-					return;
-
-				float Angle = atan2f(pFlag->GetPos().y-GetPos().y, pFlag->GetPos().x-GetPos().x);
-				vec2 vecDir = vec2(cos(Angle), sin(Angle));
-				vec2 Indicator = GetPos() + vecDir * 84.0f;
-				vec2 IndicatorM = GetPos() - vecDir * 84.0f;
-
-				// display laser beam for 0.5 seconds
-				int tickShowBeamTime = Server()->TickSpeed()*0.5;
-				long ticksInactive = tickShowBeamTime - (Server()->Tick()-tickLimit);
-				if(g_Config.m_InfHeroFlagIndicatorTime > 0 && ticksInactive > 0)
-				{
-					CNetObj_Laser *pObj = static_cast<CNetObj_Laser *>(Server()->SnapNewItem(NETOBJTYPE_LASER, m_ID, sizeof(CNetObj_Laser)));
-					if(!pObj)
-						return;
-
-					Indicator = IndicatorM + vecDir * 168.0f * (1.0f-(ticksInactive/(float)tickShowBeamTime)); 
-
-					pObj->m_X = (int)Indicator.x;
-					pObj->m_Y = (int)Indicator.y;
-					pObj->m_FromX = (int)IndicatorM.x;
-					pObj->m_FromY = (int)IndicatorM.y;
-					if(ticksInactive < 4)
-						pObj->m_StartTick = Server()->Tick()-(6-ticksInactive);
-					else 
-						pObj->m_StartTick = Server()->Tick()-3;
-				}
-
-				pObj->m_X = (int)Indicator.x;
-				pObj->m_Y = (int)Indicator.y;
-				pObj->m_FromX = pObj->m_X;
-				pObj->m_FromY = pObj->m_Y;
-				pObj->m_StartTick = Server()->Tick();
-			}
-		}
-	}
-/* INFECTION MODIFICATION END ***************************************/
-
 	CNetObj_Character *pCharacter = static_cast<CNetObj_Character *>(Server()->SnapNewItem(NETOBJTYPE_CHARACTER, ID, sizeof(CNetObj_Character)));
 	if(!pCharacter)
 		return;
@@ -1037,7 +976,6 @@ void CCharacter::FreeChildSnapIDs()
 			Server()->SnapFreeID(m_BarrierHintIDs[i]);
 			m_BarrierHintIDs[i] = -1;
 		}
-
 	}
 }
 

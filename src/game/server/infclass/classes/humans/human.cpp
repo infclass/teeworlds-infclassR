@@ -7,6 +7,7 @@
 #include <game/server/infclass/entities/biologist-mine.h>
 #include <game/server/infclass/entities/blinding-laser.h>
 #include <game/server/infclass/entities/engineer-wall.h>
+#include <game/server/infclass/entities/hero-flag.h>
 #include <game/server/infclass/entities/infccharacter.h>
 #include <game/server/infclass/entities/looper-wall.h>
 #include <game/server/infclass/entities/merc-bomb.h>
@@ -176,6 +177,55 @@ void CInfClassHuman::OnCharacterSnap(int SnappingClient)
 	{
 		switch(GetPlayerClass())
 		{
+		case PLAYERCLASS_HERO:
+		{
+			if(m_pHeroFlag && Config()->m_InfHeroFlagIndicator)
+			{
+				long TickLimit = m_pPlayer->m_LastActionMoveTick + Config()->m_InfHeroFlagIndicatorTime * Server()->TickSpeed();
+
+				// Guide hero to flag
+				if(m_pHeroFlag->GetCoolDown() <= 0 && Server()->Tick() > TickLimit)
+				{
+					CNetObj_Laser *pObj = static_cast<CNetObj_Laser *>(Server()->SnapNewItem(NETOBJTYPE_LASER, m_pCharacter->GetCursorID(), sizeof(CNetObj_Laser)));
+					if(!pObj)
+						return;
+
+					float Angle = atan2f(m_pHeroFlag->GetPos().y-GetPos().y, m_pHeroFlag->GetPos().x-GetPos().x);
+					vec2 vecDir = vec2(cos(Angle), sin(Angle));
+					vec2 Indicator = GetPos() + vecDir * 84.0f;
+					vec2 IndicatorM = GetPos() - vecDir * 84.0f;
+
+					// display laser beam for 0.5 seconds
+					int TickShowBeamTime = Server()->TickSpeed() * 0.5;
+					long TicksInactive = TickShowBeamTime - (Server()->Tick()-TickLimit);
+					if(g_Config.m_InfHeroFlagIndicatorTime > 0 && TicksInactive > 0)
+					{
+						// TODO: Probably it is incorrect to use Character->GetID() here
+						CNetObj_Laser *pObj = static_cast<CNetObj_Laser *>(Server()->SnapNewItem(NETOBJTYPE_LASER, m_pCharacter->GetID(), sizeof(CNetObj_Laser)));
+						if(!pObj)
+							return;
+
+						Indicator = IndicatorM + vecDir * 168.0f * (1.0f-(TicksInactive/(float)TickShowBeamTime));
+
+						pObj->m_X = (int)Indicator.x;
+						pObj->m_Y = (int)Indicator.y;
+						pObj->m_FromX = (int)IndicatorM.x;
+						pObj->m_FromY = (int)IndicatorM.y;
+						if(TicksInactive < 4)
+							pObj->m_StartTick = Server()->Tick()-(6-TicksInactive);
+						else
+							pObj->m_StartTick = Server()->Tick()-3;
+					}
+
+					pObj->m_X = (int)Indicator.x;
+					pObj->m_Y = (int)Indicator.y;
+					pObj->m_FromX = pObj->m_X;
+					pObj->m_FromY = pObj->m_Y;
+					pObj->m_StartTick = Server()->Tick();
+				}
+			}
+		}
+			break;
 		case PLAYERCLASS_SCIENTIST:
 		{
 			if(m_pCharacter->GetActiveWeapon() == WEAPON_GRENADE)
@@ -325,6 +375,13 @@ void CInfClassHuman::GiveClassAttributes()
 	{
 		m_PositionLockTicksRemaining = 0;
 	}
+
+	if(GetPlayerClass() == PLAYERCLASS_HERO)
+	{
+		if(!m_pHeroFlag)
+			m_pHeroFlag = new CHeroFlag(GameServer(), m_pPlayer->GetCID());
+	}
+
 	m_pCharacter->UnlockPosition();
 }
 
@@ -336,6 +393,12 @@ void CInfClassHuman::DestroyChildEntities()
 	}
 
 	m_PositionLockTicksRemaining = 0;
+	if(m_pHeroFlag)
+	{
+		// The flag removed in CInfClassCharacter::DestroyChildEntities()
+		// delete m_pHeroFlag;
+		m_pHeroFlag = nullptr;
+	}
 	m_pCharacter->UnlockPosition();
 }
 
@@ -625,7 +688,7 @@ void CInfClassHuman::BroadcastWeaponState()
 	else if(GetPlayerClass() == PLAYERCLASS_HERO)
 	{
 		//Search for flag
-		int CoolDown = m_pCharacter->GetFlagCoolDown();
+		int CoolDown = m_pHeroFlag ? m_pHeroFlag->GetCoolDown() : 0;
 
 		if(m_pCharacter->GetActiveWeapon() == WEAPON_HAMMER)
 		{
