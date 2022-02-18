@@ -523,7 +523,7 @@ void CInfClassHuman::BroadcastWeaponState()
 			GameServer()->SendBroadcast_Localization_P(GetPlayer()->GetCID(),
 				BROADCAST_PRIORITY_WEAPONSTATE, BROADCAST_DURATION_REALTIME,
 				NumBombs,
-				_P("One bomb left", "{int:NumBombs} bombs left"),
+				_CP("Soldier", "One bomb left", "{int:NumBombs} bombs left"),
 				"NumBombs", &NumBombs,
 				NULL
 			);
@@ -605,7 +605,7 @@ void CInfClassHuman::BroadcastWeaponState()
 		{
 			GameServer()->SendBroadcast_Localization(GetPlayer()->GetCID(),
 				BROADCAST_PRIORITY_WEAPONSTATE, BROADCAST_DURATION_REALTIME,
-				_("Mine activated"),
+				_C("Biologist", "Mine activated"),
 				NULL
 			);
 		}
@@ -620,7 +620,7 @@ void CInfClassHuman::BroadcastWeaponState()
 			int Seconds = 1+CoolDown/Server()->TickSpeed();
 			GameServer()->SendBroadcast_Localization(GetPlayer()->GetCID(),
 				BROADCAST_PRIORITY_WEAPONSTATE, BROADCAST_DURATION_REALTIME,
-				_("Next target in {sec:RemainingTime}"),
+				_C("Ninja", "Next target in {sec:RemainingTime}"),
 				"RemainingTime", &Seconds,
 				NULL
 			);
@@ -629,7 +629,7 @@ void CInfClassHuman::BroadcastWeaponState()
 		{
 			GameServer()->SendBroadcast_Localization(GetPlayer()->GetCID(),
 				BROADCAST_PRIORITY_WEAPONSTATE, BROADCAST_DURATION_REALTIME,
-				_("Target to eliminate: {str:PlayerName}"),
+				_C("Ninja", "Target to eliminate: {str:PlayerName}"),
 				"PlayerName", Server()->ClientName(TargetID),
 				NULL
 			);
@@ -642,7 +642,7 @@ void CInfClassHuman::BroadcastWeaponState()
 			int Seconds = 1+m_PositionLockTicksRemaining/Server()->TickSpeed();
 			GameServer()->SendBroadcast_Localization(GetPlayer()->GetCID(),
 				BROADCAST_PRIORITY_WEAPONSTATE, BROADCAST_DURATION_REALTIME,
-				_("Position lock: {sec:RemainingTime}"),
+				_C("Sniper", "Position lock: {sec:RemainingTime}"),
 				"RemainingTime", &Seconds,
 				NULL
 			);
@@ -670,11 +670,11 @@ void CInfClassHuman::BroadcastWeaponState()
 				{
 					dynamic_string Line1;
 					Server()->Localization()->Format(Line1, GetPlayer()->GetLanguage(),
-						_("Use the laser to upgrade the bomb"), NULL);
+						_C("Mercenary", "Use the laser to upgrade the bomb"), NULL);
 
 					dynamic_string Line2;
 					Server()->Localization()->Format(Line2, GetPlayer()->GetLanguage(),
-						_("Explosive yield: {percent:BombLevel}"), "BombLevel", &BombLevel, NULL);
+						_C("Mercenary", "Explosive yield: {percent:BombLevel}"), "BombLevel", &BombLevel, NULL);
 
 					Line1.append("\n");
 					Line1.append(Line2);
@@ -686,7 +686,7 @@ void CInfClassHuman::BroadcastWeaponState()
 				{
 					GameServer()->SendBroadcast_Localization(GetPlayer()->GetCID(),
 						BROADCAST_PRIORITY_WEAPONSTATE, BROADCAST_DURATION_REALTIME,
-						_("The bomb is fully upgraded.\n"
+						_C("Mercenary", "The bomb is fully upgraded.\n"
 						  "There is nothing to do with the laser."), NULL
 					);
 				}
@@ -695,7 +695,7 @@ void CInfClassHuman::BroadcastWeaponState()
 			{
 				GameServer()->SendBroadcast_Localization(GetPlayer()->GetCID(),
 					BROADCAST_PRIORITY_WEAPONSTATE, BROADCAST_DURATION_REALTIME,
-					_("Explosive yield: {percent:BombLevel}"),
+					_C("Mercenary", "Explosive yield: {percent:BombLevel}"),
 					"BombLevel", &BombLevel,
 					NULL
 				);
@@ -707,7 +707,7 @@ void CInfClassHuman::BroadcastWeaponState()
 			{
 				GameServer()->SendBroadcast_Localization(GetPlayer()->GetCID(),
 					BROADCAST_PRIORITY_WEAPONSTATE, BROADCAST_DURATION_REALTIME,
-					_("Use the hammer to place a bomb and\n"
+					_C("Mercenary", "Use the hammer to place a bomb and\n"
 					  "then use the laser to upgrade it"),
 					NULL
 				);
