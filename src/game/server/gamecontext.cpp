@@ -3694,8 +3694,8 @@ bool CGameContext::WriteClassHelpPage(dynamic_string *pOutput, const char *pLang
 								" be charged by hitting it or with a laser rifle."));
 		AddLine_Plural(g_Config.m_InfPoisonDamage,
 					_CP("Mercenary",
-						   "Mercenary can also throw poison grenades that deal one damage point.",
-						   "Mercenary can also throw poison grenades that deal {int:NumDamagePoints} damage points."),
+						   "Mercenary can also throw poison grenades that deal one damage point and prevent the infected from healing.",
+						   "Mercenary can also throw poison grenades that deal {int:NumDamagePoints} damage points and prevent the infected from healing."),
 					   "NumDamagePoints", &g_Config.m_InfPoisonDamage);
 		break;
 	case PLAYERCLASS_MEDIC:
