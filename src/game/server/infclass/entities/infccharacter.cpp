@@ -1422,7 +1422,7 @@ void CInfClassCharacter::OnHammerFired(WeaponFireContext *pFireContext)
 		}
 		else
 		{
-			GameServer()->CreateSound(GetPos(), SOUND_WEAPON_NOAMMO);
+			pFireContext->NoAmmo = true;
 		}
 	}
 	else if(GetPlayerClass() == PLAYERCLASS_SOLDIER)
