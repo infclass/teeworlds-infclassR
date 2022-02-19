@@ -505,7 +505,6 @@ void CInfClassInfected::PrepareToDie(int Killer, DAMAGE_TYPE DamageType, bool *p
 	case DAMAGE_TYPE::GAME:
 	case DAMAGE_TYPE::KILL_COMMAND:
 	case DAMAGE_TYPE::GAME_FINAL_EXPLOSION:
-		break;
 		// Accept the death to go with the default self kill routine
 		return;
 	default:
