@@ -38,6 +38,8 @@ public:
 	int GetActualDamage();
 
 private:
+	void ProcessMercenaryBombHit(CInfClassCharacter *pCharacter);
+
 	int m_MaxGrowing;
 	int m_GrowingMap_Length;
 	int m_GrowingMap_Size;

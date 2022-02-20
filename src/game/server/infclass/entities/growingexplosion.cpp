@@ -56,7 +56,6 @@ CGrowingExplosion::CGrowingExplosion(CGameContext *pGameContext, vec2 Pos, vec2 
 	m_pGrowingMapVec = new vec2[m_GrowingMap_Size];
 
 	m_StartTick = Server()->Tick();
-
 	
 	mem_zero(m_Hit, sizeof(m_Hit));
 
@@ -202,7 +201,8 @@ void CGrowingExplosion::Tick()
 					case GROWING_EXPLOSION_EFFECT::BOOM_INFECTED:
 						if(random_prob(0.2f))
 						{
-							GameController()->CreateExplosion(TileCenter, m_Owner, m_DamageType);
+							float DamageFactor = m_DamageType == DAMAGE_TYPE::MERCENARY_BOMB ? 0 : 1;
+							GameController()->CreateExplosion(TileCenter, m_Owner, m_DamageType, DamageFactor);
 						}
 						break;
 					case GROWING_EXPLOSION_EFFECT::ELECTRIC_INFECTED:
@@ -284,16 +284,25 @@ void CGrowingExplosion::Tick()
 		
 		int k = tileY*m_GrowingMap_Length+tileX;
 
-		if((m_pGrowingMap[k] >= 0) && p->IsHuman())
+		if(m_pGrowingMap[k] >= 0)
 		{
 			if(tick - m_pGrowingMap[k] < Server()->TickSpeed()/4)
 			{
 				switch(m_ExplosionEffect)
 				{
 				case GROWING_EXPLOSION_EFFECT::HEAL_HUMANS:
+					if(!p->IsHuman())
+					{
+						continue;
+					}
 					p->GiveArmor(1, GetOwner());
 					m_Hit[p->GetCID()] = true;
 					break;
+				case GROWING_EXPLOSION_EFFECT::BOOM_INFECTED:
+				{
+					ProcessMercenaryBombHit(p);
+					break;
+				}
 				default:
 					break;
 				}
@@ -325,7 +334,7 @@ void CGrowingExplosion::Tick()
 					break;
 				case GROWING_EXPLOSION_EFFECT::BOOM_INFECTED:
 				{
-					// m_Hit[p->GetCID()] = true;
+					m_Hit[p->GetCID()] = true;
 					break;
 				}
 				case GROWING_EXPLOSION_EFFECT::LOVE_INFECTED:
@@ -391,4 +400,44 @@ int CGrowingExplosion::GetActualDamage()
 		 return 5+20*((float)(m_MaxGrowing - minimum(Server()->Tick() - m_StartTick, (int)m_MaxGrowing)))/(m_MaxGrowing);
 
 	 return m_Damage;
+}
+
+void CGrowingExplosion::ProcessMercenaryBombHit(CInfClassCharacter *pCharacter)
+{
+	float Power = m_MaxGrowing / 16.0; // 0..1
+	float InnerRadius = 96.0f;
+	float OuterRadius = m_MaxGrowing * 32;
+	if(InnerRadius >= OuterRadius)
+	{
+		InnerRadius = OuterRadius * 0.9;
+	}
+
+	if(!Config()->m_InfShockwaveAffectHumans)
+	{
+		if(pCharacter->GetCID() == GetOwner())
+		{
+			//owner selfharm
+		}
+		else if(pCharacter->IsHuman())
+		{
+			// humans are not affected by force
+			return;
+		}
+	}
+	vec2 Diff = pCharacter->m_Pos - GetPos();
+	vec2 ForceDir(0,1);
+	float l = length(Diff);
+	if(l)
+		ForceDir = normalize(Diff);
+
+	float Ratio = (l-InnerRadius)/(OuterRadius-InnerRadius);
+
+	l = 1-clamp(Ratio, 0.0f, 1.0f);
+	float Dmg = Config()->m_InfMercBombMaxDamage * l * Power;
+	if(Dmg)
+	{
+		pCharacter->TakeDamage(ForceDir * Dmg * 2, Dmg, GetOwner(), m_DamageType);
+	}
+
+	m_Hit[pCharacter->GetCID()] = true;
 }
