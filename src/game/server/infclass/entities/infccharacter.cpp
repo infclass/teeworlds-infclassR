@@ -1057,7 +1057,7 @@ void CInfClassCharacter::GetActualKillers(int GivenKiller, DAMAGE_TYPE DamageTyp
 		}
 	}
 
-	if(IsFrozen())
+	if(IsFrozen() && (m_LastFreezer >= 0))
 	{
 		// The Freezer must be either the Killer or the Assistant
 		AddUnique(m_LastFreezer, &MustBeKillerOrAssistant);
@@ -1090,7 +1090,7 @@ void CInfClassCharacter::GetActualKillers(int GivenKiller, DAMAGE_TYPE DamageTyp
 
 		if(m_LastFreezer >= 0)
 		{
-			Killers.Add(m_LastFreezer);
+			AddUnique(m_LastFreezer, &Killers);
 		}
 	}
 
@@ -1181,6 +1181,20 @@ void CInfClassCharacter::GetActualKillers(int GivenKiller, DAMAGE_TYPE DamageTyp
 	int Killer = Killers.IsEmpty() ? GivenKiller : Killers.First();
 	int Assistant = -1;
 
+	if((Killer >= 0) && (GetCID() != Killer))
+	{
+		const CInfClassCharacter *pKiller = GameController()->GetCharacter(Killer);
+		if(pKiller && pKiller->m_LastHelper.m_Tick > 0)
+		{
+			// Check if the helper is in game
+			const CInfClassCharacter *pKillerHelper = GameController()->GetCharacter(pKiller->m_LastHelper.m_CID);
+			if(pKillerHelper)
+			{
+				AddUnique(pKiller->m_LastHelper.m_CID, &Assistants);
+			}
+		}
+	}
+
 	if(Killers.Size() > 1)
 	{
 		Assistant = Killers.At(1);
@@ -1212,17 +1226,6 @@ void CInfClassCharacter::GetActualKillers(int GivenKiller, DAMAGE_TYPE DamageTyp
 
 			Assistant = CID;
 			break;
-		}
-	}
-
-	if((Killer >= 0) && (Assistant < 0) && (GetCID() != Killer))
-	{
-		const CInfClassCharacter *pKiller = GameController()->GetCharacter(Killer);
-		if(pKiller && pKiller->m_LastHelper.m_Tick > 0)
-		{
-			// Check if the helper is in game
-			const CInfClassCharacter *pKillerHelper = GameController()->GetCharacter(pKiller->m_LastHelper.m_CID);
-			Assistant = pKillerHelper ? pKillerHelper->GetCID() : -1;
 		}
 	}
 
