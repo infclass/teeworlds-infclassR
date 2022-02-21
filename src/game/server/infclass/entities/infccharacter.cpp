@@ -949,6 +949,7 @@ void CInfClassCharacter::AddHelper(int HelperCID, float Time)
 {
 	m_LastHelper.m_CID = HelperCID;
 	m_LastHelper.m_Tick = Server()->TickSpeed() * Time;
+	dbg_msg("tracking", "%d added as a helper of %d for %d", HelperCID, GetCID(), m_LastHelper.m_Tick);
 }
 
 void CInfClassCharacter::GetActualKillers(int GivenKiller, DAMAGE_TYPE DamageType, int *pKiller, int *pAssistant) const
