@@ -1277,7 +1277,6 @@ int CMapConverter::Finalize()
 						}
 						else
 						{
-							int PlayerClass = CInfClassGameController::MenuClassToPlayerClass(i);
 							const char *pClassName = CInfClassGameController::GetClassDisplayName(PlayerClass);
 							CInfClassHuman::SetupSkin(SkinContext, &SkinInfo, DDNetVersion, InfClassVersion);
 							EventsDirector::SetupSkin(SkinContext, &SkinInfo, DDNetVersion, InfClassVersion);
