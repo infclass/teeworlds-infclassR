@@ -2258,9 +2258,8 @@ void CInfClassGameController::OnCharacterDeath(CInfClassCharacter *pVictim, DAMA
 		DAMAGE_TYPE::GAME, // Disconnect, joining spec, etc
 		DAMAGE_TYPE::KILL_COMMAND, // Self kill
 		DAMAGE_TYPE::GAME_FINAL_EXPLOSION,
-		DAMAGE_TYPE::DEATH_TILE,
 	};
-	if(!BadReasonsToDie.Contains(DamageType))
+	if(!BadReasonsToDie.Contains(DamageType) && (Killer != pVictim->GetCID()))
 	{
 		//Find the nearest ghoul
 		for(CInfClassCharacter *p = (CInfClassCharacter*) GameWorld()->FindFirst(CGameWorld::ENTTYPE_CHARACTER); p; p = (CInfClassCharacter *)p->TypeNext())
