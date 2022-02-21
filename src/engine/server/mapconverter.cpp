@@ -1018,9 +1018,9 @@ int CMapConverter::Finalize()
 	int DDNetVersion = 14000;
 	int InfClassVersion = 0;
 
-	CSkinContext SkinContext;
 	for(int ClassIndex = 0; ClassIndex < NUM_MENUCLASS; ++ClassIndex)
 	{
+		CSkinContext SkinContext;
 		SkinContext.PlayerClass = CInfClassGameController::MenuClassToPlayerClass(ClassIndex);
 
 		CWeakSkinInfo ClassTeeInfo;
@@ -1277,6 +1277,8 @@ int CMapConverter::Finalize()
 						}
 						else
 						{
+							CSkinContext SkinContext;
+							SkinContext.PlayerClass = PlayerClass;
 							const char *pClassName = CInfClassGameController::GetClassDisplayName(PlayerClass);
 							CInfClassHuman::SetupSkin(SkinContext, &SkinInfo, DDNetVersion, InfClassVersion);
 							EventsDirector::SetupSkin(SkinContext, &SkinInfo, DDNetVersion, InfClassVersion);
