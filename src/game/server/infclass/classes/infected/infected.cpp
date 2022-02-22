@@ -396,9 +396,6 @@ void CInfClassInfected::DoBoomerExplosion()
 				}
 			}
 
-			const float BoomerHelperDuration = 30;
-			pTarget->AddHelper(GetCID(), BoomerHelperDuration);
-
 			Length = 1-clamp((Length-InnerRadius)/(DamageRadius-InnerRadius), 0.0f, 1.0f);
 
 			if(Length)
@@ -406,6 +403,13 @@ void CInfClassInfected::DoBoomerExplosion()
 
 			float DamageToDeal = 1 + ((Damage - 1) * Length);
 			pTarget->TakeDamage(ForceDir*Force*Length, DamageToDeal, GetCID(), DAMAGE_TYPE::BOOMER_EXPLOSION);
+
+			const CInfClassPlayer *pTargetPlayer = pTarget->GetPlayer();
+			if(pTarget->IsZombie() || (pTargetPlayer && pTargetPlayer->IsInfectionStarted()))
+			{
+				const float BoomerHelperDuration = 30;
+				pTarget->AddHelper(GetCID(), BoomerHelperDuration);
+			}
 		}
 	}
 
