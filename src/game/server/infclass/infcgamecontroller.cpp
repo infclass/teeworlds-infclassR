@@ -1623,7 +1623,7 @@ void CInfClassGameController::Tick()
 	m_InfectedStarted = false;
 
 	//If the game can start ...
-	if(m_GameOverTick == -1 && NumPlayers >= g_Config.m_InfMinPlayers)
+	if(!m_Warmup && m_GameOverTick == -1 && NumPlayers >= g_Config.m_InfMinPlayers)
 	{
 		//If the infection started
 		if(IsInfectionStarted())
