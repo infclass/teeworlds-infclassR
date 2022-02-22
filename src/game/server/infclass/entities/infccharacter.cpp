@@ -566,6 +566,30 @@ void CInfClassCharacter::FireWeapon()
 	}
 }
 
+int CInfClassCharacter::ProcessDamageType(DAMAGE_TYPE DamageType, TAKEDAMAGEMODE *pMode, int *pDamage) const
+{
+	TAKEDAMAGEMODE Mode;
+	int Weapon = CInfClassGameController::DamageTypeToWeapon(DamageType, &Mode);
+	int Damage = pDamage ? *pDamage : 0;
+
+	if(GetPlayerClass() == PLAYERCLASS_HERO)
+	{
+		if(Mode == TAKEDAMAGEMODE::INFECTION)
+		{
+			Mode = TAKEDAMAGEMODE::NOINFECTION;
+			Damage = 12;
+		}
+	}
+
+	if(pMode)
+		*pMode = Mode;
+
+	if(pDamage)
+		*pDamage = Damage;
+
+	return Weapon;
+}
+
 bool CInfClassCharacter::TakeDamage(vec2 Force, float FloatDmg, int From, DAMAGE_TYPE DamageType)
 {
 	int Dmg = FloatDmg;
@@ -576,7 +600,7 @@ bool CInfClassCharacter::TakeDamage(vec2 Force, float FloatDmg, int From, DAMAGE
 	}
 
 	TAKEDAMAGEMODE Mode = TAKEDAMAGEMODE::NOINFECTION;
-	int Weapon = CInfClassGameController::DamageTypeToWeapon(DamageType, &Mode);
+	int Weapon = ProcessDamageType(DamageType, &Mode, &Dmg);
 
 	/* INFECTION MODIFICATION START ***************************************/
 
@@ -593,13 +617,6 @@ bool CInfClassCharacter::TakeDamage(vec2 Force, float FloatDmg, int From, DAMAGE
 			// The infection is only possible if the killer is a zombie and the target is a human
 			Mode = TAKEDAMAGEMODE::NOINFECTION;
 		}
-	}
-
-	if(GetPlayerClass() == PLAYERCLASS_HERO && Mode == TAKEDAMAGEMODE::INFECTION)
-	{
-		Dmg = 12;
-		// A zombie can't infect a hero
-		Mode = TAKEDAMAGEMODE::NOINFECTION;
 	}
 
 	if(pKillerChar && pKillerChar->IsInLove())
@@ -1084,7 +1101,8 @@ void CInfClassCharacter::GetActualKillers(int GivenKiller, DAMAGE_TYPE DamageTyp
 
 	if(DirectKill && !m_TakenDamageDetails.IsEmpty())
 	{
-		TAKEDAMAGEMODE DamageMode = CInfClassGameController::DamageTypeToDamageMode(DamageType);
+		TAKEDAMAGEMODE DamageMode;
+		ProcessDamageType(DamageType, &DamageMode);
 
 		// DirectDieCall means that this is a direct die() call.
 		// It means that the dealt damage does not matter.

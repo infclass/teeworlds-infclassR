@@ -94,6 +94,8 @@ public:
 
 	void FireWeapon() override;
 
+	int ProcessDamageType(DAMAGE_TYPE DamageType, TAKEDAMAGEMODE *pMode = nullptr, int *pDamage = nullptr) const;
+
 	bool TakeDamage(vec2 Force, float Dmg, int From, DAMAGE_TYPE DamageType);
 	bool TakeDamage(vec2 Force, int Dmg, int From, int Weapon, TAKEDAMAGEMODE Mode) override;
 
