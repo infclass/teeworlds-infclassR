@@ -154,7 +154,6 @@ protected:
 
 public:
 	int m_Authed;
-	int m_ScoreRound;
 	int m_HumanTime;
 	
 	bool m_knownClass[NB_PLAYERCLASS];

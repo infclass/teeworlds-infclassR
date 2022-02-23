@@ -46,7 +46,6 @@ void CPlayer::Reset()
 
 /* INFECTION MODIFICATION START ***************************************/
 	m_Authed = IServer::AUTHED_NO;
-	m_ScoreRound = 0;
 	m_ScoreMode = PLAYERSCOREMODE_SCORE;
 	m_WinAsHuman = 0;
 	m_class = PLAYERCLASS_NONE;
