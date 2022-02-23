@@ -72,6 +72,8 @@ public:
 	CGameContext *GameServer() const { return m_pGameServer; }
 	IServer *Server() const { return CPlayer::Server(); }
 
+	void OnNewRound();
+
 public:
 	int m_MapMenuItem = -1;
 

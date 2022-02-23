@@ -407,6 +407,12 @@ bool CInfClassPlayer::RandomClassChoosen() const
 	return m_RandomClassRoundId == GameController()->GetRoundId();
 }
 
+void CInfClassPlayer::OnNewRound()
+{
+	SetClass(PLAYERCLASS_NONE);
+	m_HumanTime = 0;
+}
+
 const char *CInfClassPlayer::GetClan(int SnappingClient) const
 {
 	if(GetTeam() == TEAM_SPECTATORS)
