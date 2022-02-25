@@ -2128,9 +2128,7 @@ void CGameContext::OnMessage(int MsgID, CUnpacker *pUnpacker, int ClientID)
 				else if(pLangForIp[0] && (str_comp(pLangForIp, pDefaultLang) != 0))
 					pLangForVote = pLangForIp;
 
-				char aBuf[128];
-				str_format(aBuf, sizeof(aBuf), "From client: \"%s\", for IP: \"%s\"", pLangFromClient, pLangForIp);
-				Console()->Print(IConsole::OUTPUT_LEVEL_DEBUG, "lang", aBuf);
+				dbg_msg("lang", "init_language ClientID=%d, lang from flag: \"%s\", lang for IP: \"%s\"", ClientID, pLangFromClient, pLangForIp);
 
 				SetClientLanguage(ClientID, pDefaultLang);
 

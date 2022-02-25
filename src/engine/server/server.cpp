@@ -3371,10 +3371,13 @@ const char* CServer::GetClientLanguage(int ClientID)
 
 void CServer::SetClientLanguage(int ClientID, const char* pLanguage)
 {
-	dbg_msg("server", "set_language ClientID=%d lang=%s", ClientID, pLanguage);
+	char aAddrStr[NETADDR_MAXSTRSIZE];
+	net_addr_str(m_NetServer.ClientAddr(ClientID), aAddrStr, sizeof(aAddrStr), true);
+
+	dbg_msg("lang", "set_language ClientID=%d lang=%s addr=%s", ClientID, pLanguage, aAddrStr);
 	str_copy(m_aClients[ClientID].m_aLanguage, pLanguage, sizeof(m_aClients[ClientID].m_aLanguage));
 }
-	
+
 int CServer::GetFireDelay(int WID)
 {
 	return m_InfFireDelay[WID];
