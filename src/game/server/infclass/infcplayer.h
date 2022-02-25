@@ -74,6 +74,10 @@ public:
 
 	void OnNewRound();
 
+	void OnKill();
+	void OnDeath();
+	void OnAssist();
+
 public:
 	int m_MapMenuItem = -1;
 
@@ -87,6 +91,11 @@ protected:
 
 	CInfClassGameController *m_pGameController = nullptr;
 	CInfClassPlayerClass *m_pInfcPlayerClass = nullptr;
+
+	int m_Kills = 0;
+	int m_Deaths = 0;
+	int m_Assists = 0;
+	int m_Score = 0;
 
 	int m_RandomClassRoundId = 0;
 

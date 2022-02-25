@@ -1544,6 +1544,19 @@ void CInfClassGameController::SendKillMessage(int Victim, DAMAGE_TYPE DamageType
 
 	Server()->SendMsg(&InfCPacker, MSGFLAG_VITAL|MSGFLAG_NOSEND, -1);
 	Server()->SendMsg(&VanillaPacker, MSGFLAG_VITAL|MSGFLAG_NOSEND, -1);
+
+	if(VanillaWeapon != WEAPON_GAME)
+	{
+		CInfClassPlayer *pKiller = GetPlayer(Killer);
+		CInfClassPlayer *pVictim = GetPlayer(Victim);
+		CInfClassPlayer *pAssistant = GetPlayer(Assistant);
+		if(pKiller && (pKiller != pVictim))
+			pKiller->OnKill();
+		if(pVictim)
+			pVictim->OnDeath();
+		if(pAssistant && (pAssistant != pVictim))
+			pAssistant->OnAssist();
+	}
 }
 
 int CInfClassGameController::RandomZombieToWitch()

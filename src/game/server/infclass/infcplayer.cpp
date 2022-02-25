@@ -144,6 +144,11 @@ void CInfClassPlayer::Snap(int SnappingClient)
 		{
 			pInfClassPlayer->m_Flags |= INFCLASS_PLAYER_FLAG_FORCED_TO_SPECTATE;
 		}
+
+		pInfClassPlayer->m_Kills = m_Kills;
+		pInfClassPlayer->m_Deaths = m_Deaths;
+		pInfClassPlayer->m_Assists = m_Assists;
+		pInfClassPlayer->m_Score = m_Score;
 	}
 
 	if(IsForcedToSpec && (SnappingClient == m_ClientID) && (InfClassVersion >= VERSION_INFC_FORCED_SPEC))
@@ -413,6 +418,26 @@ void CInfClassPlayer::OnNewRound()
 {
 	SetClass(PLAYERCLASS_NONE);
 	m_HumanTime = 0;
+
+	m_Kills = 0;
+	m_Deaths = 0;
+	m_Assists = 0;
+	m_Score = 0;
+}
+
+void CInfClassPlayer::OnKill()
+{
+	++m_Kills;
+}
+
+void CInfClassPlayer::OnDeath()
+{
+	++m_Deaths;
+}
+
+void CInfClassPlayer::OnAssist()
+{
+	++m_Assists;
 }
 
 const char *CInfClassPlayer::GetClan(int SnappingClient) const

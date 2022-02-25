@@ -254,6 +254,10 @@ Objects = [
 	NetObjectEx("InfClassPlayer", "player@infclass", [
 		NetIntAny("m_Flags"),
 		NetIntRange("m_Class", -1, 255),
+		NetIntAny("m_Kills"),
+		NetIntAny("m_Deaths"),
+		NetIntAny("m_Assists"),
+		NetIntAny("m_Score"),
 	]),
 
 	NetObjectEx("DDNetCharacter", "character@netobj.ddnet.tw", [
