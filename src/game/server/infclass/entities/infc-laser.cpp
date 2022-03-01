@@ -50,31 +50,43 @@ bool CInfClassLaser::HitCharacter(vec2 From, vec2 To)
 			// Medic hits something else (not a zombie)
 			return true;
 		}
-		const int MIN_ZOMBIES = 4;
-		const int DAMAGE_ON_REVIVE = 17;
-		int LastHumanClass = pHit->GetPlayer()->LastHumanClass();
+
+		int MinimumHP = Config()->m_InfRevivalDamage + 1;
+		int MinimumInfected = 5;
 
 		char aBuf[256];
-		if(pMedic->GetHealthArmorSum() <= DAMAGE_ON_REVIVE)
+		if(pMedic->GetHealthArmorSum() < MinimumHP)
 		{
-			str_format(aBuf, sizeof(aBuf), "You need at least %d HP", DAMAGE_ON_REVIVE + 1);
-			GameServer()->SendBroadcast(m_Owner, aBuf, BROADCAST_PRIORITY_GAMEANNOUNCE, BROADCAST_DURATION_GAMEANNOUNCE);
+			GameServer()->SendBroadcast_Localization(m_Owner, BROADCAST_PRIORITY_GAMEANNOUNCE,
+				BROADCAST_DURATION_GAMEANNOUNCE,
+				_("You need at least {int:MinimumHP} HP"),
+				"MinimumHP", &MinimumHP,
+				nullptr
+			);
 		}
-		else if(GameServer()->GetZombieCount() <= MIN_ZOMBIES)
+		else if(GameServer()->GetZombieCount() < MinimumInfected)
 		{
-			str_format(aBuf, sizeof(aBuf), "Too few zombies (less than %d)", MIN_ZOMBIES+1);
-			GameServer()->SendBroadcast(m_Owner, aBuf, BROADCAST_PRIORITY_GAMEANNOUNCE, BROADCAST_DURATION_GAMEANNOUNCE);
+			GameServer()->SendBroadcast_Localization(m_Owner, BROADCAST_PRIORITY_GAMEANNOUNCE,
+				BROADCAST_DURATION_GAMEANNOUNCE,
+				_("Too few infected (less than {int:MinimumInfected})"),
+				"MinimumInfected", &MinimumInfected,
+				nullptr
+			);
 		}
 		else
 		{
+			int LastHumanClass = pHit->GetPlayer()->LastHumanClass();
 			pInfected->GetPlayer()->SetClass(LastHumanClass);
 			pInfected->SetHealthArmor(1, 0);
 			pInfected->Unfreeze();
-			pMedic->TakeDamage(vec2(0.f, 0.f), DAMAGE_ON_REVIVE * 2, m_Owner, DAMAGE_TYPE::MEDIC_REVIVAL);
-			str_format(aBuf, sizeof(aBuf), "Medic %s revived %s",
-				Server()->ClientName(pMedic->GetCID()),
-				Server()->ClientName(pInfected->GetCID()));
-			GameServer()->SendChatTarget(-1, aBuf);
+			pMedic->TakeDamage(vec2(0.f, 0.f), Config()->m_InfRevivalDamage * 2, m_Owner, DAMAGE_TYPE::MEDIC_REVIVAL);
+
+			GameServer()->SendChatTarget_Localization(-1, CHATCATEGORY_HUMANS,
+				_("Medic {str:MedicName} revived {str:RevivedName}"),
+				"MedicName", Server()->ClientName(pMedic->GetCID()),
+				"RevivedName", Server()->ClientName(pInfected->GetCID()),
+				nullptr
+			);
 			int ClientID = pMedic->GetCID();
 			Server()->RoundStatistics()->OnScoreEvent(ClientID, SCOREEVENT_MEDIC_REVIVE, pMedic->GetPlayerClass(), Server()->ClientName(ClientID), GameServer()->Console());
 		}
