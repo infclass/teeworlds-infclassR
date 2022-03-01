@@ -337,6 +337,10 @@
 		"value": "M\u00e9dico tamb\u00e9m tem uma espingarda poderosa que pode empurrar os infectados."
 	},
 	{
+		"key": "Medic {str:MedicName} revived {str:RevivedName}",
+		"value": "M\u00e9dico {str:MedicName} reviveu {str:RevivedName}"
+	},
+	{
 		"key": "Medics",
 		"value": "M\u00e9dicos"
 	},
@@ -761,6 +765,10 @@
 		"value": "Para sair do t\u00e1xi, pule. Para soltar seus passageiros, ative a prote\u00e7\u00e3o de gancho (normalmente, com F3)."
 	},
 	{
+		"key": "Too few infected (less than {int:MinimumInfected})",
+		"value": "Poucos infectados (menos de {int:MinimumInfected})"
+	},
+	{
 		"key": "Too few infected to call a witch",
 		"value": "Poucos jogadores para chamar uma bruxa"
 	},
@@ -949,6 +957,10 @@
 		"value": "Voc\u00ea n\u00e3o pode se juntar aos espectadores agora"
 	},
 	{
+		"key": "You destroyed {str:PlayerName}'s turret!",
+		"value": "Voc\u00ea destruiu a torre de {str:PlayerName}!"
+	},
+	{
 		"key": "You don't have a turret to place",
 		"value": "Voc\u00ea n\u00e3o tem uma torre para colocar"
 	},
@@ -1030,6 +1042,10 @@
 		"value": "Voc\u00ea precisa de pelo menos {int:MinHp} de vida para reviver um zumbi"
 	},
 	{
+		"key": "You need at least {int:MinimumHP} HP",
+		"value": "Voc\u00ea precisa de pelo menos {int:MinimumHP} HP"
+	},
+	{
 		"key": "Your account has been created and you are now logged.",
 		"value": "Sua conta foi criada e voc\u00ea est\u00e1 logado agora."
 	},
@@ -1048,6 +1064,10 @@
 	{
 		"key": "{str:PlayerName} has been kicked ({str:Reason})",
 		"value": "{str:PlayerName} foi expulso ({str:Reason})"
+	},
+	{
+		"key": "{str:PlayerName} has destroyed your turret!",
+		"value": "{str:PlayerName} destruiu a sua torre!"
 	},
 	{
 		"key": "{str:PlayerName} has left the game",
