@@ -216,6 +216,9 @@ public:
 	void CheckPureTuning();
 	void SendTuningParams(int ClientID);
 
+	struct CVoteOptionServer *GetVoteOption(int Index);
+	void ProgressVoteOptions(int ClientID);
+
 	// engine events
 	virtual void OnInit();
 	virtual void OnStartRound();

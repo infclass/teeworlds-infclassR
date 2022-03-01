@@ -1032,6 +1032,9 @@ void CGameContext::OnTick()
 	{
 		if(m_apPlayers[i])
 		{
+			// send vote options
+			ProgressVoteOptions(i);
+
 			if(m_apPlayers[i]->GetTeam() != TEAM_SPECTATORS)
 				NumActivePlayers++;
 			
@@ -1307,6 +1310,93 @@ void CGameContext::OnClientPredictedInput(int ClientID, void *pInput)
 {
 	if(!m_World.m_Paused)
 		m_apPlayers[ClientID]->OnPredictedInput((CNetObj_PlayerInput *)pInput);
+}
+
+struct CVoteOptionServer *CGameContext::GetVoteOption(int Index)
+{
+	CVoteOptionServer *pCurrent;
+	for(pCurrent = m_pVoteOptionFirst;
+		Index > 0 && pCurrent;
+		Index--, pCurrent = pCurrent->m_pNext)
+		;
+
+	if(Index > 0)
+		return 0;
+	return pCurrent;
+}
+
+void CGameContext::ProgressVoteOptions(int ClientID)
+{
+	CPlayer *pPl = m_apPlayers[ClientID];
+
+	if(pPl->m_SendVoteIndex == -1)
+		return; // we didn't start sending options yet
+
+	if(pPl->m_SendVoteIndex > m_NumVoteOptions)
+		return; // shouldn't happen / fail silently
+
+	int VotesLeft = m_NumVoteOptions - pPl->m_SendVoteIndex;
+	int NumVotesToSend = minimum(g_Config.m_SvSendVotesPerTick, VotesLeft);
+
+	if(!VotesLeft)
+	{
+		// player has up to date vote option list
+		return;
+	}
+
+	// build vote option list msg
+	int CurIndex = 0;
+
+	CNetMsg_Sv_VoteOptionListAdd OptionMsg;
+	OptionMsg.m_pDescription0 = "";
+	OptionMsg.m_pDescription1 = "";
+	OptionMsg.m_pDescription2 = "";
+	OptionMsg.m_pDescription3 = "";
+	OptionMsg.m_pDescription4 = "";
+	OptionMsg.m_pDescription5 = "";
+	OptionMsg.m_pDescription6 = "";
+	OptionMsg.m_pDescription7 = "";
+	OptionMsg.m_pDescription8 = "";
+	OptionMsg.m_pDescription9 = "";
+	OptionMsg.m_pDescription10 = "";
+	OptionMsg.m_pDescription11 = "";
+	OptionMsg.m_pDescription12 = "";
+	OptionMsg.m_pDescription13 = "";
+	OptionMsg.m_pDescription14 = "";
+
+	// get current vote option by index
+	CVoteOptionServer *pCurrent = GetVoteOption(pPl->m_SendVoteIndex);
+
+	while(CurIndex < NumVotesToSend && pCurrent != NULL)
+	{
+		switch(CurIndex)
+		{
+		case 0: OptionMsg.m_pDescription0 = pCurrent->m_aDescription; break;
+		case 1: OptionMsg.m_pDescription1 = pCurrent->m_aDescription; break;
+		case 2: OptionMsg.m_pDescription2 = pCurrent->m_aDescription; break;
+		case 3: OptionMsg.m_pDescription3 = pCurrent->m_aDescription; break;
+		case 4: OptionMsg.m_pDescription4 = pCurrent->m_aDescription; break;
+		case 5: OptionMsg.m_pDescription5 = pCurrent->m_aDescription; break;
+		case 6: OptionMsg.m_pDescription6 = pCurrent->m_aDescription; break;
+		case 7: OptionMsg.m_pDescription7 = pCurrent->m_aDescription; break;
+		case 8: OptionMsg.m_pDescription8 = pCurrent->m_aDescription; break;
+		case 9: OptionMsg.m_pDescription9 = pCurrent->m_aDescription; break;
+		case 10: OptionMsg.m_pDescription10 = pCurrent->m_aDescription; break;
+		case 11: OptionMsg.m_pDescription11 = pCurrent->m_aDescription; break;
+		case 12: OptionMsg.m_pDescription12 = pCurrent->m_aDescription; break;
+		case 13: OptionMsg.m_pDescription13 = pCurrent->m_aDescription; break;
+		case 14: OptionMsg.m_pDescription14 = pCurrent->m_aDescription; break;
+		}
+
+		CurIndex++;
+		pCurrent = pCurrent->m_pNext;
+	}
+
+	// send msg
+	OptionMsg.m_NumOptions = NumVotesToSend;
+	Server()->SendPackMsg(&OptionMsg, MSGFLAG_VITAL, ClientID);
+
+	pPl->m_SendVoteIndex += NumVotesToSend;
 }
 
 void CGameContext::OnClientEnter(int ClientID)
@@ -2069,72 +2159,8 @@ void CGameContext::OnMessage(int MsgID, CUnpacker *pUnpacker, int ClientID)
 			CNetMsg_Sv_VoteClearOptions ClearMsg;
 			Server()->SendPackMsg(&ClearMsg, MSGFLAG_VITAL, ClientID);
 
-			CNetMsg_Sv_VoteOptionListAdd OptionMsg;
-			int NumOptions = 0;
-			OptionMsg.m_pDescription0 = "";
-			OptionMsg.m_pDescription1 = "";
-			OptionMsg.m_pDescription2 = "";
-			OptionMsg.m_pDescription3 = "";
-			OptionMsg.m_pDescription4 = "";
-			OptionMsg.m_pDescription5 = "";
-			OptionMsg.m_pDescription6 = "";
-			OptionMsg.m_pDescription7 = "";
-			OptionMsg.m_pDescription8 = "";
-			OptionMsg.m_pDescription9 = "";
-			OptionMsg.m_pDescription10 = "";
-			OptionMsg.m_pDescription11 = "";
-			OptionMsg.m_pDescription12 = "";
-			OptionMsg.m_pDescription13 = "";
-			OptionMsg.m_pDescription14 = "";
-			CVoteOptionServer *pCurrent = m_pVoteOptionFirst;
-			while(pCurrent)
-			{
-				switch(NumOptions++)
-				{
-				case 0: OptionMsg.m_pDescription0 = pCurrent->m_aDescription; break;
-				case 1: OptionMsg.m_pDescription1 = pCurrent->m_aDescription; break;
-				case 2: OptionMsg.m_pDescription2 = pCurrent->m_aDescription; break;
-				case 3: OptionMsg.m_pDescription3 = pCurrent->m_aDescription; break;
-				case 4: OptionMsg.m_pDescription4 = pCurrent->m_aDescription; break;
-				case 5: OptionMsg.m_pDescription5 = pCurrent->m_aDescription; break;
-				case 6: OptionMsg.m_pDescription6 = pCurrent->m_aDescription; break;
-				case 7: OptionMsg.m_pDescription7 = pCurrent->m_aDescription; break;
-				case 8: OptionMsg.m_pDescription8 = pCurrent->m_aDescription; break;
-				case 9: OptionMsg.m_pDescription9 = pCurrent->m_aDescription; break;
-				case 10: OptionMsg.m_pDescription10 = pCurrent->m_aDescription; break;
-				case 11: OptionMsg.m_pDescription11 = pCurrent->m_aDescription; break;
-				case 12: OptionMsg.m_pDescription12 = pCurrent->m_aDescription; break;
-				case 13: OptionMsg.m_pDescription13 = pCurrent->m_aDescription; break;
-				case 14:
-					{
-						OptionMsg.m_pDescription14 = pCurrent->m_aDescription;
-						OptionMsg.m_NumOptions = NumOptions;
-						Server()->SendPackMsg(&OptionMsg, MSGFLAG_VITAL, ClientID);
-						OptionMsg = CNetMsg_Sv_VoteOptionListAdd();
-						NumOptions = 0;
-						OptionMsg.m_pDescription1 = "";
-						OptionMsg.m_pDescription2 = "";
-						OptionMsg.m_pDescription3 = "";
-						OptionMsg.m_pDescription4 = "";
-						OptionMsg.m_pDescription5 = "";
-						OptionMsg.m_pDescription6 = "";
-						OptionMsg.m_pDescription7 = "";
-						OptionMsg.m_pDescription8 = "";
-						OptionMsg.m_pDescription9 = "";
-						OptionMsg.m_pDescription10 = "";
-						OptionMsg.m_pDescription11 = "";
-						OptionMsg.m_pDescription12 = "";
-						OptionMsg.m_pDescription13 = "";
-						OptionMsg.m_pDescription14 = "";
-					}
-				}
-				pCurrent = pCurrent->m_pNext;
-			}
-			if(NumOptions > 0)
-			{
-				OptionMsg.m_NumOptions = NumOptions;
-				Server()->SendPackMsg(&OptionMsg, MSGFLAG_VITAL, ClientID);
-			}
+			// begin sending vote options
+			pPlayer->m_SendVoteIndex = 0;
 
 			// send tuning parameters to client
 			SendTuningParams(ClientID);

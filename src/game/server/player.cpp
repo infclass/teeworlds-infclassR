@@ -41,6 +41,9 @@ void CPlayer::Reset()
 	m_DefEmote = EMOTE_NORMAL;
 	m_LastKill = 0;
 	m_LastWhisperTo = -1;
+
+	m_SendVoteIndex = -1;
+
 	m_OverrideEmote = 0;
 	m_OverrideEmoteReset = -1;
 

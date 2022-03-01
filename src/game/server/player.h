@@ -88,6 +88,8 @@ public:
 	int m_LastKill;
 	int m_LastWhisperTo;
 
+	int m_SendVoteIndex;
+
 	CTeeInfo m_TeeInfos;
 
 	int m_RespawnTick;
