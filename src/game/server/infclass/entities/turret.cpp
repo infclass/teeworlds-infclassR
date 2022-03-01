@@ -68,10 +68,14 @@ void CTurret::Tick()
 			pChr->TakeDamage(vec2(0.f, 0.f), Config()->m_InfTurretSelfDestructDmg, m_Owner, DAMAGE_TYPE::TURRET_DESTRUCTION);
 			GameServer()->CreateSound(m_Pos, SOUND_LASER_FIRE);
 			int ClientID = pChr->GetCID();
-			char aBuf[64];
-			str_format(aBuf, sizeof(aBuf), "You destroyed %s's turret!", Server()->ClientName(m_Owner));
-			GameServer()->SendChatTarget(ClientID, aBuf);
-			GameServer()->SendChatTarget(m_Owner, "A zombie has destroyed your turret!");
+			GameServer()->SendChatTarget_Localization(ClientID, CHATCATEGORY_SCORE, _("You destroyed {str:PlayerName}'s turret!"),
+				"PlayerName", Server()->ClientName(m_Owner),
+				nullptr
+			);
+			GameServer()->SendChatTarget_Localization(m_Owner, CHATCATEGORY_SCORE, _("{str:PlayerName} has destroyed your turret!"),
+				"PlayerName", Server()->ClientName(ClientID),
+				nullptr
+			);
 
 			//increase score
 			Server()->RoundStatistics()->OnScoreEvent(ClientID, SCOREEVENT_DESTROY_TURRET, pChr->GetPlayerClass(), Server()->ClientName(ClientID), GameServer()->Console());
