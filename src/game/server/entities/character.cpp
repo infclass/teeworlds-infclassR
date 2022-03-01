@@ -764,10 +764,11 @@ bool CCharacter::IncreaseOverallHp(int Amount)
 
 void CCharacter::SetHealthArmor(int HealthAmount, int ArmorAmount)
 {
+	int TotalBefore = m_Health + m_Armor;
+
 	m_Health = clamp<int>(HealthAmount, 0, 10);
 	m_Armor = clamp<int>(ArmorAmount, 0, 10);
 
-	int TotalBefore = m_Health + m_Armor;
 	int TotalAfter = m_Health + m_Armor;
 
 	OnTotalHealthChanged(TotalAfter - TotalBefore);
