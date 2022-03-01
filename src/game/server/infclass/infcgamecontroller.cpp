@@ -812,11 +812,10 @@ int CInfClassGameController::MenuClassToPlayerClass(int MenuClass)
 int CInfClassGameController::DamageTypeToWeapon(DAMAGE_TYPE DamageType, TAKEDAMAGEMODE *pMode)
 {
 	int Weapon = WEAPON_GAME;
-	TAKEDAMAGEMODE LocalMode = TAKEDAMAGEMODE::NOINFECTION;
-	if(!pMode)
-	{
-		pMode = &LocalMode;
-	}
+	TAKEDAMAGEMODE HelperMode;
+	TAKEDAMAGEMODE &Mode = pMode ? *pMode : HelperMode;
+
+	Mode = TAKEDAMAGEMODE::NOINFECTION;
 
 	switch(DamageType)
 	{
@@ -841,12 +840,12 @@ int CInfClassGameController::DamageTypeToWeapon(DAMAGE_TYPE DamageType, TAKEDAMA
 	case DAMAGE_TYPE::MERCENARY_BOMB:
 	case DAMAGE_TYPE::SCIENTIST_MINE:
 	case DAMAGE_TYPE::SCIENTIST_TELEPORT:
-		*pMode = TAKEDAMAGEMODE::SELFHARM;
+		Mode = TAKEDAMAGEMODE::SELFHARM;
 		Weapon = WEAPON_HAMMER;
 		break;
 	case DAMAGE_TYPE::INFECTION_HAMMER:
 	case DAMAGE_TYPE::BOOMER_EXPLOSION:
-		*pMode = TAKEDAMAGEMODE::INFECTION;
+		Mode = TAKEDAMAGEMODE::INFECTION;
 		Weapon = WEAPON_HAMMER;
 		break;
 	case DAMAGE_TYPE::GUN:
@@ -891,7 +890,7 @@ int CInfClassGameController::DamageTypeToWeapon(DAMAGE_TYPE DamageType, TAKEDAMA
 		break;
 	case DAMAGE_TYPE::MEDIC_REVIVAL:
 		Weapon = WEAPON_LASER;
-		*pMode = TAKEDAMAGEMODE::SELFHARM;
+		Mode = TAKEDAMAGEMODE::SELFHARM;
 		break;
 	}
 
