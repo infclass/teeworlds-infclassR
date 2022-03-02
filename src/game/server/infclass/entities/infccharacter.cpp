@@ -1855,7 +1855,7 @@ void CInfClassCharacter::OnGrenadeFired(WeaponFireContext *pFireContext)
 
 	if(GetPlayerClass() == PLAYERCLASS_SCIENTIST)
 	{
-		// Do nothing, the processing is done in CInfClassHuman::OnLaserFired()
+		// Do nothing, the processing is done in CInfClassHuman::OnGrenadeFired()
 		return;
 	}
 	else

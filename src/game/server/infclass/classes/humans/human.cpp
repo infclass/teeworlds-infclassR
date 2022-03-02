@@ -267,6 +267,9 @@ void CInfClassHuman::OnHammerFired(WeaponFireContext *pFireContext)
 
 void CInfClassHuman::OnGrenadeFired(WeaponFireContext *pFireContext)
 {
+	if(pFireContext->NoAmmo)
+		return;
+
 	switch(GetPlayerClass())
 	{
 	case PLAYERCLASS_SCIENTIST:
