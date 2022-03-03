@@ -2254,8 +2254,10 @@ void CInfClassGameController::OnCharacterDeath(CInfClassCharacter *pVictim, DAMA
 		//Find the nearest ghoul
 		for(CInfClassCharacter *p = (CInfClassCharacter*) GameWorld()->FindFirst(CGameWorld::ENTTYPE_CHARACTER); p; p = (CInfClassCharacter *)p->TypeNext())
 		{
-			if(p->GetPlayerClass() != PLAYERCLASS_GHOUL || p == pVictim) continue;
-			if(p->GetPlayer() && p->GetClass()->GetGhoulPercent() >= 1.0f) continue;
+			if(p->GetPlayerClass() != PLAYERCLASS_GHOUL || p == pVictim)
+				continue;
+			if(p->GetClass() && p->GetClass()->GetGhoulPercent() >= 1.0f)
+				continue;
 
 			float Len = distance(p->m_Pos, pVictim->m_Pos);
 
