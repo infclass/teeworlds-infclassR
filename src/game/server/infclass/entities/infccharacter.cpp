@@ -79,7 +79,7 @@ void CInfClassCharacter::OnCharacterSpawned(const SpawnContext &Context)
 	m_EnforcersInfo.Clear();
 
 	ClassSpawnAttributes();
-	DestroyChildEntities();
+
 	if(GetPlayerClass() == PLAYERCLASS_NONE)
 	{
 		OpenClassChooser();
