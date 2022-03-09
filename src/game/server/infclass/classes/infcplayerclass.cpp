@@ -209,6 +209,7 @@ void CInfClassPlayerClass::OnCharacterPreCoreTick()
 		else
 		{
 			m_pCharacter->ResetMovementsInput();
+			m_pCharacter->ResetHookInput();
 		}
 	}
 }

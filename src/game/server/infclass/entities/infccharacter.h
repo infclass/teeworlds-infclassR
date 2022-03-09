@@ -189,6 +189,7 @@ public:
 	void UnlockPosition();
 
 	void ResetMovementsInput();
+	void ResetHookInput();
 
 	void GiveNinjaBuf();
 

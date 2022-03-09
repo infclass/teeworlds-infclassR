@@ -937,6 +937,10 @@ void CInfClassCharacter::ResetMovementsInput()
 {
 	m_Input.m_Jump = 0;
 	m_Input.m_Direction = 0;
+}
+
+void CInfClassCharacter::ResetHookInput()
+{
 	m_Input.m_Hook = 0;
 }
 
@@ -2808,6 +2812,7 @@ void CInfClassCharacter::PreCoreTick()
 		}
 
 		ResetMovementsInput();
+		ResetHookInput();
 	}
 
 	UpdateTuningParam();
@@ -2913,17 +2918,26 @@ void CInfClassCharacter::UpdateTuningParam()
 {
 	CTuningParams* pTuningParams = &m_pPlayer->m_NextTuningParams;
 	
-	bool NoActions = false;
-	bool FixedPosition = false;
+	bool NoHook = false;
+	bool NoControls = false;
+	bool NoGravity = false;
 	
 	if(PositionIsLocked())
 	{
-		NoActions = true;
-		FixedPosition = true;
+		NoControls = true;
+		NoGravity = true;
 	}
 	if(m_IsFrozen)
 	{
-		NoActions = true;
+		NoHook = true;
+		NoControls = true;
+	}
+
+	if(m_Core.m_IsPassenger)
+	{
+		NoHook = true;
+		NoControls = true;
+		NoGravity = true;
 	}
 	
 	if(m_SlowMotionTick > 0)
@@ -2969,16 +2983,19 @@ void CInfClassCharacter::UpdateTuningParam()
 	{
 		pTuningParams->m_GroundFriction = 1.0f;
 	}
-	
-	if(NoActions)
+
+	if(NoHook)
+	{
+		pTuningParams->m_HookLength = 0.0f;
+	}
+	if(NoGravity)
 	{
 		pTuningParams->m_GroundControlAccel = 0.0f;
 		pTuningParams->m_GroundJumpImpulse = 0.0f;
 		pTuningParams->m_AirJumpImpulse = 0.0f;
 		pTuningParams->m_AirControlAccel = 0.0f;
-		pTuningParams->m_HookLength = 0.0f;
 	}
-	if(FixedPosition || m_Core.m_IsPassenger)
+	if(NoGravity)
 	{
 		pTuningParams->m_Gravity = 0.0f;
 	}
