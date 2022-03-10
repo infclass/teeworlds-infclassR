@@ -3,6 +3,7 @@
 
 #include "growingexplosion.h"
 
+#include <engine/shared/config.h>
 #include <game/server/gamecontext.h>
 #include <game/server/infclass/classes/infcplayerclass.h>
 #include <game/server/infclass/damage_type.h>

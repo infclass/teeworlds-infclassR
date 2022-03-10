@@ -6,7 +6,6 @@
 
 #include "infcentity.h"
 
-#include <engine/shared/config.h>
 #include <game/server/entity.h>
 #include <game/server/entities/character.h>
 
