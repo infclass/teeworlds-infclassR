@@ -1,6 +1,7 @@
 #include "infcplayerclass.h"
 
 #include <base/system.h>
+#include <engine/shared/config.h>
 #include <game/gamecore.h>
 #include <game/server/gamecontext.h>
 #include <game/server/infclass/entities/infccharacter.h>
@@ -226,7 +227,10 @@ void CInfClassPlayerClass::OnCharacterTick()
 			m_pCharacter->TakeDamage(Force, PoisonDamage, m_PoisonFrom, m_PoisonDamageType);
 			if(m_Poison >= 0)
 			{
-				m_PoisonTick = Server()->TickSpeed()/2;
+				int Damage = maximum(Config()->m_InfPoisonDamage, 1);
+				const float PoisonDurationSeconds = Config()->m_InfPoisonDuration / 1000.0;
+				const float DamageIntervalSeconds = PoisonDurationSeconds / Damage;
+				m_PoisonTick = Server()->TickSpeed() * DamageIntervalSeconds;
 			}
 		}
 		else
