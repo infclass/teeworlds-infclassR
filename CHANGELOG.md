@@ -1,5 +1,79 @@
 # Changelog
 
+## InfclassR v1.4.0 - 2022-03-13
+
+General:
+- New blinding laser is given to Ninja
+- Merc bombs are now fully deterministic
+- Merc grenades now disable healing for the infected
+- Medic grenades now explode instantly on fired
+- Ghoul flying points now depend on the death type
+- Early infected now fall in love
+- Early infected now reliably killed on round start
+- 'Love effect' now used to animate lovers attacks
+- The 'lovers' can't hook humans anymore
+- The 'lovers' now apply less force on humans
+- Slug in love now can't place a slime
+- HAPPY is now the default emote for lovers
+- Poison effect now can be replenished
+- Scientist tele now respects the ammo amount
+- Freezed characters now can cry
+- Added self-kill protection for humans
+- Humans inactivity time limit increased to 180 seconds
+- Class help pages now have shortcuts (e.g. '/help sci' and '/help merc')
+- Added a sound on character healed
+- Added support for teleports (map entities)
+- Added support for ENTITIES_OFF DDNet tiles (map entities)
+- Added a taxi mode with disabled ammo regen
+- Invisible ghosts now ignore infected zone emotions
+- DEATH_TILE as a kill reason mapped to WEAPON_NINJA
+- Taxi passengers can't hook anymore
+- 'Lock position' now disabled for taxi-passenger Sniper
+- Human class now kept on reconnect or joining spec
+- Added Portuguese (Brazil) translation (thanks fahh)
+- Updated German translation (thanks Emrldy)
+- Fixed Engineer Wall interactions with undead
+- Fixed a rare crash on a disconnect between rounds
+- Fixed compatibility with teeworlds-0.6.x
+- Fixed merc grenades poison effect duration
+- Fixed ninja katana collisions on higher speeds
+- Fixed round started up during sv_warmup
+- Fixed slug slime effect applied too often
+- Fixed spider web hook (not) catching humans
+- Fixed voodoo death with active spawn protection
+- Fixed zones tesselation
+- Fixed laser clipping
+
+Server-side features for Infclass Client:
+- Implemented damage type
+- Implemented kill assistance
+- Implemented infclass object info
+- Implemented Kills/Deaths/Assists statistic
+- Added FORCED_TO_SPECTATE camera mode
+- Boomer camera now follows BFed target
+
+Maps:
+- Added infc_half_provence
+- Fixed some small graphics issues on some maps
+- infc_hardcorepit timelimit reduced from 2 minutes to 90 seconds
+
+Maintenance:
+- Added 'sv_timelimit_in_seconds' conf variable
+- Added 'sv_info_change_delay' (the same as in DDNet)
+- Added 'inf_inactive_humans_kick_time'
+- Added 'inf_inactive_infected_kick_time'
+- Added 'inf_taxi' (0 = disabled, 1 = enabled (without passengers ammo regen), 2 = enabled)
+- Added 'inf_initial_infection_delay'
+- Added 'inf_merc_bomb_max_damage'
+- Added 'inf_slime_poison_damage' (replaces 'inf_slime_poison_duration')
+- Added 'inf_poison_duration'
+- Added 'inf_converter_id'
+- Added 'inf_converter_force_regeneration'
+- Added 'inf_event' (similar to 'events' in DDNet)
+- Added 'inf_infzone_freeze_duration'
+- Added 'inf_blindness_duration'
+- Added 'inf_revival_damage'
+
 ## InfclassR v1.3.1 - 2021-12-09
 
 General:

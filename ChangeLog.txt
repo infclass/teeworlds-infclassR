@@ -1,3 +1,10 @@
+InfclassR v1.4.0_rc1
+- Fixed laser clipping
+- Updated German translation (thanks Emrldy)
+- Fixed merc grenades poison effect duration
+- Hook re-enabled for Sniper in a locked position
+- Fixed slug slime effect applied too often
+
 InfclassR v1.4.0_alpha6
 - Scientist tele now respects the ammo amount
 - Fixed (some) cases with 10 HP regen
