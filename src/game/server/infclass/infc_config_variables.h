@@ -57,7 +57,7 @@ MACRO_CONFIG_INT(InfGhoulDigestion, inf_ghoul_digestion, 5, 0, 10000, CFGFLAG_SE
 MACRO_CONFIG_INT(InfGhoulStomachSize, inf_ghoul_stomach_size, 80, 0, 10000, CFGFLAG_SERVER, "Number of dead that the ghoul can eat")
 MACRO_CONFIG_INT(InfGhoulThreshold, inf_ghoul_threshold, 3, 0, 10000, CFGFLAG_SERVER, "Ghouls will only be created when the number of infected has reached this threshold")
 MACRO_CONFIG_INT(InfSlimeDuration, inf_slime_duration, 10, 0, 10000, CFGFLAG_SERVER, "How long Slug-Slime will stay in game (in seconds)")
-MACRO_CONFIG_INT(InfSlimePoisonDuration, inf_slime_poison_duration, 5, 0, 10000, CFGFLAG_SERVER, "How long Slug-Slime will deal damage to humans (in seconds)")
+MACRO_CONFIG_INT(InfSlimePoisonDamage, inf_slime_poison_damage, 5, 0, 10000, CFGFLAG_SERVER, "The total damage from Slug-Slime")
 MACRO_CONFIG_INT(InfSlimeHealRate, inf_slime_heal_rate, 2, 0, 10000, CFGFLAG_SERVER, "Slug-Slime heals infected for X hearts every second")
 MACRO_CONFIG_INT(InfSlimeMaxHeal, inf_slime_max_heal, 10, 0, 100, CFGFLAG_SERVER, "The maximum total HP that can be gained from Slug Slime (reasonable max value is 20)")
 MACRO_CONFIG_INT(InfInfzoneHealRate, inf_infzone_heal_rate, 3, 0, 10000, CFGFLAG_SERVER, "Infection zone heals infected for X hearts every second")
@@ -151,3 +151,4 @@ MACRO_CONFIG_INT(InfWhiteHolePullStrength, inf_white_hole_pull_strength, 40, 0, 
 // Deprecated variables
 MACRO_CONFIG_INT(InfStunGrenadeMinimalKills, inf_stun_grenade_minimal_kills, 2, 0, 30, CFGFLAG_SERVER, "Deprecated (has no effect now)")
 MACRO_CONFIG_INT(InfStunGrenadeProbability, inf_stun_grenade_probability, 30, 0, 100, CFGFLAG_SERVER, "Deprecated (has no effect now)")
+MACRO_CONFIG_INT(InfSlimePoisonDuration, inf_slime_poison_duration, 5, 0, 10000, CFGFLAG_SERVER, "Deprecated (has no effect now, use inf_slime_poison_damage instead)")
