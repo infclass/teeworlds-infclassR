@@ -160,10 +160,14 @@ void CHeroFlag::Snap(int SnappingClient)
 	if(pOwnerPlayer->GetClass() != PLAYERCLASS_HERO)
 		return;
 
-	if (GameServer()->GetHeroGiftCoolDown() <= 0)
+	if(GameServer()->GetHeroGiftCoolDown() <= 0)
 	{
-		float AngleStart = (2.0f * pi * Server()->Tick()/static_cast<float>(Server()->TickSpeed()))/CHeroFlag::SPEED;
+		const float Speed = 0.066;
+		float AngleStart = (2.0f * pi * Server()->Tick()/static_cast<float>(Server()->TickSpeed())) * Speed;
 		float AngleStep = 2.0f * pi / CHeroFlag::SHIELD_COUNT;
+
+		const vec2 DecorationsPivot(m_Pos.x, m_Pos.y);
+		const float Radius = 38;
 		
 		for(int i=0; i<CHeroFlag::SHIELD_COUNT; i++)
 		{
@@ -171,7 +175,7 @@ void CHeroFlag::Snap(int SnappingClient)
 			if(!pObj)
 				return;
 
-			vec2 PosStart = m_Pos + vec2(CHeroFlag::RADIUS * cos(AngleStart + AngleStep*i), CHeroFlag::RADIUS * sin(AngleStart + AngleStep*i));
+			vec2 PosStart = DecorationsPivot + vec2(cos(AngleStart + AngleStep*i), sin(AngleStart + AngleStep*i)) * Radius;
 
 			pObj->m_X = (int)PosStart.x;
 			pObj->m_Y = (int)PosStart.y;

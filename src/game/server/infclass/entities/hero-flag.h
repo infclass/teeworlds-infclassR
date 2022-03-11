@@ -12,9 +12,7 @@ class CHeroFlag : public CInfCEntity
 public:
 	enum
 	{
-		RADIUS = 50,
 		SHIELD_COUNT = 4,
-		SPEED = 15, // higher = slower
 	};
 
 private:
