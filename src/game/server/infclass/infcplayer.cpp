@@ -293,6 +293,8 @@ void CInfClassPlayer::SetClass(int newClass)
 	m_GhoulLevel = 0;
 	m_GhoulLevelTick = 0;
 
+	ResetNumberKills();
+
 	if(m_pInfcPlayerClass)
 	{
 		m_pInfcPlayerClass->SetCharacter(nullptr);
