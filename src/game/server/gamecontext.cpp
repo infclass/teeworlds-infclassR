@@ -2941,6 +2941,13 @@ bool CGameContext::ConAbout(IConsole::IResult *pResult)
 		Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "info", Buffer.buffer());
 		Buffer.clear();
 	}
+	if(Config()->m_AboutTranslationUrl[0])
+	{
+		Server()->Localization()->Format_L(Buffer, pLanguage, _("Translation project: {str:Url}"), "Url",
+			Config()->m_AboutTranslationUrl, nullptr);
+		Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "info", Buffer.buffer());
+		Buffer.clear();
+	}
 
 	Server()->Localization()->Format_L(Buffer, pLanguage, _("See also: /credits"), nullptr);
 	Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "info", Buffer.buffer());
