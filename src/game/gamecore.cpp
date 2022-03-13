@@ -8,11 +8,10 @@
 
 const char *CTuningParams::ms_apNames[] =
 {
-	#define MACRO_TUNING_PARAM(Name,ScriptName,Value) #ScriptName,
+	#define MACRO_TUNING_PARAM(Name, ScriptName, Value, Description) #ScriptName,
 	#include "tuning.h"
 	#undef MACRO_TUNING_PARAM
 };
-
 
 bool CTuningParams::Set(int Index, float Value)
 {
@@ -49,14 +48,14 @@ bool CTuningParams::Get(const char *pName, float *pValue) const
 
 float HermiteBasis1(float v)
 {
-	return 2*v*v*v - 3*v*v+1;
+	return 2 * v * v * v - 3 * v * v + 1;
 }
 
 float VelocityRamp(float Value, float Start, float Range, float Curvature)
 {
 	if(Value < Start)
 		return 1.0f;
-	return 1.0f/powf(Curvature, (Value-Start)/Range);
+	return 1.0f / powf(Curvature, (Value - Start) / Range);
 }
 
 const float CCharacterCore::PhysicalSize = 28.0f;
@@ -66,6 +65,7 @@ void CCharacterCore::Init(CWorldCore *pWorld, CCollision *pCollision)
 {
 	m_pWorld = pWorld;
 	m_pCollision = pCollision;
+	Reset();
 }
 
 void CCharacterCore::Reset()

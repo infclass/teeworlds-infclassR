@@ -39,14 +39,14 @@ public:
 	CTuningParams()
 	{
 		const float TicksPerSecond = 50.0f;
-#define MACRO_TUNING_PARAM(Name, ScriptName, Value) m_##Name.Set((int)(Value * 100.0f));
+#define MACRO_TUNING_PARAM(Name, ScriptName, Value, Description) m_##Name.Set((int)(Value * 100.0f));
 #include "tuning.h"
 #undef MACRO_TUNING_PARAM
 	}
 
 	bool operator==(const CTuningParams& TuningParams)
 	{
-#define MACRO_TUNING_PARAM(Name,ScriptName,Value) if(m_##Name != TuningParams.m_##Name) return false;
+#define MACRO_TUNING_PARAM(Name, ScriptName, Value, Description) if(m_##Name != TuningParams.m_##Name) return false;
 #include "tuning.h"
 #undef MACRO_TUNING_PARAM
 		return true;
@@ -54,7 +54,7 @@ public:
 
 	static const char *ms_apNames[];
 
-#define MACRO_TUNING_PARAM(Name, ScriptName, Value) CTuneParam m_##Name;
+#define MACRO_TUNING_PARAM(Name, ScriptName, Value, Description) CTuneParam m_##Name;
 #include "tuning.h"
 #undef MACRO_TUNING_PARAM
 
@@ -67,6 +67,7 @@ public:
 	bool Get(int Index, float *pValue) const;
 	bool Get(const char *pName, float *pValue) const;
 };
+
 
 inline vec2 GetDirection(int Angle)
 {

@@ -928,12 +928,52 @@ void CGameContext::CheckPureTuning()
 
 void CGameContext::SendTuningParams(int ClientID)
 {
+	if(ClientID == -1)
+	{
+		for(int i = 0; i < MAX_CLIENTS; ++i)
+		{
+			if(m_apPlayers[i])
+			{
+				SendTuningParams(i);
+			}
+		}
+		return;
+	}
+
 	CheckPureTuning();
 
 	CMsgPacker Msg(NETMSGTYPE_SV_TUNEPARAMS);
 	int *pParams = (int *)&m_Tuning;
-	for(unsigned i = 0; i < sizeof(m_Tuning)/sizeof(int); i++)
-		Msg.AddInt(pParams[i]);
+
+	unsigned int Last = sizeof(m_Tuning) / sizeof(int);
+	if(m_apPlayers[ClientID])
+	{
+		int ClientVersion = m_apPlayers[ClientID]->GetClientVersion();
+		if(ClientVersion < VERSION_DDNET_EXTRATUNES)
+			Last = 33;
+		else if(ClientVersion < VERSION_DDNET_HOOKDURATION_TUNE)
+			Last = 37;
+		else if(ClientVersion < VERSION_DDNET_FIREDELAY_TUNE)
+			Last = 38;
+	}
+
+	for(unsigned i = 0; i < Last; i++)
+	{
+		if(i == 31) // collision
+		{
+			// inverted to avoid client collision prediction
+			// (keep behavior introduced by commit 11c408e5dd8f3672b658ad0581f016be85a46011)
+			Msg.AddInt(0);
+		}
+		else if(i == 33) // jetpack
+		{
+			Msg.AddInt(0);
+		}
+		else
+		{
+			Msg.AddInt(pParams[i]);
+		}
+	}
 	Server()->SendMsg(&Msg, MSGFLAG_VITAL, ClientID);
 }
 
