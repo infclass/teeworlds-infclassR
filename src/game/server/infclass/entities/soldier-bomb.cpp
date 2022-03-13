@@ -13,6 +13,7 @@
 CSoldierBomb::CSoldierBomb(CGameContext *pGameContext, vec2 Pos, int Owner) :
 	CPlacedObject(pGameContext, CGameWorld::ENTTYPE_SOLDIER_BOMB, Pos, Owner)
 {
+	m_InfClassObjectType = INFCLASS_OBJECT_TYPE_SOLDIER_BOMB;
 	GameWorld()->InsertEntity(this);
 	m_DetectionRadius = 60.0f;
 	m_StartTick = Server()->Tick();

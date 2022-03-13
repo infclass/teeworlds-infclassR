@@ -14,6 +14,7 @@
 CMercenaryBomb::CMercenaryBomb(CGameContext *pGameContext, vec2 Pos, int Owner)
 	: CPlacedObject(pGameContext, CGameWorld::ENTTYPE_MERCENARY_BOMB, Pos, Owner)
 {
+	m_InfClassObjectType = INFCLASS_OBJECT_TYPE_MERCENARY_BOMB;
 	GameWorld()->InsertEntity(this);
 	m_LoadingTick = Server()->TickSpeed();
 	m_Damage = 0;

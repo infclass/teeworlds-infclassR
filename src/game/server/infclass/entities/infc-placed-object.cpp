@@ -8,12 +8,13 @@
 CPlacedObject::CPlacedObject(CGameContext *pGameContext, int ObjectType, vec2 Pos, int Owner, int ProximityRadius)
 	: CInfCEntity(pGameContext, ObjectType, Pos, Owner, ProximityRadius)
 {
-	m_InfclassObjectID = Server()->SnapNewID();
+	m_InfClassObjectID = Server()->SnapNewID();
+	m_InfClassObjectType = INFCLASS_OBJECT_TYPE_CUSTOM;
 }
 
 CPlacedObject::~CPlacedObject()
 {
-	Server()->SnapFreeID(m_InfclassObjectID);
+	Server()->SnapFreeID(m_InfClassObjectID);
 }
 
 bool CPlacedObject::DoSnapForClient(int SnappingClient)
@@ -30,14 +31,14 @@ bool CPlacedObject::DoSnapForClient(int SnappingClient)
 
 CNetObj_InfClassObject *CPlacedObject::SnapInfClassObject()
 {
-	CNetObj_InfClassObject *pInfClassObject = static_cast<CNetObj_InfClassObject *>(Server()->SnapNewItem(NETOBJTYPE_INFCLASSOBJECT, m_InfclassObjectID, sizeof(CNetObj_InfClassObject)));
+	CNetObj_InfClassObject *pInfClassObject = static_cast<CNetObj_InfClassObject *>(Server()->SnapNewItem(NETOBJTYPE_INFCLASSOBJECT, m_InfClassObjectID, sizeof(CNetObj_InfClassObject)));
 	if(!pInfClassObject)
 		return nullptr;
 
 	pInfClassObject->m_X = m_Pos.x;
 	pInfClassObject->m_Y = m_Pos.y;
 
-	pInfClassObject->m_Type = m_ObjType;
+	pInfClassObject->m_Type = m_InfClassObjectType;
 	pInfClassObject->m_Flags = 0;
 
 	pInfClassObject->m_Owner = GetOwner();

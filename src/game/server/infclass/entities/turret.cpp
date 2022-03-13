@@ -18,6 +18,7 @@
 CTurret::CTurret(CGameContext *pGameContext, vec2 Pos, int Owner, vec2 Direction, CTurret::Type Type)
 	: CPlacedObject(pGameContext, CGameWorld::ENTTYPE_TURRET, Pos, Owner)
 {
+	m_InfClassObjectType = INFCLASS_OBJECT_TYPE_TURRET;
 	m_Dir = Direction;
 	m_StartTick = Server()->Tick();
 	m_Bounces = 0;

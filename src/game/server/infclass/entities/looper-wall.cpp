@@ -15,6 +15,7 @@
 CLooperWall::CLooperWall(CGameContext *pGameContext, vec2 Pos1, vec2 Pos2, int Owner)
 	: CPlacedObject(pGameContext, CGameWorld::ENTTYPE_LOOPER_WALL, Pos1, Owner)
 {
+	m_InfClassObjectType = INFCLASS_OBJECT_TYPE_LOOPER_WALL;
 	if(distance(Pos1, Pos2) > g_BarrierMaxLength)
 	{
 		m_Pos2 = Pos1 + normalize(Pos2 - Pos1)*g_BarrierMaxLength;

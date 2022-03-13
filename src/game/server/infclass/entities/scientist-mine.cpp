@@ -14,6 +14,7 @@
 CScientistMine::CScientistMine(CGameContext *pGameContext, vec2 Pos, int Owner)
 	: CPlacedObject(pGameContext, CGameWorld::ENTTYPE_SCIENTIST_MINE, Pos, Owner)
 {
+	m_InfClassObjectType = INFCLASS_OBJECT_TYPE_SCIENTIST_MINE;
 	GameWorld()->InsertEntity(this);
 	m_DetectionRadius = 60.0f;
 	m_StartTick = Server()->Tick();

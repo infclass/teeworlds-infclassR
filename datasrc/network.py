@@ -37,6 +37,7 @@ Emoticons = ["OOP", "EXCLAMATION", "HEARTS", "DROP", "DOTDOT", "MUSIC", "SORRY",
 InfClassPlayerFlags = ["INFECTED", "HOOK_PROTECTION_OFF", "FORCED_TO_SPECTATE"]
 
 InfClassObjectFlags = ["HAS_SECOND_POSITION"]
+InfClassObjectTypes = ["CUSTOM", "LASER_WALL", "LOOPER_WALL", "SOLDIER_BOMB", "SCIENTIST_MINE", "BIOLOGIST_MINE", "MERCENARY_BOMB", "TURRET"]
 
 Powerups = ["HEALTH", "ARMOR", "WEAPON", "NINJA"]
 Authed = ["NO", "HELPER", "MOD", "ADMIN"]
@@ -83,6 +84,7 @@ Enums = [
 	Enum("EMOTICON", Emoticons),
 	Enum("AUTHED", Authed),
 	Enum("ENTITYCLASS", EntityClasses),
+	Enum("INFCLASS_OBJECT_TYPE", InfClassObjectTypes),
 ]
 
 Flags = [
