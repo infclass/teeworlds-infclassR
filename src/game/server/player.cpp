@@ -167,11 +167,7 @@ void CPlayer::HandleTuningParams()
 	{
 		if(m_IsReady)
 		{
-			CMsgPacker Msg(NETMSGTYPE_SV_TUNEPARAMS);
-			int *pParams = (int *)&m_NextTuningParams;
-			for(unsigned i = 0; i < sizeof(m_NextTuningParams)/sizeof(int); i++)
-				Msg.AddInt(pParams[i]);
-			Server()->SendMsg(&Msg, MSGFLAG_VITAL, GetCID());
+			GameServer()->SendTuningParams(GetCID(), m_NextTuningParams);
 		}
 		
 		m_PrevTuningParams = m_NextTuningParams;

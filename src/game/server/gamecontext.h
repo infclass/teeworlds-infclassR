@@ -215,6 +215,7 @@ public:
 	//
 	void CheckPureTuning();
 	void SendTuningParams(int ClientID);
+	void SendTuningParams(int ClientID, const CTuningParams &params);
 
 	struct CVoteOptionServer *GetVoteOption(int Index);
 	void ProgressVoteOptions(int ClientID);

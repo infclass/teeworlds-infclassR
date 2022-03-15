@@ -942,8 +942,13 @@ void CGameContext::SendTuningParams(int ClientID)
 
 	CheckPureTuning();
 
+	SendTuningParams(ClientID, m_Tuning);
+}
+
+void CGameContext::SendTuningParams(int ClientID, const CTuningParams &params)
+{
 	CMsgPacker Msg(NETMSGTYPE_SV_TUNEPARAMS);
-	int *pParams = (int *)&m_Tuning;
+	const int *pParams = (const int *)&params;
 
 	unsigned int Last = sizeof(m_Tuning) / sizeof(int);
 	if(m_apPlayers[ClientID])
