@@ -42,7 +42,7 @@ MACRO_TUNING_PARAM(LaserBounceNum, laser_bounce_num, 1, "How many times the lase
 MACRO_TUNING_PARAM(LaserBounceCost, laser_bounce_cost, 0, "Remove this much from reach when laser is bouncing")
 MACRO_TUNING_PARAM(LaserDamage, laser_damage, 5, "(UNUSED) Laser damage")
 
-MACRO_TUNING_PARAM(PlayerCollision, player_collision, 0, "Enable player collisions")
+MACRO_TUNING_PARAM(PlayerCollision, player_collision, 1, "Enable player collisions")
 MACRO_TUNING_PARAM(PlayerHooking, player_hooking, 1, "Enable player vs player hooking")
 
 //ddnet tuning
