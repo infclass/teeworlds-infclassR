@@ -184,6 +184,12 @@ int LoadPNG(CImageInfo *pImg, const char *pFilename)
 	return 1;
 }
 
+void FreePNG(CImageInfo *pImg)
+{
+	free(pImg->m_pData);
+	pImg->m_pData = nullptr;
+}
+
 void MakeGrayScale(CImageInfo *pImg)
 {
 	static const int BodySize = 96;
@@ -1007,6 +1013,8 @@ int CMapConverter::AddEmbeddedImage(const char *pImageName, int Width, int Heigh
 		Item.m_ImageData = m_DataFile.AddData(Item.m_Width * Item.m_Height * 4, pImg->m_pData);
 	}
 	m_DataFile.AddItem(MAPITEMTYPE_IMAGE, m_NumImages++, sizeof(Item), &Item);
+
+	FreePNG(pImg);
 
 	return m_NumImages-1;
 }
