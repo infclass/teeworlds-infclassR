@@ -22,7 +22,9 @@ CCollision::CCollision()
 	m_Height = 0;
 	
 	m_pLayers = 0;
-	
+
+	m_pTele = 0;
+
 	m_Time = 0.0;
 }
 
