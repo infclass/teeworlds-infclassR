@@ -147,6 +147,9 @@ int CInfClassInfected::GetDefaultEmote() const
 {
 	int EmoteNormal = EMOTE_ANGRY;
 
+	if(!m_pCharacter)
+		return EmoteNormal;
+
 	if(m_pCharacter->IsBlind())
 		EmoteNormal = EMOTE_BLINK;
 
