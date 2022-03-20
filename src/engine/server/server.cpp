@@ -2381,12 +2381,17 @@ int CServer::Run()
 
 	// start game
 	{
+		bool NonActive = false;
+
 		m_Lastheartbeat = 0;
 		m_GameStartTime = time_get();
 
 		while(m_RunServer)
 		{
+			if(NonActive)
+				PumpNetwork();
 			set_new_tick();
+
 			int64 t = time_get();
 			int NewTicks = 0;
 			
@@ -2529,9 +2534,10 @@ int CServer::Run()
 			// master server stuff
 			m_Register.RegisterUpdate(m_NetServer.NetType());
 
-			PumpNetwork();
+			if(!NonActive)
+				PumpNetwork();
 
-			bool NonActive = true;
+			NonActive = true;
 
 			for(int c = 0; c < MAX_CLIENTS; c++)
 				if(m_aClients[c].m_State != CClient::STATE_EMPTY)
