@@ -1,6 +1,6 @@
 /* (c) Magnus Auvinen. See licence.txt in the root of the distribution for more information. */
 /* If you are missing that file, acquire a complete release at teeworlds.com.                */
-#include <stdio.h>	// sscanf
+#include <cstdio> // sscanf
 
 #include <base/system.h>
 
@@ -19,8 +19,8 @@ public:
 		char m_aHostname[128];
 		NETADDR m_Addr;
 		bool m_Valid;
-
-		CHostLookup m_Lookup;
+		int m_Count;
+		std::shared_ptr<CHostLookup> m_pLookup;
 	};
 
 	enum
@@ -31,6 +31,7 @@ public:
 	};
 
 	CMasterInfo m_aMasterServers[MAX_MASTERSERVERS];
+	std::shared_ptr<CHostLookup> m_apLookup[MAX_MASTERSERVERS];
 	int m_State;
 	IEngine *m_pEngine;
 	IStorage *m_pStorage;
@@ -53,8 +54,10 @@ public:
 		// add lookup jobs
 		for(int i = 0; i < MAX_MASTERSERVERS; i++)
 		{
-			m_pEngine->HostLookup(&m_aMasterServers[i].m_Lookup, m_aMasterServers[i].m_aHostname, Nettype);
+			*m_apLookup[i] = CHostLookup(m_aMasterServers[i].m_aHostname, Nettype);
+			m_pEngine->AddJob(m_apLookup[i]);
 			m_aMasterServers[i].m_Valid = false;
+			m_aMasterServers[i].m_Count = 0;
 		}
 
 		m_State = STATE_UPDATE;
@@ -70,18 +73,20 @@ public:
 
 		for(int i = 0; i < MAX_MASTERSERVERS; i++)
 		{
-			if(m_aMasterServers[i].m_Lookup.m_Job.Status() != CJob::STATE_DONE)
+			if(m_apLookup[i]->Status() != IJob::STATE_DONE)
 				m_State = STATE_UPDATE;
 			else
 			{
-				if(m_aMasterServers[i].m_Lookup.m_Job.Result() == 0)
+				if(m_apLookup[i]->m_Result == 0)
 				{
-					m_aMasterServers[i].m_Addr = m_aMasterServers[i].m_Lookup.m_Addr;
+					m_aMasterServers[i].m_Addr = m_apLookup[i]->m_Addr;
 					m_aMasterServers[i].m_Addr.port = 8300;
 					m_aMasterServers[i].m_Valid = true;
 				}
 				else
+				{
 					m_aMasterServers[i].m_Valid = false;
+				}
 			}
 		}
 
@@ -100,6 +105,16 @@ public:
 	virtual NETADDR GetAddr(int Index) const
 	{
 		return m_aMasterServers[Index].m_Addr;
+	}
+
+	virtual void SetCount(int Index, int Count)
+	{
+		m_aMasterServers[Index].m_Count = Count;
+	}
+
+	virtual int GetCount(int Index) const
+	{
+		return m_aMasterServers[Index].m_Count;
 	}
 
 	virtual const char *GetName(int Index) const
@@ -122,7 +137,10 @@ public:
 	{
 		mem_zero(m_aMasterServers, sizeof(m_aMasterServers));
 		for(int i = 0; i < MAX_MASTERSERVERS; i++)
-			str_format(m_aMasterServers[i].m_aHostname, sizeof(m_aMasterServers[i].m_aHostname), "master%d.teeworlds.com", i+1);
+		{
+			str_format(m_aMasterServers[i].m_aHostname, sizeof(m_aMasterServers[i].m_aHostname), "master%d.teeworlds.com", i + 1);
+			m_apLookup[i] = std::make_shared<CHostLookup>();
+		}
 	}
 
 	virtual int Load()
@@ -137,7 +155,7 @@ public:
 
 		CLineReader LineReader;
 		LineReader.Init(File);
-		while(1)
+		while(true)
 		{
 			CMasterInfo Info = {{0}};
 			const char *pLine = LineReader.Get();
@@ -150,23 +168,27 @@ public:
 			{
 				Info.m_Addr.port = 8300;
 				bool Added = false;
-				for(int i = 0; i < MAX_MASTERSERVERS; ++i)
-					if(str_comp(m_aMasterServers[i].m_aHostname, Info.m_aHostname) == 0)
+				for(auto &MasterServer : m_aMasterServers)
+				{
+					if(str_comp(MasterServer.m_aHostname, Info.m_aHostname) == 0)
 					{
-						m_aMasterServers[i] = Info;
+						MasterServer = Info;
 						Added = true;
 						break;
 					}
+				}
 
 				if(!Added)
 				{
-					for(int i = 0; i < MAX_MASTERSERVERS; ++i)
-						if(m_aMasterServers[i].m_Addr.type == NETTYPE_INVALID)
+					for(auto &MasterServer : m_aMasterServers)
+					{
+						if(MasterServer.m_Addr.type == NETTYPE_INVALID)
 						{
-							m_aMasterServers[i] = Info;
+							MasterServer = Info;
 							Added = true;
 							break;
 						}
+					}
 				}
 
 				if(!Added)
@@ -188,15 +210,15 @@ public:
 		if(!File)
 			return -1;
 
-		for(int i = 0; i < MAX_MASTERSERVERS; i++)
+		for(auto &MasterServer : m_aMasterServers)
 		{
 			char aAddrStr[NETADDR_MAXSTRSIZE];
-			if(m_aMasterServers[i].m_Addr.type != NETTYPE_INVALID)
-				net_addr_str(&m_aMasterServers[i].m_Addr, aAddrStr, sizeof(aAddrStr), true);
+			if(MasterServer.m_Addr.type != NETTYPE_INVALID)
+				net_addr_str(&MasterServer.m_Addr, aAddrStr, sizeof(aAddrStr), true);
 			else
 				aAddrStr[0] = 0;
 			char aBuf[256];
-			str_format(aBuf, sizeof(aBuf), "%s %s", m_aMasterServers[i].m_aHostname, aAddrStr);
+			str_format(aBuf, sizeof(aBuf), "%s %s", MasterServer.m_aHostname, aAddrStr);
 			io_write(File, aBuf, str_length(aBuf));
 			io_write_newline(File);
 		}

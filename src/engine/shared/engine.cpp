@@ -5,15 +5,21 @@
 
 #include <engine/console.h>
 #include <engine/engine.h>
-#include <engine/storage.h>
 #include <engine/shared/config.h>
 #include <engine/shared/network.h>
+#include <engine/storage.h>
 
+CHostLookup::CHostLookup() = default;
 
-static int HostLookupThread(void *pUser)
+CHostLookup::CHostLookup(const char *pHostname, int Nettype)
 {
-	CHostLookup *pLookup = (CHostLookup *)pUser;
-	return net_host_lookup(pLookup->m_aHostname, &pLookup->m_Addr, pLookup->m_Nettype);
+	str_copy(m_aHostname, pHostname, sizeof(m_aHostname));
+	m_Nettype = Nettype;
+}
+
+void CHostLookup::Run()
+{
+	m_Result = net_host_lookup(m_aHostname, &m_Addr, m_Nettype);
 }
 
 class CEngine : public IEngine
@@ -36,37 +42,41 @@ public:
 		{
 			char aBuf[32];
 			str_timestamp(aBuf, sizeof(aBuf));
-			char aFilenameSent[128], aFilenameRecv[128];
+			char aFilenameSent[IO_MAX_PATH_LENGTH], aFilenameRecv[IO_MAX_PATH_LENGTH];
 			str_format(aFilenameSent, sizeof(aFilenameSent), "dumps/network_sent_%s.txt", aBuf);
 			str_format(aFilenameRecv, sizeof(aFilenameRecv), "dumps/network_recv_%s.txt", aBuf);
 			CNetBase::OpenLog(pEngine->m_pStorage->OpenFile(aFilenameSent, IOFLAG_WRITE, IStorage::TYPE_SAVE),
-								pEngine->m_pStorage->OpenFile(aFilenameRecv, IOFLAG_WRITE, IStorage::TYPE_SAVE));
+				pEngine->m_pStorage->OpenFile(aFilenameRecv, IOFLAG_WRITE, IStorage::TYPE_SAVE));
 			pEngine->m_Logging = true;
 		}
-		
+
 		return true;
 	}
 
-	CEngine(const char *pAppname)
+	CEngine(bool Test, const char *pAppname, bool Silent, int Jobs)
 	{
-		dbg_logger_stdout();
-		dbg_logger_debugger();
+		if(!Test)
+		{
+			if(!Silent)
+				dbg_logger_stdout();
+			dbg_logger_debugger();
 
-		//
-		dbg_msg("engine", "running on %s-%s-%s", CONF_FAMILY_STRING, CONF_PLATFORM_STRING, CONF_ARCH_STRING);
-	#ifdef CONF_ARCH_ENDIAN_LITTLE
-		dbg_msg("engine", "arch is little endian");
-	#elif defined(CONF_ARCH_ENDIAN_BIG)
-		dbg_msg("engine", "arch is big endian");
-	#else
-		dbg_msg("engine", "unknown endian");
-	#endif
+			//
+			dbg_msg("engine", "running on %s-%s-%s", CONF_FAMILY_STRING, CONF_PLATFORM_STRING, CONF_ARCH_STRING);
+#ifdef CONF_ARCH_ENDIAN_LITTLE
+			dbg_msg("engine", "arch is little endian");
+#elif defined(CONF_ARCH_ENDIAN_BIG)
+			dbg_msg("engine", "arch is big endian");
+#else
+			dbg_msg("engine", "unknown endian");
+#endif
 
-		// init the network
-		net_init();
-		CNetBase::Init();
+			// init the network
+			net_init();
+			CNetBase::Init();
+		}
 
-		m_JobPool.Init(1);
+		m_JobPool.Init(Jobs);
 
 		m_Logging = false;
 	}
@@ -79,7 +89,7 @@ public:
 		if(!m_pConsole || !m_pStorage)
 			return;
 
-		m_pConsole->Register("dbg_lognetwork", "", CFGFLAG_SERVER|CFGFLAG_CLIENT, Con_DbgLognetwork, this, "Log the network");
+		m_pConsole->Register("dbg_lognetwork", "", CFGFLAG_SERVER | CFGFLAG_CLIENT, Con_DbgLognetwork, this, "Log the network");
 	}
 
 	void InitLogfile()
@@ -89,19 +99,18 @@ public:
 			dbg_logger_file(g_Config.m_Logfile);
 	}
 
-	void HostLookup(CHostLookup *pLookup, const char *pHostname, int Nettype)
-	{
-		str_copy(pLookup->m_aHostname, pHostname, sizeof(pLookup->m_aHostname));
-		pLookup->m_Nettype = Nettype;
-		AddJob(&pLookup->m_Job, HostLookupThread, pLookup);
-	}
-
-	void AddJob(CJob *pJob, JOBFUNC pfnFunc, void *pData)
+	void AddJob(std::shared_ptr<IJob> pJob)
 	{
 		if(g_Config.m_Debug)
 			dbg_msg("engine", "job added");
-		m_JobPool.Add(pJob, pfnFunc, pData);
+		m_JobPool.Add(std::move(pJob));
 	}
 };
 
-IEngine *CreateEngine(const char *pAppname) { return new CEngine(pAppname); }
+void IEngine::RunJobBlocking(IJob *pJob)
+{
+	CJobPool::RunBlocking(pJob);
+}
+
+IEngine *CreateEngine(const char *pAppname, bool Silent, int Jobs) { return new CEngine(false, pAppname, Silent, Jobs); }
+IEngine *CreateTestEngine(const char *pAppname, int Jobs) { return new CEngine(true, pAppname, true, Jobs); }

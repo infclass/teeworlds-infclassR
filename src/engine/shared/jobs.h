@@ -2,53 +2,63 @@
 /* If you are missing that file, acquire a complete release at teeworlds.com.                */
 #ifndef ENGINE_SHARED_JOBS_H
 #define ENGINE_SHARED_JOBS_H
-typedef int (*JOBFUNC)(void *pData);
 
+#include <base/system.h>
+
+#include <atomic>
+#include <memory>
+
+class IJob;
 class CJobPool;
 
-class CJob
+class IJob
 {
 	friend class CJobPool;
 
-	CJobPool *m_pPool;
-	CJob *m_pPrev;
-	CJob *m_pNext;
+private:
+	std::shared_ptr<IJob> m_pNext;
 
-	volatile int m_Status;
-	volatile int m_Result;
+	std::atomic<int> m_Status;
+	virtual void Run() = 0;
 
-	JOBFUNC m_pfnFunc;
-	void *m_pFuncData;
 public:
-	CJob()
-	{
-		m_Status = STATE_DONE;
-		m_pFuncData = 0;
-	}
+	IJob();
+	IJob(const IJob &Other);
+	IJob &operator=(const IJob &Other);
+	virtual ~IJob();
+	int Status();
 
 	enum
 	{
-		STATE_PENDING=0,
+		STATE_PENDING = 0,
 		STATE_RUNNING,
 		STATE_DONE
 	};
-
-	int Status() const { return m_Status; }
-	int Result() const {return m_Result; }
 };
 
 class CJobPool
 {
+	enum
+	{
+		MAX_THREADS = 32
+	};
+	int m_NumThreads;
+	void *m_apThreads[MAX_THREADS];
+	std::atomic<bool> m_Shutdown;
+
 	LOCK m_Lock;
-	CJob *m_pFirstJob;
-	CJob *m_pLastJob;
+	SEMAPHORE m_Semaphore;
+	std::shared_ptr<IJob> m_pFirstJob GUARDED_BY(m_Lock);
+	std::shared_ptr<IJob> m_pLastJob GUARDED_BY(m_Lock);
 
 	static void WorkerThread(void *pUser);
 
 public:
 	CJobPool();
+	~CJobPool();
 
-	int Init(int NumThreads);
-	int Add(CJob *pJob, JOBFUNC pfnFunc, void *pData);
+	void Init(int NumThreads);
+	void Add(std::shared_ptr<IJob> pJob);
+	static void RunBlocking(IJob *pJob);
 };
 #endif

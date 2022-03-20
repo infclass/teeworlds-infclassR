@@ -3196,6 +3196,7 @@ static CServer *CreateServer() { return new CServer(); }
 
 int main(int argc, const char **argv) // ignore_convention
 {
+	bool Silent = false;
 #if defined(CONF_FAMILY_WINDOWS)
 	for(int i = 1; i < argc; i++) // ignore_convention
 	{
@@ -3217,7 +3218,7 @@ int main(int argc, const char **argv) // ignore_convention
 	IKernel *pKernel = IKernel::Create();
 
 	// create the components
-	IEngine *pEngine = CreateEngine("Teeworlds");
+	IEngine *pEngine = CreateEngine("Teeworlds", Silent, 2);
 	IEngineMap *pEngineMap = CreateEngineMap();
 	IGameServer *pGameServer = CreateGameServer();
 	IConsole *pConsole = CreateConsole(CFGFLAG_SERVER|CFGFLAG_ECON);
