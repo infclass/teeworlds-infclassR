@@ -1,3 +1,10 @@
+InfclassR v1.4.1
+- Fixed poison grenades 'no healing' effect
+- Fixed a memory leak on map client map generation
+- Fixed uninitialized memory access (Teleports layer)
+- Fixed a possible crash on map rotation
+- Fixed high CPU load from thread pool processing
+
 InfclassR v1.4.0_rc1
 - Fixed laser clipping
 - Updated German translation (thanks Emrldy)

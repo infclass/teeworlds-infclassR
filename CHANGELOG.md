@@ -1,5 +1,13 @@
 # Changelog
 
+## InfclassR v1.4.1 - 2022-03-23
+
+- Fixed poison grenades 'no healing' effect
+- Fixed a memory leak on map client map generation (AddEmbeddedImage())
+- Fixed uninitialized memory access (Teleports layer in CCollision)
+- Fixed a possible crash on map rotation (CInfClassInfected::GetDefaultEmote())
+- Fixed high CPU load from thread pool processing (CEngine and CJob backported from DDNet)
+
 ## InfclassR v1.4.0 - 2022-03-13
 
 General:
