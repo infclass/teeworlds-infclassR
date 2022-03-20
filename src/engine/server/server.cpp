@@ -2381,9 +2381,6 @@ int CServer::Run()
 
 	// start game
 	{
-		int64 ReportTime = time_get();
-		int ReportInterval = 3;
-
 		m_Lastheartbeat = 0;
 		m_GameStartTime = time_get();
 
@@ -2533,31 +2530,6 @@ int CServer::Run()
 			m_Register.RegisterUpdate(m_NetServer.NetType());
 
 			PumpNetwork();
-
-			if(ReportTime < time_get())
-			{
-				if(g_Config.m_Debug)
-				{
-					/*
-					static NETSTATS prev_stats;
-					NETSTATS stats;
-					netserver_stats(net, &stats);
-
-					perf_next();
-
-					if(config.dbg_pref)
-						perf_dump(&rootscope);
-
-					dbg_msg("server", "send=%8d recv=%8d",
-						(stats.send_bytes - prev_stats.send_bytes)/reportinterval,
-						(stats.recv_bytes - prev_stats.recv_bytes)/reportinterval);
-
-					prev_stats = stats;
-					*/
-				}
-
-				ReportTime += time_freq()*ReportInterval;
-			}
 
 			bool NonActive = true;
 
