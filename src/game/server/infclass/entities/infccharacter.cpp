@@ -2988,7 +2988,7 @@ void CInfClassCharacter::UpdateTuningParam()
 	{
 		pTuningParams->m_HookLength = 0.0f;
 	}
-	if(NoGravity)
+	if(NoControls)
 	{
 		pTuningParams->m_GroundControlAccel = 0.0f;
 		pTuningParams->m_GroundJumpImpulse = 0.0f;
