@@ -224,11 +224,13 @@ void CInfClassCharacter::TickDefered()
 
 	CCharacter::TickDefered();
 
-	const int64_t MaskOnlyBlind = GameController()->GetBlindCharactersMask(GetCID());
-	if(MaskOnlyBlind)
+	if(Events & COREEVENT_AIR_JUMP)
 	{
-		if(Events & COREEVENT_AIR_JUMP)
+		const int64_t MaskOnlyBlind = GameController()->GetBlindCharactersMask(GetCID());
+		if(MaskOnlyBlind)
+		{
 			GameServer()->CreateSound(GetPos(), SOUND_PLAYER_AIRJUMP, MaskOnlyBlind);
+		}
 	}
 }
 
