@@ -2921,6 +2921,7 @@ void CInfClassCharacter::UpdateTuningParam()
 	CTuningParams* pTuningParams = &m_pPlayer->m_NextTuningParams;
 	
 	bool NoHook = false;
+	bool NoHookAcceleration = false;
 	bool NoControls = false;
 	bool NoGravity = false;
 	
@@ -2928,6 +2929,7 @@ void CInfClassCharacter::UpdateTuningParam()
 	{
 		NoControls = true;
 		NoGravity = true;
+		NoHookAcceleration = true;
 	}
 	if(m_IsFrozen)
 	{
@@ -2990,6 +2992,13 @@ void CInfClassCharacter::UpdateTuningParam()
 	{
 		pTuningParams->m_HookLength = 0.0f;
 	}
+
+	if(NoHookAcceleration)
+	{
+		pTuningParams->m_HookDragSpeed = 0.0f;
+		pTuningParams->m_HookDragAccel = 0.0f;
+	}
+
 	if(NoControls)
 	{
 		pTuningParams->m_GroundControlAccel = 0.0f;
