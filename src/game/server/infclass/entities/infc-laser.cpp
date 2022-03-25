@@ -78,6 +78,7 @@ bool CInfClassLaser::HitCharacter(vec2 From, vec2 To)
 			int LastHumanClass = pHit->GetPlayer()->LastHumanClass();
 			pInfected->GetPlayer()->SetClass(LastHumanClass);
 			pInfected->Unfreeze();
+			pInfected->CancelSlowMotion();
 			pInfected->SetHealthArmor(1, 0);
 			pMedic->TakeDamage(vec2(0.f, 0.f), Config()->m_InfRevivalDamage * 2, m_Owner, DAMAGE_TYPE::MEDIC_REVIVAL);
 

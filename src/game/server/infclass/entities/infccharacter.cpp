@@ -935,6 +935,12 @@ void CInfClassCharacter::UnlockPosition()
 	m_PositionLocked = false;
 }
 
+void CInfClassCharacter::CancelSlowMotion()
+{
+	m_SlowMotionTick = -1;
+	m_IsInSlowMotion = false;
+}
+
 void CInfClassCharacter::ResetMovementsInput()
 {
 	m_Input.m_Jump = 0;

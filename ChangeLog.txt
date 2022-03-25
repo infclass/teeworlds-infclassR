@@ -1,3 +1,7 @@
+InfclassR v1.4.2
+- Fixed prediction for hook of locked Sniper
+- Fixed slow-motion effect kept after revive
+
 InfclassR v1.4.1
 - Fixed poison grenades 'no healing' effect
 - Fixed a memory leak on map client map generation

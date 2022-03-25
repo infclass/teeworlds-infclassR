@@ -188,6 +188,8 @@ public:
 	void LockPosition();
 	void UnlockPosition();
 
+	void CancelSlowMotion();
+
 	void ResetMovementsInput();
 	void ResetHookInput();
 
