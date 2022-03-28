@@ -964,13 +964,13 @@ void CGameContext::SendTuningParams(int ClientID, const CTuningParams &params)
 
 	for(unsigned i = 0; i < Last; i++)
 	{
-		if(i == 31) // collision
+		if(i == 31) // PlayerCollision
 		{
 			// inverted to avoid client collision prediction
 			// (keep behavior introduced by commit 11c408e5dd8f3672b658ad0581f016be85a46011)
 			Msg.AddInt(0);
 		}
-		else if(i == 33) // jetpack
+		else if(i == 33) // JetpackStrength
 		{
 			Msg.AddInt(0);
 		}
