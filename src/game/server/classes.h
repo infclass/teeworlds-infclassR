@@ -38,4 +38,14 @@ enum PLAYERCLASS
 	NB_INFECTEDCLASS = END_INFECTEDCLASS - START_INFECTEDCLASS - 1,
 };
 
+inline bool IsHumanClass(int c)
+{
+	return !(c > END_HUMANCLASS);
+}
+
+inline bool IsInfectedClass(int c)
+{
+	return c > END_HUMANCLASS;
+}
+
 #endif
