@@ -1612,7 +1612,10 @@ void CInfClassGameController::Tick()
 					//To avoid cheating, we assign to him the same class again.
 					if(pSession->m_RoundId == m_RoundId)
 					{
-						Iter.Player()->SetClass(pSession->m_Class);
+						if(IsInfectedClass(pSession->m_Class) == IsInfectionStarted())
+						{
+							Iter.Player()->SetClass(pSession->m_Class);
+						}
 					}
 
 					Server()->SetClientMemory(Iter.ClientID(), CLIENTMEMORY_SESSION_PROCESSED, true);

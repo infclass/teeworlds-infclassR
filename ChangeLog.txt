@@ -1,4 +1,6 @@
 InfclassR v1.4.2
+- Fixed a re-connected player could still use humans
+  spawn after infection started (regression)
 - Fixed prediction for hook of locked Sniper
 - Fixed slow-motion effect kept after revive
 
