@@ -3693,13 +3693,13 @@ bool CGameContext::ConHelp(IConsole::IResult *pResult)
 		Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "help", Server()->Localization()->Localize(pLanguage, _("Choose a help page with /help <page>")));
 		
 		Server()->Localization()->Format_L(Buffer, pLanguage, _("Available help pages: {str:PageList}"),
-			"PageList", "game, translate, msg, taxi",
+			"PageList", "game, translate, msg, mute, taxi",
 			NULL
 		);
 		Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "help", Buffer.buffer());
 		
 		Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "help", "engineer, soldier, scientist, biologist, looper, medic, hero, ninja, mercenary, sniper, whitehole");
-		Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "help", "smoker, hunter, bat, boomer, ghost, spider, ghoul, voodoo, undead, witch.");
+		Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "help", "smoker, hunter, bat, boomer, ghost, spider, ghoul, slug, voodoo, undead, witch.");
 	}
 	else
 	{
