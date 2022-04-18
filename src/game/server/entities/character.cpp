@@ -992,7 +992,7 @@ void CCharacter::Unfreeze()
 
 bool CCharacter::IsFrozen() const
 {
-	return m_IsFrozen > 0;
+	return m_IsFrozen;
 }
 
 bool CCharacter::IsInSlowMotion() const
