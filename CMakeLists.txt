@@ -893,6 +893,7 @@ endforeach()
 
 foreach(target ${TARGETS_OWN})
   if(MSVC)
+    target_compile_options(${target} PRIVATE /wd4065) # switch statement contains 'default' but no 'case' labels
     target_compile_options(${target} PRIVATE /wd4244) # Possible loss of data (float -> int, int -> float, etc.).
     target_compile_options(${target} PRIVATE /wd4267) # Possible loss of data (size_t - int on win64).
     target_compile_options(${target} PRIVATE /wd4800) # Implicit conversion of int to bool.
