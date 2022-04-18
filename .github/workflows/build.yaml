@@ -1,0 +1,50 @@
+name: Build with conan
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  build-cmake:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [windows-2019]
+        include:
+        - os: windows-2019
+          cmake-args: -G "Visual Studio 16 2019" -A x64 -DUSE_CONAN=ON
+          package-file: "*-win64.zip"
+          fancy: false
+          env:
+            CFLAGS: /WX
+            CXXFLAGS: /WX
+            LDFLAGS: /WX
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Install Conan
+      id: conan
+      uses: turtlebrowser/get-conan@main
+
+    - name: Build in release mode
+      env: ${{ matrix.env }}
+      run: |
+        mkdir release
+        cd release
+        ${{ matrix.cmake-path }}cmake ${{ matrix.cmake-args }} -DCMAKE_BUILD_TYPE=Release ..
+        ${{ matrix.cmake-path }}cmake --build . --config Release ${{ matrix.build-args }}
+
+    - name: Package
+      run: |
+        cd release
+        ${{ matrix.cmake-path }}cmake --build . --config Release --target package ${{ matrix.build-args }}
+        mkdir artifacts
+        mv ${{ matrix.package-file }} artifacts
+
+    - name: Upload Artifacts
+      uses: actions/upload-artifact@v1
+      with:
+        name: InfclassR-${{ matrix.os }}
+        path: release/artifacts
