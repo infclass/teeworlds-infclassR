@@ -558,6 +558,8 @@ target_include_directories(pnglite PUBLIC
 )
 add_library(pnglite::pnglite ALIAS pnglite)
 
+list(APPEND TARGETS_DEP pnglite)
+
 include_directories(SYSTEM
   ${CMAKE_CURRENT_SOURCE_DIR}/src
   ${CMAKE_CURRENT_BINARY_DIR}/src
