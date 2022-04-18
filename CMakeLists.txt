@@ -45,6 +45,7 @@ endif()
 find_package(MaxMindDB QUIET)
 set(GEOLOCATION_DEFAULT ${MaxMindDB_FOUND})
 
+option(USE_CONAN "Use Conan for dependencies" OFF)
 option(GEOLOCATION "Enable geolocation support" ${GEOLOCATION_DEFAULT})
 option(MYSQL "Enable mysql support" OFF)
 
@@ -54,6 +55,31 @@ if(NOT(CMAKE_BUILD_TYPE))
 endif()
 
 set(DBG $<OR:$<CONFIG:Debug>,$<CONFIG:RelWithDebInfo>>)
+
+if(USE_CONAN)
+  list(APPEND CMAKE_MODULE_PATH "${CMAKE_BINARY_DIR}")
+  list(APPEND CMAKE_PREFIX_PATH "${CMAKE_BINARY_DIR}")
+endif()
+
+if(USE_CONAN)
+  set(CMAKE_CXX_STANDARD 14)
+
+  include(cmake/conan.cmake)
+
+  conan_cmake_configure(
+    REQUIRES
+      icu/69.1
+      zlib/1.2.11
+    GENERATORS cmake_find_package
+  )
+
+  conan_cmake_autodetect(settings)
+
+  conan_cmake_install(PATH_OR_REFERENCE .
+                      BUILD missing
+                      REMOTE conancenter
+                      SETTINGS ${settings})
+endif()
 
 configure_file(src/game/version.h.in ${PROJECT_BINARY_DIR}/src/game/version.h @ONLY)
 
