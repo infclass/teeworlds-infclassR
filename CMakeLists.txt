@@ -687,11 +687,7 @@ set(GAME_GENERATED_SERVER
   "src/game/generated/server_data.h"
 )
 set(SERVER_SRC ${ENGINE_SERVER} ${GAME_SERVER} ${GAME_GENERATED_SERVER})
-if(TARGET_OS STREQUAL "windows")
-  set(SERVER_ICON "other/icons/DDNet-Server.rc")
-else()
-  set(SERVER_ICON)
-endif()
+set(SERVER_ICON)
 
 # Libraries
 set(LIBS_SERVER
