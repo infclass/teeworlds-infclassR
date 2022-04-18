@@ -162,7 +162,7 @@ void CHeroFlag::Snap(int SnappingClient)
 
 	if(GameServer()->GetHeroGiftCoolDown() <= 0)
 	{
-		const float Speed = 0.1;
+		const float Speed = 0.1f;
 		float AngleStart = (2.0f * pi * Server()->Tick()/static_cast<float>(Server()->TickSpeed())) * Speed;
 		float AngleStep = 2.0f * pi / CHeroFlag::SHIELD_COUNT;
 

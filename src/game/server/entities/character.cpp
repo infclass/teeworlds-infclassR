@@ -1012,7 +1012,7 @@ void CCharacter::SlowMotionEffect(float Duration, int FromCID)
 		m_SlowMotionTick = NewSlowTick;
 		m_SlowEffectApplicant = FromCID;
 		m_IsInSlowMotion = true;
-		m_Core.m_Vel *= 0.4;
+		m_Core.m_Vel *= 0.4f;
 	}
 }
 

@@ -627,7 +627,7 @@ bool CInfClassCharacter::TakeDamage(vec2 Force, float FloatDmg, int From, DAMAGE
 		Mode = TAKEDAMAGEMODE::NOINFECTION;
 		if(!IsZombie())
 		{
-			Force *= 0.1;
+			Force *= 0.1f;
 		}
 	}
 
