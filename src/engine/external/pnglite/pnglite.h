@@ -24,11 +24,6 @@
 	daniel.karling@gmail.com
  */
 
-/*
-	NOTICE:
-	This is a modified version which contains changes that address
-	compiler warnings and increase stability.
-*/
 
 #ifndef _PNGLITE_H_
 #define _PNGLITE_H_

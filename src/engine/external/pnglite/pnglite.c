@@ -150,7 +150,6 @@ static int png_get_bpp(png_t* png)
 
 static int png_read_ihdr(png_t* png)
 {
-	int result;
 	unsigned length;
 #if DO_CRC_CHECKS
 	unsigned orig_crc;
@@ -169,9 +168,7 @@ static int png_read_ihdr(png_t* png)
 	if(file_read(png, ihdr, 1, 13+4) != 13+4)
 		return PNG_EOF_ERROR;
 #if DO_CRC_CHECKS
-	result = file_read_ul(png, &orig_crc);
-	if(result != PNG_NO_ERROR)
-		return result;
+	file_read_ul(png, &orig_crc);
 
 	calc_crc = crc32(0L, 0, 0);
 	calc_crc = crc32(calc_crc, ihdr, 13+4);
@@ -179,9 +176,7 @@ static int png_read_ihdr(png_t* png)
 	if(orig_crc != calc_crc)
 		return PNG_CRC_ERROR;
 #else
-	result = file_read_ul(png);
-	if(result != PNG_NO_ERROR)
-		return result; 
+	file_read_ul(png);
 #endif
 
 	png->width = get_ul(ihdr+4);
@@ -280,8 +275,6 @@ int png_open_read(png_t* png, png_read_callback_t read_fun, void* user_pointer)
 	result = png_read_ihdr(png);
 
 	png->bpp = (unsigned char)png_get_bpp(png);
-	if(png->bpp < 0)
-		result = png->bpp;
 
 	return result;
 }
@@ -399,7 +392,6 @@ static int png_end_deflate(png_t* png)
 	deflateEnd(stream);
 
 	png_free(png->zs);
-	png->zs = 0;
 
 	return PNG_NO_ERROR;
 }
@@ -426,7 +418,6 @@ static int png_end_inflate(png_t* png)
 	}
 
 	png_free(png->zs);
-	png->zs = 0;
 
 	return PNG_NO_ERROR;
 }
@@ -536,8 +527,6 @@ static int png_read_idat(png_t* png, unsigned firstlen)
 #endif
 
 	chunk = png_alloc(firstlen); 
-	if(!chunk)
-		return PNG_MEMORY_ERROR;
 
 	result = png_init_inflate(png);
 
@@ -582,12 +571,7 @@ static int png_read_idat(png_t* png, unsigned firstlen)
 		if(length > old_len)
 		{
 			png_free(chunk); 
-			chunk = png_alloc(length);
-			if(!chunk)
-			{
-				png_end_inflate(png);
-				return PNG_MEMORY_ERROR;
-			}
+			chunk = png_alloc(length); 
 			old_len = length;
 		}
 
@@ -621,13 +605,8 @@ static int png_process_chunk(png_t* png)
 
 	if(type == *(unsigned int*)"IDAT")	/* if we found an idat, all other idats should be followed with no other chunks in between */
 	{
-		if(!png->png_data)
-		{
-			png->png_datalen = png->width * png->height * png->bpp + png->height;
-			png->png_data = png_alloc(png->png_datalen);
-		}
-		else
-			return PNG_FILE_ERROR;
+		png->png_datalen = png->width * png->height * png->bpp + png->height;
+		png->png_data = png_alloc(png->png_datalen);
 		
 		if(!png->png_data)
 			return PNG_MEMORY_ERROR;
@@ -818,8 +797,6 @@ static int png_unfilter(png_t* png, unsigned char* data)
 int png_get_data(png_t* png, unsigned char* data)
 {
 	int result = PNG_NO_ERROR;
-	png->png_data = 0;
-	png->zs = 0;
 
 	while(result == PNG_NO_ERROR)
 	{
@@ -828,18 +805,13 @@ int png_get_data(png_t* png, unsigned char* data)
 
 	if(result != PNG_DONE)
 	{
-		if(!png->png_data)
-		{
-			png_free(png->png_data);
-			png->png_data = 0;
-		}
+		png_free(png->png_data); 
 		return result;
 	}
 
 	result = png_unfilter(png, data);
 
 	png_free(png->png_data); 
-	png->png_data = 0;
 
 	return result;
 }
