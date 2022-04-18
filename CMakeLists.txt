@@ -53,6 +53,8 @@ if(NOT(CMAKE_BUILD_TYPE))
   set(CMAKE_BUILD_TYPE Release)
 endif()
 
+set(DBG $<OR:$<CONFIG:Debug>,$<CONFIG:RelWithDebInfo>>)
+
 configure_file(src/game/version.h.in ${PROJECT_BINARY_DIR}/src/game/version.h @ONLY)
 
 set(SERVER_EXECUTABLE "Infclass-Server" CACHE STRING "Name of the built server executable")
@@ -862,6 +864,45 @@ install(
 # COMPILER-SPECIFICS
 ########################################################################
 
+set(TARGETS ${TARGETS_OWN} ${TARGETS_DEP})
+
+foreach(target ${TARGETS})
+  if(MSVC)
+    # Disable static CRT for now
+    # target_compile_options(${target} PRIVATE $<$<NOT:${DBG}>:/MT> $<${DBG}:/MTd>) # Use static CRT
+    target_compile_options(${target} PRIVATE /MP) # Use multiple cores
+    target_compile_options(${target} PRIVATE /EHsc) # Only catch C++ exceptions with catch.
+    target_compile_options(${target} PRIVATE /GS) # Protect the stack pointer.
+    target_compile_options(${target} PRIVATE /wd4996) # Use of non-_s functions.
+    target_compile_options(${target} PRIVATE /utf-8) # Use UTF-8 for source files.
+  endif()
+  if(OUR_FLAGS_LINK)
+    target_link_libraries(${target} ${OUR_FLAGS_LINK})
+  endif()
+  if(OUR_FLAGS)
+    target_compile_options(${target} PRIVATE ${OUR_FLAGS})
+  endif()
+  if(DEFINE_FORTIFY_SOURCE)
+    if(MINGW)
+      target_compile_definitions(${target} PRIVATE $<$<NOT:$<CONFIG:Debug>>:_FORTIFY_SOURCE=0>) # Currently broken in MinGW, see https://sourceforge.net/p/mingw-w64/discussion/723798/thread/b9d24f041f/
+    else()
+      target_compile_definitions(${target} PRIVATE $<$<NOT:$<CONFIG:Debug>>:_FORTIFY_SOURCE=2>) # Detect some buffer overflows.
+    endif()
+  endif()
+endforeach()
+
 foreach(target ${TARGETS_OWN})
+  if(MSVC)
+    target_compile_options(${target} PRIVATE /wd4244) # Possible loss of data (float -> int, int -> float, etc.).
+    target_compile_options(${target} PRIVATE /wd4267) # Possible loss of data (size_t - int on win64).
+    target_compile_options(${target} PRIVATE /wd4800) # Implicit conversion of int to bool.
+  endif()
+
   target_compile_definitions(${target} PRIVATE $<$<CONFIG:Debug>:CONF_DEBUG>)
+endforeach()
+
+foreach(target ${TARGETS_DEP})
+  if(MSVC)
+    target_compile_options(${target} PRIVATE /W0)
+  endif()
 endforeach()
