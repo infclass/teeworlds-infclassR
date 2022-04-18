@@ -54,7 +54,6 @@ bool CInfClassLaser::HitCharacter(vec2 From, vec2 To)
 		int MinimumHP = Config()->m_InfRevivalDamage + 1;
 		int MinimumInfected = 5;
 
-		char aBuf[256];
 		if(pMedic->GetHealthArmorSum() < MinimumHP)
 		{
 			GameServer()->SendBroadcast_Localization(m_Owner, BROADCAST_PRIORITY_GAMEANNOUNCE,

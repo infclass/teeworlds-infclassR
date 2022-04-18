@@ -23,7 +23,6 @@ bool CBlindingLaser::HitCharacter(vec2 From, vec2 To)
 	CCharacter *pOwnerChar = GameServer()->GetPlayerChar(m_Owner);
 	CCharacter *pIntersect = GameServer()->m_World.IntersectCharacter(m_Pos, To, 0.f, At, pOwnerChar);
 	CInfClassCharacter *pHit = CInfClassCharacter::GetInstance(pIntersect);
-	vec2 At2;
 
 	if(!pHit)
 		return false;
