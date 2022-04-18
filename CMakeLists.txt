@@ -547,6 +547,12 @@ add_library(engine-shared EXCLUDE_FROM_ALL STATIC ${ENGINE_INTERFACE} ${ENGINE_S
 add_library(game-shared EXCLUDE_FROM_ALL STATIC ${GAME_SHARED} ${GAME_GENERATED_SHARED} ${ENGINE_UUID_SHARED} ${teeuniverses_SOURCES})
 list(APPEND TARGETS_OWN engine-shared game-shared)
 
+target_link_libraries(game-shared PUBLIC
+  ZLIB::ZLIB
+  ICU::i18n
+  ICU::uc
+)
+
 add_library(pnglite STATIC
   ${CMAKE_CURRENT_SOURCE_DIR}/src/engine/external/pnglite/pnglite.c
   ${CMAKE_CURRENT_SOURCE_DIR}/src/engine/external/pnglite/pnglite.h
