@@ -551,6 +551,8 @@ add_library(pnglite STATIC
   ${CMAKE_CURRENT_SOURCE_DIR}/src/engine/external/pnglite/pnglite.c
   ${CMAKE_CURRENT_SOURCE_DIR}/src/engine/external/pnglite/pnglite.h
 )
+target_link_libraries(pnglite PRIVATE ZLIB::ZLIB)
+
 target_include_directories(pnglite PUBLIC
   ${CMAKE_CURRENT_SOURCE_DIR}/src/engine/external/pnglite
 )
