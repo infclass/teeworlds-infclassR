@@ -120,7 +120,8 @@ bool CLocalization::CLanguage::Load(CLocalization* pLocalization, CStorage* pSto
 	
 	// load the file as a string
 	int FileSize = (int)io_length(File);
-	char *pFileData = new char[FileSize+1];
+	int FileDataSize = FileSize + 1;
+	char *pFileData = new char[FileDataSize];
 	io_read(File, pFileData, FileSize);
 	pFileData[FileSize] = 0;
 	io_close(File);
@@ -129,7 +130,7 @@ bool CLocalization::CLanguage::Load(CLocalization* pLocalization, CStorage* pSto
 	json_settings JsonSettings;
 	mem_zero(&JsonSettings, sizeof(JsonSettings));
 	char aError[256];
-	json_value *pJsonData = json_parse_ex(&JsonSettings, pFileData, aError);
+	json_value *pJsonData = json_parse_ex(&JsonSettings, pFileData, FileDataSize, aError);
 	if(pJsonData == 0)
 	{
 		dbg_msg("Localization", "Can't load the localization file %s : %s", aBuf, aError);
@@ -318,7 +319,8 @@ bool CLocalization::Init()
 	}
 	
 	int FileSize = (int)io_length(File);
-	char *pFileData = new char[FileSize+1];
+	int FileDataSize = FileSize + 1;
+	char *pFileData = new char[FileDataSize];
 	io_read(File, pFileData, FileSize);
 	pFileData[FileSize] = 0;
 	io_close(File);
@@ -327,7 +329,7 @@ bool CLocalization::Init()
 	json_settings JsonSettings;
 	mem_zero(&JsonSettings, sizeof(JsonSettings));
 	char aError[256];
-	json_value *pJsonData = json_parse_ex(&JsonSettings, pFileData, aError);
+	json_value *pJsonData = json_parse_ex(&JsonSettings, pFileData, FileDataSize, aError);
 	if(pJsonData == 0)
 	{
 		delete[] pFileData;
