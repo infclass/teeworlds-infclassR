@@ -841,7 +841,7 @@ install(
   TARGETS
     Server
   DESTINATION
-    "${CMAKE_INSTALL_PREFIX}"
+    "."
 )
 install(
   FILES
@@ -849,7 +849,7 @@ install(
     "autoexec.cfg"
     "reset.cfg"
   DESTINATION
-    "${CMAKE_INSTALL_PREFIX}"
+    "."
 )
 install(
   FILES
@@ -857,7 +857,7 @@ install(
   RENAME
     "storage.cfg.example"
   DESTINATION
-    "${CMAKE_INSTALL_PREFIX}"
+    "."
 )
 
 ########################################################################
