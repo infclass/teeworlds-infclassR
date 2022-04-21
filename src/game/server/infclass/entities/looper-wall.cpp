@@ -26,7 +26,6 @@ CLooperWall::CLooperWall(CGameContext *pGameContext, vec2 Pos1, vec2 Pos2, int O
 	{
 		m_Pos2 = Pos2;
 	}
-	m_IDs.set_size(2);
 	for(int i=0; i<2; i++)
 	{
 		m_IDs[i] = Server()->SnapNewID();
@@ -34,8 +33,6 @@ CLooperWall::CLooperWall(CGameContext *pGameContext, vec2 Pos1, vec2 Pos2, int O
 
 	m_LifeSpan = Server()->TickSpeed()*Config()->m_InfLooperBarrierLifeSpan;
 	GameWorld()->InsertEntity(this);
-	
-	m_EndPointIDs.set_size(2);
 	for(int i=0; i<2; i++)
 	{
 		m_EndPointIDs[i] = Server()->SnapNewID();
