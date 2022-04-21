@@ -62,6 +62,14 @@ if(NOT(CMAKE_BUILD_TYPE))
 endif()
 
 set(DBG $<OR:$<CONFIG:Debug>,$<CONFIG:RelWithDebInfo>>)
+if(MSVC)
+   # Use static CRT
+  if(DBG)
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /MTd")
+  else()
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /MT")
+  endif()
+endif()
 
 if(USE_CONAN)
   list(APPEND CMAKE_MODULE_PATH "${CMAKE_BINARY_DIR}")
@@ -904,7 +912,7 @@ set(TARGETS ${TARGETS_OWN} ${TARGETS_DEP})
 
 foreach(target ${TARGETS})
   if(MSVC)
-    # Disable static CRT for now
+    # Static CRT is set via CMAKE_CXX_FLAGS to fix compatibility with Conan
     # target_compile_options(${target} PRIVATE $<$<NOT:${DBG}>:/MT> $<${DBG}:/MTd>) # Use static CRT
     target_compile_options(${target} PRIVATE /MP) # Use multiple cores
     target_compile_options(${target} PRIVATE /EHsc) # Only catch C++ exceptions with catch.
