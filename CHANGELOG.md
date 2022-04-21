@@ -1,5 +1,14 @@
 # Changelog
 
+## InfclassR v1.4.2 - 2022-04-21
+
+- Fixed network clipping for looper and engineer walls
+- Fixed a re-connected player could still use humans
+  spawn after infection started (regression)
+- Fixed prediction for hook of locked Sniper
+- Fixed slow-motion effect kept after revive
+- A build for Windows is available as a tech preview (not tested)
+
 ## InfclassR v1.4.1 - 2022-03-23
 
 - Fixed poison grenades 'no healing' effect
