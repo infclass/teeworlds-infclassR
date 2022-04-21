@@ -19,7 +19,7 @@ CPlacedObject::~CPlacedObject()
 
 bool CPlacedObject::DoSnapForClient(int SnappingClient)
 {
-	if(!CInfCEntity::DoSnapForClient(SnappingClient))
+	if(NetworkClipped(SnappingClient))
 		return false;
 
 	CInfClassCharacter *pCharacter = GameController()->GetCharacter(SnappingClient);
