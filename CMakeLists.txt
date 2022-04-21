@@ -45,7 +45,14 @@ endif()
 find_package(MaxMindDB QUIET)
 set(GEOLOCATION_DEFAULT ${MaxMindDB_FOUND})
 
-option(USE_CONAN "Use Conan for dependencies" OFF)
+set(USE_CONAN_DEFAULT FALSE)
+
+set(CONAN_SUPPORTED_PLATFORMS Linux Windows Darwin)
+if(TARGET_OS STREQUAL "windows")
+  set(USE_CONAN_DEFAULT TRUE)
+endif()
+
+option(USE_CONAN "Use Conan for dependencies" ${USE_CONAN_DEFAULT})
 option(GEOLOCATION "Enable geolocation support" ${GEOLOCATION_DEFAULT})
 option(MYSQL "Enable mysql support" OFF)
 
