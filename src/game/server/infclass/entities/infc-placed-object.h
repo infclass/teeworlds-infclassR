@@ -11,6 +11,8 @@ public:
 	CPlacedObject(CGameContext *pGameContext, int ObjectType, vec2 Pos = vec2(), int Owner = -1, int ProximityRadius=0);
 	~CPlacedObject() override;
 
+	bool HasSecondPosition() const { return m_InfClassObjectFlags & INFCLASS_OBJECT_FLAG_HAS_SECOND_POSITION; }
+
 protected:
 	bool DoSnapForClient(int SnappingClient) override;
 

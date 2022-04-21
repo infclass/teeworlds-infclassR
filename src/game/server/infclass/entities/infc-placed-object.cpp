@@ -19,7 +19,7 @@ CPlacedObject::~CPlacedObject()
 
 bool CPlacedObject::DoSnapForClient(int SnappingClient)
 {
-	if(NetworkClipped(SnappingClient))
+	if(NetworkClipped(SnappingClient) && (!HasSecondPosition() || NetworkClipped(SnappingClient, m_Pos2)))
 		return false;
 
 	CInfClassCharacter *pCharacter = GameController()->GetCharacter(SnappingClient);
