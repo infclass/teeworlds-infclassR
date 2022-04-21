@@ -21,7 +21,6 @@ public:
 	int GetTick() { return m_LifeSpan; }
 
 private:
-	vec2 m_Pos2;
 	int m_LifeSpan;
 	array<int> m_IDs;
 	array<int> m_EndPointIDs;
