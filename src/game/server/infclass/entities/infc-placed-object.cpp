@@ -39,15 +39,23 @@ CNetObj_InfClassObject *CPlacedObject::SnapInfClassObject()
 	pInfClassObject->m_Y = m_Pos.y;
 
 	pInfClassObject->m_Type = m_InfClassObjectType;
-	pInfClassObject->m_Flags = 0;
+	pInfClassObject->m_Flags = m_InfClassObjectFlags;
 
 	pInfClassObject->m_Owner = GetOwner();
 
 	pInfClassObject->m_StartTick = 0;
 	pInfClassObject->m_LifeSpan = 0;
 
-	pInfClassObject->m_X2 = 0;
-	pInfClassObject->m_Y2 = 0;
+	if(m_InfClassObjectFlags & INFCLASS_OBJECT_FLAG_HAS_SECOND_POSITION)
+	{
+		pInfClassObject->m_X2 = m_Pos2.x;
+		pInfClassObject->m_Y2 = m_Pos2.y;
+	}
+	else
+	{
+		pInfClassObject->m_X2 = 0;
+		pInfClassObject->m_Y2 = 0;
+	}
 
 	return pInfClassObject;
 }

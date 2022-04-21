@@ -20,6 +20,7 @@ protected:
 	vec2 m_Pos2;
 	int m_InfClassObjectID = -1;
 	int m_InfClassObjectType = -1;
+	int m_InfClassObjectFlags = 0;
 };
 
 #endif // GAME_SERVER_ENTITIES_INFC_PLACED_OBJECT_H
