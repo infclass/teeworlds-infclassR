@@ -594,6 +594,17 @@ target_link_libraries(engine-shared PUBLIC
   ZLIB::ZLIB
 )
 
+if(CRYPTO_FOUND)
+  target_link_libraries(engine-shared PUBLIC
+    OpenSSL::Crypto
+  )
+  target_compile_definitions(engine-shared PRIVATE CONF_OPENSSL)
+else()
+  target_link_libraries(engine-shared PUBLIC
+    md5
+  )
+endif()
+
 target_link_libraries(game-shared PUBLIC
   ZLIB::ZLIB
   ICU::i18n
@@ -853,7 +864,6 @@ target_link_libraries(Server ${LIBS_SERVER})
 list(APPEND TARGETS_OWN Server)
 list(APPEND TARGETS_LINK Server)
 
-target_link_libraries(Server md5)
 target_link_libraries(Server engine-shared)
 target_link_libraries(Server game-shared)
 target_link_libraries(Server ICU::i18n)
