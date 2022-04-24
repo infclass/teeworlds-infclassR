@@ -34,9 +34,6 @@ MACRO_CONFIG_INT(SvServerInfoPerSecond, sv_server_info_per_second, 10, 1, 1000, 
 MACRO_CONFIG_INT(SvVanConnPerSecond, sv_van_conn_per_second, 10, 0, 10000, CFGFLAG_SERVER, "Antispoof specific ratelimit (0 for no limit)")
 MACRO_CONFIG_INT(SvSixup, sv_sixup, 1, 0, 1, CFGFLAG_SERVER, "Enable sixup connections")
 
-MACRO_CONFIG_INT(SvHideInfo, sv_hide_info, 0, 0, 1, CFGFLAG_SERVER, "Hide the server info")
-MACRO_CONFIG_INT(SvInfoMaxClients, sv_info_max_clients, -1, -1, 128, CFGFLAG_SERVER, "Limit the server info max clients number (-1 means 'unlimited')")
-
 MACRO_CONFIG_STR(EcBindaddr, ec_bindaddr, 128, "localhost", CFGFLAG_ECON, "Address to bind the external console to. Anything but 'localhost' is dangerous")
 MACRO_CONFIG_INT(EcPort, ec_port, 0, 0, 0, CFGFLAG_ECON, "Port to use for the external console")
 MACRO_CONFIG_STR(EcPassword, ec_password, 32, "", CFGFLAG_ECON, "External console password")
@@ -45,10 +42,12 @@ MACRO_CONFIG_INT(EcAuthTimeout, ec_auth_timeout, 30, 1, 120, CFGFLAG_ECON, "Time
 MACRO_CONFIG_INT(EcOutputLevel, ec_output_level, 1, 0, 2, CFGFLAG_ECON, "Adjusts the amount of information in the external console")
 
 MACRO_CONFIG_INT(Debug, debug, 0, 0, 1, CFGFLAG_SERVER, "Debug mode")
-MACRO_CONFIG_INT(DbgStress, dbg_stress, 0, 0, 0, CFGFLAG_SERVER, "Stress systems")
-MACRO_CONFIG_INT(DbgStressNetwork, dbg_stress_network, 0, 0, 0, CFGFLAG_SERVER, "Stress network")
 MACRO_CONFIG_INT(DbgPref, dbg_pref, 0, 0, 1, CFGFLAG_SERVER, "Performance outputs")
 MACRO_CONFIG_INT(DbgHitch, dbg_hitch, 0, 0, 0, CFGFLAG_SERVER, "Hitch warnings")
+#ifdef CONF_DEBUG
+MACRO_CONFIG_INT(DbgStress, dbg_stress, 0, 0, 0, CFGFLAG_SERVER, "Stress systems")
+MACRO_CONFIG_INT(DbgStressNetwork, dbg_stress_network, 0, 0, 0, CFGFLAG_SERVER, "Stress network")
+#endif
 
 MACRO_CONFIG_STR(SvBroadcast, sv_broadcast, 64, "DDRace.info Trunk 0.5", CFGFLAG_SERVER, "The broadcasting message")
 MACRO_CONFIG_INT(SvShutdownWhenEmpty, sv_shutdown_when_empty, 0, 0, 1, CFGFLAG_SERVER, "Shutdown server as soon as noone is on it anymore")
@@ -58,22 +57,25 @@ MACRO_CONFIG_INT(SvConnlimitTime, sv_connlimit_time, 20, 0, 1000, CFGFLAG_SERVER
 MACRO_CONFIG_INT(SvDistConnlimit, sv_distconnlimit, 16, 0, 100, CFGFLAG_SERVER, "DistConnlimit: Number of connections (from all IPs) that is allowed to do in a timespan")
 MACRO_CONFIG_INT(SvDistConnlimitTime, sv_distconnlimit_time, 60, 0, 1000, CFGFLAG_SERVER, "DistConnlimit: Time in which (all IP's) connections are counted")
 
-MACRO_CONFIG_INT(SvSuggestMoreRounds, sv_suggest_more_rounds, 0, 0, 100, CFGFLAG_SERVER, "The number of extra rounds to be played on the suggestion (vote) accepted")
-
 MACRO_CONFIG_INT(SvInfoChangeDelay, sv_info_change_delay, 5, 0, 9999, CFGFLAG_SERVER, "The time in seconds between info changes (name/skin/color), to avoid ranbow mod set this to a very high time")
 MACRO_CONFIG_INT(SvVoteTime, sv_vote_time, 25, 1, 9999, CFGFLAG_SERVER, "The time in seconds a vote lasts")
 MACRO_CONFIG_INT(SvVoteDelay, sv_vote_delay, 3, 0, 9999, CFGFLAG_SERVER, "The time in seconds between any vote")
 
-MACRO_CONFIG_INT(SvFilterChatCommands, sv_filter_chat_commands, 0, 0, 1, CFGFLAG_SERVER, "Omit from the chat messages starting with ! (like !me and !best)")
 MACRO_CONFIG_STR(SvResetFile, sv_reset_file, 128, "reset.cfg", CFGFLAG_SERVER, "File to execute on map change or reload to set the default server settings")
-MACRO_CONFIG_STR(SvChangeLogFile, sv_changelog_file, 128, "ChangeLog.txt", CFGFLAG_SERVER, "File with changelog entities")
-MACRO_CONFIG_INT(SvChangeLogMaxLinesPerPage, sv_changelog_lines_page, 6, 1, 64, CFGFLAG_SERVER, "File with changelog entities")
 
 MACRO_CONFIG_INT(ConnTimeout, conn_timeout, 100, 5, 1000, CFGFLAG_SAVE | CFGFLAG_CLIENT | CFGFLAG_SERVER, "Network timeout")
 MACRO_CONFIG_INT(ConnTimeoutProtection, conn_timeout_protection, 1000, 5, 10000, CFGFLAG_SERVER, "Network timeout protection")
 
 //Add cheat versions
 MACRO_CONFIG_STR(SvBannedVersions, sv_banned_versions, 128, "", CFGFLAG_SERVER, "Comma separated list of banned clients to be kicked on join")
+
+// Infclass generic variables
+MACRO_CONFIG_INT(SvHideInfo, sv_hide_info, 0, 0, 1, CFGFLAG_SERVER, "Hide the server info")
+MACRO_CONFIG_INT(SvInfoMaxClients, sv_info_max_clients, -1, -1, 128, CFGFLAG_SERVER, "Limit the server info max clients number (-1 means 'unlimited')")
+MACRO_CONFIG_INT(SvFilterChatCommands, sv_filter_chat_commands, 0, 0, 1, CFGFLAG_SERVER, "Omit from the chat messages starting with ! (like !me and !best)")
+MACRO_CONFIG_INT(SvSuggestMoreRounds, sv_suggest_more_rounds, 0, 0, 100, CFGFLAG_SERVER, "The number of extra rounds to be played on the suggestion (vote) accepted")
+MACRO_CONFIG_STR(SvChangeLogFile, sv_changelog_file, 128, "ChangeLog.txt", CFGFLAG_SERVER, "File with changelog entities")
+MACRO_CONFIG_INT(SvChangeLogMaxLinesPerPage, sv_changelog_lines_page, 6, 1, 64, CFGFLAG_SERVER, "File with changelog entities")
 
 #include "game/server/infclass/infc_config_variables.h"
 
