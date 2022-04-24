@@ -45,12 +45,12 @@ void CNetConnection::Reset(bool Rejoin)
 
 const char *CNetConnection::ErrorString()
 {
-	return m_ErrorString;
+	return m_aErrorString;
 }
 
 void CNetConnection::SetError(const char *pString)
 {
-	str_copy(m_ErrorString, pString, sizeof(m_ErrorString));
+	str_copy(m_aErrorString, pString, sizeof(m_aErrorString));
 }
 
 void CNetConnection::Init(NETSOCKET Socket, bool BlockCloseMsg)
@@ -60,7 +60,7 @@ void CNetConnection::Init(NETSOCKET Socket, bool BlockCloseMsg)
 
 	m_Socket = Socket;
 	m_BlockCloseMsg = BlockCloseMsg;
-	mem_zero(m_ErrorString, sizeof(m_ErrorString));
+	mem_zero(m_aErrorString, sizeof(m_aErrorString));
 }
 
 void CNetConnection::AckChunks(int Ack)
@@ -157,7 +157,7 @@ void CNetConnection::DirectInit(NETADDR &Addr, SECURITY_TOKEN SecurityToken)
 	m_State = NET_CONNSTATE_ONLINE;
 
 	m_PeerAddr = Addr;
-	mem_zero(m_ErrorString, sizeof(m_ErrorString));
+	mem_zero(m_aErrorString, sizeof(m_aErrorString));
 
 	int64 Now = time_get();
 	m_LastSendTime = Now;
@@ -201,7 +201,7 @@ int CNetConnection::Connect(NETADDR *pAddr)
 	// init connection
 	Reset();
 	m_PeerAddr = *pAddr;
-	mem_zero(m_ErrorString, sizeof(m_ErrorString));
+	mem_zero(m_aErrorString, sizeof(m_aErrorString));
 	m_State = NET_CONNSTATE_CONNECT;
 	SendControl(NET_CTRLMSG_CONNECT, 0, 0);
 	return 0;
@@ -219,9 +219,9 @@ void CNetConnection::Disconnect(const char *pReason)
 		else
 			SendControl(NET_CTRLMSG_CLOSE, 0, 0);
 
-		m_ErrorString[0] = 0;
+		m_aErrorString[0] = 0;
 		if(pReason)
-			str_copy(m_ErrorString, pReason, sizeof(m_ErrorString));
+			str_copy(m_aErrorString, pReason, sizeof(m_aErrorString));
 	}
 
 	Reset();
@@ -237,7 +237,7 @@ int CNetConnection::SimulateConnexionWithInfo(NETADDR *pAddr)
 		Reset();
 		m_State = NET_CONNSTATE_PENDING;
 		m_PeerAddr = *pAddr;
-		mem_zero(m_ErrorString, sizeof(m_ErrorString));
+		mem_zero(m_aErrorString, sizeof(m_aErrorString));
 		m_LastSendTime = Now;
 		m_LastRecvTime = Now;
 		m_LastUpdateTime = Now;
@@ -310,7 +310,7 @@ int CNetConnection::Feed(CNetPacketConstruct *pPacket, NETADDR *pAddr)
 					Reset();
 					m_State = NET_CONNSTATE_PENDING;
 					m_PeerAddr = *pAddr;
-					mem_zero(m_ErrorString, sizeof(m_ErrorString));
+					mem_zero(m_aErrorString, sizeof(m_aErrorString));
 					m_LastSendTime = Now;
 					m_LastRecvTime = Now;
 					m_LastUpdateTime = Now;

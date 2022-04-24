@@ -33,7 +33,7 @@ bool CNetServer::Open(NETADDR BindAddr, CNetBan *pNetBan, int MaxClients, int Ma
 
 	m_MaxClientsPerIP = MaxClientsPerIP;
 
-	secure_random_fill(m_SecurityTokenSeed, sizeof(m_SecurityTokenSeed));
+	secure_random_fill(m_aSecurityTokenSeed, sizeof(m_aSecurityTokenSeed));
 	
 	for(int i = 0; i < NET_MAX_CLIENTS; i++)
 		m_aSlots[i].m_Connection.Init(m_Socket, true);
@@ -45,7 +45,7 @@ int CNetServer::SetCallbacks(NETFUNC_NEWCLIENT pfnNewClient, NETFUNC_DELCLIENT p
 {
 	m_pfnNewClient = pfnNewClient;
 	m_pfnDelClient = pfnDelClient;
-	m_UserPtr = pUser;
+	m_pUser = pUser;
 	return 0;
 }
 
@@ -54,7 +54,7 @@ int CNetServer::SetCallbacks(NETFUNC_NEWCLIENT pfnNewClient, NETFUNC_CLIENTREJOI
 	m_pfnNewClient = pfnNewClient;
 	m_pfnClientRejoin = pfnClientRejoin;
 	m_pfnDelClient = pfnDelClient;
-	m_UserPtr = pUser;
+	m_pUser = pUser;
 	return 0;
 }
 
@@ -75,7 +75,7 @@ int CNetServer::Drop(int ClientID, int Type, const char *pReason)
 		pReason
 		);*/
 	if(m_pfnDelClient)
-		m_pfnDelClient(ClientID, Type, pReason, m_UserPtr);
+		m_pfnDelClient(ClientID, Type, pReason, m_pUser);
 
 	m_aSlots[ClientID].m_Connection.Disconnect(pReason);
 
@@ -104,7 +104,7 @@ SECURITY_TOKEN CNetServer::GetToken(const NETADDR &Addr)
 {
 	MD5_CTX Md5;
 	md5_init(&Md5);
-	md5_update(&Md5, (unsigned char*)m_SecurityTokenSeed, sizeof(m_SecurityTokenSeed));
+	md5_update(&Md5, (unsigned char*)m_aSecurityTokenSeed, sizeof(m_aSecurityTokenSeed));
 	md5_update(&Md5, (unsigned char*)&Addr, sizeof(Addr));
 
 	SECURITY_TOKEN SecurityToken = ToSecurityToken(md5_finish(&Md5).data);
@@ -262,7 +262,7 @@ int CNetServer::TryAcceptClient(NETADDR &Addr, SECURITY_TOKEN SecurityToken)
 	// init connection slot
 	m_aSlots[Slot].m_Connection.DirectInit(Addr, SecurityToken);
 
-	m_pfnNewClient(Slot, m_UserPtr);
+	m_pfnNewClient(Slot, m_pUser);
 
 	return Slot; // done
 }
@@ -314,7 +314,7 @@ void CNetServer::OnConnCtrlMsg(NETADDR &Addr, int ClientID, int ControlMsg, cons
 
 			// reset netconn and process rejoin
 			m_aSlots[ClientID].m_Connection.Reset(true);
-			m_pfnClientRejoin(ClientID, m_UserPtr);
+			m_pfnClientRejoin(ClientID, m_pUser);
 		}
 	}
 }

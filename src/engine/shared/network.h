@@ -185,13 +185,13 @@ private:
 	bool m_BlockCloseMsg;
 	bool m_UnknownSeq;
 
-	TStaticRingBuffer<CNetChunkResend, NET_CONN_BUFFERSIZE> m_Buffer;
+	CStaticRingBuffer<CNetChunkResend, NET_CONN_BUFFERSIZE> m_Buffer;
 
 	int64 m_LastUpdateTime;
 	int64 m_LastRecvTime;
 	int64 m_LastSendTime;
 
-	char m_ErrorString[256];
+	char m_aErrorString[256];
 
 	CNetPacketConstruct m_Construct;
 
@@ -232,8 +232,8 @@ public:
 	int State() const { return m_State; }
 	const NETADDR *PeerAddress() const { return &m_PeerAddr; }
 
-	void ResetErrorString() { m_ErrorString[0] = 0; }
-	const char *ErrorString() const { return m_ErrorString; }
+	void ResetErrorString() { m_aErrorString[0] = 0; }
+	const char *ErrorString() const { return m_aErrorString; }
 
 	// Needed for GotProblems in NetClient
 	int64 LastRecvTime() const { return m_LastRecvTime; }
@@ -323,9 +323,9 @@ class CNetServer
 	NETFUNC_NEWCLIENT m_pfnNewClient;
 	NETFUNC_DELCLIENT m_pfnDelClient;
 	NETFUNC_CLIENTREJOIN m_pfnClientRejoin;
-	void *m_UserPtr;
+	void *m_pUser;
 
-	unsigned char m_SecurityTokenSeed[16];
+	unsigned char m_aSecurityTokenSeed[16];
 
 	CSpamConn m_aSpamConns[NET_CONNLIMIT_IPS];
 	int64 m_aDistSpamConns[NET_CONNLIMIT_DDOS];
@@ -396,7 +396,7 @@ class CNetConsole
 
 	NETFUNC_NEWCLIENT m_pfnNewClient;
 	NETFUNC_DELCLIENT m_pfnDelClient;
-	void *m_UserPtr;
+	void *m_pUser;
 
 	CNetRecvUnpacker m_RecvUnpacker;
 

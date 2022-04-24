@@ -47,7 +47,7 @@ CRingBufferBase::CItem *CRingBufferBase::MergeBack(CItem *pItem)
 void CRingBufferBase::Init(void *pMemory, int Size, int Flags)
 {
 	mem_zero(pMemory, Size);
-	m_Size = (Size)/sizeof(CItem)*sizeof(CItem);
+	m_Size = (Size) / sizeof(CItem) * sizeof(CItem);
 	m_pFirst = (CItem *)pMemory;
 	m_pFirst->m_Free = 1;
 	m_pFirst->m_Size = m_Size;
@@ -55,19 +55,18 @@ void CRingBufferBase::Init(void *pMemory, int Size, int Flags)
 	m_pProduce = m_pFirst;
 	m_pConsume = m_pFirst;
 	m_Flags = Flags;
-
 }
 
 void *CRingBufferBase::Allocate(int Size)
 {
-	int WantedSize = (Size+sizeof(CItem)+sizeof(CItem)-1)/sizeof(CItem)*sizeof(CItem);
+	int WantedSize = (Size + sizeof(CItem) + sizeof(CItem) - 1) / sizeof(CItem) * sizeof(CItem);
 	CItem *pBlock = 0;
 
 	// check if we even can fit this block
 	if(WantedSize > m_Size)
 		return 0;
 
-	while(1)
+	while(true)
 	{
 		// check for space
 		if(m_pProduce->m_Free)
@@ -87,7 +86,7 @@ void *CRingBufferBase::Allocate(int Size)
 		else
 		{
 			// we have no block, check our policy and see what todo
-			if(m_Flags&FLAG_RECYCLE)
+			if(m_Flags & FLAG_RECYCLE)
 			{
 				if(!PopFirst())
 					return 0;
@@ -100,7 +99,7 @@ void *CRingBufferBase::Allocate(int Size)
 	// okey, we have our block
 
 	// split the block if needed
-	if(pBlock->m_Size > WantedSize+(int)sizeof(CItem))
+	if(pBlock->m_Size > WantedSize + (int)sizeof(CItem))
 	{
 		CItem *pNewItem = (CItem *)((char *)pBlock + WantedSize);
 		pNewItem->m_pPrev = pBlock;
@@ -117,13 +116,12 @@ void *CRingBufferBase::Allocate(int Size)
 			m_pLast = pNewItem;
 	}
 
-
 	// set next block
 	m_pProduce = NextBlock(pBlock);
 
 	// set as used and return the item pointer
 	pBlock->m_Free = 0;
-	return (void *)(pBlock+1);
+	return (void *)(pBlock + 1);
 }
 
 int CRingBufferBase::PopFirst()
@@ -145,24 +143,23 @@ int CRingBufferBase::PopFirst()
 		m_pConsume = NextBlock(m_pConsume);
 	}
 
-	// in the case that we have catched up with the produce pointer
+	// in the case that we have caught up with the produce pointer
 	// we might stand on a free block so merge em
 	MergeBack(m_pConsume);
 	return 1;
 }
 
-
 void *CRingBufferBase::Prev(void *pCurrent)
 {
 	CItem *pItem = ((CItem *)pCurrent) - 1;
 
-	while(1)
+	while(true)
 	{
 		pItem = PrevBlock(pItem);
 		if(pItem == m_pProduce)
 			return 0;
 		if(!pItem->m_Free)
-			return pItem+1;
+			return pItem + 1;
 	}
 }
 
@@ -170,13 +167,13 @@ void *CRingBufferBase::Next(void *pCurrent)
 {
 	CItem *pItem = ((CItem *)pCurrent) - 1;
 
-	while(1)
+	while(true)
 	{
 		pItem = NextBlock(pItem);
 		if(pItem == m_pProduce)
 			return 0;
 		if(!pItem->m_Free)
-			return pItem+1;
+			return pItem + 1;
 	}
 }
 
@@ -184,11 +181,10 @@ void *CRingBufferBase::First()
 {
 	if(m_pConsume->m_Free)
 		return 0;
-	return (void *)(m_pConsume+1);
+	return (void *)(m_pConsume + 1);
 }
 
 void *CRingBufferBase::Last()
 {
-	return Prev(m_pProduce+1);
+	return Prev(m_pProduce + 1);
 }
-
