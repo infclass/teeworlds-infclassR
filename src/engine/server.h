@@ -7,7 +7,6 @@
 #include <game/generated/protocol.h>
 #include <engine/shared/protocol.h>
 #include <string>
-#include <vector>
 
 /* INFECTION MODIFICATION START ***************************************/
 enum INFWEAPON
@@ -374,8 +373,6 @@ public:
 	virtual const char *GetPreviousMapName() const = 0;
 	virtual int* GetIdMap(int ClientID) = 0;
 	virtual void SetCustClt(int ClientID) = 0;
-	// InfClassR spectators vector
-	std::vector<int> spectators_id;
 
 	virtual int GetActivePlayerCount() = 0;
 };
@@ -396,7 +393,22 @@ public:
 
 	virtual void OnMessage(int MsgID, CUnpacker *pUnpacker, int ClientID) = 0;
 
-	virtual void OnClientConnected(int ClientID) = 0;
+	// Called before map reload, for any data that the game wants to
+	// persist to the next map.
+	//
+	// Has the size of the return value of `PersistentClientDataSize()`.
+	//
+	// Returns whether the game should be supplied with the data when the
+	// client connects for the next map.
+	virtual bool OnClientDataPersist(int ClientID, void *pData) = 0;
+
+	// Called when a client connects.
+	//
+	// If it is reconnecting to the game after a map change, the
+	// `pPersistentData` point is nonnull and contains the data the game
+	// previously stored.
+	virtual void OnClientConnected(int ClientID, void *pPersistentData) = 0;
+
 	virtual void OnClientEnter(int ClientID) = 0;
 	virtual void OnClientDrop(int ClientID, int Type, const char *pReason) = 0;
 	virtual void OnClientDirectInput(int ClientID, void *pInput) = 0;
@@ -405,6 +417,8 @@ public:
 	virtual bool IsClientBot(int ClientID) const = 0;
 	virtual bool IsClientReady(int ClientID) const = 0;
 	virtual bool IsClientPlayer(int ClientID) const = 0;
+
+	virtual int PersistentClientDataSize() const = 0;
 
 	virtual const char *GameType() const = 0;
 	virtual const char *Version() const = 0;

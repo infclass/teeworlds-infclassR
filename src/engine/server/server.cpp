@@ -2264,6 +2264,15 @@ int CServer::Run()
 
 	m_PrintCBIndex = Console()->RegisterPrintCallback(g_Config.m_ConsoleOutputLevel, SendRconLineAuthed, this);
 
+	{
+		int Size = GameServer()->PersistentClientDataSize();
+		for(auto &Client : m_aClients)
+		{
+			Client.m_HasPersistentData = false;
+			Client.m_pPersistentData = malloc(Size);
+		}
+	}
+
 	//Choose a random map from the rotation
 	if(!str_length(g_Config.m_SvMap) && str_length(g_Config.m_SvMaprotation))
 	{
@@ -2416,19 +2425,31 @@ int CServer::Run()
 				if(LoadMap(g_Config.m_SvMap))
 				{
 					// new map loaded
+
+					// ask the game to for the data it wants to persist past a map change
+					for(int i = 0; i < MAX_CLIENTS; i++)
+					{
+						if(m_aClients[i].m_State == CClient::STATE_INGAME)
+						{
+							m_aClients[i].m_HasPersistentData = GameServer()->OnClientDataPersist(i, m_aClients[i].m_pPersistentData);
+						}
+					}
+
 					GameServer()->OnShutdown();
 
-					for(int c = 0; c < MAX_CLIENTS; c++)
+					for(int ClientID = 0; ClientID < MAX_CLIENTS; ClientID++)
 					{
-						if(m_aClients[c].m_State <= CClient::STATE_AUTH)
+						if(m_aClients[ClientID].m_State <= CClient::STATE_AUTH)
 							continue;
 
-						SendMap(c);
+						SendMap(ClientID);
+						bool HasPersistentData = m_aClients[ClientID].m_HasPersistentData;
 /* INFECTION MODIFICATION START ***************************************/
-						m_aClients[c].Reset(false);
+						m_aClients[ClientID].Reset(false);
 /* INFECTION MODIFICATION END *****************************************/
-						m_aClients[c].m_State = CClient::STATE_CONNECTING;
-						SetClientMemory(c, CLIENTMEMORY_ROUNDSTART_OR_MAPCHANGE, true);
+						m_aClients[ClientID].m_HasPersistentData = HasPersistentData;
+						m_aClients[ClientID].m_State = CClient::STATE_CONNECTING;
+						SetClientMemory(ClientID, CLIENTMEMORY_ROUNDSTART_OR_MAPCHANGE, true);
 					}
 
 					m_GameStartTime = time_get();
@@ -2473,21 +2494,28 @@ int CServer::Run()
 					}
 				}
 				
-				for(int i=0; i<MAX_CLIENTS; i++)
+				for(int ClientID=0; ClientID<MAX_CLIENTS; ClientID++)
 				{
-					if(m_aClients[i].m_WaitingTime > 0)
+					if(m_aClients[ClientID].m_WaitingTime > 0)
 					{
-						m_aClients[i].m_WaitingTime--;
-						if(m_aClients[i].m_WaitingTime <= 0)
+						m_aClients[ClientID].m_WaitingTime--;
+						if(m_aClients[ClientID].m_WaitingTime <= 0)
 						{
-							if(m_aClients[i].m_State == CClient::STATE_READY)
+							if(m_aClients[ClientID].m_State == CClient::STATE_READY)
 							{
-								GameServer()->OnClientConnected(i);	
-								SendConnectionReady(i);
+								void *pPersistentData = 0;
+								if(m_aClients[ClientID].m_HasPersistentData)
+								{
+									pPersistentData = m_aClients[ClientID].m_pPersistentData;
+									m_aClients[ClientID].m_HasPersistentData = false;
+								}
+
+								GameServer()->OnClientConnected(ClientID, pPersistentData);
+								SendConnectionReady(ClientID);
 							}
-							else if(m_aClients[i].m_State == CClient::STATE_INGAME)
+							else if(m_aClients[ClientID].m_State == CClient::STATE_INGAME)
 							{
-								GameServer()->OnClientEnter(i);
+								GameServer()->OnClientEnter(ClientID);
 							}
 						}
 					}
@@ -2590,7 +2618,12 @@ int CServer::Run()
 	}
 #endif
 /* DDNET MODIFICATION END *********************************************/
-		
+
+	for(auto &Client : m_aClients)
+	{
+		free(Client.m_pPersistentData);
+	}
+
 	return 0;
 }
 
@@ -4928,12 +4961,11 @@ IServer::CClientSession* CServer::GetClientSession(int ClientID)
 int CServer::GetActivePlayerCount()
 {
 	int PlayerCount = 0;
-	auto& vec = spectators_id;
 	for(int i=0; i<MAX_CLIENTS; i++)
 	{
 		if(m_aClients[i].m_State == CClient::STATE_INGAME)
 		{
-			if (std::find(vec.begin(), vec.end(), i) == vec.end())
+			if(GameServer()->IsClientPlayer(i))
 				PlayerCount++;
 		}
 	}

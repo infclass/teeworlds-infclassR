@@ -114,6 +114,11 @@ class CGameContext : public IGameServer
 
 	bool m_Resetting;
 
+	struct CPersistentClientData
+	{
+		bool m_IsSpectator;
+	};
+
 public:
 	int m_ZoneHandle_icDamage;
 	int m_ZoneHandle_icTeleport;
@@ -234,7 +239,8 @@ public:
 	void CensorMessage(char *pCensoredMessage, const char *pMessage, int Size);
 	virtual void OnMessage(int MsgID, CUnpacker *pUnpacker, int ClientID);
 
-	virtual void OnClientConnected(int ClientID);
+	virtual bool OnClientDataPersist(int ClientID, void *pData);
+	virtual void OnClientConnected(int ClientID, void *pData);
 	virtual void OnClientEnter(int ClientID);
 	virtual void OnClientDrop(int ClientID, int Type, const char *pReason);
 	virtual void OnClientDirectInput(int ClientID, void *pInput);
@@ -243,6 +249,8 @@ public:
 	virtual bool IsClientBot(int ClientID) const;
 	virtual bool IsClientReady(int ClientID) const;
 	virtual bool IsClientPlayer(int ClientID) const;
+
+	virtual int PersistentClientDataSize() const { return sizeof(CPersistentClientData); }
 
 	virtual const char *GameType() const;
 	virtual const char *Version() const;
@@ -402,9 +410,6 @@ public:
 	virtual void FlagCollected(); // Triggers global gift cooldown
 /* INFECTION MODIFICATION END *****************************************/
 	// InfClassR begin
-	void AddSpectatorCID(int ClientID);
-	void RemoveSpectatorCID(int ClientID);
-	bool IsSpectatorCID(int ClientID);
 	std::ofstream fout;
 	// InfClassR end
 	bool IsVersionBanned(int Version);

@@ -1502,10 +1502,28 @@ void CGameContext::OnClientEnter(int ClientID)
 	m_VoteUpdate = true;
 }
 
-void CGameContext::OnClientConnected(int ClientID)
+bool CGameContext::OnClientDataPersist(int ClientID, void *pData)
 {
+	CPersistentClientData *pPersistent = (CPersistentClientData *)pData;
+	if(!m_apPlayers[ClientID])
+	{
+		return false;
+	}
+	pPersistent->m_IsSpectator = m_apPlayers[ClientID]->GetTeam() == TEAM_SPECTATORS;
+	return true;
+}
+
+void CGameContext::OnClientConnected(int ClientID, void *pData)
+{
+	CPersistentClientData *pPersistentData = (CPersistentClientData *)pData;
+	bool Spec = false;
+	if(pPersistentData)
+	{
+		Spec = pPersistentData->m_IsSpectator;
+	}
+
 	dbg_assert(!m_apPlayers[ClientID], "non-free player slot");
-	m_apPlayers[ClientID] = m_pController->CreatePlayer(ClientID);
+	m_apPlayers[ClientID] = m_pController->CreatePlayer(ClientID, Spec);
 	
 	//players[client_id].init(client_id);
 	//players[client_id].client_id = client_id;
@@ -1561,8 +1579,6 @@ void CGameContext::OnClientDrop(int ClientID, int Type, const char *pReason)
 		if(m_apPlayers[i] && m_apPlayers[i]->m_SpectatorID == ClientID)
 			m_apPlayers[i]->m_SpectatorID = SPEC_FREEVIEW;
 	}
-	// InfClassR remove spectators
-	RemoveSpectatorCID(ClientID);
 
 	for(int i = 0; i < MAX_CLIENTS; i++)
 	{
@@ -2072,11 +2088,7 @@ void CGameContext::OnMessage(int MsgID, CUnpacker *pUnpacker, int ClientID)
 					if(pPlayer->GetTeam() == TEAM_SPECTATORS || pMsg->m_Team == TEAM_SPECTATORS)
 						m_VoteUpdate = true;
 					m_pController->DoTeamChange(pPlayer, pMsg->m_Team);
-					if (pPlayer->GetTeam() == TEAM_SPECTATORS) {
-						AddSpectatorCID(ClientID);
-					} else {
-						RemoveSpectatorCID(ClientID);
-					}
+
 					(void)m_pController->CheckTeamBalance();
 					pPlayer->m_TeamChangeTick = Server()->Tick();
 				}
@@ -4329,7 +4341,7 @@ void CGameContext::OnInit(/*class IKernel *pKernel*/)
 	{
 		for(int i = 0; i < g_Config.m_DbgDummies ; i++)
 		{
-			OnClientConnected(MAX_CLIENTS-i-1);
+			OnClientConnected(MAX_CLIENTS - i - 1, nullptr);
 		}
 	}
 #endif
@@ -4471,12 +4483,12 @@ bool CGameContext::IsClientBot(int ClientID) const
 
 bool CGameContext::IsClientReady(int ClientID) const
 {
-	return m_apPlayers[ClientID] && m_apPlayers[ClientID]->m_IsReady ? true : false;
+	return m_apPlayers[ClientID] && m_apPlayers[ClientID]->m_IsReady;
 }
 
 bool CGameContext::IsClientPlayer(int ClientID) const
 {
-	return m_apPlayers[ClientID] && m_apPlayers[ClientID]->GetTeam() == TEAM_SPECTATORS ? false : true;
+	return m_apPlayers[ClientID] && m_apPlayers[ClientID]->GetTeam() != TEAM_SPECTATORS;
 }
 
 const char *CGameContext::GameType() const { return m_pController && m_pController->m_pGameType ? m_pController->m_pGameType : ""; }
@@ -4486,24 +4498,6 @@ const char *CGameContext::NetVersion() const { return GAME_NETVERSION; }
 
 
 IGameServer *CreateGameServer() { return new CGameContext; }
-
-void CGameContext::AddSpectatorCID(int ClientID)
-{
-	Server()->RemoveMapVotesForID(ClientID);
-	auto& vec = Server()->spectators_id;
-	if(!(std::find(vec.begin(), vec.end(), ClientID) != vec.end()))
-		vec.push_back(ClientID);
-}
-
-void CGameContext::RemoveSpectatorCID(int ClientID) {
-	auto& vec = Server()->spectators_id;
-	vec.erase(std::remove(vec.begin(), vec.end(), ClientID), vec.end());
-}
-
-bool CGameContext::IsSpectatorCID(int ClientID) {
-	auto& vec = Server()->spectators_id;
-	return std::find(vec.begin(), vec.end(), ClientID) != vec.end();
-}
 
 bool CGameContext::IsVersionBanned(int Version)
 {

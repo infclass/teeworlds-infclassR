@@ -1406,7 +1406,6 @@ void CInfClassGameController::DoTeamChange(CPlayer *pPlayer, int Team, bool DoCh
 		if(Team == TEAM_SPECTATORS)
 		{
 			GameServer()->SendChatTarget_Localization(-1, CHATCATEGORY_PLAYER, _("{str:PlayerName} joined the spectators"), "PlayerName", Server()->ClientName(ClientID), NULL);
-			GameServer()->AddSpectatorCID(ClientID);
 			Server()->InfecteClient(ClientID);
 		}
 		else
@@ -2037,10 +2036,10 @@ void CInfClassGameController::Snap(int SnappingClient)
 	pGameDataObj->m_FlagCarrierBlue = FLAG_ATSTAND;
 }
 
-CPlayer *CInfClassGameController::CreatePlayer(int ClientID)
+CPlayer *CInfClassGameController::CreatePlayer(int ClientID, bool IsSpectator)
 {
 	CInfClassPlayer *pPlayer = nullptr;
-	if (GameServer()->IsSpectatorCID(ClientID))
+	if(IsSpectator)
 	{
 		pPlayer = new(ClientID) CInfClassPlayer(this, ClientID, TEAM_SPECTATORS);
 	}

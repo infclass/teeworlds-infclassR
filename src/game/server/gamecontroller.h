@@ -139,7 +139,7 @@ public:
 	*/
 	virtual int OnCharacterDeath(class CCharacter *pVictim, class CPlayer *pKiller, int Weapon);
 
-	virtual CPlayer *CreatePlayer(int ClientID) = 0;
+	virtual CPlayer *CreatePlayer(int ClientID, bool IsSpectator) = 0;
 
 	//
 /* INFECTION MODIFICATION START ***************************************/

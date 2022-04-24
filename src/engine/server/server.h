@@ -152,7 +152,10 @@ public:
 		int m_NextMapChunk;
 
 		const IConsole::CCommandInfo *m_pRconCmdToSend;
-		
+
+		bool m_HasPersistentData;
+		void *m_pPersistentData;
+
 		void Reset(bool ResetScore=true);
 		
 		int m_NbRound;
