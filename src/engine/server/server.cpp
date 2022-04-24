@@ -1500,7 +1500,7 @@ void CServer::ProcessClientPacket(CNetChunk *pPacket)
 				return;
 
 			int Chunk = Unpacker.GetInt();
-			if(Chunk != m_aClients[ClientID].m_NextMapChunk || !g_Config.m_InfFastDownload)
+			if(Chunk != m_aClients[ClientID].m_NextMapChunk || !Config()->m_SvFastDownload)
 			{
 				SendMapData(ClientID, Chunk);
 				return;
@@ -1508,12 +1508,12 @@ void CServer::ProcessClientPacket(CNetChunk *pPacket)
 
 			if(Chunk == 0)
 			{
-				for(int i = 0; i < g_Config.m_InfMapWindow; i++)
+				for(int i = 0; i < Config()->m_SvMapWindow; i++)
 				{
 					SendMapData(ClientID, i);
 				}
 			}
-			SendMapData(ClientID, g_Config.m_InfMapWindow + m_aClients[ClientID].m_NextMapChunk);
+			SendMapData(ClientID, Config()->m_SvMapWindow + m_aClients[ClientID].m_NextMapChunk);
 			m_aClients[ClientID].m_NextMapChunk++;
 		}
 		else if(Msg == NETMSG_READY)

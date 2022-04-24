@@ -19,8 +19,6 @@ MACRO_CONFIG_INT(InfMinPlayers, inf_min_players, 2, 0, 64, CFGFLAG_SERVER, "Mini
 MACRO_CONFIG_INT(InfChallenge, inf_challenge, 0, 0, 1, CFGFLAG_SERVER, "Enable challenges")
 MACRO_CONFIG_INT(InfAccusationThreshold, inf_accusation_threshold, 4, 1, 8, CFGFLAG_SERVER, "Number of accusations needed to start a banvote")
 MACRO_CONFIG_INT(InfLeaverBanTime, inf_leaver_ban_time, 5, 0, 180, CFGFLAG_SERVER, "How long an infected gets banned (in minutes), when leaving and leaving causes a human to get infected")
-MACRO_CONFIG_INT(InfFastDownload, inf_fast_download, 1, 0, 1, CFGFLAG_SERVER, "Enables fast download of maps")
-MACRO_CONFIG_INT(InfMapWindow, inf_map_window, 15, 0, 100, CFGFLAG_SERVER, "Map downloading send-ahead window")
 MACRO_CONFIG_INT(InfShowScoreTime, inf_show_score_time, 3, 0, 12, CFGFLAG_SERVER, "Number of seconds the score will be shown at the end of a round")
 MACRO_CONFIG_INT(InfMaprotationRandom, inf_maprotation_random, 0, 0, 1, CFGFLAG_SERVER, "When enabled, next map in rotation will be chosen randomly")
 MACRO_CONFIG_INT(InfFirstInfectedLimit, inf_first_infected_limit, 0, 0, 64, CFGFLAG_SERVER, "The number of initially infected players")
@@ -153,3 +151,6 @@ MACRO_CONFIG_INT(InfWhiteHolePullStrength, inf_white_hole_pull_strength, 40, 0, 
 MACRO_CONFIG_INT(InfStunGrenadeMinimalKills, inf_stun_grenade_minimal_kills, 2, 0, 30, CFGFLAG_SERVER, "Deprecated (has no effect now)")
 MACRO_CONFIG_INT(InfStunGrenadeProbability, inf_stun_grenade_probability, 30, 0, 100, CFGFLAG_SERVER, "Deprecated (has no effect now)")
 MACRO_CONFIG_INT(InfSlimePoisonDuration, inf_slime_poison_duration, 5, 0, 10000, CFGFLAG_SERVER, "Deprecated (has no effect now, use inf_slime_poison_damage instead)")
+
+MACRO_CONFIG_INT(InfFastDownload, inf_fast_download, 1, 0, 1, CFGFLAG_SERVER, "Deprecated (use sv_fast_download instead)")
+MACRO_CONFIG_INT(InfMapWindow, inf_map_window, 15, 0, 100, CFGFLAG_SERVER, "Deprecated (use sv_map_window instead)")
