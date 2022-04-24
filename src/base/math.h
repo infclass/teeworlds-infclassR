@@ -87,29 +87,36 @@ constexpr inline T minimum(T a, T b)
 {
 	return a < b ? a : b;
 }
-
 template<typename T>
 constexpr inline T minimum(T a, T b, T c)
 {
 	return minimum(minimum(a, b), c);
 }
-
 template<typename T>
 constexpr inline T maximum(T a, T b)
 {
 	return a > b ? a : b;
 }
-
 template<typename T>
 constexpr inline T maximum(T a, T b, T c)
 {
 	return maximum(maximum(a, b), c);
 }
-
 template<typename T>
 constexpr inline T absolute(T a)
 {
 	return a < T(0) ? -a : a;
+}
+
+template<typename T>
+constexpr inline T in_range(T a, T lower, T upper)
+{
+	return lower <= a && a <= upper;
+}
+template<typename T>
+constexpr inline T in_range(T a, T upper)
+{
+	return in_range(a, 0, upper);
 }
 
 #endif // BASE_MATH_H

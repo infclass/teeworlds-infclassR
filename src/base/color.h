@@ -2,8 +2,8 @@
 #ifndef BASE_COLOR_H
 #define BASE_COLOR_H
 
-#include "math.h"
-#include "vmath.h"
+#include <base/math.h>
+#include <base/vmath.h>
 
 /*
 	Title: Color handling
@@ -96,7 +96,7 @@ public:
 		z = ((col >> 0) & 0xFF) / 255.0f;
 	}
 
-	vec4 v4() { return vec4(x, y, z, a); };
+	vec4 v4() const { return vec4(x, y, z, a); };
 
 	unsigned Pack(bool Alpha = true)
 	{
@@ -155,7 +155,7 @@ public:
 };
 
 template<typename T, typename F>
-T color_cast(const F &f) = delete;
+T color_cast(const F &) = delete;
 
 template<>
 inline ColorHSLA color_cast(const ColorRGBA &rgb)
