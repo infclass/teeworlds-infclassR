@@ -1,115 +1,71 @@
-
-#pragma once
+#ifndef BASE_TL_THREADING_H
+#define BASE_TL_THREADING_H
 
 #include "../system.h"
+#include <atomic>
 
-/*
-	atomic_inc - should return the value after increment
-	atomic_dec - should return the value after decrement
-	atomic_compswap - should return the value before the eventual swap
-	sync_barrier - creates a full hardware fence
-*/
-
-#if defined(__GNUC__)
-
-	inline unsigned atomic_inc(volatile unsigned *pValue)
-	{
-		return __sync_add_and_fetch(pValue, 1);
-	}
-
-	inline unsigned atomic_dec(volatile unsigned *pValue)
-	{
-		return __sync_add_and_fetch(pValue, -1);
-	}
-
-	inline unsigned atomic_compswap(volatile unsigned *pValue, unsigned comperand, unsigned value)
-	{
-		return __sync_val_compare_and_swap(pValue, comperand, value);
-	}
-
-	inline void sync_barrier()
-	{
-		__sync_synchronize();
-	}
-
-#elif defined(_MSC_VER)
-	#include <intrin.h>
-
-	#define WIN32_LEAN_AND_MEAN
-	#include <windows.h>
-
-	inline unsigned atomic_inc(volatile unsigned *pValue)
-	{
-		return _InterlockedIncrement((volatile long *)pValue);
-	}
-	
-	inline unsigned atomic_dec(volatile unsigned *pValue)
-	{
-		return _InterlockedDecrement((volatile long *)pValue);
-	}
-
-	inline unsigned atomic_compswap(volatile unsigned *pValue, unsigned comperand, unsigned value)
-	{
-		return _InterlockedCompareExchange((volatile long *)pValue, (long)value, (long)comperand);
-	}
-
-	inline void sync_barrier()
-	{
-		MemoryBarrier();
-	}
-#else
-	#error missing atomic implementation for this compiler
-#endif
-
-#if defined(CONF_PLATFORM_MACOSX)
-	/*
-		use semaphore provided by SDL on macosx
-	*/
-#else
-	class semaphore
-	{
-		SEMAPHORE sem;
-	public:
-		semaphore() { semaphore_init(&sem); }
-		~semaphore() { semaphore_destroy(&sem); }
-		void wait() { semaphore_wait(&sem); }
-		void signal() { semaphore_signal(&sem); }
-	};
-#endif
-
-class lock
+class CSemaphore
 {
-	friend class scope_lock;
-
-	LOCK var;
-
-	void take() { lock_wait(var); }
-	void release() { lock_release(var); }
+	SEMAPHORE m_Sem;
+	// implement the counter seperatly, because the `sem_getvalue`-API is
+	// deprecated on macOS: https://stackoverflow.com/a/16655541
+	std::atomic_int m_Count{0};
 
 public:
-	lock()
+	CSemaphore() { sphore_init(&m_Sem); }
+	~CSemaphore() { sphore_destroy(&m_Sem); }
+	CSemaphore(const CSemaphore &) = delete;
+	int GetApproximateValue() { return m_Count.load(); }
+	void Wait()
 	{
-		var = lock_create();
+		sphore_wait(&m_Sem);
+		m_Count.fetch_sub(1);
 	}
-
-	~lock()
+	void Signal()
 	{
-		lock_destroy(var);
+		m_Count.fetch_add(1);
+		sphore_signal(&m_Sem);
 	}
 };
 
-class scope_lock
+class SCOPED_CAPABILITY CLock
 {
-	lock *var;
+	LOCK m_Lock;
+
 public:
-	scope_lock(lock *l)
+	CLock() ACQUIRE(m_Lock)
 	{
-		var = l;
-		var->take();
+		m_Lock = lock_create();
 	}
 
-	~scope_lock()
+	~CLock() RELEASE()
 	{
-		var->release();
+		lock_destroy(m_Lock);
 	}
+
+	CLock(const CLock &) = delete;
+
+	void Take() ACQUIRE(m_Lock) { lock_wait(m_Lock); }
+	void Release() RELEASE() { lock_unlock(m_Lock); }
 };
+
+class CScopeLock
+{
+	CLock *m_pLock;
+
+public:
+	CScopeLock(CLock *pLock)
+	{
+		m_pLock = pLock;
+		m_pLock->Take();
+	}
+
+	~CScopeLock()
+	{
+		m_pLock->Release();
+	}
+
+	CScopeLock(const CScopeLock &) = delete;
+};
+
+#endif // BASE_TL_THREADING_H
