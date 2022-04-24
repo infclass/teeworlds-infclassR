@@ -82,6 +82,7 @@ public:
 class CServer : public IServer
 {
 	class IGameServer *m_pGameServer;
+	class CConfig *m_pConfig;
 	class IConsole *m_pConsole;
 	class IStorage *m_pStorage;
 
@@ -93,6 +94,8 @@ class CServer : public IServer
 /* DDNET MODIFICATION END *********************************************/
 public:
 	class IGameServer *GameServer() { return m_pGameServer; }
+	class CConfig *Config() { return m_pConfig; }
+	const CConfig *Config() const { return m_pConfig; }
 	class IConsole *Console() { return m_pConsole; }
 	class IStorage *Storage() { return m_pStorage; }
 

@@ -364,6 +364,8 @@ void CServer::CClient::Reset(bool ResetScore)
 
 CServer::CServer() : m_DemoRecorder(&m_SnapshotDelta)
 {
+	m_pConfig = &g_Config;
+
 	m_TickSpeed = SERVER_TICK_SPEED;
 
 	m_pGameServer = 0;
