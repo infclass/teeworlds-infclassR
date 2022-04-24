@@ -2,6 +2,8 @@
 /* If you are missing that file, acquire a complete release at teeworlds.com.                */
 #ifndef ENGINE_SHARED_MEMHEAP_H
 #define ENGINE_SHARED_MEMHEAP_H
+
+#include <cstddef>
 class CHeap
 {
 	struct CChunk
@@ -15,20 +17,19 @@ class CHeap
 	enum
 	{
 		// how large each chunk should be
-		CHUNK_SIZE = 1025*64,
+		CHUNK_SIZE = 1025 * 64,
 	};
 
 	CChunk *m_pCurrent;
 
-
 	void Clear();
 	void NewChunk();
-	void *AllocateFromChunk(unsigned int Size);
+	void *AllocateFromChunk(unsigned int Size, unsigned Alignment);
 
 public:
 	CHeap();
 	~CHeap();
 	void Reset();
-	void *Allocate(unsigned Size);
+	void *Allocate(unsigned Size, unsigned Alignment = alignof(std::max_align_t));
 };
 #endif

@@ -1671,30 +1671,85 @@ int net_udp_send(NETSOCKET sock, const NETADDR *addr, const void *data, int size
 	return d;
 }
 
-int net_udp_recv(NETSOCKET sock, NETADDR *addr, void *data, int maxsize)
+void net_init_mmsgs(MMSGS *m)
+{
+#if defined(CONF_PLATFORM_LINUX)
+	int i;
+	m->pos = 0;
+	m->size = 0;
+	mem_zero(m->msgs, sizeof(m->msgs));
+	mem_zero(m->iovecs, sizeof(m->iovecs));
+	mem_zero(m->sockaddrs, sizeof(m->sockaddrs));
+	for(i = 0; i < VLEN; ++i)
+	{
+		m->iovecs[i].iov_base = m->bufs[i];
+		m->iovecs[i].iov_len = PACKETSIZE;
+		m->msgs[i].msg_hdr.msg_iov = &(m->iovecs[i]);
+		m->msgs[i].msg_hdr.msg_iovlen = 1;
+		m->msgs[i].msg_hdr.msg_name = &(m->sockaddrs[i]);
+		m->msgs[i].msg_hdr.msg_namelen = sizeof(m->sockaddrs[i]);
+	}
+#endif
+}
+
+int net_udp_recv(NETSOCKET sock, NETADDR *addr, void *buffer, int maxsize, MMSGS *m, unsigned char **data)
 {
 	char sockaddrbuf[128];
-	socklen_t fromlen;// = sizeof(sockaddrbuf);
 	int bytes = 0;
 
+#if defined(CONF_PLATFORM_LINUX)
+	if(sock.ipv4sock >= 0)
+	{
+		if(m->pos >= m->size)
+		{
+			m->size = recvmmsg(sock.ipv4sock, m->msgs, VLEN, 0, NULL);
+			m->pos = 0;
+		}
+	}
+
+	if(sock.ipv6sock >= 0)
+	{
+		if(m->pos >= m->size)
+		{
+			m->size = recvmmsg(sock.ipv6sock, m->msgs, VLEN, 0, NULL);
+			m->pos = 0;
+		}
+	}
+
+	if(m->pos < m->size)
+	{
+		sockaddr_to_netaddr((struct sockaddr *)&(m->sockaddrs[m->pos]), addr);
+		bytes = m->msgs[m->pos].msg_len;
+		*data = (unsigned char *)m->bufs[m->pos];
+		m->pos++;
+		network_stats.recv_bytes += bytes;
+		network_stats.recv_packets++;
+		return bytes;
+	}
+#else
 	if(bytes == 0 && sock.ipv4sock >= 0)
 	{
-		fromlen = sizeof(struct sockaddr_in);
-		bytes = recvfrom(sock.ipv4sock, (char*)data, maxsize, 0, (struct sockaddr *)&sockaddrbuf, &fromlen);
+		socklen_t fromlen = sizeof(struct sockaddr_in);
+		bytes = recvfrom(sock.ipv4sock, (char *)buffer, maxsize, 0, (struct sockaddr *)&sockaddrbuf, &fromlen);
+		*data = (unsigned char *)buffer;
 	}
 
 	if(bytes <= 0 && sock.ipv6sock >= 0)
 	{
-		fromlen = sizeof(struct sockaddr_in6);
-		bytes = recvfrom(sock.ipv6sock, (char*)data, maxsize, 0, (struct sockaddr *)&sockaddrbuf, &fromlen);
+		socklen_t fromlen = sizeof(struct sockaddr_in6);
+		bytes = recvfrom(sock.ipv6sock, (char *)buffer, maxsize, 0, (struct sockaddr *)&sockaddrbuf, &fromlen);
+		*data = (unsigned char *)buffer;
 	}
+#endif
 
 #if defined(CONF_WEBSOCKETS)
 	if(bytes <= 0 && sock.web_ipv4sock >= 0)
 	{
-		fromlen = sizeof(struct sockaddr);
-		bytes = websocket_recv(sock.web_ipv4sock, data, maxsize, (struct sockaddr_in *)&sockaddrbuf, fromlen);
-		((struct sockaddr_in *)&sockaddrbuf)->sin_family = AF_WEBSOCKET_INET;
+		socklen_t fromlen = sizeof(struct sockaddr);
+		struct sockaddr_in *sockaddrbuf_in = (struct sockaddr_in *)&sockaddrbuf;
+		bytes = websocket_recv(sock.web_ipv4sock, (unsigned char *)buffer, maxsize, sockaddrbuf_in, fromlen);
+		*data = (unsigned char *)buffer;
+		sockaddrbuf_in->sin_family = AF_WEBSOCKET_INET;
 	}
 #endif
 

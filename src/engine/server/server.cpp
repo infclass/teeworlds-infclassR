@@ -2097,11 +2097,12 @@ void CServer::UpdateServerInfo()
 void CServer::PumpNetwork()
 {
 	CNetChunk Packet;
+	SECURITY_TOKEN ResponseToken;
 
 	m_NetServer.Update();
 
 	// process packets
-	while(m_NetServer.Recv(&Packet))
+	while(m_NetServer.Recv(&Packet, &ResponseToken))
 	{
 		if(Packet.m_ClientID == -1)
 		{

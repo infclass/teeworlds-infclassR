@@ -28,7 +28,12 @@ MACRO_CONFIG_INT(SvRconBantime, sv_rcon_bantime, 5, 0, 1440, CFGFLAG_SERVER, "Th
 MACRO_CONFIG_INT(SvRconTokenCheck, sv_rcon_token_check, 1, 0, 1, CFGFLAG_SERVER, "Require the use of a client with tokenized protection against IP address spoofing to permit access to the console")
 MACRO_CONFIG_INT(SvAutoDemoRecord, sv_auto_demo_record, 0, 0, 1, CFGFLAG_SERVER, "Automatically record demos")
 MACRO_CONFIG_INT(SvAutoDemoMax, sv_auto_demo_max, 10, 0, 1000, CFGFLAG_SERVER, "Maximum number of automatically recorded demos (0 = no limit)")
+MACRO_CONFIG_INT(SvVanillaAntiSpoof, sv_vanilla_antispoof, 0, 0, 1, CFGFLAG_SERVER, "Enable vanilla Antispoof")
+
 MACRO_CONFIG_INT(SvServerInfoPerSecond, sv_server_info_per_second, 10, 1, 1000, CFGFLAG_SERVER, "Maximum number of complete server info responses that are sent out per second")
+MACRO_CONFIG_INT(SvVanConnPerSecond, sv_van_conn_per_second, 10, 0, 10000, CFGFLAG_SERVER, "Antispoof specific ratelimit (0 for no limit)")
+MACRO_CONFIG_INT(SvSixup, sv_sixup, 1, 0, 1, CFGFLAG_SERVER, "Enable sixup connections")
+
 MACRO_CONFIG_INT(SvHideInfo, sv_hide_info, 0, 0, 1, CFGFLAG_SERVER, "Hide the server info")
 MACRO_CONFIG_INT(SvInfoMaxClients, sv_info_max_clients, -1, -1, 128, CFGFLAG_SERVER, "Limit the server info max clients number (-1 means 'unlimited')")
 
@@ -63,6 +68,9 @@ MACRO_CONFIG_INT(SvFilterChatCommands, sv_filter_chat_commands, 0, 0, 1, CFGFLAG
 MACRO_CONFIG_STR(SvResetFile, sv_reset_file, 128, "reset.cfg", CFGFLAG_SERVER, "File to execute on map change or reload to set the default server settings")
 MACRO_CONFIG_STR(SvChangeLogFile, sv_changelog_file, 128, "ChangeLog.txt", CFGFLAG_SERVER, "File with changelog entities")
 MACRO_CONFIG_INT(SvChangeLogMaxLinesPerPage, sv_changelog_lines_page, 6, 1, 64, CFGFLAG_SERVER, "File with changelog entities")
+
+MACRO_CONFIG_INT(ConnTimeout, conn_timeout, 100, 5, 1000, CFGFLAG_SAVE | CFGFLAG_CLIENT | CFGFLAG_SERVER, "Network timeout")
+MACRO_CONFIG_INT(ConnTimeoutProtection, conn_timeout_protection, 1000, 5, 10000, CFGFLAG_SERVER, "Network timeout protection")
 
 //Add cheat versions
 MACRO_CONFIG_STR(SvBannedVersions, sv_banned_versions, 128, "", CFGFLAG_SERVER, "Comma separated list of banned clients to be kicked on join")
