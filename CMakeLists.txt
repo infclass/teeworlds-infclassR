@@ -561,8 +561,8 @@ set_glob(GAME_SHARED GLOB src/game
 # A bit hacky, but these are needed to register all the UUIDs, even for stuff
 # that doesn't link game.
 set(ENGINE_UUID_SHARED
-  src/game/generated/protocol.cpp
-  src/game/generated/protocol.h
+  ${CMAKE_CURRENT_BINARY_DIR}/src/game/generated/protocol.cpp
+  ${CMAKE_CURRENT_BINARY_DIR}/src/game/generated/protocol.h
 )
 list(REMOVE_ITEM GAME_SHARED ${ENGINE_UUID_SHARED})
 set(GAME_GENERATED_SHARED
@@ -740,8 +740,8 @@ set_glob(GAME_SERVER GLOB_RECURSE src/game/server
   teeinfo.h
 )
 set(GAME_GENERATED_SERVER
-  "src/game/generated/server_data.cpp"
-  "src/game/generated/server_data.h"
+  ${CMAKE_CURRENT_BINARY_DIR}/src/game/generated/server_data.cpp
+  ${CMAKE_CURRENT_BINARY_DIR}/src/game/generated/server_data.h
 )
 set(SERVER_SRC ${ENGINE_SERVER} ${GAME_SERVER} ${GAME_GENERATED_SERVER})
 set(SERVER_ICON)
