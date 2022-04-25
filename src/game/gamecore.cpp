@@ -70,18 +70,24 @@ void CCharacterCore::Init(CWorldCore *pWorld, CCollision *pCollision)
 
 void CCharacterCore::Reset()
 {
-	m_Pos = vec2(0,0);
-	m_Vel = vec2(0,0);
-	m_HookPos = vec2(0,0);
-	m_HookDir = vec2(0,0);
+	m_Pos = vec2(0, 0);
+	m_Vel = vec2(0, 0);
+	m_HookPos = vec2(0, 0);
+	m_HookDir = vec2(0, 0);
 	m_HookTick = 0;
 	m_HookState = HOOK_IDLE;
 	m_HookedPlayer = -1;
 	m_Jumped = 0;
 	m_TriggeredEvents = 0;
+
+	// Infclass Character
 	m_Passenger = nullptr;
 	m_IsPassenger = false;
 	m_ProbablyStucked = false;
+
+	// never initialize both to 0
+	m_Input.m_TargetX = 0;
+	m_Input.m_TargetY = -1;
 }
 
 void CCharacterCore::Tick(bool UseInput, CParams* pParams)
@@ -146,7 +152,7 @@ void CCharacterCore::Tick(bool UseInput, CParams* pParams)
 					m_Vel.y = -pTuningParams->m_GroundJumpImpulse;
 					m_Jumped |= 1;
 				}
-				else if(!(m_Jumped&2))
+				else if(!(m_Jumped & 2))
 				{
 					m_TriggeredEvents |= COREEVENT_AIR_JUMP;
 					m_Vel.y = -pTuningParams->m_AirJumpImpulse;
@@ -470,17 +476,17 @@ void CCharacterCore::Move(CParams* pParams)
 
 void CCharacterCore::Write(CNetObj_CharacterCore *pObjCore)
 {
-	pObjCore->m_X = round(m_Pos.x);
-	pObjCore->m_Y = round(m_Pos.y);
+	pObjCore->m_X = round_to_int(m_Pos.x);
+	pObjCore->m_Y = round_to_int(m_Pos.y);
 
-	pObjCore->m_VelX = round(m_Vel.x*256.0f);
-	pObjCore->m_VelY = round(m_Vel.y*256.0f);
+	pObjCore->m_VelX = round_to_int(m_Vel.x * 256.0f);
+	pObjCore->m_VelY = round_to_int(m_Vel.y * 256.0f);
 	pObjCore->m_HookState = m_HookState;
 	pObjCore->m_HookTick = m_HookTick;
-	pObjCore->m_HookX = round(m_HookPos.x);
-	pObjCore->m_HookY = round(m_HookPos.y);
-	pObjCore->m_HookDx = round(m_HookDir.x*256.0f);
-	pObjCore->m_HookDy = round(m_HookDir.y*256.0f);
+	pObjCore->m_HookX = round_to_int(m_HookPos.x);
+	pObjCore->m_HookY = round_to_int(m_HookPos.y);
+	pObjCore->m_HookDx = round_to_int(m_HookDir.x * 256.0f);
+	pObjCore->m_HookDy = round_to_int(m_HookDir.y * 256.0f);
 	pObjCore->m_HookedPlayer = m_HookedPlayer;
 	pObjCore->m_Jumped = m_Jumped;
 	pObjCore->m_Direction = m_Direction;
@@ -491,14 +497,14 @@ void CCharacterCore::Read(const CNetObj_CharacterCore *pObjCore)
 {
 	m_Pos.x = pObjCore->m_X;
 	m_Pos.y = pObjCore->m_Y;
-	m_Vel.x = pObjCore->m_VelX/256.0f;
-	m_Vel.y = pObjCore->m_VelY/256.0f;
+	m_Vel.x = pObjCore->m_VelX / 256.0f;
+	m_Vel.y = pObjCore->m_VelY / 256.0f;
 	m_HookState = pObjCore->m_HookState;
 	m_HookTick = pObjCore->m_HookTick;
 	m_HookPos.x = pObjCore->m_HookX;
 	m_HookPos.y = pObjCore->m_HookY;
-	m_HookDir.x = pObjCore->m_HookDx/256.0f;
-	m_HookDir.y = pObjCore->m_HookDy/256.0f;
+	m_HookDir.x = pObjCore->m_HookDx / 256.0f;
+	m_HookDir.y = pObjCore->m_HookDy / 256.0f;
 	m_HookedPlayer = pObjCore->m_HookedPlayer;
 	m_Jumped = pObjCore->m_Jumped;
 	m_Direction = pObjCore->m_Direction;
