@@ -15,19 +15,21 @@ CHeroFlag::CHeroFlag(CGameContext *pGameContext, int Owner)
 	: CInfCEntity(pGameContext, CGameWorld::ENTTYPE_HERO_FLAG, vec2(), Owner, ms_PhysSize)
 {
 	m_CoolDownTick = 0;
-	for(int i=0; i<CHeroFlag::SHIELD_COUNT; i++)
+
+	for(int &ID : m_IDs)
 	{
-		m_IDs[i] = Server()->SnapNewID();
+		ID = Server()->SnapNewID();
 	}
+
 	FindPosition();
 	GameWorld()->InsertEntity(this);
 }
 
 CHeroFlag::~CHeroFlag()
 {
-	for(int i=0; i<CHeroFlag::SHIELD_COUNT; i++)
+	for(int ID : m_IDs)
 	{
-		Server()->SnapFreeID(m_IDs[i]);
+		Server()->SnapFreeID(ID);
 	}
 }
 

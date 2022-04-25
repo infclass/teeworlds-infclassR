@@ -15,25 +15,24 @@ public:
 		SHIELD_COUNT = 4,
 	};
 
-private:
-	int m_CoolDownTick;
-	int m_IDs[SHIELD_COUNT];
-
-public:
 	static const int ms_PhysSize = 14;
 
 	CHeroFlag(CGameContext *pGameContext, int Owner);
-	~CHeroFlag();
+	~CHeroFlag() override;
+
+	void FindPosition();
+	void GiveGift(CInfClassCharacter *pHero);
 
 	int GetCoolDown() const { return m_CoolDownTick; }
 
-	virtual void Tick();
-	virtual void FindPosition();
-	virtual void Snap(int SnappingClient);
-	void GiveGift(CInfClassCharacter *pHero);
+	void Tick() override;
+	void Snap(int SnappingClient) override;
 
 private:
 	void SetCoolDown();
+
+	int m_CoolDownTick = 0;
+	int m_IDs[SHIELD_COUNT];
 };
 
 #endif
