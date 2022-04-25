@@ -188,10 +188,10 @@ void CInfClassHuman::OnCharacterSnap(int SnappingClient)
 		{
 			if(m_pHeroFlag && Config()->m_InfHeroFlagIndicator)
 			{
-				long TickLimit = m_pPlayer->m_LastActionMoveTick + Config()->m_InfHeroFlagIndicatorTime * Server()->TickSpeed();
+				int TickLimit = m_pPlayer->m_LastActionMoveTick + Config()->m_InfHeroFlagIndicatorTime * Server()->TickSpeed();
+				TickLimit = maximum(TickLimit, m_pHeroFlag->GetSpawnTick());
 
-				// Guide hero to flag
-				if(m_pHeroFlag->GetSpawnTick() < CurrentTick && CurrentTick > TickLimit)
+				if(CurrentTick > TickLimit)
 				{
 					CNetObj_Laser *pObj = static_cast<CNetObj_Laser *>(Server()->SnapNewItem(NETOBJTYPE_LASER, m_pCharacter->GetCursorID(), sizeof(CNetObj_Laser)));
 					if(!pObj)
