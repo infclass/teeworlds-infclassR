@@ -14,8 +14,6 @@
 CHeroFlag::CHeroFlag(CGameContext *pGameContext, int Owner)
 	: CInfCEntity(pGameContext, CGameWorld::ENTTYPE_HERO_FLAG, vec2(), Owner, ms_PhysSize)
 {
-	m_CoolDownTick = 0;
-
 	for(int &ID : m_IDs)
 	{
 		ID = Server()->SnapNewID();
@@ -48,13 +46,13 @@ void CHeroFlag::SetCoolDown()
 	if (PlayerCount <= 1)
 	{
 		// only 1 player on, let him find as many flags as he wants
-		m_CoolDownTick = 2;
+		m_SpawnTick = Server()->Tick() + 2;
 		return;
 	}
 	float t = (8-PlayerCount) / 8.0f;
 	if (t < 0.0f) 
 		t = 0.0f;
-	m_CoolDownTick = Server()->TickSpeed() * (15+(120*t));
+	m_SpawnTick = Server()->Tick() + Server()->TickSpeed() * (15+(120*t));
 }
 
 void CHeroFlag::GiveGift(CInfClassCharacter* pHero)
@@ -109,47 +107,42 @@ void CHeroFlag::GiveGift(CInfClassCharacter* pHero)
 
 void CHeroFlag::Tick()
 {
-	if(m_CoolDownTick <= 0)
+	if(Server()->Tick() < m_SpawnTick)
+		return;
+
+	CInfClassCharacter *pOwner = GetOwnerCharacter();
+	if(!pOwner)
+		return;
+
+	if(pOwner->GetPlayerClass() != PLAYERCLASS_HERO)
 	{
-		// Find other players
-		int NbPlayer = 0;
-		for(CInfClassCharacter *p = (CInfClassCharacter*) GameWorld()->FindFirst(CGameWorld::ENTTYPE_CHARACTER); p; p = (CInfClassCharacter *)p->TypeNext())
-		{
-			NbPlayer++;
-		}
-		
-		for(CInfClassCharacter *p = (CInfClassCharacter*) GameWorld()->FindFirst(CGameWorld::ENTTYPE_CHARACTER); p; p = (CInfClassCharacter *)p->TypeNext())
-		{
-			if(p->GetPlayerClass() != PLAYERCLASS_HERO)
-				continue;
+		// Makes no sense
+		return;
+	}
 
-			if(p->GetCID() != m_Owner)
-				continue;
+	float Len = distance(pOwner->m_Pos, m_Pos);
+	if(Len < m_ProximityRadius + pOwner->m_ProximityRadius)
+	{
+		FindPosition();
+		GiveGift(pOwner);
 
-			float Len = distance(p->m_Pos, m_Pos);
-			if(Len < m_ProximityRadius + p->m_ProximityRadius)
-			{
-				FindPosition();
-				GiveGift(p);
-				
-				if(NbPlayer > 3)
-				{
-					int ClientID = p->GetCID();
-					Server()->RoundStatistics()->OnScoreEvent(ClientID, SCOREEVENT_HERO_FLAG, p->GetPlayerClass(), Server()->ClientName(ClientID), GameServer()->Console());
-					GameServer()->SendScoreSound(p->GetCID());
-				}
-				break;
-			}
+		if(Server()->GetActivePlayerCount() > 3)
+		{
+			int ClientID = pOwner->GetCID();
+			Server()->RoundStatistics()->OnScoreEvent(ClientID, SCOREEVENT_HERO_FLAG, pOwner->GetPlayerClass(), Server()->ClientName(ClientID), GameServer()->Console());
+			GameServer()->SendScoreSound(pOwner->GetCID());
 		}
 	}
-	else
-		m_CoolDownTick--;
+}
 
+void CHeroFlag::TickPaused()
+{
+	m_SpawnTick++;
 }
 
 void CHeroFlag::Snap(int SnappingClient)
 {
-	if(m_CoolDownTick > 0)
+	if(Server()->Tick() < m_SpawnTick)
 		return;
 	
 	if(NetworkClipped(SnappingClient))

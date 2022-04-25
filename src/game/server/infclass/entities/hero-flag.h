@@ -23,15 +23,16 @@ public:
 	void FindPosition();
 	void GiveGift(CInfClassCharacter *pHero);
 
-	int GetCoolDown() const { return m_CoolDownTick; }
+	int GetSpawnTick() const { return m_SpawnTick; }
 
 	void Tick() override;
+	void TickPaused() override;
 	void Snap(int SnappingClient) override;
 
 private:
 	void SetCoolDown();
 
-	int m_CoolDownTick = 0;
+	int m_SpawnTick = 0;
 	int m_IDs[SHIELD_COUNT];
 };
 

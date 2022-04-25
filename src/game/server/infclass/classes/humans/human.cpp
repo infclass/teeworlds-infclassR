@@ -179,6 +179,7 @@ void CInfClassHuman::OnCharacterTick()
 
 void CInfClassHuman::OnCharacterSnap(int SnappingClient)
 {
+	const int CurrentTick = Server()->Tick();
 	if(SnappingClient == m_pPlayer->GetCID())
 	{
 		switch(GetPlayerClass())
@@ -190,7 +191,7 @@ void CInfClassHuman::OnCharacterSnap(int SnappingClient)
 				long TickLimit = m_pPlayer->m_LastActionMoveTick + Config()->m_InfHeroFlagIndicatorTime * Server()->TickSpeed();
 
 				// Guide hero to flag
-				if(m_pHeroFlag->GetCoolDown() <= 0 && Server()->Tick() > TickLimit)
+				if(m_pHeroFlag->GetSpawnTick() < CurrentTick && CurrentTick > TickLimit)
 				{
 					CNetObj_Laser *pObj = static_cast<CNetObj_Laser *>(Server()->SnapNewItem(NETOBJTYPE_LASER, m_pCharacter->GetCursorID(), sizeof(CNetObj_Laser)));
 					if(!pObj)
@@ -442,6 +443,7 @@ void CInfClassHuman::DestroyChildEntities()
 
 void CInfClassHuman::BroadcastWeaponState()
 {
+	const int CurrentTick = Server()->Tick();
 	if(GetPlayerClass() == PLAYERCLASS_ENGINEER)
 	{
 		CEngineerWall* pCurrentWall = NULL;
@@ -726,7 +728,7 @@ void CInfClassHuman::BroadcastWeaponState()
 	else if(GetPlayerClass() == PLAYERCLASS_HERO)
 	{
 		//Search for flag
-		int CoolDown = m_pHeroFlag ? m_pHeroFlag->GetCoolDown() : 0;
+		int CoolDown = m_pHeroFlag ? m_pHeroFlag->GetSpawnTick() - CurrentTick : 0;
 
 		if(m_pCharacter->GetActiveWeapon() == WEAPON_HAMMER)
 		{
@@ -764,7 +766,7 @@ void CInfClassHuman::BroadcastWeaponState()
 		}
 		else if(CoolDown > 0)
 		{
-			int Seconds = 1+CoolDown/Server()->TickSpeed();
+			int Seconds = 1 + CoolDown / Server()->TickSpeed();
 			GameServer()->SendBroadcast_Localization(GetPlayer()->GetCID(),
 				BROADCAST_PRIORITY_WEAPONSTATE, BROADCAST_DURATION_REALTIME,
 				_("Next flag in {sec:RemainingTime}"),
