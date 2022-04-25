@@ -1008,6 +1008,8 @@ void CInfClassCharacter::GetActualKillers(int GivenKiller, DAMAGE_TYPE DamageTyp
 	//   killer=sniper (insta-kill)
 	// - Sniper killed a merc-poisoned inf from unlocked position:
 	//   killer=sniper assistant=merc
+	// - Scientist spawns a WhiteHole which drags an infected and then the inf does selfkill:
+	//   killer=scientist
 	//
 	// - Hunter hammered a med poisoned by a slug:
 	//   killer=hunter (insta kill)
@@ -1063,7 +1065,7 @@ void CInfClassCharacter::GetActualKillers(int GivenKiller, DAMAGE_TYPE DamageTyp
 		AddUnique(m_LastFreezer, &MustBeKillerOrAssistant);
 	}
 
-	ClientsArray HookersRightNow = m_LastHookers;
+	ClientsArray HookersRightNow;
 	if(m_LastHookerTick + 1 >= Server()->Tick())
 	{
 		// + 1 to still count hookers from the previous tick for the case if the
@@ -1167,7 +1169,7 @@ void CInfClassCharacter::GetActualKillers(int GivenKiller, DAMAGE_TYPE DamageTyp
 	}
 
 	{
-		ClientsArray &Enforcers = DirectKill ? Killers : Assistants;
+		ClientsArray &Enforcers = DirectKill ? Assistants : Killers;
 
 		for(const EnforcerInfo &info : m_EnforcersInfo)
 		{
