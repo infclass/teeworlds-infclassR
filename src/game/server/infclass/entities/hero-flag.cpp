@@ -184,7 +184,7 @@ void CHeroFlag::Snap(int SnappingClient)
 		}
 	}
 
-	CNetObj_Flag *pFlag = (CNetObj_Flag *)Server()->SnapNewItem(NETOBJTYPE_FLAG, TEAM_BLUE, sizeof(CNetObj_Flag));
+	CNetObj_Flag *pFlag = (CNetObj_Flag *)Server()->SnapNewItem(NETOBJTYPE_FLAG, m_ID, sizeof(CNetObj_Flag));
 	if(!pFlag)
 		return;
 
