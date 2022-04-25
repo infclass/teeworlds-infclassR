@@ -206,11 +206,6 @@ void CInfClassHuman::OnCharacterSnap(int SnappingClient)
 					long TicksInactive = TickShowBeamTime - (Server()->Tick()-TickLimit);
 					if(g_Config.m_InfHeroFlagIndicatorTime > 0 && TicksInactive > 0)
 					{
-						// TODO: Probably it is incorrect to use Character->GetID() here
-						CNetObj_Laser *pObj = static_cast<CNetObj_Laser *>(Server()->SnapNewItem(NETOBJTYPE_LASER, m_pCharacter->GetID(), sizeof(CNetObj_Laser)));
-						if(!pObj)
-							return;
-
 						Indicator = IndicatorM + vecDir * 168.0f * (1.0f-(TicksInactive/(float)TickShowBeamTime));
 
 						pObj->m_X = (int)Indicator.x;
@@ -218,16 +213,22 @@ void CInfClassHuman::OnCharacterSnap(int SnappingClient)
 						pObj->m_FromX = (int)IndicatorM.x;
 						pObj->m_FromY = (int)IndicatorM.y;
 						if(TicksInactive < 4)
+						{
 							pObj->m_StartTick = Server()->Tick()-(6-TicksInactive);
+						}
 						else
+						{
 							pObj->m_StartTick = Server()->Tick()-3;
+						}
 					}
-
-					pObj->m_X = (int)Indicator.x;
-					pObj->m_Y = (int)Indicator.y;
-					pObj->m_FromX = pObj->m_X;
-					pObj->m_FromY = pObj->m_Y;
-					pObj->m_StartTick = Server()->Tick();
+					else
+					{
+						pObj->m_X = (int)Indicator.x;
+						pObj->m_Y = (int)Indicator.y;
+						pObj->m_FromX = pObj->m_X;
+						pObj->m_FromY = pObj->m_Y;
+						pObj->m_StartTick = Server()->Tick();
+					}
 				}
 			}
 		}
