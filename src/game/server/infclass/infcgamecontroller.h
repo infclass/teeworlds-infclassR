@@ -121,6 +121,8 @@ public:
 	void RegisterChatCommands(class IConsole *pConsole) override;
 
 	static bool ConSetClientName(IConsole::IResult *pResult, void *pUserData);
+	static bool ConUserSetClass(IConsole::IResult *pResult, void *pUserData);
+	bool ConUserSetClass(IConsole::IResult *pResult);
 	static bool ConSetClass(IConsole::IResult *pResult, void *pUserData);
 	bool ConSetClass(IConsole::IResult *pResult);
 

@@ -905,6 +905,7 @@ void CInfClassGameController::RegisterChatCommands(IConsole *pConsole)
 	pConsole->Register("queue_fast_round", "", CFGFLAG_SERVER, ConQueueFastRound, this, "Queue a faster gameplay round");
 	pConsole->Register("queue_fun_round", "", CFGFLAG_SERVER, ConQueueFunRound, this, "Queue a fun gameplay round");
 
+	pConsole->Register("set_class", "s<classname>", CFGFLAG_CHAT|CFGFLAG_USER, ConUserSetClass, this, "Set the class of a player");
 	pConsole->Register("save_position", "", CFGFLAG_CHAT|CFGFLAG_USER, ConSavePosition, this, "Save the current character position");
 	pConsole->Register("load_position", "", CFGFLAG_CHAT|CFGFLAG_USER, ConLoadPosition, this, "Load (restore) the current character position");
 
@@ -921,6 +922,46 @@ bool CInfClassGameController::ConSetClientName(IConsole::IResult *pResult, void 
 
 	pSelf->Server()->SetClientName(PlayerID, pNewName);
 
+	return true;
+}
+
+bool CInfClassGameController::ConUserSetClass(IConsole::IResult *pResult, void *pUserData)
+{
+	CInfClassGameController *pSelf = (CInfClassGameController *)pUserData;
+	return pSelf->ConUserSetClass(pResult);
+}
+
+bool CInfClassGameController::ConUserSetClass(IConsole::IResult *pResult)
+{
+	int ClientID = pResult->GetClientID();
+	if(!Config()->m_InfTrainingMode)
+	{
+		GameServer()->SendChatTarget_Localization(ClientID, CHATCATEGORY_DEFAULT, _("The command is not available (enabled only in training mode)"), nullptr);
+		return true;
+	}
+
+	const char *pClassName = pResult->GetString(0);
+
+	CInfClassPlayer *pPlayer = GetPlayer(ClientID);
+
+	if(!pPlayer)
+		return true;
+
+	bool Ok = false;
+	int PlayerClass = GetClassByName(pClassName, &Ok);
+	if(Ok)
+	{
+		pPlayer->SetClass(PlayerClass);
+		const char *pClassDisplayName = GetClassDisplayName(PlayerClass);
+		GameServer()->SendChatTarget_Localization(-1, CHATCATEGORY_PLAYER, _("{str:PlayerName} changed the class to {str:ClassName}"),
+									"PlayerName", Server()->ClientName(ClientID),
+									"ClassName", pClassDisplayName,
+									nullptr);
+
+		return true;
+	}
+
+	Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "inf_set_class", "Unknown class");
 	return true;
 }
 

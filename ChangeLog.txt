@@ -1,6 +1,6 @@
 InfclassR v1.5.0_alpha1
 - Added training mode with /save_position,
-  /load_position
+  /load_position, and /set_class commands
 - Hero flag indicator now properly animated for
   standing heroes
 
