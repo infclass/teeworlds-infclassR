@@ -1889,6 +1889,9 @@ void CInfClassGameController::AnnounceTheWinner(int NumHumans, int Seconds)
 
 bool CInfClassGameController::IsInfectionStarted() const
 {
+	if(Config()->m_InfTrainingMode)
+		return false;
+
 	return (m_RoundStartTick + Server()->TickSpeed() * GetInfectionDelay() <= Server()->Tick());
 }
 
@@ -1951,6 +1954,9 @@ bool CInfClassGameController::WhiteHoleEnabled() const
 
 float CInfClassGameController::GetTimeLimit() const
 {
+	if(Config()->m_InfTrainingMode)
+		return 0;
+
 	float BaseTimeLimit = Config()->m_SvTimelimitInSeconds ? Config()->m_SvTimelimitInSeconds / 60.0 : Config()->m_SvTimelimit;
 
 	switch(GetRoundType())
@@ -2400,6 +2406,9 @@ void CInfClassGameController::OnCharacterSpawned(CInfClassCharacter *pCharacter)
 
 void CInfClassGameController::DoWincheck()
 {
+	if(Config()->m_InfTrainingMode)
+		return;
+
 	int NumHumans = 0;
 	int NumInfected = 0;
 	GetPlayerCounter(-1, NumHumans, NumInfected);

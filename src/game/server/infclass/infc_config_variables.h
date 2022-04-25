@@ -13,6 +13,8 @@ MACRO_CONFIG_INT(InfInactiveHumansKickTime, inf_inactive_humans_kick_time, 180, 
 MACRO_CONFIG_INT(InfInactiveInfectedKickTime, inf_inactive_infected_kick_time, 30, 0, 10000, CFGFLAG_SERVER, "How many seconds to wait before taking care of inactive infected")
 MACRO_CONFIG_INT(InfInitialInfectionDelay, inf_initial_infection_delay, 10, 0, 10000, CFGFLAG_SERVER, "The number of seconds until the game infect the first humans in the round")
 
+MACRO_CONFIG_INT(InfTrainingMode, inf_training_mode, 0, 0, 1, CFGFLAG_SERVER, "Enable the training mode (with commands)")
+
 MACRO_CONFIG_STR(InfEvent, inf_event, 64, "", CFGFLAG_SERVER, "Special event")
 
 MACRO_CONFIG_INT(InfMinPlayers, inf_min_players, 2, 0, 64, CFGFLAG_SERVER, "Minimum number of players to start the round")
