@@ -905,6 +905,9 @@ void CInfClassGameController::RegisterChatCommands(IConsole *pConsole)
 	pConsole->Register("queue_fast_round", "", CFGFLAG_SERVER, ConQueueFastRound, this, "Queue a faster gameplay round");
 	pConsole->Register("queue_fun_round", "", CFGFLAG_SERVER, ConQueueFunRound, this, "Queue a fun gameplay round");
 
+	pConsole->Register("save_position", "", CFGFLAG_CHAT|CFGFLAG_USER, ConSavePosition, this, "Save the current character position");
+	pConsole->Register("load_position", "", CFGFLAG_CHAT|CFGFLAG_USER, ConLoadPosition, this, "Load (restore) the current character position");
+
 	pConsole->Register("witch", "", CFGFLAG_CHAT|CFGFLAG_USER, ChatWitch, this, "Call Witch");
 	pConsole->Register("santa", "", CFGFLAG_CHAT|CFGFLAG_USER, ChatWitch, this, "Call the Santa");
 }
@@ -990,6 +993,103 @@ bool CInfClassGameController::ConQueueFunRound(IConsole::IResult *pResult, void 
 	}
 
 	pSelf->m_QueuedRoundType = ROUND_TYPE::FUN;
+	return true;
+}
+
+bool CInfClassGameController::ConSavePosition(IConsole::IResult *pResult, void *pUserData)
+{
+	CInfClassGameController *pSelf = (CInfClassGameController *)pUserData;
+	return pSelf->ConSavePosition(pResult);
+}
+
+bool CInfClassGameController::ConSavePosition(IConsole::IResult *pResult)
+{
+	int ClientID = pResult->GetClientID();
+	if(!Config()->m_InfTrainingMode)
+	{
+		GameServer()->SendChatTarget_Localization(ClientID, CHATCATEGORY_DEFAULT, _("The command is not available (enabled only in training mode)"), nullptr);
+		return true;
+	}
+
+	CInfClassCharacter *pCharacter = GetCharacter(ClientID);
+	if(!pCharacter)
+	{
+		GameServer()->SendChatTarget_Localization(ClientID, CHATCATEGORY_DEFAULT, _("Unable to save the position: you have no character to save its position"), nullptr);
+		return true;
+	}
+
+	if(!pCharacter->IsAlive())
+	{
+		GameServer()->SendChatTarget_Localization(ClientID, CHATCATEGORY_DEFAULT, _("Unable to save the position: the character state is not valid"), nullptr);
+		return true;
+	}
+
+	if(!pCharacter->IsGrounded())
+	{
+		GameServer()->SendChatTarget_Localization(ClientID, CHATCATEGORY_DEFAULT, _("Unable to save the position: the character does not stand on the ground"), nullptr);
+		return true;
+	}
+
+	vec2 Position = pCharacter->GetPos();
+	CInfClassPlayer *pPlayer = GetPlayer(ClientID);
+	if(!pPlayer)
+	{
+		// What...
+		return true;
+	}
+
+	pPlayer->AddSavedPosition(Position);
+
+	return true;
+}
+
+bool CInfClassGameController::ConLoadPosition(IConsole::IResult *pResult, void *pUserData)
+{
+	CInfClassGameController *pSelf = (CInfClassGameController *)pUserData;
+	return pSelf->ConLoadPosition(pResult);
+}
+
+bool CInfClassGameController::ConLoadPosition(IConsole::IResult *pResult)
+{
+	int ClientID = pResult->GetClientID();
+	if(!Config()->m_InfTrainingMode)
+	{
+		GameServer()->SendChatTarget_Localization(ClientID, CHATCATEGORY_DEFAULT, _("The command is not available (enabled only in training mode)"), nullptr);
+		return true;
+	}
+
+	CInfClassCharacter *pCharacter = GetCharacter(ClientID);
+	if(!pCharacter)
+	{
+		GameServer()->SendChatTarget_Localization(ClientID, CHATCATEGORY_DEFAULT, _("Unable to load the position: you have no character to load its position"), nullptr);
+		return true;
+	}
+
+	if(!pCharacter->IsAlive())
+	{
+		GameServer()->SendChatTarget_Localization(ClientID, CHATCATEGORY_DEFAULT, _("Unable to load the position: the character state is not valid"), nullptr);
+		return true;
+	}
+
+	vec2 Position;
+	CInfClassPlayer *pPlayer = GetPlayer(ClientID);
+	if(!pPlayer)
+	{
+		// What...
+		return true;
+	}
+
+	pPlayer->LoadSavedPosition(&Position);
+
+	pCharacter->m_Pos = Position;
+	pCharacter->m_Core.m_Pos = Position;
+	pCharacter->m_Core.m_Vel = vec2(0, 0);
+	GameWorld()->ReleaseHooked(ClientID);
+	pCharacter->m_Core.m_HookedPlayer = -1;
+	pCharacter->m_Core.m_HookState = HOOK_RETRACTED;
+	pCharacter->m_Core.m_TriggeredEvents |= COREEVENT_HOOK_RETRACT;
+	pCharacter->m_Core.m_HookPos = Position;
+
 	return true;
 }
 

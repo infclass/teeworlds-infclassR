@@ -127,6 +127,10 @@ public:
 	static bool ConStartFastRound(IConsole::IResult *pResult, void *pUserData);
 	static bool ConQueueFastRound(IConsole::IResult *pResult, void *pUserData);
 	static bool ConQueueFunRound(IConsole::IResult *pResult, void *pUserData);
+	static bool ConSavePosition(IConsole::IResult *pResult, void *pUserData);
+	bool ConSavePosition(IConsole::IResult *pResult);
+	static bool ConLoadPosition(IConsole::IResult *pResult, void *pUserData);
+	bool ConLoadPosition(IConsole::IResult *pResult);
 
 	static bool ChatWitch(IConsole::IResult *pResult, void *pUserData);
 	bool ChatWitch(IConsole::IResult *pResult);

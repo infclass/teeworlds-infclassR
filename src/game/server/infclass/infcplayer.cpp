@@ -414,6 +414,21 @@ bool CInfClassPlayer::RandomClassChoosen() const
 	return m_RandomClassRoundId == GameController()->GetRoundId();
 }
 
+void CInfClassPlayer::AddSavedPosition(const vec2 Position)
+{
+	m_SavedPositions.Resize(1);
+	m_SavedPositions[0] = Position;
+}
+
+bool CInfClassPlayer::LoadSavedPosition(vec2 *pOutput) const
+{
+	if(m_SavedPositions.IsEmpty())
+		return false;
+
+	*pOutput = m_SavedPositions.At(0);
+	return true;
+}
+
 void CInfClassPlayer::OnNewRound()
 {
 	SetClass(PLAYERCLASS_NONE);

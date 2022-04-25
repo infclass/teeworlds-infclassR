@@ -2,6 +2,7 @@
 #define GAME_SERVER_INFCLASS_PLAYER_H
 
 #include <game/gamecore.h>
+#include <base/tl/array_on_stack.h>
 
 class CGameContext;
 class CInfClassCharacter;
@@ -69,6 +70,9 @@ public:
 	void SetRandomClassChoosen();
 	bool RandomClassChoosen() const;
 
+	void AddSavedPosition(const vec2 Position);
+	bool LoadSavedPosition(vec2 *pOutput) const;
+
 	CGameContext *GameServer() const { return m_pGameServer; }
 	IServer *Server() const { return CPlayer::Server(); }
 
@@ -112,6 +116,8 @@ protected:
 
 	int m_GhoulLevel = 0;
 	int m_GhoulLevelTick = 0;
+
+	array_on_stack<vec2, 1> m_SavedPositions;
 };
 
 inline CInfClassPlayer *CInfClassPlayer::GetInstance(CPlayer *pPlayer)
