@@ -95,10 +95,21 @@ void CCharacterCore::Tick(bool UseInput, CParams* pParams)
 		Grounded = true;
 	if(m_pCollision->CheckPoint(m_Pos.x-PhysicalSize/2, m_Pos.y+PhysicalSize/2+5))
 		Grounded = true;
-	
-	bool Stucked = false;
-	Stucked = m_pCollision->TestBox(m_Pos, vec2(PhysicalSize, PhysicalSize));
-	
+
+	// InfClassR taxi mode
+	if(m_ProbablyStucked)
+	{
+		if(m_pCollision->TestBox(m_Pos, vec2(PhysicalSize, PhysicalSize)))
+		{
+			m_Pos.y += 1;
+		}
+		else
+		{
+			m_ProbablyStucked = false;
+		}
+	}
+	// InfClassR taxi mode end
+
 	vec2 TargetDirection = normalize(vec2(m_Input.m_TargetX, m_Input.m_TargetY));
 
 	m_Vel.y += pTuningParams->m_Gravity;
@@ -106,15 +117,6 @@ void CCharacterCore::Tick(bool UseInput, CParams* pParams)
 	float MaxSpeed = Grounded ? pTuningParams->m_GroundControlSpeed : pTuningParams->m_AirControlSpeed;
 	float Accel = Grounded ? pTuningParams->m_GroundControlAccel : pTuningParams->m_AirControlAccel;
 	float Friction = Grounded ? pTuningParams->m_GroundFriction : pTuningParams->m_AirFriction;
-
-	if (m_ProbablyStucked) {
-		m_Pos.y += 1;
-		if (!Stucked) {
-			m_ProbablyStucked = false;
-			m_Pos.y -= 1;
-		}
-	}
-	// InfClassR taxi mode end
 
 	// handle input
 	if(UseInput)
