@@ -72,8 +72,7 @@ void CInfClassCharacter::OnCharacterSpawned(const SpawnContext &Context)
 	m_HallucinationTick = -1;
 	m_SlipperyTick = -1;
 	m_LastFreezer = -1;
-	m_LastHelper.m_CID = -1;
-	m_LastHelper.m_Tick = 0;
+	ResetHelpers();
 	m_LastHookers.Clear();
 	m_LastHookerTick = -1;
 	m_EnforcersInfo.Clear();
@@ -1005,6 +1004,12 @@ void CInfClassCharacter::AddHelper(int HelperCID, float Time)
 	m_LastHelper.m_CID = HelperCID;
 	m_LastHelper.m_Tick = HelpTicks;
 	dbg_msg("tracking", "%d added as a helper of %d for %d", HelperCID, GetCID(), m_LastHelper.m_Tick);
+}
+
+void CInfClassCharacter::ResetHelpers()
+{
+	m_LastHelper.m_CID = -1;
+	m_LastHelper.m_Tick = 0;
 }
 
 void CInfClassCharacter::GetActualKillers(int GivenKiller, DAMAGE_TYPE DamageType, int *pKiller, int *pAssistant) const

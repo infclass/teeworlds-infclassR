@@ -198,6 +198,7 @@ public:
 	int GetCursorID() const { return m_CursorID; }
 
 	void AddHelper(int HelperCID, float Time);
+	void ResetHelpers();
 
 	void GetActualKillers(int GivenKiller, DAMAGE_TYPE GivenWeapon, int *pKiller, int *pAssistant) const;
 

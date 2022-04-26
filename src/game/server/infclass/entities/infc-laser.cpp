@@ -79,6 +79,8 @@ bool CInfClassLaser::HitCharacter(vec2 From, vec2 To)
 			pInfected->Unfreeze();
 			pInfected->CancelSlowMotion();
 			pInfected->SetHealthArmor(1, 0);
+			const float ReviverHelperDuration = 45;
+			pInfected->AddHelper(pMedic->GetCID(), ReviverHelperDuration);
 			pMedic->TakeDamage(vec2(0.f, 0.f), Config()->m_InfRevivalDamage * 2, m_Owner, DAMAGE_TYPE::MEDIC_REVIVAL);
 
 			GameServer()->SendChatTarget_Localization(-1, CHATCATEGORY_HUMANS,
