@@ -1613,6 +1613,8 @@ void CInfClassCharacter::OnHammerFired(WeaponFireContext *pFireContext)
 				else
 					Dir = vec2(0.f, -1.f);
 
+				vec2 Force = vec2(0.f, -1.f) + normalize(Dir + vec2(0.f, -1.1f)) * 10.0f;
+
 /* INFECTION MODIFICATION START ***************************************/
 				if(IsZombie())
 				{
@@ -1630,7 +1632,7 @@ void CInfClassCharacter::OnHammerFired(WeaponFireContext *pFireContext)
 							}
 
 							if(!pTarget->GetPlayer()->HookProtectionEnabled())
-								pTarget->m_Core.m_Vel += vec2(0.f, -1.f) + normalize(Dir + vec2(0.f, -1.1f)) * 10.0f;
+								pTarget->m_Core.m_Vel += Force;
 						}
 					}
 					else
@@ -1652,8 +1654,7 @@ void CInfClassCharacter::OnHammerFired(WeaponFireContext *pFireContext)
 							DamageType = DAMAGE_TYPE::BITE;
 						}
 
-						pTarget->TakeDamage(vec2(0.f, -1.f) + normalize(Dir + vec2(0.f, -1.1f)) * 10.0f, Damage,
-							GetCID(), DamageType);
+						pTarget->TakeDamage(Force, Damage, GetCID(), DamageType);
 					}
 				}
 				else if(GetPlayerClass() == PLAYERCLASS_BIOLOGIST || GetPlayerClass() == PLAYERCLASS_MERCENARY)
@@ -1661,16 +1662,14 @@ void CInfClassCharacter::OnHammerFired(WeaponFireContext *pFireContext)
 					/* affects mercenary only if love bombs are disabled. */
 					if (pTarget->IsZombie())
 					{
-						pTarget->TakeDamage(vec2(0.f, -1.f) + normalize(Dir + vec2(0.f, -1.1f)) * 10.0f, 20, 
-								GetCID(), DAMAGE_TYPE::HAMMER);
+						pTarget->TakeDamage(Force, 20, GetCID(), DAMAGE_TYPE::HAMMER);
 					}
 				}
 				else if(GetPlayerClass() == PLAYERCLASS_MEDIC)
 				{
 					if (pTarget->IsZombie())
 					{
-						pTarget->TakeDamage(vec2(0.f, -1.f) + normalize(Dir + vec2(0.f, -1.1f)) * 10.0f, 20, 
-								GetCID(), DAMAGE_TYPE::HAMMER);
+						pTarget->TakeDamage(Force, 20, GetCID(), DAMAGE_TYPE::HAMMER);
 					}
 					else
 					{
@@ -1689,7 +1688,7 @@ void CInfClassCharacter::OnHammerFired(WeaponFireContext *pFireContext)
 				}
 				else
 				{
-					pTarget->TakeDamage(vec2(0.f, -1.f) + normalize(Dir + vec2(0.f, -1.1f)) * 10.0f, g_pData->m_Weapons.m_Hammer.m_pBase->m_Damage,
+					pTarget->TakeDamage(Force, g_pData->m_Weapons.m_Hammer.m_pBase->m_Damage,
 						GetCID(), DAMAGE_TYPE::HAMMER);
 				}
 /* INFECTION MODIFICATION END *****************************************/
