@@ -1504,7 +1504,7 @@ void CInfClassGameController::StartRound()
 		if(pPlayer)
 		{
 			Server()->SetClientMemory(i, CLIENTMEMORY_ROUNDSTART_OR_MAPCHANGE, true);
-			pPlayer->OnNewRound();
+			pPlayer->OnStartRound();
 		}
 	}
 }

@@ -76,7 +76,7 @@ public:
 	CGameContext *GameServer() const { return m_pGameServer; }
 	IServer *Server() const { return CPlayer::Server(); }
 
-	void OnNewRound();
+	void OnStartRound();
 
 	void OnKill();
 	void OnDeath();

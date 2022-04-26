@@ -439,7 +439,7 @@ bool CInfClassPlayer::LoadSavedPosition(vec2 *pOutput) const
 	return true;
 }
 
-void CInfClassPlayer::OnNewRound()
+void CInfClassPlayer::OnStartRound()
 {
 	SetClass(PLAYERCLASS_NONE);
 	m_HumanTime = 0;
