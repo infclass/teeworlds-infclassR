@@ -309,14 +309,18 @@ void CInfClassPlayer::SetClass(int newClass)
 
 	const bool HadHumanClass = GetCharacterClass() && GetCharacterClass()->IsHuman();
 	const bool HadInfectedClass = GetCharacterClass() && GetCharacterClass()->IsZombie();
+	const bool SameTeam = IsHuman() ? HadHumanClass : HadInfectedClass;
 
-	if(IsHuman() && !HadHumanClass)
+	if(!SameTeam)
 	{
-		SetCharacterClass(new(m_ClientID) CInfClassHuman(this));
-	}
-	else if (IsZombie() && !HadInfectedClass)
-	{
-		SetCharacterClass(new(m_ClientID) CInfClassInfected(this));
+		if(IsZombie())
+		{
+			SetCharacterClass(new(m_ClientID) CInfClassInfected(this));
+		}
+		else
+		{
+			SetCharacterClass(new(m_ClientID) CInfClassHuman(this));
+		}
 	}
 
 	// Skip the SetCharacter() routine if the World ResetRequested because it
