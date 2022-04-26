@@ -458,47 +458,53 @@ void IGameController::DoTeamBalance()
 	GameServer()->Console()->Print(IConsole::OUTPUT_LEVEL_DEBUG, "game", "Balancing teams");
 
 	int aT[2] = {0,0};
-	float aTScore[2] = {0,0};
-	float aPScore[MAX_CLIENTS] = {0.0f};
+	float aTeamScore[2] = {0,0};
+	float aPlayerScore[MAX_CLIENTS] = {0.0f};
+
+	// gather stats
 	for(int i = 0; i < MAX_CLIENTS; i++)
 	{
 		if(GameServer()->m_apPlayers[i] && GameServer()->m_apPlayers[i]->GetTeam() != TEAM_SPECTATORS)
 		{
 			aT[GameServer()->m_apPlayers[i]->GetTeam()]++;
-			aPScore[i] = 0.0;
-			aTScore[GameServer()->m_apPlayers[i]->GetTeam()] += aPScore[i];
+			aPlayerScore[i] = 0.0;
+			aTeamScore[GameServer()->m_apPlayers[i]->GetTeam()] += aPlayerScore[i];
 		}
 	}
 
 	// are teams unbalanced?
 	if(absolute(aT[0]-aT[1]) >= 2)
 	{
-		int M = (aT[0] > aT[1]) ? 0 : 1;
+		int BiggerTeam = (aT[0] > aT[1]) ? 0 : 1;
 		int NumBalance = absolute(aT[0]-aT[1]) / 2;
 
 		do
 		{
-			CPlayer *pP = 0;
-			float PD = aTScore[M];
+			CPlayer *pPlayer = 0;
+			float ScoreDiff = aTeamScore[BiggerTeam];
 			for(int i = 0; i < MAX_CLIENTS; i++)
 			{
 				if(!GameServer()->m_apPlayers[i] || !CanBeMovedOnBalance(i))
 					continue;
+
 				// remember the player who would cause lowest score-difference
-				if(GameServer()->m_apPlayers[i]->GetTeam() == M && (!pP || absolute((aTScore[M^1]+aPScore[i]) - (aTScore[M]-aPScore[i])) < PD))
+				if(GameServer()->m_apPlayers[i]->GetTeam() == BiggerTeam && (!pPlayer || absolute((aTeamScore[BiggerTeam^1]+aPlayerScore[i]) - (aTeamScore[BiggerTeam]-aPlayerScore[i])) < ScoreDiff))
 				{
-					pP = GameServer()->m_apPlayers[i];
-					PD = absolute((aTScore[M^1]+aPScore[i]) - (aTScore[M]-aPScore[i]));
+					pPlayer = GameServer()->m_apPlayers[i];
+					ScoreDiff = absolute((aTeamScore[BiggerTeam^1]+aPlayerScore[i]) - (aTeamScore[BiggerTeam]-aPlayerScore[i]));
 				}
 			}
 
 			// move the player to the other team
-			int Temp = pP->m_LastActionTick;
-			DoTeamChange(pP, M^1);
-			pP->m_LastActionTick = Temp;
+			if(pPlayer)
+			{
+				int Temp = pPlayer->m_LastActionTick;
+				DoTeamChange(pPlayer, BiggerTeam^1);
+				pPlayer->m_LastActionTick = Temp;
 
-			pP->Respawn();
-			pP->m_ForceBalanced = true;
+				pPlayer->Respawn();
+				pPlayer->m_ForceBalanced = true;
+			}
 		} while (--NumBalance);
 
 		m_ForceBalanced = true;
