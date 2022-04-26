@@ -453,6 +453,60 @@ void IGameController::PostReset()
 	}
 }
 
+void IGameController::DoTeamBalance()
+{
+	GameServer()->Console()->Print(IConsole::OUTPUT_LEVEL_DEBUG, "game", "Balancing teams");
+
+	int aT[2] = {0,0};
+	float aTScore[2] = {0,0};
+	float aPScore[MAX_CLIENTS] = {0.0f};
+	for(int i = 0; i < MAX_CLIENTS; i++)
+	{
+		if(GameServer()->m_apPlayers[i] && GameServer()->m_apPlayers[i]->GetTeam() != TEAM_SPECTATORS)
+		{
+			aT[GameServer()->m_apPlayers[i]->GetTeam()]++;
+			aPScore[i] = 0.0;
+			aTScore[GameServer()->m_apPlayers[i]->GetTeam()] += aPScore[i];
+		}
+	}
+
+	// are teams unbalanced?
+	if(absolute(aT[0]-aT[1]) >= 2)
+	{
+		int M = (aT[0] > aT[1]) ? 0 : 1;
+		int NumBalance = absolute(aT[0]-aT[1]) / 2;
+
+		do
+		{
+			CPlayer *pP = 0;
+			float PD = aTScore[M];
+			for(int i = 0; i < MAX_CLIENTS; i++)
+			{
+				if(!GameServer()->m_apPlayers[i] || !CanBeMovedOnBalance(i))
+					continue;
+				// remember the player who would cause lowest score-difference
+				if(GameServer()->m_apPlayers[i]->GetTeam() == M && (!pP || absolute((aTScore[M^1]+aPScore[i]) - (aTScore[M]-aPScore[i])) < PD))
+				{
+					pP = GameServer()->m_apPlayers[i];
+					PD = absolute((aTScore[M^1]+aPScore[i]) - (aTScore[M]-aPScore[i]));
+				}
+			}
+
+			// move the player to the other team
+			int Temp = pP->m_LastActionTick;
+			DoTeamChange(pP, M^1);
+			pP->m_LastActionTick = Temp;
+
+			pP->Respawn();
+			pP->m_ForceBalanced = true;
+		} while (--NumBalance);
+
+		m_ForceBalanced = true;
+	}
+
+	m_UnbalancedTick = -1;
+}
+
 int IGameController::OnCharacterDeath(class CCharacter *pVictim, class CPlayer *pKiller, int Weapon)
 {
 	return 0;
@@ -535,55 +589,7 @@ void IGameController::Tick()
 	// do team-balancing
 	if(IsTeamplay() && m_UnbalancedTick != -1 && Server()->Tick() > m_UnbalancedTick+g_Config.m_SvTeambalanceTime*Server()->TickSpeed()*60)
 	{
-		GameServer()->Console()->Print(IConsole::OUTPUT_LEVEL_DEBUG, "game", "Balancing teams");
-
-		int aT[2] = {0,0};
-		float aTScore[2] = {0,0};
-		float aPScore[MAX_CLIENTS] = {0.0f};
-		for(int i = 0; i < MAX_CLIENTS; i++)
-		{
-			if(GameServer()->m_apPlayers[i] && GameServer()->m_apPlayers[i]->GetTeam() != TEAM_SPECTATORS)
-			{
-				aT[GameServer()->m_apPlayers[i]->GetTeam()]++;
-				aPScore[i] = 0.0;
-				aTScore[GameServer()->m_apPlayers[i]->GetTeam()] += aPScore[i];
-			}
-		}
-
-		// are teams unbalanced?
-		if(absolute(aT[0]-aT[1]) >= 2)
-		{
-			int M = (aT[0] > aT[1]) ? 0 : 1;
-			int NumBalance = absolute(aT[0]-aT[1]) / 2;
-
-			do
-			{
-				CPlayer *pP = 0;
-				float PD = aTScore[M];
-				for(int i = 0; i < MAX_CLIENTS; i++)
-				{
-					if(!GameServer()->m_apPlayers[i] || !CanBeMovedOnBalance(i))
-						continue;
-					// remember the player who would cause lowest score-difference
-					if(GameServer()->m_apPlayers[i]->GetTeam() == M && (!pP || absolute((aTScore[M^1]+aPScore[i]) - (aTScore[M]-aPScore[i])) < PD))
-					{
-						pP = GameServer()->m_apPlayers[i];
-						PD = absolute((aTScore[M^1]+aPScore[i]) - (aTScore[M]-aPScore[i]));
-					}
-				}
-
-				// move the player to the other team
-				int Temp = pP->m_LastActionTick;
-				DoTeamChange(pP, M^1);
-				pP->m_LastActionTick = Temp;
-
-				pP->Respawn();
-				pP->m_ForceBalanced = true;
-			} while (--NumBalance);
-
-			m_ForceBalanced = true;
-		}
-		m_UnbalancedTick = -1;
+		DoTeamBalance();
 	}
 
 	DoActivityCheck();

@@ -98,6 +98,8 @@ public:
 	*/
 	virtual bool CanBeMovedOnBalance(int ClientID);
 
+	void DoTeamBalance();
+
 	virtual void Tick();
 
 	virtual void Snap(int SnappingClient);
