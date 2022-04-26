@@ -46,7 +46,7 @@ public:
 	const CInfClassPlayerClass *GetCharacterClass() const { return m_pInfcPlayerClass; }
 	void SetCharacterClass(CInfClassPlayerClass *pClass);
 
-	void SetClass(int newClass) override;
+	void SetClass(int newClass) final;
 	void UpdateSkin();
 
 	void Infect(CPlayer* pInfectiousPlayer);
