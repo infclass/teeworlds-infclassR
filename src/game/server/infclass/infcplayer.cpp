@@ -328,7 +328,13 @@ void CInfClassPlayer::SetClass(int newClass)
 	// IGameServer::Tick() which also invalidates possible auto class selection.
 	if(!GameServer()->m_World.m_ResetRequested)
 	{
-		m_pInfcPlayerClass->SetCharacter(GetCharacter());
+		CInfClassCharacter *pCharacter = GetCharacter();
+		m_pInfcPlayerClass->SetCharacter(pCharacter);
+		if(pCharacter && !SameTeam)
+		{
+			 // Changed team (was not an infected but is infected now or vice versa)
+			pCharacter->ResetHelpers();
+		}
 	}
 	m_pInfcPlayerClass->OnPlayerClassChanged();
 }
