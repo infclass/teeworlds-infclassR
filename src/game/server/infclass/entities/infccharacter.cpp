@@ -991,8 +991,19 @@ void CInfClassCharacter::AddHelper(int HelperCID, float Time)
 	if(HelperCID == GetCID())
 		return;
 
+	if(HelperCID < 0)
+		return;
+
+	int HelpTicks = Server()->TickSpeed() * Time;
+	const int NewHelpPriority = 12;
+	if(m_LastHelper.m_Tick > (HelpTicks + Server()->TickSpeed() * NewHelpPriority))
+	{
+		// Keep the previous helper
+		return;
+	}
+
 	m_LastHelper.m_CID = HelperCID;
-	m_LastHelper.m_Tick = Server()->TickSpeed() * Time;
+	m_LastHelper.m_Tick = HelpTicks;
 	dbg_msg("tracking", "%d added as a helper of %d for %d", HelperCID, GetCID(), m_LastHelper.m_Tick);
 }
 
