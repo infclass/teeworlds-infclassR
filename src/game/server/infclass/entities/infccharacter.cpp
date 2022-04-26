@@ -1647,7 +1647,15 @@ void CInfClassCharacter::OnHammerFired(WeaponFireContext *pFireContext)
 							}
 
 							if(!pTarget->GetPlayer()->HookProtectionEnabled())
+							{
 								pTarget->m_Core.m_Vel += Force;
+
+								if(-Force.y > 6.f)
+								{
+									const float HammerFlyHelperDuration = 20;
+									pTarget->AddHelper(GetCID(), HammerFlyHelperDuration);
+								}
+							}
 						}
 					}
 					else
