@@ -2641,6 +2641,12 @@ void CInfClassCharacter::TryUnfreeze(int UnfreezerCID)
 	}
 
 	Unfreeze();
+
+	if(UnfreezerCID >= 0)
+	{
+		const float UnfreezerHelperDuration = 10;
+		AddHelper(UnfreezerCID, UnfreezerHelperDuration);
+	}
 }
 
 void CInfClassCharacter::MakeBlind(int ClientID, float Duration)
