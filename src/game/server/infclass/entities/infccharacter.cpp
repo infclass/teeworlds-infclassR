@@ -688,7 +688,7 @@ bool CInfClassCharacter::TakeDamage(vec2 Force, float FloatDmg, int From, DAMAGE
 				//Heal and unfreeze
 				if(DamageType == DAMAGE_TYPE::BOOMER_EXPLOSION)
 				{
-					TryUnfreeze();
+					TryUnfreeze(From);
 					if(!IsFrozen())
 					{
 						Heal(8+random_int(0, 10), From);
@@ -1653,7 +1653,7 @@ void CInfClassCharacter::OnHammerFired(WeaponFireContext *pFireContext)
 					{
 						if(pTarget->IsFrozen())
 						{
-							pTarget->TryUnfreeze();
+							pTarget->TryUnfreeze(GetCID());
 						}
 						else
 						{
@@ -2629,7 +2629,7 @@ bool CInfClassCharacter::HasHallucination() const
 	return m_HallucinationTick > 0;
 }
 
-void CInfClassCharacter::TryUnfreeze()
+void CInfClassCharacter::TryUnfreeze(int UnfreezerCID)
 {
 	if(!IsFrozen())
 		return;
