@@ -976,6 +976,9 @@ void CInfClassCharacter::GiveNinjaBuf()
 
 void CInfClassCharacter::AddHelper(int HelperCID, float Time)
 {
+	if(HelperCID == GetCID())
+		return;
+
 	m_LastHelper.m_CID = HelperCID;
 	m_LastHelper.m_Tick = Server()->TickSpeed() * Time;
 	dbg_msg("tracking", "%d added as a helper of %d for %d", HelperCID, GetCID(), m_LastHelper.m_Tick);
