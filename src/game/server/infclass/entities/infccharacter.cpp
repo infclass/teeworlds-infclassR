@@ -831,6 +831,12 @@ bool CInfClassCharacter::Heal(int HitPoints, int FromCID)
 		SetEmote(EMOTE_HAPPY, Server()->Tick() + Server()->TickSpeed());
 		int Sound = HadFullHealth ? SOUND_PICKUP_ARMOR : SOUND_PICKUP_HEALTH;
 		GameContext()->CreateSound(GetPos(), Sound, CmaskOne(GetCID()));
+
+		if(FromCID >= 0)
+		{
+			const float HealerHelperDuration = 20;
+			AddHelper(FromCID, HealerHelperDuration);
+		}
 	}
 
 	return Healed;
@@ -850,6 +856,12 @@ bool CInfClassCharacter::GiveArmor(int HitPoints, int FromCID)
 		SetEmote(EMOTE_HAPPY, Server()->Tick() + Server()->TickSpeed());
 		int Sound = SOUND_PICKUP_ARMOR;
 		GameContext()->CreateSound(GetPos(), Sound, CmaskOne(GetCID()));
+
+		if(FromCID >= 0)
+		{
+			const float HealerHelperDuration = 20;
+			AddHelper(FromCID, HealerHelperDuration);
+		}
 	}
 
 	return Armored;
