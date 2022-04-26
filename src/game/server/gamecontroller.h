@@ -8,6 +8,7 @@
 
 class CConfig;
 class CPlayer;
+class CMapInfo;
 
 /*
 	Class: Game Controller
@@ -36,6 +37,8 @@ public:
 /* INFECTION MODIFICATION START ***************************************/
 
 protected:
+	bool LoadMapConfig(const char *pMapName, CMapInfo *pInfo);
+
 	void CycleMap(bool Forced = false);
 	void ResetGame();
 

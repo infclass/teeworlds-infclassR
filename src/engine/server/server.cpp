@@ -2203,51 +2203,6 @@ int CServer::LoadMap(const char *pMapName)
 	return 1;
 }
 
-int CServer::GetMinPlayersForMap(const char* pMapName)
-{
-	int MinPlayers = 0;
-	char MapInfoFilename[256];
-	str_format(MapInfoFilename, sizeof(MapInfoFilename), "maps/%s.cfg", pMapName);
-	IOHANDLE File = Storage()->OpenFile(MapInfoFilename, IOFLAG_READ, IStorage::TYPE_ALL);
-
-	if(!File)
-		return 0;
-
-	char MapInfoLine[512];
-	bool isEndOfFile = false;
-	while(!isEndOfFile)
-	{
-		isEndOfFile = true;
-		
-		//Load one line
-		int MapInfoLineLength = 0;
-		char c;
-		while(io_read(File, &c, 1))
-		{
-			isEndOfFile = false;
-			
-			if(c == '\n') break;
-			else
-			{
-				MapInfoLine[MapInfoLineLength] = c;
-				MapInfoLineLength++;
-			}
-		}
-		
-		MapInfoLine[MapInfoLineLength] = 0;
-		
-		//Get the key
-		static const char MinPlayersKey[] = "# mapinfo: minplayers ";
-		if(str_comp_nocase_num(MapInfoLine, MinPlayersKey, sizeof(MinPlayersKey) - 1) == 0)
-		{
-			MinPlayers = str_toint(MapInfoLine+sizeof(MinPlayersKey) - 1);
-		}
-	}
-	io_close(File);
-
-	return MinPlayers;
-}
-
 void CServer::InitRegister(CNetServer *pNetServer, IEngineMasterServer *pMasterServer, IConsole *pConsole)
 {
 	m_Register.Init(pNetServer, pMasterServer, pConsole);
