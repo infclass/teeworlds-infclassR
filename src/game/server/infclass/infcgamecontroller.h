@@ -129,6 +129,11 @@ public:
 	static bool ConStartFastRound(IConsole::IResult *pResult, void *pUserData);
 	static bool ConQueueFastRound(IConsole::IResult *pResult, void *pUserData);
 	static bool ConQueueFunRound(IConsole::IResult *pResult, void *pUserData);
+	static bool ConMapRotationStatus(IConsole::IResult *pResult, void *pUserData);
+	static bool ConSaveMapsData(IConsole::IResult *pResult, void *pUserData);
+	static bool ConPrintMapsData(IConsole::IResult *pResult, void *pUserData);
+	static bool ConResetMapData(IConsole::IResult *pResult, void *pUserData);
+	static bool ConAddMapData(IConsole::IResult *pResult, void *pUserData);
 	static bool ConSavePosition(IConsole::IResult *pResult, void *pUserData);
 	bool ConSavePosition(IConsole::IResult *pResult);
 	static bool ConLoadPosition(IConsole::IResult *pResult, void *pUserData);

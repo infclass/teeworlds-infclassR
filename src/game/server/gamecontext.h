@@ -108,6 +108,7 @@ class CGameContext : public IGameServer
 	static bool ConStartFunRound(IConsole::IResult *pResult, void *pUserData);
 	static bool ConStartSpecialFunRound(IConsole::IResult *pResult, void *pUserData);
 	static bool ConchainSpecialMotdupdate(IConsole::IResult *pResult, void *pUserData, IConsole::FCommandCallback pfnCallback, void *pCallbackUserData);
+	static bool ConchainSyncMapRotation(IConsole::IResult *pResult, void *pUserData, IConsole::FCommandCallback pfnCallback, void *pCallbackUserData);
 
 	CGameContext(int Resetting);
 	void Construct(int Resetting);

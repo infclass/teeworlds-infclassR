@@ -2429,6 +2429,8 @@ bool CGameContext::ConAddMap(IConsole::IResult *pResult, void *pUserData)
 		pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "server", aBuf);
 	}
 
+	pSelf->m_pController->OnMapAdded(pMapName);
+
 	return true;
 }
 
@@ -2903,6 +2905,21 @@ bool CGameContext::ConchainSpecialMotdupdate(IConsole::IResult *pResult, void *p
 	return true;
 }
 
+bool CGameContext::ConchainSyncMapRotation(IConsole::IResult *pResult, void *pUserData, IConsole::FCommandCallback pfnCallback, void *pCallbackUserData)
+{
+	pfnCallback(pResult, pCallbackUserData);
+
+	if(pResult->NumArguments())
+	{
+		CGameContext *pSelf = (CGameContext *)pUserData;
+		if(pSelf->m_pController)
+		{
+			pSelf->m_pController->SyncSmartMapRotationData();
+		}
+	}
+
+	return true;
+}
 
 /* INFECTION MODIFICATION START ***************************************/
 
@@ -4244,6 +4261,8 @@ void CGameContext::OnConsoleInit()
 
 	Console()->Chain("sv_motd", ConchainSpecialMotdupdate, this);
 
+	Console()->Chain("sv_maprotation", ConchainSyncMapRotation, this);
+
 	InitGeolocation();
 }
 
@@ -4347,6 +4366,7 @@ void CGameContext::OnInit(/*class IKernel *pKernel*/)
 #endif
 
 	InitChangelog();
+	m_pController->InitSmartMapRotation();
 }
 
 void CGameContext::OnStartRound()

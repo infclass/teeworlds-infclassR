@@ -904,6 +904,12 @@ void CInfClassGameController::RegisterChatCommands(IConsole *pConsole)
 	pConsole->Register("start_fast_round", "", CFGFLAG_SERVER, ConStartFastRound, this, "Start a faster gameplay round");
 	pConsole->Register("queue_fast_round", "", CFGFLAG_SERVER, ConQueueFastRound, this, "Queue a faster gameplay round");
 	pConsole->Register("queue_fun_round", "", CFGFLAG_SERVER, ConQueueFunRound, this, "Queue a fun gameplay round");
+	pConsole->Register("map_rotation_status", "", CFGFLAG_SERVER, ConMapRotationStatus, this, "Print the status of map rotation");
+
+	pConsole->Register("save_maps_data", "s<filename>", CFGFLAG_SERVER, ConSaveMapsData, this, "Save the map rotation data to a file");
+	pConsole->Register("print_maps_data", "", CFGFLAG_SERVER, ConPrintMapsData, this, "Print the data of map rotation");
+	pConsole->Register("reset_map_data", "s<mapname>", CFGFLAG_SERVER, ConResetMapData, this, "Reset map rotation data");
+	pConsole->Register("add_map_data", "s<mapname> i<timestamp>", CFGFLAG_SERVER, ConAddMapData, this, "Add map rotation data");
 
 	pConsole->Register("set_class", "s<classname>", CFGFLAG_CHAT|CFGFLAG_USER, ConUserSetClass, this, "Set the class of a player");
 	pConsole->Register("save_position", "", CFGFLAG_CHAT|CFGFLAG_USER, ConSavePosition, this, "Save the current character position");
@@ -1034,6 +1040,46 @@ bool CInfClassGameController::ConQueueFunRound(IConsole::IResult *pResult, void 
 	}
 
 	pSelf->m_QueuedRoundType = ROUND_TYPE::FUN;
+	return true;
+}
+
+bool CInfClassGameController::ConMapRotationStatus(IConsole::IResult *pResult, void *pUserData)
+{
+	CInfClassGameController *pSelf = (CInfClassGameController *)pUserData;
+	pSelf->ConSmartMapRotationStatus();
+	return true;
+}
+
+bool CInfClassGameController::ConSaveMapsData(IConsole::IResult *pResult, void *pUserData)
+{
+	const char *pFileName = pResult->GetString(0);
+
+	CInfClassGameController *pSelf = (CInfClassGameController *)pUserData;
+	pSelf->SaveMapRotationData(pFileName);
+	return true;
+}
+
+bool CInfClassGameController::ConPrintMapsData(IConsole::IResult *pResult, void *pUserData)
+{
+	CInfClassGameController *pSelf = (CInfClassGameController *)pUserData;
+	pSelf->PrintMapRotationData();
+	return true;
+}
+
+bool CInfClassGameController::ConResetMapData(IConsole::IResult *pResult, void *pUserData)
+{
+	const char *pMapName = pResult->GetString(0);
+
+	ResetMapInfo(pMapName);
+	return true;
+}
+
+bool CInfClassGameController::ConAddMapData(IConsole::IResult *pResult, void *pUserData)
+{
+	const char *pMapName = pResult->GetString(0);
+	int Timestamp = pResult->GetInteger(1);
+
+	AddMapTimestamp(pMapName, Timestamp);
 	return true;
 }
 
@@ -1507,6 +1553,8 @@ void CInfClassGameController::StartRound()
 			pPlayer->OnStartRound();
 		}
 	}
+
+	OnStartRound();
 }
 
 void CInfClassGameController::EndRound()

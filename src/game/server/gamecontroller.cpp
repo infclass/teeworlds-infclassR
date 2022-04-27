@@ -16,7 +16,121 @@ class CMapInfo
 public:
 	int MinimumPlayers = 0;
 	int MaximumPlayers = 0;
+	int RecommendedPlayers = 0;
 };
+
+class CMapInfoEx : public CMapInfo
+{
+public:
+	int Timestamp = 0;
+
+	const char *Name() const { return aMapName; }
+	void SetName(const char *pMapName);
+
+	void AddTimestamp(int Timestamp);
+	void ResetData();
+
+protected:
+	char aMapName[64];
+};
+
+void CMapInfoEx::SetName(const char *pMapName)
+{
+	str_copy(aMapName, pMapName, sizeof(aMapName));
+}
+
+void CMapInfoEx::AddTimestamp(int Timestamp)
+{
+	this->Timestamp = Timestamp;
+}
+
+void CMapInfoEx::ResetData()
+{
+	Timestamp = 0;
+}
+
+constexpr int MaxMapsNumber = 256;
+
+static array_on_stack<CMapInfoEx, MaxMapsNumber> s_aMapInfo;
+static int s_CachedMapIndex = 0;
+
+int GetMapIndex(const char *pMapName)
+{
+	for(int i = 0; i < s_aMapInfo.Size(); ++i)
+	{
+		if(str_comp(pMapName, s_aMapInfo.At(i).Name()) == 0)
+		{
+			return i;
+		}
+	}
+
+	return -1;
+}
+
+CMapInfoEx *GetMapInfo(const char *pMapName)
+{
+	if(s_CachedMapIndex >= s_aMapInfo.Size())
+		s_CachedMapIndex = -1;
+
+	if((s_CachedMapIndex < 0) || (str_comp(pMapName, s_aMapInfo.At(s_CachedMapIndex).Name()) != 0))
+		s_CachedMapIndex = GetMapIndex(pMapName);
+
+	if(s_CachedMapIndex < 0)
+		return nullptr;
+
+	return &s_aMapInfo[s_CachedMapIndex];
+}
+
+static float GetMapTimeScore(const CMapInfoEx &Info, int CurrentTimestamp, int MinTimestamp)
+{
+	int V1 = Info.Timestamp - MinTimestamp; // Range from zero to something
+	float V2 = CurrentTimestamp - MinTimestamp; // Range from something to zero
+
+	float TimeScore = 0;
+	if(V1 < 0)
+	{
+		TimeScore = 1;
+	}
+	else if(V2 <= 0)
+	{
+		TimeScore = 0;
+	}
+	else
+	{
+		TimeScore = clamp<float>(1 - V1 / V2, 0, 1);
+	}
+
+	return TimeScore;
+}
+
+static float GetMapFitPlayersScore(const CMapInfoEx &Info, int CurrentActivePlayers)
+{
+	float FitPlayersScore = 1;
+
+	int SaneMinimumPlayers = clamp<int>(Info.MinimumPlayers, 2, MAX_CLIENTS - 1);
+	int SaneMaximumPlayers = Info.MaximumPlayers == 0 ? MAX_CLIENTS - 1 : Info.MaximumPlayers;
+	SaneMaximumPlayers = clamp<int>(SaneMaximumPlayers, SaneMinimumPlayers, MAX_CLIENTS - 1);
+
+	if(CurrentActivePlayers == SaneMinimumPlayers)
+	{
+		FitPlayersScore -= 0.5f;
+	}
+	else if(CurrentActivePlayers == SaneMinimumPlayers + 1)
+	{
+		FitPlayersScore -= 0.25f;
+	}
+
+	if(CurrentActivePlayers == SaneMaximumPlayers)
+	{
+		FitPlayersScore -= 0.5f;
+	}
+	else if(CurrentActivePlayers == SaneMaximumPlayers - 1)
+	{
+		FitPlayersScore -= 0.25f;
+	}
+
+	return FitPlayersScore;
+}
 
 CConfig *IGameController::Config() const
 {
@@ -362,6 +476,188 @@ void IGameController::GetMapRotationInfo(CMapRotationInfo *pMapRotationInfo)
 	}
 }
 
+void IGameController::SyncSmartMapRotationData()
+{
+	s_aMapInfo.Clear();
+
+	// handle maprotation
+	const char *pMapRotation = Config()->m_SvMaprotation;
+	const char *pCurrentMap = Config()->m_SvMap;
+
+	const char *pNextMap = pMapRotation;
+	char aMapNameBuffer[64];
+	while(*pNextMap)
+	{
+		int WordLen = 0;
+		while(pNextMap[WordLen] && !IGameController::IsWordSeparator(pNextMap[WordLen]))
+		{
+			aMapNameBuffer[WordLen] = pNextMap[WordLen];
+			WordLen++;
+		}
+		aMapNameBuffer[WordLen] = 0;
+
+		dbg_msg("smart-rotation", "sync data: new map %s", aMapNameBuffer);
+		OnMapAdded(aMapNameBuffer);
+
+		pNextMap += WordLen + 1;
+	}
+}
+
+void IGameController::ConSmartMapRotationStatus()
+{
+	char aBuf[256];
+	str_format(aBuf, sizeof(aBuf), "Smart maprotation: %d", Config()->m_InfSmartMapRotation);
+	Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "server", aBuf);
+
+	str_format(aBuf, sizeof(aBuf), "Maps in the rotation: %d", s_aMapInfo.Size());
+	Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "server", aBuf);
+
+	int CurrentActivePlayers = Server()->GetActivePlayerCount();
+
+	str_format(aBuf, sizeof(aBuf), "Active players: %d", CurrentActivePlayers);
+	Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "server", aBuf);
+
+	if(s_aMapInfo.IsEmpty())
+	{
+		return;
+	}
+
+	int CurrentTimestamp = time_timestamp();
+
+	int MinTimestamp = CurrentTimestamp;
+	int MaxMapNameLength = 0;
+
+	for(const CMapInfoEx &Info : s_aMapInfo)
+	{
+		int NameLength = strlen(Info.Name());
+		if(NameLength > MaxMapNameLength)
+			MaxMapNameLength = NameLength;
+
+		if(CurrentActivePlayers < Info.MinimumPlayers)
+			continue;
+
+		if(Info.MaximumPlayers && (CurrentActivePlayers > Info.MaximumPlayers))
+			continue;
+
+		if(Info.Timestamp < MinTimestamp)
+		{
+			MinTimestamp = Info.Timestamp;
+		}
+	}
+
+	for(int i = 0; i < s_aMapInfo.Size(); ++i)
+	{
+		const CMapInfoEx &Info = s_aMapInfo.At(i);
+
+		bool Skipped = false;
+
+		if(CurrentActivePlayers < Info.MinimumPlayers)
+			Skipped = true;
+
+		if(Info.MaximumPlayers && (CurrentActivePlayers > Info.MaximumPlayers))
+			Skipped = true;
+
+		float TimeScore = GetMapTimeScore(Info, CurrentTimestamp, MinTimestamp);
+		float FitPlayersScore = GetMapFitPlayersScore(Info, CurrentActivePlayers);
+
+		int EstimatedScore = TimeScore * 100 + FitPlayersScore * 30;
+		int MapScore = Skipped ? 0 : EstimatedScore;
+
+		str_format(aBuf, sizeof(aBuf), "- %2d %-*s Score: %3d (time: %.2f, fit players: %.2f, estimated score: %3d) | players min: %2d / max: %2d | ts: %d", i, MaxMapNameLength, Info.Name(),
+			MapScore, TimeScore, FitPlayersScore, EstimatedScore, Info.MinimumPlayers, Info.MaximumPlayers, Info.Timestamp);
+
+		Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "server", aBuf);
+	}
+}
+
+void IGameController::LoadMapRotationData()
+{
+
+}
+
+void IGameController::SaveMapRotationData(const char *pFileName)
+{
+	char aBuf[256];
+	IOHANDLE File = GameServer()->Storage()->OpenFile(pFileName, IOFLAG_WRITE, IStorage::TYPE_SAVE);
+	if(!File)
+	{
+		str_format(aBuf, sizeof(aBuf), "failed to save map rotation state to '%s'", pFileName);
+		GameServer()->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "server", aBuf);
+		return;
+	}
+
+	PrintMapRotationData(File);
+
+	io_close(File);
+	str_format(aBuf, sizeof(aBuf), "map rotation data saved to '%s'", pFileName);
+	Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "server", aBuf);
+}
+
+void IGameController::PrintMapRotationData(IOHANDLE Output)
+{
+	char aBuf[256];
+	for(const CMapInfoEx &Info : s_aMapInfo)
+	{
+		str_format(aBuf, sizeof(aBuf), "add_map_data %s %d", Info.Name(), Info.Timestamp);
+
+		if(Output)
+		{
+			io_write(Output, aBuf, str_length(aBuf));
+			io_write_newline(Output);
+		}
+		else
+		{
+			Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "server", aBuf);
+		}
+	}
+}
+
+void IGameController::ResetMapInfo(const char *pMapName)
+{
+	CMapInfoEx *pMapInfo = GetMapInfo(pMapName);
+	if(!pMapInfo)
+	{
+		return;
+	}
+
+	pMapInfo->ResetData();
+}
+
+void IGameController::AddMapTimestamp(const char *pMapName, int Timestamp)
+{
+	CMapInfoEx *pMapInfo = GetMapInfo(pMapName);
+	if(!pMapInfo)
+	{
+		return;
+	}
+
+	pMapInfo->AddTimestamp(Timestamp);
+}
+
+void IGameController::OnMapAdded(const char *pMapName)
+{
+	dbg_msg("smart-rotation", "sync data: OnMapAdded %s", pMapName);
+
+	if(!GameServer()->MapExists(pMapName))
+	{
+		return;
+	}
+
+	s_aMapInfo.Add({});
+	CMapInfoEx &Info = s_aMapInfo.Last();
+	Info.SetName(pMapName);
+	LoadMapConfig(pMapName, &Info);
+}
+
+void IGameController::InitSmartMapRotation()
+{
+	if(s_aMapInfo.IsEmpty())
+	{
+		SyncSmartMapRotationData();
+		LoadMapRotationData();
+	}
+}
+
 bool IGameController::LoadMapConfig(const char *pMapName, CMapInfo *pInfo)
 {
 	pInfo->MinimumPlayers = 0;
@@ -436,17 +732,29 @@ void IGameController::CycleMap(bool Forced)
 	if(!str_length(g_Config.m_SvMaprotation))
 		return;
 
+	if(Config()->m_InfSmartMapRotation)
+	{
+		SmartMapCycle();
+	}
+	else
+	{
+		DefaultMapCycle();
+	}
+}
+
+void IGameController::DefaultMapCycle()
+{
 	int PlayerCount = Server()->GetActivePlayerCount();
 
 	CMapRotationInfo pMapRotationInfo;
 	GetMapRotationInfo(&pMapRotationInfo);
-	
+
 	if (pMapRotationInfo.m_MapCount == 0)
 		return;
 
 	char aBuf[256] = {0};
 	int i=0;
-	CMapInfo MapInfo;
+	CMapInfo Info;
 	if (g_Config.m_InfMaprotationRandom)
 	{
 		// handle random maprotation
@@ -505,6 +813,66 @@ void IGameController::CycleMap(bool Forced)
 	}
 
 	RotateMapTo(aBuf);
+}
+
+void IGameController::SmartMapCycle()
+{
+	if(s_aMapInfo.IsEmpty())
+		return;
+
+	const char *pCurrentMap = g_Config.m_SvMap;
+	int CurrentActivePlayers = Server()->GetActivePlayerCount();
+
+	int BestMapIndex = 0;
+	int BestMapScore = 0;
+	int CurrentTimestamp = time_timestamp();
+
+	int MinTimestamp = CurrentTimestamp;
+
+	for(const CMapInfoEx &Info : s_aMapInfo)
+	{
+		if(CurrentActivePlayers < Info.MinimumPlayers)
+			continue;
+
+		if(Info.MaximumPlayers && (CurrentActivePlayers > Info.MaximumPlayers))
+			continue;
+
+		if(Info.Timestamp < MinTimestamp)
+		{
+			MinTimestamp = Info.Timestamp;
+		}
+	}
+
+	for(int i = 0; i < s_aMapInfo.Size(); ++i)
+	{
+		const CMapInfoEx &Info = s_aMapInfo.At(i);
+
+		if(CurrentActivePlayers < Info.MinimumPlayers)
+			continue;
+
+		if(Info.MaximumPlayers && (CurrentActivePlayers > Info.MaximumPlayers))
+			continue;
+
+		if(str_comp(Info.Name(), pCurrentMap) == 0)
+			continue;
+
+		float TimeScore = GetMapTimeScore(Info, CurrentTimestamp, MinTimestamp);
+		float FitPlayersScore = GetMapFitPlayersScore(Info, CurrentActivePlayers);
+
+		int MapScore = TimeScore * 100 + FitPlayersScore * 30;
+
+		if(MapScore <= BestMapScore)
+			continue;
+
+		BestMapScore = MapScore;
+		BestMapIndex = i;
+	}
+
+	const CMapInfoEx &Info = s_aMapInfo.At(BestMapIndex);
+	s_CachedMapIndex = BestMapIndex;
+
+	dbg_msg("smart-rotation", "rotating to index %d (name %s)", BestMapIndex, Info.Name());
+	RotateMapTo(Info.Name());
 }
 
 void IGameController::SkipMap()
@@ -597,6 +965,18 @@ void IGameController::DoTeamBalance()
 int IGameController::OnCharacterDeath(class CCharacter *pVictim, class CPlayer *pKiller, int Weapon)
 {
 	return 0;
+}
+
+void IGameController::OnStartRound()
+{
+	CMapInfoEx *pMapInfo = GetMapInfo(Config()->m_SvMap);
+	if(!pMapInfo)
+		return;
+
+	int Timestamp = time_timestamp();
+	pMapInfo->AddTimestamp(Timestamp);
+	dbg_msg("smart-rotation", "OnStartRound: Sync timestamp of %s to %d",
+		pMapInfo->Name(), Timestamp);
 }
 
 void IGameController::OnCharacterSpawn(class CCharacter *pChr)

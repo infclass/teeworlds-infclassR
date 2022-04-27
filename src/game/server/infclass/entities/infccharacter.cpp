@@ -1209,6 +1209,11 @@ void CInfClassCharacter::GetActualKillers(int GivenKiller, DAMAGE_TYPE DamageTyp
 				AddUnique(info.m_CID, &Enforcers);
 			}
 		}
+
+		if((m_LastHookerTick > 0) && (!m_LastHookers.IsEmpty()))
+		{
+			AddUnique(m_LastHookers.First(), &Enforcers);
+		}
 	}
 
 	int Killer = Killers.IsEmpty() ? GivenKiller : Killers.First();

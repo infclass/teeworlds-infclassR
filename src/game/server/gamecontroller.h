@@ -38,10 +38,23 @@ public:
 	inline const array<vec2>& HeroFlagPositions() const { return m_HeroFlagPositions; }
 /* INFECTION MODIFICATION START ***************************************/
 
+	void OnMapAdded(const char *pMapName);
+	void InitSmartMapRotation();
+	void SyncSmartMapRotationData();
+	void ConSmartMapRotationStatus();
+	void LoadMapRotationData();
+	void SaveMapRotationData(const char *pFileName);
+	void PrintMapRotationData(IOHANDLE Output = 0);
+
+	static void ResetMapInfo(const char *pMapName);
+	static void AddMapTimestamp(const char *pMapName, int Timestamp);
+
 protected:
 	bool LoadMapConfig(const char *pMapName, CMapInfo *pInfo);
 
 	void CycleMap(bool Forced = false);
+	void DefaultMapCycle();
+	void SmartMapCycle();
 	void ResetGame();
 	void RotateMapTo(const char *pMapName);
 
@@ -146,6 +159,8 @@ public:
 				weapon when switching team or player suicides.
 	*/
 	virtual int OnCharacterDeath(class CCharacter *pVictim, class CPlayer *pKiller, int Weapon);
+
+	void OnStartRound();
 
 	virtual CPlayer *CreatePlayer(int ClientID, bool IsSpectator) = 0;
 
