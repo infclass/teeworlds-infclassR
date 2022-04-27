@@ -15,6 +15,7 @@ class CMapInfo
 {
 public:
 	int MinimumPlayers = 0;
+	int MaximumPlayers = 0;
 };
 
 CConfig *IGameController::Config() const
@@ -364,6 +365,8 @@ void IGameController::GetMapRotationInfo(CMapRotationInfo *pMapRotationInfo)
 bool IGameController::LoadMapConfig(const char *pMapName, CMapInfo *pInfo)
 {
 	pInfo->MinimumPlayers = 0;
+	pInfo->MaximumPlayers = 0;
+
 	char MapInfoFilename[256];
 	str_format(MapInfoFilename, sizeof(MapInfoFilename), "maps/%s.cfg", pMapName);
 	IOHANDLE File = GameServer()->Storage()->OpenFile(MapInfoFilename, IOFLAG_READ, IStorage::TYPE_ALL);
@@ -396,11 +399,17 @@ bool IGameController::LoadMapConfig(const char *pMapName, CMapInfo *pInfo)
 
 		//Get the key
 		static const char MinPlayersKey[] = "# mapinfo: minplayers ";
+		static const char MaxPlayersKey[] = "# mapinfo: maxplayers ";
 		if(str_comp_nocase_num(MapInfoLine, MinPlayersKey, sizeof(MinPlayersKey) - 1) == 0)
 		{
 			pInfo->MinimumPlayers = str_toint(MapInfoLine+sizeof(MinPlayersKey) - 1);
 		}
+		if(str_comp_nocase_num(MapInfoLine, MaxPlayersKey, sizeof(MaxPlayersKey) - 1) == 0)
+		{
+			pInfo->MaximumPlayers = str_toint(MapInfoLine+sizeof(MaxPlayersKey) - 1);
+		}
 	}
+
 	io_close(File);
 
 	return true;
@@ -446,16 +455,25 @@ void IGameController::CycleMap(bool Forced)
 		{
 			RandInt = random_int(0, pMapRotationInfo.m_MapCount-1);
 			GetWordFromList(aBuf, g_Config.m_SvMaprotation, pMapRotationInfo.m_MapNameIndices[RandInt]);
-			LoadMapConfig(aBuf, &MapInfo);
-			if (RandInt != pMapRotationInfo.m_CurrentMapNumber && PlayerCount >= MapInfo.MinimumPlayers)
-				break;
+			LoadMapConfig(aBuf, &Info);
+
+			if(Info.MaximumPlayers && (PlayerCount > Info.MaximumPlayers))
+				continue;
+
+			if(RandInt == pMapRotationInfo.m_CurrentMapNumber)
+				continue;
+
+			if(PlayerCount < Info.MinimumPlayers)
+				continue;
+
+			break;
 		}
 		i = RandInt;
 	}
 	else
 	{
 		// handle normal maprotation
-		i = pMapRotationInfo.m_CurrentMapNumber+1;
+		i = pMapRotationInfo.m_CurrentMapNumber + 1;
 		for ( ; i != pMapRotationInfo.m_CurrentMapNumber; i++)
 		{
 			if (i >= pMapRotationInfo.m_MapCount)
@@ -465,9 +483,15 @@ void IGameController::CycleMap(bool Forced)
 					break;
 			}
 			GetWordFromList(aBuf, g_Config.m_SvMaprotation, pMapRotationInfo.m_MapNameIndices[i]);
-			LoadMapConfig(aBuf, &MapInfo);
-			if (PlayerCount >= MapInfo.MinimumPlayers)
-				break;
+			LoadMapConfig(aBuf, &Info);
+
+			if(Info.MaximumPlayers && (PlayerCount > Info.MaximumPlayers))
+				continue;
+
+			if(PlayerCount < Info.MinimumPlayers)
+				continue;
+
+			break;
 		}
 	}
 
