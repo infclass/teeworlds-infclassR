@@ -43,6 +43,7 @@ protected:
 
 	void CycleMap(bool Forced = false);
 	void ResetGame();
+	void RotateMapTo(const char *pMapName);
 
 	char m_aMapWish[128];
 	char m_aQueuedMap[128];

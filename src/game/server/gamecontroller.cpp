@@ -203,6 +203,19 @@ void IGameController::ResetGame()
 	GameServer()->m_World.m_ResetRequested = true;
 }
 
+void IGameController::RotateMapTo(const char *pMapName)
+{
+	char aBuf[256];
+	str_format(aBuf, sizeof(aBuf), "rotating map to %s", pMapName);
+	GameServer()->Console()->Print(IConsole::OUTPUT_LEVEL_DEBUG, "game", aBuf);
+	Server()->ChangeMap(pMapName);
+
+	if(Server()->GetMapReload())
+	{
+		m_RoundCount = 0;
+	}
+}
+
 void IGameController::DoTeamChange(CPlayer *pPlayer, int Team, bool DoChatMsg)
 {
 	Team = ClampTeam(Team);
@@ -397,12 +410,8 @@ void IGameController::CycleMap(bool Forced)
 {
 	if(m_aMapWish[0] != 0)
 	{
-		char aBuf[256];
-		str_format(aBuf, sizeof(aBuf), "rotating map to %s", m_aMapWish);
-		GameServer()->Console()->Print(IConsole::OUTPUT_LEVEL_DEBUG, "game", aBuf);
-		Server()->ChangeMap(m_aMapWish);
+		RotateMapTo(m_aMapWish);
 		m_aMapWish[0] = 0;
-		m_RoundCount = 0;
 		return;
 	}
 	if(!Forced && m_RoundCount < g_Config.m_SvRoundsPerMap-1)
@@ -410,12 +419,8 @@ void IGameController::CycleMap(bool Forced)
 
 	if(m_aQueuedMap[0] != 0)
 	{
-		char aBuf[256];
-		str_format(aBuf, sizeof(aBuf), "rotating to a queued map %s", m_aQueuedMap);
-		GameServer()->Console()->Print(IConsole::OUTPUT_LEVEL_DEBUG, "game", aBuf);
-		Server()->ChangeMap(m_aQueuedMap);
+		RotateMapTo(m_aQueuedMap);
 		m_aQueuedMap[0] = 0;
-		m_RoundCount = 0;
 		return;
 	}
 
@@ -475,12 +480,7 @@ void IGameController::CycleMap(bool Forced)
 		GetWordFromList(aBuf, g_Config.m_SvMaprotation, pMapRotationInfo.m_MapNameIndices[i]);
 	}
 
-	m_RoundCount = 0;
-
-	char aBufMsg[256];
-	str_format(aBufMsg, sizeof(aBufMsg), "rotating map to %s", aBuf);
-	GameServer()->Console()->Print(IConsole::OUTPUT_LEVEL_DEBUG, "game", aBufMsg);
-	Server()->ChangeMap(aBuf);
+	RotateMapTo(aBuf);
 }
 
 void IGameController::SkipMap()
