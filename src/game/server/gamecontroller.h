@@ -9,6 +9,7 @@
 class CConfig;
 class CPlayer;
 class CMapInfo;
+class IConsole;
 
 /*
 	Class: Game Controller
@@ -24,6 +25,7 @@ protected:
 	CGameContext *GameServer() const { return m_pGameServer; }
 	CConfig *Config() const;
 	IServer *Server() const { return m_pServer; }
+	IConsole *Console();
 
 	void DoActivityCheck();
 

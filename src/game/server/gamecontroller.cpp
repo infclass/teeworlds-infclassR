@@ -22,6 +22,11 @@ CConfig *IGameController::Config() const
 	return GameServer()->Config();
 }
 
+IConsole *IGameController::Console()
+{
+	return GameServer()->Console();
+}
+
 IGameController::IGameController(class CGameContext *pGameServer)
 {
 	m_pGameServer = pGameServer;
