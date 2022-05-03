@@ -226,6 +226,8 @@ public:
 	bool m_ServerInfoHighLoad;
 	int64 m_ServerInfoFirstRequest;
 	int m_ServerInfoNumRequests;
+	int64_t m_ServerInfoRequestLogTick;
+	int m_ServerInfoRequestLogRecords;
 
 	CDemoRecorder m_DemoRecorder;
 	CRegister m_Register;

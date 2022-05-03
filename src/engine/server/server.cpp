@@ -387,6 +387,9 @@ CServer::CServer() : m_DemoRecorder(&m_SnapshotDelta)
 	m_ServerInfoNumRequests = 0;
 	m_ServerInfoHighLoad = false;
 
+	m_ServerInfoRequestLogTick = 0;
+	m_ServerInfoRequestLogRecords = 0;
+
 #ifdef CONF_SQL
 /* DDNET MODIFICATION START *******************************************/
 	for (int i = 0; i < MAX_SQLSERVERS; i++)
@@ -1778,8 +1781,30 @@ void CServer::SendServerInfoConnless(const NETADDR *pAddr, int Token, int Type)
 		m_ServerInfoFirstRequest = Now;
 	}
 
+	if(!m_ServerInfoHighLoad)
+	{
+		m_ServerInfoRequestLogTick = 0;
+		m_ServerInfoRequestLogRecords = 0;
+	}
+
 	bool SendResponse = m_ServerInfoNumRequests <= MaxRequests && !m_ServerInfoHighLoad;
 	if(!SendResponse) {
+		constexpr int MaxRecords = 50;
+		constexpr int MaxRecordsTime = 20; // Seconds
+
+		if(m_ServerInfoRequestLogRecords > MaxRecords && Now < m_ServerInfoRequestLogTick + TickSpeed() * MaxRecordsTime)
+		{
+			return;
+		}
+
+		if(Now >= m_ServerInfoRequestLogTick + TickSpeed() * MaxRecordsTime)
+		{
+			m_ServerInfoRequestLogTick = Now;
+			m_ServerInfoRequestLogRecords = 0;
+		}
+
+		m_ServerInfoRequestLogRecords++;
+
 		char aBuf[256];
 		char aAddrStr[256];
 		net_addr_str(pAddr, aAddrStr, sizeof(aAddrStr), true);
