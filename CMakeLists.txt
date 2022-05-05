@@ -649,6 +649,8 @@ set_glob(ENGINE_SERVER GLOB src/engine/server
   mapconverter.h
   #measure_ticks.cpp
   #measure_ticks.h
+  name_ban.cpp
+  name_ban.h
   netsession.h
   register.cpp
   register.h

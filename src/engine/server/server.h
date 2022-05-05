@@ -24,6 +24,8 @@
 #include "sql_server.h"
 /* DDNET MODIFICATION END *********************************************/
 
+#include "name_ban.h"
+
 class CSnapIDPool
 {
 	enum
@@ -234,6 +236,8 @@ public:
 
 	int m_RconRestrict;
 
+	array<CNameBan> m_aNameBans;
+
 	CServer();
 	virtual ~CServer();
 
@@ -321,7 +325,11 @@ public:
 	static bool ConMute(class IConsole::IResult *pResult, void *pUser);
 	static bool ConUnmute(class IConsole::IResult *pResult, void *pUser);
 	static bool ConWhisper(class IConsole::IResult *pResult, void *pUser);
-	
+
+	static bool ConNameBan(IConsole::IResult *pResult, void *pUser);
+	static bool ConNameUnban(IConsole::IResult *pResult, void *pUser);
+	static bool ConNameBans(IConsole::IResult *pResult, void *pUser);
+
 /* DDNET MODIFICATION START *******************************************/
 #ifdef CONF_SQL
 	static bool ConAddSqlServer(IConsole::IResult *pResult, void *pUserData);

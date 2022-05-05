@@ -466,23 +466,38 @@ void CServer::SetClientName(int ClientID, const char *pName)
 	if(!pName)
 		return;
 
-	char aCleanName[MAX_NAME_LENGTH];
-	str_copy(aCleanName, pName, sizeof(aCleanName));
+	int Skeleton[MAX_NAME_SKELETON_LENGTH];
+	int SkeletonLength = str_utf8_to_skeleton(pName, Skeleton, sizeof(Skeleton) / sizeof(Skeleton[0]));
+	int Buffer[MAX_NAME_SKELETON_LENGTH * 2 + 2];
+	bool Banned = false;
+	for(int i = 0; i < m_aNameBans.size(); i++)
+	{
+		CNameBan *pBan = &m_aNameBans[i];
+		int Distance = str_utf32_dist_buffer(Skeleton, SkeletonLength, pBan->m_aSkeleton, pBan->m_SkeletonLength, Buffer, sizeof(Buffer) / sizeof(Buffer[0]));
+		if(Distance <= pBan->m_Distance)
+		{
+			Banned = true;
+		}
+	}
 
-	// clear name
-	//~ for(char *p = aCleanName; *p; ++p)
-	//~ {
-		//~ if(*p < 32)
-			//~ *p = ' ';
-	//~ }
+	if(Banned)
+	{
+		if(m_aClients[ClientID].m_State == CClient::STATE_READY)
+		{
+			Kick(ClientID, "Kicked (your name is banned)");
+		}
+		return;
+	}
 
-	if(TrySetClientName(ClientID, aCleanName))
+	char aNameTry[MAX_NAME_LENGTH];
+	str_copy(aNameTry, pName, sizeof(aNameTry));
+
+	if(TrySetClientName(ClientID, aNameTry))
 	{
 		// auto rename
 		for(int i = 1;; i++)
 		{
-			char aNameTry[MAX_NAME_LENGTH];
-			str_format(aNameTry, sizeof(aCleanName), "(%d)%s", i, aCleanName);
+			str_format(aNameTry, sizeof(aNameTry), "(%d)%s", i, pName);
 			if(TrySetClientName(ClientID, aNameTry) == 0)
 				break;
 		}
@@ -2774,6 +2789,70 @@ bool CServer::ConStatus(IConsole::IResult *pResult, void *pUser)
 /* INFECTION MODIFICATION END *****************************************/
 }
 
+bool CServer::ConNameBan(IConsole::IResult *pResult, void *pUser)
+{
+	CServer *pThis = (CServer *)pUser;
+	char aBuf[256];
+	const char *pName = pResult->GetString(0);
+	const char *pReason = pResult->NumArguments() > 3 ? pResult->GetString(3) : "";
+	int Distance = pResult->NumArguments() > 1 ? pResult->GetInteger(1) : str_length(pName) / 3;
+	int IsSubstring = pResult->NumArguments() > 2 ? pResult->GetInteger(2) : 0;
+
+	for(int i = 0; i < pThis->m_aNameBans.size(); i++)
+	{
+		CNameBan *pBan = &pThis->m_aNameBans[i];
+		if(str_comp(pBan->m_aName, pName) == 0)
+		{
+			str_format(aBuf, sizeof(aBuf), "changed name='%s' distance=%d old_distance=%d is_substring=%d old_is_substring=%d reason='%s' old_reason='%s'", pName, Distance, pBan->m_Distance, IsSubstring, pBan->m_IsSubstring, pReason, pBan->m_aReason);
+			pThis->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "name_ban", aBuf);
+			pBan->m_Distance = Distance;
+			pBan->m_IsSubstring = IsSubstring;
+			str_copy(pBan->m_aReason, pReason, sizeof(pBan->m_aReason));
+			return true;
+		}
+	}
+
+	pThis->m_aNameBans.add(CNameBan(pName, Distance, IsSubstring, pReason));
+	str_format(aBuf, sizeof(aBuf), "added name='%s' distance=%d is_substring=%d reason='%s'", pName, Distance, IsSubstring, pReason);
+	pThis->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "name_ban", aBuf);
+	return true;
+}
+
+bool CServer::ConNameUnban(IConsole::IResult *pResult, void *pUser)
+{
+	CServer *pThis = (CServer *)pUser;
+	const char *pName = pResult->GetString(0);
+
+	for(int i = 0; i < pThis->m_aNameBans.size(); i++)
+	{
+		CNameBan *pBan = &pThis->m_aNameBans[i];
+		if(str_comp(pBan->m_aName, pName) == 0)
+		{
+			char aBuf[128];
+			str_format(aBuf, sizeof(aBuf), "removed name='%s' distance=%d is_substring=%d reason='%s'", pBan->m_aName, pBan->m_Distance, pBan->m_IsSubstring, pBan->m_aReason);
+			pThis->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "name_ban", aBuf);
+			pThis->m_aNameBans.remove_index(i);
+		}
+	}
+
+	return true;
+}
+
+bool CServer::ConNameBans(IConsole::IResult *pResult, void *pUser)
+{
+	CServer *pThis = (CServer *)pUser;
+
+	for(int i = 0; i < pThis->m_aNameBans.size(); i++)
+	{
+		CNameBan *pBan = &pThis->m_aNameBans[i];
+		char aBuf[128];
+		str_format(aBuf, sizeof(aBuf), "name='%s' distance=%d is_substring=%d reason='%s'", pBan->m_aName, pBan->m_Distance, pBan->m_IsSubstring, pBan->m_aReason);
+		pThis->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "name_ban", aBuf);
+	}
+
+	return true;
+}
+
 bool CServer::ConShutdown(IConsole::IResult *pResult, void *pUser)
 {
 	CServer* pThis = static_cast<CServer *>(pUser);
@@ -3096,6 +3175,10 @@ void CServer::RegisterCommands()
 	Console()->Register("stoprecord", "", CFGFLAG_SERVER, ConStopRecord, this, "Stop recording");
 
 	Console()->Register("reload", "", CFGFLAG_SERVER, ConMapReload, this, "Reload the map");
+
+	Console()->Register("name_ban", "s[name] ?i[distance] ?i[is_substring] ?r[reason]", CFGFLAG_SERVER, ConNameBan, this, "Ban a certain nickname");
+	Console()->Register("name_unban", "s[name]", CFGFLAG_SERVER, ConNameUnban, this, "Unban a certain nickname");
+	Console()->Register("name_bans", "", CFGFLAG_SERVER, ConNameBans, this, "List all name bans");
 
 	Console()->Chain("sv_name", ConchainSpecialInfoupdate, this);
 	Console()->Chain("password", ConchainSpecialInfoupdate, this);
