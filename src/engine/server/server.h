@@ -8,6 +8,8 @@
 
 #include <engine/masterserver.h>
 #include <engine/server.h>
+
+#include <engine/map.h>
 #include <engine/server/netsession.h>
 #include <engine/server/register.h>
 #include <engine/server/roundstatistics.h>
@@ -241,8 +243,10 @@ public:
 	CServer();
 	virtual ~CServer();
 
-	int TrySetClientName(int ClientID, const char *pName);
+	bool IsClientNameAvailable(int ClientID, const char *pNameRequest);
+	bool SetClientNameImpl(int ClientID, const char *pNameRequest, bool Set);
 
+	virtual bool WouldClientNameChange(int ClientID, const char *pNameRequest);
 	virtual void SetClientName(int ClientID, const char *pName);
 	virtual void SetClientClan(int ClientID, char const *pClan);
 	virtual void SetClientCountry(int ClientID, int Country);

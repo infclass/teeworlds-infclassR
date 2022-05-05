@@ -1,4 +1,5 @@
 InfclassR v1.5.0_alpha1
+- Names are now checked for confusing with existing ones
 - "By-hammer senders" are now considered as killer helpers
 - Healers are now considered as killer helpers
 - Added training mode with /save_position,
