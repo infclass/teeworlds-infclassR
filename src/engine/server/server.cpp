@@ -3282,6 +3282,7 @@ int main(int argc, const char **argv) // ignore_convention
 	
 	pEngine->Init();
 	pConfig->Init();
+	pConsole->Init();
 	pEngineMasterServer->Init();
 	pEngineMasterServer->Load();
 

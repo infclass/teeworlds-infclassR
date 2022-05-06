@@ -46,6 +46,7 @@ class CConsole : public IConsole
 	};
 
 	CExecFile *m_pFirstExec;
+	class CConfig *m_pConfig;
 	class IStorage *m_pStorage;
 	int m_AccessLevel;
 
@@ -171,8 +172,12 @@ class CConsole : public IConsole
 	CCommand *FindCommand(const char *pName, int FlagMask);
 
 public:
+	CConfig *Config() { return m_pConfig; }
+
 	CConsole(int FlagMask);
 	~CConsole();
+
+	virtual void Init();
 
 	virtual const CCommandInfo *FirstCommandInfo(int AccessLevel, int FlagMask) const;
 	virtual const CCommandInfo *GetCommandInfo(const char *pName, int FlagMask, bool Temp);

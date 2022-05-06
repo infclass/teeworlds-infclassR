@@ -813,24 +813,6 @@ CConsole::CConsole(int FlagMask)
 	Register("mod_status", "", CFGFLAG_SERVER, ConModCommandStatus, this, "List all commands which are accessible for moderators");
 	Register("adjust", "si", CFGFLAG_SERVER, ConAdjustVariable, this, "Adjust the variable value (add the given delta)");
 	Register("dump_variables", "", CFGFLAG_SERVER|CFGFLAG_CLIENT, ConModCommandDumpVariables, this, "Dump all config variables");
-
-	// TODO: this should disappear
-	#define MACRO_CONFIG_INT(Name,ScriptName,Def,Min,Max,Flags,Desc) \
-	{ \
-		static CIntVariableData Data = { this, &g_Config.m_##Name, Min, Max }; \
-		Register(#ScriptName, "?i", Flags, IntVariableCommand, &Data, Desc); \
-	}
-
-	#define MACRO_CONFIG_STR(Name,ScriptName,Len,Def,Flags,Desc) \
-	{ \
-		static CStrVariableData Data = { this, g_Config.m_##Name, Len }; \
-		Register(#ScriptName, "?r", Flags, StrVariableCommand, &Data, Desc); \
-	}
-
-	#include "config_variables.h"
-
-	#undef MACRO_CONFIG_INT
-	#undef MACRO_CONFIG_STR
 }
 
 CConsole::~CConsole()
@@ -844,6 +826,30 @@ CConsole::~CConsole()
 		delete pCommand;
 		pCommand = pNext;
 	}
+}
+
+void CConsole::Init()
+{
+	m_pConfig = &g_Config;
+	m_pStorage = Kernel()->RequestInterface<IStorage>();
+
+	// TODO: this should disappear
+#define MACRO_CONFIG_INT(Name, ScriptName, Def, Min, Max, Flags, Desc) \
+	{ \
+		static CIntVariableData Data = { this, &g_Config.m_##Name, Min, Max }; \
+		Register(#ScriptName, "?i", Flags, IntVariableCommand, &Data, Desc); \
+	}
+
+#define MACRO_CONFIG_STR(Name, ScriptName, Len, Def, Flags, Desc) \
+	{ \
+		static CStrVariableData Data = { this, g_Config.m_##Name, Len }; \
+		Register(#ScriptName, "?r", Flags, StrVariableCommand, &Data, Desc); \
+	}
+
+#include "config_variables.h"
+
+#undef MACRO_CONFIG_INT
+#undef MACRO_CONFIG_STR
 }
 
 void CConsole::ParseArguments(int NumArgs, const char **ppArguments)
