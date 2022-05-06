@@ -741,47 +741,6 @@ void CConsole::ConAdjustVariable(IConsole::IResult *pResult, void *pUserData)
 		pConsole->Print(OUTPUT_LEVEL_STANDARD, "Console", aBuf);
 }
 
-void CConsole::ConModCommandGet(IConsole::IResult *pArguments, void *pUserData)
-{
-	CConsole *pConsole = (CConsole*)pUserData;
-
-	const char *pVariableName = pArguments->GetString(0);
-
-	CCommand *pCommand = pConsole->FindCommand(pVariableName, pConsole->m_FlagMask);
-	if(!pCommand || (pCommand->m_Flags & CFGFLAG_ECON))
-	{
-		// Ignore the 'get' command for ECON variables
-		return;
-	}
-
-	FCommandCallback pfnCallback = pCommand->m_pfnCallback;
-	void *pCommandUserData = pCommand->m_pUserData;
-
-	// check for chain
-	if(pCommand->m_pfnCallback == Con_Chain)
-	{
-		CChain *pChainInfo = static_cast<CChain *>(pCommand->m_pUserData);
-		pfnCallback = pChainInfo->m_pfnCallback;
-		pCommandUserData = pChainInfo->m_pCallbackUserData;
-	}
-
-	char aBuf[1024];
-	aBuf[0] = 0;
-	if(pfnCallback == IntVariableCommand)
-	{
-		CIntVariableData *pData = static_cast<CIntVariableData *>(pCommandUserData);
-		str_format(aBuf, sizeof(aBuf), "%s %d", pCommand->m_pName, *pData->m_pVariable);
-	}
-	if(pfnCallback == StrVariableCommand)
-	{
-		CStrVariableData *pData = static_cast<CStrVariableData *>(pCommandUserData);
-		str_format(aBuf, sizeof(aBuf), "%s \"%s\"", pCommand->m_pName, pData->m_pStr);
-	}
-
-	if(aBuf[0])
-		pConsole->Print(OUTPUT_LEVEL_STANDARD, "Console", aBuf);
-}
-
 void CConsole::ConModCommandDumpVariables(IConsole::IResult *pArguments, void *pUserData)
 {
 	CConsole *pConsole = (CConsole*)pUserData;
@@ -853,7 +812,6 @@ CConsole::CConsole(int FlagMask)
 	Register("mod_command", "s?i", CFGFLAG_SERVER, ConModCommandAccess, this, "Specify command accessibility for moderators");
 	Register("mod_status", "", CFGFLAG_SERVER, ConModCommandStatus, this, "List all commands which are accessible for moderators");
 	Register("adjust", "si", CFGFLAG_SERVER, ConAdjustVariable, this, "Adjust the variable value (add the given delta)");
-	Register("get", "s", CFGFLAG_SERVER, ConModCommandGet, this, "Get the value of a config variable");
 	Register("dump_variables", "", CFGFLAG_SERVER|CFGFLAG_CLIENT, ConModCommandDumpVariables, this, "Dump all config variables");
 
 	// TODO: this should disappear
