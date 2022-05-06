@@ -348,11 +348,8 @@ void CConsole::ExecuteLineStroked(int Stroke, const char *pStr, int ClientID, bo
 					if(ParseArgs(&Result, pCommand->m_pParams))
 					{
 						char aBuf[256];
-						
-						str_format(aBuf, sizeof(aBuf), "Usage: %s %s", pCommand->m_pName, pCommand->m_pUsage);
-						
-						Print(OUTPUT_LEVEL_STANDARD, "Console", "Invalid arguments.");
-						Print(OUTPUT_LEVEL_STANDARD, "Console", aBuf);
+						str_format(aBuf, sizeof(aBuf), "Invalid arguments... Usage: %s %s", pCommand->m_pName, pCommand->m_pParams);
+						Print(OUTPUT_LEVEL_STANDARD, "console", aBuf);
 					}
 					else if(m_StoreCommands && pCommand->m_Flags&CFGFLAG_STORE)
 					{
@@ -363,16 +360,7 @@ void CConsole::ExecuteLineStroked(int Stroke, const char *pStr, int ClientID, bo
 					}
 					else
 					{
-						bool ValideArguments = pCommand->m_pfnCallback(&Result, pCommand->m_pUserData);
-						if(!ValideArguments)
-						{
-							char aBuf[256];
-							
-							str_format(aBuf, sizeof(aBuf), "Usage: %s %s", pCommand->m_pName, pCommand->m_pUsage);
-							
-							Print(OUTPUT_LEVEL_STANDARD, "Console", "Invalid arguments.");
-							Print(OUTPUT_LEVEL_STANDARD, "Console", aBuf);
-						}
+						pCommand->m_pfnCallback(&Result, pCommand->m_pUserData);
 					}
 				}
 			}
@@ -481,21 +469,17 @@ void CConsole::ExecuteFile(const char *pFilename)
 	m_pFirstExec = pPrev;
 }
 
-bool CConsole::Con_Echo(IResult *pResult, void *pUserData)
+void CConsole::Con_Echo(IResult *pResult, void *pUserData)
 {
-	((CConsole*)pUserData)->Print(IConsole::OUTPUT_LEVEL_STANDARD, "Console", pResult->GetString(0));
-	
-	return true;
+	((CConsole *)pUserData)->Print(IConsole::OUTPUT_LEVEL_STANDARD, "console", pResult->GetString(0));
 }
 
-bool CConsole::Con_Exec(IResult *pResult, void *pUserData)
+void CConsole::Con_Exec(IResult *pResult, void *pUserData)
 {
-	((CConsole*)pUserData)->ExecuteFile(pResult->GetString(0));
-	
-	return true;
+	((CConsole *)pUserData)->ExecuteFile(pResult->GetString(0));
 }
 
-bool CConsole::ConModCommandAccess(IResult *pResult, void *pUser)
+void CConsole::ConModCommandAccess(IResult *pResult, void *pUser)
 {
 	CConsole* pConsole = static_cast<CConsole *>(pUser);
 	char aBuf[128];
@@ -514,11 +498,9 @@ bool CConsole::ConModCommandAccess(IResult *pResult, void *pUser)
 		str_format(aBuf, sizeof(aBuf), "No such command: '%s'.", pResult->GetString(0));
 
 	pConsole->Print(OUTPUT_LEVEL_STANDARD, "Console", aBuf);
-
-	return true;
 }
 
-bool CConsole::ConModCommandStatus(IResult *pResult, void *pUser)
+void CConsole::ConModCommandStatus(IResult *pResult, void *pUser)
 {
 	CConsole* pConsole = static_cast<CConsole *>(pUser);
 	char aBuf[240];
@@ -551,8 +533,6 @@ bool CConsole::ConModCommandStatus(IResult *pResult, void *pUser)
 	}
 	if(Used > 0)
 		pConsole->Print(OUTPUT_LEVEL_STANDARD, "Console", aBuf);
-	
-	return true;
 }
 
 struct CIntVariableData
@@ -570,7 +550,7 @@ struct CStrVariableData
 	int m_MaxSize;
 };
 
-static bool IntVariableCommand(IConsole::IResult *pResult, void *pUserData)
+static void IntVariableCommand(IConsole::IResult *pResult, void *pUserData)
 {
 	CIntVariableData *pData = (CIntVariableData *)pUserData;
 
@@ -589,11 +569,15 @@ static bool IntVariableCommand(IConsole::IResult *pResult, void *pUserData)
 
 		*(pData->m_pVariable) = Val;
 	}
-	
-	return true;
+	else
+	{
+		char aBuf[32];
+		str_format(aBuf, sizeof(aBuf), "Value: %d", *(pData->m_pVariable));
+		pData->m_pConsole->Print(IConsole::OUTPUT_LEVEL_STANDARD, "console", aBuf);
+	}
 }
 
-static bool StrVariableCommand(IConsole::IResult *pResult, void *pUserData)
+static void StrVariableCommand(IConsole::IResult *pResult, void *pUserData)
 {
 	CStrVariableData *pData = (CStrVariableData *)pUserData;
 
@@ -620,11 +604,15 @@ static bool StrVariableCommand(IConsole::IResult *pResult, void *pUserData)
 		else
 			str_copy(pData->m_pStr, pString, pData->m_MaxSize);
 	}
-	
-	return true;
+	else
+	{
+		char aBuf[1024];
+		str_format(aBuf, sizeof(aBuf), "Value: %s", pData->m_pStr);
+		pData->m_pConsole->Print(IConsole::OUTPUT_LEVEL_STANDARD, "console", aBuf);
+	}
 }
 
-bool CConsole::ConToggle(IConsole::IResult *pResult, void *pUser)
+void CConsole::ConToggle(IConsole::IResult *pResult, void *pUser)
 {
 	CConsole* pConsole = static_cast<CConsole *>(pUser);
 	char aBuf[128] = {0};
@@ -658,11 +646,9 @@ bool CConsole::ConToggle(IConsole::IResult *pResult, void *pUser)
 
 	if(aBuf[0] != 0)
 		pConsole->Print(OUTPUT_LEVEL_STANDARD, "Console", aBuf);
-	
-	return true;
 }
 
-bool CConsole::ConToggleStroke(IConsole::IResult *pResult, void *pUser)
+void CConsole::ConToggleStroke(IConsole::IResult *pResult, void *pUser)
 {
 	CConsole* pConsole = static_cast<CConsole *>(pUser);
 	char aBuf[128] = {0};
@@ -693,18 +679,16 @@ bool CConsole::ConToggleStroke(IConsole::IResult *pResult, void *pUser)
 
 	if(aBuf[0] != 0)
 		pConsole->Print(OUTPUT_LEVEL_STANDARD, "Console", aBuf);
-
-	return true;
 }
 
-bool CConsole::ConAdjustVariable(IConsole::IResult *pResult, void *pUserData)
+void CConsole::ConAdjustVariable(IConsole::IResult *pResult, void *pUserData)
 {
 	CConsole *pConsole = (CConsole*)pUserData;
 
 	if(pResult->NumArguments() != 2)
 	{
 		pConsole->Print(OUTPUT_LEVEL_STANDARD, "Console", "Invalid usage. Use: increase <variable> <amount>");
-		return false;
+		return;
 	}
 
 	const char *pVariableName = pResult->GetString(0);
@@ -715,7 +699,7 @@ bool CConsole::ConAdjustVariable(IConsole::IResult *pResult, void *pUserData)
 	{
 		// Ignore the command for ECON variables
 		pConsole->Print(OUTPUT_LEVEL_STANDARD, "Console", "The variable does not exist");
-		return false;
+		return;
 	}
 
 	FCommandCallback pfnCallback = pCommand->m_pfnCallback;
@@ -755,11 +739,9 @@ bool CConsole::ConAdjustVariable(IConsole::IResult *pResult, void *pUserData)
 
 	if(aBuf[0])
 		pConsole->Print(OUTPUT_LEVEL_STANDARD, "Console", aBuf);
-
-	return aBuf[0];
 }
 
-bool CConsole::ConModCommandGet(IConsole::IResult *pArguments, void *pUserData)
+void CConsole::ConModCommandGet(IConsole::IResult *pArguments, void *pUserData)
 {
 	CConsole *pConsole = (CConsole*)pUserData;
 
@@ -769,7 +751,7 @@ bool CConsole::ConModCommandGet(IConsole::IResult *pArguments, void *pUserData)
 	if(!pCommand || (pCommand->m_Flags & CFGFLAG_ECON))
 	{
 		// Ignore the 'get' command for ECON variables
-		return false;
+		return;
 	}
 
 	FCommandCallback pfnCallback = pCommand->m_pfnCallback;
@@ -798,11 +780,9 @@ bool CConsole::ConModCommandGet(IConsole::IResult *pArguments, void *pUserData)
 
 	if(aBuf[0])
 		pConsole->Print(OUTPUT_LEVEL_STANDARD, "Console", aBuf);
-
-	return aBuf[0];
 }
 
-bool CConsole::ConModCommandDumpVariables(IConsole::IResult *pArguments, void *pUserData)
+void CConsole::ConModCommandDumpVariables(IConsole::IResult *pArguments, void *pUserData)
 {
 	CConsole *pConsole = (CConsole*)pUserData;
 
@@ -844,8 +824,6 @@ bool CConsole::ConModCommandDumpVariables(IConsole::IResult *pArguments, void *p
 		if(aBuf[0])
 			pConsole->Print(OUTPUT_LEVEL_STANDARD, "Console", aBuf);
 	}
-
-	return true;
 }
 
 CConsole::CConsole(int FlagMask)
@@ -1162,12 +1140,10 @@ void CConsole::DeregisterTempAll()
 	m_pRecycleList = 0;
 }
 
-bool CConsole::Con_Chain(IResult *pResult, void *pUserData)
+void CConsole::Con_Chain(IResult *pResult, void *pUserData)
 {
 	CChain *pInfo = (CChain *)pUserData;
 	pInfo->m_pfnChainCallback(pResult, pInfo->m_pUserData, pInfo->m_pfnCallback, pInfo->m_pCallbackUserData);
-
-	return true;
 }
 
 void CConsole::Chain(const char *pName, FChainCommandCallback pfnChainFunc, void *pUser)

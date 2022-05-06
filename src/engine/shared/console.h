@@ -51,16 +51,16 @@ class CConsole : public IConsole
 	CCommand *m_pRecycleList;
 	CHeap m_TempCommands;
 
-	static bool Con_Chain(IResult *pResult, void *pUserData);
-	static bool Con_Echo(IResult *pResult, void *pUserData);
-	static bool Con_Exec(IResult *pResult, void *pUserData);
-	static bool ConToggle(IResult *pResult, void *pUser);
-	static bool ConToggleStroke(IResult *pResult, void *pUser);
-	static bool ConAdjustVariable(IResult *pResult, void *pUserData);
-	static bool ConModCommandGet(IResult *pResult, void *pUserData);
-	static bool ConModCommandDumpVariables(IResult *pResult, void *pUserData);
-	static bool ConModCommandAccess(IResult *pResult, void *pUser);
-	static bool ConModCommandStatus(IConsole::IResult *pResult, void *pUser);
+	static void Con_Chain(IResult *pResult, void *pUserData);
+	static void Con_Echo(IResult *pResult, void *pUserData);
+	static void Con_Exec(IResult *pResult, void *pUserData);
+	static void ConToggle(IResult *pResult, void *pUser);
+	static void ConToggleStroke(IResult *pResult, void *pUser);
+	static void ConAdjustVariable(IResult *pResult, void *pUserData);
+	static void ConModCommandGet(IResult *pResult, void *pUserData);
+	static void ConModCommandDumpVariables(IResult *pResult, void *pUserData);
+	static void ConModCommandAccess(IResult *pResult, void *pUser);
+	static void ConModCommandStatus(IConsole::IResult *pResult, void *pUser);
 
 	void ExecuteFileRecurse(const char *pFilename);
 	void ExecuteLineStroked(int Stroke, const char *pStr, int ClientID, bool TeamChat);

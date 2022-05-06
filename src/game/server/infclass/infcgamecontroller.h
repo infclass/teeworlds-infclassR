@@ -120,27 +120,27 @@ public:
 
 	void RegisterChatCommands(class IConsole *pConsole) override;
 
-	static bool ConSetClientName(IConsole::IResult *pResult, void *pUserData);
-	static bool ConUserSetClass(IConsole::IResult *pResult, void *pUserData);
-	bool ConUserSetClass(IConsole::IResult *pResult);
-	static bool ConSetClass(IConsole::IResult *pResult, void *pUserData);
-	bool ConSetClass(IConsole::IResult *pResult);
+	static void ConSetClientName(IConsole::IResult *pResult, void *pUserData);
+	static void ConUserSetClass(IConsole::IResult *pResult, void *pUserData);
+	void ConUserSetClass(IConsole::IResult *pResult);
+	static void ConSetClass(IConsole::IResult *pResult, void *pUserData);
+	void ConSetClass(IConsole::IResult *pResult);
 
-	static bool ConStartFastRound(IConsole::IResult *pResult, void *pUserData);
-	static bool ConQueueFastRound(IConsole::IResult *pResult, void *pUserData);
-	static bool ConQueueFunRound(IConsole::IResult *pResult, void *pUserData);
-	static bool ConMapRotationStatus(IConsole::IResult *pResult, void *pUserData);
-	static bool ConSaveMapsData(IConsole::IResult *pResult, void *pUserData);
-	static bool ConPrintMapsData(IConsole::IResult *pResult, void *pUserData);
-	static bool ConResetMapData(IConsole::IResult *pResult, void *pUserData);
-	static bool ConAddMapData(IConsole::IResult *pResult, void *pUserData);
-	static bool ConSavePosition(IConsole::IResult *pResult, void *pUserData);
-	bool ConSavePosition(IConsole::IResult *pResult);
-	static bool ConLoadPosition(IConsole::IResult *pResult, void *pUserData);
-	bool ConLoadPosition(IConsole::IResult *pResult);
+	static void ConStartFastRound(IConsole::IResult *pResult, void *pUserData);
+	static void ConQueueFastRound(IConsole::IResult *pResult, void *pUserData);
+	static void ConQueueFunRound(IConsole::IResult *pResult, void *pUserData);
+	static void ConMapRotationStatus(IConsole::IResult *pResult, void *pUserData);
+	static void ConSaveMapsData(IConsole::IResult *pResult, void *pUserData);
+	static void ConPrintMapsData(IConsole::IResult *pResult, void *pUserData);
+	static void ConResetMapData(IConsole::IResult *pResult, void *pUserData);
+	static void ConAddMapData(IConsole::IResult *pResult, void *pUserData);
+	static void ConSavePosition(IConsole::IResult *pResult, void *pUserData);
+	void ConSavePosition(IConsole::IResult *pResult);
+	static void ConLoadPosition(IConsole::IResult *pResult, void *pUserData);
+	void ConLoadPosition(IConsole::IResult *pResult);
 
-	static bool ChatWitch(IConsole::IResult *pResult, void *pUserData);
-	bool ChatWitch(IConsole::IResult *pResult);
+	static void ChatWitch(IConsole::IResult *pResult, void *pUserData);
+	void ChatWitch(IConsole::IResult *pResult);
 
 	using IGameController::GameServer;
 	CGameWorld *GameWorld();

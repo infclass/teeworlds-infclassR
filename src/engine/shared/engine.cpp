@@ -29,7 +29,7 @@ public:
 	IStorage *m_pStorage;
 	bool m_Logging;
 
-	static bool Con_DbgLognetwork(IConsole::IResult *pResult, void *pUserData)
+	static void Con_DbgLognetwork(IConsole::IResult *pResult, void *pUserData)
 	{
 		CEngine *pEngine = static_cast<CEngine *>(pUserData);
 
@@ -49,8 +49,6 @@ public:
 				pEngine->m_pStorage->OpenFile(aFilenameRecv, IOFLAG_WRITE, IStorage::TYPE_SAVE));
 			pEngine->m_Logging = true;
 		}
-
-		return true;
 	}
 
 	CEngine(bool Test, const char *pAppname, bool Silent, int Jobs)

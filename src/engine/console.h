@@ -74,8 +74,8 @@ public:
 
 	typedef void (*FPrintCallback)(const char *pStr, void *pUser);
 	typedef void (*FPossibleCallback)(const char *pCmd, void *pUser);
-	typedef bool (*FCommandCallback)(IResult *pResult, void *pUserData);
-	typedef bool (*FChainCommandCallback)(IResult *pResult, void *pUserData, FCommandCallback pfnCallback, void *pCallbackUserData);
+	typedef void (*FCommandCallback)(IResult *pResult, void *pUserData);
+	typedef void (*FChainCommandCallback)(IResult *pResult, void *pUserData, FCommandCallback pfnCallback, void *pCallbackUserData);
 
 	virtual const CCommandInfo *FirstCommandInfo(int AccessLevel, int Flagmask) const = 0;
 	virtual const CCommandInfo *GetCommandInfo(const char *pName, int FlagMask, bool Temp) = 0;

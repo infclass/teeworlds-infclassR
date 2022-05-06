@@ -285,7 +285,7 @@ int CServerBan::BanRange(const CNetRange *pRange, int Seconds, const char *pReas
 	return -1;
 }
 
-bool CServerBan::ConBanExt(IConsole::IResult *pResult, void *pUser)
+void CServerBan::ConBanExt(IConsole::IResult *pResult, void *pUser)
 {
 	CServerBan *pThis = static_cast<CServerBan*>(pUser);
 
@@ -308,8 +308,6 @@ bool CServerBan::ConBanExt(IConsole::IResult *pResult, void *pUser)
 	}
 	else
 		ConBan(pResult, pUser);
-	
-	return true;
 }
 
 /* INFECTION MODIFICATION START ***************************************/
@@ -2609,7 +2607,7 @@ int CServer::Run()
 	return 0;
 }
 
-bool CServer::ConUnmute(IConsole::IResult *pResult, void *pUser)
+void CServer::ConUnmute(IConsole::IResult *pResult, void *pUser)
 {
 	CServer* pThis = (CServer *)pUser;
 	
@@ -2625,11 +2623,9 @@ bool CServer::ConUnmute(IConsole::IResult *pResult, void *pUser)
 	}
 	else
 		pThis->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "Server", "Invalid client id");
-	
-	return true;
 }
 
-bool CServer::ConMute(IConsole::IResult *pResult, void *pUser)
+void CServer::ConMute(IConsole::IResult *pResult, void *pUser)
 {
 	CServer* pThis = (CServer *)pUser;
 	
@@ -2651,11 +2647,9 @@ bool CServer::ConMute(IConsole::IResult *pResult, void *pUser)
 	}
 	else
 		pThis->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "Server", "Invalid client id");
-	
-	return true;
 }
 
-bool CServer::ConWhisper(IConsole::IResult *pResult, void *pUser)
+void CServer::ConWhisper(IConsole::IResult *pResult, void *pUser)
 {
 	CServer* pThis = (CServer *)pUser;
 	
@@ -2687,12 +2681,9 @@ bool CServer::ConWhisper(IConsole::IResult *pResult, void *pUser)
 	}
 	else
 		pThis->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "Server", "Invalid client id");
-	
-
-	return true;
 }
 
-bool CServer::ConKick(IConsole::IResult *pResult, void *pUser)
+void CServer::ConKick(IConsole::IResult *pResult, void *pUser)
 {
 	CServer* pThis = (CServer *)pUser;
 	
@@ -2711,12 +2702,10 @@ bool CServer::ConKick(IConsole::IResult *pResult, void *pUser)
 	}
 	else
 		pThis->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "Server", "Invalid client id");
-	
-	return true;
 }
 
 /* INFECTION MODIFICATION START ***************************************/
-bool CServer::ConOptionStatus(IConsole::IResult *pResult, void *pUser)
+void CServer::ConOptionStatus(IConsole::IResult *pResult, void *pUser)
 {
 	char aBuf[1024];
 	CServer* pThis = static_cast<CServer *>(pUser);
@@ -2736,17 +2725,15 @@ bool CServer::ConOptionStatus(IConsole::IResult *pResult, void *pUser)
 			pThis->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "Server", aBuf);
 		}
 	}
-	
-	return true;
 }
 /* INFECTION MODIFICATION END *****************************************/
 
-bool CServer::ConStatusExtended(IConsole::IResult *pResult, void *pUser)
+void CServer::ConStatusExtended(IConsole::IResult *pResult, void *pUser)
 {
-	return ConStatus(pResult, pUser);
+	ConStatus(pResult, pUser);
 }
 
-bool CServer::ConStatus(IConsole::IResult *pResult, void *pUser)
+void CServer::ConStatus(IConsole::IResult *pResult, void *pUser)
 {
 	char aBuf[1024];
 	char aAddrStr[NETADDR_MAXSTRSIZE];
@@ -2786,12 +2773,10 @@ bool CServer::ConStatus(IConsole::IResult *pResult, void *pUser)
 			pThis->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "Server", aBuf);
 		}
 	}
-	
-	return true;
 /* INFECTION MODIFICATION END *****************************************/
 }
 
-bool CServer::ConNameBan(IConsole::IResult *pResult, void *pUser)
+void CServer::ConNameBan(IConsole::IResult *pResult, void *pUser)
 {
 	CServer *pThis = (CServer *)pUser;
 	char aBuf[256];
@@ -2810,17 +2795,16 @@ bool CServer::ConNameBan(IConsole::IResult *pResult, void *pUser)
 			pBan->m_Distance = Distance;
 			pBan->m_IsSubstring = IsSubstring;
 			str_copy(pBan->m_aReason, pReason, sizeof(pBan->m_aReason));
-			return true;
+			return;
 		}
 	}
 
 	pThis->m_aNameBans.add(CNameBan(pName, Distance, IsSubstring, pReason));
 	str_format(aBuf, sizeof(aBuf), "added name='%s' distance=%d is_substring=%d reason='%s'", pName, Distance, IsSubstring, pReason);
 	pThis->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "name_ban", aBuf);
-	return true;
 }
 
-bool CServer::ConNameUnban(IConsole::IResult *pResult, void *pUser)
+void CServer::ConNameUnban(IConsole::IResult *pResult, void *pUser)
 {
 	CServer *pThis = (CServer *)pUser;
 	const char *pName = pResult->GetString(0);
@@ -2836,11 +2820,9 @@ bool CServer::ConNameUnban(IConsole::IResult *pResult, void *pUser)
 			pThis->m_aNameBans.remove_index(i);
 		}
 	}
-
-	return true;
 }
 
-bool CServer::ConNameBans(IConsole::IResult *pResult, void *pUser)
+void CServer::ConNameBans(IConsole::IResult *pResult, void *pUser)
 {
 	CServer *pThis = (CServer *)pUser;
 
@@ -2851,11 +2833,9 @@ bool CServer::ConNameBans(IConsole::IResult *pResult, void *pUser)
 		str_format(aBuf, sizeof(aBuf), "name='%s' distance=%d is_substring=%d reason='%s'", pBan->m_aName, pBan->m_Distance, pBan->m_IsSubstring, pBan->m_aReason);
 		pThis->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "name_ban", aBuf);
 	}
-
-	return true;
 }
 
-bool CServer::ConShutdown(IConsole::IResult *pResult, void *pUser)
+void CServer::ConShutdown(IConsole::IResult *pResult, void *pUser)
 {
 	CServer* pThis = static_cast<CServer *>(pUser);
 	pThis->m_RunServer = 0;
@@ -2864,8 +2844,6 @@ bool CServer::ConShutdown(IConsole::IResult *pResult, void *pUser)
 	{
 		str_copy(pThis->m_aShutdownReason, pReason, sizeof(pThis->m_aShutdownReason));
 	}
-
-	return true;
 }
 
 void CServer::DemoRecorder_HandleAutoStart()
@@ -2892,7 +2870,7 @@ bool CServer::DemoRecorder_IsRecording()
 	return m_DemoRecorder.IsRecording();
 }
 
-bool CServer::ConRecord(IConsole::IResult *pResult, void *pUser)
+void CServer::ConRecord(IConsole::IResult *pResult, void *pUser)
 {
 	CServer* pServer = (CServer *)pUser;
 	char aFilename[128];
@@ -2906,25 +2884,19 @@ bool CServer::ConRecord(IConsole::IResult *pResult, void *pUser)
 		str_format(aFilename, sizeof(aFilename), "demos/demo_%s.demo", aDate);
 	}
 	pServer->m_DemoRecorder.Start(pServer->Storage(), pServer->Console(), aFilename, pServer->GameServer()->NetVersion(), pServer->m_aCurrentMap, pServer->m_CurrentMapSha256, pServer->m_CurrentMapCrc, "server");
-	
-	return true;
 }
 
-bool CServer::ConStopRecord(IConsole::IResult *pResult, void *pUser)
+void CServer::ConStopRecord(IConsole::IResult *pResult, void *pUser)
 {
 	((CServer *)pUser)->m_DemoRecorder.Stop();
-	
-	return true;
 }
 
-bool CServer::ConMapReload(IConsole::IResult *pResult, void *pUser)
+void CServer::ConMapReload(IConsole::IResult *pResult, void *pUser)
 {
 	((CServer *)pUser)->m_MapReload = 1;
-	
-	return true;
 }
 
-bool CServer::ConLogout(IConsole::IResult *pResult, void *pUser)
+void CServer::ConLogout(IConsole::IResult *pResult, void *pUser)
 {
 	CServer *pServer = (CServer *)pUser;
 
@@ -2944,29 +2916,27 @@ bool CServer::ConLogout(IConsole::IResult *pResult, void *pUser)
 		str_format(aBuf, sizeof(aBuf), "ClientID=%d logged out", pServer->m_RconClientID);
 		pServer->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "server", aBuf);
 	}
-	
-	return true;
 }
 
-bool CServer::ConchainSpecialInfoupdate(IConsole::IResult *pResult, void *pUserData, IConsole::FCommandCallback pfnCallback, void *pCallbackUserData)
+void CServer::ConchainSpecialInfoupdate(IConsole::IResult *pResult, void *pUserData, IConsole::FCommandCallback pfnCallback, void *pCallbackUserData)
 {
 	pfnCallback(pResult, pCallbackUserData);
 	if(pResult->NumArguments())
+	{
 		((CServer *)pUserData)->UpdateServerInfo();
-	
-	return true;
+	}
 }
 
-bool CServer::ConchainMaxclientsperipUpdate(IConsole::IResult *pResult, void *pUserData, IConsole::FCommandCallback pfnCallback, void *pCallbackUserData)
+void CServer::ConchainMaxclientsperipUpdate(IConsole::IResult *pResult, void *pUserData, IConsole::FCommandCallback pfnCallback, void *pCallbackUserData)
 {
 	pfnCallback(pResult, pCallbackUserData);
 	if(pResult->NumArguments())
+	{
 		((CServer *)pUserData)->m_NetServer.SetMaxClientsPerIP(pResult->GetInteger(0));
-	
-	return true;
+	}
 }
 
-bool CServer::ConchainModCommandUpdate(IConsole::IResult *pResult, void *pUserData, IConsole::FCommandCallback pfnCallback, void *pCallbackUserData)
+void CServer::ConchainModCommandUpdate(IConsole::IResult *pResult, void *pUserData, IConsole::FCommandCallback pfnCallback, void *pCallbackUserData)
 {
 	if(pResult->NumArguments() == 2)
 	{
@@ -2992,12 +2962,12 @@ bool CServer::ConchainModCommandUpdate(IConsole::IResult *pResult, void *pUserDa
 		}
 	}
 	else
+	{
 		pfnCallback(pResult, pCallbackUserData);
-	
-	return true;
+	}
 }
 
-bool CServer::ConchainConsoleOutputLevelUpdate(IConsole::IResult *pResult, void *pUserData, IConsole::FCommandCallback pfnCallback, void *pCallbackUserData)
+void CServer::ConchainConsoleOutputLevelUpdate(IConsole::IResult *pResult, void *pUserData, IConsole::FCommandCallback pfnCallback, void *pCallbackUserData)
 {
 	pfnCallback(pResult, pCallbackUserData);
 	if(pResult->NumArguments() == 1)
@@ -3005,18 +2975,16 @@ bool CServer::ConchainConsoleOutputLevelUpdate(IConsole::IResult *pResult, void 
 		CServer *pThis = static_cast<CServer *>(pUserData);
 		pThis->Console()->SetPrintOutputLevel(pThis->m_PrintCBIndex, pResult->GetInteger(0));
 	}
-	
-	return true;
 }
 
 /* DDNET MODIFICATION START *******************************************/
 #ifdef CONF_SQL
-bool CServer::ConAddSqlServer(IConsole::IResult *pResult, void *pUserData)
+void CServer::ConAddSqlServer(IConsole::IResult *pResult, void *pUserData)
 {
 	CServer *pSelf = (CServer *)pUserData;
 
 	if (pResult->NumArguments() != 7 && pResult->NumArguments() != 8)
-		return false;
+		return;
 
 	bool ReadOnly;
 	if (str_comp_nocase(pResult->GetString(0), "w") == 0)
@@ -3026,7 +2994,7 @@ bool CServer::ConAddSqlServer(IConsole::IResult *pResult, void *pUserData)
 	else
 	{
 		pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "server", "choose either 'r' for SqlReadServer or 'w' for SqlWriteServer");
-		return true;
+		return;
 	}
 
 	bool SetUpDb = pResult->NumArguments() == 8 ? pResult->GetInteger(7) : false;
@@ -3052,11 +3020,9 @@ bool CServer::ConAddSqlServer(IConsole::IResult *pResult, void *pUserData)
 		}
 	}
 	pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "server", "failed to add new sqlserver: limit of sqlservers reached");
-
-	return true;
 }
 
-bool CServer::ConDumpSqlServers(IConsole::IResult *pResult, void *pUserData)
+void CServer::ConDumpSqlServers(IConsole::IResult *pResult, void *pUserData)
 {
 	CServer *pSelf = (CServer *)pUserData;
 
@@ -3068,20 +3034,20 @@ bool CServer::ConDumpSqlServers(IConsole::IResult *pResult, void *pUserData)
 	else
 	{
 		pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "server", "choose either 'r' for SqlReadServer or 'w' for SqlWriteServer");
-		return true;
+		return;
 	}
 
 	CSqlServer** apSqlServers = ReadOnly ? pSelf->m_apSqlReadServers : pSelf->m_apSqlWriteServers;
 
 	for (int i = 0; i < MAX_SQLSERVERS; i++)
+	{
 		if (apSqlServers[i])
 		{
 			char aBuf[512];
 			str_format(aBuf, sizeof(aBuf), "SQL-%s %d: DB: '%s' Prefix: '%s' User: '%s' Pass: '%s' IP: '%s' Port: %d", ReadOnly ? "Read" : "Write", i, apSqlServers[i]->GetDatabase(), apSqlServers[i]->GetPrefix(), apSqlServers[i]->GetUser(), apSqlServers[i]->GetPass(), apSqlServers[i]->GetIP(), apSqlServers[i]->GetPort());
 			pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "server", aBuf);
 		}
-	
-	return true;
+	}
 }
 
 void CServer::CreateTablesThread(void *pData)
@@ -3092,70 +3058,66 @@ void CServer::CreateTablesThread(void *pData)
 
 /* DDNET MODIFICATION END *********************************************/
 
-bool CServer::ConSetWeaponFireDelay(IConsole::IResult *pResult, void *pUserData)
+void CServer::ConSetWeaponFireDelay(IConsole::IResult *pResult, void *pUserData)
 {
 	CServer *pSelf = (CServer *)pUserData;
 	if(pResult->NumArguments() != 2)
-		return false;
+		return;
 
 	int WeaponID = pResult->GetInteger(0);
 	if((WeaponID < 0) || (WeaponID >= NB_INFWEAPON))
 	{
-		return false;
+		return;
 	}
 	int Interval = pResult->GetInteger(1);
 	if(Interval < 0)
 	{
-		return false;
+		return;
 	}
 
 	pSelf->SetFireDelay(WeaponID, Interval);
-
-	return true;
 }
 
-bool CServer::ConSetWeaponAmmoRegen(IConsole::IResult *pResult, void *pUserData)
+void CServer::ConSetWeaponAmmoRegen(IConsole::IResult *pResult, void *pUserData)
 {
 	CServer *pSelf = (CServer *)pUserData;
 	if(pResult->NumArguments() != 2)
-		return false;
+		return;
 
 	int WeaponID = pResult->GetInteger(0);
 	if((WeaponID < 0) || (WeaponID >= NB_INFWEAPON))
 	{
-		return false;
+		return;
 	}
 	int Interval = pResult->GetInteger(1);
 	if(Interval < 0)
 	{
-		return false;
+		return;
 	}
 
 	pSelf->SetAmmoRegenTime(WeaponID, Interval);
 
-	return true;
+	return;
 }
 
-bool CServer::ConSetWeaponMaxAmmo(IConsole::IResult *pResult, void *pUserData)
+void CServer::ConSetWeaponMaxAmmo(IConsole::IResult *pResult, void *pUserData)
 {
 	CServer *pSelf = (CServer *)pUserData;
 	if(pResult->NumArguments() != 2)
-		return false;
+		return;
 
 	int WeaponID = pResult->GetInteger(0);
 	if((WeaponID < 0) || (WeaponID >= NB_INFWEAPON))
 	{
-		return false;
+		return;
 	}
 	int Interval = pResult->GetInteger(1);
 	if(Interval < 0)
 	{
-		return false;
+		return;
 	}
 
 	pSelf->SetMaxAmmo(WeaponID, Interval);
-
-	return true;
 }
 
 void CServer::RegisterCommands()

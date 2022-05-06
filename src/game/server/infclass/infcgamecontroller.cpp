@@ -919,7 +919,7 @@ void CInfClassGameController::RegisterChatCommands(IConsole *pConsole)
 	pConsole->Register("santa", "", CFGFLAG_CHAT|CFGFLAG_USER, ChatWitch, this, "Call the Santa");
 }
 
-bool CInfClassGameController::ConSetClientName(IConsole::IResult *pResult, void *pUserData)
+void CInfClassGameController::ConSetClientName(IConsole::IResult *pResult, void *pUserData)
 {
 	CInfClassGameController *pSelf = (CInfClassGameController *)pUserData;
 
@@ -927,23 +927,21 @@ bool CInfClassGameController::ConSetClientName(IConsole::IResult *pResult, void 
 	const char *pNewName = pResult->GetString(1);
 
 	pSelf->Server()->SetClientName(PlayerID, pNewName);
-
-	return true;
 }
 
-bool CInfClassGameController::ConUserSetClass(IConsole::IResult *pResult, void *pUserData)
+void CInfClassGameController::ConUserSetClass(IConsole::IResult *pResult, void *pUserData)
 {
 	CInfClassGameController *pSelf = (CInfClassGameController *)pUserData;
-	return pSelf->ConUserSetClass(pResult);
+	pSelf->ConUserSetClass(pResult);
 }
 
-bool CInfClassGameController::ConUserSetClass(IConsole::IResult *pResult)
+void CInfClassGameController::ConUserSetClass(IConsole::IResult *pResult)
 {
 	int ClientID = pResult->GetClientID();
 	if(!Config()->m_InfTrainingMode)
 	{
 		GameServer()->SendChatTarget_Localization(ClientID, CHATCATEGORY_DEFAULT, _("The command is not available (enabled only in training mode)"), nullptr);
-		return true;
+		return;
 	}
 
 	const char *pClassName = pResult->GetString(0);
@@ -951,7 +949,7 @@ bool CInfClassGameController::ConUserSetClass(IConsole::IResult *pResult)
 	CInfClassPlayer *pPlayer = GetPlayer(ClientID);
 
 	if(!pPlayer)
-		return true;
+		return;
 
 	bool Ok = false;
 	int PlayerClass = GetClassByName(pClassName, &Ok);
@@ -964,20 +962,19 @@ bool CInfClassGameController::ConUserSetClass(IConsole::IResult *pResult)
 									"ClassName", pClassDisplayName,
 									nullptr);
 
-		return true;
+		return;
 	}
 
 	Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "inf_set_class", "Unknown class");
-	return true;
 }
 
-bool CInfClassGameController::ConSetClass(IConsole::IResult *pResult, void *pUserData)
+void CInfClassGameController::ConSetClass(IConsole::IResult *pResult, void *pUserData)
 {
 	CInfClassGameController *pSelf = (CInfClassGameController *)pUserData;
-	return pSelf->ConSetClass(pResult);
+	pSelf->ConSetClass(pResult);
 }
 
-bool CInfClassGameController::ConSetClass(IConsole::IResult *pResult)
+void CInfClassGameController::ConSetClass(IConsole::IResult *pResult)
 {
 	int PlayerID = pResult->GetInteger(0);
 	const char *pClassName = pResult->GetString(1);
@@ -985,7 +982,7 @@ bool CInfClassGameController::ConSetClass(IConsole::IResult *pResult)
 	CInfClassPlayer *pPlayer = GetPlayer(PlayerID);
 
 	if(!pPlayer)
-		return true;
+		return;
 
 	bool Ok = false;
 	int PlayerClass = GetClassByName(pClassName, &Ok);
@@ -997,30 +994,26 @@ bool CInfClassGameController::ConSetClass(IConsole::IResult *pResult)
 		str_format(aBuf, sizeof(aBuf), "The admin change the class of %s to %s", GameServer()->Server()->ClientName(PlayerID), pClassDisplayName);
 		GameServer()->SendChat(-1, CGameContext::CHAT_ALL, aBuf);
 
-		return true;
+		return;
 	}
 
 	Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "inf_set_class", "Unknown class");
-	return true;
 }
 
-bool CInfClassGameController::ConStartFastRound(IConsole::IResult *pResult, void *pUserData)
+void CInfClassGameController::ConStartFastRound(IConsole::IResult *pResult, void *pUserData)
 {
 	CInfClassGameController *pSelf = (CInfClassGameController *)pUserData;
 	pSelf->m_QueuedRoundType = ROUND_TYPE::FAST;
 	pSelf->StartRound();
-
-	return true;
 }
 
-bool CInfClassGameController::ConQueueFastRound(IConsole::IResult *pResult, void *pUserData)
+void CInfClassGameController::ConQueueFastRound(IConsole::IResult *pResult, void *pUserData)
 {
 	CInfClassGameController *pSelf = (CInfClassGameController *)pUserData;
 	pSelf->m_QueuedRoundType = ROUND_TYPE::FAST;
-	return true;
 }
 
-bool CInfClassGameController::ConQueueFunRound(IConsole::IResult *pResult, void *pUserData)
+void CInfClassGameController::ConQueueFunRound(IConsole::IResult *pResult, void *pUserData)
 {
 	CInfClassGameController *pSelf = (CInfClassGameController *)pUserData;
 
@@ -1036,85 +1029,79 @@ bool CInfClassGameController::ConQueueFunRound(IConsole::IResult *pResult, void 
 		{
 			pSelf->GameServer()->SendChatTarget(-1, pErrorMessage);
 		}
-		return false;
+		return;
 	}
 
 	pSelf->m_QueuedRoundType = ROUND_TYPE::FUN;
-	return true;
 }
 
-bool CInfClassGameController::ConMapRotationStatus(IConsole::IResult *pResult, void *pUserData)
+void CInfClassGameController::ConMapRotationStatus(IConsole::IResult *pResult, void *pUserData)
 {
 	CInfClassGameController *pSelf = (CInfClassGameController *)pUserData;
 	pSelf->ConSmartMapRotationStatus();
-	return true;
 }
 
-bool CInfClassGameController::ConSaveMapsData(IConsole::IResult *pResult, void *pUserData)
+void CInfClassGameController::ConSaveMapsData(IConsole::IResult *pResult, void *pUserData)
 {
 	const char *pFileName = pResult->GetString(0);
 
 	CInfClassGameController *pSelf = (CInfClassGameController *)pUserData;
 	pSelf->SaveMapRotationData(pFileName);
-	return true;
 }
 
-bool CInfClassGameController::ConPrintMapsData(IConsole::IResult *pResult, void *pUserData)
+void CInfClassGameController::ConPrintMapsData(IConsole::IResult *pResult, void *pUserData)
 {
 	CInfClassGameController *pSelf = (CInfClassGameController *)pUserData;
 	pSelf->PrintMapRotationData();
-	return true;
 }
 
-bool CInfClassGameController::ConResetMapData(IConsole::IResult *pResult, void *pUserData)
+void CInfClassGameController::ConResetMapData(IConsole::IResult *pResult, void *pUserData)
 {
 	const char *pMapName = pResult->GetString(0);
 
 	ResetMapInfo(pMapName);
-	return true;
 }
 
-bool CInfClassGameController::ConAddMapData(IConsole::IResult *pResult, void *pUserData)
+void CInfClassGameController::ConAddMapData(IConsole::IResult *pResult, void *pUserData)
 {
 	const char *pMapName = pResult->GetString(0);
 	int Timestamp = pResult->GetInteger(1);
 
 	AddMapTimestamp(pMapName, Timestamp);
-	return true;
 }
 
-bool CInfClassGameController::ConSavePosition(IConsole::IResult *pResult, void *pUserData)
+void CInfClassGameController::ConSavePosition(IConsole::IResult *pResult, void *pUserData)
 {
 	CInfClassGameController *pSelf = (CInfClassGameController *)pUserData;
 	return pSelf->ConSavePosition(pResult);
 }
 
-bool CInfClassGameController::ConSavePosition(IConsole::IResult *pResult)
+void CInfClassGameController::ConSavePosition(IConsole::IResult *pResult)
 {
 	int ClientID = pResult->GetClientID();
 	if(!Config()->m_InfTrainingMode)
 	{
 		GameServer()->SendChatTarget_Localization(ClientID, CHATCATEGORY_DEFAULT, _("The command is not available (enabled only in training mode)"), nullptr);
-		return true;
+		return;
 	}
 
 	CInfClassCharacter *pCharacter = GetCharacter(ClientID);
 	if(!pCharacter)
 	{
 		GameServer()->SendChatTarget_Localization(ClientID, CHATCATEGORY_DEFAULT, _("Unable to save the position: you have no character to save its position"), nullptr);
-		return true;
+		return;
 	}
 
 	if(!pCharacter->IsAlive())
 	{
 		GameServer()->SendChatTarget_Localization(ClientID, CHATCATEGORY_DEFAULT, _("Unable to save the position: the character state is not valid"), nullptr);
-		return true;
+		return;
 	}
 
 	if(!pCharacter->IsGrounded())
 	{
 		GameServer()->SendChatTarget_Localization(ClientID, CHATCATEGORY_DEFAULT, _("Unable to save the position: the character does not stand on the ground"), nullptr);
-		return true;
+		return;
 	}
 
 	vec2 Position = pCharacter->GetPos();
@@ -1122,40 +1109,38 @@ bool CInfClassGameController::ConSavePosition(IConsole::IResult *pResult)
 	if(!pPlayer)
 	{
 		// What...
-		return true;
+		return;
 	}
 
 	pPlayer->AddSavedPosition(Position);
-
-	return true;
 }
 
-bool CInfClassGameController::ConLoadPosition(IConsole::IResult *pResult, void *pUserData)
+void CInfClassGameController::ConLoadPosition(IConsole::IResult *pResult, void *pUserData)
 {
 	CInfClassGameController *pSelf = (CInfClassGameController *)pUserData;
 	return pSelf->ConLoadPosition(pResult);
 }
 
-bool CInfClassGameController::ConLoadPosition(IConsole::IResult *pResult)
+void CInfClassGameController::ConLoadPosition(IConsole::IResult *pResult)
 {
 	int ClientID = pResult->GetClientID();
 	if(!Config()->m_InfTrainingMode)
 	{
 		GameServer()->SendChatTarget_Localization(ClientID, CHATCATEGORY_DEFAULT, _("The command is not available (enabled only in training mode)"), nullptr);
-		return true;
+		return;
 	}
 
 	CInfClassCharacter *pCharacter = GetCharacter(ClientID);
 	if(!pCharacter)
 	{
 		GameServer()->SendChatTarget_Localization(ClientID, CHATCATEGORY_DEFAULT, _("Unable to load the position: you have no character to load its position"), nullptr);
-		return true;
+		return;
 	}
 
 	if(!pCharacter->IsAlive())
 	{
 		GameServer()->SendChatTarget_Localization(ClientID, CHATCATEGORY_DEFAULT, _("Unable to load the position: the character state is not valid"), nullptr);
-		return true;
+		return;
 	}
 
 	vec2 Position;
@@ -1163,7 +1148,7 @@ bool CInfClassGameController::ConLoadPosition(IConsole::IResult *pResult)
 	if(!pPlayer)
 	{
 		// What...
-		return true;
+		return;
 	}
 
 	pPlayer->LoadSavedPosition(&Position);
@@ -1176,17 +1161,15 @@ bool CInfClassGameController::ConLoadPosition(IConsole::IResult *pResult)
 	pCharacter->m_Core.m_HookState = HOOK_RETRACTED;
 	pCharacter->m_Core.m_TriggeredEvents |= COREEVENT_HOOK_RETRACT;
 	pCharacter->m_Core.m_HookPos = Position;
-
-	return true;
 }
 
-bool CInfClassGameController::ChatWitch(IConsole::IResult *pResult, void *pUserData)
+void CInfClassGameController::ChatWitch(IConsole::IResult *pResult, void *pUserData)
 {
 	CInfClassGameController *pSelf = (CInfClassGameController *)pUserData;
-	return pSelf->ChatWitch(pResult);
+	pSelf->ChatWitch(pResult);
 }
 
-bool CInfClassGameController::ChatWitch(IConsole::IResult *pResult)
+void CInfClassGameController::ChatWitch(IConsole::IResult *pResult)
 {
 	int ClientID = pResult->GetClientID();
 	const int REQUIRED_CALLERS_COUNT = 5;
@@ -1206,11 +1189,11 @@ bool CInfClassGameController::ChatWitch(IConsole::IResult *pResult)
 		if(Winter)
 		{
 			GameServer()->SendChatTarget_Localization(ClientID, CHATCATEGORY_DEFAULT, _("The Santa is already here"), nullptr);
-			return true;
+			return;
 		}
 
 		GameServer()->SendChatTarget_Localization(ClientID, CHATCATEGORY_DEFAULT, _("All witches are already here"), nullptr);
-		return true;
+		return;
 	}
 
 	int Humans = 0;
@@ -1222,22 +1205,22 @@ bool CInfClassGameController::ChatWitch(IConsole::IResult *pResult)
 		if(Winter)
 		{
 			GameServer()->SendChatTarget_Localization(ClientID, CHATCATEGORY_DEFAULT, _("Too few players to call the Santa"), nullptr);
-			return true;
+			return;
 		}
 
 		GameServer()->SendChatTarget_Localization(ClientID, CHATCATEGORY_DEFAULT, _("Too few players to call a witch"), nullptr);
-		return true;
+		return;
 	}
 	if(Infected < MIN_ZOMBIES)
 	{
 		if(Winter)
 		{
 			GameServer()->SendChatTarget_Localization(ClientID, CHATCATEGORY_DEFAULT, _("Too few infected to call the Santa"), nullptr);
-			return true;
+			return;
 		}
 
 		GameServer()->SendChatTarget_Localization(ClientID, CHATCATEGORY_DEFAULT, _("Too few infected to call a witch"), nullptr);
-		return true;
+		return;
 	}
 
 	// It is possible that we had the needed callers but all witches already were there.
@@ -1250,11 +1233,11 @@ bool CInfClassGameController::ChatWitch(IConsole::IResult *pResult)
 			if(Winter)
 			{
 				GameServer()->SendChatTarget_Localization(ClientID, CHATCATEGORY_DEFAULT, _("You have called the Santa once again"), nullptr);
-				return true;
+				return;
 			}
 
 			GameServer()->SendChatTarget_Localization(ClientID, CHATCATEGORY_DEFAULT, _("You can't call witch twice"), nullptr);
-			return true;
+			return;
 		}
 
 		m_WitchCallers.Add(ClientID);
@@ -1270,7 +1253,7 @@ bool CInfClassGameController::ChatWitch(IConsole::IResult *pResult)
 					"PlayerName", Server()->ClientName(ClientID),
 					"RequiredCallers", &PrintableRequiredCallers,
 					nullptr);
-				return true;
+				return;
 			}
 
 			GameServer()->SendChatTarget_Localization(-1, CHATCATEGORY_DEFAULT,
@@ -1310,7 +1293,7 @@ bool CInfClassGameController::ChatWitch(IConsole::IResult *pResult)
 				GameServer()->SendChatTarget_Localization(ClientID, CHATCATEGORY_DEFAULT,
 					_("The Santa is already here"),
 					nullptr);
-				return true;
+				return;
 			}
 			GameServer()->SendChatTarget_Localization(ClientID, CHATCATEGORY_DEFAULT,
 				_("All witches are already here"),
@@ -1324,7 +1307,7 @@ bool CInfClassGameController::ChatWitch(IConsole::IResult *pResult)
 					_("Santa {str:PlayerName} has arrived!"),
 					"PlayerName", Server()->ClientName(WitchId),
 					nullptr);
-				return true;
+				return;
 			}
 
 			GameServer()->SendChatTarget_Localization(-1, CHATCATEGORY_DEFAULT,
@@ -1333,8 +1316,6 @@ bool CInfClassGameController::ChatWitch(IConsole::IResult *pResult)
 				nullptr);
 		}
 	}
-
-	return true;
 }
 
 IConsole *CInfClassGameController::Console() const

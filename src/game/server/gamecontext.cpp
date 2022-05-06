@@ -2270,7 +2270,7 @@ void CGameContext::ChatConsolePrintCallback(const char *pLine, void *pUser)
 }
 /* DDNET MODIFICATION END *********************************************/
 
-bool CGameContext::ConTuneParam(IConsole::IResult *pResult, void *pUserData)
+void CGameContext::ConTuneParam(IConsole::IResult *pResult, void *pUserData)
 {
 	CGameContext *pSelf = (CGameContext *)pUserData;
 	const char *pParamName = pResult->GetString(0);
@@ -2285,22 +2285,18 @@ bool CGameContext::ConTuneParam(IConsole::IResult *pResult, void *pUserData)
 	}
 	else
 		pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "tuning", "No such tuning parameter");
-	
-	return true;
 }
 
-bool CGameContext::ConTuneReset(IConsole::IResult *pResult, void *pUserData)
+void CGameContext::ConTuneReset(IConsole::IResult *pResult, void *pUserData)
 {
 	CGameContext *pSelf = (CGameContext *)pUserData;
 	CTuningParams TuningParams;
 	*pSelf->Tuning() = TuningParams;
 	//~ pSelf->SendTuningParams(-1);
 	pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "tuning", "Tuning reset");
-	
-	return true;
 }
 
-bool CGameContext::ConTuneDump(IConsole::IResult *pResult, void *pUserData)
+void CGameContext::ConTuneDump(IConsole::IResult *pResult, void *pUserData)
 {
 	CGameContext *pSelf = (CGameContext *)pUserData;
 	char aBuf[256];
@@ -2311,39 +2307,31 @@ bool CGameContext::ConTuneDump(IConsole::IResult *pResult, void *pUserData)
 		str_format(aBuf, sizeof(aBuf), "%s %.2f", pSelf->Tuning()->ms_apNames[i], v);
 		pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "tuning", aBuf);
 	}
-	
-	return true;
 }
 
-bool CGameContext::ConPause(IConsole::IResult *pResult, void *pUserData)
+void CGameContext::ConPause(IConsole::IResult *pResult, void *pUserData)
 {
 	CGameContext *pSelf = (CGameContext *)pUserData;
 
 	if(pSelf->m_pController->IsGameOver())
-		return true;
+		return;
 
 	pSelf->m_World.m_Paused ^= 1;
-	
-	return true;
 }
 
-bool CGameContext::ConChangeMap(IConsole::IResult *pResult, void *pUserData)
+void CGameContext::ConChangeMap(IConsole::IResult *pResult, void *pUserData)
 {
 	CGameContext *pSelf = (CGameContext *)pUserData;
 	pSelf->m_pController->ChangeMap(pResult->NumArguments() ? pResult->GetString(0) : "");
-	
-	return true;
 }
 
-bool CGameContext::ConSkipMap(IConsole::IResult *pResult, void *pUserData)
+void CGameContext::ConSkipMap(IConsole::IResult *pResult, void *pUserData)
 {
 	CGameContext *pSelf = (CGameContext *)pUserData;
 	pSelf->m_pController->SkipMap();
-	
-	return true;
 }
 
-bool CGameContext::ConQueueMap(IConsole::IResult *pResult, void *pUserData)
+void CGameContext::ConQueueMap(IConsole::IResult *pResult, void *pUserData)
 {
 	CGameContext *pSelf = (CGameContext *)pUserData;
 
@@ -2361,21 +2349,20 @@ bool CGameContext::ConQueueMap(IConsole::IResult *pResult, void *pUserData)
 	}
 
 	pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "server", aBuf);
-	return true;
 }
 
-bool CGameContext::ConAddMap(IConsole::IResult *pResult, void *pUserData)
+void CGameContext::ConAddMap(IConsole::IResult *pResult, void *pUserData)
 {
 	CGameContext *pSelf = (CGameContext *)pUserData;
 
 	if(pResult->NumArguments() != 1)
-		return false;
+		return;
 
 	const char *pMapName = pResult->GetString(0);
 	if(!str_utf8_check(pMapName))
 	{
 		pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "server", "Invalid (non UTF-8) filename");
-		return true;
+		return;
 	}
 
 	{
@@ -2392,7 +2379,7 @@ bool CGameContext::ConAddMap(IConsole::IResult *pResult, void *pUserData)
 				if((nextC == 0) || IGameController::IsWordSeparator(nextC))
 				{
 					pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "server", "The map is already in the rotation list");
-					return true;
+					return;
 				}
 			}
 		}
@@ -2404,7 +2391,7 @@ bool CGameContext::ConAddMap(IConsole::IResult *pResult, void *pUserData)
 		str_format(aBuf, sizeof(aBuf), "Unable to find map %s", pMapName);
 		pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "server", aBuf);
 
-		return true;
+		return;
 	}
 
 	char *pData = g_Config.m_SvMaprotation;
@@ -2418,7 +2405,7 @@ bool CGameContext::ConAddMap(IConsole::IResult *pResult, void *pUserData)
 	if(i + 1 + str_length(pMapName) >= MaxSize)
 	{
 		// Overflow
-		return true;
+		return;
 	}
 	pData[i] = ' ';
 	++i;
@@ -2430,45 +2417,37 @@ bool CGameContext::ConAddMap(IConsole::IResult *pResult, void *pUserData)
 	}
 
 	pSelf->m_pController->OnMapAdded(pMapName);
-
-	return true;
 }
 
-bool CGameContext::ConRestart(IConsole::IResult *pResult, void *pUserData)
+void CGameContext::ConRestart(IConsole::IResult *pResult, void *pUserData)
 {
 	CGameContext *pSelf = (CGameContext *)pUserData;
 	if(pResult->NumArguments())
 		pSelf->m_pController->DoWarmup(pResult->GetInteger(0));
 	else
 		pSelf->m_pController->StartRound();
-	
-	return true;
 }
 
-bool CGameContext::ConBroadcast(IConsole::IResult *pResult, void *pUserData)
+void CGameContext::ConBroadcast(IConsole::IResult *pResult, void *pUserData)
 {
 	CGameContext *pSelf = (CGameContext *)pUserData;
 	pSelf->SendBroadcast(-1, pResult->GetString(0), BROADCAST_PRIORITY_SERVERANNOUNCE, pSelf->Server()->TickSpeed()*3);
-	
-	return true;
 }
 
-bool CGameContext::ConSay(IConsole::IResult *pResult, void *pUserData)
+void CGameContext::ConSay(IConsole::IResult *pResult, void *pUserData)
 {
 	CGameContext *pSelf = (CGameContext *)pUserData;
 	pSelf->SendChatTarget(-1, pResult->GetString(0));
-	
-	return true;
 }
 
-bool CGameContext::ConSetTeam(IConsole::IResult *pResult, void *pUserData)
+void CGameContext::ConSetTeam(IConsole::IResult *pResult, void *pUserData)
 {
 	CGameContext *pSelf = (CGameContext *)pUserData;
 	int ClientID = clamp(pResult->GetInteger(0), 0, (int)MAX_CLIENTS-1);
 	int Team = clamp(pResult->GetInteger(1), -1, 1);
 	int Delay = pResult->NumArguments()>2 ? pResult->GetInteger(2) : 0;
 	if(!pSelf->m_apPlayers[ClientID])
-		return true;
+		return;
 
 	char aBuf[256];
 	str_format(aBuf, sizeof(aBuf), "moved client %d to team %d", ClientID, Team);
@@ -2477,11 +2456,9 @@ bool CGameContext::ConSetTeam(IConsole::IResult *pResult, void *pUserData)
 	pSelf->m_apPlayers[ClientID]->m_TeamChangeTick = pSelf->Server()->Tick()+pSelf->Server()->TickSpeed()*Delay*60;
 	pSelf->m_pController->DoTeamChange(pSelf->m_apPlayers[ClientID], Team);
 	(void)pSelf->m_pController->CheckTeamBalance();
-	
-	return true;
 }
 
-bool CGameContext::ConSetTeamAll(IConsole::IResult *pResult, void *pUserData)
+void CGameContext::ConSetTeamAll(IConsole::IResult *pResult, void *pUserData)
 {
 	CGameContext *pSelf = (CGameContext *)pUserData;
 	int Team = clamp(pResult->GetInteger(0), -1, 1);
@@ -2496,11 +2473,9 @@ bool CGameContext::ConSetTeamAll(IConsole::IResult *pResult, void *pUserData)
 
 	// TODO: Remove
 	(void)pSelf->m_pController->CheckTeamBalance();
-	
-	return true;
 }
 
-bool CGameContext::ConAddVote(IConsole::IResult *pResult, void *pUserData)
+void CGameContext::ConAddVote(IConsole::IResult *pResult, void *pUserData)
 {
 	CGameContext *pSelf = (CGameContext *)pUserData;
 	const char *pDescription = pResult->GetString(0);
@@ -2509,7 +2484,7 @@ bool CGameContext::ConAddVote(IConsole::IResult *pResult, void *pUserData)
 	if(pSelf->m_NumVoteOptions == MAX_VOTE_OPTIONS)
 	{
 		pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "server", "maximum number of vote options reached");
-		return true;
+		return;
 	}
 
 	// check for valid option
@@ -2518,7 +2493,7 @@ bool CGameContext::ConAddVote(IConsole::IResult *pResult, void *pUserData)
 		char aBuf[256];
 		str_format(aBuf, sizeof(aBuf), "skipped invalid command '%s'", pCommand);
 		pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "server", aBuf);
-		return true;
+		return;
 	}
 	while(*pDescription && *pDescription == ' ')
 		pDescription++;
@@ -2527,7 +2502,7 @@ bool CGameContext::ConAddVote(IConsole::IResult *pResult, void *pUserData)
 		char aBuf[256];
 		str_format(aBuf, sizeof(aBuf), "skipped invalid option '%s'", pDescription);
 		pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "server", aBuf);
-		return true;
+		return;
 	}
 
 	// check for duplicate entry
@@ -2539,7 +2514,7 @@ bool CGameContext::ConAddVote(IConsole::IResult *pResult, void *pUserData)
 			char aBuf[256];
 			str_format(aBuf, sizeof(aBuf), "option '%s' already exists", pDescription);
 			pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "server", aBuf);
-			return true;
+			return;
 		}
 		pOption = pOption->m_pNext;
 	}
@@ -2567,11 +2542,9 @@ bool CGameContext::ConAddVote(IConsole::IResult *pResult, void *pUserData)
 	CNetMsg_Sv_VoteOptionAdd OptionMsg;
 	OptionMsg.m_pDescription = pOption->m_aDescription;
 	pSelf->Server()->SendPackMsg(&OptionMsg, MSGFLAG_VITAL, -1);
-	
-	return true;
 }
 
-bool CGameContext::ConRemoveVote(IConsole::IResult *pResult, void *pUserData)
+void CGameContext::ConRemoveVote(IConsole::IResult *pResult, void *pUserData)
 {
 	CGameContext *pSelf = (CGameContext *)pUserData;
 	const char *pDescription = pResult->GetString(0);
@@ -2589,7 +2562,7 @@ bool CGameContext::ConRemoveVote(IConsole::IResult *pResult, void *pUserData)
 		char aBuf[256];
 		str_format(aBuf, sizeof(aBuf), "option '%s' does not exist", pDescription);
 		pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "server", aBuf);
-		return true;
+		return;
 	}
 
 	// inform clients about removed option
@@ -2634,11 +2607,9 @@ bool CGameContext::ConRemoveVote(IConsole::IResult *pResult, void *pUserData)
 	pSelf->m_pVoteOptionFirst = pVoteOptionFirst;
 	pSelf->m_pVoteOptionLast = pVoteOptionLast;
 	pSelf->m_NumVoteOptions = NumVoteOptions;
-	
-	return true;
 }
 
-bool CGameContext::ConForceVote(IConsole::IResult *pResult, void *pUserData)
+void CGameContext::ConForceVote(IConsole::IResult *pResult, void *pUserData)
 {
 	CGameContext *pSelf = (CGameContext *)pUserData;
 	const char *pType = pResult->GetString(0);
@@ -2666,7 +2637,7 @@ bool CGameContext::ConForceVote(IConsole::IResult *pResult, void *pUserData)
 		{
 			str_format(aBuf, sizeof(aBuf), "'%s' isn't an option on this server", pValue);
 			pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "server", aBuf);
-			return true;
+			return;
 		}
 	}
 	else if(str_comp_nocase(pType, "kick") == 0)
@@ -2675,7 +2646,7 @@ bool CGameContext::ConForceVote(IConsole::IResult *pResult, void *pUserData)
 		if(KickID < 0 || KickID >= MAX_CLIENTS || !pSelf->m_apPlayers[KickID])
 		{
 			pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "server", "Invalid client id to kick");
-			return true;
+			return;
 		}
 
 		if (!g_Config.m_SvVoteKickBantime)
@@ -2697,7 +2668,7 @@ bool CGameContext::ConForceVote(IConsole::IResult *pResult, void *pUserData)
 		if(SpectateID < 0 || SpectateID >= MAX_CLIENTS || !pSelf->m_apPlayers[SpectateID] || pSelf->m_apPlayers[SpectateID]->GetTeam() == TEAM_SPECTATORS)
 		{
 			pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "server", "Invalid client id to move");
-			return true;
+			return;
 		}
 
 		str_format(aBuf, sizeof(aBuf), "admin moved '%s' to spectator (%s)", pSelf->Server()->ClientName(SpectateID), pReason);
@@ -2705,11 +2676,9 @@ bool CGameContext::ConForceVote(IConsole::IResult *pResult, void *pUserData)
 		str_format(aBuf, sizeof(aBuf), "set_team %d -1 %d", SpectateID, g_Config.m_SvVoteSpectateRejoindelay);
 		pSelf->Console()->ExecuteLine(aBuf, -1, false);
 	}
-	
-	return true;
 }
 
-bool CGameContext::ConClearVotes(IConsole::IResult *pResult, void *pUserData)
+void CGameContext::ConClearVotes(IConsole::IResult *pResult, void *pUserData)
 {
 	CGameContext *pSelf = (CGameContext *)pUserData;
 
@@ -2720,17 +2689,15 @@ bool CGameContext::ConClearVotes(IConsole::IResult *pResult, void *pUserData)
 	pSelf->m_pVoteOptionFirst = 0;
 	pSelf->m_pVoteOptionLast = 0;
 	pSelf->m_NumVoteOptions = 0;
-	
-	return true;
 }
 
-bool CGameContext::ConVote(IConsole::IResult *pResult, void *pUserData)
+void CGameContext::ConVote(IConsole::IResult *pResult, void *pUserData)
 {
 	CGameContext *pSelf = (CGameContext *)pUserData;
 
 	// check if there is a vote running
 	if(!pSelf->m_VoteCloseTime)
-		return true;
+		return;
 
 	if(str_comp_nocase(pResult->GetString(0), "yes") == 0)
 		pSelf->m_VoteEnforce = CGameContext::VOTE_ENFORCE_YES;
@@ -2741,11 +2708,9 @@ bool CGameContext::ConVote(IConsole::IResult *pResult, void *pUserData)
 	pSelf->SendChatTarget(-1, aBuf);
 	str_format(aBuf, sizeof(aBuf), "forcing vote %s", pResult->GetString(0));
 	pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "server", aBuf);
-	
-	return true;
 }
 
-bool CGameContext::ConStartFunRound(IConsole::IResult *pResult, void *pUserData)
+void CGameContext::ConStartFunRound(IConsole::IResult *pResult, void *pUserData)
 {
 	CGameContext *pSelf = (CGameContext *)pUserData;
 	if(pSelf->m_FunRoundConfigurations.empty())
@@ -2760,14 +2725,14 @@ bool CGameContext::ConStartFunRound(IConsole::IResult *pResult, void *pUserData)
 		{
 			pSelf->SendChatTarget(-1, pErrorMessage);
 		}
-		return false;
+		return;
 	}
 	const int type = random_int(0, pSelf->m_FunRoundConfigurations.size() - 1);
 	const FunRoundConfiguration &Configuration = pSelf->m_FunRoundConfigurations[type];
-	return pSelf->StartFunRound(Configuration);
+	pSelf->StartFunRound(Configuration);
 }
 
-bool CGameContext::ConStartSpecialFunRound(IConsole::IResult *pResult, void *pUserData)
+void CGameContext::ConStartSpecialFunRound(IConsole::IResult *pResult, void *pUserData)
 {
 	CGameContext *pSelf = (CGameContext *)pUserData;
 	FunRoundConfiguration Configuration;
@@ -2789,9 +2754,9 @@ bool CGameContext::ConStartSpecialFunRound(IConsole::IResult *pResult, void *pUs
 	if (!Configuration.HumanClass || !Configuration.InfectedClass)
 	{
 		pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "server", "invalid special fun round configuration");
-		return false;
+		return;
 	}
-	return pSelf->StartFunRound(Configuration);
+	pSelf->StartFunRound(Configuration);
 }
 
 bool CGameContext::StartFunRound(const FunRoundConfiguration &Configuration)
@@ -2889,7 +2854,7 @@ void CGameContext::EndFunRound()
 	m_FunRoundsPassed++;
 }
 
-bool CGameContext::ConchainSpecialMotdupdate(IConsole::IResult *pResult, void *pUserData, IConsole::FCommandCallback pfnCallback, void *pCallbackUserData)
+void CGameContext::ConchainSpecialMotdupdate(IConsole::IResult *pResult, void *pUserData, IConsole::FCommandCallback pfnCallback, void *pCallbackUserData)
 {
 	pfnCallback(pResult, pCallbackUserData);
 	if(pResult->NumArguments())
@@ -2901,11 +2866,9 @@ bool CGameContext::ConchainSpecialMotdupdate(IConsole::IResult *pResult, void *p
 			if(pSelf->m_apPlayers[i])
 				pSelf->Server()->SendPackMsg(&Msg, MSGFLAG_VITAL, i);
 	}
-	
-	return true;
 }
 
-bool CGameContext::ConchainSyncMapRotation(IConsole::IResult *pResult, void *pUserData, IConsole::FCommandCallback pfnCallback, void *pCallbackUserData)
+void CGameContext::ConchainSyncMapRotation(IConsole::IResult *pResult, void *pUserData, IConsole::FCommandCallback pfnCallback, void *pCallbackUserData)
 {
 	pfnCallback(pResult, pCallbackUserData);
 
@@ -2917,13 +2880,11 @@ bool CGameContext::ConchainSyncMapRotation(IConsole::IResult *pResult, void *pUs
 			pSelf->m_pController->SyncSmartMapRotationData();
 		}
 	}
-
-	return true;
 }
 
 /* INFECTION MODIFICATION START ***************************************/
 
-bool CGameContext::ConVersion(IConsole::IResult *pResult, void *pUserData)
+void CGameContext::ConVersion(IConsole::IResult *pResult, void *pUserData)
 {
 	CGameContext *pSelf = (CGameContext *)pUserData;
 
@@ -2939,11 +2900,9 @@ bool CGameContext::ConVersion(IConsole::IResult *pResult, void *pUserData)
 		str_format(aBuf, sizeof(aBuf), "Git revision hash: %s", GIT_SHORTREV_HASH);
 		pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "info", aBuf);
 	}
-
-	return true;
 }
 
-bool CGameContext::ConCredits(IConsole::IResult *pResult, void *pUserData)
+void CGameContext::ConCredits(IConsole::IResult *pResult, void *pUserData)
 {
 	CGameContext *pSelf = (CGameContext *)pUserData;
 
@@ -2967,17 +2926,15 @@ bool CGameContext::ConCredits(IConsole::IResult *pResult, void *pUserData)
 	pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("Thanks to {str:ListOfContributors}"), "ListOfContributors", aThanks, NULL);
 	Buffer.append("\n\n");
 	pSelf->SendMOTD(ClientID, Buffer.buffer());
-
-	return true;
 }
 
-bool CGameContext::ConAbout(IConsole::IResult *pResult, void *pUserData)
+void CGameContext::ConAbout(IConsole::IResult *pResult, void *pUserData)
 {
 	CGameContext *pSelf = (CGameContext *)pUserData;
-	return pSelf->ConAbout(pResult);
+	pSelf->ConAbout(pResult);
 }
 
-bool CGameContext::ConAbout(IConsole::IResult *pResult)
+void CGameContext::ConAbout(IConsole::IResult *pResult)
 {
 	int ClientID = pResult->GetClientID();
 	const char* pLanguage = m_apPlayers[ClientID]->GetLanguage();
@@ -3040,8 +2997,6 @@ bool CGameContext::ConAbout(IConsole::IResult *pResult)
 	Server()->Localization()->Format_L(Buffer, pLanguage, _("See also: /credits"), nullptr);
 	Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "info", Buffer.buffer());
 	Buffer.clear();
-
-	return true;
 }
 
 bool CGameContext::PrivateMessage(const char* pStr, int ClientID, bool TeamChat)
@@ -3374,7 +3329,7 @@ void CGameContext::InitGeolocation()
 #endif
 }
 
-bool CGameContext::ConRegister(IConsole::IResult *pResult, void *pUserData)
+void CGameContext::ConRegister(IConsole::IResult *pResult, void *pUserData)
 {
 	CGameContext *pSelf = (CGameContext *)pUserData;
 	int ClientID = pResult->GetClientID();
@@ -3387,11 +3342,9 @@ bool CGameContext::ConRegister(IConsole::IResult *pResult, void *pUserData)
 		pEmail = pResult->GetString(2);
 	
 	pSelf->Server()->Register(ClientID, pLogin, pPassword, pEmail);
-	
-	return true;
 }
 
-bool CGameContext::ConLogin(IConsole::IResult *pResult, void *pUserData)
+void CGameContext::ConLogin(IConsole::IResult *pResult, void *pUserData)
 {
 	CGameContext *pSelf = (CGameContext *)pUserData;
 	int ClientID = pResult->GetClientID();
@@ -3399,23 +3352,19 @@ bool CGameContext::ConLogin(IConsole::IResult *pResult, void *pUserData)
 	const char *pLogin = pResult->GetString(0);
 	const char *pPassword = pResult->GetString(1);
 	pSelf->Server()->Login(ClientID, pLogin, pPassword);
-	
-	return true;
 }
 
-bool CGameContext::ConLogout(IConsole::IResult *pResult, void *pUserData)
+void CGameContext::ConLogout(IConsole::IResult *pResult, void *pUserData)
 {
 	CGameContext *pSelf = (CGameContext *)pUserData;
 	int ClientID = pResult->GetClientID();
 	
 	pSelf->Server()->Logout(ClientID);
-	
-	return true;
 }
 
 #ifdef CONF_SQL
 
-bool CGameContext::ConSetEmail(IConsole::IResult *pResult, void *pUserData)
+void CGameContext::ConSetEmail(IConsole::IResult *pResult, void *pUserData)
 {
 	CGameContext *pSelf = (CGameContext *)pUserData;
 	int ClientID = pResult->GetClientID();
@@ -3423,21 +3372,17 @@ bool CGameContext::ConSetEmail(IConsole::IResult *pResult, void *pUserData)
 	const char *pEmail = pResult->GetString(0);
 	
 	pSelf->Server()->SetEmail(ClientID, pEmail);
-	
-	return true;
 }
 
-bool CGameContext::ConChallenge(IConsole::IResult *pResult, void *pUserData)
+void CGameContext::ConChallenge(IConsole::IResult *pResult, void *pUserData)
 {
 	CGameContext *pSelf = (CGameContext *)pUserData;
 	int ClientID = pResult->GetClientID();
 	
 	pSelf->Server()->ShowChallenge(ClientID);
-	
-	return true;
 }
 
-bool CGameContext::ConTop10(IConsole::IResult *pResult, void *pUserData)
+void CGameContext::ConTop10(IConsole::IResult *pResult, void *pUserData)
 {
 	CGameContext *pSelf = (CGameContext *)pUserData;
 	int ClientID = pResult->GetClientID();
@@ -3487,11 +3432,9 @@ bool CGameContext::ConTop10(IConsole::IResult *pResult, void *pUserData)
 	}
 	else
 		pSelf->Server()->ShowTop10(ClientID, SQL_SCORETYPE_ROUND_SCORE);
-	
-	return true;
 }
 
-bool CGameContext::ConRank(IConsole::IResult *pResult, void *pUserData)
+void CGameContext::ConRank(IConsole::IResult *pResult, void *pUserData)
 {
 	CGameContext *pSelf = (CGameContext *)pUserData;
 	int ClientID = pResult->GetClientID();
@@ -3542,11 +3485,9 @@ bool CGameContext::ConRank(IConsole::IResult *pResult, void *pUserData)
 	}
 	else
 		pSelf->Server()->ShowRank(ClientID, SQL_SCORETYPE_ROUND_SCORE);
-	
-	return true;
 }
 
-bool CGameContext::ConGoal(IConsole::IResult *pResult, void *pUserData)
+void CGameContext::ConGoal(IConsole::IResult *pResult, void *pUserData)
 {
 	CGameContext *pSelf = (CGameContext *)pUserData;
 	int ClientID = pResult->GetClientID();
@@ -3596,11 +3537,9 @@ bool CGameContext::ConGoal(IConsole::IResult *pResult, void *pUserData)
 	}
 	else
 		pSelf->Server()->ShowGoal(ClientID, SQL_SCORETYPE_ROUND_SCORE);
-	
-	return true;
 }
 
-bool CGameContext::ConStats(IConsole::IResult *pResult, void *pUserData)
+void CGameContext::ConStats(IConsole::IResult *pResult, void *pUserData)
 {
 	CGameContext *pSelf = (CGameContext *)pUserData;
 	int ClientID = pResult->GetClientID();
@@ -3612,19 +3551,17 @@ bool CGameContext::ConStats(IConsole::IResult *pResult, void *pUserData)
 	}
 	else
 		pSelf->Server()->ShowStats(ClientID, -1);
-	
-	return true;
 }
 
 #endif
 
-bool CGameContext::ConHelp(IConsole::IResult *pResult, void *pUserData)
+void CGameContext::ConHelp(IConsole::IResult *pResult, void *pUserData)
 {
 	CGameContext *pSelf = (CGameContext *)pUserData;
-	return pSelf->ConHelp(pResult);
+	pSelf->ConHelp(pResult);
 }
 
-bool CGameContext::ConHelp(IConsole::IResult *pResult)
+void CGameContext::ConHelp(IConsole::IResult *pResult)
 {
 	int ClientID = pResult->GetClientID();
 	const char *pLanguage = m_apPlayers[ClientID]->GetLanguage();
@@ -3748,8 +3685,6 @@ bool CGameContext::ConHelp(IConsole::IResult *pResult)
 	{
 		SendMOTD(ClientID, Buffer.buffer());
 	}
-
-	return true;
 }
 
 bool CGameContext::WriteClassHelpPage(dynamic_string *pOutput, const char *pLanguage, PLAYERCLASS PlayerClass)
@@ -3965,7 +3900,7 @@ bool CGameContext::WriteClassHelpPage(dynamic_string *pOutput, const char *pLang
 	return true;
 }
 
-bool CGameContext::ConAntiPing(IConsole::IResult *pResult, void *pUserData)
+void CGameContext::ConAntiPing(IConsole::IResult *pResult, void *pUserData)
 {
 	CGameContext *pSelf = (CGameContext *)pUserData;
 	int ClientID = pResult->GetClientID();
@@ -3976,11 +3911,9 @@ bool CGameContext::ConAntiPing(IConsole::IResult *pResult, void *pUserData)
 		pSelf->Server()->SetClientAntiPing(ClientID, 1);
 	else
 		pSelf->Server()->SetClientAntiPing(ClientID, 0);
-	
-	return true;
 }
 
-bool CGameContext::ConAlwaysRandom(IConsole::IResult *pResult, void *pUserData)
+void CGameContext::ConAlwaysRandom(IConsole::IResult *pResult, void *pUserData)
 {
 	CGameContext *pSelf = (CGameContext *)pUserData;
 	int ClientID = pResult->GetClientID();
@@ -4000,11 +3933,9 @@ bool CGameContext::ConAlwaysRandom(IConsole::IResult *pResult, void *pUserData)
 		const char* pTxtAlwaysRandomOff = pSelf->Server()->Localization()->Localize(pLanguage, _("The class selector will be displayed when rounds start"));
 		pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "alwaysrandom", pTxtAlwaysRandomOff);		
 	}
-	
-	return true;
 }
 
-bool CGameContext::ConLanguage(IConsole::IResult *pResult, void *pUserData)
+void CGameContext::ConLanguage(IConsole::IResult *pResult, void *pUserData)
 {
 	CGameContext *pSelf = (CGameContext *)pUserData;
 	
@@ -4052,11 +3983,9 @@ bool CGameContext::ConLanguage(IConsole::IResult *pResult, void *pUserData)
 		
 		pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "language", Buffer.buffer());
 	}
-	
-	return true;
 }
 
-bool CGameContext::ConCmdList(IConsole::IResult *pResult, void *pUserData)
+void CGameContext::ConCmdList(IConsole::IResult *pResult, void *pUserData)
 {
 	CGameContext *pSelf = (CGameContext *)pUserData;
 	int ClientID = pResult->GetClientID();
@@ -4082,24 +4011,22 @@ bool CGameContext::ConCmdList(IConsole::IResult *pResult, void *pUserData)
 	pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("Press <F3> or <F4> to enable or disable hook protection"), NULL);
 			
 	pSelf->SendMOTD(ClientID, Buffer.buffer());
-	
-	return true;
 }
 
-bool CGameContext::ConChangeLog(IConsole::IResult *pResult, void *pUserData)
+void CGameContext::ConChangeLog(IConsole::IResult *pResult, void *pUserData)
 {
 	CGameContext *pSelf = (CGameContext *)pUserData;
-	return pSelf->ConChangeLog(pResult);
+	pSelf->ConChangeLog(pResult);
 }
 
-bool CGameContext::ConChangeLog(IConsole::IResult *pResult)
+void CGameContext::ConChangeLog(IConsole::IResult *pResult)
 {
 	int ClientID = pResult->GetClientID();
 
 	if(m_aChangeLogEntries.Size() == 0)
 	{
 		SendChatTarget_Localization(ClientID, CHATCATEGORY_DEFAULT, _("ChangeLog is not provided"), nullptr);
-		return true;
+		return;
 	}
 
 	int PageNumber = pResult->GetInteger(0);
@@ -4113,7 +4040,7 @@ bool CGameContext::ConChangeLog(IConsole::IResult *pResult)
 		SendChatTarget_Localization(ClientID, CHATCATEGORY_DEFAULT, _("ChangeLog page {int:PageNumber} is not available"),
 			"PageNumber", &PageNumber,
 			nullptr);
-		return true;
+		return;
 	}
 
 	int PageIndex = PageNumber - 1;
@@ -4137,26 +4064,22 @@ bool CGameContext::ConChangeLog(IConsole::IResult *pResult)
 			"NextPage", &NextPage,
 			nullptr);
 	}
-
-	return true;
 }
 
-bool CGameContext::ConReloadChangeLog(IConsole::IResult *pResult, void *pUserData)
+void CGameContext::ConReloadChangeLog(IConsole::IResult *pResult, void *pUserData)
 {
 	CGameContext *pSelf = (CGameContext *)pUserData;
 	pSelf->ReloadChangelog();
-	return true;
 }
 
-bool CGameContext::ConClearFunRounds(IConsole::IResult *pResult, void *pUserData)
+void CGameContext::ConClearFunRounds(IConsole::IResult *pResult, void *pUserData)
 {
 	CGameContext *pSelf = (CGameContext *)pUserData;
 	pSelf->m_FunRoundConfigurations.clear();
 	pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "server", "fun rounds cleared");
-	return true;
 }
 
-bool CGameContext::ConAddFunRound(IConsole::IResult *pResult, void *pUserData)
+void CGameContext::ConAddFunRound(IConsole::IResult *pResult, void *pUserData)
 {
 	CGameContext *pSelf = (CGameContext *)pUserData;
 	FunRoundConfiguration Settings;
@@ -4178,7 +4101,7 @@ bool CGameContext::ConAddFunRound(IConsole::IResult *pResult, void *pUserData)
 	if (!Settings.HumanClass || !Settings.InfectedClass)
 	{
 		pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "server", "invalid special fun round configuration");
-		return false;
+		return;
 	}
 	else
 	{
@@ -4190,8 +4113,6 @@ bool CGameContext::ConAddFunRound(IConsole::IResult *pResult, void *pUserData)
 	}
 
 	pSelf->m_FunRoundConfigurations.push_back(Settings);
-
-	return true;
 }
 /* INFECTION MODIFICATION END *****************************************/
 

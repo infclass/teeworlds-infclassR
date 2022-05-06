@@ -77,7 +77,7 @@ public:
 	virtual int BanAddr(const NETADDR *pAddr, int Seconds, const char *pReason);
 	virtual int BanRange(const CNetRange *pRange, int Seconds, const char *pReason);
 
-	static bool ConBanExt(class IConsole::IResult *pResult, void *pUser);
+	static void ConBanExt(class IConsole::IResult *pResult, void *pUser);
 
 	int m_BanID;
 };
@@ -312,27 +312,27 @@ public:
 	void InitRegister(CNetServer *pNetServer, IEngineMasterServer *pMasterServer, IConsole *pConsole);
 	int Run();
 
-	static bool ConKick(IConsole::IResult *pResult, void *pUser);
-	static bool ConStatus(IConsole::IResult *pResult, void *pUser);
-	static bool ConStatusExtended(IConsole::IResult *pResult, void *pUser);
-	static bool ConOptionStatus(IConsole::IResult *pResult, void *pUser);
-	static bool ConShutdown(IConsole::IResult *pResult, void *pUser);
-	static bool ConRecord(IConsole::IResult *pResult, void *pUser);
-	static bool ConStopRecord(IConsole::IResult *pResult, void *pUser);
-	static bool ConMapReload(IConsole::IResult *pResult, void *pUser);
-	static bool ConLogout(IConsole::IResult *pResult, void *pUser);
-	static bool ConchainSpecialInfoupdate(IConsole::IResult *pResult, void *pUserData, IConsole::FCommandCallback pfnCallback, void *pCallbackUserData);
-	static bool ConchainMaxclientsperipUpdate(IConsole::IResult *pResult, void *pUserData, IConsole::FCommandCallback pfnCallback, void *pCallbackUserData);
-	static bool ConchainModCommandUpdate(IConsole::IResult *pResult, void *pUserData, IConsole::FCommandCallback pfnCallback, void *pCallbackUserData);
-	static bool ConchainConsoleOutputLevelUpdate(IConsole::IResult *pResult, void *pUserData, IConsole::FCommandCallback pfnCallback, void *pCallbackUserData);
+	static void ConKick(IConsole::IResult *pResult, void *pUser);
+	static void ConStatus(IConsole::IResult *pResult, void *pUser);
+	static void ConStatusExtended(IConsole::IResult *pResult, void *pUser);
+	static void ConOptionStatus(IConsole::IResult *pResult, void *pUser);
+	static void ConShutdown(IConsole::IResult *pResult, void *pUser);
+	static void ConRecord(IConsole::IResult *pResult, void *pUser);
+	static void ConStopRecord(IConsole::IResult *pResult, void *pUser);
+	static void ConMapReload(IConsole::IResult *pResult, void *pUser);
+	static void ConLogout(IConsole::IResult *pResult, void *pUser);
+	static void ConchainSpecialInfoupdate(IConsole::IResult *pResult, void *pUserData, IConsole::FCommandCallback pfnCallback, void *pCallbackUserData);
+	static void ConchainMaxclientsperipUpdate(IConsole::IResult *pResult, void *pUserData, IConsole::FCommandCallback pfnCallback, void *pCallbackUserData);
+	static void ConchainModCommandUpdate(IConsole::IResult *pResult, void *pUserData, IConsole::FCommandCallback pfnCallback, void *pCallbackUserData);
+	static void ConchainConsoleOutputLevelUpdate(IConsole::IResult *pResult, void *pUserData, IConsole::FCommandCallback pfnCallback, void *pCallbackUserData);
 
-	static bool ConMute(class IConsole::IResult *pResult, void *pUser);
-	static bool ConUnmute(class IConsole::IResult *pResult, void *pUser);
-	static bool ConWhisper(class IConsole::IResult *pResult, void *pUser);
+	static void ConMute(class IConsole::IResult *pResult, void *pUser);
+	static void ConUnmute(class IConsole::IResult *pResult, void *pUser);
+	static void ConWhisper(class IConsole::IResult *pResult, void *pUser);
 
-	static bool ConNameBan(IConsole::IResult *pResult, void *pUser);
-	static bool ConNameUnban(IConsole::IResult *pResult, void *pUser);
-	static bool ConNameBans(IConsole::IResult *pResult, void *pUser);
+	static void ConNameBan(IConsole::IResult *pResult, void *pUser);
+	static void ConNameUnban(IConsole::IResult *pResult, void *pUser);
+	static void ConNameBans(IConsole::IResult *pResult, void *pUser);
 
 /* DDNET MODIFICATION START *******************************************/
 #ifdef CONF_SQL
@@ -343,9 +343,9 @@ public:
 #endif
 /* DDNET MODIFICATION END *********************************************/
 	
-	static bool ConSetWeaponFireDelay(class IConsole::IResult *pResult, void *pUserData);
-	static bool ConSetWeaponAmmoRegen(class IConsole::IResult *pResult, void *pUserData);
-	static bool ConSetWeaponMaxAmmo(class IConsole::IResult *pResult, void *pUserData);
+	static void ConSetWeaponFireDelay(class IConsole::IResult *pResult, void *pUserData);
+	static void ConSetWeaponAmmoRegen(class IConsole::IResult *pResult, void *pUserData);
+	static void ConSetWeaponMaxAmmo(class IConsole::IResult *pResult, void *pUserData);
 
 	void RegisterCommands();
 
