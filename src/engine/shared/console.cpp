@@ -183,16 +183,17 @@ int CConsole::ParseArgs(CResult *pResult, const char *pFormat)
 /* DDNET MODIFICATION START *******************************************/
 char CConsole::NextParam(const char *&pFormat)
 {
-	if (*pFormat)
+	if(*pFormat)
 	{
 		pFormat++;
 
-		if (*pFormat == '<')
+		char ClosingBracket = (*pFormat == '<') ? '>' : ']';
+		if((*pFormat == '[') || (*pFormat == '<'))
 		{
 			// skip bracket contents
-			for (; *pFormat != '>'; pFormat++)
+			for(; *pFormat != ClosingBracket; pFormat++)
 			{
-				if (!*pFormat)
+				if(!*pFormat)
 					return *pFormat;
 			}
 
@@ -200,7 +201,7 @@ char CConsole::NextParam(const char *&pFormat)
 			pFormat++;
 
 			// skip space if there is one
-			if (*pFormat == ' ')
+			if(*pFormat == ' ')
 				pFormat++;
 		}
 	}
