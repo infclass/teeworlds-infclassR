@@ -1463,8 +1463,10 @@ void CGameContext::OnClientEnter(int ClientID)
 	//world.insert_entity(&players[client_id]);
 	m_apPlayers[ClientID]->m_IsInGame = true;
 	m_apPlayers[ClientID]->Respawn();
-	
+
 /* INFECTION MODIFICATION START ***************************************/
+	m_apPlayers[ClientID]->SetOriginalName(Server()->ClientName(ClientID));
+
 	SendChatTarget_Localization(-1, CHATCATEGORY_PLAYER, _("{str:PlayerName} entered and joined the game"), "PlayerName", Server()->ClientName(ClientID), NULL);
 
 	SendChatTarget(ClientID, "InfectionClass Mod. Version: " GAME_VERSION);
@@ -1505,11 +1507,15 @@ void CGameContext::OnClientEnter(int ClientID)
 bool CGameContext::OnClientDataPersist(int ClientID, void *pData)
 {
 	CPersistentClientData *pPersistent = (CPersistentClientData *)pData;
-	if(!m_apPlayers[ClientID])
+	const CPlayer *pPlayer = m_apPlayers[ClientID];
+	if(!pPlayer)
 	{
 		return false;
 	}
-	pPersistent->m_IsSpectator = m_apPlayers[ClientID]->GetTeam() == TEAM_SPECTATORS;
+
+	pPersistent->m_IsSpectator = pPlayer->GetTeam() == TEAM_SPECTATORS;
+	pPersistent->m_ClientNameLocked = pPlayer->m_ClientNameLocked;
+
 	return true;
 }
 
@@ -1517,13 +1523,16 @@ void CGameContext::OnClientConnected(int ClientID, void *pData)
 {
 	CPersistentClientData *pPersistentData = (CPersistentClientData *)pData;
 	bool Spec = false;
+	bool NameLocked = false;
 	if(pPersistentData)
 	{
 		Spec = pPersistentData->m_IsSpectator;
+		NameLocked = pPersistentData->m_ClientNameLocked;
 	}
 
 	dbg_assert(!m_apPlayers[ClientID], "non-free player slot");
 	m_apPlayers[ClientID] = m_pController->CreatePlayer(ClientID, Spec);
+	m_apPlayers[ClientID]->m_ClientNameLocked = NameLocked;
 	
 	//players[client_id].init(client_id);
 	//players[client_id].client_id = client_id;
@@ -2136,7 +2145,7 @@ void CGameContext::OnMessage(int MsgID, CUnpacker *pUnpacker, int ClientID)
 			pPlayer->m_LastChangeInfo = Server()->Tick();
 
 			// set infos
-			if(Server()->WouldClientNameChange(ClientID, pMsg->m_pName))
+			if(!pPlayer->m_ClientNameLocked && Server()->WouldClientNameChange(ClientID, pMsg->m_pName))
 			{
 				char aOldName[MAX_NAME_LENGTH];
 				str_copy(aOldName, Server()->ClientName(ClientID), sizeof(aOldName));

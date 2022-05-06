@@ -50,7 +50,13 @@ void CPlayer::Reset()
 /* INFECTION MODIFICATION START ***************************************/
 	m_Authed = IServer::AUTHED_NO;
 	m_ScoreMode = PLAYERSCOREMODE_SCORE;
+
+	m_ClientNameLocked = false;
+	m_aOriginalName[0] = 0;
+
 	m_WinAsHuman = 0;
+	m_HookProtection = false;
+	m_HookProtectionAutomatic = true;
 	m_class = PLAYERCLASS_NONE;
 	m_LastHumanClass = PLAYERCLASS_NONE;
 	m_InfectionTick = -1;
@@ -483,6 +489,11 @@ const char* CPlayer::GetLanguage()
 void CPlayer::SetLanguage(const char* pLanguage)
 {
 	str_copy(m_aLanguage, pLanguage, sizeof(m_aLanguage));
+}
+
+void CPlayer::SetOriginalName(const char *pName)
+{
+	str_copy(m_aOriginalName, pName, sizeof(m_aOriginalName));
 }
 
 /* INFECTION MODIFICATION END *****************************************/

@@ -899,7 +899,10 @@ int CInfClassGameController::DamageTypeToWeapon(DAMAGE_TYPE DamageType, TAKEDAMA
 
 void CInfClassGameController::RegisterChatCommands(IConsole *pConsole)
 {
-	pConsole->Register("set_client_name", "i<clientid> s<name>", CFGFLAG_SERVER, ConSetClientName, this, "Set the name of a player");
+	pConsole->Register("restore_client_name", "i[clientid]", CFGFLAG_SERVER, ConRestoreClientName, this, "Set the name of a player");
+	pConsole->Register("set_client_name", "i[clientid] r[name]", CFGFLAG_SERVER, ConSetClientName, this, "Set the name of a player (and also lock it)");
+	pConsole->Register("lock_client_name", "i[clientid] i[lock]", CFGFLAG_SERVER, ConLockClientName, this, "Set the name of a player");
+
 	pConsole->Register("inf_set_class", "i<clientid> s<classname>", CFGFLAG_SERVER, ConSetClass, this, "Set the class of a player");
 	pConsole->Register("start_fast_round", "", CFGFLAG_SERVER, ConStartFastRound, this, "Start a faster gameplay round");
 	pConsole->Register("queue_fast_round", "", CFGFLAG_SERVER, ConQueueFastRound, this, "Queue a faster gameplay round");
@@ -919,6 +922,22 @@ void CInfClassGameController::RegisterChatCommands(IConsole *pConsole)
 	pConsole->Register("santa", "", CFGFLAG_CHAT|CFGFLAG_USER, ChatWitch, this, "Call the Santa");
 }
 
+void CInfClassGameController::ConRestoreClientName(IConsole::IResult *pResult, void *pUserData)
+{
+	CInfClassGameController *pSelf = (CInfClassGameController *)pUserData;
+
+	int PlayerID = pResult->GetInteger(0);
+
+	CInfClassPlayer *pPlayer = pSelf->GetPlayer(PlayerID);
+	if(!pPlayer)
+	{
+		return;
+	}
+
+	pPlayer->m_ClientNameLocked = true;
+	pSelf->Server()->SetClientName(PlayerID, pPlayer->GetOriginalName());
+}
+
 void CInfClassGameController::ConSetClientName(IConsole::IResult *pResult, void *pUserData)
 {
 	CInfClassGameController *pSelf = (CInfClassGameController *)pUserData;
@@ -926,7 +945,40 @@ void CInfClassGameController::ConSetClientName(IConsole::IResult *pResult, void 
 	int PlayerID = pResult->GetInteger(0);
 	const char *pNewName = pResult->GetString(1);
 
+	if(pResult->NumArguments() != 2)
+	{
+		return;
+	}
+
+	CInfClassPlayer *pPlayer = pSelf->GetPlayer(PlayerID);
+	if(!pPlayer)
+	{
+		return;
+	}
+
+	pPlayer->m_ClientNameLocked = true;
 	pSelf->Server()->SetClientName(PlayerID, pNewName);
+}
+
+void CInfClassGameController::ConLockClientName(IConsole::IResult *pResult, void *pUserData)
+{
+	CInfClassGameController *pSelf = (CInfClassGameController *)pUserData;
+
+	int PlayerID = pResult->GetInteger(0);
+	int Lock = pResult->GetInteger(1);
+
+	if(pResult->NumArguments() != 2)
+	{
+		return;
+	}
+
+	CInfClassPlayer *pPlayer = pSelf->GetPlayer(PlayerID);
+	if(!pPlayer)
+	{
+		return;
+	}
+
+	pPlayer->m_ClientNameLocked = Lock != 0;
 }
 
 void CInfClassGameController::ConUserSetClass(IConsole::IResult *pResult, void *pUserData)

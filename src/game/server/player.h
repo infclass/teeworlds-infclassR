@@ -179,11 +179,16 @@ public:
 	
 	const char* GetLanguage();
 	void SetLanguage(const char* pLanguage);
-	
+
+	void SetOriginalName(const char *pName);
+	const char *GetOriginalName() const { return m_aOriginalName; }
+
+	bool m_ClientNameLocked;
+
 	int m_WinAsHuman;
 	bool m_HookProtection;
 	bool m_HookProtectionAutomatic;
-	
+
 	CTuningParams m_PrevTuningParams;
 	CTuningParams m_NextTuningParams;
 	
@@ -192,6 +197,9 @@ public:
 	int m_LastHumanClasses[2];
 
 /* INFECTION MODIFICATION END *****************************************/
+
+protected:
+	char m_aOriginalName[MAX_NAME_LENGTH];
 };
 
 enum
