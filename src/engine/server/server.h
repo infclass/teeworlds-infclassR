@@ -6,7 +6,7 @@
 #include <base/hash.h>
 #include <base/math.h>
 
-#include <engine/masterserver.h>
+#include <engine/engine.h>
 #include <engine/server.h>
 
 #include <engine/map.h>
@@ -18,7 +18,6 @@
 #include <engine/shared/netban.h>
 #include <engine/shared/network.h>
 #include <engine/shared/snapshot.h>
-#include <game/server/classes.h>
 #include <game/voting.h>
 
 /* DDNET MODIFICATION START *******************************************/

@@ -3,8 +3,10 @@
 #ifndef ENGINE_SHARED_CONSOLE_H
 #define ENGINE_SHARED_CONSOLE_H
 
-#include <engine/console.h>
 #include "memheap.h"
+#include <base/math.h>
+#include <engine/console.h>
+#include <engine/storage.h>
 
 class CConsole : public IConsole
 {
@@ -21,7 +23,6 @@ class CConsole : public IConsole
 
 		void SetAccessLevel(int AccessLevel) { m_AccessLevel = clamp(AccessLevel, (int)(ACCESS_LEVEL_ADMIN), (int)(ACCESS_LEVEL_MOD)); }
 	};
-
 
 	class CChain
 	{

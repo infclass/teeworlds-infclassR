@@ -2,11 +2,12 @@
 /* If you are missing that file, acquire a complete release at teeworlds.com.				*/
 #ifndef ENGINE_SERVER_H
 #define ENGINE_SERVER_H
+
 #include "kernel.h"
 #include "message.h"
+
 #include <game/generated/protocol.h>
 #include <engine/shared/protocol.h>
-#include <string>
 
 /* INFECTION MODIFICATION START ***************************************/
 enum INFWEAPON
@@ -423,9 +424,7 @@ public:
 	virtual const char *GameType() const = 0;
 	virtual const char *Version() const = 0;
 	virtual const char *NetVersion() const = 0;
-	
-	virtual class CLayers *Layers() = 0;
-	
+
 /* INFECTION MODIFICATION START ***************************************/
 	virtual void ClearBroadcast(int To, int Priority) = 0;
 	virtual void SendBroadcast_Localization(int To, int Priority, int LifeSpan, const char* pText, ...) = 0;
@@ -438,8 +437,6 @@ public:
 	
 	virtual void OnSetAuthed(int ClientID, int Level) = 0;
 	
-	virtual int GetHeroGiftCoolDown() = 0;
-	virtual void FlagCollected() = 0;
 /* INFECTION MODIFICATION END *****************************************/
 };
 
