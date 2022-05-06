@@ -1886,31 +1886,29 @@ void CGameContext::OnMessage(int MsgID, CUnpacker *pUnpacker, int ClientID)
 			}
 /* INFECTION MODIFICATION END *****************************************/
 			
-			// trim right and set maximum length to 271 utf8-characters
+			// trim right and set maximum length to 256 utf8-characters
 			int Length = 0;
 			const char *p = pMsg->m_pMessage;
 			const char *pEnd = 0;
 			while(*p)
- 			{
+			{
 				const char *pStrOld = p;
 				int Code = str_utf8_decode(&p);
 
 				// check if unicode is not empty
-				if(Code > 0x20 && Code != 0xA0 && Code != 0x034F && (Code < 0x2000 || Code > 0x200F) && (Code < 0x2028 || Code > 0x202F) &&
-					(Code < 0x205F || Code > 0x2064) && (Code < 0x206A || Code > 0x206F) && (Code < 0xFE00 || Code > 0xFE0F) &&
-					Code != 0xFEFF && (Code < 0xFFF9 || Code > 0xFFFC))
+				if(!str_utf8_isspace(Code))
 				{
 					pEnd = 0;
 				}
 				else if(pEnd == 0)
 					pEnd = pStrOld;
 
-				if(++Length >= 270)
+				if(++Length >= 256)
 				{
 					*(const_cast<char *>(p)) = 0;
 					break;
 				}
- 			}
+			}
 			if(pEnd != 0)
 				*(const_cast<char *>(pEnd)) = 0;
 
