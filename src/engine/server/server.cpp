@@ -2457,21 +2457,6 @@ int CServer::Run()
 				{
 					if(m_aClients[i].m_State >= CClient::STATE_READY && m_aClients[i].m_Session.m_MuteTick > 0)
 						m_aClients[i].m_Session.m_MuteTick--;
-					
-					if(m_aClients[i].m_State >= CClient::STATE_READY && m_aClients[i].m_UserID < 0)
-					{
-						if(TrySetClientName(i, m_aClients[i].m_aName))
-						{
-							// auto rename
-							for(int j = 1;; j++)
-							{
-								char aNameTry[MAX_NAME_LENGTH];
-								str_format(aNameTry, sizeof(aNameTry), "(%d)%s", j, m_aClients[i].m_aName);
-								if(TrySetClientName(i, aNameTry) == 0)
-									break;
-							}
-						}
-					}
 				}
 				
 				for(int ClientID=0; ClientID<MAX_CLIENTS; ClientID++)
