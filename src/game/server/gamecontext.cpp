@@ -1876,16 +1876,13 @@ void CGameContext::OnMessage(int MsgID, CUnpacker *pUnpacker, int ClientID)
 			if(g_Config.m_SvSpamprotection && pPlayer->m_LastChat && pPlayer->m_LastChat+Server()->TickSpeed() > Server()->Tick())
 				return;
 
-/* INFECTION MODIFICATION START ***************************************/
 			CNetMsg_Cl_Say *pMsg = (CNetMsg_Cl_Say *)pRawMsg;
-			int Team = CGameContext::CHAT_ALL;
-			if(pMsg->m_Team)
+			if(!str_utf8_check(pMsg->m_pMessage))
 			{
-				if(pPlayer->GetTeam() == TEAM_SPECTATORS) Team = CGameContext::CHAT_SPEC;
-				else Team = (pPlayer->IsZombie() ? CGameContext::CHAT_RED : CGameContext::CHAT_BLUE);
+				return;
 			}
-/* INFECTION MODIFICATION END *****************************************/
-			
+			int Team = pMsg->m_Team;
+
 			// trim right and set maximum length to 256 utf8-characters
 			int Length = 0;
 			const char *p = pMsg->m_pMessage;
@@ -1912,9 +1909,21 @@ void CGameContext::OnMessage(int MsgID, CUnpacker *pUnpacker, int ClientID)
 			if(pEnd != 0)
 				*(const_cast<char *>(pEnd)) = 0;
 
-			// drop empty and autocreated spam messages (more than 16 characters per second)
-			if(Length == 0 || (g_Config.m_SvSpamprotection && pPlayer->m_LastChat && pPlayer->m_LastChat+Server()->TickSpeed()*((15+Length)/16) > Server()->Tick()))
+			// drop empty and autocreated spam messages (more than 32 characters per second)
+			if(Length == 0 || (g_Config.m_SvSpamprotection && pPlayer->m_LastChat && pPlayer->m_LastChat+Server()->TickSpeed() * ((31 + Length) / 32) > Server()->Tick()))
 				return;
+
+/* INFECTION MODIFICATION START ***************************************/
+			if(Team)
+			{
+				if(pPlayer->GetTeam() == TEAM_SPECTATORS)
+					Team = CGameContext::CHAT_SPEC;
+				else
+					Team = (pPlayer->IsZombie() ? CGameContext::CHAT_RED : CGameContext::CHAT_BLUE);
+			}
+			else
+				Team = CHAT_ALL;
+/* INFECTION MODIFICATION END *****************************************/
 
 			pPlayer->m_LastChat = Server()->Tick();
 			
