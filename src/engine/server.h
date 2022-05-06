@@ -9,6 +9,12 @@
 #include <game/generated/protocol.h>
 #include <engine/shared/protocol.h>
 
+// When recording a demo on the server, the ClientID -1 is used
+enum
+{
+	SERVER_DEMO_CLIENT = -1
+};
+
 /* INFECTION MODIFICATION START ***************************************/
 enum INFWEAPON
 {
@@ -88,8 +94,6 @@ enum
 	CHATCATEGORY_HUMANS,
 	CHATCATEGORY_ACCUSATION,
 };
-
-static const int DemoClientID = -1;
 
 /* INFECTION MODIFICATION END *****************************************/
 
@@ -232,7 +236,7 @@ public:
 
 	bool Translate(int& target, int client)
 	{
-		if(client == DemoClientID)
+		if(client == SERVER_DEMO_CLIENT)
 			return true;
 
 		CClientInfo info;

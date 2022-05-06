@@ -148,7 +148,7 @@ void CHeroFlag::Snap(int SnappingClient)
 	if(NetworkClipped(SnappingClient))
 		return;
 	
-	if(SnappingClient != DemoClientID && SnappingClient != m_Owner)
+	if(SnappingClient != SERVER_DEMO_CLIENT && SnappingClient != m_Owner)
 		return;
 	
 	CInfClassPlayer* pOwnerPlayer = GameController()->GetPlayer(m_Owner);

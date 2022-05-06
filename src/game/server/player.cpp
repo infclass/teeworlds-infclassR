@@ -203,7 +203,7 @@ void CPlayer::Snap(int SnappingClient)
 		return;
 
 	int id = m_ClientID;
-	if(SnappingClient != DemoClientID && !Server()->Translate(id, SnappingClient))
+	if(SnappingClient != SERVER_DEMO_CLIENT && !Server()->Translate(id, SnappingClient))
 		return;
 
 	SnapClientInfo(SnappingClient, id);
@@ -237,7 +237,7 @@ void CPlayer::Snap(int SnappingClient)
 	if(!pPlayerInfo)
 		return;
 
-	pPlayerInfo->m_Latency = SnappingClient == DemoClientID ? m_Latency.m_Min : GameServer()->m_apPlayers[SnappingClient]->m_aActLatency[m_ClientID];
+	pPlayerInfo->m_Latency = SnappingClient == SERVER_DEMO_CLIENT ? m_Latency.m_Min : GameServer()->m_apPlayers[SnappingClient]->m_aActLatency[m_ClientID];
 	pPlayerInfo->m_Local = 0;
 	pPlayerInfo->m_ClientID = id;
 /* INFECTION MODIFICATION START ***************************************/

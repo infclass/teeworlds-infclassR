@@ -3205,7 +3205,7 @@ void CServer::SnapSetStaticsize(int ItemType, int Size)
 
 int CServer::GetClientInfclassVersion(int ClientID) const
 {
-	if(ClientID == DemoClientID)
+	if(ClientID == SERVER_DEMO_CLIENT)
 	{
 		return 1000;
 	}

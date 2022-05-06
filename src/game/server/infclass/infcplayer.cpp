@@ -175,7 +175,7 @@ void CInfClassPlayer::SnapClientInfo(int SnappingClient, int SnappingClientMappe
 	pClientInfo->m_Country = Server()->ClientCountry(m_ClientID);
 
 	IServer::CClientInfo ClientInfo = {0};
-	if(SnappingClient != DemoClientID)
+	if(SnappingClient != SERVER_DEMO_CLIENT)
 	{
 		Server()->GetClientInfo(SnappingClient, &ClientInfo);
 	}
