@@ -900,8 +900,6 @@ add_executable(Server
   ${DEPS}
   ${SERVER_SRC}
   ${SERVER_ICON}
-  $<TARGET_OBJECTS:engine-shared>
-  $<TARGET_OBJECTS:game-shared>
 )
 
 set_property(TARGET Server
