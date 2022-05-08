@@ -795,6 +795,7 @@ if(TOOLS)
   set_src(TOOLS_SRC GLOB src/tools
     dilate.cpp
     dummy_map.cpp
+    map_convert_for_client.cpp
     map_diff.cpp
     map_extract.cpp
     map_resave.cpp
@@ -818,6 +819,9 @@ if(TOOLS)
       endif()
       if(TOOL MATCHES "^config_")
         list(APPEND EXTRA_TOOL_SRC "src/tools/config_common.h")
+      endif()
+      if(TOOL MATCHES "^(map_convert_for_client)$")
+        list(APPEND EXTRA_TOOL_SRC ${SERVER_SRC})
       endif()
       set(EXCLUDE_FROM_ALL)
       if(DEV)
@@ -899,6 +903,8 @@ add_custom_command(
   COMMAND ${PYTHON_EXECUTABLE} scripts/translation-python3.py
   WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
 )
+
+#add_library(server-shared STATIC ${SERVER_SRC})
 
 # Target
 add_executable(Server
