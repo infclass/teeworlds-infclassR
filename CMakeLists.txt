@@ -55,6 +55,7 @@ endif()
 option(USE_CONAN "Use Conan for dependencies" ${USE_CONAN_DEFAULT})
 option(GEOLOCATION "Enable geolocation support" ${GEOLOCATION_DEFAULT})
 option(MYSQL "Enable mysql support" OFF)
+option(TOOLS "Compile tools" ON)
 
 # Set the default build type to Release
 if(NOT(CMAKE_BUILD_TYPE))
@@ -227,6 +228,13 @@ function(set_glob VAR GLOBBING DIRECTORY) # ...
 
   set(${VAR} ${FILES} PARENT_SCOPE)
 endfunction()
+
+function(set_src VAR GLOBBING DIRECTORY) # ...
+  set_glob(${VAR} ${GLOBBING} ${DIRECTORY} ${ARGN})
+  set(${VAR} ${${VAR}} PARENT_SCOPE)
+  set(CHECKSUM_SRC ${CHECKSUM_SRC} ${${VAR}} PARENT_SCOPE)
+endfunction()
+set(CHECKSUM_SRC)
 
 ########################################################################
 # INITIALIZE TARGET LISTS
@@ -596,6 +604,7 @@ list(APPEND TARGETS_OWN engine-shared game-shared)
 
 target_link_libraries(engine-shared PUBLIC
   ZLIB::ZLIB
+  ${CMAKE_THREAD_LIBS_INIT}
 )
 
 if(CRYPTO_FOUND)
@@ -771,6 +780,64 @@ set(LIBS_SERVER
   # on it.
   ${CMAKE_THREAD_LIBS_INIT}
 )
+
+########################################################################
+# VARIOUS TARGETS
+########################################################################
+
+if(TOOLS)
+  set(TARGETS_TOOLS)
+  set_src(TOOLS_SRC GLOB src/tools
+    dilate.cpp
+    dummy_map.cpp
+    map_diff.cpp
+    map_extract.cpp
+    map_resave.cpp
+    packetgen.cpp
+    unicode_confusables.cpp
+    uuid.cpp
+  )
+  foreach(ABS_T ${TOOLS_SRC})
+    # Infclass: ABS_T is not actually ABS because of the changes in set_glob()
+    set(ABS_T "${PROJECT_SOURCE_DIR}/${ABS_T}")
+
+    file(RELATIVE_PATH T "${PROJECT_SOURCE_DIR}/src/tools/" ${ABS_T})
+    if(T MATCHES "\\.cpp$")
+      string(REGEX REPLACE "\\.cpp$" "" TOOL "${T}")
+      set(TOOL_DEPS ${DEPS})
+      set(TOOL_LIBS ${LIBS})
+      if(TOOL MATCHES "^(dilate|map_convert_07|map_optimize|map_extract|map_replace_image)$")
+        list(APPEND TOOL_DEPS ${PNGLITE_DEP})
+        list(APPEND TOOL_LIBS ${PNGLITE_LIBRARIES})
+        list(APPEND TOOL_INCLUDE_DIRS ${PNGLITE_INCLUDE_DIRS})
+      endif()
+      if(TOOL MATCHES "^config_")
+        list(APPEND EXTRA_TOOL_SRC "src/tools/config_common.h")
+      endif()
+      set(EXCLUDE_FROM_ALL)
+      if(DEV)
+        set(EXCLUDE_FROM_ALL EXCLUDE_FROM_ALL)
+      endif()
+      message(STATUS "Found tool ${TOOL}")
+      add_executable(${TOOL} ${EXCLUDE_FROM_ALL}
+        ${TOOL_DEPS}
+        src/tools/${TOOL}.cpp
+        ${EXTRA_TOOL_SRC}
+      )
+      target_include_directories(${TOOL} SYSTEM PRIVATE ${TOOL_INCLUDE_DIRS})
+      target_link_libraries(${TOOL} ${TOOL_LIBS}
+        engine-shared
+        game-shared # engine depends on mapitems_ex.cpp
+      )
+      list(APPEND TARGETS_TOOLS ${TOOL})
+    endif()
+  endforeach()
+
+  list(APPEND TARGETS_OWN ${TARGETS_TOOLS})
+  list(APPEND TARGETS_LINK ${TARGETS_TOOLS})
+
+  add_custom_target(tools DEPENDS ${TARGETS_TOOLS})
+endif()
 
 # Translation dev targets
 set(PO_TEMPlATE "other/po/infclass.pot")
