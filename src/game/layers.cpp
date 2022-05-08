@@ -59,7 +59,7 @@ void CLayers::Init(IMap *pMap)
 						m_pTeleLayer = pTilemap;
 					}
 
-					if(pTilemap->m_Flags&TILESLAYERFLAG_PHYSICS)
+					if(pTilemap->m_Flags & TILESLAYERFLAG_GAME)
 					{
 						m_pPhysicsLayer = pTilemap;
 						m_pGameGroup = pGroup;

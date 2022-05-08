@@ -325,7 +325,7 @@ bool CMapConverter::Load()
 			{
 				CMapItemLayerTilemap *pTileLayer = reinterpret_cast<CMapItemLayerTilemap *>(pLayer);
 				
-				if(pTileLayer->m_Flags&TILESLAYERFLAG_PHYSICS)
+				if(pTileLayer->m_Flags & TILESLAYERFLAG_GAME)
 				{
 					pPhysicsLayer = pTileLayer;
 					break;
@@ -883,18 +883,10 @@ void CMapConverter::CopyLayers()
 			{
 				CMapItemLayerTilemap *pTilemapItem = (CMapItemLayerTilemap *)pLayerItem;
 
-				if(pTilemapItem->m_Flags&TILESLAYERFLAG_PHYSICS)
+				if(pTilemapItem->m_Flags & TILESLAYERFLAG_GAME)
 				{
 					CopyGameLayer();
 					GroupLayers++;
-				}
-				else if(pTilemapItem->m_Flags&TILESLAYERFLAG_ZONE)
-				{
-					
-				}
-				else if(pTilemapItem->m_Flags&TILESLAYERFLAG_ENTITY)
-				{
-					
 				}
 				else
 				{
