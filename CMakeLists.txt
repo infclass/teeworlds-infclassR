@@ -897,6 +897,7 @@ add_custom_command(
 
 # Target
 add_executable(Server
+  src/game/server/main_server.cpp
   ${DEPS}
   ${SERVER_SRC}
   ${SERVER_ICON}

@@ -489,4 +489,5 @@ public:
 	virtual void SetCustClt(int ClientID);
 };
 
+extern CServer *CreateServer();
 #endif
