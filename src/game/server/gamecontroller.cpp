@@ -482,7 +482,6 @@ void IGameController::SyncSmartMapRotationData()
 
 	// handle maprotation
 	const char *pMapRotation = Config()->m_SvMaprotation;
-	const char *pCurrentMap = Config()->m_SvMap;
 
 	const char *pNextMap = pMapRotation;
 	char aMapNameBuffer[64];
@@ -496,7 +495,6 @@ void IGameController::SyncSmartMapRotationData()
 		}
 		aMapNameBuffer[WordLen] = 0;
 
-		dbg_msg("smart-rotation", "sync data: new map %s", aMapNameBuffer);
 		OnMapAdded(aMapNameBuffer);
 
 		pNextMap += WordLen + 1;
@@ -636,8 +634,6 @@ void IGameController::AddMapTimestamp(const char *pMapName, int Timestamp)
 
 void IGameController::OnMapAdded(const char *pMapName)
 {
-	dbg_msg("smart-rotation", "sync data: OnMapAdded %s", pMapName);
-
 	if(!GameServer()->MapExists(pMapName))
 	{
 		return;
