@@ -665,29 +665,6 @@ int CServer::Init()
 	SetMaxAmmo(INFWEAPON_LOOPER_GRENADE, 10);
 	SetMaxAmmo(INFWEAPON_BLINDING_LASER, 10);
 	
-	SetClassAvailability(PLAYERCLASS_ENGINEER, 2);
-	SetClassAvailability(PLAYERCLASS_SOLDIER, 2);
-	SetClassAvailability(PLAYERCLASS_MERCENARY, 2);
-	SetClassAvailability(PLAYERCLASS_SNIPER, 2);
-	SetClassAvailability(PLAYERCLASS_NINJA, 2);
-	SetClassAvailability(PLAYERCLASS_MEDIC, 2);
-	SetClassAvailability(PLAYERCLASS_HERO, 2);
-	SetClassAvailability(PLAYERCLASS_SCIENTIST, 2);
-	SetClassAvailability(PLAYERCLASS_BIOLOGIST, 2);
-	SetClassAvailability(PLAYERCLASS_LOOPER, 2);
-	
-	SetClassAvailability(PLAYERCLASS_SMOKER, 1);
-	SetClassAvailability(PLAYERCLASS_HUNTER, 1);
-	SetClassAvailability(PLAYERCLASS_BAT, 1);
-	SetClassAvailability(PLAYERCLASS_GHOST, 1);
-	SetClassAvailability(PLAYERCLASS_SPIDER, 1);
-	SetClassAvailability(PLAYERCLASS_GHOUL, 1);
-	SetClassAvailability(PLAYERCLASS_SLUG, 1);
-	SetClassAvailability(PLAYERCLASS_BOOMER, 1);
-	SetClassAvailability(PLAYERCLASS_VOODOO, 1);
-	SetClassAvailability(PLAYERCLASS_UNDEAD, 1);
-	SetClassAvailability(PLAYERCLASS_WITCH, 1);
-	
 	m_InfClassChooser = 1;
 /* INFECTION MODIFICATION END *****************************************/
 
@@ -3320,16 +3297,6 @@ int CServer::GetMaxAmmo(int WID)
 void CServer::SetMaxAmmo(int WID, int n)
 {
 	m_InfMaxAmmo[WID] = n;
-}
-
-int CServer::GetClassAvailability(int CID)
-{
-	return m_InfClassAvailability[CID];
-}
-
-void CServer::SetClassAvailability(int CID, int n)
-{
-	m_InfClassAvailability[CID] = n;
 }
 
 int CServer::GetClientNbRound(int ClientID)

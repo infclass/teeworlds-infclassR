@@ -360,7 +360,6 @@ public:
 	int m_InfAmmoRegenTime[NB_INFWEAPON];
 	int m_InfFireDelay[NB_INFWEAPON];
 	int m_InfMaxAmmo[NB_INFWEAPON];
-	int m_InfClassAvailability[NB_PLAYERCLASS];
 
 public:
 	int GetClientInfclassVersion(int ClientID) const override;
@@ -388,9 +387,6 @@ public:
 	
 	virtual int GetMaxAmmo(int WID);
 	virtual void SetMaxAmmo(int WID, int n);
-	
-	virtual int GetClassAvailability(int CID);
-	virtual void SetClassAvailability(int CID, int n);
 	
 	virtual int GetClientNbRound(int ClientID);
 	

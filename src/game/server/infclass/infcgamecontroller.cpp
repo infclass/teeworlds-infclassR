@@ -2910,7 +2910,7 @@ int CInfClassGameController::ChooseInfectedClass(const CPlayer *pPlayer) const
 	for (int PlayerClass = START_INFECTEDCLASS + 1; PlayerClass < END_INFECTEDCLASS; ++PlayerClass)
 	{
 		double &ClassProbability = Probability[PlayerClass - START_INFECTEDCLASS - 1];
-		ClassProbability = Server()->GetClassAvailability(PlayerClass) ? GetPlayerClassProbability(PlayerClass) : 0;
+		ClassProbability = GetPlayerClassProbability(PlayerClass);
 		if(GetRoundType() == ROUND_TYPE::FUN)
 		{
 			// We care only about the class enablement
