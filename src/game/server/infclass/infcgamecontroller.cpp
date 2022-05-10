@@ -2174,6 +2174,11 @@ bool CInfClassGameController::WhiteHoleEnabled() const
 	return Config()->m_InfWhiteHoleProbability > 0;
 }
 
+bool CInfClassGameController::IsClassChooserEnabled() const
+{
+	return true;
+}
+
 float CInfClassGameController::GetTimeLimit() const
 {
 	if(Config()->m_InfTrainingMode)

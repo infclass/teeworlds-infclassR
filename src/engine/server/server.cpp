@@ -664,8 +664,6 @@ int CServer::Init()
 	SetMaxAmmo(INFWEAPON_LOOPER_LASER, 20);
 	SetMaxAmmo(INFWEAPON_LOOPER_GRENADE, 10);
 	SetMaxAmmo(INFWEAPON_BLINDING_LASER, 10);
-	
-	m_InfClassChooser = 1;
 /* INFECTION MODIFICATION END *****************************************/
 
 	return 0;
@@ -3302,11 +3300,6 @@ void CServer::SetMaxAmmo(int WID, int n)
 int CServer::GetClientNbRound(int ClientID)
 {
 	return m_aClients[ClientID].m_NbRound;
-}
-
-int CServer::IsClassChooserEnabled()
-{
-	return m_InfClassChooser;
 }
 
 void CServer::SetPlayerClassEnabled(int PlayerClass, bool Enabled)

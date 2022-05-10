@@ -2126,12 +2126,12 @@ void CInfClassCharacter::OpenClassChooser()
 		return;
 	}
 
-	if(!Server()->IsClassChooserEnabled() || Server()->GetClientAlwaysRandom(GetCID()))
+	if(!GameController()->IsClassChooserEnabled() || Server()->GetClientAlwaysRandom(GetCID()))
 	{
 		m_pPlayer->SetClass(GameController()->ChooseHumanClass(m_pPlayer));
 		GetPlayer()->SetRandomClassChoosen();
 
-		if(Server()->IsClassChooserEnabled())
+		if(GameController()->IsClassChooserEnabled())
 			GiveRandomClassSelectionBonus();
 	}
 	else

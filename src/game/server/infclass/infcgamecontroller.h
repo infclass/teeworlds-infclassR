@@ -91,6 +91,7 @@ public:
 	bool AreTurretsEnabled() const;
 	bool MercBombsEnabled() const;
 	bool WhiteHoleEnabled() const;
+	bool IsClassChooserEnabled() const;
 
 	float GetTimeLimit() const;
 	float GetInfectionDelay() const;

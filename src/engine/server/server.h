@@ -356,7 +356,6 @@ public:
 	
 /* INFECTION MODIFICATION START ***************************************/
 public:
-	int m_InfClassChooser;
 	int m_InfAmmoRegenTime[NB_INFWEAPON];
 	int m_InfFireDelay[NB_INFWEAPON];
 	int m_InfMaxAmmo[NB_INFWEAPON];
@@ -387,10 +386,9 @@ public:
 	
 	virtual int GetMaxAmmo(int WID);
 	virtual void SetMaxAmmo(int WID, int n);
-	
+
 	virtual int GetClientNbRound(int ClientID);
 	
-	virtual int IsClassChooserEnabled();
 	void SetPlayerClassEnabled(int PlayerClass, bool Enabled) override;
 	void SetPlayerClassProbability(int PlayerClass, int Probability) override;
 	virtual bool IsClientLogged(int ClientID);
