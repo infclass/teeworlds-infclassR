@@ -914,12 +914,12 @@ void CInfClassGameController::RegisterChatCommands(IConsole *pConsole)
 	pConsole->Register("reset_map_data", "s<mapname>", CFGFLAG_SERVER, ConResetMapData, this, "Reset map rotation data");
 	pConsole->Register("add_map_data", "s<mapname> i<timestamp>", CFGFLAG_SERVER, ConAddMapData, this, "Add map rotation data");
 
-	pConsole->Register("set_class", "s<classname>", CFGFLAG_CHAT|CFGFLAG_USER, ConUserSetClass, this, "Set the class of a player");
-	pConsole->Register("save_position", "", CFGFLAG_CHAT|CFGFLAG_USER, ConSavePosition, this, "Save the current character position");
-	pConsole->Register("load_position", "", CFGFLAG_CHAT|CFGFLAG_USER, ConLoadPosition, this, "Load (restore) the current character position");
+	pConsole->Register("set_class", "s<classname>", CFGFLAG_CHAT, ConUserSetClass, this, "Set the class of a player");
+	pConsole->Register("save_position", "", CFGFLAG_CHAT, ConSavePosition, this, "Save the current character position");
+	pConsole->Register("load_position", "", CFGFLAG_CHAT, ConLoadPosition, this, "Load (restore) the current character position");
 
-	pConsole->Register("witch", "", CFGFLAG_CHAT|CFGFLAG_USER, ChatWitch, this, "Call Witch");
-	pConsole->Register("santa", "", CFGFLAG_CHAT|CFGFLAG_USER, ChatWitch, this, "Call the Santa");
+	pConsole->Register("witch", "", CFGFLAG_CHAT, ChatWitch, this, "Call Witch");
+	pConsole->Register("santa", "", CFGFLAG_CHAT, ChatWitch, this, "Call the Santa");
 }
 
 void CInfClassGameController::ConRestoreClientName(IConsole::IResult *pResult, void *pUserData)

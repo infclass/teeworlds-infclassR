@@ -4177,29 +4177,29 @@ void CGameContext::OnConsoleInit()
 	//Chat Command
 	Console()->Register("version", "", CFGFLAG_SERVER, ConVersion, this, "Display information about the server version and build");
 
-	Console()->Register("credits", "", CFGFLAG_CHAT | CFGFLAG_USER, ConCredits, this, "Shows the credits of the mod");
-	Console()->Register("about", "", CFGFLAG_CHAT|CFGFLAG_USER, ConAbout, this, "Display information about the mod");
-	Console()->Register("info", "", CFGFLAG_CHAT|CFGFLAG_USER, ConAbout, this, "Display information about the mod");
-	Console()->Register("register", "s<username> s<password> ?s<email>", CFGFLAG_CHAT|CFGFLAG_USER, ConRegister, this, "Create an account");
-	Console()->Register("login", "s<username> s<password>", CFGFLAG_CHAT|CFGFLAG_USER, ConLogin, this, "Login to an account");
-	Console()->Register("logout", "", CFGFLAG_CHAT|CFGFLAG_USER, ConLogout, this, "Logout");
+	Console()->Register("credits", "", CFGFLAG_CHAT, ConCredits, this, "Shows the credits of the mod");
+	Console()->Register("about", "", CFGFLAG_CHAT, ConAbout, this, "Display information about the mod");
+	Console()->Register("info", "", CFGFLAG_CHAT, ConAbout, this, "Display information about the mod");
+	Console()->Register("register", "s<username> s<password> ?s<email>", CFGFLAG_CHAT, ConRegister, this, "Create an account");
+	Console()->Register("login", "s<username> s<password>", CFGFLAG_CHAT, ConLogin, this, "Login to an account");
+	Console()->Register("logout", "", CFGFLAG_CHAT, ConLogout, this, "Logout");
 #ifdef CONF_SQL
-	Console()->Register("setemail", "s<email>", CFGFLAG_CHAT|CFGFLAG_USER, ConSetEmail, this, "Change your email");
+	Console()->Register("setemail", "s<email>", CFGFLAG_CHAT, ConSetEmail, this, "Change your email");
 	
-	Console()->Register("top10", "?s<classname>", CFGFLAG_CHAT|CFGFLAG_USER, ConTop10, this, "Show the top 10 on the current map");
-	Console()->Register("challenge", "", CFGFLAG_CHAT|CFGFLAG_USER, ConChallenge, this, "Show the current winner of the challenge");
-	Console()->Register("rank", "?s<classname>", CFGFLAG_CHAT|CFGFLAG_USER, ConRank, this, "Show your rank");
-	Console()->Register("goal", "?s<classname>", CFGFLAG_CHAT|CFGFLAG_USER, ConGoal, this, "Show your goal");
-	Console()->Register("stats", "i", CFGFLAG_CHAT|CFGFLAG_USER, ConStats, this, "Show stats by id");
+	Console()->Register("top10", "?s<classname>", CFGFLAG_CHAT, ConTop10, this, "Show the top 10 on the current map");
+	Console()->Register("challenge", "", CFGFLAG_CHAT, ConChallenge, this, "Show the current winner of the challenge");
+	Console()->Register("rank", "?s<classname>", CFGFLAG_CHAT, ConRank, this, "Show your rank");
+	Console()->Register("goal", "?s<classname>", CFGFLAG_CHAT, ConGoal, this, "Show your goal");
+	Console()->Register("stats", "i", CFGFLAG_CHAT, ConStats, this, "Show stats by id");
 #endif
-	Console()->Register("help", "?s<page>", CFGFLAG_CHAT|CFGFLAG_USER, ConHelp, this, "Display help");
+	Console()->Register("help", "?s<page>", CFGFLAG_CHAT, ConHelp, this, "Display help");
 	Console()->Register("reload_changelog", "?i<page>", CFGFLAG_SERVER, ConReloadChangeLog, this, "Reload the changelog file");
-	Console()->Register("changelog", "?i<page>", CFGFLAG_CHAT|CFGFLAG_USER, ConChangeLog, this, "Display a changelog page");
-	Console()->Register("alwaysrandom", "i<0|1>", CFGFLAG_CHAT|CFGFLAG_USER, ConAlwaysRandom, this, "Display information about the mod");
-	Console()->Register("antiping", "i<0|1>", CFGFLAG_CHAT|CFGFLAG_USER, ConAntiPing, this, "Try to improve your ping");
-	Console()->Register("language", "s<en|fr|nl|de|bg|sr-Latn|hr|cs|pl|uk|ru|el|la|it|es|pt|hu|ar|tr|sah|fa|tl|zh-CN|ja>", CFGFLAG_CHAT|CFGFLAG_USER, ConLanguage, this, "Set the language");
-	Console()->Register("lang", "s<en|fr|nl|de|bg|sr-Latn|hr|cs|pl|uk|ru|el|la|it|es|pt|hu|ar|tr|sah|fa|tl|zh-CN|ja>", CFGFLAG_CHAT|CFGFLAG_USER, ConLanguage, this, "Set the language");
-	Console()->Register("cmdlist", "", CFGFLAG_CHAT|CFGFLAG_USER, ConCmdList, this, "List of commands");
+	Console()->Register("changelog", "?i<page>", CFGFLAG_CHAT, ConChangeLog, this, "Display a changelog page");
+	Console()->Register("alwaysrandom", "i<0|1>", CFGFLAG_CHAT, ConAlwaysRandom, this, "Display information about the mod");
+	Console()->Register("antiping", "i<0|1>", CFGFLAG_CHAT, ConAntiPing, this, "Try to improve your ping");
+	Console()->Register("language", "s<en|fr|nl|de|bg|sr-Latn|hr|cs|pl|uk|ru|el|la|it|es|pt|hu|ar|tr|sah|fa|tl|zh-CN|ja>", CFGFLAG_CHAT, ConLanguage, this, "Set the language");
+	Console()->Register("lang", "s<en|fr|nl|de|bg|sr-Latn|hr|cs|pl|uk|ru|el|la|it|es|pt|hu|ar|tr|sah|fa|tl|zh-CN|ja>", CFGFLAG_CHAT, ConLanguage, this, "Set the language");
+	Console()->Register("cmdlist", "", CFGFLAG_CHAT, ConCmdList, this, "List of commands");
 /* INFECTION MODIFICATION END *****************************************/
 
 	Console()->Chain("sv_motd", ConchainSpecialMotdupdate, this);

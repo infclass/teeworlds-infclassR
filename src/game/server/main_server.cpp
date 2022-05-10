@@ -41,7 +41,7 @@ int main(int argc, const char **argv) // ignore_convention
 	IConsole *pConsole = CreateConsole(CFGFLAG_SERVER|CFGFLAG_ECON);
 	IEngineMasterServer *pEngineMasterServer = CreateEngineMasterServer();
 	IStorage *pStorage = CreateStorage("Teeworlds", IStorage::STORAGETYPE_SERVER, argc, argv); // ignore_convention
-	IConfig *pConfig = CreateConfig();
+	IConfigManager *pConfigManager = CreateConfigManager();
 
 	pServer->m_pLocalization = new CLocalization(pStorage);
 	pServer->m_pLocalization->InitConfig(0, NULL);
@@ -63,7 +63,7 @@ int main(int argc, const char **argv) // ignore_convention
 		RegisterFail = RegisterFail || !pKernel->RegisterInterface(pGameServer);
 		RegisterFail = RegisterFail || !pKernel->RegisterInterface(pConsole);
 		RegisterFail = RegisterFail || !pKernel->RegisterInterface(pStorage);
-		RegisterFail = RegisterFail || !pKernel->RegisterInterface(pConfig);
+		RegisterFail = RegisterFail || !pKernel->RegisterInterface(pConfigManager);
 		RegisterFail = RegisterFail || !pKernel->RegisterInterface(pEngineMasterServer); // register as both
 		RegisterFail = RegisterFail || !pKernel->RegisterInterface(static_cast<IMasterServer *>(pEngineMasterServer), false);
 
@@ -75,7 +75,7 @@ int main(int argc, const char **argv) // ignore_convention
 	}
 
 	pEngine->Init();
-	pConfig->Init();
+	pConfigManager->Init();
 	pConsole->Init();
 	pEngineMasterServer->Init();
 	pEngineMasterServer->Load();
@@ -89,9 +89,6 @@ int main(int argc, const char **argv) // ignore_convention
 	// parse the command line arguments
 	if(argc > 1) // ignore_convention
 		pConsole->ParseArguments(argc-1, &argv[1]); // ignore_convention
-
-	// restore empty config strings to their defaults
-	pConfig->RestoreStrings();
 
 	pEngine->InitLogfile();
 

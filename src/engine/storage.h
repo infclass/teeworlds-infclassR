@@ -7,8 +7,7 @@
 
 enum
 {
-	MAX_PATHS = 16,
-	MAX_PATH_LENGTH = 512
+	MAX_PATHS = 16
 };
 
 class IStorage : public IInterface
@@ -41,6 +40,7 @@ public:
 	virtual const char *GetDataPath(const char *pFilename, char *pBuffer, unsigned BufferSize) = 0;
 
 	static void StripPathAndExtension(const char *pFilename, char *pBuffer, int BufferSize);
+	static const char *FormatTmpPath(char *aBuf, unsigned BufSize, const char *pPath);
 };
 
 extern IStorage *CreateStorage(const char *pApplicationName, int StorageType, int NumArgs, const char **ppArguments);
