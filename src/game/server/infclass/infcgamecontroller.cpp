@@ -3039,9 +3039,11 @@ int CInfClassGameController::GetPlayerClassProbability(int PlayerClass) const
 		case PLAYERCLASS_UNDEAD:
 			return g_Config.m_InfProbaUndead;
 		default:
-			Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "server", "WARNING: Invalid GetPlayerClassProbability() call");
-			return false;
+			break;
 	}
+
+	Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "server", "WARNING: Invalid GetPlayerClassProbability() call");
+	return 0;
 }
 
 ROUND_TYPE CInfClassGameController::GetRoundType() const
