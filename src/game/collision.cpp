@@ -186,6 +186,28 @@ bool CCollision::TestBox(vec2 Pos, vec2 Size) const
 		return true;
 	if(CheckPoint(Pos.x+Size.x, Pos.y+Size.y))
 		return true;
+
+	if(Size.x > 32)
+	{
+		// check with step 32
+	}
+	if(Size.y > 16)
+	{
+		int Y = 0;
+		while(1)
+		{
+			Y += 30;
+			if(Y / 2 > Size.y)
+			{
+				break;
+			}
+			if(CheckPoint(Pos.x - Size.x, Pos.y - Size.y + Y))
+				return true;
+			if(CheckPoint(Pos.x + Size.x, Pos.y - Size.y + Y))
+				return true;
+		}
+	}
+
 	return false;
 }
 
