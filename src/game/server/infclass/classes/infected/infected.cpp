@@ -37,7 +37,7 @@ void CInfClassInfected::SetupSkinContext(CSkinContext *output, bool ForSameTeam)
 	switch(GetPlayerClass())
 	{
 	case PLAYERCLASS_SPIDER:
-		output->ExtraData1 = m_HookOnTheLimit;
+		output->ExtraData1 = ForSameTeam ? m_HookOnTheLimit : 0;
 		break;
 	case PLAYERCLASS_GHOUL:
 		output->ExtraData1 = GetGhoulPercent() * 100;
