@@ -33,7 +33,7 @@ SkinGetter CInfClassHuman::GetSkinGetter() const
 	return CInfClassHuman::SetupSkin;
 }
 
-void CInfClassHuman::SetupSkinContext(CSkinContext *pOutput) const
+void CInfClassHuman::SetupSkinContext(CSkinContext *pOutput, bool ForSameTeam) const
 {
 	pOutput->PlayerClass = GetPlayerClass();
 	pOutput->ExtraData1 = 0;

@@ -32,7 +32,7 @@ public:
 	bool IsZombie() const;
 
 	virtual SkinGetter GetSkinGetter() const = 0;
-	virtual void SetupSkinContext(CSkinContext *pOutput) const = 0;
+	virtual void SetupSkinContext(CSkinContext *pOutput, bool ForSameTeam) const = 0;
 
 	virtual int GetDefaultEmote() const;
 	virtual void GetAmmoRegenParams(int Weapon, WeaponRegenParams *pParams);

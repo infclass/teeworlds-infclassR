@@ -90,7 +90,8 @@ protected:
 
 	bool IsForcedToSpectate() const;
 
-	CSkinContext m_SkinContext;
+	CSkinContext m_SameTeamSkinContext;
+	CSkinContext m_DiffTeamSkinContext;
 	SkinGetter m_SkinGetter;
 
 	CInfClassGameController *m_pGameController = nullptr;

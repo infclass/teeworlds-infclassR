@@ -31,7 +31,7 @@ SkinGetter CInfClassInfected::GetSkinGetter() const
 	return CInfClassInfected::SetupSkin;
 }
 
-void CInfClassInfected::SetupSkinContext(CSkinContext *output) const
+void CInfClassInfected::SetupSkinContext(CSkinContext *output, bool ForSameTeam) const
 {
 	output->PlayerClass = GetPlayerClass();
 	switch(GetPlayerClass())

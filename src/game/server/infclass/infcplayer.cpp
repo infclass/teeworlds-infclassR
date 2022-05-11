@@ -183,8 +183,13 @@ void CInfClassPlayer::SnapClientInfo(int SnappingClient, int SnappingClientMappe
 	CWeakSkinInfo SkinInfo;
 	if(m_SkinGetter)
 	{
-		m_SkinGetter(m_SkinContext, &SkinInfo, ClientInfo.m_DDNetVersion, ClientInfo.m_InfClassVersion);
-		EventsDirector::SetupSkin(m_SkinContext, &SkinInfo, ClientInfo.m_DDNetVersion, ClientInfo.m_InfClassVersion);
+		CInfClassPlayer *pSnappingClient = GameController()->GetPlayer(SnappingClient);
+
+		bool SameTeam = pSnappingClient && (m_Team == pSnappingClient->m_Team) && (IsHuman() == pSnappingClient->IsHuman());
+
+		const CSkinContext &SkinContext = SameTeam ? m_SameTeamSkinContext : m_DiffTeamSkinContext;
+		m_SkinGetter(SkinContext, &SkinInfo, ClientInfo.m_DDNetVersion, ClientInfo.m_InfClassVersion);
+		EventsDirector::SetupSkin(SkinContext, &SkinInfo, ClientInfo.m_DDNetVersion, ClientInfo.m_InfClassVersion);
 	}
 	else
 	{
@@ -343,7 +348,8 @@ void CInfClassPlayer::UpdateSkin()
 {
 	if(m_pInfcPlayerClass)
 	{
-		m_pInfcPlayerClass->SetupSkinContext(&m_SkinContext);
+		m_pInfcPlayerClass->SetupSkinContext(&m_SameTeamSkinContext, true);
+		m_pInfcPlayerClass->SetupSkinContext(&m_DiffTeamSkinContext, false);
 		m_SkinGetter = m_pInfcPlayerClass->GetSkinGetter();
 	}
 	else
