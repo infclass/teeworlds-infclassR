@@ -26,7 +26,12 @@ CInfClassInfected *CInfClassInfected::GetInstance(CInfClassCharacter *pCharacter
 	return nullptr;
 }
 
-SkinGetter CInfClassInfected::SetupSkin(CSkinContext *output) const
+SkinGetter CInfClassInfected::GetSkinGetter() const
+{
+	return CInfClassInfected::SetupSkin;
+}
+
+void CInfClassInfected::SetupSkinContext(CSkinContext *output) const
 {
 	output->PlayerClass = GetPlayerClass();
 	switch(GetPlayerClass())
@@ -44,8 +49,6 @@ SkinGetter CInfClassInfected::SetupSkin(CSkinContext *output) const
 		output->ExtraData1 = 0;
 		break;
 	}
-
-	return CInfClassInfected::SetupSkin;
 }
 
 bool CInfClassInfected::SetupSkin(const CSkinContext &Context, CWeakSkinInfo *pOutput, int DDNetVersion, int InfClassVersion)

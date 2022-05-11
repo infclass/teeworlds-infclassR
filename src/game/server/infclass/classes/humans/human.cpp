@@ -28,12 +28,15 @@ CInfClassHuman::CInfClassHuman(CInfClassPlayer *pPlayer)
 {
 }
 
-SkinGetter CInfClassHuman::SetupSkin(CSkinContext *pOutput) const
+SkinGetter CInfClassHuman::GetSkinGetter() const
+{
+	return CInfClassHuman::SetupSkin;
+}
+
+void CInfClassHuman::SetupSkinContext(CSkinContext *pOutput) const
 {
 	pOutput->PlayerClass = GetPlayerClass();
 	pOutput->ExtraData1 = 0;
-
-	return CInfClassHuman::SetupSkin;
 }
 
 bool CInfClassHuman::SetupSkin(const CSkinContext &Context, CWeakSkinInfo *pOutput, int DDNetVersion, int InfClassVersion)

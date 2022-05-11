@@ -341,7 +341,15 @@ void CInfClassPlayer::SetClass(int newClass)
 
 void CInfClassPlayer::UpdateSkin()
 {
-	m_SkinGetter = m_pInfcPlayerClass ? m_pInfcPlayerClass->SetupSkin(&m_SkinContext) : nullptr;
+	if(m_pInfcPlayerClass)
+	{
+		m_pInfcPlayerClass->SetupSkinContext(&m_SkinContext);
+		m_SkinGetter = m_pInfcPlayerClass->GetSkinGetter();
+	}
+	else
+	{
+		m_SkinGetter = nullptr;
+	}
 }
 
 void CInfClassPlayer::Infect(CPlayer *pInfectiousPlayer)

@@ -31,7 +31,8 @@ public:
 	virtual bool IsHuman() const = 0;
 	bool IsZombie() const;
 
-	virtual SkinGetter SetupSkin(CSkinContext *pOutput) const = 0;
+	virtual SkinGetter GetSkinGetter() const = 0;
+	virtual void SetupSkinContext(CSkinContext *pOutput) const = 0;
 
 	virtual int GetDefaultEmote() const;
 	virtual void GetAmmoRegenParams(int Weapon, WeaponRegenParams *pParams);
