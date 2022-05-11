@@ -881,6 +881,11 @@ void CCharacter::Snap(int SnappingClient)
 	pCharacter->m_PlayerFlags = GetPlayer()->m_PlayerFlags;
 }
 
+int CCharacter::NetworkClipped(int SnappingClient) const
+{
+	return CEntity::NetworkClipped(SnappingClient, m_Pos) && (m_Core.m_HookState == HOOK_IDLE || CEntity::NetworkClipped(SnappingClient, m_Core.m_HookPos));
+}
+
 /* INFECTION MODIFICATION START ***************************************/
 vec2 CCharacter::GetDirection() const
 {

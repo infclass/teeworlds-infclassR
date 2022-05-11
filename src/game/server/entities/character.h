@@ -52,6 +52,8 @@ public:
 	virtual void TickPaused();
 	virtual void Snap(int SnappingClient);
 
+	int NetworkClipped(int SnappingClient) const;
+
 	bool IsGrounded();
 
 	void SetWeapon(int W);
