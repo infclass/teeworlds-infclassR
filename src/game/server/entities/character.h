@@ -233,6 +233,8 @@ public:
 	int GetInfWeaponID(int WID) const;
 /* INFECTION MODIFICATION END *****************************************/
 
+	int GetEffectiveHookMode() const;
+
 	CCharacterCore *Core() { return &m_Core; }
 	virtual void PreCoreTick() { }
 	virtual void PostCoreTick() { }

@@ -215,6 +215,8 @@ void CInfClassInfected::OnCharacterPreCoreTick()
 					if(Len < p->GetProximityRadius())
 					{
 						m_pCharacter->SetHookedPlayer(p->GetCID());
+						// Note: typical Teeworlds clients restore m_HookMode = 1
+						// via "Direct weapon selection" / m_LatestInput.m_WantedWeapon
 						m_pCharacter->m_HookMode = 0;
 						m_pCharacter->m_Core.m_HookTick = 0;
 

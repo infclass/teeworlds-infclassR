@@ -560,7 +560,8 @@ void CCharacter::Tick()
 	{
 		CoreTickParams.m_HookGrabTime = g_Config.m_InfBatHookTime*SERVER_TICK_SPEED;
 	}
-	CoreTickParams.m_HookMode = m_HookMode;
+
+	CoreTickParams.m_HookMode = GetEffectiveHookMode();
 	
 	m_Core.Tick(true, &CoreTickParams);
 	
@@ -1109,6 +1110,14 @@ int CCharacter::GetInfWeaponID(int WID) const
 	{
 		return INFWEAPON_NONE;
 	}
+}
+
+int CCharacter::GetEffectiveHookMode() const
+{
+	if(m_Core.m_HookedPlayer >= 0)
+		return 0;
+
+	return m_HookMode;
 }
 
 /* INFECTION MODIFICATION END *****************************************/

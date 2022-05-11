@@ -2664,7 +2664,7 @@ void CInfClassCharacter::MakeBlind(int ClientID, float Duration)
 
 float CInfClassCharacter::WebHookLength() const
 {
-	if((m_HookMode != 1) && !g_Config.m_InfSpiderCatchHumans)
+	if((GetEffectiveHookMode() != 1) && !g_Config.m_InfSpiderCatchHumans)
 		return 0;
 
 	if(m_Core.m_HookState != HOOK_GRABBED)
@@ -2990,7 +2990,7 @@ void CInfClassCharacter::UpdateTuningParam()
 		}
 	}
 	
-	if(m_HookMode == 1)
+	if(GetEffectiveHookMode() == 1)
 	{
 		pTuningParams->m_HookDragSpeed = 0.0f;
 		pTuningParams->m_HookDragAccel = 1.0f;

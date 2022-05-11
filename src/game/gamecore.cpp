@@ -334,11 +334,10 @@ void CCharacterCore::Tick(bool UseInput, CParams* pParams)
 			m_HookState = HOOK_RETRACTED;
 			m_HookPos = m_Pos;
 		}
-		
-		if(pParams->m_HookMode == 1 && distance(m_HookPos, m_Pos) > g_Config.m_InfSpiderWebHookLength)
+
+		if(m_HookedPlayer < 0 && pParams->m_HookMode == 1 && distance(m_HookPos, m_Pos) > g_Config.m_InfSpiderWebHookLength)
 		{
 			// release hook
-			m_HookedPlayer = -1;
 			m_HookState = HOOK_RETRACTED;
 			m_HookPos = m_Pos;
 		}
