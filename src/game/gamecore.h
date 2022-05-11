@@ -237,6 +237,7 @@ public:
 	bool m_Infected;
 	bool m_InLove;
 	// InfClassR
+	int m_PassengerNumber = 0;
 	static const float PassengerYOffset;
 	CCharacterCore* m_Passenger;
 	bool m_IsPassenger;

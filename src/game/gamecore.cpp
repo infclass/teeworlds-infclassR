@@ -432,7 +432,20 @@ void CCharacterCore::Move(CParams* pParams)
 	m_Vel.x = m_Vel.x*RampValue;
 
 	vec2 NewPos = m_Pos;
-	m_pCollision->MoveBox(&NewPos, &m_Vel, vec2(28.0f, 28.0f), 0);
+
+	vec2 Size = vec2(PhysicalSize, PhysicalSize);
+	int PosDiff = 0;
+
+	if((g_Config.m_InfTaxiCollisions & 2) && m_PassengerNumber)
+	{
+		int PassengersExtraHeight = m_PassengerNumber * PassengerYOffset;
+		PosDiff = PassengersExtraHeight / 2;
+		Size.y += PassengersExtraHeight;
+		NewPos.y -= PosDiff;
+	}
+
+	m_pCollision->MoveBox(&NewPos, &m_Vel, Size, 0);
+	NewPos.y += PosDiff;
 
 	m_Vel.x = m_Vel.x*(1.0f/RampValue);
 
@@ -545,6 +558,21 @@ void CCharacterCore::TryBecomePassenger(CCharacterCore *pTaxi)
 	if(m_HookProtected || pTaxi->m_HookProtected)
 		return;
 
+	if(g_Config.m_InfTaxiCollisions & 1)
+	{
+		if(m_pCollision->CheckPoint(pTaxi->m_Pos + vec2(PhysicalSize / 2, -PassengerYOffset))
+				|| m_pCollision->CheckPoint(pTaxi->m_Pos + vec2(-PhysicalSize / 2, -PassengerYOffset)))
+		{
+			return;
+		}
+
+		if(m_pCollision->CheckPoint(pTaxi->m_Pos + vec2(PhysicalSize / 2, -PassengerYOffset / 2))
+				|| m_pCollision->CheckPoint(pTaxi->m_Pos + vec2(-PhysicalSize / 2, -PassengerYOffset / 2)))
+		{
+			return;
+		}
+	}
+
 	pTaxi->SetPassenger(this);
 	m_HookedPlayer = -1;
 	m_HookState = HOOK_RETRACTED;
@@ -581,6 +609,8 @@ void CCharacterCore::UpdateTaxiPassengers()
 		SetPassenger(nullptr);
 	}
 
+	m_PassengerNumber = 0;
+
 	if(m_IsPassenger)
 	{
 		// Do nothing
@@ -602,5 +632,7 @@ void CCharacterCore::UpdateTaxiPassengers()
 
 			pPassenger = pPassenger->m_Passenger;
 		}
+
+		m_PassengerNumber = PassengerNumber;
 	}
 }
