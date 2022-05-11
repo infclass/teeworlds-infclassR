@@ -242,6 +242,8 @@ public:
 	bool m_IsPassenger;
 	bool m_ProbablyStucked;
 
+	bool HasPassenger() const { return m_Passenger; }
+
 	int m_Jumped;
 
 	int m_Direction;
@@ -259,6 +261,7 @@ public:
 	void Write(CNetObj_CharacterCore *pObjCore);
 	void Quantize();
 	bool IsRecursePassenger(CCharacterCore *pMaybePassenger) const;
+	void TryBecomePassenger(CCharacterCore *pTaxi);
 	void SetPassenger(CCharacterCore *pPassenger);
 	void EnableJump();
 

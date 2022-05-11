@@ -389,13 +389,15 @@ void CCharacterCore::Tick(bool UseInput, CParams* pParams)
 					if(Distance > PhysicalSize*1.50f) // TODO: fix tweakable variable
 					{
 						// InfClassR taxi mode, todo: cleanup
-						if(g_Config.m_InfTaxi && !pCharCore->m_Passenger && (!m_Infected && !pCharCore->m_Infected && !m_HookProtected) && !IsRecursePassenger(pCharCore)) {
-							pCharCore->SetPassenger(this);
-							m_HookedPlayer = -1;
-							m_HookState = HOOK_RETRACTED;
-							m_HookPos = m_Pos;
-							continue;
+						if(g_Config.m_InfTaxi && !m_IsPassenger && !m_Infected &&!pCharCore->m_Infected)
+						{
+							TryBecomePassenger(pCharCore);
+
+							if(m_IsPassenger) {
+								continue;
+							}
 						}
+
 						// InfClassR taxi mode end
 
 						float Accel = pTuningParams->m_HookDragAccel * (Distance/pTuningParams->m_HookLength);
@@ -530,6 +532,23 @@ bool CCharacterCore::IsRecursePassenger(CCharacterCore *pMaybePassenger) const
 	}
 
 	return false;
+}
+
+void CCharacterCore::TryBecomePassenger(CCharacterCore *pTaxi)
+{
+	if(pTaxi->HasPassenger())
+		return;
+
+	if(IsRecursePassenger(pTaxi))
+		return;
+
+	if(m_HookProtected || pTaxi->m_HookProtected)
+		return;
+
+	pTaxi->SetPassenger(this);
+	m_HookedPlayer = -1;
+	m_HookState = HOOK_RETRACTED;
+	m_HookPos = m_Pos;
 }
 
 void CCharacterCore::SetPassenger(CCharacterCore *pPassenger)
