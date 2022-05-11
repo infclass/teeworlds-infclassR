@@ -2764,56 +2764,20 @@ void CInfClassCharacter::GiveGift(int GiftType)
 	IncreaseHealth(1);
 	GiveArmor(4);
 
-	switch(GetPlayerClass())
+	const auto AllWeaponsWithAmmo =
 	{
-		case PLAYERCLASS_ENGINEER:
-			GiveWeapon(WEAPON_LASER, -1);
-			GiveWeapon(WEAPON_GUN, -1);
-			break;
-		case PLAYERCLASS_SOLDIER:
-			GiveWeapon(WEAPON_GUN, -1);
-			GiveWeapon(WEAPON_GRENADE, -1);
-			break;
-		case PLAYERCLASS_SCIENTIST:
-			GiveWeapon(WEAPON_GUN, -1);
-			GiveWeapon(WEAPON_GRENADE, -1);
-			GiveWeapon(WEAPON_LASER, -1);
-			break;
-		case PLAYERCLASS_BIOLOGIST:
-			GiveWeapon(WEAPON_GUN, -1);
-			GiveWeapon(WEAPON_LASER, -1);
-			GiveWeapon(WEAPON_SHOTGUN, -1);
-			break;
-		case PLAYERCLASS_LOOPER:
-			GiveWeapon(WEAPON_LASER, -1);
-			GiveWeapon(WEAPON_GRENADE, -1);
-			break;
-		case PLAYERCLASS_MEDIC:
-			GiveWeapon(WEAPON_GUN, -1);
-			GiveWeapon(WEAPON_SHOTGUN, -1);
-			GiveWeapon(WEAPON_GRENADE, -1);
-			GiveWeapon(WEAPON_LASER, -1);
-			break;
-		case PLAYERCLASS_HERO:
-			GiveWeapon(WEAPON_GUN, -1);
-			GiveWeapon(WEAPON_SHOTGUN, -1);
-			GiveWeapon(WEAPON_GRENADE, -1);
-			GiveWeapon(WEAPON_LASER, -1);
-			break;
-		case PLAYERCLASS_NINJA:
-			GiveWeapon(WEAPON_GUN, -1);
-			GiveWeapon(WEAPON_GRENADE, -1);
-			GiveWeapon(WEAPON_LASER, -1);
-			break;
-		case PLAYERCLASS_SNIPER:
-			GiveWeapon(WEAPON_GUN, -1);
-			GiveWeapon(WEAPON_LASER, -1);
-			break;
-		case PLAYERCLASS_MERCENARY:
-			GiveWeapon(WEAPON_GUN, -1);
-			GiveWeapon(WEAPON_GRENADE, -1);
-			GiveWeapon(WEAPON_LASER, -1);
-			break;
+		WEAPON_GUN,
+		WEAPON_SHOTGUN,
+		WEAPON_GRENADE,
+		WEAPON_LASER,
+	};
+
+	for(int WeaponSlot : AllWeaponsWithAmmo)
+	{
+		if(m_aWeapons[WeaponSlot].m_Got)
+		{
+			GiveWeapon(WeaponSlot, -1);
+		}
 	}
 }
 
