@@ -275,6 +275,10 @@ void CInfClassPlayerClass::OnCharacterDeath(DAMAGE_TYPE DamageType)
 	DestroyChildEntities();
 }
 
+void CInfClassPlayerClass::OnHookAttachedPlayer()
+{
+}
+
 void CInfClassPlayerClass::OnWeaponFired(WeaponFireContext *pFireContext)
 {
 	switch(pFireContext->Weapon)

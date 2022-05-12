@@ -2859,6 +2859,14 @@ void CInfClassCharacter::PostCoreTick()
 		HandleMapMenu();
 	}
 
+	if(m_Core.m_TriggeredEvents & COREEVENT_HOOK_ATTACH_PLAYER)
+	{
+		if(m_pClass)
+		{
+			m_pClass->OnHookAttachedPlayer();
+		}
+	}
+
 	HandleWeaponsRegen();
 	HandleHookDraining();
 	HandleIndirectKillerCleanup();

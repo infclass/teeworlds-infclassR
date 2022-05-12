@@ -58,6 +58,8 @@ public:
 	virtual void OnCharacterSpawned(const SpawnContext &Context);
 	virtual void OnCharacterDeath(DAMAGE_TYPE DamageType);
 
+	virtual void OnHookAttachedPlayer();
+
 	virtual void OnWeaponFired(WeaponFireContext *pFireContext);
 
 	virtual void OnHammerFired(WeaponFireContext *pFireContext);
