@@ -6,18 +6,6 @@
 
 #include "netdatabase.h"
 
-bool CNetDatabase::StrAllnum(const char *pStr)
-{
-	while(*pStr)
-	{
-		if(!(*pStr >= '0' && *pStr <= '9'))
-			return false;
-		pStr++;
-	}
-	return true;
-}
-
-
 CNetDatabase::CNetHash::CNetHash(const NETADDR *pAddr)
 {
 	if(pAddr->type==NETTYPE_IPV4)

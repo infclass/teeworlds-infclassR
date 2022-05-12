@@ -284,7 +284,7 @@ void CServerBan::ConBanExt(IConsole::IResult *pResult, void *pUser)
 	const char *pReason = pResult->NumArguments()>2 ? pResult->GetString(2) : "No reason given";
 	pThis->m_BanID = -1;
 
-	if(StrAllnum(pStr))
+	if(str_isallnum(pStr))
 	{
 		int ClientID = str_toint(pStr);
 		if(ClientID < 0 || ClientID >= MAX_CLIENTS || pThis->Server()->m_aClients[ClientID].m_State == CServer::CClient::STATE_EMPTY)
@@ -2578,7 +2578,7 @@ void CServer::ConUnmute(IConsole::IResult *pResult, void *pUser)
 	
 	const char *pStr = pResult->GetString(0);
 	
-	if(CNetDatabase::StrAllnum(pStr))
+	if(str_isallnum(pStr))
 	{
 		int ClientID = str_toint(pStr);
 		if(ClientID < 0 || ClientID >= MAX_CLIENTS || pThis->m_aClients[ClientID].m_State == CServer::CClient::STATE_EMPTY)
@@ -2598,7 +2598,7 @@ void CServer::ConMute(IConsole::IResult *pResult, void *pUser)
 	int Minutes = pResult->NumArguments()>1 ? clamp(pResult->GetInteger(1), 0, 44640) : 5;
 	const char *pReason = pResult->NumArguments()>2 ? pResult->GetString(2) : "No reason given";
 	
-	if(CNetDatabase::StrAllnum(pStr))
+	if(str_isallnum(pStr))
 	{
 		int ClientID = str_toint(pStr);
 		if(ClientID < 0 || ClientID >= MAX_CLIENTS || pThis->m_aClients[ClientID].m_State == CServer::CClient::STATE_EMPTY)
@@ -2621,7 +2621,7 @@ void CServer::ConWhisper(IConsole::IResult *pResult, void *pUser)
 	const char *pStrClientID = pResult->GetString(0);
 	const char *pText = pResult->GetString(1);
 
-	if(CNetDatabase::StrAllnum(pStrClientID))
+	if(str_isallnum(pStrClientID))
 	{
 		int ClientID = str_toint(pStrClientID);
 		if(ClientID < 0 || ClientID >= MAX_CLIENTS || pThis->m_aClients[ClientID].m_State == CServer::CClient::STATE_EMPTY)
@@ -2657,7 +2657,7 @@ void CServer::ConKick(IConsole::IResult *pResult, void *pUser)
 	const char *pReason = pResult->NumArguments()>1 ? pResult->GetString(1) : "No reason given";
 	str_format(aBuf, sizeof(aBuf), "Kicked (%s)", pReason);
 
-	if(CNetDatabase::StrAllnum(pStr))
+	if(str_isallnum(pStr))
 	{
 		int ClientID = str_toint(pStr);
 		if(ClientID < 0 || ClientID >= MAX_CLIENTS || pThis->m_aClients[ClientID].m_State == CServer::CClient::STATE_EMPTY)
