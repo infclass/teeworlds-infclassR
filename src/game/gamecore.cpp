@@ -388,18 +388,6 @@ void CCharacterCore::Tick(bool UseInput, CParams* pParams)
 				{
 					if(Distance > PhysicalSize*1.50f) // TODO: fix tweakable variable
 					{
-						// InfClassR taxi mode, todo: cleanup
-						if(g_Config.m_InfTaxi && !m_IsPassenger && !m_Infected &&!pCharCore->m_Infected)
-						{
-							TryBecomePassenger(pCharCore);
-
-							if(m_IsPassenger) {
-								continue;
-							}
-						}
-
-						// InfClassR taxi mode end
-
 						float Accel = pTuningParams->m_HookDragAccel * (Distance/pTuningParams->m_HookLength);
 						float DragSpeed = pTuningParams->m_HookDragSpeed;
 

@@ -257,6 +257,25 @@ void CInfClassHuman::OnCharacterSnap(int SnappingClient)
 	}
 }
 
+
+void CInfClassHuman::OnHookAttachedPlayer()
+{
+	if(!m_pCharacter)
+		return;
+
+	if(m_pCharacter->IsPassenger())
+		return;
+
+	if(!Config()->m_InfTaxi)
+		return;
+
+	CCharacter *pHookedCharacter = GameController()->GetCharacter(m_pCharacter->GetHookedPlayer());
+	if(!pHookedCharacter || !pHookedCharacter->IsHuman())
+		return;
+
+	m_pCharacter->m_Core.TryBecomePassenger(&pHookedCharacter->m_Core);
+}
+
 void CInfClassHuman::OnHammerFired(WeaponFireContext *pFireContext)
 {
 	switch(GetPlayerClass())

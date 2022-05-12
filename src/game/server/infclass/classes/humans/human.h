@@ -26,6 +26,8 @@ public:
 	void OnCharacterTick() override;
 	void OnCharacterSnap(int SnappingClient) override;
 
+	void OnHookAttachedPlayer() override;
+
 	void OnHammerFired(WeaponFireContext *pFireContext) override;
 	void OnGrenadeFired(WeaponFireContext *pFireContext) override;
 	void OnLaserFired(WeaponFireContext *pFireContext) override;
