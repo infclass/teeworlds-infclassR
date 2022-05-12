@@ -4,6 +4,7 @@
 #define ENGINE_CONSOLE_H
 
 #include "kernel.h"
+#include <base/color.h>
 
 class IConsole : public IInterface
 {
@@ -23,7 +24,7 @@ public:
 
 		TEMPCMD_NAME_LENGTH=32,
 		TEMPCMD_HELP_LENGTH=96,
-		TEMPCMD_PARAMS_LENGTH=16,
+		TEMPCMD_PARAMS_LENGTH = 96,
 
 		MAX_PRINT_CB=4,
 	};
@@ -43,6 +44,7 @@ public:
 		virtual int GetInteger(unsigned Index) = 0;
 		virtual float GetFloat(unsigned Index) = 0;
 		virtual const char *GetString(unsigned Index) = 0;
+		virtual ColorHSLA GetColor(unsigned Index, bool Light) = 0;
 		
 		int GetClientID() { return m_ClientID; }
 		bool GetTeamChat() { return m_TeamChat; }
@@ -63,7 +65,6 @@ public:
 		CCommandInfo() { m_AccessLevel = ACCESS_LEVEL_ADMIN; }
 		virtual ~CCommandInfo() {}
 		const char *m_pName;
-		char m_pUsage[128];
 		const char *m_pHelp;
 		const char *m_pParams;
 
@@ -91,8 +92,8 @@ public:
 	virtual void StoreCommands(bool Store) = 0;
 
 	virtual bool LineIsValid(const char *pStr) = 0;
-	virtual void ExecuteLine(const char *Sptr, int ClientID, bool TeamChat) = 0;
-	virtual void ExecuteLineFlag(const char *Sptr, int ClientID, bool TeamChat, int FlasgMask) = 0;
+	virtual void ExecuteLine(const char *Sptr, int ClientID = -1, bool TeamChat = false) = 0;
+	virtual void ExecuteLineFlag(const char *Sptr, int FlasgMask, int ClientID, bool TeamChat) = 0;
 	virtual void ExecuteLineStroked(int Stroke, const char *pStr, int ClientID, bool TeamChat) = 0;
 	virtual void ExecuteFile(const char *pFilename) = 0;
 

@@ -1987,7 +1987,7 @@ void CGameContext::OnMessage(int MsgID, CUnpacker *pUnpacker, int ClientID)
 					}
 					m_ChatResponseTargetID = ClientID;
 
-					Console()->ExecuteLineFlag(pMsg->m_pMessage + 1, ClientID, (Team != CGameContext::CHAT_ALL), CFGFLAG_CHAT);
+					Console()->ExecuteLineFlag(pMsg->m_pMessage + 1, CFGFLAG_CHAT, ClientID, (Team != CGameContext::CHAT_ALL));
 
 					m_ChatResponseTargetID = -1;
 					Console()->SetAccessLevel(IConsole::ACCESS_LEVEL_ADMIN);

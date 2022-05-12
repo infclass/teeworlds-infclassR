@@ -1608,7 +1608,7 @@ void CServer::ProcessClientPacket(CNetChunk *pPacket)
 					default:
 						Console()->SetAccessLevel(IConsole::ACCESS_LEVEL_USER);
 				}	
-				Console()->ExecuteLineFlag(pCmd, ClientID, false, CFGFLAG_SERVER);
+				Console()->ExecuteLineFlag(pCmd, CFGFLAG_SERVER, ClientID, false);
 				Console()->SetAccessLevel(IConsole::ACCESS_LEVEL_ADMIN);
 				m_RconClientID = IServer::RCON_CID_SERV;
 				m_RconAuthLevel = AUTHED_ADMIN;

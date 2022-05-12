@@ -35,7 +35,7 @@ class CConsole : public IConsole
 
 	int m_FlagMask;
 	bool m_StoreCommands;
-	const char *m_paStrokeStr[2];
+	const char *m_apStrokeStr[2];
 	CCommand *m_pFirstCommand;
 
 	class CExecFile
@@ -119,6 +119,7 @@ class CConsole : public IConsole
 		virtual const char *GetString(unsigned Index);
 		virtual int GetInteger(unsigned Index);
 		virtual float GetFloat(unsigned Index);
+		virtual ColorHSLA GetColor(unsigned Index, bool Light);
 
 		virtual void RemoveArgument(unsigned Index)
 		{
@@ -134,8 +135,6 @@ class CConsole : public IConsole
 	int ParseArgs(CResult *pResult, const char *pFormat);
 
 	char NextParam(const char *&pFormat);
-	
-	void GenerateUsage(const char* pParam, char* pUsage);
 	
 	class CExecutionQueue
 	{
@@ -192,8 +191,8 @@ public:
 	virtual void StoreCommands(bool Store);
 
 	virtual bool LineIsValid(const char *pStr);
-	virtual void ExecuteLine(const char *pStr, int ClientID, bool TeamChat);
-	virtual void ExecuteLineFlag(const char *pStr, int ClientID, bool TeamChat, int FlagMask);
+	virtual void ExecuteLine(const char *pStr, int ClientID = -1, bool TeamChat = false);
+	virtual void ExecuteLineFlag(const char *pStr, int FlagMask, int ClientID, bool TeamChat);
 	virtual void ExecuteFile(const char *pFilename);
 
 	virtual int RegisterPrintCallback(int OutputLevel, FPrintCallback pfnPrintCallback, void *pUserData);
