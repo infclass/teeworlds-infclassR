@@ -2567,7 +2567,7 @@ void CInfClassCharacter::SetHookedPlayer(int ClientID)
 {
 	m_Core.m_HookedPlayer = ClientID;
 
-	if(ClientID > 0)
+	if(ClientID >= 0)
 	{
 		m_Core.m_HookTick = 0;
 		m_Core.m_TriggeredEvents |= COREEVENT_HOOK_ATTACH_PLAYER;
