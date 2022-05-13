@@ -85,7 +85,6 @@ class CGameContext : public IGameServer
 	CCollision m_Collision;
 	CNetObjHandler m_NetObjHandler;
 	CTuningParams m_Tuning;
-	int m_HeroGiftCooldown;
 
 	static void ConTuneParam(IConsole::IResult *pResult, void *pUserData);
 	static void ConToggleTuneParam(IConsole::IResult *pResult, void *pUserData);
@@ -233,7 +232,6 @@ public:
 
 	// engine events
 	virtual void OnInit();
-	virtual void OnStartRound();
 	virtual void OnConsoleInit();
 	virtual void OnShutdown();
 
@@ -412,8 +410,6 @@ public:
 	std::vector<FunRoundConfiguration> m_FunRoundConfigurations;
 
 public:
-	virtual int GetHeroGiftCoolDown() { return m_HeroGiftCooldown; }
-	virtual void FlagCollected(); // Triggers global gift cooldown
 /* INFECTION MODIFICATION END *****************************************/
 	// InfClassR begin
 	std::ofstream fout;

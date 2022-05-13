@@ -67,7 +67,6 @@ void CGameContext::Construct(int Resetting)
 	m_pVoteOptionFirst = 0;
 	m_pVoteOptionLast = 0;
 	m_NumVoteOptions = 0;
-	m_HeroGiftCooldown = 0;
 	
 	m_ChatResponseTargetID = -1;
 
@@ -1028,9 +1027,6 @@ void CGameContext::OnTick()
 			}
 		}
 	}
-
-	if(m_HeroGiftCooldown > 0)
-		m_HeroGiftCooldown--;
 
 	//Check for banvote
 	if(!m_VoteCloseTime)
@@ -4387,11 +4383,6 @@ void CGameContext::OnInit(/*class IKernel *pKernel*/)
 	m_pController->InitSmartMapRotation();
 }
 
-void CGameContext::OnStartRound()
-{
-	m_HeroGiftCooldown = 0;
-}
-
 void CGameContext::OnShutdown()
 {
 	//reset votes.
@@ -4497,15 +4488,6 @@ void CGameContext::OnSnap(int ClientID)
 		if(m_apPlayers[i])
 			m_apPlayers[i]->Snap(ClientID);
 	}
-}
-
-void CGameContext::FlagCollected()
-{
-	float t = (8-Server()->GetActivePlayerCount()) / 8.0f;
-	if (t < 0.0f) 
-		t = 0.0f;
-
-	m_HeroGiftCooldown = Server()->TickSpeed() * (15+(120*t));
 }
 
 void CGameContext::OnPreSnap() {}

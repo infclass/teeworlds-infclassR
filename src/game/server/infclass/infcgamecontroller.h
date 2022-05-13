@@ -86,6 +86,9 @@ public:
 	bool CanVote() override;
 	void OnPlayerDisconnect(CPlayer *pPlayer, int Type, const char *pReason) override;
 	void OnPlayerInfected(CInfClassPlayer *pPlayer, CInfClassPlayer *pInfectiousPlayer, int PreviousClass);
+
+	void OnHeroFlagCollected();
+
 	bool IsInfectionStarted() const;
 	bool CanJoinTeam(int Team, int ClientID) override;
 	bool AreTurretsEnabled() const;
@@ -103,6 +106,8 @@ public:
 	void EnableTargetToKill() { m_TargetToKill = (m_TargetToKill < 0 ? -1 : m_TargetToKill); }
 	void DisableTargetToKill() { m_TargetToKill = -2; }
 	int GetTargetToKillCoolDown() { return m_TargetToKillCoolDown; }
+
+	int GetHeroGiftCoolDown() const { return m_HeroGiftCooldown; }
 
 	void ResetFinalExplosion();
 	void SaveRoundRules();
@@ -186,6 +191,8 @@ private:
 	int m_MapHeight;
 	int* m_GrowingMap;
 	bool m_ExplosionStarted;
+
+	int m_HeroGiftCooldown = 0;
 
 	int m_TargetToKill;
 	int m_TargetToKillCoolDown;

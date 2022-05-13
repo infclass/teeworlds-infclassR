@@ -189,6 +189,15 @@ void CInfClassGameController::OnPlayerInfected(CInfClassPlayer *pPlayer, CInfCla
 	}
 }
 
+void CInfClassGameController::OnHeroFlagCollected()
+{
+	float t = (8-Server()->GetActivePlayerCount()) / 8.0f;
+	if (t < 0.0f)
+		t = 0.0f;
+
+	m_HeroGiftCooldown = Server()->TickSpeed() * (15+(120*t));
+}
+
 bool CInfClassGameController::OnEntity(const char* pName, vec2 Pivot, vec2 P0, vec2 P1, vec2 P2, vec2 P3, int PosEnv)
 {
 	bool res = IGameController::OnEntity(pName, Pivot, P0, P1, P2, P3, PosEnv);
@@ -1575,7 +1584,6 @@ void CInfClassGameController::StartRound()
 	IGameController::StartRound();
 
 	Server()->ResetStatistics();
-	GameServer()->OnStartRound();
 
 	for(int i = 0; i < MAX_CLIENTS; i++)
 	{
@@ -1586,6 +1594,8 @@ void CInfClassGameController::StartRound()
 			pPlayer->OnStartRound();
 		}
 	}
+
+	m_HeroGiftCooldown = 0;
 
 	OnStartRound();
 }
@@ -1881,6 +1891,9 @@ void CInfClassGameController::Tick()
 
 	HandleTargetsToKill();
 	HandleLastHookers();
+
+	if(m_HeroGiftCooldown > 0)
+		m_HeroGiftCooldown--;
 
 	if(m_SuggestMoreRounds && !GameServer()->HasActiveVote())
 	{
