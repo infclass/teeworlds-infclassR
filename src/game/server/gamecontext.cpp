@@ -2309,6 +2309,28 @@ void CGameContext::ConTuneParam(IConsole::IResult *pResult, void *pUserData)
 		pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "tuning", "No such tuning parameter");
 }
 
+void CGameContext::ConToggleTuneParam(IConsole::IResult *pResult, void *pUserData)
+{
+	CGameContext *pSelf = (CGameContext *)pUserData;
+	const char *pParamName = pResult->GetString(0);
+	float OldValue;
+
+	if(!pSelf->Tuning()->Get(pParamName, &OldValue))
+	{
+		pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "tuning", "No such tuning parameter");
+		return;
+	}
+
+	float NewValue = fabs(OldValue - pResult->GetFloat(1)) < 0.0001f ? pResult->GetFloat(2) : pResult->GetFloat(1);
+
+	pSelf->Tuning()->Set(pParamName, NewValue);
+
+	char aBuf[256];
+	str_format(aBuf, sizeof(aBuf), "%s changed to %.2f", pParamName, NewValue);
+	pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "tuning", aBuf);
+	pSelf->SendTuningParams(-1);
+}
+
 void CGameContext::ConTuneReset(IConsole::IResult *pResult, void *pUserData)
 {
 	CGameContext *pSelf = (CGameContext *)pUserData;
@@ -4192,26 +4214,23 @@ void CGameContext::ConAddFunRound(IConsole::IResult *pResult, void *pUserData)
 void CGameContext::OnConsoleInit()
 {
 	m_pServer = Kernel()->RequestInterface<IServer>();
-	m_pConfig = &g_Config;
-	m_pStorage = Kernel()->RequestInterface<IStorage>();
+	m_pConfig = Kernel()->RequestInterface<IConfigManager>()->Values();
 	m_pConsole = Kernel()->RequestInterface<IConsole>();
+	m_pStorage = Kernel()->RequestInterface<IStorage>();
 
 	m_ChatPrintCBIndex = Console()->RegisterPrintCallback(IConsole::OUTPUT_LEVEL_STANDARD, ChatConsolePrintCallback, this);
 
-	Console()->Register("tune", "s<param> i<value>", CFGFLAG_SERVER, ConTuneParam, this, "Tune variable to value");
+	Console()->Register("tune", "s[tuning] i[value]", CFGFLAG_SERVER | CFGFLAG_GAME, ConTuneParam, this, "Tune variable to value");
+	Console()->Register("toggle_tune", "s[tuning] i[value 1] i[value 2]", CFGFLAG_SERVER | CFGFLAG_GAME, ConToggleTuneParam, this, "Toggle tune variable");
 	Console()->Register("tune_reset", "", CFGFLAG_SERVER, ConTuneReset, this, "Reset tuning");
 	Console()->Register("tune_dump", "", CFGFLAG_SERVER, ConTuneDump, this, "Dump tuning");
-
-	Console()->Register("pause", "", CFGFLAG_SERVER, ConPause, this, "Pause/unpause game");
-	Console()->Register("change_map", "?r", CFGFLAG_SERVER|CFGFLAG_STORE, ConChangeMap, this, "Change map");
-	Console()->Register("skip_map", "", CFGFLAG_SERVER|CFGFLAG_STORE, ConSkipMap, this, "Change map to the next in the rotation");
-	Console()->Register("queue_map", "s", CFGFLAG_SERVER|CFGFLAG_STORE, ConQueueMap, this, "Set the next map");
-	Console()->Register("add_map", "s", CFGFLAG_SERVER|CFGFLAG_STORE, ConAddMap, this, "Add a map to the maps rotation list");
-	Console()->Register("restart", "?i<sec>", CFGFLAG_SERVER|CFGFLAG_STORE, ConRestart, this, "Restart in x seconds (0 = abort)");
-	Console()->Register("broadcast", "r<message>", CFGFLAG_SERVER, ConBroadcast, this, "Broadcast message");
-	Console()->Register("say", "r", CFGFLAG_SERVER, ConSay, this, "Say in chat");
-	Console()->Register("set_team", "ii?i", CFGFLAG_SERVER, ConSetTeam, this, "Set team of player to team");
-	Console()->Register("set_team_all", "i", CFGFLAG_SERVER, ConSetTeamAll, this, "Set team of all players to team");
+	Console()->Register("pause_game", "", CFGFLAG_SERVER, ConPause, this, "Pause/unpause game");
+	Console()->Register("change_map", "?r[map]", CFGFLAG_SERVER | CFGFLAG_STORE, ConChangeMap, this, "Change map");
+	Console()->Register("restart", "?i[seconds]", CFGFLAG_SERVER | CFGFLAG_STORE, ConRestart, this, "Restart in x seconds (0 = abort)");
+	Console()->Register("broadcast", "r[message]", CFGFLAG_SERVER, ConBroadcast, this, "Broadcast message");
+	Console()->Register("say", "r[message]", CFGFLAG_SERVER, ConSay, this, "Say in chat");
+	Console()->Register("set_team", "i[id] i[team-id] ?i[delay in minutes]", CFGFLAG_SERVER, ConSetTeam, this, "Set team of player to team");
+	Console()->Register("set_team_all", "i[team-id]", CFGFLAG_SERVER, ConSetTeamAll, this, "Set team of all players to team");
 
 	Console()->Register("add_vote", "s[name] r[command]", CFGFLAG_SERVER, ConAddVote, this, "Add a voting option");
 	Console()->Register("remove_vote", "r[name]", CFGFLAG_SERVER, ConRemoveVote, this, "remove a voting option");
@@ -4220,12 +4239,15 @@ void CGameContext::OnConsoleInit()
 	Console()->Register("add_map_votes", "", CFGFLAG_SERVER, ConAddMapVotes, this, "Automatically adds voting options for all maps");
 	Console()->Register("vote", "r['yes'|'no']", CFGFLAG_SERVER, ConVote, this, "Force a vote to yes/no");
 
+/* INFECTION MODIFICATION START ***************************************/
+	Console()->Register("skip_map", "", CFGFLAG_SERVER|CFGFLAG_STORE, ConSkipMap, this, "Change map to the next in the rotation");
+	Console()->Register("queue_map", "?r[map]", CFGFLAG_SERVER|CFGFLAG_STORE, ConQueueMap, this, "Set the next map");
+	Console()->Register("add_map", "?r[map]", CFGFLAG_SERVER|CFGFLAG_STORE, ConAddMap, this, "Add a map to the maps rotation list");
+
 	Console()->Register("start_fun_round", "", CFGFLAG_SERVER, ConStartFunRound, this, "Start fun round");
 	Console()->Register("start_special_fun_round", "ss?s", CFGFLAG_SERVER, ConStartSpecialFunRound, this, "Start fun round");
 	Console()->Register("clear_fun_rounds", "", CFGFLAG_SERVER, ConClearFunRounds, this, "Start fun round");
 	Console()->Register("add_fun_round", "ss?s", CFGFLAG_SERVER, ConAddFunRound, this, "Start fun round");
-	
-/* INFECTION MODIFICATION START ***************************************/
 	
 	//Chat Command
 	Console()->Register("version", "", CFGFLAG_SERVER, ConVersion, this, "Display information about the server version and build");
@@ -4233,25 +4255,25 @@ void CGameContext::OnConsoleInit()
 	Console()->Register("credits", "", CFGFLAG_CHAT, ConCredits, this, "Shows the credits of the mod");
 	Console()->Register("about", "", CFGFLAG_CHAT, ConAbout, this, "Display information about the mod");
 	Console()->Register("info", "", CFGFLAG_CHAT, ConAbout, this, "Display information about the mod");
-	Console()->Register("register", "s<username> s<password> ?s<email>", CFGFLAG_CHAT, ConRegister, this, "Create an account");
-	Console()->Register("login", "s<username> s<password>", CFGFLAG_CHAT, ConLogin, this, "Login to an account");
+	Console()->Register("register", "s[username] s[password] ?s[email]", CFGFLAG_CHAT, ConRegister, this, "Create an account");
+	Console()->Register("login", "s[username] s[password]", CFGFLAG_CHAT, ConLogin, this, "Login to an account");
 	Console()->Register("logout", "", CFGFLAG_CHAT, ConLogout, this, "Logout");
 #ifdef CONF_SQL
-	Console()->Register("setemail", "s<email>", CFGFLAG_CHAT, ConSetEmail, this, "Change your email");
+	Console()->Register("setemail", "s[email]", CFGFLAG_CHAT, ConSetEmail, this, "Change your email");
 	
-	Console()->Register("top10", "?s<classname>", CFGFLAG_CHAT, ConTop10, this, "Show the top 10 on the current map");
+	Console()->Register("top10", "?s[classname]", CFGFLAG_CHAT, ConTop10, this, "Show the top 10 on the current map");
 	Console()->Register("challenge", "", CFGFLAG_CHAT, ConChallenge, this, "Show the current winner of the challenge");
-	Console()->Register("rank", "?s<classname>", CFGFLAG_CHAT, ConRank, this, "Show your rank");
-	Console()->Register("goal", "?s<classname>", CFGFLAG_CHAT, ConGoal, this, "Show your goal");
+	Console()->Register("rank", "?s[classname]", CFGFLAG_CHAT, ConRank, this, "Show your rank");
+	Console()->Register("goal", "?s[classname]", CFGFLAG_CHAT, ConGoal, this, "Show your goal");
 	Console()->Register("stats", "i", CFGFLAG_CHAT, ConStats, this, "Show stats by id");
 #endif
-	Console()->Register("help", "?s<page>", CFGFLAG_CHAT, ConHelp, this, "Display help");
-	Console()->Register("reload_changelog", "?i<page>", CFGFLAG_SERVER, ConReloadChangeLog, this, "Reload the changelog file");
-	Console()->Register("changelog", "?i<page>", CFGFLAG_CHAT, ConChangeLog, this, "Display a changelog page");
-	Console()->Register("alwaysrandom", "i<0|1>", CFGFLAG_CHAT, ConAlwaysRandom, this, "Display information about the mod");
-	Console()->Register("antiping", "i<0|1>", CFGFLAG_CHAT, ConAntiPing, this, "Try to improve your ping");
-	Console()->Register("language", "s<en|fr|nl|de|bg|sr-Latn|hr|cs|pl|uk|ru|el|la|it|es|pt|hu|ar|tr|sah|fa|tl|zh-CN|ja>", CFGFLAG_CHAT, ConLanguage, this, "Set the language");
-	Console()->Register("lang", "s<en|fr|nl|de|bg|sr-Latn|hr|cs|pl|uk|ru|el|la|it|es|pt|hu|ar|tr|sah|fa|tl|zh-CN|ja>", CFGFLAG_CHAT, ConLanguage, this, "Set the language");
+	Console()->Register("help", "?s[page]", CFGFLAG_CHAT, ConHelp, this, "Display help");
+	Console()->Register("reload_changelog", "?i[page]", CFGFLAG_SERVER, ConReloadChangeLog, this, "Reload the changelog file");
+	Console()->Register("changelog", "?i[page]", CFGFLAG_CHAT, ConChangeLog, this, "Display a changelog page");
+	Console()->Register("alwaysrandom", "i[0|1]", CFGFLAG_CHAT, ConAlwaysRandom, this, "Display information about the mod");
+	Console()->Register("antiping", "i[0|1]", CFGFLAG_CHAT, ConAntiPing, this, "Try to improve your ping");
+	Console()->Register("language", "s[en|fr|nl|de|bg|sr-Latn|hr|cs|pl|uk|ru|el|la|it|es|pt|hu|ar|tr|sah|fa|tl|zh-CN|ja]", CFGFLAG_CHAT, ConLanguage, this, "Set the language");
+	Console()->Register("lang", "s[en|fr|nl|de|bg|sr-Latn|hr|cs|pl|uk|ru|el|la|it|es|pt|hu|ar|tr|sah|fa|tl|zh-CN|ja]", CFGFLAG_CHAT, ConLanguage, this, "Set the language");
 	Console()->Register("cmdlist", "", CFGFLAG_CHAT, ConCmdList, this, "List of commands");
 /* INFECTION MODIFICATION END *****************************************/
 

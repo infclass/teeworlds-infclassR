@@ -88,6 +88,7 @@ class CGameContext : public IGameServer
 	int m_HeroGiftCooldown;
 
 	static void ConTuneParam(IConsole::IResult *pResult, void *pUserData);
+	static void ConToggleTuneParam(IConsole::IResult *pResult, void *pUserData);
 	static void ConTuneReset(IConsole::IResult *pResult, void *pUserData);
 	static void ConTuneDump(IConsole::IResult *pResult, void *pUserData);
 	static void ConPause(IConsole::IResult *pResult, void *pUserData);
