@@ -30,12 +30,10 @@ protected:
 	void DoActivityCheck();
 
 /* INFECTION MODIFICATION START ***************************************/
-	array<vec2> m_HeroFlagPositions;
 	array<vec2> m_SpawnPoints[2];
 	int m_RoundId;
 	
 public:
-	inline const array<vec2>& HeroFlagPositions() const { return m_HeroFlagPositions; }
 /* INFECTION MODIFICATION START ***************************************/
 
 	void OnMapAdded(const char *pMapName);

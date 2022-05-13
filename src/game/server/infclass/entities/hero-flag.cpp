@@ -83,16 +83,14 @@ void CHeroFlag::GiveGift(CInfClassCharacter* pHero)
 				nullptr);
 		}
 	}
-		
+
 	// Only increase your *own* character health when on cooldown
-	if (GameController()->GetHeroGiftCoolDown() > 0)
+	if(!GameController()->HeroGiftAvailable())
 		return;
 
-	// Find other players	
-	GameServer()->SendBroadcast_Localization(-1, BROADCAST_PRIORITY_GAMEANNOUNCE, BROADCAST_DURATION_GAMEANNOUNCE, _("The Hero found the flag!"), NULL);
-	GameServer()->CreateSoundGlobal(SOUND_CTF_CAPTURE);
-	GameController()->OnHeroFlagCollected();
+	GameController()->OnHeroFlagCollected(GetOwner());
 
+	// Find other players	
 	for(CInfClassCharacter *p = (CInfClassCharacter*) GameWorld()->FindFirst(CGameWorld::ENTTYPE_CHARACTER); p; p = (CInfClassCharacter *)p->TypeNext())
 	{
 		if(p->IsZombie() || p == pHero)
@@ -155,7 +153,7 @@ void CHeroFlag::Snap(int SnappingClient)
 	if(pOwnerPlayer->GetClass() != PLAYERCLASS_HERO)
 		return;
 
-	if(GameController()->GetHeroGiftCoolDown() <= 0)
+	if(GameController()->HeroGiftAvailable())
 	{
 		const float Speed = 0.1f;
 		float AngleStart = (2.0f * pi * Server()->Tick()/static_cast<float>(Server()->TickSpeed())) * Speed;

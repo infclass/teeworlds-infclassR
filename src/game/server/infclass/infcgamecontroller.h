@@ -87,7 +87,7 @@ public:
 	void OnPlayerDisconnect(CPlayer *pPlayer, int Type, const char *pReason) override;
 	void OnPlayerInfected(CInfClassPlayer *pPlayer, CInfClassPlayer *pInfectiousPlayer, int PreviousClass);
 
-	void OnHeroFlagCollected();
+	void OnHeroFlagCollected(int ClientID);
 
 	bool IsInfectionStarted() const;
 	bool CanJoinTeam(int Team, int ClientID) override;
@@ -107,7 +107,8 @@ public:
 	void DisableTargetToKill() { m_TargetToKill = -2; }
 	int GetTargetToKillCoolDown() { return m_TargetToKillCoolDown; }
 
-	int GetHeroGiftCoolDown() const { return m_HeroGiftCooldown; }
+	bool HeroGiftAvailable() const;
+	const array<vec2> &HeroFlagPositions() const { return m_HeroFlagPositions; }
 
 	void ResetFinalExplosion();
 	void SaveRoundRules();
@@ -192,7 +193,8 @@ private:
 	int* m_GrowingMap;
 	bool m_ExplosionStarted;
 
-	int m_HeroGiftCooldown = 0;
+	array<vec2> m_HeroFlagPositions;
+	int m_HeroGiftTick = 0;
 
 	int m_TargetToKill;
 	int m_TargetToKillCoolDown;

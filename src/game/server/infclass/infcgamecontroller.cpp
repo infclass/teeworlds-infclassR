@@ -189,13 +189,20 @@ void CInfClassGameController::OnPlayerInfected(CInfClassPlayer *pPlayer, CInfCla
 	}
 }
 
-void CInfClassGameController::OnHeroFlagCollected()
+void CInfClassGameController::OnHeroFlagCollected(int ClientID)
 {
-	float t = (8-Server()->GetActivePlayerCount()) / 8.0f;
+	GameServer()->SendBroadcast_Localization(-1, BROADCAST_PRIORITY_GAMEANNOUNCE, BROADCAST_DURATION_GAMEANNOUNCE, _("The Hero found the flag!"), NULL);
+	GameServer()->CreateSoundGlobal(SOUND_CTF_CAPTURE);
+
+	int Tick = Server()->Tick();
+	if(Tick < m_HeroGiftTick)
+		return;
+
+	float t = (8 - Server()->GetActivePlayerCount()) / 8.0f;
 	if (t < 0.0f)
 		t = 0.0f;
 
-	m_HeroGiftCooldown = Server()->TickSpeed() * (15+(120*t));
+	m_HeroGiftTick = Tick + Server()->TickSpeed() * (15 + (120 * t));
 }
 
 bool CInfClassGameController::OnEntity(const char* pName, vec2 Pivot, vec2 P0, vec2 P1, vec2 P2, vec2 P3, int PosEnv)
@@ -1595,7 +1602,7 @@ void CInfClassGameController::StartRound()
 		}
 	}
 
-	m_HeroGiftCooldown = 0;
+	m_HeroGiftTick = 0;
 
 	OnStartRound();
 }
@@ -1892,8 +1899,10 @@ void CInfClassGameController::Tick()
 	HandleTargetsToKill();
 	HandleLastHookers();
 
-	if(m_HeroGiftCooldown > 0)
-		m_HeroGiftCooldown--;
+	if(GameServer()->m_World.m_Paused)
+	{
+		m_HeroGiftTick++;
+	}
 
 	if(m_SuggestMoreRounds && !GameServer()->HasActiveVote())
 	{
@@ -2230,6 +2239,11 @@ void CInfClassGameController::TargetKilled()
 		PlayerCounter++;
 
 	m_TargetToKillCoolDown = Server()->TickSpeed()*(10 + 3*maximum(0, 16 - PlayerCounter));
+}
+
+bool CInfClassGameController::HeroGiftAvailable() const
+{
+	return Server()->Tick() >= m_HeroGiftTick;
 }
 
 void CInfClassGameController::Snap(int SnappingClient)
