@@ -275,6 +275,10 @@ void CInfClassPlayerClass::OnCharacterDeath(DAMAGE_TYPE DamageType)
 	DestroyChildEntities();
 }
 
+void CInfClassPlayerClass::OnKilledCharacter(int Victim, bool Assisted)
+{
+}
+
 void CInfClassPlayerClass::OnHookAttachedPlayer()
 {
 }

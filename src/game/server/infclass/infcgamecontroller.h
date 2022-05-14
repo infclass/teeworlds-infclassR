@@ -101,11 +101,7 @@ public:
 
 	bool IsSpawnable(vec2 Pos, int TeleZoneIndex) override;
 
-	int GetTargetToKill() const;
-	void TargetKilled();
-	void EnableTargetToKill() { m_TargetToKill = (m_TargetToKill < 0 ? -1 : m_TargetToKill); }
-	void DisableTargetToKill() { m_TargetToKill = -2; }
-	int GetTargetToKillCoolDown() { return m_TargetToKillCoolDown; }
+	const ClientsArray &GetValidNinjaTargets() const { return m_NinjaTargets; }
 
 	bool HeroGiftAvailable() const;
 	const array<vec2> &HeroFlagPositions() const { return m_HeroFlagPositions; }
@@ -172,7 +168,7 @@ protected:
 	void AnnounceTheWinner(int NumHumans, int Seconds);
 
 private:
-	void HandleTargetsToKill();
+	void UpdateNinjaTargets();
 
 	void ReservePlayerOwnSnapItems();
 	void FreePlayerOwnSnapItems();
@@ -196,6 +192,7 @@ private:
 	array<vec2> m_HeroFlagPositions;
 	int m_HeroGiftTick = 0;
 
+	ClientsArray m_NinjaTargets;
 	int m_TargetToKill;
 	int m_TargetToKillCoolDown;
 

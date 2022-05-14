@@ -58,6 +58,8 @@ public:
 	virtual void OnCharacterSpawned(const SpawnContext &Context);
 	virtual void OnCharacterDeath(DAMAGE_TYPE DamageType);
 
+	virtual void OnKilledCharacter(int Victim, bool Assisted);
+
 	virtual void OnHookAttachedPlayer();
 
 	virtual void OnWeaponFired(WeaponFireContext *pFireContext);

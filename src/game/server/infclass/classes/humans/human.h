@@ -28,6 +28,8 @@ public:
 	void OnCharacterTick() override;
 	void OnCharacterSnap(int SnappingClient) override;
 
+	void OnKilledCharacter(int Victim, bool Assisted) override;
+
 	void OnHookAttachedPlayer() override;
 
 	void OnHammerFired(WeaponFireContext *pFireContext) override;
@@ -41,6 +43,7 @@ protected:
 	void DestroyChildEntities() override;
 	void BroadcastWeaponState() override;
 
+	void OnNinjaTargetKiller(bool Assisted);
 	void OnBlindingLaserFired(WeaponFireContext *pFireContext);
 
 	bool PositionLockAvailable() const;
@@ -49,6 +52,8 @@ protected:
 
 private:
 	int m_PositionLockTicksRemaining = 0;
+	int m_NinjaTargetTick = 0;
+	int m_NinjaTargetCID = -1;
 
 	CHeroFlag *m_pHeroFlag = nullptr;
 };

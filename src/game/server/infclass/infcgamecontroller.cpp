@@ -21,6 +21,7 @@
 
 #include <engine/message.h>
 #include <game/generated/protocol.h>
+#include <game/server/infclass/classes/humans/human.h>
 #include <game/server/infclass/classes/infected/infected.h>
 
 #include <algorithm>
@@ -57,9 +58,6 @@ CInfClassGameController::CInfClassGameController(class CGameContext *pGameServer
 	m_MapWidth = GameServer()->Collision()->GetWidth();
 	m_MapHeight = GameServer()->Collision()->GetHeight();
 	m_GrowingMap = new int[m_MapWidth*m_MapHeight];
-
-	m_TargetToKill = -1;
-	m_TargetToKillCoolDown = 0;
 
 	m_InfectedStarted = false;
 	
@@ -1475,56 +1473,33 @@ void CInfClassGameController::GetSortedTargetsInRange(const vec2 &Center, const 
 	SortCharactersByDistance(PossibleCIDs, pOutput, Center, Radius);
 }
 
-void CInfClassGameController::HandleTargetsToKill()
+void CInfClassGameController::UpdateNinjaTargets()
 {
-	//Target to kill
-	if(m_TargetToKill >= 0 && (!GetPlayer(m_TargetToKill) || !GetCharacter(m_TargetToKill) || !GetPlayer(m_TargetToKill)->IsActuallyZombie()))
-	{
-		m_TargetToKill = -1;
-	}
+	m_NinjaTargets.Clear();
 
-	int LastTarget = -1;
-	// Zombie is in InfecZone too long -> change target
-	if(m_TargetToKill >= 0 && GetCharacter(m_TargetToKill) && (GetCharacter(m_TargetToKill)->GetInfZoneTick()*Server()->TickSpeed()) > 1000*Config()->m_InfNinjaTargetAfkTime)
-	{
-		LastTarget = m_TargetToKill;
-		m_TargetToKill = -1;
-	}
+	if(!m_InfectedStarted && !Config()->m_InfTrainingMode)
+		return;
 
-	if(m_TargetToKillCoolDown > 0)
-		m_TargetToKillCoolDown--;
+	int InfectedCount = 0;
 
-	if((m_TargetToKillCoolDown == 0 && m_TargetToKill == -1))
+	for(int i = 0; i < MAX_CLIENTS; i++)
 	{
-		int m_aTargetList[MAX_CLIENTS];
-		int NbTargets = 0;
-		int infectedCount = 0;
-		for(int i=0; i<MAX_CLIENTS; i++)
+		if(GetCharacter(i) && GetCharacter(i)->IsZombie())
 		{
-			if(GetCharacter(i) && GetCharacter(i)->IsZombie() && GetPlayer(i)->GetClass() != PLAYERCLASS_UNDEAD)
+			InfectedCount++;
+			if(GetPlayer(i)->GetClass() == PLAYERCLASS_UNDEAD)
+				continue;
+
+			if(GetCharacter(i)->GetInfZoneTick() * Server()->TickSpeed() < 1000 * Config()->m_InfNinjaTargetAfkTime) // Make sure zombie is not camping in InfZone
 			{
-				if (GetCharacter(i)->GetInfZoneTick() * Server()->TickSpeed() < 1000*Config()->m_InfNinjaTargetAfkTime) // Make sure zombie is not camping in InfZone
-				{
-					m_aTargetList[NbTargets] = i;
-					NbTargets++;
-				}
-				infectedCount++;
+				m_NinjaTargets.Add(i);
 			}
 		}
+	}
 
-		if(NbTargets > 0)
-			m_TargetToKill = m_aTargetList[random_int(0, NbTargets-1)];
-
-		if(m_TargetToKill == -1)
-		{
-			if (LastTarget >= 0)
-				m_TargetToKill = LastTarget; // Reset Target if no new targets were found
-		}
-
-		if (infectedCount < g_Config.m_InfNinjaMinInfected)
-		{
-			m_TargetToKill = -1; // disable target system
-		}
+	if(InfectedCount < g_Config.m_InfNinjaMinInfected)
+	{
+		m_NinjaTargets.Clear();
 	}
 }
 
@@ -1891,12 +1866,10 @@ void CInfClassGameController::Tick()
 	}
 	else
 	{
-		DisableTargetToKill();
-		
 		m_RoundStartTick = Server()->Tick();
 	}
 
-	HandleTargetsToKill();
+	UpdateNinjaTargets();
 	HandleLastHookers();
 
 	if(GameServer()->m_World.m_Paused)
@@ -1926,7 +1899,6 @@ void CInfClassGameController::TickInfectionStarted()
 	{
 		MaybeSuggestMoreRounds();
 	}
-	EnableTargetToKill();
 
 	int NumHumans = 0;
 	int NumInfected = 0;
@@ -2064,7 +2036,6 @@ void CInfClassGameController::TickInfectionStarted()
 
 void CInfClassGameController::TickInfectionNotStarted()
 {
-	DisableTargetToKill();
 }
 
 void CInfClassGameController::MaybeSendStatistics()
@@ -2222,23 +2193,6 @@ float CInfClassGameController::GetTimeLimit() const
 float CInfClassGameController::GetInfectionDelay() const
 {
 	return Config()->m_InfInitialInfectionDelay;
-}
-
-int CInfClassGameController::GetTargetToKill() const
-{
-	return m_TargetToKill;
-}
-
-void CInfClassGameController::TargetKilled()
-{
-	m_TargetToKill = -1;
-
-	int PlayerCounter = 0;
-	CInfClassPlayerIterator<PLAYERITER_INGAME> Iter(GameServer()->m_apPlayers);
-	while(Iter.Next())
-		PlayerCounter++;
-
-	m_TargetToKillCoolDown = Server()->TickSpeed()*(10 + 3*maximum(0, 16 - PlayerCounter));
 }
 
 bool CInfClassGameController::HeroGiftAvailable() const
@@ -2428,6 +2382,8 @@ void CInfClassGameController::RewardTheKiller(CInfClassCharacter *pVictim, CInfC
 
 	if(pKiller->IsHuman())
 	{
+		CInfClassHuman *pKillerHuman = CInfClassHuman::GetInstance(pKiller);
+
 		if(pKiller == pVictim->GetPlayer())
 		{
 			Server()->RoundStatistics()->OnScoreEvent(pKiller->GetCID(), SCOREEVENT_HUMAN_SUICIDE, pKiller->GetClass(), Server()->ClientName(pKiller->GetCID()), Console());
@@ -2459,20 +2415,7 @@ void CInfClassGameController::RewardTheKiller(CInfClassCharacter *pVictim, CInfC
 				GameServer()->SendScoreSound(pKiller->GetCID());
 			}
 		
-			if(pKiller->GetClass() == PLAYERCLASS_NINJA && pVictim->GetCID() == GetTargetToKill())
-			{
-				GameServer()->SendChatTarget_Localization(pKiller->GetCID(), CHATCATEGORY_SCORE, _("You have eliminated your target, +2 points"), NULL);
-				Server()->RoundStatistics()->OnScoreEvent(pKiller->GetCID(), SCOREEVENT_KILL_TARGET, pKiller->GetClass(), Server()->ClientName(pKiller->GetCID()), Console());
-				TargetKilled();
-				
-				if(pKiller->GetCharacter())
-				{
-					pKiller->GetCharacter()->GiveNinjaBuf();
-					pKiller->GetCharacter()->SetEmote(EMOTE_HAPPY, Server()->Tick() + Server()->TickSpeed());
-					GameServer()->SendEmoticon(pKiller->GetCID(), EMOTICON_MUSIC);
-					pKiller->GetCharacter()->Heal(4);
-				}
-			}
+			pKillerHuman->OnKilledCharacter(pVictim->GetCID(), false);
 		}
 	}
 }
@@ -2495,27 +2438,9 @@ void CInfClassGameController::OnCharacterDeath(CInfClassCharacter *pVictim, DAMA
 	if(pVictim->IsZombie() && pVictim->IsFrozen() && pVictim->m_LastFreezer >= 0)
 	{
 		CInfClassPlayer *pFreezer = GetPlayer(pVictim->m_LastFreezer);
-		if(pFreezer && pFreezer != pKiller)
+		if(pFreezer && pFreezer->GetCharacterClass() && pFreezer != pKiller)
 		{
-			if (pFreezer->GetClass() == PLAYERCLASS_NINJA)
-			{
-				Server()->RoundStatistics()->OnScoreEvent(pFreezer->GetCID(), SCOREEVENT_HELP_FREEZE, pFreezer->GetClass(), Server()->ClientName(pFreezer->GetCID()), Console());
-				GameServer()->SendScoreSound(pFreezer->GetCID());
-
-				if(pVictim->GetCID() == GetTargetToKill())
-				{
-					GameServer()->SendChatTarget_Localization(pFreezer->GetCID(), CHATCATEGORY_SCORE, _("You have eliminated your target, +2 points"), NULL);
-					Server()->RoundStatistics()->OnScoreEvent(pFreezer->GetCID(), SCOREEVENT_KILL_TARGET, pFreezer->GetClass(), Server()->ClientName(pFreezer->GetCID()), Console());
-					TargetKilled();
-
-					if(pFreezer->GetCharacter())
-					{
-						pFreezer->GetCharacter()->GiveNinjaBuf();
-						pFreezer->GetCharacter()->SetEmote(EMOTE_HAPPY, Server()->Tick() + Server()->TickSpeed());
-						GameServer()->SendEmoticon(pFreezer->GetCID(), EMOTICON_MUSIC);
-					}
-				}
-			}
+			pFreezer->GetCharacterClass()->OnKilledCharacter(pVictim->GetCID(), true);
 		}
 	}
 

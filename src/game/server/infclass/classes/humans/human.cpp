@@ -1,5 +1,6 @@
 #include "human.h"
 
+#include <engine/server/roundstatistics.h>
 #include <engine/shared/config.h>
 #include <game/server/classes.h>
 #include <game/server/gamecontext.h>
@@ -189,6 +190,34 @@ void CInfClassHuman::OnCharacterPreCoreTick()
 void CInfClassHuman::OnCharacterTick()
 {
 	CInfClassPlayerClass::OnCharacterTick();
+
+	switch(GetPlayerClass())
+	{
+	case PLAYERCLASS_NINJA:
+	{
+		if(Server()->Tick() > m_NinjaTargetTick)
+		{
+			const ClientsArray &ValidNinjaTargets = GameController()->GetValidNinjaTargets();
+			if(!ValidNinjaTargets.Contains(m_NinjaTargetCID))
+			{
+				if(ValidNinjaTargets.IsEmpty())
+				{
+					m_NinjaTargetCID = -1;
+				}
+				else
+				{
+					int Index = random_int(0, ValidNinjaTargets.Size() - 1);
+					m_NinjaTargetCID = ValidNinjaTargets[Index];
+				}
+			}
+		}
+		else
+		{
+			m_NinjaTargetCID = -1;
+		}
+		break;
+	}
+	}
 }
 
 void CInfClassHuman::OnCharacterSnap(int SnappingClient)
@@ -268,6 +297,20 @@ void CInfClassHuman::OnCharacterSnap(int SnappingClient)
 	}
 }
 
+void CInfClassHuman::OnKilledCharacter(int Victim, bool Assisted)
+{
+	switch(GetPlayerClass())
+	{
+	case PLAYERCLASS_NINJA:
+		if(Victim == m_NinjaTargetCID)
+		{
+			OnNinjaTargetKiller(Assisted);
+		}
+		break;
+	default:
+		break;
+	}
+}
 
 void CInfClassHuman::OnHookAttachedPlayer()
 {
@@ -354,6 +397,9 @@ void CInfClassHuman::OnLaserFired(WeaponFireContext *pFireContext)
 
 void CInfClassHuman::GiveClassAttributes()
 {
+	m_NinjaTargetTick = 0;
+	m_NinjaTargetCID = -1;
+
 	if(!m_pCharacter)
 	{
 		return;
@@ -465,6 +511,9 @@ void CInfClassHuman::DestroyChildEntities()
 	}
 
 	m_PositionLockTicksRemaining = 0;
+	m_NinjaTargetTick = 0;
+	m_NinjaTargetCID = -1;
+
 	if(m_pHeroFlag)
 	{
 		// The flag removed in CInfClassCharacter::DestroyChildEntities()
@@ -656,13 +705,15 @@ void CInfClassHuman::BroadcastWeaponState()
 	}
 	else if(GetPlayerClass() == PLAYERCLASS_NINJA)
 	{
-		int TargetID = GameController()->GetTargetToKill();
-		int CoolDown = GameController()->GetTargetToKillCoolDown();
+		int TargetID = m_NinjaTargetCID;
+		int CoolDown = m_NinjaTargetTick - Server()->Tick();
 
-		if(CoolDown > 0)
+		const ClientsArray &ValidNinjaTargets = GameController()->GetValidNinjaTargets();
+
+		if((CoolDown > 0))
 		{
-			int Seconds = 1+CoolDown/Server()->TickSpeed();
-			GameServer()->SendBroadcast_Localization(GetPlayer()->GetCID(),
+			int Seconds = 1 + CoolDown / Server()->TickSpeed();
+			GameServer()->SendBroadcast_Localization(GetCID(),
 				BROADCAST_PRIORITY_WEAPONSTATE, BROADCAST_DURATION_REALTIME,
 				_C("Ninja", "Next target in {sec:RemainingTime}"),
 				"RemainingTime", &Seconds,
@@ -671,7 +722,7 @@ void CInfClassHuman::BroadcastWeaponState()
 		}
 		else if(TargetID >= 0)
 		{
-			GameServer()->SendBroadcast_Localization(GetPlayer()->GetCID(),
+			GameServer()->SendBroadcast_Localization(GetCID(),
 				BROADCAST_PRIORITY_WEAPONSTATE, BROADCAST_DURATION_REALTIME,
 				_C("Ninja", "Target to eliminate: {str:PlayerName}"),
 				"PlayerName", Server()->ClientName(TargetID),
@@ -808,6 +859,29 @@ void CInfClassHuman::BroadcastWeaponState()
 			);
 		}
 	}
+}
+
+void CInfClassHuman::OnNinjaTargetKiller(bool Assisted)
+{
+	GameServer()->SendChatTarget_Localization(GetCID(), CHATCATEGORY_SCORE, _("You have eliminated your target, +2 points"), NULL);
+	Server()->RoundStatistics()->OnScoreEvent(GetCID(), SCOREEVENT_KILL_TARGET, GetPlayerClass(), Server()->ClientName(GetCID()), GameServer()->Console());
+
+	if(m_pCharacter)
+	{
+		m_pCharacter->GiveNinjaBuf();
+		m_pCharacter->SetEmote(EMOTE_HAPPY, Server()->Tick() + Server()->TickSpeed());
+		GameServer()->SendEmoticon(GetCID(), EMOTICON_MUSIC);
+
+		if(!Assisted)
+		{
+			m_pCharacter->Heal(4);
+		}
+	}
+
+	int PlayerCounter = Server()->GetActivePlayerCount();
+	int CooldownTicks = Server()->TickSpeed()*(10 + 3 * maximum(0, 16 - PlayerCounter));
+	m_NinjaTargetCID = -1;
+	m_NinjaTargetTick = Server()->Tick() + CooldownTicks;
 }
 
 void CInfClassHuman::OnBlindingLaserFired(WeaponFireContext *pFireContext)
