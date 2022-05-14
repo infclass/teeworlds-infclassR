@@ -14,6 +14,8 @@ class CInfClassHuman : public CInfClassPlayerClass
 public:
 	explicit CInfClassHuman(CInfClassPlayer *pPlayer);
 
+	static CInfClassHuman *GetInstance(CInfClassPlayer *pPlayer);
+
 	bool IsHuman() const final { return true; }
 
 	SkinGetter GetSkinGetter() const override;

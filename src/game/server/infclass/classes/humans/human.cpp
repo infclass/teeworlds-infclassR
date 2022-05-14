@@ -28,6 +28,17 @@ CInfClassHuman::CInfClassHuman(CInfClassPlayer *pPlayer)
 {
 }
 
+CInfClassHuman *CInfClassHuman::GetInstance(CInfClassPlayer *pCharacter)
+{
+	CInfClassPlayerClass *pClass = pCharacter ? pCharacter->GetCharacterClass() : nullptr;
+	if(pClass && pClass->IsHuman())
+	{
+		return static_cast<CInfClassHuman*>(pClass);
+	}
+
+	return nullptr;
+}
+
 SkinGetter CInfClassHuman::GetSkinGetter() const
 {
 	return CInfClassHuman::SetupSkin;
