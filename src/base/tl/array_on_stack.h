@@ -20,6 +20,8 @@ public:
 	T operator[](int Index) const { return m_Data[Index]; }
 	T &operator[](int Index) { return m_Data[Index]; }
 
+	array_on_stack &operator=(const array_on_stack &Array) noexcept;
+
 	T &First() { return m_Data[0]; }
 	T &Last() { return m_Data[m_Size - 1]; }
 
@@ -99,5 +101,18 @@ protected:
 	T m_Data[StackCapacity];
 	int m_Size = 0;
 };
+
+template<class T, int StackCapacity>
+array_on_stack<T, StackCapacity> &array_on_stack<T, StackCapacity>::operator=(const array_on_stack<T, StackCapacity> &Array) noexcept
+{
+	m_Size = 0;
+
+	for(const T &Item : Array)
+	{
+		Add(Item);
+	}
+
+	return *this;
+}
 
 #endif // BASE_TL_ARRAY_ON_STACK_H
