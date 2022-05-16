@@ -268,6 +268,7 @@ Objects = [
 		NetIntAny("m_Version"),
 		NetIntAny("m_Flags"),
 		NetIntRange("m_TimeLimitInSeconds", 0, 'max_int'),
+		NetIntAny("m_HeroGiftTick"),
 	]),
 
 	NetObjectEx("DDNetCharacter", "character@netobj.ddnet.tw", [
