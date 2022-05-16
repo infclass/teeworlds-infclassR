@@ -15,6 +15,7 @@ class CInfClassPlayer;
 class IServer;
 
 struct SpawnContext;
+struct DeathContext;
 struct WeaponFireContext;
 struct WeaponRegenParams;
 
@@ -45,7 +46,7 @@ public:
 	int GetPlayerClass() const;
 	void OnPlayerClassChanged();
 
-	virtual void PrepareToDie(int Killer, DAMAGE_TYPE DamageType, bool *pRefusedToDie);
+	virtual void PrepareToDie(const DeathContext &Context, bool *pRefusedToDie);
 	void Poison(int Count, int From, DAMAGE_TYPE DamageType);
 
 	bool IsHealingDisabled() const;

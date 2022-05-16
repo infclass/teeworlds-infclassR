@@ -12,6 +12,8 @@ class CWhiteHole;
 
 enum class DAMAGE_TYPE;
 
+struct DeathContext;
+
 enum
 {
 	GIFT_HEROFLAG=0,
@@ -124,7 +126,7 @@ public:
 
 	void Die(int Killer, int Weapon) override;
 	void Die(int Killer, DAMAGE_TYPE DamageType);
-	void Die(DAMAGE_TYPE DamageType, int Killer, int Assistant);
+	void Die(const DeathContext &Context);
 
 	void SetActiveWeapon(int Weapon);
 	void SetLastWeapon(int Weapon);
@@ -200,7 +202,7 @@ public:
 	void AddHelper(int HelperCID, float Time);
 	void ResetHelpers();
 
-	void GetActualKillers(int GivenKiller, DAMAGE_TYPE GivenWeapon, int *pKiller, int *pAssistant) const;
+	void GetDeathContext(int GivenKiller, DAMAGE_TYPE GivenWeapon, DeathContext *pContext) const;
 
 	void UpdateLastHookers(const ClientsArray &Hookers, int HookerTick);
 

@@ -4,6 +4,7 @@
 #include "../infcplayerclass.h"
 
 #include <game/server/alloc.h>
+#include <game/server/infclass/death_context.h>
 
 class CInfClassInfected : public CInfClassPlayerClass
 {
@@ -40,7 +41,7 @@ public:
 
 	bool FindWitchSpawnPosition(vec2 &Position);
 
-	void PrepareToDie(int Killer, DAMAGE_TYPE DamageType, bool *pRefusedToDie) override;
+	void PrepareToDie(const DeathContext &Context, bool *pRefusedToDie) override;
 
 protected:
 	void GiveClassAttributes() override;
@@ -54,8 +55,7 @@ protected:
 	int m_LaserWallTick = 0;
 
 	int m_VoodooTimeAlive = 0;
-	int m_VoodooKiller; // Save killer + weapon for delayed kill message
-	DAMAGE_TYPE m_VoodooDamageType;
+	DeathContext m_VoodooDeathContext;
 	bool m_VoodooAboutToDie = false;
 
 	bool m_HookOnTheLimit = false;

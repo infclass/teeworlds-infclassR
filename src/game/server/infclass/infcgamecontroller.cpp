@@ -7,6 +7,7 @@
 #include <game/server/gamecontext.h>
 #include <game/server/infclass/classes/infcplayerclass.h>
 #include <game/server/infclass/damage_type.h>
+#include <game/server/infclass/death_context.h>
 #include <game/server/infclass/entities/flyingpoint.h>
 #include <game/server/infclass/entities/infccharacter.h>
 #include <game/server/infclass/infcplayer.h>
@@ -2426,8 +2427,12 @@ int CInfClassGameController::OnCharacterDeath(class CCharacter *pAbstractVictim,
 	return 0;
 }
 
-void CInfClassGameController::OnCharacterDeath(CInfClassCharacter *pVictim, DAMAGE_TYPE DamageType, int Killer, int Assistant)
+void CInfClassGameController::OnCharacterDeath(CInfClassCharacter *pVictim, const DeathContext &Context)
 {
+	DAMAGE_TYPE DamageType = Context.DamageType;
+	int Killer = Context.Killer;
+	int Assistant = Context.Assistant;
+
 	dbg_msg("server", "OnCharacterDeath: victim: %d, DT: %d, killer: %d, assistant: %d", pVictim->GetCID(), static_cast<int>(DamageType), Killer, Assistant);
 
 	CInfClassPlayer *pKiller = GetPlayer(Killer);

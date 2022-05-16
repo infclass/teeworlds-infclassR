@@ -244,7 +244,7 @@ void CInfClassInfected::OnCharacterTick()
 		if (m_VoodooTimeAlive > 0)
 			m_VoodooTimeAlive-=1000;
 		else
-			m_pCharacter->Die(m_VoodooKiller, m_VoodooDamageType);
+			m_pCharacter->Die(m_VoodooDeathContext);
 
 		// Display time left to live
 		int Time = m_VoodooTimeAlive/Server()->TickSpeed();
@@ -509,9 +509,9 @@ int CInfClassInfected::GetGhoulLevel() const
 	return GetPlayer()->GetGhoulLevel();
 }
 
-void CInfClassInfected::PrepareToDie(int Killer, DAMAGE_TYPE DamageType, bool *pRefusedToDie)
+void CInfClassInfected::PrepareToDie(const DeathContext &Context, bool *pRefusedToDie)
 {
-	switch (DamageType)
+	switch(Context.DamageType)
 	{
 	case DAMAGE_TYPE::DEATH_TILE:
 	case DAMAGE_TYPE::GAME:
@@ -523,14 +523,14 @@ void CInfClassInfected::PrepareToDie(int Killer, DAMAGE_TYPE DamageType, bool *p
 		break;
 	}
 
-	if(Killer == GetCID())
+	if(Context.Killer == GetCID())
 	{
 		return;
 	}
 
 	if(GetPlayerClass() == PLAYERCLASS_UNDEAD)
 	{
-		m_pCharacter->Freeze(10.0, Killer, FREEZEREASON_UNDEAD);
+		m_pCharacter->Freeze(10.0, Context.Killer, FREEZEREASON_UNDEAD);
 		m_pCharacter->SetHealthArmor(0, 0);
 		*pRefusedToDie = true;
 		return;
@@ -562,8 +562,7 @@ void CInfClassInfected::PrepareToDie(int Killer, DAMAGE_TYPE DamageType, bool *p
 	if(GetPlayerClass() == PLAYERCLASS_VOODOO)
 	{
 		m_VoodooAboutToDie = true;
-		m_VoodooKiller = Killer;
-		m_VoodooDamageType = DamageType;
+		m_VoodooDeathContext = Context;
 		UpdateSkin();
 
 		*pRefusedToDie = true;

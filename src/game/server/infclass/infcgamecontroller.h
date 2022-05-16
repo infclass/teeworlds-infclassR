@@ -13,6 +13,7 @@ class CInfClassCharacter;
 class CInfClassPlayer;
 struct CNetObj_GameInfo;
 struct SpawnContext;
+struct DeathContext;
 
 enum class TAKEDAMAGEMODE;
 enum class DAMAGE_TYPE;
@@ -66,7 +67,7 @@ public:
 	void SendHammerDot(const vec2 &Pos, int SnapID);
 
 	int OnCharacterDeath(class CCharacter *pVictim, class CPlayer *pKiller, int Weapon) override;
-	void OnCharacterDeath(CInfClassCharacter *pVictim, DAMAGE_TYPE DamageType, int Killer, int Assistant);
+	void OnCharacterDeath(CInfClassCharacter *pVictim, const DeathContext &Context);
 	void OnCharacterSpawned(CInfClassCharacter *pCharacter);
 	void DoWincheck() override;
 	void StartRound() override;

@@ -14,6 +14,7 @@
 
 #include <game/server/infclass/classes/infected/infected.h>
 #include <game/server/infclass/damage_type.h>
+#include <game/server/infclass/death_context.h>
 #include <game/server/infclass/entities/biologist-mine.h>
 #include <game/server/infclass/entities/bouncing-bullet.h>
 #include <game/server/infclass/entities/engineer-wall.h>
@@ -113,14 +114,13 @@ void CInfClassCharacter::OnCharacterInInfectionZone()
 	}
 	else
 	{
-		int Killer = -1;
-		int Assistant = -1;
+		DeathContext Context;
 		DAMAGE_TYPE DamageType = DAMAGE_TYPE::INFECTION_TILE;
-		GetActualKillers(GetCID(), DamageType, &Killer, &Assistant);
+		GetDeathContext(GetCID(), DamageType, &Context);
 
-		CInfClassPlayer *pKiller = GameController()->GetPlayer(Killer);
+		CInfClassPlayer *pKiller = GameController()->GetPlayer(Context.Killer);
 
-		GameController()->OnCharacterDeath(this, DamageType, Killer, Assistant);
+		GameController()->OnCharacterDeath(this, Context);
 		GameServer()->CreateSound(GetPos(), SOUND_PLAYER_DIE);
 
 		GetPlayer()->Infect(pKiller);
@@ -772,11 +772,10 @@ bool CInfClassCharacter::TakeDamage(vec2 Force, float FloatDmg, int From, DAMAGE
 	// check for death
 	if(m_Health <= 0)
 	{
-		int Killer = -1;
-		int Assistant = -1;
-		GetActualKillers(From, DamageType, &Killer, &Assistant);
+		DeathContext Context;
+		GetDeathContext(From, DamageType, &Context);
 
-		Die(DamageType, Killer, Assistant);
+		Die(Context);
 		return false;
 	}
 
@@ -791,11 +790,10 @@ bool CInfClassCharacter::TakeDamage(vec2 Force, float FloatDmg, int From, DAMAGE
 			Server()->ClientName(GetCID()), Weapon);
 		GameServer()->Console()->Print(IConsole::OUTPUT_LEVEL_DEBUG, "game", aBuf);
 
-		int Killer = -1;
-		int Assistant = -1;
-		GetActualKillers(From, DamageType, &Killer, &Assistant);
+		DeathContext Context;
+		GetDeathContext(From, DamageType, &Context);
 
-		GameController()->SendKillMessage(GetCID(), DamageType, Killer, Assistant);
+		GameController()->SendKillMessage(GetCID(), Context.DamageType, Context.Killer, Context.Assistant);
 	}
 /* INFECTION MODIFICATION END *****************************************/
 
@@ -1012,8 +1010,11 @@ void CInfClassCharacter::ResetHelpers()
 	m_LastHelper.m_Tick = 0;
 }
 
-void CInfClassCharacter::GetActualKillers(int GivenKiller, DAMAGE_TYPE DamageType, int *pKiller, int *pAssistant) const
+void CInfClassCharacter::GetDeathContext(int GivenKiller, DAMAGE_TYPE DamageType, DeathContext *pContext) const
 {
+	pContext->Killer = GivenKiller;
+	pContext->DamageType = DamageType;
+
 	switch(DamageType)
 	{
 	case DAMAGE_TYPE::GAME:
@@ -1267,8 +1268,8 @@ void CInfClassCharacter::GetActualKillers(int GivenKiller, DAMAGE_TYPE DamageTyp
 		}
 	}
 
-	*pKiller = Killer;
-	*pAssistant = Assistant;
+	pContext->Killer = Killer;
+	pContext->Assistant = Assistant;
 }
 
 void CInfClassCharacter::UpdateLastHookers(const ClientsArray &Hookers, int HookerTick)
@@ -2417,13 +2418,13 @@ void CInfClassCharacter::Die(int Killer, DAMAGE_TYPE DamageType)
 {
 	dbg_msg("server", "CInfClassCharacter::Die: victim: %d, killer: %d, DT: %d", GetCID(), Killer, static_cast<int>(DamageType));
 
-	int Assistant = -1;
-	GetActualKillers(Killer, DamageType, &Killer, &Assistant);
+	DeathContext Context;
+	GetDeathContext(Killer, DamageType, &Context);
 
-	Die(DamageType, Killer, Assistant);
+	Die(Context);
 }
 
-void CInfClassCharacter::Die(DAMAGE_TYPE DamageType, int Killer, int Assistant)
+void CInfClassCharacter::Die(const DeathContext &Context)
 {
 	if(!IsAlive())
 	{
@@ -2433,7 +2434,7 @@ void CInfClassCharacter::Die(DAMAGE_TYPE DamageType, int Killer, int Assistant)
 	bool RefusedToDie = false;
 	if(GetClass())
 	{
-		GetClass()->PrepareToDie(Killer, DamageType, &RefusedToDie);
+		GetClass()->PrepareToDie(Context, &RefusedToDie);
 	}
 	if(RefusedToDie)
 	{
@@ -2444,7 +2445,7 @@ void CInfClassCharacter::Die(DAMAGE_TYPE DamageType, int Killer, int Assistant)
 
 	// we got to wait 0.5 secs before respawning
 	m_pPlayer->m_RespawnTick = Server()->Tick()+Server()->TickSpeed()/2;
-	GameController()->OnCharacterDeath(this, DamageType, Killer, Assistant);
+	GameController()->OnCharacterDeath(this, Context);
 
 	// a nice sound
 	GameServer()->CreateSound(GetPos(), SOUND_PLAYER_DIE);
