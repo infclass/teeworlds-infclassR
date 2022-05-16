@@ -7,7 +7,6 @@
 #include <game/server/infclass/classes/infcplayerclass.h>
 #include <game/server/infclass/classes/infected/infected.h>
 #include <game/server/infclass/damage_type.h>
-#include <engine/server/roundstatistics.h>
 #include <engine/shared/config.h>
 
 #include "engineer-wall.h"
@@ -161,22 +160,6 @@ void CEngineerWall::OnZombieHit(CInfClassCharacter *pZombie)
 		if(!pZombie->CanDie())
 		{
 			return;
-		}
-
-		for(CInfClassCharacter *pHook = (CInfClassCharacter*) GameWorld()->FindFirst(CGameWorld::ENTTYPE_CHARACTER); pHook; pHook = (CInfClassCharacter *)pHook->TypeNext())
-		{
-			if(
-				pHook->GetPlayer() &&
-				pHook->IsHuman() &&
-				pHook->GetHookedPlayer() == pZombie->GetCID() &&
-				pHook->GetCID() != m_Owner && //The engineer will get the point when the infected dies
-				pZombie->m_LastFreezer != pHook->GetCID() //The ninja will get the point when the infected dies
-			)
-			{
-				int ClientID = pHook->GetCID();
-				Server()->RoundStatistics()->OnScoreEvent(ClientID, SCOREEVENT_HELP_HOOK_BARRIER, pHook->GetPlayerClass(), Server()->ClientName(ClientID), GameServer()->Console());
-				GameServer()->SendScoreSound(pHook->GetCID());
-			}
 		}
 
 		int LifeSpanReducer = ((Server()->TickSpeed()*Config()->m_InfBarrierTimeReduce)/100);
