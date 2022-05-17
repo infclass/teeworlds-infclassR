@@ -53,6 +53,8 @@ public:
 	void DisableHealing(float Duration, int From, DAMAGE_TYPE DamageType);
 
 	// Events
+	virtual void OnPlayerSnap(int SnappingClient, int InfClassVersion);
+
 	virtual void OnCharacterPreCoreTick();
 	virtual void OnCharacterTick();
 	virtual void OnCharacterSnap(int SnappingClient);

@@ -24,6 +24,8 @@ public:
 
 	void GetAmmoRegenParams(int Weapon, WeaponRegenParams *pParams) override;
 
+	void OnPlayerSnap(int SnappingClient, int InfClassVersion) override;
+
 	void OnCharacterPreCoreTick() override;
 	void OnCharacterTick() override;
 	void OnCharacterSnap(int SnappingClient) override;

@@ -194,6 +194,10 @@ void CInfClassPlayerClass::DisableHealing(float Duration, int From, DAMAGE_TYPE 
 	m_HealingDisabledTicks = maximum<int>(m_HealingDisabledTicks, Duration * Server()->TickSpeed());
 }
 
+void CInfClassPlayerClass::OnPlayerSnap(int SnappingClient, int InfClassVersion)
+{
+}
+
 bool CInfClassPlayerClass::IsHealingDisabled() const
 {
 	return m_HealingDisabledTicks > 0;

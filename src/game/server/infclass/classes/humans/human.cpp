@@ -136,6 +136,33 @@ void CInfClassHuman::GetAmmoRegenParams(int Weapon, WeaponRegenParams *pParams)
 	}
 }
 
+void CInfClassHuman::OnPlayerSnap(int SnappingClient, int InfClassVersion)
+{
+	if(InfClassVersion < 140)
+	{
+		// CNetObj_InfClassClassInfo introduced in v0.1.4
+		return;
+	}
+
+	if(SnappingClient == GetCID())
+	{
+		CNetObj_InfClassClassInfo *pClassInfo = static_cast<CNetObj_InfClassClassInfo *>(Server()->SnapNewItem(NETOBJTYPE_INFCLASSCLASSINFO, GetCID(), sizeof(CNetObj_InfClassClassInfo)));
+		if(!pClassInfo)
+			return;
+		pClassInfo->m_Class = GetPlayerClass();
+		pClassInfo->m_Flags = 0;
+		pClassInfo->m_Data1 = 0;
+
+		switch(GetPlayerClass())
+		{
+		case PLAYERCLASS_HERO:
+		{
+			pClassInfo->m_Data1 = m_pHeroFlag ? m_pHeroFlag->GetSpawnTick() : 0;
+		}
+		}
+	}
+}
+
 void CInfClassHuman::OnCharacterPreCoreTick()
 {
 	CInfClassPlayerClass::OnCharacterPreCoreTick();
@@ -526,6 +553,8 @@ void CInfClassHuman::DestroyChildEntities()
 void CInfClassHuman::BroadcastWeaponState()
 {
 	const int CurrentTick = Server()->Tick();
+	int ClientVersion = Server()->GetClientInfclassVersion(GetCID());
+
 	if(GetPlayerClass() == PLAYERCLASS_ENGINEER)
 	{
 		CEngineerWall* pCurrentWall = NULL;
@@ -848,7 +877,7 @@ void CInfClassHuman::BroadcastWeaponState()
 				);
 			}
 		}
-		else if(CoolDown > 0)
+		else if(CoolDown > 0 && (ClientVersion < 140)) // 140 introduces native timers for Hero
 		{
 			int Seconds = 1 + CoolDown / Server()->TickSpeed();
 			GameServer()->SendBroadcast_Localization(GetPlayer()->GetCID(),

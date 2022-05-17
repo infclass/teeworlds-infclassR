@@ -149,6 +149,8 @@ void CInfClassPlayer::Snap(int SnappingClient)
 		pInfClassPlayer->m_Deaths = m_Deaths;
 		pInfClassPlayer->m_Assists = m_Assists;
 		pInfClassPlayer->m_Score = m_Score;
+
+		GetCharacterClass()->OnPlayerSnap(SnappingClient, InfClassVersion);
 	}
 
 	if(IsForcedToSpec && (SnappingClient == m_ClientID) && (InfClassVersion >= VERSION_INFC_FORCED_SPEC))

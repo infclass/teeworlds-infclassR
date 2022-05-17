@@ -271,6 +271,12 @@ Objects = [
 		NetIntAny("m_HeroGiftTick"),
 	]),
 
+	NetObjectEx("InfClassClassInfo", "classinfo@infclass", [
+		NetIntAny("m_Flags"),
+		NetIntRange("m_Class", -1, 255),
+		NetIntAny("m_Data1"),
+	]),
+
 	NetObjectEx("DDNetCharacter", "character@netobj.ddnet.tw", [
 		NetIntAny("m_Flags"),
 		NetTick("m_FreezeEnd"),
