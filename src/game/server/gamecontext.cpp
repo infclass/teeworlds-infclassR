@@ -4359,6 +4359,9 @@ void CGameContext::OnInit(/*class IKernel *pKernel*/)
 		}
 	}
 
+	InitChangelog();
+	m_pController->InitSmartMapRotation();
+
 	{
 		//Open file
 		char *pMapShortName = &g_Config.m_SvMap[0];
@@ -4378,9 +4381,6 @@ void CGameContext::OnInit(/*class IKernel *pKernel*/)
 		}
 	}
 #endif
-
-	InitChangelog();
-	m_pController->InitSmartMapRotation();
 }
 
 void CGameContext::OnShutdown()
