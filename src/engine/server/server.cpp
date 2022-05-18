@@ -366,7 +366,8 @@ CServer::CServer() : m_DemoRecorder(&m_SnapshotDelta)
 	m_pCurrentMapData = 0;
 	m_CurrentMapSize = 0;
 
-	m_MapReload = 0;
+	m_MapReload = false;
+	m_ReloadedWhenEmpty = false;
 
 	m_RconClientID = IServer::RCON_CID_SERV;
 	m_RconAuthLevel = AUTHED_ADMIN;
@@ -2520,9 +2521,20 @@ int CServer::Run()
 					NonActive = false;
 
 			// wait for incoming data
-			if (NonActive)
+			if(NonActive)
 			{
-				if(g_Config.m_SvShutdownWhenEmpty)
+				if(Config()->m_SvReloadWhenEmpty == 1)
+				{
+					m_MapReload = true;
+					Config()->m_SvReloadWhenEmpty = 0;
+				}
+				else if(Config()->m_SvReloadWhenEmpty == 2 && !m_ReloadedWhenEmpty)
+				{
+					m_MapReload = true;
+					m_ReloadedWhenEmpty = true;
+				}
+
+				if(Config()->m_SvShutdownWhenEmpty)
 					m_RunServer = false;
 				else
 					net_socket_read_wait(m_NetServer.Socket(), 1000000);
