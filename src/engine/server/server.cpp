@@ -2549,6 +2549,10 @@ int CServer::Run()
 			}
 		}
 	}
+
+	if(Config()->m_SvShutdownFile[0])
+		Console()->ExecuteFile(Config()->m_SvShutdownFile);
+
 	// disconnect all clients on shutdown
 	for(int i = 0; i < MAX_CLIENTS; ++i)
 	{
