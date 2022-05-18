@@ -2456,7 +2456,10 @@ void CGameContext::ConAddMap(IConsole::IResult *pResult, void *pUserData)
 		pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "server", aBuf);
 	}
 
-	pSelf->m_pController->OnMapAdded(pMapName);
+	if(pSelf->m_pController)
+	{
+		pSelf->m_pController->OnMapAdded(pMapName);
+	}
 }
 
 void CGameContext::ConRestart(IConsole::IResult *pResult, void *pUserData)
