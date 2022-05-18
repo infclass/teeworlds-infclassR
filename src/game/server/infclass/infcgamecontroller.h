@@ -140,6 +140,8 @@ public:
 	static void ConPrintMapsData(IConsole::IResult *pResult, void *pUserData);
 	static void ConResetMapData(IConsole::IResult *pResult, void *pUserData);
 	static void ConAddMapData(IConsole::IResult *pResult, void *pUserData);
+	static void ConSetMapMinMaxPlayers(IConsole::IResult *pResult, void *pUserData);
+	void ConSetMapMinMaxPlayers(IConsole::IResult *pResult);
 	static void ConSavePosition(IConsole::IResult *pResult, void *pUserData);
 	void ConSavePosition(IConsole::IResult *pResult);
 	static void ConLoadPosition(IConsole::IResult *pResult, void *pUserData);

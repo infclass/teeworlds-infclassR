@@ -46,6 +46,7 @@ public:
 
 	static void ResetMapInfo(const char *pMapName);
 	static void AddMapTimestamp(const char *pMapName, int Timestamp);
+	static bool SetMapMinMaxPlayers(const char *pMapName, int MinPlayers, int MaxPlayers);
 
 protected:
 	bool LoadMapConfig(const char *pMapName, CMapInfo *pInfo);

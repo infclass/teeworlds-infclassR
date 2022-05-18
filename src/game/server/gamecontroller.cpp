@@ -607,6 +607,18 @@ void IGameController::PrintMapRotationData(IOHANDLE Output)
 		{
 			Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "server", aBuf);
 		}
+
+		str_format(aBuf, sizeof(aBuf), "set_map_min_max_players %s %d %d", Info.Name(), Info.MinimumPlayers, Info.MaximumPlayers);
+
+		if(Output)
+		{
+			io_write(Output, aBuf, str_length(aBuf));
+			io_write_newline(Output);
+		}
+		else
+		{
+			Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "server", aBuf);
+		}
 	}
 }
 
@@ -630,6 +642,20 @@ void IGameController::AddMapTimestamp(const char *pMapName, int Timestamp)
 	}
 
 	pMapInfo->AddTimestamp(Timestamp);
+}
+
+bool IGameController::SetMapMinMaxPlayers(const char *pMapName, int MinPlayers, int MaxPlayers)
+{
+	CMapInfoEx *pMapInfo = GetMapInfo(pMapName);
+	if(!pMapInfo)
+	{
+		return false;
+	}
+
+	pMapInfo->MinimumPlayers = MinPlayers;
+	pMapInfo->MaximumPlayers = MaxPlayers;
+
+	return true;
 }
 
 void IGameController::OnMapAdded(const char *pMapName)

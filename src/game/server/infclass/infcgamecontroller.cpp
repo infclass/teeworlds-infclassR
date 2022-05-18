@@ -928,6 +928,7 @@ void CInfClassGameController::RegisterChatCommands(IConsole *pConsole)
 	pConsole->Register("print_maps_data", "", CFGFLAG_SERVER, ConPrintMapsData, this, "Print the data of map rotation");
 	pConsole->Register("reset_map_data", "s<mapname>", CFGFLAG_SERVER, ConResetMapData, this, "Reset map rotation data");
 	pConsole->Register("add_map_data", "s<mapname> i<timestamp>", CFGFLAG_SERVER, ConAddMapData, this, "Add map rotation data");
+	pConsole->Register("set_map_min_max_players", "s<mapname> i<min> ?i<max>", CFGFLAG_SERVER, ConSetMapMinMaxPlayers, this, "Set min/max players for a map");
 
 	pConsole->Register("set_class", "s<classname>", CFGFLAG_CHAT, ConUserSetClass, this, "Set the class of a player");
 	pConsole->Register("save_position", "", CFGFLAG_CHAT, ConSavePosition, this, "Save the current character position");
@@ -1135,6 +1136,26 @@ void CInfClassGameController::ConAddMapData(IConsole::IResult *pResult, void *pU
 	int Timestamp = pResult->GetInteger(1);
 
 	AddMapTimestamp(pMapName, Timestamp);
+}
+
+void CInfClassGameController::ConSetMapMinMaxPlayers(IConsole::IResult *pResult, void *pUserData)
+{
+	CInfClassGameController *pSelf = (CInfClassGameController *)pUserData;
+	return pSelf->ConSetMapMinMaxPlayers(pResult);
+}
+
+void CInfClassGameController::ConSetMapMinMaxPlayers(IConsole::IResult *pResult)
+{
+	if((pResult->NumArguments() < 2) || (pResult->NumArguments() > 3))
+	{
+		return;
+	}
+
+	const char *pMapName = pResult->GetString(0);
+	int MinPlayers = pResult->GetInteger(1);
+	int MaxPlayers = pResult->NumArguments() == 3 ? pResult->GetInteger(2) : 0;
+
+	SetMapMinMaxPlayers(pMapName, MinPlayers, MaxPlayers);
 }
 
 void CInfClassGameController::ConSavePosition(IConsole::IResult *pResult, void *pUserData)
