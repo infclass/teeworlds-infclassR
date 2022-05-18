@@ -4239,9 +4239,9 @@ void CGameContext::OnConsoleInit()
 	Console()->Register("vote", "r['yes'|'no']", CFGFLAG_SERVER, ConVote, this, "Force a vote to yes/no");
 
 /* INFECTION MODIFICATION START ***************************************/
-	Console()->Register("skip_map", "", CFGFLAG_SERVER|CFGFLAG_STORE, ConSkipMap, this, "Change map to the next in the rotation");
-	Console()->Register("queue_map", "?r[map]", CFGFLAG_SERVER|CFGFLAG_STORE, ConQueueMap, this, "Set the next map");
-	Console()->Register("add_map", "?r[map]", CFGFLAG_SERVER|CFGFLAG_STORE, ConAddMap, this, "Add a map to the maps rotation list");
+	Console()->Register("skip_map", "", CFGFLAG_SERVER, ConSkipMap, this, "Change map to the next in the rotation");
+	Console()->Register("queue_map", "?r[map]", CFGFLAG_SERVER, ConQueueMap, this, "Set the next map");
+	Console()->Register("add_map", "?r[map]", CFGFLAG_SERVER, ConAddMap, this, "Add a map to the maps rotation list");
 
 	Console()->Register("start_fun_round", "", CFGFLAG_SERVER, ConStartFunRound, this, "Start fun round");
 	Console()->Register("start_special_fun_round", "ss?s", CFGFLAG_SERVER, ConStartSpecialFunRound, this, "Start fun round");
