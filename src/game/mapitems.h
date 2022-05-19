@@ -6,18 +6,18 @@
 // layer types
 enum
 {
-	LAYERTYPE_INVALID=0,
+	// TODO(Shereef Marzouk): fix this for vanilla, make use of LAYERTYPE_GAME instead of using m_game variable in the editor.
+	LAYERTYPE_INVALID = 0,
 	LAYERTYPE_GAME,
 	LAYERTYPE_TILES,
 	LAYERTYPE_QUADS,
-	// LAYERTYPE_FRONT,
-	// LAYERTYPE_TELE,
-	// LAYERTYPE_SPEEDUP,
-	// LAYERTYPE_SWITCH,
-	// LAYERTYPE_TUNE,
-	LAYERTYPE_SOUNDS_DEPRECATED = 9, // deprecated! do not use this, this is just for compatibility reasons
+	LAYERTYPE_FRONT,
+	LAYERTYPE_TELE,
+	LAYERTYPE_SPEEDUP,
+	LAYERTYPE_SWITCH,
+	LAYERTYPE_TUNE,
+	LAYERTYPE_SOUNDS_DEPRECATED, // deprecated! do not use this, this is just for compatibility reasons
 	LAYERTYPE_SOUNDS,
-
 
 	MAPITEMTYPE_VERSION=0,
 	MAPITEMTYPE_INFO,
@@ -39,33 +39,156 @@ enum
 	NUM_CURVETYPES,
 
 	// game layer tiles
-	TILE_ENTITY_NULL=0,
-	TILE_ENTITY_SPAWN_RED,
-	TILE_ENTITY_SPAWN_BLUE,
-	TILE_ENTITY_FLAGSTAND_RED,
-	TILE_ENTITY_FLAGSTAND_BLUE,
-	TILE_ENTITY_ARMOR,
-	TILE_ENTITY_HEALTH,
-	TILE_ENTITY_WEAPON_SHOTGUN,
-	TILE_ENTITY_WEAPON_GRENADE,
-	TILE_ENTITY_POWERUP_NINJA,
-	TILE_ENTITY_WEAPON_LASER,
-
-	TILE_PHYSICS_AIR=0,
-	TILE_PHYSICS_SOLID=1,
-	TILE_PHYSICS_NOHOOK=3,
-	
-	ZONE_NULL=0,
-	ZONE_TELE_NOWITCH=1,
-	ZONE_TELE_NOSCIENTIST,
-	
-	ZONE_DAMAGE_DEATH=1,
-	ZONE_DAMAGE_DEATH_NOUNDEAD,
-	ZONE_DAMAGE_DEATH_INFECTED,
-	ZONE_DAMAGE_INFECTION,
-
-	ZONE_BONUS_BONUS=1,
-
+	// TODO define which Layer uses which tiles (needed for mapeditor)
+	ENTITY_NULL = 0,
+	ENTITY_SPAWN,
+	ENTITY_SPAWN_RED,
+	ENTITY_SPAWN_BLUE,
+	ENTITY_FLAGSTAND_RED,
+	ENTITY_FLAGSTAND_BLUE,
+	ENTITY_ARMOR_1,
+	ENTITY_HEALTH_1,
+	ENTITY_WEAPON_SHOTGUN,
+	ENTITY_WEAPON_GRENADE,
+	ENTITY_POWERUP_NINJA,
+	ENTITY_WEAPON_LASER,
+	//DDRace - Main Lasers
+	ENTITY_LASER_FAST_CCW,
+	ENTITY_LASER_NORMAL_CCW,
+	ENTITY_LASER_SLOW_CCW,
+	ENTITY_LASER_STOP,
+	ENTITY_LASER_SLOW_CW,
+	ENTITY_LASER_NORMAL_CW,
+	ENTITY_LASER_FAST_CW,
+	//DDRace - Laser Modifiers
+	ENTITY_LASER_SHORT,
+	ENTITY_LASER_MEDIUM,
+	ENTITY_LASER_LONG,
+	ENTITY_LASER_C_SLOW,
+	ENTITY_LASER_C_NORMAL,
+	ENTITY_LASER_C_FAST,
+	ENTITY_LASER_O_SLOW,
+	ENTITY_LASER_O_NORMAL,
+	ENTITY_LASER_O_FAST,
+	//DDRace - Plasma
+	ENTITY_PLASMAE = 29,
+	ENTITY_PLASMAF,
+	ENTITY_PLASMA,
+	ENTITY_PLASMAU,
+	//DDRace - Shotgun
+	ENTITY_CRAZY_SHOTGUN_EX,
+	ENTITY_CRAZY_SHOTGUN,
+	//DDNet - Removing specific weapon
+	ENTITY_ARMOR_SHOTGUN,
+	ENTITY_ARMOR_GRENADE,
+	ENTITY_ARMOR_NINJA,
+	ENTITY_ARMOR_LASER,
+	//DDRace - Draggers
+	ENTITY_DRAGGER_WEAK = 42,
+	ENTITY_DRAGGER_NORMAL,
+	ENTITY_DRAGGER_STRONG,
+	//Draggers Behind Walls
+	ENTITY_DRAGGER_WEAK_NW,
+	ENTITY_DRAGGER_NORMAL_NW,
+	ENTITY_DRAGGER_STRONG_NW,
+	//Doors
+	ENTITY_DOOR = 49,
+	//End Of Lower Tiles
+	NUM_ENTITIES,
+	//Start From Top Left
+	//Tile Controllers
+	TILE_AIR = 0,
+	TILE_SOLID,
+	TILE_DEATH,
+	TILE_NOHOOK,
+	TILE_NOLASER,
+	TILE_THROUGH_CUT,
+	TILE_THROUGH,
+	TILE_JUMP,
+	TILE_FREEZE = 9,
+	TILE_TELEINEVIL,
+	TILE_UNFREEZE,
+	TILE_DFREEZE,
+	TILE_DUNFREEZE,
+	TILE_TELEINWEAPON,
+	TILE_TELEINHOOK,
+	TILE_WALLJUMP = 16,
+	TILE_EHOOK_ENABLE,
+	TILE_EHOOK_DISABLE,
+	TILE_HIT_ENABLE,
+	TILE_HIT_DISABLE,
+	TILE_SOLO_ENABLE,
+	TILE_SOLO_DISABLE,
+	//Switches
+	TILE_SWITCHTIMEDOPEN = 22,
+	TILE_SWITCHTIMEDCLOSE,
+	TILE_SWITCHOPEN,
+	TILE_SWITCHCLOSE,
+	TILE_TELEIN,
+	TILE_TELEOUT,
+	TILE_BOOST,
+	TILE_TELECHECK,
+	TILE_TELECHECKOUT,
+	TILE_TELECHECKIN,
+	TILE_REFILL_JUMPS = 32,
+	TILE_START,
+	TILE_FINISH,
+	TILE_CHECKPOINT_FIRST = 35,
+	TILE_CHECKPOINT_LAST = 59,
+	TILE_STOP = 60,
+	TILE_STOPS,
+	TILE_STOPA,
+	TILE_TELECHECKINEVIL,
+	TILE_CP,
+	TILE_CP_F,
+	TILE_THROUGH_ALL,
+	TILE_THROUGH_DIR,
+	TILE_TUNE,
+	TILE_OLDLASER = 71,
+	TILE_NPC,
+	TILE_EHOOK,
+	TILE_NOHIT,
+	TILE_NPH,
+	TILE_UNLOCK_TEAM,
+	TILE_ADD_TIME = 79,
+	TILE_NPC_DISABLE = 88,
+	TILE_UNLIMITED_JUMPS_DISABLE,
+	TILE_JETPACK_DISABLE,
+	TILE_NPH_DISABLE,
+	TILE_SUBTRACT_TIME = 95,
+	TILE_TELE_GUN_ENABLE = 96,
+	TILE_TELE_GUN_DISABLE = 97,
+	TILE_ALLOW_TELE_GUN = 98,
+	TILE_ALLOW_BLUE_TELE_GUN = 99,
+	TILE_NPC_ENABLE = 104,
+	TILE_UNLIMITED_JUMPS_ENABLE,
+	TILE_JETPACK_ENABLE,
+	TILE_NPH_ENABLE,
+	TILE_TELE_GRENADE_ENABLE = 112,
+	TILE_TELE_GRENADE_DISABLE = 113,
+	TILE_TELE_LASER_ENABLE = 128,
+	TILE_TELE_LASER_DISABLE = 129,
+	TILE_CREDITS_1 = 140,
+	TILE_CREDITS_2 = 141,
+	TILE_CREDITS_3 = 142,
+	TILE_CREDITS_4 = 143,
+	TILE_LFREEZE = 144,
+	TILE_LUNFREEZE = 145,
+	TILE_CREDITS_5 = 156,
+	TILE_CREDITS_6 = 157,
+	TILE_CREDITS_7 = 158,
+	TILE_CREDITS_8 = 159,
+	TILE_ENTITIES_OFF_1 = 190,
+	TILE_ENTITIES_OFF_2,
+	//End of higher tiles
+	//Layers
+	LAYER_GAME = 0,
+	LAYER_FRONT,
+	LAYER_TELE,
+	LAYER_SPEEDUP,
+	LAYER_SWITCH,
+	LAYER_TUNE,
+	NUM_LAYERS,
 	//Flags
 	TILEFLAG_VFLIP = 1,
 	TILEFLAG_HFLIP = 2,
@@ -86,15 +209,17 @@ enum
 	TILESLAYERFLAG_TUNE = 32,
 
 	ENTITY_OFFSET = 255 - 16 * 4,
-};
+	
+	ZONE_NULL=0,
+	ZONE_TELE_NOWITCH=1,
+	ZONE_TELE_NOSCIENTIST,
+	
+	ZONE_DAMAGE_DEATH=1,
+	ZONE_DAMAGE_DEATH_NOUNDEAD,
+	ZONE_DAMAGE_DEATH_INFECTED,
+	ZONE_DAMAGE_INFECTION,
 
-enum DD_TILE_TELE
-{
-	TILE_TELEINEVIL = 10,
-	TILE_TELEINWEAPON = 14,
-	TILE_TELEINHOOK = 15,
-	TILE_TELEIN = 26,
-	TILE_TELEOUT = 27,
+	ZONE_BONUS_BONUS=1,
 };
 
 struct CPoint
@@ -136,7 +261,12 @@ struct CMapItemInfo
 	int m_MapVersion;
 	int m_Credits;
 	int m_License;
-} ;
+};
+
+struct CMapItemInfoSettings : CMapItemInfo
+{
+	int m_Settings;
+};
 
 struct CMapItemImage
 {
@@ -146,7 +276,7 @@ struct CMapItemImage
 	int m_External;
 	int m_ImageName;
 	int m_ImageData;
-} ;
+};
 
 struct CMapItemGroup_v1
 {
@@ -158,12 +288,14 @@ struct CMapItemGroup_v1
 
 	int m_StartLayer;
 	int m_NumLayers;
-} ;
-
+};
 
 struct CMapItemGroup : public CMapItemGroup_v1
 {
-	enum { CURRENT_VERSION=3 };
+	enum
+	{
+		CURRENT_VERSION = 3
+	};
 
 	int m_UseClipping;
 	int m_ClipX;
@@ -172,14 +304,14 @@ struct CMapItemGroup : public CMapItemGroup_v1
 	int m_ClipH;
 
 	int m_aName[3];
-} ;
+};
 
 struct CMapItemLayer
 {
 	int m_Version;
 	int m_Type;
 	int m_Flags;
-} ;
+};
 
 struct CMapItemLayerTilemap
 {
@@ -202,7 +334,7 @@ struct CMapItemLayerTilemap
 	// DDRace
 
 	int m_Tele;
-} ;
+};
 
 struct CMapItemLayerQuads
 {
@@ -214,12 +346,12 @@ struct CMapItemLayerQuads
 	int m_Image;
 
 	int m_aName[3];
-} ;
+};
 
 struct CMapItemVersion
 {
 	int m_Version;
-} ;
+};
 
 struct CEnvPoint
 {
@@ -227,8 +359,8 @@ struct CEnvPoint
 	int m_Curvetype;
 	int m_aValues[4]; // 1-4 depending on envelope (22.10 fixed point)
 
-	bool operator<(const CEnvPoint &Other) { return m_Time < Other.m_Time; }
-} ;
+	bool operator<(const CEnvPoint &Other) const { return m_Time < Other.m_Time; }
+};
 
 struct CMapItemEnvelope_v1
 {
@@ -237,11 +369,14 @@ struct CMapItemEnvelope_v1
 	int m_StartPoint;
 	int m_NumPoints;
 	int m_aName[8];
-} ;
+};
 
 struct CMapItemEnvelope : public CMapItemEnvelope_v1
 {
-	enum { CURRENT_VERSION=2 };
+	enum
+	{
+		CURRENT_VERSION = 2
+	};
 	int m_Synchronized;
 };
 

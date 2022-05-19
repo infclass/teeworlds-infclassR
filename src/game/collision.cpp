@@ -30,38 +30,16 @@ CCollision::CCollision()
 
 CCollision::~CCollision()
 {
-	if(m_pTiles)
-		delete[] m_pTiles;
-	
-	m_pTiles = 0;
+	Dest();
 }
 
 void CCollision::Init(class CLayers *pLayers)
 {
+	Dest();
 	m_pLayers = pLayers;
-	
 	m_Width = m_pLayers->GameLayer()->m_Width;
 	m_Height = m_pLayers->GameLayer()->m_Height;
-	CTile* pPhysicsTiles = static_cast<CTile *>(m_pLayers->Map()->GetData(m_pLayers->GameLayer()->m_Data));
-	if(m_pTiles)
-		delete[] m_pTiles;
-	m_pTiles = new int[m_Width*m_Height];
-
-	for(int i = 0; i < m_Width*m_Height; i++)
-	{
-		switch(pPhysicsTiles[i].m_Index)
-		{
-		case TILE_PHYSICS_SOLID:
-			m_pTiles[i] = COLFLAG_SOLID;
-			break;
-		case TILE_PHYSICS_NOHOOK:
-			m_pTiles[i] = COLFLAG_SOLID|COLFLAG_NOHOOK;
-			break;
-		default:
-			m_pTiles[i] = 0x0;
-			break;
-		}
-	}
+	m_pTiles = static_cast<CTile *>(m_pLayers->Map()->GetData(m_pLayers->GameLayer()->m_Data));
 
 	InitTeleports();
 }
@@ -97,15 +75,16 @@ void CCollision::InitTeleports()
 
 int CCollision::GetTile(int x, int y) const
 {
-	int Nx = clamp(x/32, 0, m_Width-1);
-	int Ny = clamp(y/32, 0, m_Height-1);
+	if(!m_pTiles)
+		return 0;
 
-	return m_pTiles[Ny*m_Width+Nx];
-}
+	int Nx = clamp(x / 32, 0, m_Width - 1);
+	int Ny = clamp(y / 32, 0, m_Height - 1);
+	int pos = Ny * m_Width + Nx;
 
-bool CCollision::IsTileSolid(int x, int y) const
-{
-	return GetTile(x, y)&COLFLAG_SOLID;
+	if(m_pTiles[pos].m_Index >= TILE_SOLID && m_pTiles[pos].m_Index <= TILE_NOLASER)
+		return m_pTiles[pos].m_Index;
+	return 0;
 }
 
 // TODO: rewrite this smarter!
@@ -279,13 +258,20 @@ void CCollision::MoveBox(vec2 *pInoutPos, vec2 *pInoutVel, vec2 Size, float Elas
 	*pInoutVel = Vel;
 }
 
-/* INFECTION MODIFICATION START ***************************************/
-bool CCollision::CheckPhysicsFlag(vec2 Pos, int Flag)
+void CCollision::Dest()
 {
-	return GetTile(Pos.x, Pos.y)&Flag;
+	m_pTiles = 0;
+	m_Width = 0;
+	m_Height = 0;
+	m_pLayers = 0;
+	m_pTele = 0;
 }
 
-/* INFECTION MODIFICATION END *****************************************/
+bool CCollision::IsSolid(int x, int y) const
+{
+	int index = GetTile(x, y);
+	return index == TILE_SOLID || index == TILE_NOHOOK;
+}
 
 int CCollision::GetZoneHandle(const char* pName)
 {

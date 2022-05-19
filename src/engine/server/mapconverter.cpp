@@ -67,9 +67,9 @@ DDNET_TILE GetClientGameTileIndex(int PhysicalIndex, DDNET_TILE DDNetIndex, int 
 {
 	switch(PhysicalIndex)
 	{
-		case TILE_PHYSICS_SOLID:
+		case TILE_SOLID:
 			return DDNET_TILE::TILE_SOLID;
-		case TILE_PHYSICS_NOHOOK:
+		case TILE_NOHOOK:
 			return DDNET_TILE::TILE_NOHOOK;
 		default:
 			break;
@@ -837,7 +837,7 @@ void CMapConverter::CopyGameLayer()
 			int icDamageIndex = Collision.GetZoneValueAt(ZoneHandle_icDamage, X, Y);
 			int icBonusIndex = Collision.GetZoneValueAt(ZoneHandle_icBonus, X, Y);
 
-			DDNET_TILE DDNetIndex = PhysicalIndex < TILE_PHYSICS_NOHOOK ? DDNET_TILE::TILE_AIR : static_cast<DDNET_TILE>(PhysicalIndex);
+			DDNET_TILE DDNetIndex = PhysicalIndex < TILE_NOHOOK ? DDNET_TILE::TILE_AIR : static_cast<DDNET_TILE>(PhysicalIndex);
 
 			const DDNET_TILE Tile = GetClientGameTileIndex(PhysicalIndex, DDNetIndex, icDamageIndex, icBonusIndex);
 			m_pTiles[j*m_Width+i].m_Index = static_cast<int>(Tile);

@@ -11,6 +11,8 @@
 #include <engine/shared/protocol.h>
 #include <game/generated/protocol.h>
 
+#include "mapitems.h"
+
 class CCollision;
 
 class CTuneParam

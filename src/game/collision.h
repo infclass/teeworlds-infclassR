@@ -11,26 +11,21 @@
 
 class CCollision
 {
-	int *m_pTiles;
+	class CTile *m_pTiles;
 	int m_Width;
 	int m_Height;
-	
 	class CLayers *m_pLayers;
 	
 	double m_Time;
 	
 	array< array<int> > m_Zones;
 
-	bool IsTileSolid(int x, int y) const;
+	bool IsSolid(int x, int y) const;
 	int GetTile(int x, int y) const;
 
 public:
 	enum
 	{
-		COLFLAG_SOLID=1,
-		COLFLAG_NOHOOK=2,
-		COLFLAG_WATER=4,
-		
 		ZONEFLAG_DEATH=1,
 		ZONEFLAG_INFECTION=2,
 		ZONEFLAG_NOSPAWN=4,
@@ -41,7 +36,7 @@ public:
 	void Init(class CLayers *pLayers);
 	void InitTeleports();
 
-	bool CheckPoint(float x, float y) const { return IsTileSolid(round(x), round(y)); }
+	bool CheckPoint(float x, float y) const { return IsSolid(round_to_int(x), round(y)); }
 	bool CheckPoint(vec2 Pos) const { return CheckPoint(Pos.x, Pos.y); }
 	int GetCollisionAt(float x, float y) const { return GetTile(round(x), round(y)); }
 	int GetWidth() const { return m_Width; };
@@ -51,6 +46,8 @@ public:
 	void MoveBox(vec2 *pInoutPos, vec2 *pInoutVel, vec2 Size, float Elasticity) const;
 	bool TestBox(vec2 Pos, vec2 Size) const;
 
+	void Dest();
+
 	void SetTime(double Time) { m_Time = Time; }
 	
 	//This function return an Handle to access all zone layers with the name "pName"
@@ -59,8 +56,6 @@ public:
 	int GetZoneValueAt(int ZoneHandle, vec2 Pos) { return GetZoneValueAt(ZoneHandle, Pos.x, Pos.y); }
 	
 /* INFECTION MODIFICATION START ***************************************/
-	bool CheckPhysicsFlag(vec2 Pos, int Flag);
-	
 	bool AreConnected(vec2 Pos1, vec2 Pos2, float Radius);
 /* INFECTION MODIFICATION END *****************************************/
 

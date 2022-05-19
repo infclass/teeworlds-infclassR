@@ -32,7 +32,7 @@ public:
 	CMapItemLayerTilemap *TeleLayer() const { return m_pTeleLayer; }
 
 private:
-	CMapItemLayerTilemap *m_pTeleLayer = nullptr;
+	CMapItemLayerTilemap *m_pTeleLayer;
 
 	// InfClass
 

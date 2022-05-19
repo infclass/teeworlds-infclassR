@@ -211,7 +211,6 @@ void CCharacterCore::Tick(bool UseInput, CParams* pParams)
 	}
 	else if(m_HookState == HOOK_RETRACT_END)
 	{
-		m_HookState = HOOK_RETRACTED;
 		m_TriggeredEvents |= COREEVENT_HOOK_RETRACT;
 		m_HookState = HOOK_RETRACTED;
 	}
@@ -227,11 +226,14 @@ void CCharacterCore::Tick(bool UseInput, CParams* pParams)
 		// make sure that the hook doesn't go though the ground
 		bool GoingToHitGround = false;
 		bool GoingToRetract = false;
+		bool GoingThroughTele = false;
 		int Hit = m_pCollision->IntersectLine(m_HookPos, NewPos, &NewPos, 0);
 		if(Hit)
 		{
-			if(Hit&CCollision::COLFLAG_NOHOOK)
+			if(Hit == TILE_NOHOOK)
 				GoingToRetract = true;
+			else if(Hit == TILE_TELEINHOOK)
+				GoingThroughTele = true;
 			else
 				GoingToHitGround = true;
 		}
