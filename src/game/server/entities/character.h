@@ -153,7 +153,9 @@ public:
 
 	// the player core for the physics
 	CCharacterCore m_Core;
-	
+
+	void HandleSkippableTiles(int Index);
+
 private:
 /* INFECTION MODIFICATION END *****************************************/
 
@@ -237,9 +239,12 @@ public:
 
 	int GetEffectiveHookMode() const;
 
+	int m_MoveRestrictions;
+
 	CCharacterCore *Core() { return &m_Core; }
+
 	virtual void PreCoreTick() { }
-	virtual void PostCoreTick() { }
+	virtual void PostCoreTick();
 };
 
 #endif

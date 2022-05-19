@@ -881,6 +881,79 @@ void CCharacter::Snap(int SnappingClient)
 	pCharacter->m_PlayerFlags = GetPlayer()->m_PlayerFlags;
 }
 
+void CCharacter::HandleSkippableTiles(int Index)
+{
+#if 0
+	if(GameLayerClipped(m_Pos))
+	{
+		Die(m_pPlayer->GetCID(), WEAPON_WORLD);
+		return;
+	}
+#endif
+
+	if(Index < 0)
+		return;
+
+	// handle speedup tiles
+	if(GameServer()->Collision()->IsSpeedup(Index))
+	{
+		vec2 Direction, TempVel = m_Core.m_Vel;
+		int Force, MaxSpeed = 0;
+		float TeeAngle, SpeederAngle, DiffAngle, SpeedLeft, TeeSpeed;
+		GameServer()->Collision()->GetSpeedup(Index, &Direction, &Force, &MaxSpeed);
+		if(Force == 255 && MaxSpeed)
+		{
+			m_Core.m_Vel = Direction * (MaxSpeed / 5);
+		}
+		else
+		{
+			if(MaxSpeed > 0 && MaxSpeed < 5)
+				MaxSpeed = 5;
+			if(MaxSpeed > 0)
+			{
+				if(Direction.x > 0.0000001f)
+					SpeederAngle = -atan(Direction.y / Direction.x);
+				else if(Direction.x < 0.0000001f)
+					SpeederAngle = atan(Direction.y / Direction.x) + 2.0f * asin(1.0f);
+				else if(Direction.y > 0.0000001f)
+					SpeederAngle = asin(1.0f);
+				else
+					SpeederAngle = asin(-1.0f);
+
+				if(SpeederAngle < 0)
+					SpeederAngle = 4.0f * asin(1.0f) + SpeederAngle;
+
+				if(TempVel.x > 0.0000001f)
+					TeeAngle = -atan(TempVel.y / TempVel.x);
+				else if(TempVel.x < 0.0000001f)
+					TeeAngle = atan(TempVel.y / TempVel.x) + 2.0f * asin(1.0f);
+				else if(TempVel.y > 0.0000001f)
+					TeeAngle = asin(1.0f);
+				else
+					TeeAngle = asin(-1.0f);
+
+				if(TeeAngle < 0)
+					TeeAngle = 4.0f * asin(1.0f) + TeeAngle;
+
+				TeeSpeed = sqrt(pow(TempVel.x, 2) + pow(TempVel.y, 2));
+
+				DiffAngle = SpeederAngle - TeeAngle;
+				SpeedLeft = MaxSpeed / 5.0f - cos(DiffAngle) * TeeSpeed;
+				if(abs((int)SpeedLeft) > Force && SpeedLeft > 0.0000001f)
+					TempVel += Direction * Force;
+				else if(abs((int)SpeedLeft) > Force)
+					TempVel += Direction * -Force;
+				else
+					TempVel += Direction * SpeedLeft;
+			}
+			else
+				TempVel += Direction * Force;
+
+			m_Core.m_Vel = ClampVel(m_MoveRestrictions, TempVel);
+		}
+	}
+}
+
 int CCharacter::NetworkClipped(int SnappingClient) const
 {
 	return CEntity::NetworkClipped(SnappingClient, m_Pos) && (m_Core.m_HookState == HOOK_IDLE || CEntity::NetworkClipped(SnappingClient, m_Core.m_HookPos));
@@ -1126,3 +1199,10 @@ int CCharacter::GetEffectiveHookMode() const
 }
 
 /* INFECTION MODIFICATION END *****************************************/
+
+void CCharacter::PostCoreTick()
+{
+	int CurrentIndex = GameServer()->Collision()->GetMapIndex(m_Pos);
+	HandleSkippableTiles(CurrentIndex);
+	m_MoveRestrictions = GameServer()->Collision()->GetMoveRestrictions(nullptr, this, m_Pos, 18.0f, CurrentIndex);
+}

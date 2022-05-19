@@ -30,9 +30,11 @@ public:
 	// DDRace
 
 	CMapItemLayerTilemap *TeleLayer() const { return m_pTeleLayer; }
+	CMapItemLayerTilemap *SpeedupLayer() const { return m_pSpeedupLayer; }
 
 private:
 	CMapItemLayerTilemap *m_pTeleLayer;
+	CMapItemLayerTilemap *m_pSpeedupLayer;
 
 	// InfClass
 

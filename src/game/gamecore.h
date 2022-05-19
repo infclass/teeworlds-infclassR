@@ -263,6 +263,14 @@ public:
 	void Read(const CNetObj_CharacterCore *pObjCore);
 	void Write(CNetObj_CharacterCore *pObjCore);
 	void Quantize();
+
+	// DDRace
+
+private:
+	int m_MoveRestrictions;
+
+	// InfClass
+public:
 	bool IsRecursePassenger(CCharacterCore *pMaybePassenger) const;
 	void TryBecomePassenger(CCharacterCore *pTaxi);
 	void SetPassenger(CCharacterCore *pPassenger);

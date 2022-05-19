@@ -2856,6 +2856,8 @@ void CInfClassCharacter::PreCoreTick()
 
 void CInfClassCharacter::PostCoreTick()
 {
+	CCharacter::PostCoreTick();
+
 	if(GetPlayer()->MapMenu() == 1)
 	{
 		HandleMapMenu();

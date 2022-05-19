@@ -9,6 +9,18 @@
 #include <map>
 #include <vector>
 
+enum
+{
+	CANTMOVE_LEFT = 1 << 0,
+	CANTMOVE_RIGHT = 1 << 1,
+	CANTMOVE_UP = 1 << 2,
+	CANTMOVE_DOWN = 1 << 3,
+};
+
+vec2 ClampVel(int MoveRestriction, vec2 Vel);
+
+typedef bool (*CALLBACK_SWITCHACTIVE)(int Number, void *pUser);
+
 class CCollision
 {
 	class CTile *m_pTiles;
@@ -48,6 +60,12 @@ public:
 
 	void Dest();
 
+	int GetMoveRestrictions(CALLBACK_SWITCHACTIVE pfnSwitchActive, void *pUser, vec2 Pos, float Distance = 18.0f, int OverrideCenterTileIndex = -1);
+	int GetMoveRestrictions(vec2 Pos, float Distance = 18.0f)
+	{
+		return GetMoveRestrictions(0, 0, Pos, Distance);
+	}
+
 	void SetTime(double Time) { m_Time = Time; }
 	
 	//This function return an Handle to access all zone layers with the name "pName"
@@ -59,8 +77,17 @@ public:
 	bool AreConnected(vec2 Pos1, vec2 Pos2, float Radius);
 /* INFECTION MODIFICATION END *****************************************/
 
-	int GetPureMapIndex(float x, float y);
-	int GetPureMapIndex(vec2 Pos) { return GetPureMapIndex(Pos.x, Pos.y); }
+	int GetPureMapIndex(float x, float y) const;
+	int GetPureMapIndex(vec2 Pos) const { return GetPureMapIndex(Pos.x, Pos.y); }
+	int GetMapIndex(vec2 Pos) const;
+	bool TileExists(int Index) const;
+	bool TileExistsNext(int Index) const;
+	vec2 GetPos(int Index) const;
+	int GetTileIndex(int Index) const;
+	int GetTileFlags(int Index) const;
+
+	int IsSpeedup(int Index) const;
+	void GetSpeedup(int Index, vec2 *Dir, int *Force, int *MaxSpeed) const;
 
 	class CTeleTile *TeleLayer() { return m_pTele; }
 	class CLayers *Layers() { return m_pLayers; }
@@ -70,6 +97,8 @@ public:
 private:
 	class CTeleTile *m_pTele;
 	std::map<int, std::vector<vec2>> m_TeleOuts;
+
+	class CSpeedupTile *m_pSpeedup;
 };
 
 #endif

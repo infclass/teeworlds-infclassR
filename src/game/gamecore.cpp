@@ -92,6 +92,8 @@ void CCharacterCore::Reset()
 
 void CCharacterCore::Tick(bool UseInput, CParams* pParams)
 {
+	m_MoveRestrictions = m_pCollision->GetMoveRestrictions(m_Pos);
+
 	const CTuningParams* pTuningParams = pParams->m_pTuningParams;
 	m_TriggeredEvents = 0;
 

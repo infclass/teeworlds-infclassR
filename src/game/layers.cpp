@@ -14,6 +14,9 @@ CLayers::CLayers()
 	m_pZoneGroup = 0;
 	m_pEntityGroup = 0;
 	m_pMap = 0;
+
+	m_pTeleLayer = 0;
+	m_pSpeedupLayer = 0;
 }
 
 void CLayers::Init(class IKernel *pKernel)
@@ -28,7 +31,8 @@ void CLayers::Init(IMap *pMap)
 	m_pMap->GetType(MAPITEMTYPE_GROUP, &m_GroupsStart, &m_GroupsNum);
 	m_pMap->GetType(MAPITEMTYPE_LAYER, &m_LayersStart, &m_LayersNum);
 
-	m_pTeleLayer = nullptr;
+	m_pTeleLayer = 0;
+	m_pSpeedupLayer = 0;
 
 	for(int g = 0; g < NumGroups(); g++)
 	{
@@ -85,6 +89,14 @@ void CLayers::Init(IMap *pMap)
 						pTilemap->m_Tele = *((int *)(pTilemap) + 15);
 					}
 					m_pTeleLayer = pTilemap;
+				}
+				if(pTilemap->m_Flags & TILESLAYERFLAG_SPEEDUP)
+				{
+					if(pTilemap->m_Version <= 2)
+					{
+						pTilemap->m_Speedup = *((int *)(pTilemap) + 16);
+					}
+					m_pSpeedupLayer = pTilemap;
 				}
 			}
 		}
