@@ -40,9 +40,9 @@ void CCollision::Init(class CLayers *pLayers)
 {
 	m_pLayers = pLayers;
 	
-	m_Width = m_pLayers->PhysicsLayer()->m_Width;
-	m_Height = m_pLayers->PhysicsLayer()->m_Height;
-	CTile* pPhysicsTiles = static_cast<CTile *>(m_pLayers->Map()->GetData(m_pLayers->PhysicsLayer()->m_Data));
+	m_Width = m_pLayers->GameLayer()->m_Width;
+	m_Height = m_pLayers->GameLayer()->m_Height;
+	CTile* pPhysicsTiles = static_cast<CTile *>(m_pLayers->Map()->GetData(m_pLayers->GameLayer()->m_Data));
 	if(m_pTiles)
 		delete[] m_pTiles;
 	m_pTiles = new int[m_Width*m_Height];

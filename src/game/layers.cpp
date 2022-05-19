@@ -10,7 +10,7 @@ CLayers::CLayers()
 	m_LayersNum = 0;
 	m_LayersStart = 0;
 	m_pGameGroup = 0;
-	m_pPhysicsLayer = 0;
+	m_pGameLayer = 0;
 	m_pZoneGroup = 0;
 	m_pEntityGroup = 0;
 	m_pMap = 0;
@@ -35,56 +35,62 @@ void CLayers::Init(IMap *pMap)
 		CMapItemGroup *pGroup = GetGroup(g);
 		
 		char aGroupName[12];
-		char aLayerName[12];
 		IntsToStr(pGroup->m_aName, sizeof(aGroupName)/sizeof(int), aGroupName);
 		
 		if(str_comp(aGroupName, "#Zones") == 0)
-			m_pZoneGroup = pGroup;
-		else if(str_comp(aGroupName, "#Entities") == 0)
-			m_pEntityGroup = pGroup;
-		else
 		{
-			for(int l = 0; l < pGroup->m_NumLayers; l++)
+			m_pZoneGroup = pGroup;
+			continue;
+		}
+		if(str_comp(aGroupName, "#Entities") == 0)
+		{
+			m_pEntityGroup = pGroup;
+			continue;
+		}
+
+		for(int l = 0; l < pGroup->m_NumLayers; l++)
+		{
+			CMapItemLayer *pLayer = GetLayer(pGroup->m_StartLayer + l);
+
+			if(pLayer->m_Type == LAYERTYPE_TILES)
 			{
-				CMapItemLayer *pLayer = GetLayer(pGroup->m_StartLayer+l);
+				CMapItemLayerTilemap *pTilemap = reinterpret_cast<CMapItemLayerTilemap *>(pLayer);
 
-				if(pLayer->m_Type == LAYERTYPE_TILES)
+				if(pTilemap->m_Flags & TILESLAYERFLAG_GAME)
 				{
-					CMapItemLayerTilemap *pTilemap = reinterpret_cast<CMapItemLayerTilemap *>(pLayer);
-					aLayerName[0] = 0;
-					IntsToStr(pTilemap->m_aName, sizeof(aLayerName)/sizeof(int), aLayerName);
+					m_pGameLayer = pTilemap;
+					m_pGameGroup = pGroup;
 
-					if((str_comp(aGroupName, "Game") == 0) && str_comp(aLayerName, "Tele") == 0)
+					// make sure the game group has standard settings
+					m_pGameGroup->m_OffsetX = 0;
+					m_pGameGroup->m_OffsetY = 0;
+					m_pGameGroup->m_ParallaxX = 100;
+					m_pGameGroup->m_ParallaxY = 100;
+
+					if(m_pGameGroup->m_Version >= 2)
 					{
-						m_pTeleLayer = pTilemap;
+						m_pGameGroup->m_UseClipping = 0;
+						m_pGameGroup->m_ClipX = 0;
+						m_pGameGroup->m_ClipY = 0;
+						m_pGameGroup->m_ClipW = 0;
+						m_pGameGroup->m_ClipH = 0;
 					}
 
-					if(pTilemap->m_Flags & TILESLAYERFLAG_GAME)
+					//break;
+				}
+				if(pTilemap->m_Flags & TILESLAYERFLAG_TELE)
+				{
+					if(pTilemap->m_Version <= 2)
 					{
-						m_pPhysicsLayer = pTilemap;
-						m_pGameGroup = pGroup;
-
-						// make sure the game group has standard settings
-						m_pGameGroup->m_OffsetX = 0;
-						m_pGameGroup->m_OffsetY = 0;
-						m_pGameGroup->m_ParallaxX = 100;
-						m_pGameGroup->m_ParallaxY = 100;
-
-						if(m_pGameGroup->m_Version >= 2)
-						{
-							m_pGameGroup->m_UseClipping = 0;
-							m_pGameGroup->m_ClipX = 0;
-							m_pGameGroup->m_ClipY = 0;
-							m_pGameGroup->m_ClipW = 0;
-							m_pGameGroup->m_ClipH = 0;
-						}
+						pTilemap->m_Tele = *((int *)(pTilemap) + 15);
 					}
+					m_pTeleLayer = pTilemap;
 				}
 			}
 		}
 	}
 	
-	if(!m_pPhysicsLayer)
+	if(!m_pGameLayer)
 		dbg_msg("InfClass", "CLayer::Init: no Game Layer found");
 }
 
