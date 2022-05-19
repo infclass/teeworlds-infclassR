@@ -15,98 +15,42 @@
 
 #include <limits>
 
-enum class DDNET_TILE
+int GetClientGameTileIndex(int GameLayerIndex, int icDamageIndex, int icBonusIndex)
 {
-	TILE_AIR = 0,
-	TILE_SOLID,
-	TILE_DEATH,
-	TILE_NOHOOK,
-	TILE_NOLASER,
-	TILE_THROUGH_CUT,
-	TILE_THROUGH,
-	TILE_JUMP,
-	TILE_FREEZE = 9,
-	TILE_TELEINEVIL,
-	TILE_UNFREEZE,
-	TILE_DFREEZE,
-	TILE_DUNFREEZE,
-	TILE_TELEINWEAPON,
-	TILE_TELEINHOOK,
-	TILE_WALLJUMP = 16,
-	TILE_EHOOK_ENABLE,
-	TILE_EHOOK_DISABLE,
-	TILE_HIT_ENABLE,
-	TILE_HIT_DISABLE,
-	TILE_SOLO_ENABLE,
-	TILE_SOLO_DISABLE,
-	//Switches
-	TILE_SWITCHTIMEDOPEN = 22,
-	TILE_SWITCHTIMEDCLOSE,
-	TILE_SWITCHOPEN,
-	TILE_SWITCHCLOSE,
-	TILE_TELEIN,
-	TILE_TELEOUT,
-	TILE_BOOST,
-	TILE_TELECHECK,
-	TILE_TELECHECKOUT,
-	TILE_TELECHECKIN,
-	TILE_REFILL_JUMPS = 32,
-	TILE_START,
-	TILE_FINISH,
-	TILE_CHECKPOINT_FIRST = 35,
-	TILE_CHECKPOINT_LAST = 59,
-	TILE_STOP = 60,
-	TILE_STOPS,
-	TILE_STOPA,
-
-	TILE_ENTITIES_OFF_1 = 190,
-	TILE_ENTITIES_OFF_2,
-};
-
-DDNET_TILE GetClientGameTileIndex(int PhysicalIndex, DDNET_TILE DDNetIndex, int icDamageIndex, int icBonusIndex)
-{
-	switch(PhysicalIndex)
+	switch(GameLayerIndex)
 	{
-		case TILE_SOLID:
-			return DDNET_TILE::TILE_SOLID;
-		case TILE_NOHOOK:
-			return DDNET_TILE::TILE_NOHOOK;
-		default:
-			break;
-	}
-
-	switch(DDNetIndex)
-	{
-	case DDNET_TILE::TILE_ENTITIES_OFF_1:
-	case DDNET_TILE::TILE_ENTITIES_OFF_2:
-		return DDNetIndex;
+	case TILE_SOLID:
+	case TILE_NOHOOK:
+	case TILE_ENTITIES_OFF_1:
+	case TILE_ENTITIES_OFF_2:
+		return GameLayerIndex;
 	default:
 		break;
 	}
 
 	switch(icDamageIndex)
 	{
-		case ZONE_DAMAGE_DEATH:
-			return DDNET_TILE::TILE_DEATH;
-		case ZONE_DAMAGE_DEATH_NOUNDEAD:
-			return DDNET_TILE::TILE_HIT_DISABLE;
-		case ZONE_DAMAGE_DEATH_INFECTED:
-			return DDNET_TILE::TILE_DUNFREEZE;
-		case ZONE_DAMAGE_INFECTION:
-			return DDNET_TILE::TILE_TELEINWEAPON;
-		default:
-			break;
+	case ZONE_DAMAGE_DEATH:
+		return TILE_DEATH;
+	case ZONE_DAMAGE_DEATH_NOUNDEAD:
+		return TILE_HIT_DISABLE;
+	case ZONE_DAMAGE_DEATH_INFECTED:
+		return TILE_DUNFREEZE;
+	case ZONE_DAMAGE_INFECTION:
+		return TILE_TELEINWEAPON;
+	default:
+		break;
 	}
 
 	switch(icBonusIndex)
 	{
-		case ZONE_BONUS_BONUS:
-			return DDNET_TILE::TILE_THROUGH_CUT;
-		default:
-			break;
+	case ZONE_BONUS_BONUS:
+		return TILE_THROUGH_CUT;
+	default:
+		break;
 	}
 
-	return DDNET_TILE::TILE_AIR;
+	return TILE_AIR;
 }
 
 class CImageInfo
@@ -833,13 +777,11 @@ void CMapConverter::CopyGameLayer()
 			float X = i * 32 + 16;
 			float Y = j * 32 + 16;
 
-			int PhysicalIndex = m_pPhysicsLayerTiles[j*m_Width+i].m_Index;
+			int GameLayerIndex = m_pPhysicsLayerTiles[j*m_Width+i].m_Index;
 			int icDamageIndex = Collision.GetZoneValueAt(ZoneHandle_icDamage, X, Y);
 			int icBonusIndex = Collision.GetZoneValueAt(ZoneHandle_icBonus, X, Y);
 
-			DDNET_TILE DDNetIndex = PhysicalIndex < TILE_NOHOOK ? DDNET_TILE::TILE_AIR : static_cast<DDNET_TILE>(PhysicalIndex);
-
-			const DDNET_TILE Tile = GetClientGameTileIndex(PhysicalIndex, DDNetIndex, icDamageIndex, icBonusIndex);
+			const int Tile = GetClientGameTileIndex(GameLayerIndex, icDamageIndex, icBonusIndex);
 			m_pTiles[j*m_Width+i].m_Index = static_cast<int>(Tile);
 
 			i += m_pPhysicsLayerTiles[j*m_Width+i].m_Skip;
