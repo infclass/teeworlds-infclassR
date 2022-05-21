@@ -164,6 +164,10 @@ private:
 	CCharacterCore m_SendCore; // core that we should send
 	CCharacterCore m_ReckoningCore; // the dead reckoning core
 
+	// DDRace
+
+	void SnapCharacter(int SnappingClient, int ID);
+
 /* INFECTION MODIFICATION START ***************************************/
 protected:
 	virtual void OnTotalHealthChanged(int Difference) = 0;

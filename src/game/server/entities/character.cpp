@@ -789,35 +789,31 @@ bool CCharacter::TakeDamage(vec2 Force, int Dmg, int From, int Weapon, TAKEDAMAG
 	return false;
 }
 
-void CCharacter::Snap(int SnappingClient)
+//TODO: Move the emote stuff to a function
+void CCharacter::SnapCharacter(int SnappingClient, int ID)
 {
-	int ID = m_pPlayer->GetCID();
+	CCharacterCore *pCore;
+	int Tick, Weapon = m_ActiveWeapon;
 
-	if(!Server()->Translate(ID, SnappingClient))
-		return;
+	// write down the m_Core
+	if(!m_ReckoningTick || GameServer()->m_World.m_Paused)
+	{
+		Tick = 0;
+		pCore = &m_Core;
+	}
+	else
+	{
+		Tick = m_ReckoningTick;
+		pCore = &m_SendCore;
+	}
 
-	if(NetworkClipped(SnappingClient))
-		return;
+	int EmoteNormal = m_pPlayer->GetDefaultEmote();
 
 	CNetObj_Character *pCharacter = static_cast<CNetObj_Character *>(Server()->SnapNewItem(NETOBJTYPE_CHARACTER, ID, sizeof(CNetObj_Character)));
 	if(!pCharacter)
 		return;
-	int EmoteNormal = m_pPlayer->GetDefaultEmote();;
-	
-	// write down the m_Core
-	if(!m_ReckoningTick || GameServer()->m_World.m_Paused)
-	{
-		// no dead reckoning when paused because the client doesn't know
-		// how far to perform the reckoning
-		pCharacter->m_Tick = 0;
-		m_Core.Write(pCharacter);
-	}
-	else
-	{
-		pCharacter->m_Tick = m_ReckoningTick;
-		m_SendCore.Write(pCharacter);
-	}
-
+	pCharacter->m_Tick = Tick;
+	pCore->Write(pCharacter);
 	if(pCharacter->m_HookedPlayer != -1)
 	{
 		if(!Server()->Translate(pCharacter->m_HookedPlayer, SnappingClient))
@@ -832,13 +828,9 @@ void CCharacter::Snap(int SnappingClient)
 /* INFECTION MODIFICATION START ***************************************/
 	if(GetInfWeaponID(m_ActiveWeapon) == INFWEAPON_NINJA_HAMMER)
 	{
-		pCharacter->m_Weapon = WEAPON_NINJA;
+		Weapon = WEAPON_NINJA;
 	}
-	else
-	{
-		pCharacter->m_Weapon = m_ActiveWeapon;
-	}
-	
+
 	if(GetPlayerClass() == PLAYERCLASS_SPIDER)
 	{
 		pCharacter->m_HookTick -= (g_Config.m_InfSpiderHookTime - 1) * SERVER_TICK_SPEED-SERVER_TICK_SPEED/5;
@@ -853,8 +845,8 @@ void CCharacter::Snap(int SnappingClient)
 	}
 /* INFECTION MODIFICATION END *****************************************/
 	pCharacter->m_AttackTick = m_AttackTick;
-
 	pCharacter->m_Direction = m_Input.m_Direction;
+	pCharacter->m_Weapon = Weapon;
 
 	if(m_pPlayer->GetCID() == SnappingClient || SnappingClient == -1 ||
 		(!g_Config.m_SvStrictSpectateMode && m_pPlayer->GetCID() == GameServer()->m_apPlayers[SnappingClient]->m_SpectatorID))
@@ -864,7 +856,7 @@ void CCharacter::Snap(int SnappingClient)
 		if(m_aWeapons[m_ActiveWeapon].m_Ammo > 0)
 			pCharacter->m_AmmoCount = m_aWeapons[m_ActiveWeapon].m_Ammo;
 	}
-	
+
 /* INFECTION MODIFICATION START ***************************************/
 	if(GetInfWeaponID(m_ActiveWeapon) == INFWEAPON_MERCENARY_GUN)
 	{
@@ -879,6 +871,19 @@ void CCharacter::Snap(int SnappingClient)
 	}
 
 	pCharacter->m_PlayerFlags = GetPlayer()->m_PlayerFlags;
+}
+
+void CCharacter::Snap(int SnappingClient)
+{
+	int ID = m_pPlayer->GetCID();
+
+	if(!Server()->Translate(ID, SnappingClient))
+		return;
+
+	if(NetworkClipped(SnappingClient))
+		return;
+
+	SnapCharacter(SnappingClient, ID);
 }
 
 void CCharacter::HandleSkippableTiles(int Index)
