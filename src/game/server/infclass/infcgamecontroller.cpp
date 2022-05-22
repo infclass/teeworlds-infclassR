@@ -25,27 +25,42 @@
 #include <game/server/infclass/classes/humans/human.h>
 #include <game/server/infclass/classes/infected/infected.h>
 
+#include <array>
 #include <algorithm>
 #include <iostream>
 #include <map>
 
 const int InfClassModeSpecialSkip = 0x100;
 
+static const char *gs_aRoundNames[] = {
+	"classic",
+	"fun",
+	"fast",
+	"invalid",
+};
+
 const char *toString(ROUND_TYPE RoundType)
 {
-	switch(RoundType)
+	int Index = static_cast<int>(RoundType);
+	if((Index < 0) || (Index >= std::size(gs_aRoundNames)))
 	{
-	case ROUND_TYPE::NORMAL:
-		return "classic";
-	case ROUND_TYPE::FUN:
-		return "fun";
-	case ROUND_TYPE::FAST:
-		return "fast";
+		dbg_msg("Controller", "toString(ROUND_TYPE %d): out of range!", Index);
+		return "invalid";
+	}
+	return gs_aRoundNames[Index];
+}
+
+ROUND_TYPE GetTypeByName(const char *pName)
+{
+	for(int i = 0; i < static_cast<int>(ROUND_TYPE::COUNT); ++i)
+	{
+		if(str_comp(pName, gs_aRoundNames[i]) == 0)
+		{
+			return static_cast<ROUND_TYPE>(i);
+		}
 	}
 
-	dbg_msg("Controller", "toString(ROUND_TYPE %d): out of range!", static_cast<int>(RoundType));
-
-	return "invalid";
+	return ROUND_TYPE::INVALID;
 }
 
 CInfClassGameController::CInfClassGameController(class CGameContext *pGameServer)
@@ -919,6 +934,7 @@ void CInfClassGameController::RegisterChatCommands(IConsole *pConsole)
 	pConsole->Register("lock_client_name", "i[clientid] i[lock]", CFGFLAG_SERVER, ConLockClientName, this, "Set the name of a player");
 
 	pConsole->Register("inf_set_class", "i<clientid> s<classname>", CFGFLAG_SERVER, ConSetClass, this, "Set the class of a player");
+	pConsole->Register("queue_round", "s<type>", CFGFLAG_SERVER, ConQueueSpecialRound, this, "Start a special round");
 	pConsole->Register("start_fast_round", "", CFGFLAG_SERVER, ConStartFastRound, this, "Start a faster gameplay round");
 	pConsole->Register("queue_fast_round", "", CFGFLAG_SERVER, ConQueueFastRound, this, "Queue a faster gameplay round");
 	pConsole->Register("queue_fun_round", "", CFGFLAG_SERVER, ConQueueFunRound, this, "Queue a fun gameplay round");
@@ -1068,6 +1084,18 @@ void CInfClassGameController::ConSetClass(IConsole::IResult *pResult)
 	}
 
 	Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "inf_set_class", "Unknown class");
+}
+
+void CInfClassGameController::ConQueueSpecialRound(IConsole::IResult *pResult, void *pUserData)
+{
+	CInfClassGameController *pSelf = (CInfClassGameController *)pUserData;
+	const char *pRoundTypeName = pResult->GetString(0);
+	ROUND_TYPE Type = GetTypeByName(pRoundTypeName);
+	if(Type == ROUND_TYPE::INVALID)
+	{
+		return;
+	}
+	pSelf->m_QueuedRoundType = Type;
 }
 
 void CInfClassGameController::ConStartFastRound(IConsole::IResult *pResult, void *pUserData)
@@ -1582,6 +1610,8 @@ void CInfClassGameController::StartRound()
 		GameServer()->CreateSoundGlobal(SOUND_CTF_CAPTURE);
 		GameServer()->SendChatTarget(-1, "Starting the 'fast' round. Good luck everyone!");
 		break;
+	case ROUND_TYPE::INVALID:
+		break;
 	}
 
 	SaveRoundRules();
@@ -1622,6 +1652,8 @@ void CInfClassGameController::EndRound()
 		break;
 	case ROUND_TYPE::FUN:
 		GameServer()->EndFunRound();
+		break;
+	case ROUND_TYPE::INVALID:
 		break;
 	}
 

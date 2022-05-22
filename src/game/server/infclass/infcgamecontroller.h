@@ -25,6 +25,8 @@ enum class ROUND_TYPE
 	NORMAL,
 	FUN,
 	FAST,
+	COUNT,
+	INVALID = COUNT,
 };
 
 enum class CLASS_AVAILABILITY
@@ -132,6 +134,7 @@ public:
 	static void ConSetClass(IConsole::IResult *pResult, void *pUserData);
 	void ConSetClass(IConsole::IResult *pResult);
 
+	static void ConQueueSpecialRound(IConsole::IResult *pResult, void *pUserData);
 	static void ConStartFastRound(IConsole::IResult *pResult, void *pUserData);
 	static void ConQueueFastRound(IConsole::IResult *pResult, void *pUserData);
 	static void ConQueueFunRound(IConsole::IResult *pResult, void *pUserData);
