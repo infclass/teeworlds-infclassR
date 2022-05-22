@@ -253,7 +253,9 @@ void CCharacterCore::Tick(bool UseInput, CParams* pParams)
 				CCharacterCore *pCharCore = m_pWorld->m_apCharacters[i];
 				if (IsRecursePassenger(pCharCore))
 					continue;
-				if(!pCharCore || pCharCore == this || (pCharCore->m_HookProtected && (m_Infected == pCharCore->m_Infected)) || m_IsPassenger || m_Passenger == pCharCore)
+				if(!pCharCore || pCharCore == this || (pCharCore->m_HookProtected && (m_Infected == pCharCore->m_Infected)))
+					continue;
+				if(m_IsPassenger)
 					continue;
 				if(m_InLove)
 					continue;
