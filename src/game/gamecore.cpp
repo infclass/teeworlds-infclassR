@@ -259,7 +259,7 @@ void CCharacterCore::Tick(bool UseInput, CParams* pParams)
 				CCharacterCore *pCharCore = m_pWorld->m_apCharacters[i];
 				if (IsRecursePassenger(pCharCore))
 					continue;
-				if(!pCharCore || pCharCore == this || (pCharCore->m_HookProtected && (m_Infected == pCharCore->m_Infected)))
+				if(!pCharCore || pCharCore == this || (!(m_Super || pCharCore->m_Super) && ((m_Id != -1 && !m_pTeams->CanHook(m_Id, i)) || pCharCore->m_Solo || m_Solo)))
 					continue;
 				if(m_IsPassenger)
 					continue;
@@ -368,24 +368,23 @@ void CCharacterCore::Tick(bool UseInput, CParams* pParams)
 				continue;
 
 			//player *p = (player*)ent;
-			if(pCharCore == this) // || !(p->flags&FLAG_ALIVE)
+			//if(pCharCore == this) // || !(p->flags&FLAG_ALIVE)
+
+			if(pCharCore == this || (m_Id != -1 && !m_pTeams->CanHook(m_Id, i)))
 				continue; // make sure that we don't nudge our self
 
+			if(!(m_Super || pCharCore->m_Super) && (m_Solo || pCharCore->m_Solo))
+				continue;
+
+			// handle player <-> player collision
 			float Distance = distance(m_Pos, pCharCore->m_Pos);
 			if(Distance > 0)
 			{
 				vec2 Dir = normalize(m_Pos - pCharCore->m_Pos);
 
-				bool CanCollide = true; // pTuningParams->m_PlayerCollision;
-				// handle player <-> player collision
-				if((m_Infected == pCharCore->m_Infected) && (m_HookProtected || pCharCore->m_HookProtected))
-					CanCollide = false;
+				bool CanCollide = (m_Super || pCharCore->m_Super) || (pCharCore->m_Collision && m_Collision && !m_NoCollision && !pCharCore->m_NoCollision && 1); // m_Tuning.m_PlayerCollision);
 
-				// Totally disable humans body collisions
-				if(!m_Infected && !pCharCore->m_Infected)
-					CanCollide = false;
-
-				if(CanCollide && Distance < PhysicalSize * 1.25f && Distance > 0.0f)
+				if(CanCollide && (m_Id == -1 || m_pTeams->CanCollide(m_Id, i)) && Distance < PhysicalSize * 1.25f && Distance > 0.0f)
 				{
 					float a = (PhysicalSize * 1.45f - Distance);
 					float Velocity = 0.5f;
@@ -470,9 +469,7 @@ void CCharacterCore::Move(CParams* pParams)
 					CCharacterCore *pCharCore = m_pWorld->m_apCharacters[p];
 					if(!pCharCore || pCharCore == this)
 						continue;
-					if (!m_Infected && !pCharCore->m_Infected)
-						continue;
-					if ((m_Infected && pCharCore->m_Infected) && (m_HookProtected || pCharCore->m_HookProtected))
+					if((!(pCharCore->m_Super || m_Super) && (m_Solo || pCharCore->m_Solo || (m_Id != -1 && !m_pTeams->CanCollide(m_Id, p)))))
 						continue;
 					float D = distance(Pos, pCharCore->m_Pos);
 					if(D < 28.0f && D >= 0.0f)
