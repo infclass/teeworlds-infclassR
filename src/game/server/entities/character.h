@@ -10,6 +10,8 @@
 
 #include <game/gamecore.h>
 
+class CGameTeams;
+
 /* INFECTION MODIFICATION START ***************************************/
 enum FREEZEREASON
 {
@@ -150,15 +152,23 @@ public:
 	int m_DartOldVelAmount;
 	
 	int m_WaterJumpLifeSpan;
+	/* INFECTION MODIFICATION END *****************************************/
 
 	// the player core for the physics
 	CCharacterCore m_Core;
+	CGameTeams *m_pTeams = nullptr;
 
+	void DDRaceInit();
 	void HandleSkippableTiles(int Index);
 
-private:
-/* INFECTION MODIFICATION END *****************************************/
+public:
+	CGameTeams *Teams() { return m_pTeams; }
+	void SetTeams(CGameTeams *pTeams);
 
+	int Team();
+	bool CanCollide(int ClientID);
+
+private:
 	// info for dead reckoning
 	int m_ReckoningTick; // tick that we are performing dead reckoning From
 	CCharacterCore m_SendCore; // core that we should send

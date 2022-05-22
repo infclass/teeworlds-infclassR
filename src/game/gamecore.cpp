@@ -61,10 +61,14 @@ float VelocityRamp(float Value, float Start, float Range, float Curvature)
 const float CCharacterCore::PhysicalSize = 28.0f;
 const float CCharacterCore::PassengerYOffset = 50;
 
-void CCharacterCore::Init(CWorldCore *pWorld, CCollision *pCollision)
+void CCharacterCore::Init(CWorldCore *pWorld, CCollision *pCollision, CTeamsCore *pTeams)
 {
 	m_pWorld = pWorld;
 	m_pCollision = pCollision;
+
+	m_pTeams = pTeams;
+	m_Id = -1;
+
 	Reset();
 }
 
@@ -522,6 +526,11 @@ void CCharacterCore::Quantize()
 	CNetObj_CharacterCore Core;
 	Write(&Core);
 	Read(&Core);
+}
+
+void CCharacterCore::SetTeamsCore(CTeamsCore *pTeams)
+{
+	m_pTeams = pTeams;
 }
 
 bool CCharacterCore::IsRecursePassenger(CCharacterCore *pMaybePassenger) const

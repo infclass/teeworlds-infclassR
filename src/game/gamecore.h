@@ -12,6 +12,7 @@
 #include <game/generated/protocol.h>
 
 #include "mapitems.h"
+#include "teamscore.h"
 
 class CCollision;
 
@@ -255,7 +256,7 @@ public:
 
 	int m_TriggeredEvents;
 
-	void Init(CWorldCore *pWorld, CCollision *pCollision);
+	void Init(CWorldCore *pWorld, CCollision *pCollision, CTeamsCore *pTeams = nullptr);
 	void Reset();
 	void Tick(bool UseInput, CParams* pParams);
 	void Move(CParams* pParams);
@@ -266,7 +267,13 @@ public:
 
 	// DDRace
 
+	int m_Id;
+
+	// DDNet Character
+	void SetTeamsCore(CTeamsCore *pTeams);
+
 private:
+	CTeamsCore *m_pTeams;
 	int m_MoveRestrictions;
 
 	// InfClass

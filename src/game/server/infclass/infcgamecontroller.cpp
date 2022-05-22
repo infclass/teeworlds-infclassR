@@ -64,9 +64,11 @@ ROUND_TYPE GetTypeByName(const char *pName)
 }
 
 CInfClassGameController::CInfClassGameController(class CGameContext *pGameServer)
-: IGameController(pGameServer)
+: IGameController(pGameServer), m_Teams(pGameServer)
 {
 	m_pGameType = "InfClassR";
+
+	m_Teams.m_Core.m_IsInfclass = true;
 	
 	m_GrowingMap = 0;
 	
@@ -2624,6 +2626,10 @@ void CInfClassGameController::OnCharacterDeath(CInfClassCharacter *pVictim, cons
 
 void CInfClassGameController::OnCharacterSpawned(CInfClassCharacter *pCharacter)
 {
+	IGameController::OnCharacterSpawn(pCharacter);
+
+	pCharacter->SetTeams(&m_Teams);
+
 	CInfClassPlayer *pPlayer = pCharacter->GetPlayer();
 	if(!IsInfectionStarted() && pPlayer->RandomClassChoosen())
 	{

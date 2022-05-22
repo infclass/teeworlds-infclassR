@@ -4,6 +4,7 @@
 #define GAME_SERVER_INFCLASS_GAMECONTROLLER_H
 
 #include <game/server/gamecontroller.h>
+#include <game/server/teams.h>
 
 #include <base/tl/array_on_stack.h>
 #include <engine/console.h>
@@ -194,6 +195,8 @@ private:
 	int m_MapHeight;
 	int* m_GrowingMap;
 	bool m_ExplosionStarted;
+
+	CGameTeams m_Teams;
 
 	array<vec2> m_HeroFlagPositions;
 	int m_HeroGiftTick = 0;

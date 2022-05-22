@@ -10,6 +10,8 @@
 #include "character.h"
 #include "projectile.h"
 
+#include <game/server/teams.h>
+
 MACRO_ALLOC_POOL_ID_IMPL(CCharacter, MAX_CLIENTS)
 
 // Character, "physical" player's part
@@ -95,6 +97,8 @@ bool CCharacter::Spawn(CPlayer *pPlayer, vec2 Pos)
 	m_Alive = true;
 
 	GameServer()->m_pController->OnCharacterSpawn(this);
+
+	DDRaceInit();
 
 	return true;
 }
@@ -355,6 +359,7 @@ void CCharacter::Tick()
 		m_EmoteStop = -1;
 	}
 
+	m_Core.m_Id = GetPlayer()->GetCID();
 /* INFECTION MODIFICATION START ***************************************/
 	//~ if(GameServer()->Collision()->CheckPhysicsFlag(m_Core.m_Pos, CCollision::COLFLAG_WATER))
 	//~ {
@@ -627,7 +632,8 @@ void CCharacter::TickDefered()
 	{
 		CCharacterCore::CParams CoreTickParams(&GameWorld()->m_Core.m_Tuning);
 		CWorldCore TempWorld;
-		m_ReckoningCore.Init(&TempWorld, GameServer()->Collision());
+		m_ReckoningCore.Init(&TempWorld, GameServer()->Collision(), &Teams()->m_Core);
+		m_ReckoningCore.m_Id = m_pPlayer->GetCID();
 		m_ReckoningCore.Tick(false, &CoreTickParams);
 		m_ReckoningCore.Move(&CoreTickParams);
 		m_ReckoningCore.Quantize();
@@ -640,6 +646,7 @@ void CCharacter::TickDefered()
 	vec2 StartVel = m_Core.m_Vel;
 	bool StuckBefore = GameServer()->Collision()->TestBox(m_Core.m_Pos, vec2(28.0f, 28.0f));
 
+	m_Core.m_Id = m_pPlayer->GetCID();
 	m_Core.Move(&CoreTickParams);
 	bool StuckAfterMove = GameServer()->Collision()->TestBox(m_Core.m_Pos, vec2(28.0f, 28.0f));
 	m_Core.Quantize();
@@ -884,6 +891,16 @@ void CCharacter::Snap(int SnappingClient)
 		return;
 
 	SnapCharacter(SnappingClient, ID);
+}
+
+bool CCharacter::CanCollide(int ClientID)
+{
+	return Teams()->m_Core.CanCollide(GetPlayer()->GetCID(), ClientID);
+}
+
+int CCharacter::Team()
+{
+	return Teams()->m_Core.Team(m_pPlayer->GetCID());
 }
 
 void CCharacter::HandleSkippableTiles(int Index)
@@ -1210,4 +1227,15 @@ void CCharacter::PostCoreTick()
 	int CurrentIndex = GameServer()->Collision()->GetMapIndex(m_Pos);
 	HandleSkippableTiles(CurrentIndex);
 	m_MoveRestrictions = GameServer()->Collision()->GetMoveRestrictions(nullptr, this, m_Pos, 18.0f, CurrentIndex);
+}
+
+void CCharacter::SetTeams(CGameTeams *pTeams)
+{
+	m_pTeams = pTeams;
+	m_Core.SetTeamsCore(&m_pTeams->m_Core);
+}
+
+void CCharacter::DDRaceInit()
+{
+	m_Core.m_Id = GetPlayer()->GetCID();
 }

@@ -566,6 +566,8 @@ set_glob(GAME_SHARED GLOB src/game
   mapitems_ex.cpp
   mapitems_ex.h
   mapitems_ex_types.h
+  teamscore.cpp
+  teamscore.h
   tuning.h
   variables.h
   version.h
@@ -763,6 +765,8 @@ set_glob(GAME_SERVER GLOB_RECURSE src/game/server
   gameworld.h
   player.cpp
   player.h
+  teams.cpp
+  teams.h
   teeinfo.cpp
   teeinfo.h
 )
