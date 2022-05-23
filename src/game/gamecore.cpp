@@ -83,6 +83,12 @@ void CCharacterCore::Reset()
 	m_HookedPlayer = -1;
 	m_Jumped = 0;
 	m_TriggeredEvents = 0;
+	m_Collision = true;
+
+	// DDNet Character
+	m_Solo = false;
+	m_NoCollision = false;
+	m_Super = false;
 
 	// Infclass Character
 	m_Passenger = nullptr;

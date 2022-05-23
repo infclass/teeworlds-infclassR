@@ -230,6 +230,7 @@ public:
 	static const float PhysicalSize;
 	vec2 m_Pos;
 	vec2 m_Vel;
+	bool m_Collision;
 
 	vec2 m_HookPos;
 	vec2 m_HookDir;
@@ -271,6 +272,9 @@ public:
 
 	// DDNet Character
 	void SetTeamsCore(CTeamsCore *pTeams);
+	bool m_Solo;
+	bool m_NoCollision;
+	bool m_Super;
 
 private:
 	CTeamsCore *m_pTeams;
