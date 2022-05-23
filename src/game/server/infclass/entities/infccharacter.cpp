@@ -2102,8 +2102,8 @@ void CInfClassCharacter::OnBiologistLaserFired(WeaponFireContext *pFireContext)
 			GameWorld()->DestroyEntity(pMine);
 	}
 
-	const float BigLaserMaxLength = 400.0f;
-	vec2 To = GetPos() + GetDirection() * BigLaserMaxLength;
+	const float BioLaserMaxLength = 400.0f;
+	vec2 To = GetPos() + GetDirection() * BioLaserMaxLength;
 	if(GameServer()->Collision()->IntersectLine(GetPos(), To, 0x0, &To))
 	{
 		new CBiologistMine(GameServer(), GetPos(), To, GetCID());
