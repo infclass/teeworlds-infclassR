@@ -9,6 +9,8 @@
 
 #include "alloc.h"
 
+class CCollision;
+
 /*
 	Class: Entity
 		Basic entity class.
@@ -22,6 +24,7 @@ class CEntity
 	CEntity *m_pNextTypeEntity;
 
 	class CGameWorld *m_pGameWorld;
+	CCollision *m_pCCollision;
 protected:
 	bool m_MarkedForDestroy;
 	int m_ID;
@@ -39,9 +42,10 @@ public:
 	/* Objects */
 	class CGameWorld *GameWorld() { return m_pGameWorld; }
 	class CConfig *Config() { return m_pGameWorld->Config(); }
-	class CGameContext *GameServer() { return GameWorld()->GameServer(); }
-	class IServer *Server() { return GameWorld()->Server(); }
-	
+	class CGameContext *GameServer() { return m_pGameWorld->GameServer(); }
+	class IServer *Server() { return m_pGameWorld->Server(); }
+	CCollision *Collision() { return m_pCCollision; }
+
 	/* Getters */
 	CEntity *TypeNext() { return m_pNextTypeEntity; }
 	CEntity *TypePrev() { return m_pPrevTypeEntity; }
