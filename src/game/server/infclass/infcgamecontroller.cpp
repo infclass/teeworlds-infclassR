@@ -71,7 +71,12 @@ CInfClassGameController::CInfClassGameController(class CGameContext *pGameServer
 	m_Teams.m_Core.m_IsInfclass = true;
 	
 	m_GrowingMap = 0;
-	
+
+	//Get zones
+	m_ZoneHandle_icDamage = GameServer()->Collision()->GetZoneHandle("icDamage");
+	m_ZoneHandle_icTeleport = GameServer()->Collision()->GetZoneHandle("icTele");
+	m_ZoneHandle_icBonus = GameServer()->Collision()->GetZoneHandle("icBonus");
+
 	m_ExplosionStarted = false;
 	m_MapWidth = GameServer()->Collision()->GetWidth();
 	m_MapHeight = GameServer()->Collision()->GetHeight();
@@ -360,12 +365,12 @@ int CInfClassGameController::GetZoneValueAt(int ZoneHandle, const vec2 &Pos) con
 
 int CInfClassGameController::GetDamageZoneValueAt(const vec2 &Pos) const
 {
-	return GetZoneValueAt(GameServer()->m_ZoneHandle_icDamage, Pos);
+	return GetZoneValueAt(m_ZoneHandle_icDamage, Pos);
 }
 
 int CInfClassGameController::GetBonusZoneValueAt(const vec2 &Pos) const
 {
-	return GetZoneValueAt(GameServer()->m_ZoneHandle_icBonus, Pos);
+	return GetZoneValueAt(m_ZoneHandle_icBonus, Pos);
 }
 
 void CInfClassGameController::CreateExplosion(const vec2 &Pos, int Owner, DAMAGE_TYPE DamageType, float DamageFactor)
@@ -2771,7 +2776,7 @@ bool CInfClassGameController::IsSpawnable(vec2 Pos, int TeleZoneIndex)
 	}
 	
 	//Check the center
-	int TeleIndex = GameServer()->Collision()->GetZoneValueAt(GameServer()->m_ZoneHandle_icTeleport, Pos);
+	int TeleIndex = GameServer()->Collision()->GetZoneValueAt(m_ZoneHandle_icTeleport, Pos);
 	if(GameServer()->Collision()->CheckPoint(Pos))
 		return false;
 	if(TeleZoneIndex && TeleIndex == TeleZoneIndex)
@@ -2782,7 +2787,7 @@ bool CInfClassGameController::IsSpawnable(vec2 Pos, int TeleZoneIndex)
 	{
 		float Angle = i * (2.0f * pi / 16.0f);
 		vec2 CheckPos = Pos + vec2(cos(Angle), sin(Angle)) * 30.0f;
-		TeleIndex = GameServer()->Collision()->GetZoneValueAt(GameServer()->m_ZoneHandle_icTeleport, CheckPos);
+		TeleIndex = GameServer()->Collision()->GetZoneValueAt(m_ZoneHandle_icTeleport, CheckPos);
 		if(GameServer()->Collision()->CheckPoint(CheckPos))
 			return false;
 		if(TeleZoneIndex && TeleIndex == TeleZoneIndex)

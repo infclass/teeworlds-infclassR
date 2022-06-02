@@ -125,11 +125,6 @@ class CGameContext : public IGameServer
 	};
 
 public:
-	int m_ZoneHandle_icDamage;
-	int m_ZoneHandle_icTeleport;
-	int m_ZoneHandle_icBonus;
-
-public:
 	IServer *Server() const { return m_pServer; }
 	CConfig *Config() { return m_pConfig; }
 	IStorage *Storage() const { return m_pStorage; }

@@ -191,6 +191,10 @@ private:
 	ClientsArray m_WitchCallers;
 
 private:
+	int m_ZoneHandle_icDamage;
+	int m_ZoneHandle_icTeleport;
+	int m_ZoneHandle_icBonus;
+
 	int m_MapWidth;
 	int m_MapHeight;
 	int* m_GrowingMap;
