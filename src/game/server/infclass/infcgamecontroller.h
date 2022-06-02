@@ -108,7 +108,7 @@ public:
 	const ClientsArray &GetValidNinjaTargets() const { return m_NinjaTargets; }
 
 	bool HeroGiftAvailable() const;
-	const array<vec2> &HeroFlagPositions() const { return m_HeroFlagPositions; }
+	bool GetHeroFlagPosition(vec2 *pFlagPosition) const;
 	bool IsPositionAvailableForHumans(const vec2 &FlagPosition) const;
 
 	void ResetFinalExplosion();

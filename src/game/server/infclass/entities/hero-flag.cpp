@@ -33,10 +33,7 @@ CHeroFlag::~CHeroFlag()
 
 void CHeroFlag::FindPosition()
 {
-	int NbPos = GameController()->HeroFlagPositions().size();
-	int Index = random_int(0, NbPos-1);
-	
-	m_Pos = GameController()->HeroFlagPositions()[Index];
+	m_HasSpawnPosition = GameController()->GetHeroFlagPosition(&m_Pos);
 }
 
 void CHeroFlag::SetCoolDown()
@@ -55,13 +52,12 @@ void CHeroFlag::SetCoolDown()
 	m_SpawnTick = Server()->Tick() + Server()->TickSpeed() * (15+(120*t));
 }
 
-void CHeroFlag::GiveGift(CInfClassCharacter* pHero)
+void CHeroFlag::GiveGift(CInfClassCharacter *pHero)
 {
 	pHero->SetHealthArmor(10, 10);
 	pHero->GiveWeapon(WEAPON_SHOTGUN, -1);
 	pHero->GiveWeapon(WEAPON_GRENADE, -1);
 	pHero->GiveWeapon(WEAPON_LASER, -1);
-	SetCoolDown();
 
 	pHero->SetEmote(EMOTE_HAPPY, Server()->Tick() + Server()->TickSpeed());
 	GameServer()->SendEmoticon(pHero->GetCID(), EMOTICON_MUSIC);
@@ -105,7 +101,20 @@ void CHeroFlag::GiveGift(CInfClassCharacter* pHero)
 
 void CHeroFlag::Tick()
 {
-	if(Server()->Tick() < m_SpawnTick)
+	if(IsAvailable())
+	{
+		m_HasSpawnPosition = GameController()->IsPositionAvailableForHumans(GetPos());
+	}
+
+	if(!IsAvailable())
+	{
+		FindPosition();
+	}
+
+	if(!IsAvailable())
+		return;
+
+	if(Server()->Tick() < GetSpawnTick())
 		return;
 
 	CInfClassCharacter *pOwner = GetOwnerCharacter();
@@ -118,11 +127,12 @@ void CHeroFlag::Tick()
 		return;
 	}
 
-	float Len = distance(pOwner->m_Pos, m_Pos);
-	if(Len < m_ProximityRadius + pOwner->m_ProximityRadius)
+	float Len = distance(pOwner->GetPos(), GetPos());
+	if(Len < GetProximityRadius() + pOwner->GetProximityRadius())
 	{
-		FindPosition();
 		GiveGift(pOwner);
+		SetCoolDown();
+		FindPosition();
 
 		if(Server()->GetActivePlayerCount() > 3)
 		{

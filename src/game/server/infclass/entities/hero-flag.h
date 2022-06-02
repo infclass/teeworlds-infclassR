@@ -23,6 +23,7 @@ public:
 	void FindPosition();
 	void GiveGift(CInfClassCharacter *pHero);
 
+	bool IsAvailable() const { return m_HasSpawnPosition; }
 	int GetSpawnTick() const { return m_SpawnTick; }
 
 	void Tick() override;
@@ -34,6 +35,7 @@ private:
 
 	int m_SpawnTick = 0;
 	int m_IDs[SHIELD_COUNT];
+	bool m_HasSpawnPosition = false;
 };
 
 #endif

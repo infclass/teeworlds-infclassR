@@ -2263,6 +2263,24 @@ bool CInfClassGameController::HeroGiftAvailable() const
 	return Server()->Tick() >= m_HeroGiftTick;
 }
 
+bool CInfClassGameController::GetHeroFlagPosition(vec2 *pFlagPosition) const
+{
+	int NbPos = m_HeroFlagPositions.size();
+
+	for(int Attempts = 3; Attempts > 0; Attempts--)
+	{
+		int Index = random_int(0, NbPos - 1);
+		const vec2 Pos = m_HeroFlagPositions[Index];
+		*pFlagPosition = Pos;
+		if(IsPositionAvailableForHumans(Pos))
+		{
+			return true;
+		}
+	}
+
+	return false;
+}
+
 bool CInfClassGameController::IsPositionAvailableForHumans(const vec2 &Position) const
 {
 	int DamageZoneValue = GetDamageZoneValueAt(Position);
