@@ -51,7 +51,7 @@ void CEngineerWall::Tick()
 	
 	if(m_LifeSpan < 0)
 	{
-		GameServer()->m_World.DestroyEntity(this);
+		GameWorld()->DestroyEntity(this);
 	}
 	else
 	{

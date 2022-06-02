@@ -15,7 +15,7 @@ CLaserTeleport::CLaserTeleport(CGameContext *pGameContext, vec2 StartPos, vec2 E
 void CLaserTeleport::Tick()
 {
 	if (m_LaserFired)
-		GameServer()->m_World.DestroyEntity(this);
+		GameWorld()->DestroyEntity(this);
 }
 
 void CLaserTeleport::Snap(int SnappingClient)

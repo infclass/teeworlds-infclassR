@@ -43,7 +43,7 @@ void CMedicGrenade::Tick()
 
 	if(GameLayerClipped(CurPos))
 	{
-		GameServer()->m_World.DestroyEntity(this);
+		GameWorld()->DestroyEntity(this);
 		return;
 	}
 	
@@ -116,5 +116,5 @@ void CMedicGrenade::Snap(int SnappingClient)
 void CMedicGrenade::Explode()
 {
 	new CGrowingExplosion(GameServer(), m_ActualPos, m_ActualDir, m_Owner, 4, GROWING_EXPLOSION_EFFECT::HEAL_HUMANS);
-	GameServer()->m_World.DestroyEntity(this);
+	GameWorld()->DestroyEntity(this);
 }

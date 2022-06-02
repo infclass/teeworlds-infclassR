@@ -36,7 +36,7 @@ CScientistMine::~CScientistMine()
 void CScientistMine::Explode(int DetonatedBy)
 {
 	new CGrowingExplosion(GameServer(), m_Pos, vec2(0.0, -1.0), m_Owner, 6, DAMAGE_TYPE::SCIENTIST_MINE);
-	GameServer()->m_World.DestroyEntity(this);
+	GameWorld()->DestroyEntity(this);
 	
 	//Self damage
 	CInfClassCharacter *OwnerChar = GetOwnerCharacter();

@@ -52,7 +52,7 @@ void CBouncingBullet::Tick()
 	
 	if(GameLayerClipped(CurPos) || m_LifeSpan < 0 || m_BounceLeft < 0 || m_DistanceLeft < 0.0f)
 	{
-		GameServer()->m_World.DestroyEntity(this);
+		GameWorld()->DestroyEntity(this);
 		return;
 	}
 	
@@ -69,7 +69,7 @@ void CBouncingBullet::Tick()
 			pTargetChr->TakeDamage(m_Direction * 2, Damage, m_Owner, DAMAGE_TYPE::BIOLOGIST_SHOTGUN);
 		}
 
-		GameServer()->m_World.DestroyEntity(this);
+		GameWorld()->DestroyEntity(this);
 	}
 	else
 	{

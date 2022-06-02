@@ -151,7 +151,7 @@ void CGrowingExplosion::Tick()
 	//~ if((tick - m_StartTick) > Server()->TickSpeed())
 	if((tick - m_StartTick) > m_MaxGrowing)
 	{
-		GameServer()->m_World.DestroyEntity(this);
+		GameWorld()->DestroyEntity(this);
 		return;
 	}
 	

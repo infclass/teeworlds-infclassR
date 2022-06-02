@@ -72,7 +72,7 @@ void CSuperWeaponIndicator::Tick()
 	{
 		if (m_OwnerChar->m_HasWhiteHole == false)
 		{
-			GameServer()->m_World.DestroyEntity(this);
+			GameWorld()->DestroyEntity(this);
 			return; // Do not proceed after destruction
 		} 
 	}

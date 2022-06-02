@@ -84,8 +84,8 @@ void CMercenaryBomb::Explode()
 		GameServer()->CreateSound(m_Pos, SOUND_GRENADE_EXPLODE);
 		new CGrowingExplosion(GameServer(), m_Pos, vec2(0.0, -1.0), m_Owner, 16.0f * Factor, DAMAGE_TYPE::MERCENARY_BOMB);
 	}
-				
-	GameServer()->m_World.DestroyEntity(this);
+
+	GameWorld()->DestroyEntity(this);
 }
 
 bool CMercenaryBomb::ReadyToExplode()

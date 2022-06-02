@@ -107,7 +107,7 @@ void CProjectile::Tick()
 			}
 		}
 
-		GameServer()->m_World.DestroyEntity(this);
+		GameWorld()->DestroyEntity(this);
 	}
 	
 /* INFECTION MODIFICATION END *****************************************/

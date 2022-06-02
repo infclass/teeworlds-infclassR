@@ -37,7 +37,7 @@ void CBiologistMine::Explode()
 		new CBiologistLaser(GameServer(), m_Pos, vec2(cos(RandomShift + AngleStep*i), sin(RandomShift + AngleStep*i)), m_Owner, 10);
 	}
 	
-	GameServer()->m_World.DestroyEntity(this);
+	GameWorld()->DestroyEntity(this);
 }
 
 void CBiologistMine::Snap(int SnappingClient)

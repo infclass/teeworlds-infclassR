@@ -76,7 +76,7 @@ void CSoldierBomb::Explode()
 
 	if(m_nbBomb == 0)
 	{
-		GameServer()->m_World.DestroyEntity(this);
+		GameWorld()->DestroyEntity(this);
 	}
 }
 

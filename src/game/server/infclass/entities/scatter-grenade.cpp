@@ -59,7 +59,7 @@ void CScatterGrenade::Tick()
 	
 	if(GameLayerClipped(CurPos))
 	{
-		GameServer()->m_World.DestroyEntity(this);
+		GameWorld()->DestroyEntity(this);
 		return;
 	}
 	
@@ -144,7 +144,7 @@ void CScatterGrenade::Explode()
 		new CGrowingExplosion(GameServer(), m_ActualPos, m_ActualDir, m_Owner, 4, DAMAGE_TYPE::MERCENARY_GRENADE);
 	}
 	
-	GameServer()->m_World.DestroyEntity(this);
+	GameWorld()->DestroyEntity(this);
 	
 }
 

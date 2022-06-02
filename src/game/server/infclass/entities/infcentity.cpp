@@ -22,7 +22,7 @@ CInfClassCharacter *CInfCEntity::GetOwnerCharacter()
 
 void CInfCEntity::Reset()
 {
-	GameServer()->m_World.DestroyEntity(this);
+	GameWorld()->DestroyEntity(this);
 }
 
 void CInfCEntity::SetPos(const vec2 &Position)
