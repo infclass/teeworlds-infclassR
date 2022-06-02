@@ -109,6 +109,7 @@ public:
 
 	bool HeroGiftAvailable() const;
 	const array<vec2> &HeroFlagPositions() const { return m_HeroFlagPositions; }
+	bool IsPositionAvailableForHumans(const vec2 &FlagPosition) const;
 
 	void ResetFinalExplosion();
 	void SaveRoundRules();

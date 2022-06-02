@@ -2263,6 +2263,19 @@ bool CInfClassGameController::HeroGiftAvailable() const
 	return Server()->Tick() >= m_HeroGiftTick;
 }
 
+bool CInfClassGameController::IsPositionAvailableForHumans(const vec2 &Position) const
+{
+	int DamageZoneValue = GetDamageZoneValueAt(Position);
+	switch(DamageZoneValue)
+	{
+	case ZONE_DAMAGE_INFECTION:
+	case ZONE_DAMAGE_DEATH_NOUNDEAD:
+		return false;
+	default:
+		return true;
+	}
+}
+
 void CInfClassGameController::Snap(int SnappingClient)
 {
 	CNetObj_GameInfo *pGameInfoObj = (CNetObj_GameInfo *)Server()->SnapNewItem(NETOBJTYPE_GAMEINFO, 0, sizeof(CNetObj_GameInfo));
