@@ -107,10 +107,6 @@ void CInfClassCharacter::OnCharacterInInfectionZone()
 				IncreaseHealth(1);
 			}
 		}
-		if (m_InfZoneTick < 0) {
-			m_InfZoneTick = Server()->Tick(); // Save Tick when zombie enters infection zone
-			GrantSpawnProtection();
-		}
 	}
 	else
 	{
