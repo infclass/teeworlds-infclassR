@@ -591,6 +591,57 @@ inline vec3 BarycentricCoordinates(const vec2& t0, const vec2& t1, const vec2& t
     return bary;
 }
 
+template <typename V>
+bool OutOfRange(V value, V q0, V q1, V q2, V q3)
+{
+	if(q0 > q1)
+	{
+		if(q2 > q3)
+		{
+			const V Min = minimum(q1, q3);
+			if(value < Min)
+				return true;
+			const V Max = maximum(q0, q2);
+			if(value > Max)
+				return true;
+		}
+		else
+		{
+			const V Min = minimum(q1, q2);
+			if(value < Min)
+				return true;
+			const V Max = maximum(q0, q3);
+			if(value > Max)
+				return true;
+		}
+	}
+	else
+	{
+		// q1 is bigger than q0
+		if(q2 > q3)
+		{
+			const V Min = minimum(q0, q3);
+			if(value < Min)
+				return true;
+			const V Max = maximum(q1, q2);
+			if(value > Max)
+				return true;
+		}
+		else
+		{
+			// q3 is bigger than q2
+			const V Min = minimum(q0, q2);
+			if(value < Min)
+				return true;
+			const V Max = maximum(q1, q3);
+			if(value > Max)
+				return true;
+		}
+	}
+
+	return false;
+}
+
 //t0, t1 and t2 are position of triangle vertices
 inline bool InsideTriangle(const vec2& t0, const vec2& t1, const vec2& t2, const vec2& p)
 {
@@ -693,6 +744,11 @@ int CCollision::GetZoneValueAt(int ZoneHandle, float x, float y)
 					Rotate(&center, &p2, Angle);
 					Rotate(&center, &p3, Angle);
 				}
+
+				if(OutOfRange(x, p0.x, p1.x, p2.x, p3.x))
+					continue;
+				if(OutOfRange(y, p0.y, p1.y, p2.y, p3.y))
+					continue;
 				
 				if(InsideQuad(p0, p1, p2, p3, vec2(x, y)))
 				{
