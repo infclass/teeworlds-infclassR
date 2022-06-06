@@ -15,8 +15,30 @@
 
 #include <limits>
 
-int GetClientGameTileIndex(int GameLayerIndex, int icDamageIndex, int icBonusIndex)
+class CClientGameTileGetter
 {
+public:
+	explicit CClientGameTileGetter(CCollision *pCollision);
+
+	int GetClientGameTileIndex(int TileX, int TileY) const;
+
+protected:
+	CCollision *m_pCollision = nullptr;
+	int m_ZoneHandle_icDamage = -1;
+	int m_ZoneHandle_icBonus = -1;
+};
+
+CClientGameTileGetter::CClientGameTileGetter(CCollision *pCollision)
+	: m_pCollision(pCollision)
+{
+	m_ZoneHandle_icDamage = m_pCollision->GetZoneHandle("icDamage");
+	m_ZoneHandle_icBonus = m_pCollision->GetZoneHandle("icBonus");
+}
+
+int CClientGameTileGetter::GetClientGameTileIndex(int TileX, int TileY) const
+{
+	int W = m_pCollision->GetWidth();
+	int GameLayerIndex = m_pCollision->GetTileIndex(TileY * W + TileX);
 	switch(GameLayerIndex)
 	{
 	case TILE_SOLID:
@@ -27,6 +49,11 @@ int GetClientGameTileIndex(int GameLayerIndex, int icDamageIndex, int icBonusInd
 	default:
 		break;
 	}
+
+	float X = TileX * 32 + 16;
+	float Y = TileY * 32 + 16;
+
+	int icDamageIndex = m_pCollision->GetZoneValueAt(m_ZoneHandle_icDamage, X, Y);
 
 	switch(icDamageIndex)
 	{
@@ -42,6 +69,7 @@ int GetClientGameTileIndex(int GameLayerIndex, int icDamageIndex, int icBonusInd
 		break;
 	}
 
+	int icBonusIndex = m_pCollision->GetZoneValueAt(m_ZoneHandle_icBonus, X, Y);
 	switch(icBonusIndex)
 	{
 	case ZONE_BONUS_BONUS:
@@ -765,31 +793,20 @@ void CMapConverter::CopyGameLayer()
 	CCollision Collision;
 	Collision.Init(&Layers);
 
-	int ZoneHandle_icDamage = Collision.GetZoneHandle("icDamage");
-	int ZoneHandle_icBonus = Collision.GetZoneHandle("icBonus");
+	CClientGameTileGetter TilesGetter(&Collision);
 
 	//Cleanup the game layer
 	//This will make maps no more usable by a server, but the original ones are in the repository
-	for(int j=0; j<m_Height; j++)
+	for(int j = 0; j < m_Height; j++)
 	{
-		for(int i=0; i<m_Width; i++)
+		for(int i = 0; i < m_Width; i++)
 		{
-			float X = i * 32 + 16;
-			float Y = j * 32 + 16;
-
-			int GameLayerIndex = m_pPhysicsLayerTiles[j*m_Width+i].m_Index;
-			int icDamageIndex = Collision.GetZoneValueAt(ZoneHandle_icDamage, X, Y);
-			int icBonusIndex = Collision.GetZoneValueAt(ZoneHandle_icBonus, X, Y);
-
-			const int Tile = GetClientGameTileIndex(GameLayerIndex, icDamageIndex, icBonusIndex);
-			m_pTiles[j*m_Width+i].m_Index = static_cast<int>(Tile);
-
-			i += m_pPhysicsLayerTiles[j*m_Width+i].m_Skip;
+			m_pTiles[j * m_Width + i].m_Index = TilesGetter.GetClientGameTileIndex(i, j);
 		}
 	}
 	
-	Item.m_Data = m_DataFile.AddData(m_Width*m_Height*sizeof(CTile), m_pTiles);
-	StrToInts(Item.m_aName, sizeof(Item.m_aName)/sizeof(int), "Game");
+	Item.m_Data = m_DataFile.AddData(m_Width * m_Height * sizeof(CTile), m_pTiles);
+	StrToInts(Item.m_aName, sizeof(Item.m_aName) / sizeof(int), "Game");
 	m_DataFile.AddItem(MAPITEMTYPE_LAYER, m_NumLayers++, sizeof(Item), &Item);
 }
 
