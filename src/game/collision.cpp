@@ -621,6 +621,13 @@ static void Rotate(vec2 *pCenter, vec2 *pPoint, float Rotation)
 	pPoint->y = (x * sinf(Rotation) + y * cosf(Rotation) + pCenter->y);
 }
 
+struct SAnimationTransformCache
+{
+	vec2 Position = vec2(0.0f, 0.f);
+	float Angle = 0;
+	int PosEnv = -1;
+};
+
 int CCollision::GetZoneValueAt(int ZoneHandle, float x, float y)
 {
 	if(!m_pLayers->ZoneGroup())
@@ -630,6 +637,8 @@ int CCollision::GetZoneValueAt(int ZoneHandle, float x, float y)
 		return 0;
 	
 	int Index = 0;
+
+	SAnimationTransformCache AnimationCache;
 	
 	for(int i = 0; i < m_Zones[ZoneHandle].size(); i++)
 	{
@@ -661,7 +670,14 @@ int CCollision::GetZoneValueAt(int ZoneHandle, float x, float y)
 				float Angle = 0.0f;
 				if(pQuads[q].m_PosEnv >= 0)
 				{
-					GetAnimationTransform(m_Time, pQuads[q].m_PosEnv, m_pLayers, Position, Angle);
+					if(pQuads[q].m_PosEnv != AnimationCache.PosEnv)
+					{
+						AnimationCache.PosEnv = pQuads[q].m_PosEnv;
+						GetAnimationTransform(m_Time, AnimationCache.PosEnv, m_pLayers, AnimationCache.Position, AnimationCache.Angle);
+					}
+
+					Position = AnimationCache.Position;
+					Angle = AnimationCache.Angle;
 				}
 				
 				vec2 p0 = Position + vec2(fx2f(pQuads[q].m_aPoints[0].x), fx2f(pQuads[q].m_aPoints[0].y));
