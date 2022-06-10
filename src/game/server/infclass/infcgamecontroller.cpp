@@ -251,13 +251,12 @@ bool CInfClassGameController::OnEntity(const char* pName, vec2 Pivot, vec2 P0, v
 	return res;
 }
 
-void CInfClassGameController::HandleCharacterTiles(CCharacter *pChr)
+void CInfClassGameController::HandleCharacterTiles(CInfClassCharacter *pCharacter)
 {
-	CInfClassCharacter *pCharacter = CInfClassCharacter::GetInstance(pChr);
-	int Index0 = GetDamageZoneValueAt(vec2(pChr->GetPos().x + pChr->GetProximityRadius() / 3.f, pChr->GetPos().y - pChr->GetProximityRadius() / 3.f));
-	int Index1 = GetDamageZoneValueAt(vec2(pChr->GetPos().x + pChr->GetProximityRadius() / 3.f, pChr->GetPos().y + pChr->GetProximityRadius() / 3.f));
-	int Index2 = GetDamageZoneValueAt(vec2(pChr->GetPos().x - pChr->GetProximityRadius() / 3.f, pChr->GetPos().y - pChr->GetProximityRadius() / 3.f));
-	int Index3 = GetDamageZoneValueAt(vec2(pChr->GetPos().x - pChr->GetProximityRadius() / 3.f, pChr->GetPos().y + pChr->GetProximityRadius() / 3.f));
+	int Index0 = GetDamageZoneValueAt(vec2(pCharacter->GetPos().x + pCharacter->GetProximityRadius() / 3.f, pCharacter->GetPos().y - pCharacter->GetProximityRadius() / 3.f));
+	int Index1 = GetDamageZoneValueAt(vec2(pCharacter->GetPos().x + pCharacter->GetProximityRadius() / 3.f, pCharacter->GetPos().y + pCharacter->GetProximityRadius() / 3.f));
+	int Index2 = GetDamageZoneValueAt(vec2(pCharacter->GetPos().x - pCharacter->GetProximityRadius() / 3.f, pCharacter->GetPos().y - pCharacter->GetProximityRadius() / 3.f));
+	int Index3 = GetDamageZoneValueAt(vec2(pCharacter->GetPos().x - pCharacter->GetProximityRadius() / 3.f, pCharacter->GetPos().y + pCharacter->GetProximityRadius() / 3.f));
 
 	array_on_stack<int, 4> Indices;
 	Indices.Add(Index0);
@@ -286,7 +285,7 @@ void CInfClassGameController::HandleCharacterTiles(CCharacter *pChr)
 		pCharacter->OnCharacterOutOfInfectionZone();
 	}
 
-	int BonusZoneIndex = GetBonusZoneValueAt(pChr->GetPos());
+	int BonusZoneIndex = GetBonusZoneValueAt(pCharacter->GetPos());
 	if(BonusZoneIndex == ZONE_BONUS_BONUS)
 	{
 		pCharacter->OnCharacterInBonusZoneTick();

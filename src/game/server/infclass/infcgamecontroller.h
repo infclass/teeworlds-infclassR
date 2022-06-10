@@ -54,7 +54,7 @@ public:
 	CPlayer *CreatePlayer(int ClientID, bool IsSpectator) override;
 
 	bool OnEntity(const char* pName, vec2 Pivot, vec2 P0, vec2 P1, vec2 P2, vec2 P3, int PosEnv) override;
-	void HandleCharacterTiles(class CCharacter *pChr);
+	void HandleCharacterTiles(CInfClassCharacter *pCharacter);
 	void HandleLastHookers();
 
 	int64_t GetBlindCharactersMask(int ExcludeCID) const;
