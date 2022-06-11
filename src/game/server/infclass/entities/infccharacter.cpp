@@ -77,6 +77,9 @@ void CInfClassCharacter::OnCharacterSpawned(const SpawnContext &Context)
 	m_LastHookerTick = -1;
 	m_EnforcersInfo.Clear();
 
+	m_DamageZoneTick = -1;
+	m_DamageZoneDealtDamage = 0;
+
 	ClassSpawnAttributes();
 
 	if(GetPlayerClass() == PLAYERCLASS_NONE)
@@ -146,6 +149,31 @@ void CInfClassCharacter::OnCharacterInBonusZoneTick()
 
 		Server()->RoundStatistics()->OnScoreEvent(GetCID(), SCOREEVENT_BONUS, GetPlayerClass(), Server()->ClientName(GetCID()), Console());
 		GameServer()->SendScoreSound(GetCID());
+	}
+}
+
+void CInfClassCharacter::OnCharacterInDamageZone(float Damage)
+{
+	constexpr DAMAGE_TYPE DamageType = DAMAGE_TYPE::DAMAGE_TILE;
+
+	const int Tick = Server()->Tick();
+
+	if(m_DamageZoneTick < 0 || (Tick >= (m_DamageZoneTick + Server()->TickSpeed())))
+		m_DamageZoneDealtDamage = 0;
+
+	if(Damage > m_DamageZoneDealtDamage)
+	{
+		Damage -= m_DamageZoneDealtDamage;
+		m_DamageZoneDealtDamage += Damage;
+		TakeDamage(vec2(), Damage, -1, DamageType);
+		m_DamageZoneTick = Server()->Tick();
+	}
+
+	if(m_pClass)
+	{
+		constexpr float DamageDisablesHealingForSeconds = 1;
+		constexpr int DamageFrom = -1;
+		m_pClass->DisableHealing(DamageDisablesHealingForSeconds, DamageFrom, DamageType);
 	}
 }
 
@@ -225,6 +253,14 @@ void CInfClassCharacter::TickDefered()
 		{
 			GameServer()->CreateSound(GetPos(), SOUND_PLAYER_AIRJUMP, MaskOnlyBlind);
 		}
+	}
+}
+
+void CInfClassCharacter::TickPaused()
+{
+	if(m_DamageZoneTick != -1)
+	{
+		m_DamageZoneTick++;
 	}
 }
 

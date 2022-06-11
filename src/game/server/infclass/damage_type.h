@@ -57,6 +57,7 @@ enum class DAMAGE_TYPE
 
 	NO_DAMAGE, // Sometimes we need DAMAGE_TYPE for the API and INVALID value does not fit
 	MEDIC_REVIVAL,
+	DAMAGE_TILE,
 };
 
 #endif // INFCLASS_DAMAGE_TYPE_H

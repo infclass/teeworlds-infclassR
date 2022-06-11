@@ -253,16 +253,21 @@ bool CInfClassGameController::OnEntity(const char* pName, vec2 Pivot, vec2 P0, v
 
 void CInfClassGameController::HandleCharacterTiles(CInfClassCharacter *pCharacter)
 {
-	int Index0 = GetDamageZoneValueAt(vec2(pCharacter->GetPos().x + pCharacter->GetProximityRadius() / 3.f, pCharacter->GetPos().y - pCharacter->GetProximityRadius() / 3.f));
-	int Index1 = GetDamageZoneValueAt(vec2(pCharacter->GetPos().x + pCharacter->GetProximityRadius() / 3.f, pCharacter->GetPos().y + pCharacter->GetProximityRadius() / 3.f));
-	int Index2 = GetDamageZoneValueAt(vec2(pCharacter->GetPos().x - pCharacter->GetProximityRadius() / 3.f, pCharacter->GetPos().y - pCharacter->GetProximityRadius() / 3.f));
-	int Index3 = GetDamageZoneValueAt(vec2(pCharacter->GetPos().x - pCharacter->GetProximityRadius() / 3.f, pCharacter->GetPos().y + pCharacter->GetProximityRadius() / 3.f));
+	ZoneData Data0;
+	ZoneData Data1;
+	ZoneData Data2;
+	ZoneData Data3;
+
+	GetDamageZoneValueAt(vec2(pCharacter->GetPos().x + pCharacter->GetProximityRadius() / 3.f, pCharacter->GetPos().y - pCharacter->GetProximityRadius() / 3.f), &Data0);
+	GetDamageZoneValueAt(vec2(pCharacter->GetPos().x + pCharacter->GetProximityRadius() / 3.f, pCharacter->GetPos().y + pCharacter->GetProximityRadius() / 3.f), &Data1);
+	GetDamageZoneValueAt(vec2(pCharacter->GetPos().x - pCharacter->GetProximityRadius() / 3.f, pCharacter->GetPos().y - pCharacter->GetProximityRadius() / 3.f), &Data2);
+	GetDamageZoneValueAt(vec2(pCharacter->GetPos().x - pCharacter->GetProximityRadius() / 3.f, pCharacter->GetPos().y + pCharacter->GetProximityRadius() / 3.f), &Data3);
 
 	array_on_stack<int, 4> Indices;
-	Indices.Add(Index0);
-	Indices.Add(Index1);
-	Indices.Add(Index2);
-	Indices.Add(Index3);
+	Indices.Add(Data0.Index);
+	Indices.Add(Data1.Index);
+	Indices.Add(Data2.Index);
+	Indices.Add(Data3.Index);
 
 	if(Indices.Contains(ZONE_DAMAGE_DEATH))
 	{
@@ -283,6 +288,25 @@ void CInfClassGameController::HandleCharacterTiles(CInfClassCharacter *pCharacte
 	if(pCharacter->IsAlive() && !Indices.Contains(ZONE_DAMAGE_INFECTION))
 	{
 		pCharacter->OnCharacterOutOfInfectionZone();
+	}
+
+	int TeamDamageIndex = pCharacter->IsHuman() ? ZONE_DAMAGE_DAMAGE_HUMANS : ZONE_DAMAGE_DAMAGE_INFECTED;
+	bool TakeDamage = Indices.Contains(ZONE_DAMAGE_DAMAGE) || Indices.Contains(TeamDamageIndex);
+	if(TakeDamage)
+	{
+		int Damage = 0;
+		for(const ZoneData &Data : { Data0, Data1, Data2, Data3 })
+		{
+			if((Data.Index == ZONE_DAMAGE_DAMAGE) || Data.Index == TeamDamageIndex)
+			{
+				Damage = maximum(Damage, Data.ExtraData);
+			}
+		}
+
+		if(Damage > 0)
+		{
+			pCharacter->OnCharacterInDamageZone(Damage);
+		}
 	}
 
 	int BonusZoneIndex = GetBonusZoneValueAt(pCharacter->GetPos());
@@ -911,6 +935,7 @@ int CInfClassGameController::DamageTypeToWeapon(DAMAGE_TYPE DamageType, TAKEDAMA
 
 	case DAMAGE_TYPE::DEATH_TILE:
 	case DAMAGE_TYPE::INFECTION_TILE:
+	case DAMAGE_TYPE::DAMAGE_TILE:
 		Weapon = WEAPON_WORLD;
 		break;
 	case DAMAGE_TYPE::GAME:
@@ -1778,6 +1803,13 @@ void CInfClassGameController::SendKillMessage(int Victim, DAMAGE_TYPE DamageType
 		VanillaWeapon = WEAPON_NINJA;
 	}
 
+	// Old clients have no idea about DAMAGE_TILEs,
+	// and we don't need a different UI indication
+	if(DamageType == DAMAGE_TYPE::DAMAGE_TILE)
+	{
+		DamageType = DAMAGE_TYPE::DEATH_TILE;
+	}
+
 	// Substitute the weapon for clients for better UI icon
 	if(DamageType == DAMAGE_TYPE::DEATH_TILE)
 		VanillaWeapon = WEAPON_NINJA;
@@ -2288,6 +2320,8 @@ bool CInfClassGameController::IsPositionAvailableForHumans(const vec2 &Position)
 	{
 	case ZONE_DAMAGE_INFECTION:
 	case ZONE_DAMAGE_DEATH_NOUNDEAD:
+	case ZONE_DAMAGE_DAMAGE:
+	case ZONE_DAMAGE_DAMAGE_HUMANS:
 		return false;
 	default:
 		return true;

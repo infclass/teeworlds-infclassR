@@ -83,11 +83,13 @@ public:
 	void OnCharacterInInfectionZone();
 	void OnCharacterOutOfInfectionZone();
 	void OnCharacterInBonusZoneTick();
+	void OnCharacterInDamageZone(float Damage);
 	void OnWhiteHoleSpawned(const CWhiteHole *pWhiteHole);
 
 	void Destroy() override;
 	void Tick() override;
 	void TickDefered() override;
+	void TickPaused() override;
 	void Snap(int SnappingClient) override;
 	void SpecialSnapForClient(int SnappingClient, bool *pDoSnap);
 
@@ -244,6 +246,9 @@ protected:
 
 	int m_BlindnessTicks = 0;
 	int m_LastBlinder = -1;
+
+	int m_DamageZoneTick;
+	float m_DamageZoneDealtDamage = 0;
 
 	array_on_stack<EnforcerInfo, 4> m_EnforcersInfo;
 
