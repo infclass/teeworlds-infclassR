@@ -15,6 +15,7 @@ class CInfClassPlayer;
 struct CNetObj_GameInfo;
 struct SpawnContext;
 struct DeathContext;
+struct ZoneData;
 
 enum class TAKEDAMAGEMODE;
 enum class DAMAGE_TYPE;
@@ -59,9 +60,9 @@ public:
 
 	int64_t GetBlindCharactersMask(int ExcludeCID) const;
 
-	int GetZoneValueAt(int ZoneHandle, const vec2 &Pos) const;
-	int GetDamageZoneValueAt(const vec2 &Pos) const;
-	int GetBonusZoneValueAt(const vec2 &Pos) const;
+	int GetZoneValueAt(int ZoneHandle, const vec2 &Pos, ZoneData *pData = nullptr) const;
+	int GetDamageZoneValueAt(const vec2 &Pos, ZoneData *pData = nullptr) const;
+	int GetBonusZoneValueAt(const vec2 &Pos, ZoneData *pData = nullptr) const;
 
 	void CreateExplosion(const vec2 &Pos, int Owner, DAMAGE_TYPE DamageType, float DamageFactor = 1.0f);
 	void CreateExplosionDisk(vec2 Pos, float InnerRadius, float DamageRadius, int Damage, float Force, int Owner, DAMAGE_TYPE DamageType);

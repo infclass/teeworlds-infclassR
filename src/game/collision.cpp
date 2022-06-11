@@ -679,7 +679,7 @@ struct SAnimationTransformCache
 	int PosEnv = -1;
 };
 
-int CCollision::GetZoneValueAt(int ZoneHandle, float x, float y)
+int CCollision::GetZoneValueAt(int ZoneHandle, float x, float y, ZoneData *pData)
 {
 	if(!m_pLayers->ZoneGroup())
 		return 0;
@@ -688,6 +688,7 @@ int CCollision::GetZoneValueAt(int ZoneHandle, float x, float y)
 		return 0;
 	
 	int Index = 0;
+	int ExtraData = 0;
 
 	SAnimationTransformCache AnimationCache;
 	
@@ -753,9 +754,16 @@ int CCollision::GetZoneValueAt(int ZoneHandle, float x, float y)
 				if(InsideQuad(p0, p1, p2, p3, vec2(x, y)))
 				{
 					Index = pQuads[q].m_ColorEnvOffset;
+					ExtraData = pQuads[q].m_aColors[0].g;
 				}
 			}
 		}
+	}
+
+	if(pData)
+	{
+		pData->Index = Index;
+		pData->ExtraData = ExtraData;
 	}
 	
 	return Index;

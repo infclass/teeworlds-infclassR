@@ -21,6 +21,12 @@ vec2 ClampVel(int MoveRestriction, vec2 Vel);
 
 typedef bool (*CALLBACK_SWITCHACTIVE)(int Number, void *pUser);
 
+struct ZoneData
+{
+	int Index = -1;
+	int ExtraData = -1;
+};
+
 class CCollision
 {
 	class CTile *m_pTiles;
@@ -70,8 +76,8 @@ public:
 	
 	//This function return an Handle to access all zone layers with the name "pName"
 	int GetZoneHandle(const char* pName);
-	int GetZoneValueAt(int ZoneHandle, float x, float y);
-	int GetZoneValueAt(int ZoneHandle, vec2 Pos) { return GetZoneValueAt(ZoneHandle, Pos.x, Pos.y); }
+	int GetZoneValueAt(int ZoneHandle, float x, float y, ZoneData *pData = nullptr);
+	int GetZoneValueAt(int ZoneHandle, vec2 Pos, ZoneData *pData = nullptr) { return GetZoneValueAt(ZoneHandle, Pos.x, Pos.y, pData); }
 	
 /* INFECTION MODIFICATION START ***************************************/
 	bool AreConnected(vec2 Pos1, vec2 Pos2, float Radius);

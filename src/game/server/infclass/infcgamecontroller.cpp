@@ -357,19 +357,19 @@ int64_t CInfClassGameController::GetBlindCharactersMask(int ExcludeCID) const
 	return Mask;
 }
 
-int CInfClassGameController::GetZoneValueAt(int ZoneHandle, const vec2 &Pos) const
+int CInfClassGameController::GetZoneValueAt(int ZoneHandle, const vec2 &Pos, ZoneData *pData) const
 {
-	return GameServer()->Collision()->GetZoneValueAt(ZoneHandle, Pos);
+	return GameServer()->Collision()->GetZoneValueAt(ZoneHandle, Pos, pData);
 }
 
-int CInfClassGameController::GetDamageZoneValueAt(const vec2 &Pos) const
+int CInfClassGameController::GetDamageZoneValueAt(const vec2 &Pos, ZoneData *pData) const
 {
-	return GetZoneValueAt(m_ZoneHandle_icDamage, Pos);
+	return GetZoneValueAt(m_ZoneHandle_icDamage, Pos, pData);
 }
 
-int CInfClassGameController::GetBonusZoneValueAt(const vec2 &Pos) const
+int CInfClassGameController::GetBonusZoneValueAt(const vec2 &Pos, ZoneData *pData) const
 {
-	return GetZoneValueAt(m_ZoneHandle_icBonus, Pos);
+	return GetZoneValueAt(m_ZoneHandle_icBonus, Pos, pData);
 }
 
 void CInfClassGameController::CreateExplosion(const vec2 &Pos, int Owner, DAMAGE_TYPE DamageType, float DamageFactor)
