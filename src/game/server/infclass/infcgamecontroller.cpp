@@ -1778,6 +1778,7 @@ void CInfClassGameController::SendKillMessage(int Victim, DAMAGE_TYPE DamageType
 		VanillaWeapon = WEAPON_NINJA;
 	}
 
+	// Substitute the weapon for clients for better UI icon
 	if(DamageType == DAMAGE_TYPE::DEATH_TILE)
 		VanillaWeapon = WEAPON_NINJA;
 
