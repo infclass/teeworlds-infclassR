@@ -42,7 +42,7 @@ MACRO_CONFIG_INT(InfHeroLimit, inf_hero_limit, 10, 0, 64, CFGFLAG_SERVER, "Maxim
 MACRO_CONFIG_INT(InfSupportLimit, inf_support_limit, 40, 0, 64, CFGFLAG_SERVER, "Maximum number of supports in game")
 MACRO_CONFIG_INT(InfWitchLimit, inf_witch_limit, 2, 0, 64, CFGFLAG_SERVER, "Maximum number of witches in game")
 MACRO_CONFIG_INT(InfSoldierBombs, inf_soldier_bombs, 3, 1, 16, CFGFLAG_SERVER, "Number of bombs for the soldier")
-MACRO_CONFIG_INT(InfMercBombs, inf_merc_bombs, 16, 1, 100, CFGFLAG_SERVER, "Number of the mercenary bomb upgrades")
+MACRO_CONFIG_INT(InfMercBombs, inf_merc_bombs, 15, 1, 100, CFGFLAG_SERVER, "Number of the mercenary bomb upgrades")
 MACRO_CONFIG_INT(InfMercBombMaxDamage, inf_merc_bomb_max_damage, 24, 0, 100, CFGFLAG_SERVER, "The max damage of a fully upgraded mercenary bomb")
 MACRO_CONFIG_INT(InfMercLove, inf_merc_love, 1, 0, 1, CFGFLAG_SERVER, "Enables love bombs for the mercenary (hammer)")
 MACRO_CONFIG_INT(InfBarrierLifeSpan, inf_barrier_lifespan, 30, 0, 100, CFGFLAG_SERVER, "Barrier lifespan")
