@@ -337,7 +337,7 @@ bool CCollision::TestBox(vec2 Pos, vec2 Size) const
 	return false;
 }
 
-void CCollision::MoveBox(vec2 *pInoutPos, vec2 *pInoutVel, vec2 Size, float Elasticity) const
+void CCollision::MoveBox(vec2 *pInoutPos, vec2 *pInoutVel, vec2 Size, vec2 Elasticity, bool *pGrounded) const
 {
 	// do the move
 	vec2 Pos = *pInoutPos;
@@ -348,7 +348,10 @@ void CCollision::MoveBox(vec2 *pInoutPos, vec2 *pInoutVel, vec2 Size, float Elas
 
 	if(Distance > 0.00001f)
 	{
-		float Fraction = 1.0f/(float)(Max+1);
+		float Fraction = 1.0f / (float)(Max + 1);
+		float ElasticityX = clamp(Elasticity.x, -1.0f, 1.0f);
+		float ElasticityY = clamp(Elasticity.y, -1.0f, 1.0f);
+
 		for(int i = 0; i <= Max; i++)
 		{
 			// Early break as optimization to stop checking for collisions for
@@ -374,15 +377,17 @@ void CCollision::MoveBox(vec2 *pInoutPos, vec2 *pInoutVel, vec2 Size, float Elas
 
 				if(TestBox(vec2(Pos.x, NewPos.y), Size))
 				{
+					if(pGrounded && ElasticityY > 0 && Vel.y > 0)
+						*pGrounded = true;
 					NewPos.y = Pos.y;
-					Vel.y *= -Elasticity;
+					Vel.y *= -ElasticityY;
 					Hits++;
 				}
 
 				if(TestBox(vec2(NewPos.x, Pos.y), Size))
 				{
 					NewPos.x = Pos.x;
-					Vel.x *= -Elasticity;
+					Vel.x *= -ElasticityX;
 					Hits++;
 				}
 
@@ -390,10 +395,12 @@ void CCollision::MoveBox(vec2 *pInoutPos, vec2 *pInoutVel, vec2 Size, float Elas
 				// this is a real _corner case_!
 				if(Hits == 0)
 				{
+					if(pGrounded && ElasticityY > 0 && Vel.y > 0)
+						*pGrounded = true;
 					NewPos.y = Pos.y;
-					Vel.y *= -Elasticity;
+					Vel.y *= -ElasticityY;
 					NewPos.x = Pos.x;
-					Vel.x *= -Elasticity;
+					Vel.x *= -ElasticityX;
 				}
 			}
 

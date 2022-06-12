@@ -469,7 +469,18 @@ void CCharacterCore::Move(CParams* pParams)
 		NewPos.y -= PosDiff;
 	}
 
-	m_pCollision->MoveBox(&NewPos, &m_Vel, Size, 0);
+	bool Grounded = false;
+	m_pCollision->MoveBox(&NewPos, &m_Vel, Size,
+		vec2(pTuningParams->m_GroundElasticityX,
+			pTuningParams->m_GroundElasticityY),
+		&Grounded);
+
+	if(Grounded)
+	{
+		m_Jumped &= ~2;
+		m_JumpedTotal = 0;
+	}
+
 	NewPos.y += PosDiff;
 
 	m_Vel.x = m_Vel.x*(1.0f/RampValue);

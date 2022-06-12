@@ -141,7 +141,8 @@ void CCharacter::HandleWaterJump()
 	if(m_DartLifeSpan > 0)
 	{
 		m_Core.m_Vel = m_DartDir * 15.0f;
-		GameServer()->Collision()->MoveBox(&m_Core.m_Pos, &m_Core.m_Vel, vec2(m_ProximityRadius, m_ProximityRadius), 0.f);
+		const vec2 GroundElasticity{};
+		GameServer()->Collision()->MoveBox(&m_Core.m_Pos, &m_Core.m_Vel, vec2(m_ProximityRadius, m_ProximityRadius), GroundElasticity);
 		m_Core.m_Vel = vec2(0.f, 0.f);
 	}	
 }

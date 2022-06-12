@@ -429,7 +429,8 @@ void CInfClassCharacter::HandleNinjaMove(float NinjaVelocity)
 {
 	SetVelocity(m_DartDir * NinjaVelocity);
 
-	GameServer()->Collision()->MoveBox(&m_Core.m_Pos, &m_Core.m_Vel, CCharacterCore::PhysicalSizeVec2(), 0.f);
+	const vec2 GroundElasticity{};
+	Collision()->MoveBox(&m_Core.m_Pos, &m_Core.m_Vel, vec2(GetProximityRadius(), GetProximityRadius()), GroundElasticity);
 
 	// reset velocity so the client doesn't predict stuff
 	ResetVelocity();
