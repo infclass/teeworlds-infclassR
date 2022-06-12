@@ -2232,7 +2232,7 @@ bool CInfClassGameController::WhiteHoleEnabled() const
 
 bool CInfClassGameController::IsClassChooserEnabled() const
 {
-	return true;
+	return Config()->m_InfClassChooser;
 }
 
 float CInfClassGameController::GetTimeLimit() const
