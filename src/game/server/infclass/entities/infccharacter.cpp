@@ -835,6 +835,31 @@ bool CInfClassCharacter::Heal(int HitPoints, int FromCID)
 	return Healed;
 }
 
+bool CInfClassCharacter::GiveHealth(int HitPoints, int FromCID)
+{
+	if(GetClass() && GetClass()->IsHealingDisabled())
+	{
+		return false;
+	}
+	
+	bool Healed = IncreaseHealth(HitPoints);
+
+	if(Healed)
+	{
+		SetEmote(EMOTE_HAPPY, Server()->Tick() + Server()->TickSpeed());
+		int Sound = SOUND_PICKUP_HEALTH;
+		GameContext()->CreateSound(GetPos(), Sound, CmaskOne(GetCID()));
+
+		if(FromCID >= 0)
+		{
+			const float HealerHelperDuration = 20;
+			AddHelper(FromCID, HealerHelperDuration);
+		}
+	}
+
+	return Healed;
+}
+
 bool CInfClassCharacter::GiveArmor(int HitPoints, int FromCID)
 {
 	if(GetClass() && GetClass()->IsHealingDisabled())

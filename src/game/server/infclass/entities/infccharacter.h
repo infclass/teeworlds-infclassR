@@ -102,6 +102,7 @@ public:
 	bool TakeDamage(vec2 Force, int Dmg, int From, int Weapon, TAKEDAMAGEMODE Mode) override;
 
 	bool Heal(int HitPoints, int FromCID = -1);
+	bool GiveHealth(int HitPoints, int FromCID = -1);
 	bool GiveArmor(int HitPoints, int FromCID = -1);
 
 	void OnWeaponFired(WeaponFireContext *pFireContext);
