@@ -65,6 +65,32 @@ int CGameWorld::FindEntities(vec2 Pos, float Radius, CEntity **ppEnts, int Max, 
 	return Num;
 }
 
+CEntity *CGameWorld::ClosestEntity(vec2 Pos, float Radius, int Type, const CEntity *pNotThis)
+{
+	// Find other players
+	float ClosestRange = Radius * 2;
+	CEntity *pClosest = 0;
+
+	CEntity *p = FindFirst(Type);
+	for(; p; p = p->TypeNext())
+ 	{
+		if(p == pNotThis)
+			continue;
+
+		float Len = distance(Pos, p->m_Pos);
+		if(Len < p->m_ProximityRadius + Radius)
+		{
+			if(Len < ClosestRange)
+			{
+				ClosestRange = Len;
+				pClosest = p;
+			}
+		}
+	}
+
+	return pClosest;
+}
+
 void CGameWorld::InsertEntity(CEntity *pEnt)
 {
 #ifdef CONF_DEBUG

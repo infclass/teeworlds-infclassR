@@ -10,6 +10,7 @@
 #include <game/server/infclass/death_context.h>
 #include <game/server/infclass/entities/flyingpoint.h>
 #include <game/server/infclass/entities/infccharacter.h>
+#include <game/server/infclass/entities/ic-pickup.h>
 #include <game/server/infclass/infcplayer.h>
 
 #include <base/tl/array_on_stack.h>
@@ -246,6 +247,18 @@ bool CInfClassGameController::OnEntity(const char* pName, vec2 Pivot, vec2 P0, v
 		//Add hero flag spawns
 		vec2 Pos = (P0 + P1 + P2 + P3)/4.0f;
 		m_HeroFlagPositions.add(Pos);
+	}
+	else if(str_comp(pName, "health") == 0)
+	{
+		vec2 Pos = (P0 + P1 + P2 + P3)/4.0f;
+		CIcPickup *p = new CIcPickup(GameServer(), IC_PICKUP_TYPE::HEALTH, Pos);
+		p->SetRespawnInterval(15);
+	}
+	else if(str_comp(pName, "armor") == 0)
+	{
+		vec2 Pos = (P0 + P1 + P2 + P3)/4.0f;
+		CIcPickup *p = new CIcPickup(GameServer(), IC_PICKUP_TYPE::ARMOR, Pos);
+		p->SetRespawnInterval(15);
 	}
 
 	return res;

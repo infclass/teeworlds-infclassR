@@ -20,6 +20,7 @@ public:
 	{
 		ENTTYPE_PROJECTILE = 0,
 		ENTTYPE_LASER,
+		ENTTYPE_PICKUP,
 		ENTTYPE_GROWINGEXPLOSION,
 		ENTTYPE_FLYINGPOINT,
 		ENTTYPE_CHARACTER,
@@ -97,6 +98,21 @@ public:
 			Number of entities found and added to the ents array.
 	*/
 	int FindEntities(vec2 Pos, float Radius, CEntity **ppEnts, int Max, int Type);
+	
+	/*
+		Function: closest_CEntity
+			Finds the closest CEntity of a type to a specific point.
+
+		Arguments:
+			pos - The center position.
+			radius - How far off the CEntity is allowed to be
+			type - Type of the entities to find.
+			notthis - Entity to ignore
+
+		Returns:
+			Returns a pointer to the closest CEntity or NULL if no CEntity is close enough.
+	*/
+	CEntity *ClosestEntity(vec2 Pos, float Radius, int Type, const CEntity *pNotThis);
 
 	/*
 		Function: interserct_CCharacter
