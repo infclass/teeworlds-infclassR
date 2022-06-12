@@ -205,8 +205,15 @@ void IGameController::DoActivityCheck()
 		{
 			CPlayer *pPlayer = GameServer()->m_apPlayers[i];
 			float PlayerMaxInactiveTimeSecs = pPlayer->IsHuman() ? HumanMaxInactiveTimeSecs : InfectedMaxInactiveTimeSecs;
+			if(PlayerMaxInactiveTimeSecs < 20)
+			{
+				PlayerMaxInactiveTimeSecs = 20;
+			}
 
-			if(Server()->Tick() > pPlayer->m_LastActionTick + PlayerMaxInactiveTimeSecs * Server()->TickSpeed())
+			int WarningTick = pPlayer->m_LastActionTick + (PlayerMaxInactiveTimeSecs - 10) * Server()->TickSpeed();
+			int KickingTick = pPlayer->m_LastActionTick + PlayerMaxInactiveTimeSecs * Server()->TickSpeed();
+
+			if(Server()->Tick() > KickingTick)
 			{
 				switch(g_Config.m_SvInactiveKick)
 				{
@@ -235,6 +242,21 @@ void IGameController::DoActivityCheck()
 					Server()->Kick(i, "Kicked for inactivity");
 				}
 				}
+			}
+			else if(Server()->Tick() >= WarningTick)
+			{
+				// Warn
+				const char *pText = Config()->m_SvInactiveKick == 0
+					? _C("Inactive kick broadcast message", "Warning: {sec:RemainingTime} until a move to spec for inactivity")
+					: _C("Inactive kick broadcast message", "Warning: {sec:RemainingTime} until a kick for inactivity");
+				int Seconds = (KickingTick - Server()->Tick()) / Server()->TickSpeed() + 1;
+				GameServer()->SendBroadcast_Localization(pPlayer->GetCID(),
+					BROADCAST_PRIORITY_INTERFACE,
+					BROADCAST_DURATION_REALTIME,
+					pText,
+					"RemainingTime", &Seconds,
+					nullptr
+				);
 			}
 		}
 	}
