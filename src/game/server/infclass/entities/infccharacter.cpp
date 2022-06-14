@@ -957,26 +957,14 @@ void CInfClassCharacter::OnWeaponFired(WeaponFireContext *pFireContext)
 
 	switch(pFireContext->Weapon)
 	{
-		case WEAPON_HAMMER:
-			OnHammerFired(pFireContext);
-			break;
-		case WEAPON_GUN:
-			OnGunFired(pFireContext);
-			break;
-		case WEAPON_SHOTGUN:
-			OnShotgunFired(pFireContext);
-			break;
-		case WEAPON_GRENADE:
-			OnGrenadeFired(pFireContext);
-			break;
-		case WEAPON_LASER:
-			OnLaserFired(pFireContext);
-			break;
-		case WEAPON_NINJA:
-			OnNinjaFired(pFireContext);
-			break;
-		default:
-			break;
+	case WEAPON_HAMMER:
+		OnHammerFired(pFireContext);
+		break;
+	case WEAPON_GRENADE:
+		OnGrenadeFired(pFireContext);
+		break;
+	default:
+		break;
 	}
 }
 
@@ -1821,14 +1809,6 @@ void CInfClassCharacter::OnHammerFired(WeaponFireContext *pFireContext)
 	}
 }
 
-void CInfClassCharacter::OnGunFired(WeaponFireContext *pFireContext)
-{
-}
-
-void CInfClassCharacter::OnShotgunFired(WeaponFireContext *pFireContext)
-{
-}
-
 void CInfClassCharacter::OnGrenadeFired(WeaponFireContext *pFireContext)
 {
 	if(GetPlayerClass() == PLAYERCLASS_MERCENARY)
@@ -1883,16 +1863,6 @@ void CInfClassCharacter::OnGrenadeFired(WeaponFireContext *pFireContext)
 
 		GameServer()->CreateSound(GetPos(), SOUND_GRENADE_FIRE);
 	}
-}
-
-void CInfClassCharacter::OnLaserFired(WeaponFireContext *pFireContext)
-{
-}
-
-void CInfClassCharacter::OnNinjaFired(WeaponFireContext *pFireContext)
-{
-	// The design of ninja supposes different implementation (not via FireWeapon)
-	// See HandleNinja() for details.
 }
 
 void CInfClassCharacter::OnMercGrenadeFired(WeaponFireContext *pFireContext)

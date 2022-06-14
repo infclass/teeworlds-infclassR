@@ -110,11 +110,7 @@ public:
 	void OnWeaponFired(WeaponFireContext *pFireContext);
 
 	void OnHammerFired(WeaponFireContext *pFireContext);
-	void OnGunFired(WeaponFireContext *pFireContext);
-	void OnShotgunFired(WeaponFireContext *pFireContext);
 	void OnGrenadeFired(WeaponFireContext *pFireContext);
-	void OnLaserFired(WeaponFireContext *pFireContext);
-	void OnNinjaFired(WeaponFireContext *pFireContext);
 
 	void OnMercGrenadeFired(WeaponFireContext *pFireContext);
 	void OnMedicGrenadeFired(WeaponFireContext *pFireContext);
