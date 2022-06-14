@@ -150,4 +150,69 @@ public:
 	CAnimatedEntity(CGameWorld *pGameWorld, int Objtype, vec2 Pivot, vec2 RelPosition, int PosEnv);
 };
 
+template <typename T>
+class TEntityPtr
+{
+public:
+	using value_type = T;
+
+	TEntityPtr(T *pData)
+		: m_pData(pData)
+	{
+	}
+
+	T &operator*()
+	{
+		return *(static_cast<T*>(m_pData));
+	}
+	T *operator->()
+	{
+		return static_cast<T*>(m_pData);
+	}
+	
+	T *data()
+	{
+		return static_cast<T*>(m_pData);
+	}
+
+	operator bool()
+	{
+		return m_pData;
+	}
+
+	operator T *()
+	{
+		return static_cast<T*>(m_pData);
+	}
+
+	TEntityPtr &operator++()
+	{
+		if(m_pData)
+		{
+			m_pData = m_pData->TypeNext();
+		}
+		
+		return *this;
+	}
+
+	TEntityPtr operator++(int)
+	{
+		TEntityPtr tmp(m_pData);
+		if(m_pData)
+		{
+			m_pData = m_pData->TypeNext();
+		}
+		
+		return tmp;
+	}
+	
+	friend bool operator==(const TEntityPtr &a, const TEntityPtr &b)
+	{
+		return a.m_pData == b.m_pData;
+	}
+
+private:
+	CEntity *m_pData = nullptr;
+};
+
 #endif
