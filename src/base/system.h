@@ -149,23 +149,43 @@ void mem_move(void *dest, const void *source, unsigned size);
 */
 void mem_zero(void *block, unsigned size);
 
-/*
-	Function: mem_comp
-		Compares two blocks of memory
-
-	Parameters:
-		a - First block of data
-		b - Second block of data
-		size - Size of the data to compare
-
-	Returns:
-		<0 - Block a is less than block b
-		0 - Block a is equal to block b
-		>0 - Block a is greater than block b
-*/
+/**
+ * Compares two blocks of memory
+ *
+ * @ingroup Memory
+ *
+ * @param a First block of data
+ * @param b Second block of data
+ * @param size Size of the data to compare
+ *
+ * @return < 0 - Block a is less than block b.
+ * @return 0 - Block a is equal to block b.
+ * @return > 0 - Block a is greater than block b.
+ */
 int mem_comp(const void *a, const void *b, int size);
 
-/* Group: File IO */
+/**
+ * Checks whether a block of memory contains null bytes.
+ *
+ * @ingroup Memory
+ *
+ * @param block Pointer to the block to check for nulls.
+ * @param size Size of the block.
+ *
+ * @return 1 - The block has a null byte.
+ * @return 0 - The block does not have a null byte.
+ */
+int mem_has_null(const void *block, unsigned size);
+
+/**
+ * @defgroup File-IO
+ *
+ * I/O related operations.
+ */
+
+/**
+ * @ingroup File-IO
+ */
 enum
 {
 	IOFLAG_READ = 1,
@@ -179,6 +199,7 @@ enum
 
 	IO_MAX_PATH_LENGTH = 512,
 };
+
 
 typedef struct IOINTERNAL *IOHANDLE;
 
@@ -211,17 +232,46 @@ IOHANDLE io_open(const char *filename, int flags);
 */
 unsigned io_read(IOHANDLE io, void *buffer, unsigned size);
 
-/*
-	Function: io_skip
-		Skips data in a file.
+/**
+ * Reads the rest of the file into a buffer.
+ *
+ * @ingroup File-IO
+ *
+ * @param io Handle to the file to read data from.
+ * @param result Receives the file's remaining contents.
+ * @param result_len Receives the file's remaining length.
+ *
+ * @remark Does NOT guarantee that there are no internal null bytes.
+ * @remark The result must be freed after it has been used.
+ */
+void io_read_all(IOHANDLE io, void **result, unsigned *result_len);
 
-	Parameters:
-		io - Handle to the file.
-		size - Number of bytes to skip.
+/**
+ * Reads the rest of the file into a zero-terminated buffer with
+ * no internal null bytes.
+ *
+ * @ingroup File-IO
+ *
+ * @param io Handle to the file to read data from.
+ *
+ * @return The file's remaining contents or null on failure.
+ *
+ * @remark Guarantees that there are no internal null bytes.
+ * @remark Guarantees that result will contain zero-termination.
+ * @remark The result must be freed after it has been used.
+ */
+char *io_read_all_str(IOHANDLE io);
 
-	Returns:
-		Number of bytes skipped.
-*/
+/**
+ * Skips data in a file.
+ *
+ * @ingroup File-IO
+ *
+ * @param io Handle to the file.
+ * @param size Number of bytes to skip.
+ *
+ * @return Number of bytes skipped.
+ */
 unsigned io_skip(IOHANDLE io, int size);
 
 /*
