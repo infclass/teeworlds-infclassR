@@ -118,7 +118,6 @@ public:
 
 	void OnMercGrenadeFired(WeaponFireContext *pFireContext);
 	void OnMedicGrenadeFired(WeaponFireContext *pFireContext);
-	void OnBiologistLaserFired(WeaponFireContext *pFireContext);
 
 	void OpenClassChooser();
 	void HandleMapMenu();

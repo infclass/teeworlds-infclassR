@@ -15,7 +15,6 @@
 #include <game/server/infclass/classes/infected/infected.h>
 #include <game/server/infclass/damage_type.h>
 #include <game/server/infclass/death_context.h>
-#include <game/server/infclass/entities/biologist-mine.h>
 #include <game/server/infclass/entities/engineer-wall.h>
 #include <game/server/infclass/entities/growingexplosion.h>
 #include <game/server/infclass/entities/hero-flag.h>
@@ -1891,12 +1890,6 @@ void CInfClassCharacter::OnGrenadeFired(WeaponFireContext *pFireContext)
 
 void CInfClassCharacter::OnLaserFired(WeaponFireContext *pFireContext)
 {
-	if(GetPlayerClass() == PLAYERCLASS_BIOLOGIST)
-	{
-		OnBiologistLaserFired(pFireContext);
-		return;
-	}
-
 	if(pFireContext->NoAmmo)
 	{
 		return;
@@ -2026,35 +2019,6 @@ void CInfClassCharacter::OnMedicGrenadeFired(WeaponFireContext *pFireContext)
 	new CGrowingExplosion(GameServer(), GetPos(), GetDirection(), GetCID(), HealingExplosionRadius, GROWING_EXPLOSION_EFFECT::HEAL_HUMANS);
 
 	GameServer()->CreateSound(GetPos(), SOUND_GRENADE_FIRE);
-}
-
-void CInfClassCharacter::OnBiologistLaserFired(WeaponFireContext *pFireContext)
-{
-	if(pFireContext->AmmoAvailable < 10)
-	{
-		pFireContext->NoAmmo = true;
-		pFireContext->AmmoConsumed = 0;
-		return;
-	}
-
-	for(CBiologistMine* pMine = (CBiologistMine*) GameWorld()->FindFirst(CGameWorld::ENTTYPE_BIOLOGIST_MINE); pMine; pMine = (CBiologistMine*) pMine->TypeNext())
-	{
-		if(pMine->GetOwner() != GetCID()) continue;
-			GameWorld()->DestroyEntity(pMine);
-	}
-
-	const float BioLaserMaxLength = 400.0f;
-	vec2 To = GetPos() + GetDirection() * BioLaserMaxLength;
-	if(GameServer()->Collision()->IntersectLine(GetPos(), To, 0x0, &To))
-	{
-		new CBiologistMine(GameServer(), GetPos(), To, GetCID());
-		GameServer()->CreateSound(GetPos(), SOUND_LASER_FIRE);
-		pFireContext->AmmoConsumed = pFireContext->AmmoAvailable;
-	}
-	else
-	{
-		pFireContext->FireAccepted = false;
-	}
 }
 
 void CInfClassCharacter::OpenClassChooser()

@@ -545,6 +545,9 @@ void CInfClassHuman::OnLaserFired(WeaponFireContext *pFireContext)
 	case PLAYERCLASS_NINJA:
 		OnBlindingLaserFired(pFireContext);
 		break;
+	case PLAYERCLASS_BIOLOGIST:
+		OnBiologistLaserFired(pFireContext);
+		break;
 	default:
 		break;
 }
@@ -1043,6 +1046,35 @@ void CInfClassHuman::OnNinjaTargetKiller(bool Assisted)
 void CInfClassHuman::OnBlindingLaserFired(WeaponFireContext *pFireContext)
 {
 	new CBlindingLaser(GameContext(), GetPos(), GetDirection(), GetCID());
+}
+
+void CInfClassHuman::OnBiologistLaserFired(WeaponFireContext *pFireContext)
+{
+	if(pFireContext->AmmoAvailable < 10)
+	{
+		pFireContext->NoAmmo = true;
+		pFireContext->AmmoConsumed = 0;
+		return;
+	}
+
+	for(TEntityPtr<CBiologistMine> pMine = GameWorld()->FindFirst<CBiologistMine>(); pMine; ++pMine)
+	{
+		if(pMine->GetOwner() != GetCID()) continue;
+			GameWorld()->DestroyEntity(pMine);
+	}
+
+	const float BioLaserMaxLength = 400.0f;
+	vec2 To = GetPos() + GetDirection() * BioLaserMaxLength;
+	if(GameServer()->Collision()->IntersectLine(GetPos(), To, 0x0, &To))
+	{
+		new CBiologistMine(GameServer(), GetPos(), To, GetCID());
+		GameServer()->CreateSound(GetPos(), SOUND_LASER_FIRE);
+		pFireContext->AmmoConsumed = pFireContext->AmmoAvailable;
+	}
+	else
+	{
+		pFireContext->FireAccepted = false;
+	}
 }
 
 bool CInfClassHuman::PositionLockAvailable() const
