@@ -16,6 +16,7 @@
 #include <game/server/infclass/entities/infccharacter.h>
 #include <game/server/infclass/entities/laser-teleport.h>
 #include <game/server/infclass/entities/looper-wall.h>
+#include <game/server/infclass/entities/medic-laser.h>
 #include <game/server/infclass/entities/merc-bomb.h>
 #include <game/server/infclass/entities/merc-laser.h>
 #include <game/server/infclass/entities/scientist-laser.h>
@@ -561,6 +562,9 @@ void CInfClassHuman::OnLaserFired(WeaponFireContext *pFireContext)
 		break;
 	case PLAYERCLASS_MERCENARY:
 		OnMercLaserFired(pFireContext);
+		break;
+	case PLAYERCLASS_MEDIC:
+		new CMedicLaser(GameServer(), GetPos(), Direction, StartEnergy, GetCID());
 		break;
 
 	case PLAYERCLASS_LOOPER:
