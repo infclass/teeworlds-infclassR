@@ -35,6 +35,7 @@ public:
 	void OnHookAttachedPlayer() override;
 
 	void OnHammerFired(WeaponFireContext *pFireContext) override;
+	void OnShotgunFired(WeaponFireContext *pFireContext) override;
 	void OnGrenadeFired(WeaponFireContext *pFireContext) override;
 	void OnLaserFired(WeaponFireContext *pFireContext) override;
 

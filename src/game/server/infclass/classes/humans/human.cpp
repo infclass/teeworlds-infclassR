@@ -4,9 +4,13 @@
 #include <engine/shared/config.h>
 #include <game/server/classes.h>
 #include <game/server/gamecontext.h>
+
+#include <game/server/entities/projectile.h>
+
 #include <game/server/infclass/damage_type.h>
 #include <game/server/infclass/entities/biologist-mine.h>
 #include <game/server/infclass/entities/blinding-laser.h>
+#include <game/server/infclass/entities/bouncing-bullet.h>
 #include <game/server/infclass/entities/engineer-wall.h>
 #include <game/server/infclass/entities/hero-flag.h>
 #include <game/server/infclass/entities/infccharacter.h>
@@ -376,6 +380,75 @@ void CInfClassHuman::OnHammerFired(WeaponFireContext *pFireContext)
 		default:
 			break;
 	}
+}
+
+void CInfClassHuman::OnShotgunFired(WeaponFireContext *pFireContext)
+{
+	if(pFireContext->NoAmmo)
+		return;
+	
+	vec2 Direction = GetDirection();
+	vec2 ProjStartPos = GetPos()+Direction*GetProximityRadius()*0.75f;
+
+	int ShotSpread = 3;
+	if(GetPlayerClass() == PLAYERCLASS_BIOLOGIST)
+		ShotSpread = 1;
+
+	CMsgPacker Msg(NETMSGTYPE_SV_EXTRAPROJECTILE);
+	Msg.AddInt(ShotSpread * 2 + 1);
+
+	float Force = 2.0f;
+	DAMAGE_TYPE DamageType = DAMAGE_TYPE::SHOTGUN;
+	if(GetPlayerClass() == PLAYERCLASS_MEDIC)
+	{
+		Force = 10.0f;
+		DamageType = DAMAGE_TYPE::MEDIC_SHOTGUN;
+	}
+
+	for(int i = -ShotSpread; i <= ShotSpread; ++i)
+	{
+		float Spreading[] = {-0.21f, -0.14f, -0.070f, 0, 0.070f, 0.14f, 0.21f};
+		float a = GetAngle(Direction);
+		a += Spreading[i + 3] * 2.0f * (0.25f + 0.75f * static_cast<float>(10 - pFireContext->AmmoAvailable)/10.0f);
+		float v = 1 - (absolute(i) / static_cast<float>(ShotSpread));
+		float Speed = mix<float>(GameServer()->Tuning()->m_ShotgunSpeeddiff, 1.0f, v);
+		vec2 Direction = vec2(cosf(a), sinf(a)) * Speed;
+
+		float LifeTime = GameServer()->Tuning()->m_ShotgunLifetime + 0.1f * static_cast<float>(pFireContext->AmmoAvailable)/10.0f;
+
+		if(GetPlayerClass() == PLAYERCLASS_BIOLOGIST)
+		{
+			CBouncingBullet *pProj = new CBouncingBullet(GameServer(),
+				GetCID(),
+				ProjStartPos,
+				Direction);
+
+			// pack the Projectile and send it to the client Directly
+			CNetObj_Projectile p;
+			pProj->FillInfo(&p);
+			for(unsigned i = 0; i < sizeof(CNetObj_Projectile)/sizeof(int); i++)
+				Msg.AddInt(((int *)&p)[i]);
+		}
+		else
+		{
+			CProjectile *pProj = new CProjectile(GameContext(), WEAPON_SHOTGUN,
+				GetCID(),
+				ProjStartPos,
+				Direction,
+				(int)(Server()->TickSpeed()*LifeTime),
+				1, false, Force, -1, DamageType);
+
+			// pack the Projectile and send it to the client Directly
+			CNetObj_Projectile p;
+			pProj->FillInfo(&p);
+			for(unsigned i = 0; i < sizeof(CNetObj_Projectile)/sizeof(int); i++)
+				Msg.AddInt(((int *)&p)[i]);
+		}
+	}
+
+	Server()->SendMsg(&Msg, MSGFLAG_VITAL, GetCID());
+
+	GameServer()->CreateSound(GetPos(), SOUND_SHOTGUN_FIRE);
 }
 
 void CInfClassHuman::OnGrenadeFired(WeaponFireContext *pFireContext)
