@@ -535,14 +535,18 @@ void CInfClassHuman::OnGrenadeFired(WeaponFireContext *pFireContext)
 
 void CInfClassHuman::OnLaserFired(WeaponFireContext *pFireContext)
 {
+	if(pFireContext->NoAmmo)
+	{
+		return;
+	}
+
 	switch(GetPlayerClass())
 	{
-		case PLAYERCLASS_NINJA:
-			OnBlindingLaserFired(pFireContext);
-			break;
-		default:
-			break;
-	}
+	case PLAYERCLASS_NINJA:
+		OnBlindingLaserFired(pFireContext);
+		break;
+	default:
+		break;
 }
 
 void CInfClassHuman::GiveClassAttributes()
@@ -1038,11 +1042,6 @@ void CInfClassHuman::OnNinjaTargetKiller(bool Assisted)
 
 void CInfClassHuman::OnBlindingLaserFired(WeaponFireContext *pFireContext)
 {
-	if(pFireContext->NoAmmo)
-	{
-		return;
-	}
-
 	new CBlindingLaser(GameContext(), GetPos(), GetDirection(), GetCID());
 }
 
