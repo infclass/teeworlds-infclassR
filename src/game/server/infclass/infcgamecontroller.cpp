@@ -196,7 +196,7 @@ void CInfClassGameController::OnPlayerInfected(CInfClassPlayer *pPlayer, CInfCla
 	}
 
 	//Search for hook
-	for(CInfClassCharacter *pHook = (CInfClassCharacter*) GameServer()->m_World.FindFirst(CGameWorld::ENTTYPE_CHARACTER); pHook; pHook = (CInfClassCharacter *)pHook->TypeNext())
+	for(TEntityPtr<CInfClassCharacter> pHook = GameWorld()->FindFirst<CInfClassCharacter>(); pHook; ++pHook)
 	{
 		if(
 			pHook->GetPlayer() &&
@@ -1935,7 +1935,7 @@ void CInfClassGameController::Tick()
 	UpdateNinjaTargets();
 	HandleLastHookers();
 
-	if(GameServer()->m_World.m_Paused)
+	if(GameWorld()->m_Paused)
 	{
 		m_HeroGiftTick++;
 	}
@@ -2306,7 +2306,7 @@ void CInfClassGameController::Snap(int SnappingClient)
 		pGameInfoObj->m_GameStateFlags |= GAMESTATEFLAG_GAMEOVER;
 	if(m_SuddenDeath)
 		pGameInfoObj->m_GameStateFlags |= GAMESTATEFLAG_SUDDENDEATH;
-	if(GameServer()->m_World.m_Paused)
+	if(GameWorld()->m_Paused)
 		pGameInfoObj->m_GameStateFlags |= GAMESTATEFLAG_PAUSED;
 	pGameInfoObj->m_RoundStartTick = m_RoundStartTick;
 	pGameInfoObj->m_WarmupTimer = m_Warmup;
@@ -2556,9 +2556,9 @@ void CInfClassGameController::OnCharacterDeath(CInfClassCharacter *pVictim, cons
 	if(!BadReasonsToDie.Contains(DamageType) && (Killer != pVictim->GetCID()))
 	{
 		//Find the nearest ghoul
-		for(CInfClassCharacter *p = (CInfClassCharacter*) GameWorld()->FindFirst(CGameWorld::ENTTYPE_CHARACTER); p; p = (CInfClassCharacter *)p->TypeNext())
+		for(TEntityPtr<CInfClassCharacter> p = GameWorld()->FindFirst<CInfClassCharacter>(); p; ++p)
 		{
-			if(p->GetPlayerClass() != PLAYERCLASS_GHOUL || p == pVictim)
+			if(p->GetPlayerClass() != PLAYERCLASS_GHOUL || p.data() == pVictim)
 				continue;
 			if(p->GetClass() && p->GetClass()->GetGhoulPercent() >= 1.0f)
 				continue;
@@ -2711,7 +2711,7 @@ void CInfClassGameController::DoWincheck()
 	//Start the final explosion if the time is over
 	if(m_InfectedStarted && !m_ExplosionStarted && GetTimeLimit() > 0 && Seconds >= GetTimeLimit() * 60)
 	{
-		for(CInfClassCharacter *p = (CInfClassCharacter*) GameServer()->m_World.FindFirst(CGameWorld::ENTTYPE_CHARACTER); p; p = (CInfClassCharacter *)p->TypeNext())
+		for(TEntityPtr<CInfClassCharacter> p = GameWorld()->FindFirst<CInfClassCharacter>(); p; ++p)
 		{
 			if(p->IsZombie())
 			{
@@ -2767,7 +2767,7 @@ void CInfClassGameController::DoWincheck()
 			}
 		}
 
-		for(CInfClassCharacter *p = (CInfClassCharacter*) GameServer()->m_World.FindFirst(CGameWorld::ENTTYPE_CHARACTER); p; p = (CInfClassCharacter *)p->TypeNext())
+		for(TEntityPtr<CInfClassCharacter> p = GameWorld()->FindFirst<CInfClassCharacter>(); p; ++p)
 		{
 			if(p->IsHuman())
 				continue;
@@ -2798,7 +2798,7 @@ bool CInfClassGameController::IsSpawnable(vec2 Pos, int TeleZoneIndex)
 {
 	//First check if there is a tee too close
 	CCharacter *aEnts[MAX_CLIENTS];
-	int Num = GameServer()->m_World.FindEntities(Pos, 64, (CEntity**)aEnts, MAX_CLIENTS, CGameWorld::ENTTYPE_CHARACTER);
+	int Num = GameWorld()->FindEntities(Pos, 64, (CEntity**)aEnts, MAX_CLIENTS, CGameWorld::ENTTYPE_CHARACTER);
 	
 	for(int c = 0; c < Num; ++c)
 	{
@@ -2837,7 +2837,7 @@ bool CInfClassGameController::TryRespawn(CInfClassPlayer *pPlayer, SpawnContext 
 	// Deny any spawns during the World ResetRequested because the new Characters
 	// are going to be destroyed during this IGameServer::Tick().
 	// (and it may break the auto class selection)
-	if(GameServer()->m_World.m_ResetRequested)
+	if(GameWorld()->m_ResetRequested)
 	{
 		return false;
 	}

@@ -1425,7 +1425,7 @@ void CInfClassCharacter::OnHammerFired(WeaponFireContext *pFireContext)
 
 	if(GetPlayerClass() == PLAYERCLASS_ENGINEER)
 	{
-		for(CEngineerWall *pWall = (CEngineerWall*) GameWorld()->FindFirst(CGameWorld::ENTTYPE_ENGINEER_WALL); pWall; pWall = (CEngineerWall*) pWall->TypeNext())
+		for(TEntityPtr<CEngineerWall> pWall = GameWorld()->FindFirst<CEngineerWall>(); pWall; ++pWall)
 		{
 			if(pWall->GetOwner() == GetCID())
 				GameWorld()->DestroyEntity(pWall);
