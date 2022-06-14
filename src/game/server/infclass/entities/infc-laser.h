@@ -19,6 +19,8 @@ protected:
 	CInfClassLaser(CGameContext *pGameContext, vec2 Pos, vec2 Direction, float StartEnergy, int Owner, int Dmg, int ObjType);
 
 	virtual bool HitCharacter(vec2 From, vec2 To);
+	virtual bool OnCharacterHit(CInfClassCharacter *pHit);
+
 	virtual void DoBounce();
 
 protected:

@@ -16,22 +16,9 @@ CBlindingLaser::CBlindingLaser(CGameContext *pGameContext, vec2 Pos, vec2 Direct
 	DoBounce();
 }
 
-bool CBlindingLaser::HitCharacter(vec2 From, vec2 To)
+bool CBlindingLaser::OnCharacterHit(CInfClassCharacter *pHit)
 {
-	vec2 At;
-	CCharacter *pOwnerChar = GameServer()->GetPlayerChar(m_Owner);
-	CCharacter *pIntersect = GameServer()->m_World.IntersectCharacter(m_Pos, To, 0.f, At, pOwnerChar);
-	CInfClassCharacter *pHit = CInfClassCharacter::GetInstance(pIntersect);
-
-	if(!pHit)
-		return false;
-
-	m_From = From;
-	m_Pos = At;
-	m_Energy = -1;
-
 	pHit->MakeBlind(GetOwner(), Config()->m_InfBlindnessDuration / 1000.0);
-
 	return true;
 }
 

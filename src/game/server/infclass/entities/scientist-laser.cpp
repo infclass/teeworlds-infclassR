@@ -9,27 +9,19 @@
 
 #include "white-hole.h"
 #include "growingexplosion.h"
+#include "infccharacter.h"
 
 CScientistLaser::CScientistLaser(CGameContext *pGameContext, vec2 Pos, vec2 Direction, float StartEnergy, int Owner, int Dmg)
 	: CInfClassLaser(pGameContext, Pos, Direction, StartEnergy, Owner, Dmg, CGameWorld::ENTTYPE_LASER)
 {
+	m_DamageType = DAMAGE_TYPE::SCIENTIST_LASER;
+	
 	GameWorld()->InsertEntity(this);
 	DoBounce();
 }
 
-bool CScientistLaser::HitCharacter(vec2 From, vec2 To)
+bool CScientistLaser::OnCharacterHit(CInfClassCharacter *pHit)
 {
-	vec2 At;
-	CCharacter *pOwnerChar = GameServer()->GetPlayerChar(m_Owner);
-	CCharacter *pHit = GameServer()->m_World.IntersectCharacter(m_Pos, To, 0.f, At, pOwnerChar);
-
-	if(!pHit)
-		return false;
-
-	m_From = From;
-	m_Pos = At;
-	m_Energy = -1;
-
 	return true;
 }
 
@@ -63,11 +55,11 @@ void CScientistLaser::DoBounce()
 			m_Energy = -1;
 		}
 	}
-	
-	GameController()->CreateExplosion(m_Pos, m_Owner, DAMAGE_TYPE::SCIENTIST_LASER);
-	
+
+	GameController()->CreateExplosion(m_Pos, m_Owner, m_DamageType);
+
 	//Create a white hole entity
-	CCharacter *pOwnerChar = GameServer()->GetPlayerChar(m_Owner);
+	CInfClassCharacter *pOwnerChar = GetOwnerCharacter();
 	if(pOwnerChar && pOwnerChar->m_HasWhiteHole)
 	{
 		new CGrowingExplosion(GameServer(), m_Pos, vec2(0.0, -1.0), m_Owner, 5, DAMAGE_TYPE::WHITE_HOLE);

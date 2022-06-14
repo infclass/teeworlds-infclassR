@@ -9,7 +9,7 @@ public:
 	CBlindingLaser(CGameContext *pGameContext, vec2 Pos, vec2 Direction, int Owner);
 
 protected:
-	bool HitCharacter(vec2 From, vec2 To) final;
+	bool OnCharacterHit(CInfClassCharacter *pHit) final;
 	void DoBounce() final;
 
 };

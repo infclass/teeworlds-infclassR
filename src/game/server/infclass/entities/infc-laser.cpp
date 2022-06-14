@@ -31,7 +31,8 @@ bool CInfClassLaser::HitCharacter(vec2 From, vec2 To)
 {
 	vec2 At;
 	CInfClassCharacter *pOwnerChar = GameController()->GetCharacter(GetOwner());
-	CInfClassCharacter *pHit = static_cast<CInfClassCharacter*>(GameWorld()->IntersectCharacter(m_Pos, To, 0.f, At, pOwnerChar));
+	CCharacter *pIntersect = GameWorld()->IntersectCharacter(m_Pos, To, 0.f, At, pOwnerChar);
+	CInfClassCharacter *pHit = CInfClassCharacter::GetInstance(pIntersect);
 
 	if(!pHit)
 		return false;
@@ -40,6 +41,11 @@ bool CInfClassLaser::HitCharacter(vec2 From, vec2 To)
 	m_Pos = At;
 	m_Energy = -1;
 
+	return OnCharacterHit(pHit);
+}
+
+bool CInfClassLaser::OnCharacterHit(CInfClassCharacter *pHit)
+{
 	pHit->TakeDamage(vec2(0.f, 0.f), m_Dmg, m_Owner, m_DamageType);
 
 	if(m_DamageType == DAMAGE_TYPE::LOOPER_LASER)

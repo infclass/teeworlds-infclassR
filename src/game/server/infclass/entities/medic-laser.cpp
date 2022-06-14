@@ -18,26 +18,10 @@ CMedicLaser::CMedicLaser(CGameContext *pGameContext, vec2 Pos, vec2 Direction, f
 	DoBounce();
 }
 
-bool CMedicLaser::HitCharacter(vec2 From, vec2 To)
+bool CMedicLaser::OnCharacterHit(CInfClassCharacter *pHit)
 {
-	vec2 At;
-	CInfClassCharacter *pMedic = GetOwnerCharacter();
-	CCharacter *pIntersect = GameServer()->m_World.IntersectCharacter(m_Pos, To, 0.f, At, pMedic);
-	CInfClassCharacter *pHit = CInfClassCharacter::GetInstance(pIntersect);
-
-	if(!pHit)
-		return false;
-
-	m_From = From;
-	m_Pos = At;
-	m_Energy = -1;
-	
 	CInfClassCharacter *pInfected = pHit;
-	if (!pInfected)
-	{
-		// Medic hits something else (not a zombie)
-		return true;
-	}
+	CInfClassCharacter *pMedic = GetOwnerCharacter();
 
 	int MinimumHP = Config()->m_InfRevivalDamage + 1;
 	int MinimumInfected = 5;
