@@ -7,8 +7,10 @@
 #include "biologist-laser.h"
 #include "infccharacter.h"
 
+int CBiologistMine::EntityId = CGameWorld::ENTTYPE_BIOLOGIST_MINE;
+
 CBiologistMine::CBiologistMine(CGameContext *pGameContext, vec2 Pos, vec2 EndPos, int Owner)
-	: CPlacedObject(pGameContext, CGameWorld::ENTTYPE_BIOLOGIST_MINE, Pos, Owner)
+	: CPlacedObject(pGameContext, EntityId, Pos, Owner)
 {
 	m_InfClassObjectType = INFCLASS_OBJECT_TYPE_BIOLOGIST_MINE;
 	m_EndPos = EndPos;

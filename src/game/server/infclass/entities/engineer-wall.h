@@ -10,6 +10,8 @@ class CInfClassCharacter;
 class CEngineerWall : public CPlacedObject
 {
 public:
+	static int EntityId;
+
 	CEngineerWall(CGameContext *pGameContext, vec2 Pos, vec2 Direction, int Owner);
 	virtual ~CEngineerWall();
 

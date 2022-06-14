@@ -39,6 +39,8 @@ class CCharacter : public CEntity
 	MACRO_ALLOC_POOL_ID()
 
 public:
+	static int EntityId;
+
 	class IConsole *Console() { return m_pConsole; }
 
 	//character's size

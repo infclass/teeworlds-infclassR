@@ -15,8 +15,10 @@
 const float g_BarrierMaxLength = 300.0;
 const float g_BarrierRadius = 0.0;
 
+int CEngineerWall::EntityId = CGameWorld::ENTTYPE_ENGINEER_WALL;
+
 CEngineerWall::CEngineerWall(CGameContext *pGameContext, vec2 Pos1, vec2 Pos2, int Owner)
-	: CPlacedObject(pGameContext, CGameWorld::ENTTYPE_ENGINEER_WALL, Pos1, Owner)
+	: CPlacedObject(pGameContext, EntityId, Pos1, Owner)
 {
 	m_InfClassObjectType = INFCLASS_OBJECT_TYPE_LASER_WALL;
 	m_InfClassObjectFlags = INFCLASS_OBJECT_FLAG_HAS_SECOND_POSITION;

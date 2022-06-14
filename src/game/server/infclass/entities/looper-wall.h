@@ -6,6 +6,8 @@
 class CLooperWall : public CPlacedObject
 {
 public:
+	static int EntityId;
+
 	enum
 	{
 		THICKNESS = 17,

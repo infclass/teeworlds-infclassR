@@ -12,8 +12,10 @@
 #include "looper-wall.h"
 #include "infccharacter.h"
 
+int CLooperWall::EntityId = CGameWorld::ENTTYPE_LOOPER_WALL;
+
 CLooperWall::CLooperWall(CGameContext *pGameContext, vec2 Pos1, vec2 Pos2, int Owner)
-	: CPlacedObject(pGameContext, CGameWorld::ENTTYPE_LOOPER_WALL, Pos1, Owner)
+	: CPlacedObject(pGameContext, EntityId, Pos1, Owner)
 {
 	m_InfClassObjectType = INFCLASS_OBJECT_TYPE_LOOPER_WALL;
 	m_InfClassObjectFlags = INFCLASS_OBJECT_FLAG_HAS_SECOND_POSITION;

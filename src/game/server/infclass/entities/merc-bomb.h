@@ -16,6 +16,8 @@ public:
 	};
 
 public:
+	static int EntityId;
+
 	CMercenaryBomb(CGameContext *pGameContext, vec2 Pos, int Owner);
 	~CMercenaryBomb();
 

@@ -8,6 +8,8 @@
 class CBiologistMine : public CPlacedObject
 {
 public:
+	static int EntityId;
+
 	enum
 	{
 		NUM_SIDE = 10,

@@ -12,6 +12,8 @@
 
 #include <game/server/teams.h>
 
+int CCharacter::EntityId = CGameWorld::ENTTYPE_CHARACTER;
+
 MACRO_ALLOC_POOL_ID_IMPL(CCharacter, MAX_CLIENTS)
 
 // Character, "physical" player's part

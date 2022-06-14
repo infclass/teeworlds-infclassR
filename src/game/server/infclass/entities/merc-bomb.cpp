@@ -11,8 +11,10 @@
 #include "growingexplosion.h"
 #include "infccharacter.h"
 
+int CMercenaryBomb::EntityId = CGameWorld::ENTTYPE_MERCENARY_BOMB;
+
 CMercenaryBomb::CMercenaryBomb(CGameContext *pGameContext, vec2 Pos, int Owner)
-	: CPlacedObject(pGameContext, CGameWorld::ENTTYPE_MERCENARY_BOMB, Pos, Owner)
+	: CPlacedObject(pGameContext, EntityId, Pos, Owner)
 {
 	m_InfClassObjectType = INFCLASS_OBJECT_TYPE_MERCENARY_BOMB;
 	GameWorld()->InsertEntity(this);
