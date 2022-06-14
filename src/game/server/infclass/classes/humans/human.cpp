@@ -382,6 +382,53 @@ void CInfClassHuman::OnHammerFired(WeaponFireContext *pFireContext)
 	}
 }
 
+void CInfClassHuman::OnGunFired(WeaponFireContext *pFireContext)
+{
+	if(pFireContext->NoAmmo)
+		return;
+
+	vec2 Direction = GetDirection();
+	vec2 ProjStartPos = GetPos()+Direction*GetProximityRadius()*0.75f;
+
+	DAMAGE_TYPE DamageType = DAMAGE_TYPE::GUN;
+	
+	if(GetPlayerClass() == PLAYERCLASS_MERCENARY)
+		DamageType = DAMAGE_TYPE::MERCENARY_GUN;
+
+	{
+		CProjectile *pProj = new CProjectile(GameContext(), WEAPON_GUN,
+			GetCID(),
+			ProjStartPos,
+			Direction,
+			(int)(Server()->TickSpeed()*GameServer()->Tuning()->m_GunLifetime),
+			1, 0, 0, -1, DamageType);
+		
+		// pack the Projectile and send it to the client Directly
+		CNetObj_Projectile p;
+		pProj->FillInfo(&p);
+		
+		CMsgPacker Msg(NETMSGTYPE_SV_EXTRAPROJECTILE);
+		Msg.AddInt(1);
+		for(unsigned i = 0; i < sizeof(CNetObj_Projectile)/sizeof(int); i++)
+			Msg.AddInt(((int *)&p)[i]);
+		
+		Server()->SendMsg(&Msg, MSGFLAG_VITAL, GetCID());
+	}
+
+	if(GetPlayerClass() == PLAYERCLASS_MERCENARY)
+	{
+		float MaxSpeed = GameServer()->Tuning()->m_GroundControlSpeed * 1.7f;
+		vec2 Recoil = Direction * (-MaxSpeed / 5.0f);
+		m_pCharacter->SaturateVelocity(Recoil, MaxSpeed);
+
+		GameServer()->CreateSound(GetPos(), SOUND_HOOK_LOOP);
+	}
+	else
+	{
+		GameServer()->CreateSound(GetPos(), SOUND_GUN_FIRE);
+	}
+}
+
 void CInfClassHuman::OnShotgunFired(WeaponFireContext *pFireContext)
 {
 	if(pFireContext->NoAmmo)
