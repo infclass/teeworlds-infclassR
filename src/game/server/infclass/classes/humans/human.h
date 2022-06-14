@@ -50,6 +50,7 @@ protected:
 	void OnNinjaTargetKiller(bool Assisted);
 	void OnBlindingLaserFired(WeaponFireContext *pFireContext);
 	void OnBiologistLaserFired(WeaponFireContext *pFireContext);
+	void OnMercLaserFired(WeaponFireContext *pFireContext);
 
 	bool PositionLockAvailable() const;
 

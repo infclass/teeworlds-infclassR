@@ -17,6 +17,8 @@
 #include <game/server/infclass/entities/laser-teleport.h>
 #include <game/server/infclass/entities/looper-wall.h>
 #include <game/server/infclass/entities/merc-bomb.h>
+#include <game/server/infclass/entities/merc-laser.h>
+#include <game/server/infclass/entities/scientist-laser.h>
 #include <game/server/infclass/entities/scientist-mine.h>
 #include <game/server/infclass/entities/soldier-bomb.h>
 #include <game/server/infclass/entities/white-hole.h>
@@ -540,6 +542,11 @@ void CInfClassHuman::OnLaserFired(WeaponFireContext *pFireContext)
 		return;
 	}
 
+	vec2 Direction = GetDirection();
+	float StartEnergy = GameServer()->Tuning()->m_LaserReach;
+	int Damage = GameServer()->Tuning()->m_LaserDamage;
+	DAMAGE_TYPE DamageType = DAMAGE_TYPE::LASER;
+
 	switch(GetPlayerClass())
 	{
 	case PLAYERCLASS_NINJA:
@@ -548,8 +555,34 @@ void CInfClassHuman::OnLaserFired(WeaponFireContext *pFireContext)
 	case PLAYERCLASS_BIOLOGIST:
 		OnBiologistLaserFired(pFireContext);
 		break;
-	default:
+	case PLAYERCLASS_SCIENTIST:
+		StartEnergy *= 0.6f;
+		new CScientistLaser(GameServer(), GetPos(), Direction, StartEnergy, GetCID(), Damage);
 		break;
+	case PLAYERCLASS_MERCENARY:
+		OnMercLaserFired(pFireContext);
+		break;
+
+	case PLAYERCLASS_LOOPER:
+		StartEnergy *= 0.7f;
+		Damage = 5;
+		DamageType = DAMAGE_TYPE::LOOPER_LASER;
+		new CInfClassLaser(GameServer(), GetPos(), Direction, StartEnergy, GetCID(), Damage, DamageType);
+		break;
+	case PLAYERCLASS_SNIPER:
+		Damage = m_pCharacter->PositionIsLocked() ? 30 : random_int(10, 13);
+		DamageType = DAMAGE_TYPE::SNIPER_RIFLE;
+		new CInfClassLaser(GameServer(), GetPos(), Direction, StartEnergy, GetCID(), Damage, DamageType);
+		break;
+	default:
+		new CInfClassLaser(GameServer(), GetPos(), Direction, StartEnergy, GetCID(), Damage, DamageType);
+		break;
+	}
+	
+	if(pFireContext->FireAccepted)
+	{
+		GameServer()->CreateSound(GetPos(), SOUND_LASER_FIRE);
+	}
 }
 
 void CInfClassHuman::GiveClassAttributes()
@@ -1068,12 +1101,34 @@ void CInfClassHuman::OnBiologistLaserFired(WeaponFireContext *pFireContext)
 	if(GameServer()->Collision()->IntersectLine(GetPos(), To, 0x0, &To))
 	{
 		new CBiologistMine(GameServer(), GetPos(), To, GetCID());
-		GameServer()->CreateSound(GetPos(), SOUND_LASER_FIRE);
 		pFireContext->AmmoConsumed = pFireContext->AmmoAvailable;
 	}
 	else
 	{
 		pFireContext->FireAccepted = false;
+	}
+}
+
+void CInfClassHuman::OnMercLaserFired(WeaponFireContext *pFireContext)
+{
+	CMercenaryBomb *pCurrentBomb = nullptr;
+	for(TEntityPtr<CMercenaryBomb> pBomb = GameWorld()->FindFirst<CMercenaryBomb>(); pBomb; ++pBomb)
+	{
+		if(pBomb->GetOwner() == GetCID())
+		{
+			pCurrentBomb = pBomb;
+			break;
+		}
+	}
+
+	if(!pCurrentBomb)
+	{
+		GameServer()->SendBroadcast_Localization(GetCID(), BROADCAST_PRIORITY_WEAPONSTATE, 60, "Bomb needed");
+		pFireContext->FireAccepted = false;
+	}
+	else
+	{
+		new CMercenaryLaser(GameServer(), GetPos(), GetDirection(), GameServer()->Tuning()->m_LaserReach, GetCID());
 	}
 }
 

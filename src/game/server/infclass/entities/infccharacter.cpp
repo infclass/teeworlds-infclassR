@@ -18,14 +18,11 @@
 #include <game/server/infclass/entities/engineer-wall.h>
 #include <game/server/infclass/entities/growingexplosion.h>
 #include <game/server/infclass/entities/hero-flag.h>
-#include <game/server/infclass/entities/infc-laser.h>
 #include <game/server/infclass/entities/looper-wall.h>
 #include <game/server/infclass/entities/medic-grenade.h>
 #include <game/server/infclass/entities/merc-bomb.h>
-#include <game/server/infclass/entities/merc-laser.h>
 #include <game/server/infclass/entities/plasma.h>
 #include <game/server/infclass/entities/scatter-grenade.h>
-#include <game/server/infclass/entities/scientist-laser.h>
 #include <game/server/infclass/entities/scientist-mine.h>
 #include <game/server/infclass/entities/slug-slime.h>
 #include <game/server/infclass/entities/soldier-bomb.h>
@@ -1890,69 +1887,6 @@ void CInfClassCharacter::OnGrenadeFired(WeaponFireContext *pFireContext)
 
 void CInfClassCharacter::OnLaserFired(WeaponFireContext *pFireContext)
 {
-	if(pFireContext->NoAmmo)
-	{
-		return;
-	}
-
-	vec2 Direction = GetDirection();
-	int Damage = GameServer()->Tuning()->m_LaserDamage;
-
-	if(GetPlayerClass() == PLAYERCLASS_SNIPER)
-	{
-		if(PositionIsLocked())
-			Damage = 30;
-		else
-			Damage = random_int(10, 13);
-		new CInfClassLaser(GameServer(), GetPos(), Direction, GameServer()->Tuning()->m_LaserReach, GetCID(), Damage, DAMAGE_TYPE::SNIPER_RIFLE);
-		GameServer()->CreateSound(GetPos(), SOUND_LASER_FIRE);
-	}
-	else if(GetPlayerClass() == PLAYERCLASS_SCIENTIST)
-	{
-		//white hole activation in scientist-laser
-		
-		new CScientistLaser(GameServer(), GetPos(), Direction, GameServer()->Tuning()->m_LaserReach*0.6f, GetCID(), Damage);
-		GameServer()->CreateSound(GetPos(), SOUND_LASER_FIRE);
-	}
-	else if (GetPlayerClass() == PLAYERCLASS_LOOPER) 
-	{
-		Damage = 5;
-		new CInfClassLaser(GameServer(), GetPos(), Direction, GameServer()->Tuning()->m_LaserReach*0.7f, GetCID(), Damage, DAMAGE_TYPE::LOOPER_LASER);
-		GameServer()->CreateSound(GetPos(), SOUND_LASER_FIRE);
-	}
-	else if(GetPlayerClass() == PLAYERCLASS_MERCENARY)
-	{
-		CMercenaryBomb* pCurrentBomb = nullptr;
-		for(CMercenaryBomb *pBomb = (CMercenaryBomb*) GameWorld()->FindFirst(CGameWorld::ENTTYPE_MERCENARY_BOMB); pBomb; pBomb = (CMercenaryBomb*) pBomb->TypeNext())
-		{
-			if(pBomb->GetOwner() == GetCID())
-			{
-				pCurrentBomb = pBomb;
-				break;
-			}
-		}
-
-		if(!pCurrentBomb)
-		{
-			GameServer()->SendBroadcast_Localization(GetCID(), BROADCAST_PRIORITY_WEAPONSTATE, 60, "Bomb needed");
-			pFireContext->FireAccepted = false;
-		}
-		else
-		{
-			new CMercenaryLaser(GameServer(), GetPos(), Direction, GameServer()->Tuning()->m_LaserReach, GetCID());
-			GameServer()->CreateSound(GetPos(), SOUND_LASER_FIRE);
-		}
-	}
-	else if (GetPlayerClass() == PLAYERCLASS_NINJA)
-	{
-		// Do nothing, the processing is done in CInfClassHuman::OnLaserFired()
-		return;
-	}
-	else
-	{
-		new CInfClassLaser(GameServer(), GetPos(), Direction, GameServer()->Tuning()->m_LaserReach, GetCID(), Damage, DAMAGE_TYPE::LASER);
-		GameServer()->CreateSound(GetPos(), SOUND_LASER_FIRE);
-	}
 }
 
 void CInfClassCharacter::OnNinjaFired(WeaponFireContext *pFireContext)

@@ -12,7 +12,6 @@ CBlindingLaser::CBlindingLaser(CGameContext *pGameContext, vec2 Pos, vec2 Direct
 	: CInfClassLaser(pGameContext, Pos, Direction, 600, Owner, 0, CGameWorld::ENTTYPE_LASER)
 {
 	GameWorld()->InsertEntity(this);
-	GameServer()->CreateSound(GetPos(), SOUND_LASER_FIRE);
 
 	DoBounce();
 }
