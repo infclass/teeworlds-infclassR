@@ -74,6 +74,13 @@ public:
 
 	CEntity *FindFirst(int Type);
 
+	template<typename T>
+	T *FindFirst()
+	{
+		CEntity *pF = FindFirst(T::EntityId);
+		return pF ? static_cast<T *>(pF) : nullptr;
+	}
+
 	/*
 		Function: find_entities
 			Finds entities close to a position and returns them in a list.
