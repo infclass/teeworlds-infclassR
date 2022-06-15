@@ -87,6 +87,7 @@ public:
 
 protected:
 	const char *GetClan(int SnappingClient = -1) const override;
+	void HandleAutoRespawn() override;
 
 	bool IsForcedToSpectate() const;
 

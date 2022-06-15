@@ -86,6 +86,12 @@ void CPlayer::Reset()
 /* INFECTION MODIFICATION END *****************************************/
 }
 
+void CPlayer::HandleAutoRespawn()
+{
+	if(!m_pCharacter && m_DieTick+Server()->TickSpeed()*3 <= Server()->Tick())
+		Respawn();
+}
+
 void CPlayer::Tick()
 {
 #ifdef CONF_DEBUG
@@ -126,8 +132,7 @@ void CPlayer::Tick()
 		if(!m_pCharacter && m_Team == TEAM_SPECTATORS && m_SpectatorID == SPEC_FREEVIEW)
 			m_ViewPos -= vec2(clamp(m_ViewPos.x-m_LatestActivity.m_TargetX, -500.0f, 500.0f), clamp(m_ViewPos.y-m_LatestActivity.m_TargetY, -400.0f, 400.0f));
 
-		if(!m_pCharacter && m_DieTick+Server()->TickSpeed()*3 <= Server()->Tick())
-			Respawn();
+		HandleAutoRespawn();
 
 		if(m_pCharacter)
 		{
@@ -317,8 +322,9 @@ void CPlayer::OnDirectInput(CNetObj_PlayerInput *NewInput)
 	if(m_pCharacter)
 		m_pCharacter->OnDirectInput(NewInput);
 
-	if(!m_pCharacter && m_Team != TEAM_SPECTATORS && (NewInput->m_Fire&1))
-		m_Spawning = true;
+	bool AcceptInput = Server()->Tick() > m_DieTick + Server()->TickSpeed() * 0.2f;
+	if(!m_pCharacter && m_Team != TEAM_SPECTATORS && AcceptInput && (NewInput->m_Fire&1))
+		Respawn();
 
 	// check for activity
 	if(NewInput->m_Direction || m_LatestActivity.m_TargetX != NewInput->m_TargetX ||
@@ -358,7 +364,12 @@ void CPlayer::KillCharacter(int Weapon)
 void CPlayer::Respawn()
 {
 	if(m_Team != TEAM_SPECTATORS)
-		m_Spawning = true;
+	{
+		if(!m_Spawning)
+		{
+			m_Spawning = true;
+		}
+	}
 }
 
 void CPlayer::SetTeam(int Team, bool DoChatMsg)

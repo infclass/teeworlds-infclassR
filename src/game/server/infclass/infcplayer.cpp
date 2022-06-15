@@ -514,6 +514,20 @@ const char *CInfClassPlayer::GetClan(int SnappingClient) const
 	return aBuf;
 }
 
+void CInfClassPlayer::HandleAutoRespawn()
+{
+	int InfClassVersion = Server()->GetClientInfclassVersion(m_ClientID);
+
+	float AutoSpawnInterval = 3;
+	if((InfClassVersion >= VERSION_INFC_FORCED_SPEC) && IsForcedToSpectate())
+		AutoSpawnInterval = 5;
+
+	if(!m_pCharacter && m_DieTick+Server()->TickSpeed() * AutoSpawnInterval <= Server()->Tick())
+	{
+		Respawn();
+	}
+}
+
 bool CInfClassPlayer::IsForcedToSpectate() const
 {
 	return !IsSpectator() && (!m_pCharacter || !m_pCharacter->IsAlive()) && TargetToFollow() >= 0;

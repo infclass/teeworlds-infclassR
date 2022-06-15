@@ -199,6 +199,8 @@ public:
 /* INFECTION MODIFICATION END *****************************************/
 
 protected:
+	virtual void HandleAutoRespawn();
+
 	char m_aOriginalName[MAX_NAME_LENGTH];
 };
 
