@@ -39,6 +39,9 @@ void CIcPickup::Tick()
 		else
 			return;
 	}
+
+	CInfCEntity::Tick();
+
 	// Check if a player intersected us
 	CInfClassCharacter *pChr = (CInfClassCharacter *)GameWorld()->ClosestEntity(m_Pos, PickupPhysSize, CGameWorld::ENTTYPE_CHARACTER, 0);
 	if(pChr && pChr->IsAlive())

@@ -20,13 +20,19 @@ public:
 	CInfClassCharacter *GetOwnerCharacter();
 
 	void Reset() override;
+	void Tick() override;
 
 	void SetPos(const vec2 &Position);
+	void SetAnimatedPos(const vec2 &Pivot, const vec2 &RelPosition, int PosEnv);
 
 protected:
 	virtual bool DoSnapForClient(int SnappingClient);
+	void SyncPosition();
 
 	int m_Owner = 0;
+	vec2 m_Pivot;
+	vec2 m_RelPosition;
+	int m_PosEnv = -1;
 };
 
 #endif // GAME_SERVER_ENTITIES_INFC_ENTITY_H

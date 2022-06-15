@@ -1,5 +1,6 @@
 #include "infcentity.h"
 
+#include <game/animation.h>
 #include <game/server/gamecontext.h>
 #include <game/server/infclass/infcgamecontroller.h>
 
@@ -25,9 +26,24 @@ void CInfCEntity::Reset()
 	GameWorld()->DestroyEntity(this);
 }
 
+void CInfCEntity::Tick()
+{
+	if(m_PosEnv >= 0)
+	{
+		SyncPosition();
+	}
+}
+
 void CInfCEntity::SetPos(const vec2 &Position)
 {
 	m_Pos = Position;
+}
+
+void CInfCEntity::SetAnimatedPos(const vec2 &Pivot, const vec2 &RelPosition, int PosEnv)
+{
+	m_Pivot = Pivot;
+	m_RelPosition = RelPosition;
+	m_PosEnv = PosEnv;
 }
 
 bool CInfCEntity::DoSnapForClient(int SnappingClient)
@@ -36,4 +52,19 @@ bool CInfCEntity::DoSnapForClient(int SnappingClient)
 		return false;
 
 	return true;
+}
+
+void CInfCEntity::SyncPosition()
+{
+	vec2 Position(0.0f, 0.0f);
+	float Angle = 0.0f;
+	if(m_PosEnv >= 0)
+	{
+		GetAnimationTransform(GameController()->GetTime(), m_PosEnv, GameServer()->Layers(), Position, Angle);
+	}
+
+	float x = (m_RelPosition.x * cosf(Angle) - m_RelPosition.y * sinf(Angle));
+	float y = (m_RelPosition.x * sinf(Angle) + m_RelPosition.y * cosf(Angle));
+
+	SetPos(Position + m_Pivot + vec2(x, y));
 }
