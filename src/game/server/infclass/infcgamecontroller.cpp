@@ -230,10 +230,11 @@ void CInfClassGameController::OnHeroFlagCollected(int ClientID)
 bool CInfClassGameController::OnEntity(const char* pName, vec2 Pivot, vec2 P0, vec2 P1, vec2 P2, vec2 P3, int PosEnv)
 {
 	bool res = IGameController::OnEntity(pName, Pivot, P0, P1, P2, P3, PosEnv);
+	vec2 Pos = (P0 + P1 + P2 + P3)/4.0f;
 
+	CInfCEntity *pNewEntity = nullptr;
 	if(str_comp(pName, "icInfected") == 0)
 	{
-		vec2 Pos = (P0 + P1 + P2 + P3)/4.0f;
 		int SpawnX = static_cast<int>(Pos.x)/32.0f;
 		int SpawnY = static_cast<int>(Pos.y)/32.0f;
 		
@@ -245,20 +246,26 @@ bool CInfClassGameController::OnEntity(const char* pName, vec2 Pivot, vec2 P0, v
 	else if(str_comp(pName, "icHeroFlag") == 0)
 	{
 		//Add hero flag spawns
-		vec2 Pos = (P0 + P1 + P2 + P3)/4.0f;
 		m_HeroFlagPositions.add(Pos);
 	}
 	else if(str_comp(pName, "health") == 0)
 	{
-		vec2 Pos = (P0 + P1 + P2 + P3)/4.0f;
 		CIcPickup *p = new CIcPickup(GameServer(), IC_PICKUP_TYPE::HEALTH, Pos);
 		p->SetRespawnInterval(15);
+		p->Spawn();
+		pNewEntity = p;
 	}
 	else if(str_comp(pName, "armor") == 0)
 	{
-		vec2 Pos = (P0 + P1 + P2 + P3)/4.0f;
 		CIcPickup *p = new CIcPickup(GameServer(), IC_PICKUP_TYPE::ARMOR, Pos);
 		p->SetRespawnInterval(15);
+		p->Spawn();
+		pNewEntity = p;
+	}
+
+	if(pNewEntity && (PosEnv >= 0))
+	{
+		pNewEntity->SetAnimatedPos(Pivot, Pos - Pivot, PosEnv);
 	}
 
 	return res;
