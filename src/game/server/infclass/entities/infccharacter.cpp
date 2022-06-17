@@ -953,6 +953,14 @@ void CInfClassCharacter::OnTotalHealthChanged(int Difference)
 	}
 }
 
+void CInfClassCharacter::PrepareToDie(const DeathContext &Context, bool *pRefusedToDie)
+{
+	if(GetClass())
+	{
+		GetClass()->PrepareToDie(Context, pRefusedToDie);
+	}
+}
+
 void CInfClassCharacter::OnWeaponFired(WeaponFireContext *pFireContext)
 {
 	GetClass()->OnWeaponFired(pFireContext);
@@ -2241,12 +2249,10 @@ void CInfClassCharacter::Die(const DeathContext &Context)
 	{
 		return;
 	}
-
+	
 	bool RefusedToDie = false;
-	if(GetClass())
-	{
-		GetClass()->PrepareToDie(Context, &RefusedToDie);
-	}
+	PrepareToDie(Context, &RefusedToDie);
+
 	if(RefusedToDie)
 	{
 		return;

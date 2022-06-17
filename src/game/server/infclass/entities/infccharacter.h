@@ -231,6 +231,7 @@ protected:
 	void HandleDamage(int From, int Damage, DAMAGE_TYPE DamageType);
 
 	void OnTotalHealthChanged(int Difference) override;
+	void PrepareToDie(const DeathContext &Context, bool *pRefusedToDie);
 
 protected:
 	CInfClassGameController *m_pGameController = nullptr;
