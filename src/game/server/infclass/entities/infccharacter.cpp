@@ -701,7 +701,7 @@ bool CInfClassCharacter::TakeDamage(vec2 Force, float FloatDmg, int From, DAMAGE
 		Dmg = DamageAccepted;
 	}
 
-	if(m_ProtectionTick > 0)
+	if(IsInvincible())
 	{
 		Dmg = 0;
 	}
