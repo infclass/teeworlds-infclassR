@@ -955,6 +955,29 @@ void CInfClassCharacter::OnTotalHealthChanged(int Difference)
 
 void CInfClassCharacter::PrepareToDie(const DeathContext &Context, bool *pRefusedToDie)
 {
+	switch(Context.DamageType)
+	{
+	case DAMAGE_TYPE::DEATH_TILE:
+	case DAMAGE_TYPE::GAME:
+	case DAMAGE_TYPE::KILL_COMMAND:
+	case DAMAGE_TYPE::GAME_FINAL_EXPLOSION:
+		// Accept the death to go with the default self kill routine
+		return;
+	default:
+		break;
+	}
+
+	if(Context.Killer == GetCID())
+	{
+		return;
+	}
+
+	if(IsInvincible())
+	{
+		*pRefusedToDie = true;
+		return;
+	}
+
 	if(GetClass())
 	{
 		GetClass()->PrepareToDie(Context, pRefusedToDie);

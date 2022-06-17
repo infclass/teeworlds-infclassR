@@ -511,23 +511,6 @@ int CInfClassInfected::GetGhoulLevel() const
 
 void CInfClassInfected::PrepareToDie(const DeathContext &Context, bool *pRefusedToDie)
 {
-	switch(Context.DamageType)
-	{
-	case DAMAGE_TYPE::DEATH_TILE:
-	case DAMAGE_TYPE::GAME:
-	case DAMAGE_TYPE::KILL_COMMAND:
-	case DAMAGE_TYPE::GAME_FINAL_EXPLOSION:
-		// Accept the death to go with the default self kill routine
-		return;
-	default:
-		break;
-	}
-
-	if(Context.Killer == GetCID())
-	{
-		return;
-	}
-
 	if(GetPlayerClass() == PLAYERCLASS_UNDEAD)
 	{
 		m_pCharacter->Freeze(10.0, Context.Killer, FREEZEREASON_UNDEAD);
@@ -550,12 +533,6 @@ void CInfClassInfected::PrepareToDie(const DeathContext &Context, bool *pRefused
 			// Return here to allow the death on voodoo time expired
 			return;
 		}
-	}
-
-	if(m_pCharacter->IsInvincible())
-	{
-		*pRefusedToDie = true;
-		return;
 	}
 
 	// Start counting down, delay killer message for later
