@@ -153,6 +153,9 @@ public:
 	static void ConLoadPosition(IConsole::IResult *pResult, void *pUserData);
 	void ConLoadPosition(IConsole::IResult *pResult);
 
+	static void ConSetHealthArmor(IConsole::IResult *pResult, void *pUserData);
+	void ConSetHealthArmor(IConsole::IResult *pResult);	
+
 	static void ChatWitch(IConsole::IResult *pResult, void *pUserData);
 	void ChatWitch(IConsole::IResult *pResult);
 
