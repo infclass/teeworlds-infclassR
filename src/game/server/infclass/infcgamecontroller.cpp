@@ -985,6 +985,7 @@ void CInfClassGameController::RegisterChatCommands(IConsole *pConsole)
 	pConsole->Register("lock_client_name", "i[clientid] i[lock]", CFGFLAG_SERVER, ConLockClientName, this, "Set the name of a player");
 
 	pConsole->Register("set_health_armor", "i[clientid] i[health] i[armor]", CFGFLAG_SERVER, ConSetHealthArmor, this, "Set the player health/armor");
+	pConsole->Register("set_invincible", "i[clientid] i[level]", CFGFLAG_SERVER, ConSetInvincible, this, "Set the player invincibility level");
 
 	pConsole->Register("inf_set_class", "i<clientid> s<classname>", CFGFLAG_SERVER, ConSetClass, this, "Set the class of a player");
 	pConsole->Register("queue_round", "s<type>", CFGFLAG_SERVER, ConQueueSpecialRound, this, "Start a special round");
@@ -1353,6 +1354,26 @@ void CInfClassGameController::ConSetHealthArmor(IConsole::IResult *pResult)
 	}
 
 	pCharacter->SetHealthArmor(Health, Armor);
+}
+
+void CInfClassGameController::ConSetInvincible(IConsole::IResult *pResult, void *pUserData)
+{
+	CInfClassGameController *pSelf = (CInfClassGameController *)pUserData;
+	return pSelf->ConSetInvincible(pResult);
+}
+
+void CInfClassGameController::ConSetInvincible(IConsole::IResult *pResult)
+{
+	int ClientID = pResult->GetInteger(0);
+	int Invincible = pResult->GetInteger(1);
+
+	CInfClassCharacter *pCharacter = GetCharacter(ClientID);
+	if(!pCharacter)
+	{
+		return;
+	}
+
+	pCharacter->SetInvincible(Invincible);
 }
 
 void CInfClassGameController::ChatWitch(IConsole::IResult *pResult, void *pUserData)

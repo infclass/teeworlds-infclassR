@@ -76,6 +76,8 @@ void CInfClassCharacter::OnCharacterSpawned(const SpawnContext &Context)
 	m_DamageZoneTick = -1;
 	m_DamageZoneDealtDamage = 0;
 
+	m_Invincible = false;
+
 	ClassSpawnAttributes();
 
 	if(GetPlayerClass() == PLAYERCLASS_NONE)
@@ -2436,7 +2438,12 @@ bool CInfClassCharacter::IsInvisible() const
 
 bool CInfClassCharacter::IsInvincible() const
 {
-	return m_ProtectionTick > 0;
+	return m_Invincible || (m_ProtectionTick > 0);
+}
+
+void CInfClassCharacter::SetInvincible(int Invincible)
+{
+	m_Invincible = Invincible;
 }
 
 bool CInfClassCharacter::HasHallucination() const

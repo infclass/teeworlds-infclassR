@@ -165,6 +165,7 @@ public:
 
 	bool IsInvisible() const;
 	bool IsInvincible() const; // Invincible here means "ignores all damage"
+	void SetInvincible(int Invincible);
 	bool HasHallucination() const;
 	void TryUnfreeze(int UnfreezerCID = -1);
 	FREEZEREASON GetFreezeReason() const { return m_FreezeReason; }
@@ -251,6 +252,8 @@ protected:
 	array_on_stack<CDamagePoint, 4> m_TakenDamageDetails;
 	bool m_NeedFullHeal = false;
 	bool m_PositionLocked = false;
+
+	int m_Invincible = 0;
 };
 
 inline const CInfClassCharacter *CInfClassCharacter::GetInstance(const CCharacter *pCharacter)
