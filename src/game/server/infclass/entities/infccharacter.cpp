@@ -76,7 +76,7 @@ void CInfClassCharacter::OnCharacterSpawned(const SpawnContext &Context)
 	m_DamageZoneTick = -1;
 	m_DamageZoneDealtDamage = 0;
 
-	m_Invincible = false;
+	m_Invincible = 0;
 
 	ClassSpawnAttributes();
 
@@ -110,6 +110,9 @@ void CInfClassCharacter::OnCharacterInInfectionZone()
 	}
 	else
 	{
+		if(m_Invincible >= 2)
+			return;
+
 		DeathContext Context;
 		DAMAGE_TYPE DamageType = DAMAGE_TYPE::INFECTION_TILE;
 		GetDeathContext(GetCID(), DamageType, &Context);
@@ -659,6 +662,11 @@ bool CInfClassCharacter::TakeDamage(vec2 Force, float FloatDmg, int From, DAMAGE
 		}
 	}
 
+	if(m_Invincible >= 2)
+	{
+		Mode = TAKEDAMAGEMODE::NOINFECTION;
+	}
+
 	if((GetPlayerClass() == PLAYERCLASS_HUNTER) && (DamageType == DAMAGE_TYPE::MEDIC_SHOTGUN))
 	{
 		// Hunters are immune to shotgun force
@@ -958,6 +966,15 @@ void CInfClassCharacter::PrepareToDie(const DeathContext &Context, bool *pRefuse
 	switch(Context.DamageType)
 	{
 	case DAMAGE_TYPE::DEATH_TILE:
+		if(m_Invincible >= 3)
+		{
+			*pRefusedToDie = true;
+			return;
+		}
+		else
+		{
+			return;
+		}
 	case DAMAGE_TYPE::GAME:
 	case DAMAGE_TYPE::KILL_COMMAND:
 	case DAMAGE_TYPE::GAME_FINAL_EXPLOSION:

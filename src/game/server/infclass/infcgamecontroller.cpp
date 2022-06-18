@@ -985,7 +985,7 @@ void CInfClassGameController::RegisterChatCommands(IConsole *pConsole)
 	pConsole->Register("lock_client_name", "i[clientid] i[lock]", CFGFLAG_SERVER, ConLockClientName, this, "Set the name of a player");
 
 	pConsole->Register("set_health_armor", "i[clientid] i[health] i[armor]", CFGFLAG_SERVER, ConSetHealthArmor, this, "Set the player health/armor");
-	pConsole->Register("set_invincible", "i[clientid] i[level]", CFGFLAG_SERVER, ConSetInvincible, this, "Set the player invincibility level");
+	pConsole->Register("set_invincible", "i[clientid] i[level]", CFGFLAG_SERVER, ConSetInvincible, this, "Set the player invincibility level (1 inv to damage, 2 inv to inf, 3 inv to death tiles");
 
 	pConsole->Register("inf_set_class", "i<clientid> s<classname>", CFGFLAG_SERVER, ConSetClass, this, "Set the class of a player");
 	pConsole->Register("queue_round", "s<type>", CFGFLAG_SERVER, ConQueueSpecialRound, this, "Start a special round");
