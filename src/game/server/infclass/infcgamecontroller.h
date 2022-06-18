@@ -157,6 +157,8 @@ public:
 	void ConSetHealthArmor(IConsole::IResult *pResult);	
 	static void ConSetInvincible(IConsole::IResult *pResult, void *pUserData);
 	void ConSetInvincible(IConsole::IResult *pResult);
+	static void ConSetHookProtection(IConsole::IResult *pResult, void *pUserData);
+	void ConSetHookProtection(IConsole::IResult *pResult);
 
 	static void ChatWitch(IConsole::IResult *pResult, void *pUserData);
 	void ChatWitch(IConsole::IResult *pResult);
