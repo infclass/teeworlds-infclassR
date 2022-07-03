@@ -1439,7 +1439,7 @@ bool CInfClassCharacter::HasPassenger() const
 	return m_Core.m_Passenger;
 }
 
-CCharacter *CInfClassCharacter::GetPassenger()
+CInfClassCharacter *CInfClassCharacter::GetPassenger()
 {
 	if(!m_Core.m_Passenger)
 	{
@@ -1450,10 +1450,32 @@ CCharacter *CInfClassCharacter::GetPassenger()
 	{
 		CCharacterCore *pCharCore = GameServer()->m_World.m_Core.m_apCharacters[i];
 		if(pCharCore == m_Core.m_Passenger)
-			return GameServer()->GetPlayerChar(i);
+			return GameController()->GetCharacter(i);
 	}
 
 	return nullptr;
+}
+
+CInfClassCharacter *CInfClassCharacter::GetTaxiDriver()
+{
+	if(!IsPassenger())
+	{
+		return nullptr;
+	}
+
+	for(int i = 0; i < MAX_CLIENTS; i++)
+	{
+		CCharacterCore *pCharCore = GameServer()->m_World.m_Core.m_apCharacters[i];
+		if(pCharCore && (pCharCore->m_Passenger == &m_Core))
+			return GameController()->GetCharacter(i);
+	}
+
+	return nullptr;
+}
+
+void CInfClassCharacter::SetPassenger(CCharacter *pPassenger)
+{
+	m_Core.SetPassenger(pPassenger ? &pPassenger->m_Core : nullptr);
 }
 
 int CInfClassCharacter::GetInfZoneTick() // returns how many ticks long a player is already in InfZone

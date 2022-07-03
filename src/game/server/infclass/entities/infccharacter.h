@@ -210,7 +210,9 @@ public:
 	void SaturateVelocity(vec2 Force, float MaxSpeed);
 	bool IsPassenger() const;
 	bool HasPassenger() const;
-	CCharacter *GetPassenger();
+	CInfClassCharacter *GetPassenger();
+	CInfClassCharacter *GetTaxiDriver();
+	void SetPassenger(CCharacter *pPassenger);
 	int GetInfZoneTick();
 
 	using CCharacter::GameWorld;
