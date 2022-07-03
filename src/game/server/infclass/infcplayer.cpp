@@ -341,6 +341,12 @@ void CInfClassPlayer::SetClass(int newClass)
 		{
 			 // Changed team (was not an infected but is infected now or vice versa)
 			pCharacter->ResetHelpers();
+			pCharacter->SetPassenger(nullptr);
+			CInfClassCharacter *pDriver = pCharacter->GetTaxiDriver();
+			if(pDriver)
+			{
+				pDriver->SetPassenger(nullptr);
+			}
 		}
 	}
 	m_pInfcPlayerClass->OnPlayerClassChanged();
