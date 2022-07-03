@@ -266,9 +266,9 @@ void CInfClassPlayerClass::OnCharacterSpawned(const SpawnContext &Context)
 
 void CInfClassPlayerClass::OnCharacterDeath(DAMAGE_TYPE DamageType)
 {
-	if(m_pCharacter->m_Core.m_Passenger)
+	if(m_pCharacter->HasPassenger())
 	{
-		m_pCharacter->m_Core.SetPassenger(nullptr);
+		m_pCharacter->SetPassenger(nullptr);
 	}
 
 	if(m_pPlayer)
