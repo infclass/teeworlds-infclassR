@@ -2777,6 +2777,11 @@ void CInfClassGameController::OnCharacterDeath(CInfClassCharacter *pVictim, cons
 		RespawnDelay *= 0.5;
 	}
 
+	if(m_Warmup > 0)
+	{
+		RespawnDelay = Server()->TickSpeed() * 0.2f;
+	}
+
 	pVictim->GetPlayer()->m_RespawnTick = Server()->Tick() + RespawnDelay;
 }
 
