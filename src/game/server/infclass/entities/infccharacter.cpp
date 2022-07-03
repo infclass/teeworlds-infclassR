@@ -2731,7 +2731,7 @@ void CInfClassCharacter::PreCoreTick()
 	if(HasPassenger())
 	{
 		const bool SameTeam = m_Core.m_Passenger->m_Infected == m_Core.m_Infected;
-		if(SameTeam && m_Core.m_HookProtected)
+		if(SameTeam && (m_Core.m_HookProtected || m_Core.m_Passenger->m_HookProtected))
 		{
 			m_Core.SetPassenger(nullptr);
 		}
