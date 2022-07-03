@@ -1094,23 +1094,24 @@ void CInfClassHuman::OnBiologistLaserFired(WeaponFireContext *pFireContext)
 		return;
 	}
 
+	const float BioLaserMaxLength = 400.0f;
+	vec2 To = GetPos() + GetDirection() * BioLaserMaxLength;
+	bool CanFire = GameServer()->Collision()->IntersectLine(GetPos(), To, 0x0, &To);
+
+	if(!CanFire)
+	{
+		pFireContext->FireAccepted = false;
+		return;
+	}
+
 	for(TEntityPtr<CBiologistMine> pMine = GameWorld()->FindFirst<CBiologistMine>(); pMine; ++pMine)
 	{
 		if(pMine->GetOwner() != GetCID()) continue;
 			GameWorld()->DestroyEntity(pMine);
 	}
 
-	const float BioLaserMaxLength = 400.0f;
-	vec2 To = GetPos() + GetDirection() * BioLaserMaxLength;
-	if(GameServer()->Collision()->IntersectLine(GetPos(), To, 0x0, &To))
-	{
-		new CBiologistMine(GameServer(), GetPos(), To, GetCID());
-		pFireContext->AmmoConsumed = pFireContext->AmmoAvailable;
-	}
-	else
-	{
-		pFireContext->FireAccepted = false;
-	}
+	new CBiologistMine(GameServer(), GetPos(), To, GetCID());
+	pFireContext->AmmoConsumed = pFireContext->AmmoAvailable;
 }
 
 void CInfClassHuman::OnMercLaserFired(WeaponFireContext *pFireContext)
