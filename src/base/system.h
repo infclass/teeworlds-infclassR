@@ -2301,4 +2301,21 @@ int secure_rand_below(int below);
 }
 #endif
 
+/**
+ * Copies a string to a fixed-size array of chars.
+ *
+ * @ingroup Strings
+ *
+ * @param dst Array that shall receive the string.
+ * @param src String to be copied.
+ *
+ * @remark The strings are treated as zero-terminated strings.
+ * @remark Guarantees that dst string will contain zero-termination.
+ */
+template<int N>
+void str_copy(char (&dst)[N], const char *src)
+{
+	str_copy(dst, src, N);
+}
+
 #endif
