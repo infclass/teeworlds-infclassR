@@ -1,4 +1,5 @@
 InfclassR v1.5.0_alpha2
+- Fixed langs list in /lang description
 - Fixed missing help for messaging commands
 - Biologist mine is now kept on a new placement miss
 - Fixed taxi behavior on character team changes

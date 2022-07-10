@@ -4285,8 +4285,29 @@ void CGameContext::OnConsoleInit()
 	Console()->Register("changelog", "?i[page]", CFGFLAG_CHAT, ConChangeLog, this, "Display a changelog page");
 	Console()->Register("alwaysrandom", "i[0|1]", CFGFLAG_CHAT, ConAlwaysRandom, this, "Display information about the mod");
 	Console()->Register("antiping", "i[0|1]", CFGFLAG_CHAT, ConAntiPing, this, "Try to improve your ping");
-	Console()->Register("language", "s[en|fr|nl|de|bg|sr-Latn|hr|cs|pl|uk|ru|el|la|it|es|pt|hu|ar|tr|sah|fa|tl|zh-CN|ja]", CFGFLAG_CHAT, ConLanguage, this, "Set the language");
-	Console()->Register("lang", "s[en|fr|nl|de|bg|sr-Latn|hr|cs|pl|uk|ru|el|la|it|es|pt|hu|ar|tr|sah|fa|tl|zh-CN|ja]", CFGFLAG_CHAT, ConLanguage, this, "Set the language");
+
+	static char aLangs[256] = {};
+	if(!aLangs[0])
+	{
+		dynamic_string BufferList;
+		int BufferIter = 0;
+		for(int i = 0; i < Server()->Localization()->m_pLanguages.size(); i++)
+		{
+			if(i)
+				BufferIter = BufferList.append_at(BufferIter, "|");
+			BufferIter = BufferList.append_at(BufferIter, Server()->Localization()->m_pLanguages[i]->GetFilename());
+		}
+		if(!BufferList.empty())
+		{
+			str_format(aLangs, sizeof(aLangs), "s[%s]", BufferList.buffer());
+		}
+	}
+
+	if(aLangs[0])
+	{
+		Console()->Register("language", aLangs, CFGFLAG_CHAT, ConLanguage, this, "Set the language");
+		Console()->Register("lang", aLangs, CFGFLAG_CHAT, ConLanguage, this, "Set the language");
+	}
 	Console()->Register("cmdlist", "", CFGFLAG_CHAT, ConCmdList, this, "List of commands");
 /* INFECTION MODIFICATION END *****************************************/
 
