@@ -266,6 +266,9 @@ public:
 private:
 	static void ChatConsolePrintCallback(const char *pLine, void *pUser);
 
+	static void ConWhisper(IConsole::IResult *pResult, void *pUserData);
+	static void ConConverse(IConsole::IResult *pResult, void *pUserData);
+
 	static void ConCredits(IConsole::IResult *pResult, void *pUserData);
 	static void ConAbout(IConsole::IResult *pResult, void *pUserData);
 	void ConAbout(IConsole::IResult *pResult);

@@ -2291,6 +2291,16 @@ void CGameContext::ChatConsolePrintCallback(const char *pLine, void *pUser)
 }
 /* DDNET MODIFICATION END *********************************************/
 
+void CGameContext::ConConverse(IConsole::IResult *pResult, void *pUserData)
+{
+	// This will never be called
+}
+
+void CGameContext::ConWhisper(IConsole::IResult *pResult, void *pUserData)
+{
+	// This will never be called
+}
+
 void CGameContext::ConTuneParam(IConsole::IResult *pResult, void *pUserData)
 {
 	CGameContext *pSelf = (CGameContext *)pUserData;
@@ -4283,6 +4293,14 @@ void CGameContext::OnConsoleInit()
 	Console()->Chain("sv_motd", ConchainSpecialMotdupdate, this);
 
 	Console()->Chain("sv_maprotation", ConchainSyncMapRotation, this);
+
+#define CHAT_COMMAND(name, params, flags, callback, userdata, help) m_pConsole->Register(name, params, flags, callback, userdata, help);
+	// From ddracechat.h
+	CHAT_COMMAND("w", "s[player name] r[message]", CFGFLAG_CHAT | CFGFLAG_SERVER | CFGFLAG_NONTEEHISTORIC, ConWhisper, this, "Whisper something to someone (private message)")
+	CHAT_COMMAND("whisper", "s[player name] r[message]", CFGFLAG_CHAT | CFGFLAG_SERVER | CFGFLAG_NONTEEHISTORIC, ConWhisper, this, "Whisper something to someone (private message)")
+	CHAT_COMMAND("c", "r[message]", CFGFLAG_CHAT | CFGFLAG_SERVER | CFGFLAG_NONTEEHISTORIC, ConConverse, this, "Converse with the last person you whispered to (private message)")
+	CHAT_COMMAND("converse", "r[message]", CFGFLAG_CHAT | CFGFLAG_SERVER | CFGFLAG_NONTEEHISTORIC, ConConverse, this, "Converse with the last person you whispered to (private message)")
+#undef CHAT_COMMAND
 
 	InitGeolocation();
 }
