@@ -1,3 +1,16 @@
+InfclassR v1.5.0_alpha2
+- Fixed missing help for messaging commands
+- Biologist mine is now kept on a new placement miss
+- Fixed taxi behavior on character team changes
+- Implemented entities animation
+- Added health and armor pickups support
+- Added damage zone type (deals a certain damage)
+- Updated 'infc_canyon' (tech update)
+- Added a broadcast warning about kick for inactivity
+- 'inf_merc_bombs' reduced from 16 to 15
+  (restored the value used before v1.4.0_alpha6)
+- Added /sp, /lp aliases for save/load position
+
 InfclassR v1.5.0_alpha1
 - Ninja targets are now set individually
 - Taxi passengers now collide with solid ground
