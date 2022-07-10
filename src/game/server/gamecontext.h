@@ -281,8 +281,8 @@ private:
 	static void ConGoal(IConsole::IResult *pResult, void *pUserData);
 	static void ConStats(IConsole::IResult *pResult, void *pUserData);
 #endif
-	static void ConHelp(IConsole::IResult *pResult, void *pUserData);
-	void ConHelp(IConsole::IResult *pResult);
+	static void ChatHelp(IConsole::IResult *pResult, void *pUserData);
+	void ChatHelp(int ClientID, const char *pHelpPage);
 	bool WriteClassHelpPage(dynamic_string *pOutput, const char *pLanguage, PLAYERCLASS PlayerClass);
 	static void ConAlwaysRandom(IConsole::IResult *pResult, void *pUserData);
 	static void ConAntiPing(IConsole::IResult *pResult, void *pUserData);

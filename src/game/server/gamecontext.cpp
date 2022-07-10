@@ -3652,17 +3652,18 @@ void CGameContext::ConStats(IConsole::IResult *pResult, void *pUserData)
 
 #endif
 
-void CGameContext::ConHelp(IConsole::IResult *pResult, void *pUserData)
-{
-	CGameContext *pSelf = (CGameContext *)pUserData;
-	pSelf->ConHelp(pResult);
-}
-
-void CGameContext::ConHelp(IConsole::IResult *pResult)
+void CGameContext::ChatHelp(IConsole::IResult *pResult, void *pUserData)
 {
 	int ClientID = pResult->GetClientID();
-	const char *pLanguage = m_apPlayers[ClientID]->GetLanguage();
 	const char *pHelpPage = (pResult->NumArguments()>0) ? pResult->GetString(0) : nullptr;
+
+	CGameContext *pSelf = (CGameContext *)pUserData;
+	pSelf->ChatHelp(ClientID, pHelpPage);
+}
+
+void CGameContext::ChatHelp(int ClientID, const char *pHelpPage)
+{
+	const char *pLanguage = m_apPlayers[ClientID]->GetLanguage();
 
 	dynamic_string Buffer;
 
@@ -4269,7 +4270,7 @@ void CGameContext::OnConsoleInit()
 	Console()->Register("goal", "?s[classname]", CFGFLAG_CHAT, ConGoal, this, "Show your goal");
 	Console()->Register("stats", "i", CFGFLAG_CHAT, ConStats, this, "Show stats by id");
 #endif
-	Console()->Register("help", "?s[page]", CFGFLAG_CHAT, ConHelp, this, "Display help");
+	Console()->Register("help", "?s[page]", CFGFLAG_CHAT, ChatHelp, this, "Display help");
 	Console()->Register("reload_changelog", "?i[page]", CFGFLAG_SERVER, ConReloadChangeLog, this, "Reload the changelog file");
 	Console()->Register("changelog", "?i[page]", CFGFLAG_CHAT, ConChangeLog, this, "Display a changelog page");
 	Console()->Register("alwaysrandom", "i[0|1]", CFGFLAG_CHAT, ConAlwaysRandom, this, "Display information about the mod");
