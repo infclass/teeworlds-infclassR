@@ -861,9 +861,6 @@ static inline bool RepackMsg(const CMsgPacker *pMsg, CPacker &Packer)
 int CServer::SendMsg(CMsgPacker *pMsg, int Flags, int ClientID)
 {
 	CNetChunk Packet;
-	if(!pMsg)
-		return -1;
-
 	// drop packet to dummy client
 	if(ClientIsBot(ClientID))
 		return 0;
