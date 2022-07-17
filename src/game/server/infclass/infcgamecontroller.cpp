@@ -2987,6 +2987,9 @@ bool CInfClassGameController::TryRespawn(CInfClassPlayer *pPlayer, SpawnContext 
 			if(!pCharacter)
 				continue;
 
+			if(pCharacter->IsFrozen())
+				continue;
+
 			CInfClassInfected *pInfected = CInfClassInfected::GetInstance(pCharacter);
 
 			if(pInfected->FindWitchSpawnPosition(pContext->SpawnPos))
