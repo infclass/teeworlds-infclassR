@@ -198,6 +198,7 @@ private:
 	int GetMinimumInfectedForPlayers(int PlayersNumber) const;
 
 	int RandomZombieToWitch();
+	bool IsSafeWitchCandidate(int ClientID) const;
 	ClientsArray m_WitchCallers;
 
 private:

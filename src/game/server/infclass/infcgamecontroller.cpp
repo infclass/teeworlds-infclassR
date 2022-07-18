@@ -1978,35 +1978,81 @@ void CInfClassGameController::SendKillMessage(int Victim, DAMAGE_TYPE DamageType
 
 int CInfClassGameController::RandomZombieToWitch()
 {
-	ClientsArray zombies_id;
+	ClientsArray UnsafeInfected;
+	ClientsArray SafeInfected;
 
 	m_WitchCallers.Clear();
 
 	for(int i = 0; i < MAX_CLIENTS; i++)
 	{
-		if(!GameServer()->m_apPlayers[i])
+		CInfClassPlayer *pPlayer = GetPlayer(i);
+		if(!pPlayer)
 			continue;
-		if(GameServer()->m_apPlayers[i]->GetClass() == PLAYERCLASS_WITCH)
+		if(pPlayer->GetClass() == PLAYERCLASS_WITCH)
 			continue;
-		if(GameServer()->m_apPlayers[i]->IsActuallyZombie()) {
-			zombies_id.Add(i);
-		}
+		if(!pPlayer->IsActuallyZombie())
+			continue;
+
+		UnsafeInfected.Add(i);
+		
+		if(!IsSafeWitchCandidate(i))
+			continue;
+		
+		SafeInfected.Add(i);
 	}
 
-	if(zombies_id.IsEmpty())
+	if(UnsafeInfected.IsEmpty())
 	{
 		Console()->Print(IConsole::OUTPUT_LEVEL_DEBUG, "witch", "Unable to find any suitable player");
 		return -1;
 	}
 
-	int id = random_int(0, zombies_id.Size() - 1);
+	const ClientsArray &Candidates = SafeInfected.IsEmpty() ? UnsafeInfected : SafeInfected;
+	int id = random_int(0, Candidates.Size() - 1);
 	char aBuf[512];
 	/* debug */
-	str_format(aBuf, sizeof(aBuf), "going through MAX_CLIENTS=%d, zombie_count=%d, random_int=%d, id=%d", MAX_CLIENTS, static_cast<int>(zombies_id.Size()), id, zombies_id[id]);
+	str_format(aBuf, sizeof(aBuf), "going through MAX_CLIENTS=%d, zombie_count=%d, random_int=%d, id=%d", MAX_CLIENTS, static_cast<int>(UnsafeInfected.Size()), id, UnsafeInfected[id]);
 	Console()->Print(IConsole::OUTPUT_LEVEL_DEBUG, "witch", aBuf);
 	/* /debug */
-	GetPlayer(zombies_id[id])->SetClass(PLAYERCLASS_WITCH);
-	return zombies_id[id];
+	GetPlayer(Candidates[id])->SetClass(PLAYERCLASS_WITCH);
+	return Candidates[id];
+}
+
+bool CInfClassGameController::IsSafeWitchCandidate(int ClientID) const
+{
+	constexpr double MaxInactiveSeconds = 5;
+	constexpr double SafeRadius = 1000;
+
+	const CInfClassPlayer *pPlayer = GetPlayer(ClientID);
+	if(!pPlayer)
+		return false;
+
+	if(Server()->Tick() > pPlayer->m_LastActionTick + MaxInactiveSeconds * Server()->TickSpeed())
+		return false;
+
+	const CInfClassCharacter *pCharacter = GetCharacter(ClientID);
+	if(pCharacter && pCharacter->IsAlive())
+	{
+		array_on_stack<CInfClassCharacter *, MAX_CLIENTS> aCharsNearby;
+		int Num = GameServer()->m_World.FindEntities(pCharacter->GetPos(), SafeRadius,
+			reinterpret_cast<CEntity**>(aCharsNearby.begin()),
+			aCharsNearby.Capacity(),
+			CGameWorld::ENTTYPE_CHARACTER);
+		aCharsNearby.Resize(Num);
+
+		for(const CInfClassCharacter *pCharNearby : aCharsNearby)
+		{
+			if(pCharNearby == pCharacter)
+				continue;
+			
+			if(pCharNearby->IsAlive() && pCharNearby->IsHuman())
+			{
+				return false;
+			}
+		}
+	}
+
+	return true;
 }
 
 void CInfClassGameController::Tick()
