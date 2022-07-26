@@ -3024,7 +3024,7 @@ bool CInfClassGameController::TryRespawn(CInfClassPlayer *pPlayer, SpawnContext 
 		if(IsSpawnable(m_SpawnPoints[Type][I], 0))
 		{
 			pContext->SpawnPos = m_SpawnPoints[Type][I];
-			pContext->SpawnType = SpawnContext::WitchSpawn;
+			pContext->SpawnType = SpawnContext::MapSpawn;
 			return true;
 		}
 	}
