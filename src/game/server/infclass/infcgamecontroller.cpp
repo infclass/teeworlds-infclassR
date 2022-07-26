@@ -403,8 +403,23 @@ int64_t CInfClassGameController::GetBlindCharactersMask(int ExcludeCID) const
 
 bool CInfClassGameController::HumanWallAllowedInPos(const vec2 &Pos) const
 {
+	const float Radius = 32.0f;
+
 	if (GetDamageZoneValueAt(Pos) == ZONE_DAMAGE_INFECTION)
 		return false;
+
+	{ // Check for spawns
+		int Type = 0; // InfectedSpawn
+
+		// get spawn point
+		for(int i = 0; i < m_SpawnPoints[Type].size(); i++)
+		{
+			if(distance(Pos, m_SpawnPoints[Type][i]) <= Radius)
+			{
+				return false;
+			}
+		}
+	}
 
 	return true;
 }
