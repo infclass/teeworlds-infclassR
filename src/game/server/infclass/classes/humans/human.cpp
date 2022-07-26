@@ -1089,8 +1089,8 @@ void CInfClassHuman::OnBiologistLaserFired(WeaponFireContext *pFireContext)
 {
 	if(pFireContext->AmmoAvailable < 10)
 	{
+		pFireContext->FireAccepted = false;
 		pFireContext->NoAmmo = true;
-		pFireContext->AmmoConsumed = 0;
 		return;
 	}
 
