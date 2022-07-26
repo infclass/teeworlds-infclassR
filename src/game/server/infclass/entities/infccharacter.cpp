@@ -1530,21 +1530,21 @@ void CInfClassCharacter::OnHammerFired(WeaponFireContext *pFireContext)
 		}
 		else if(distance(m_FirstShotCoord, GetPos()) > 10.0)
 		{
-			//Check if the barrier is in toxic gases
-			bool isAccepted = true;
+			m_FirstShot = true;
+
 			for(int i=0; i<15; i++)
 			{
 				vec2 TestPos = m_FirstShotCoord + (GetPos() - m_FirstShotCoord)*(static_cast<float>(i)/14.0f);
 				if(!GameController()->HumanWallAllowedInPos(TestPos))
 				{
-					isAccepted = false;
+					pFireContext->FireAccepted = false;
+					pFireContext->NoAmmo = true;
 					break;
 				}
 			}
 
-			if(isAccepted)
+			if(pFireContext->FireAccepted)
 			{
-				m_FirstShot = true;
 				new CEngineerWall(GameServer(), m_FirstShotCoord, GetPos(), GetCID());
 				GameServer()->CreateSound(GetPos(), SOUND_LASER_FIRE);
 			}
@@ -1566,24 +1566,22 @@ void CInfClassCharacter::OnHammerFired(WeaponFireContext *pFireContext)
 		}
 		else if(distance(m_FirstShotCoord, GetPos()) > 10.0)
 		{
-			//Check if the barrier is in toxic gases
-			bool isAccepted = true;
+			m_FirstShot = true;
+
 			for(int i=0; i<15; i++)
 			{
 				vec2 TestPos = m_FirstShotCoord + (GetPos() - m_FirstShotCoord)*(static_cast<float>(i)/14.0f);
 				if(!GameController()->HumanWallAllowedInPos(TestPos))
 				{
-					isAccepted = false;
+					pFireContext->FireAccepted = false;
+					pFireContext->NoAmmo = true;
 					break;
 				}
 			}
 
-			if(isAccepted)
+			if(pFireContext->FireAccepted)
 			{
-				m_FirstShot = true;
-				
 				new CLooperWall(GameServer(), m_FirstShotCoord, GetPos(), GetCID());
-				
 				GameServer()->CreateSound(GetPos(), SOUND_LASER_FIRE);
 			}
 		}
