@@ -401,6 +401,14 @@ int64_t CInfClassGameController::GetBlindCharactersMask(int ExcludeCID) const
 	return Mask;
 }
 
+bool CInfClassGameController::HumanWallAllowedInPos(const vec2 &Pos) const
+{
+	if (GetDamageZoneValueAt(Pos) == ZONE_DAMAGE_INFECTION)
+		return false;
+
+	return true;
+}
+
 int CInfClassGameController::GetZoneValueAt(int ZoneHandle, const vec2 &Pos, ZoneData *pData) const
 {
 	return GameServer()->Collision()->GetZoneValueAt(ZoneHandle, Pos, pData);

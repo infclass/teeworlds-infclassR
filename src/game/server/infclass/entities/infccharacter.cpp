@@ -1535,9 +1535,10 @@ void CInfClassCharacter::OnHammerFired(WeaponFireContext *pFireContext)
 			for(int i=0; i<15; i++)
 			{
 				vec2 TestPos = m_FirstShotCoord + (GetPos() - m_FirstShotCoord)*(static_cast<float>(i)/14.0f);
-				if(GameController()->GetDamageZoneValueAt(TestPos) == ZONE_DAMAGE_INFECTION)
+				if(!GameController()->HumanWallAllowedInPos(TestPos))
 				{
 					isAccepted = false;
+					break;
 				}
 			}
 
@@ -1570,9 +1571,10 @@ void CInfClassCharacter::OnHammerFired(WeaponFireContext *pFireContext)
 			for(int i=0; i<15; i++)
 			{
 				vec2 TestPos = m_FirstShotCoord + (GetPos() - m_FirstShotCoord)*(static_cast<float>(i)/14.0f);
-				if(GameController()->GetDamageZoneValueAt(TestPos) == ZONE_DAMAGE_INFECTION)
+				if(!GameController()->HumanWallAllowedInPos(TestPos))
 				{
 					isAccepted = false;
+					break;
 				}
 			}
 

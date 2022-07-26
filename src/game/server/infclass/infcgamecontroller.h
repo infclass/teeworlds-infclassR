@@ -60,6 +60,7 @@ public:
 
 	int64_t GetBlindCharactersMask(int ExcludeCID) const;
 
+	bool HumanWallAllowedInPos(const vec2 &Pos) const;
 	int GetZoneValueAt(int ZoneHandle, const vec2 &Pos, ZoneData *pData = nullptr) const;
 	int GetDamageZoneValueAt(const vec2 &Pos, ZoneData *pData = nullptr) const;
 	int GetBonusZoneValueAt(const vec2 &Pos, ZoneData *pData = nullptr) const;
