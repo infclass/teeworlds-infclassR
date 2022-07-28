@@ -65,7 +65,7 @@ public:
 
 	virtual void OnHookAttachedPlayer();
 
-	virtual void OnWeaponFired(WeaponFireContext *pFireContext);
+	void OnWeaponFired(WeaponFireContext *pFireContext);
 
 	virtual void OnHammerFired(WeaponFireContext *pFireContext);
 	virtual void OnGunFired(WeaponFireContext *pFireContext);
