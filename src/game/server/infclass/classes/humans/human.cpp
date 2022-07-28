@@ -1101,6 +1101,7 @@ void CInfClassHuman::OnBiologistLaserFired(WeaponFireContext *pFireContext)
 	if(!CanFire)
 	{
 		pFireContext->FireAccepted = false;
+		pFireContext->NoAmmo = true;
 		return;
 	}
 
