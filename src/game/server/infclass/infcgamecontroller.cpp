@@ -13,7 +13,7 @@
 #include <game/server/infclass/entities/ic-pickup.h>
 #include <game/server/infclass/infcplayer.h>
 
-#include <base/tl/array_on_stack.h>
+#include <base/tl/ic_array.h>
 #include <engine/shared/config.h>
 #include <engine/server/mapconverter.h>
 #include <engine/server/roundstatistics.h>
@@ -283,7 +283,7 @@ void CInfClassGameController::HandleCharacterTiles(CInfClassCharacter *pCharacte
 	GetDamageZoneValueAt(vec2(pCharacter->GetPos().x - pCharacter->GetProximityRadius() / 3.f, pCharacter->GetPos().y - pCharacter->GetProximityRadius() / 3.f), &Data2);
 	GetDamageZoneValueAt(vec2(pCharacter->GetPos().x - pCharacter->GetProximityRadius() / 3.f, pCharacter->GetPos().y + pCharacter->GetProximityRadius() / 3.f), &Data3);
 
-	array_on_stack<int, 4> Indices;
+	icArray<int, 4> Indices;
 	Indices.Add(Data0.Index);
 	Indices.Add(Data1.Index);
 	Indices.Add(Data2.Index);
@@ -339,7 +339,7 @@ void CInfClassGameController::HandleCharacterTiles(CInfClassCharacter *pCharacte
 void CInfClassGameController::HandleLastHookers()
 {
 	const int CurrentTick = Server()->Tick();
-	array_on_stack<ClientsArray, MAX_CLIENTS> CharacterHookedBy;
+	icArray<ClientsArray, MAX_CLIENTS> CharacterHookedBy;
 	CharacterHookedBy.Resize(MAX_CLIENTS);
 
 	for(int i = 0; i < MAX_CLIENTS; ++i)
@@ -1620,7 +1620,7 @@ void CInfClassGameController::SortCharactersByDistance(const ClientsArray &Input
 		}
 	};
 
-	array_on_stack<DistanceItem, MAX_CLIENTS> Distances;
+	icArray<DistanceItem, MAX_CLIENTS> Distances;
 
 	for(int i = 0; i < Input.Size(); ++i)
 	{
@@ -2033,7 +2033,7 @@ bool CInfClassGameController::IsSafeWitchCandidate(int ClientID) const
 	const CInfClassCharacter *pCharacter = GetCharacter(ClientID);
 	if(pCharacter && pCharacter->IsAlive())
 	{
-		array_on_stack<CInfClassCharacter *, MAX_CLIENTS> aCharsNearby;
+		icArray<CInfClassCharacter *, MAX_CLIENTS> aCharsNearby;
 		int Num = GameServer()->m_World.FindEntities(pCharacter->GetPos(), SafeRadius,
 			reinterpret_cast<CEntity**>(aCharsNearby.begin()),
 			aCharsNearby.Capacity(),
@@ -2737,7 +2737,7 @@ void CInfClassGameController::OnCharacterDeath(CInfClassCharacter *pVictim, cons
 		}
 	}
 
-	static const array_on_stack<DAMAGE_TYPE, 4> BadReasonsToDie = {
+	static const icArray<DAMAGE_TYPE, 4> BadReasonsToDie = {
 		DAMAGE_TYPE::GAME, // Disconnect, joining spec, etc
 		DAMAGE_TYPE::KILL_COMMAND, // Self kill
 		DAMAGE_TYPE::GAME_FINAL_EXPLOSION,

@@ -51,7 +51,7 @@ void CMapInfoEx::ResetData()
 
 constexpr int MaxMapsNumber = 256;
 
-static array_on_stack<CMapInfoEx, MaxMapsNumber> s_aMapInfo;
+static icArray<CMapInfoEx, MaxMapsNumber> s_aMapInfo;
 static int s_CachedMapIndex = 0;
 
 int GetMapIndex(const char *pMapName)

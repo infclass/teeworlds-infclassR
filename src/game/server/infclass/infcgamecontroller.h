@@ -6,7 +6,7 @@
 #include <game/server/gamecontroller.h>
 #include <game/server/teams.h>
 
-#include <base/tl/array_on_stack.h>
+#include <base/tl/ic_array.h>
 #include <engine/console.h>
 
 class CGameWorld;
@@ -20,7 +20,7 @@ struct ZoneData;
 enum class TAKEDAMAGEMODE;
 enum class DAMAGE_TYPE;
 
-using ClientsArray = array_on_stack<int, 64>; // MAX_CLIENTS
+using ClientsArray = icArray<int, 64>; // MAX_CLIENTS
 
 enum class ROUND_TYPE
 {

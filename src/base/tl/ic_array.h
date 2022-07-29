@@ -1,14 +1,14 @@
-#ifndef BASE_TL_ARRAY_ON_STACK_H
-#define BASE_TL_ARRAY_ON_STACK_H
+#ifndef BASE_TL_IC_ARRAY_H
+#define BASE_TL_IC_ARRAY_H
 
 #include <initializer_list>
 
 template <class T, int StackCapacity>
-class array_on_stack
+class icArray
 {
 public:
-	array_on_stack() = default;
-	array_on_stack(std::initializer_list<T> list)
+	icArray() = default;
+	icArray(std::initializer_list<T> list)
 	{
 		for(const T &Element : list)
 		{
@@ -20,7 +20,7 @@ public:
 	T operator[](int Index) const { return m_Data[Index]; }
 	T &operator[](int Index) { return m_Data[Index]; }
 
-	array_on_stack &operator=(const array_on_stack &Array) noexcept;
+	icArray &operator=(const icArray &Array) noexcept;
 
 	T &First() { return m_Data[0]; }
 	T &Last() { return m_Data[m_Size - 1]; }
@@ -103,7 +103,7 @@ protected:
 };
 
 template<class T, int StackCapacity>
-array_on_stack<T, StackCapacity> &array_on_stack<T, StackCapacity>::operator=(const array_on_stack<T, StackCapacity> &Array) noexcept
+icArray<T, StackCapacity> &icArray<T, StackCapacity>::operator=(const icArray<T, StackCapacity> &Array) noexcept
 {
 	m_Size = 0;
 
@@ -115,4 +115,4 @@ array_on_stack<T, StackCapacity> &array_on_stack<T, StackCapacity>::operator=(co
 	return *this;
 }
 
-#endif // BASE_TL_ARRAY_ON_STACK_H
+#endif // BASE_TL_IC_ARRAY_H

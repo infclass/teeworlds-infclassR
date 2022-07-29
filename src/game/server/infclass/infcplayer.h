@@ -2,7 +2,7 @@
 #define GAME_SERVER_INFCLASS_PLAYER_H
 
 #include <game/gamecore.h>
-#include <base/tl/array_on_stack.h>
+#include <base/tl/ic_array.h>
 
 class CGameContext;
 class CInfClassCharacter;
@@ -117,8 +117,7 @@ protected:
 
 	int m_GhoulLevel = 0;
 	int m_GhoulLevelTick = 0;
-
-	array_on_stack<vec2, 1> m_SavedPositions;
+	icArray<vec2, 1> m_SavedPositions;
 };
 
 inline CInfClassPlayer *CInfClassPlayer::GetInstance(CPlayer *pPlayer)

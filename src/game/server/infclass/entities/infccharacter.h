@@ -1,7 +1,7 @@
 #ifndef GAME_SERVER_INFCLASS_ENTITIES_CHARACTER_H
 #define GAME_SERVER_INFCLASS_ENTITIES_CHARACTER_H
 
-#include <base/tl/array_on_stack.h>
+#include <base/tl/ic_array.h>
 #include <game/server/entities/character.h>
 
 class CGameContext;
@@ -67,7 +67,7 @@ struct SpawnContext
 	SPAWN_TYPE SpawnType = MapSpawn;
 };
 
-using ClientsArray = array_on_stack<int, 64>; // MAX_CLIENTS
+using ClientsArray = icArray<int, 64>; // MAX_CLIENTS
 
 class CInfClassCharacter : public CCharacter
 {
@@ -249,10 +249,10 @@ protected:
 	int m_DamageZoneTick;
 	float m_DamageZoneDealtDamage = 0;
 
-	array_on_stack<EnforcerInfo, 4> m_EnforcersInfo;
+	icArray<EnforcerInfo, 4> m_EnforcersInfo;
 
 	int m_DamageTaken = 0;
-	array_on_stack<CDamagePoint, 4> m_TakenDamageDetails;
+	icArray<CDamagePoint, 4> m_TakenDamageDetails;
 	bool m_NeedFullHeal = false;
 	bool m_PositionLocked = false;
 

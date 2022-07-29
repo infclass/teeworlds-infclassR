@@ -32,8 +32,8 @@ enum
 
 /* INFECTION MODIFICATION START ***************************************/
 bool CGameContext::m_ClientMuted[MAX_CLIENTS][MAX_CLIENTS];
-array_on_stack<string, 256> CGameContext::m_aChangeLogEntries;
-array_on_stack<int, 16> CGameContext::m_aChangeLogPageIndices;
+icArray<string, 256> CGameContext::m_aChangeLogEntries;
+icArray<int, 16> CGameContext::m_aChangeLogPageIndices;
 
 void CGameContext::OnSetAuthed(int ClientID, int Level)
 {
@@ -557,7 +557,7 @@ void CGameContext::ReloadChangelog()
 	const int MaxLinesPerPage = Config()->m_SvChangeLogMaxLinesPerPage;
 	int AddedLines = 0;
 
-	array_on_stack<char, 8> SamePageItemStartChars = {
+	icArray<char, 8> SamePageItemStartChars = {
 		' ',
 		'-',
 	};
