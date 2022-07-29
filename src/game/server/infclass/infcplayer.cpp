@@ -248,6 +248,23 @@ void CInfClassPlayer::KillCharacter(int Weapon)
 	}
 
 	CPlayer::KillCharacter(Weapon);
+
+	if(!m_pCharacter && (Weapon != WEAPON_GAME))
+	{
+		// Character actually died / removed from the world
+		constexpr PLAYERCLASS EphemeralClasses[] = {
+			PLAYERCLASS_UNDEAD,
+			PLAYERCLASS_WITCH,
+		};
+		for(PLAYERCLASS C : EphemeralClasses)
+		{
+			int Index= m_PreviousClasses.IndexOf(C);
+			if(Index >= 0)
+			{
+				m_PreviousClasses.RemoveAt(Index);
+			}
+		}
+	}
 }
 
 int CInfClassPlayer::GetDefaultEmote() const
