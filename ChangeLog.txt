@@ -1,3 +1,9 @@
+InfclassR v1.5.0_alpha3 (WIP)
+- Engineer and Looper walls now can't be built on spawns
+- Biologist laser now does NoAmmo sound on fire failed
+- Fixed sound on Biologist laser fired with ammo < 10
+- Frozen witch now can not spawn the infected
+
 InfclassR v1.5.0_alpha2
 - Fixed langs list in /lang description
 - Fixed missing help for messaging commands
