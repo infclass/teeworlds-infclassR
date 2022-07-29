@@ -366,12 +366,7 @@ void CInfClassPlayer::UpdateSkin()
 	}
 }
 
-void CInfClassPlayer::Infect(CPlayer *pInfectiousPlayer)
-{
-	StartInfection(/* force */ false, pInfectiousPlayer);
-}
-
-void CInfClassPlayer::StartInfection(bool force, CPlayer *pInfectiousPlayer)
+void CInfClassPlayer::StartInfection(CPlayer *pInfectiousPlayer, bool force)
 {
 	if(!force && IsZombie())
 		return;

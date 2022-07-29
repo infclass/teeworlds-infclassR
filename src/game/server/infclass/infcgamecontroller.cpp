@@ -2814,7 +2814,7 @@ void CInfClassGameController::OnCharacterDeath(CInfClassCharacter *pVictim, cons
 	if(DamageType != DAMAGE_TYPE::GAME)
 	{
 		// Do not infect on disconnect or joining spec
-		pVictim->GetPlayer()->StartInfection(ForceInfection, pKiller);
+		pVictim->GetPlayer()->StartInfection(pKiller, ForceInfection);
 	}
 
 	bool SelfKill = false;

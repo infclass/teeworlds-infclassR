@@ -50,8 +50,7 @@ public:
 	void SetClass(int newClass) final;
 	void UpdateSkin();
 
-	void Infect(CPlayer* pInfectiousPlayer);
-	void StartInfection(bool force = false, CPlayer* pInfectiousPlayer = nullptr);
+	void StartInfection(CPlayer* pInfectiousPlayer = nullptr, bool force = false);
 	bool IsInfectionStarted() const;
 
 	int MapMenu() const { return (m_Team != TEAM_SPECTATORS) ? m_MapMenu : 0; }

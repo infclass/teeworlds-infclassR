@@ -122,7 +122,7 @@ void CInfClassCharacter::OnCharacterInInfectionZone()
 		GameController()->OnCharacterDeath(this, Context);
 		GameServer()->CreateSound(GetPos(), SOUND_PLAYER_DIE);
 
-		GetPlayer()->Infect(pKiller);
+		GetPlayer()->StartInfection(pKiller);
 
 		if (g_Config.m_InfInfzoneFreezeDuration > 0)
 		{
@@ -819,7 +819,7 @@ bool CInfClassCharacter::TakeDamage(vec2 Force, float FloatDmg, int From, DAMAGE
 /* INFECTION MODIFICATION START ***************************************/
 	if(Mode == TAKEDAMAGEMODE::INFECTION)
 	{
-		GetPlayer()->Infect(pKillerPlayer);
+		GetPlayer()->StartInfection(pKillerPlayer);
 
 		char aBuf[256];
 		str_format(aBuf, sizeof(aBuf), "kill killer='%s' victim='%s' weapon=%d",
