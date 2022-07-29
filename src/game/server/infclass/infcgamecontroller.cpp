@@ -2015,7 +2015,8 @@ int CInfClassGameController::RandomZombieToWitch()
 	str_format(aBuf, sizeof(aBuf), "going through MAX_CLIENTS=%d, zombie_count=%d, random_int=%d, id=%d", MAX_CLIENTS, static_cast<int>(UnsafeInfected.Size()), id, UnsafeInfected[id]);
 	Console()->Print(IConsole::OUTPUT_LEVEL_DEBUG, "witch", aBuf);
 	/* /debug */
-	GetPlayer(Candidates[id])->SetClass(PLAYERCLASS_WITCH);
+	CInfClassPlayer *pPlayer = GetPlayer(Candidates[id]);
+	pPlayer->SetClass(PLAYERCLASS_WITCH);
 	return Candidates[id];
 }
 
