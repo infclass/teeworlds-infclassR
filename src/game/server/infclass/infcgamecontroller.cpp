@@ -3152,7 +3152,7 @@ int CInfClassGameController::ChooseHumanClass(const CPlayer *pPlayer) const
 
 int CInfClassGameController::ChooseInfectedClass(const CInfClassPlayer *pPlayer) const
 {
-	if(pPlayer->InfectionType() == INFECTION_TYPE::RESTORE_INF_CLASS)
+	// if(pPlayer->InfectionType() == INFECTION_TYPE::RESTORE_INF_CLASS)
 	{
 		int PrevClass = pPlayer->GetPreviousInfectedClass();
 		if(PrevClass != PLAYERCLASS_INVALID)

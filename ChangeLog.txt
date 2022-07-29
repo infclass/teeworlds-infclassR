@@ -1,4 +1,6 @@
 InfclassR v1.5.0_alpha3 (WIP)
+- New (same-round) infection now restores previous
+  the previous infected class
 - Engineer and Looper walls now can't be built on spawns
 - Biologist laser now does NoAmmo sound on fire failed
 - Fixed sound on Biologist laser fired with ammo < 10
