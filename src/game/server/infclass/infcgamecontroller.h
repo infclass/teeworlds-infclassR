@@ -80,7 +80,7 @@ public:
 	void DoTeamChange(class CPlayer *pPlayer, int Team, bool DoChatMsg = true) override;
 	bool TryRespawn(CInfClassPlayer *pPlayer, SpawnContext *pContext);
 	int ChooseHumanClass(const CPlayer *pPlayer) const;
-	int ChooseInfectedClass(const CPlayer *pPlayer) const override;
+	int ChooseInfectedClass(const CInfClassPlayer *pPlayer) const;
 	bool GetPlayerClassEnabled(int PlayerClass) const;
 	int GetMinPlayersForClass(int PlayerClass) const;
 	int GetClassPlayerLimit(int PlayerClass) const;

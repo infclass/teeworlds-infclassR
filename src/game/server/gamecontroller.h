@@ -165,7 +165,6 @@ public:
 
 	//
 /* INFECTION MODIFICATION START ***************************************/
-	virtual int ChooseInfectedClass(const CPlayer* pPlayer) const = 0;
 	virtual bool IsSpawnable(vec2 Position, int TeleZoneIndex) = 0;
 	virtual void OnPlayerDisconnect(CPlayer *pPlayer, int Type, const char *pReason);
 

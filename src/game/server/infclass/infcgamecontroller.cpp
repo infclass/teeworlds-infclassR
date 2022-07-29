@@ -1800,8 +1800,9 @@ void CInfClassGameController::EndRound()
 	m_RoundStarted = false;
 }
 
-void CInfClassGameController::DoTeamChange(CPlayer *pPlayer, int Team, bool DoChatMsg)
+void CInfClassGameController::DoTeamChange(CPlayer *pBasePlayer, int Team, bool DoChatMsg)
 {
+	CInfClassPlayer *pPlayer = CInfClassPlayer::GetInstance(pBasePlayer);
 	Team = ClampTeam(Team);
 	if(Team == pPlayer->GetTeam())
 		return;
@@ -3148,7 +3149,7 @@ int CInfClassGameController::ChooseHumanClass(const CPlayer *pPlayer) const
 	return START_HUMANCLASS + 1 + random_distribution(Probability, Probability + NB_HUMANCLASS);
 }
 
-int CInfClassGameController::ChooseInfectedClass(const CPlayer *pPlayer) const
+int CInfClassGameController::ChooseInfectedClass(const CInfClassPlayer *pPlayer) const
 {
 	//Get information about existing infected
 	int nbInfected = 0;
