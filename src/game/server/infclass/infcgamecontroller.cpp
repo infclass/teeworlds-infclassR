@@ -143,7 +143,7 @@ void CInfClassGameController::OnPlayerDisconnect(CPlayer *pPlayer, int Type, con
 	IGameController::OnPlayerDisconnect(pPlayer, Type, pReason);
 }
 
-void CInfClassGameController::OnPlayerInfected(CInfClassPlayer *pPlayer, CInfClassPlayer *pInfectiousPlayer, int PreviousClass)
+void CInfClassGameController::DoPlayerInfection(CInfClassPlayer *pPlayer, CInfClassPlayer *pInfectiousPlayer, int PreviousClass)
 {
 	int c = ChooseInfectedClass(pPlayer);
 	pPlayer->SetClass(c);
@@ -2778,7 +2778,7 @@ void CInfClassGameController::OnCharacterDeath(CInfClassCharacter *pVictim, cons
 		pVictim->GetClass()->OnCharacterDeath(DamageType);
 	}
 
-	bool ForceInfection = false;
+	INFECTION_TYPE InfectionType = INFECTION_TYPE::REGULAR;
 	bool ClassSpecialProcessingEnabled = true;
 
 	if((GetRoundType() == ROUND_TYPE::FUN) && !pVictim->IsHuman() && GetPlayerClassProbability(pVictim->GetPlayerClass()))
@@ -2793,12 +2793,12 @@ void CInfClassGameController::OnCharacterDeath(CInfClassCharacter *pVictim, cons
 			case PLAYERCLASS_WITCH:
 				GameServer()->SendBroadcast_Localization(-1, BROADCAST_PRIORITY_GAMEANNOUNCE, BROADCAST_DURATION_GAMEANNOUNCE, _("The witch is dead"), NULL);
 				GameServer()->CreateSoundGlobal(SOUND_CTF_RETURN);
-				ForceInfection = true;
+				InfectionType = INFECTION_TYPE::RESTORE_INF_CLASS;
 				break;
 			case PLAYERCLASS_UNDEAD:
 				GameServer()->SendBroadcast_Localization(-1, BROADCAST_PRIORITY_GAMEANNOUNCE, BROADCAST_DURATION_GAMEANNOUNCE, _("The undead is finally dead"), NULL);
 				GameServer()->CreateSoundGlobal(SOUND_CTF_RETURN);
-				ForceInfection = true;
+				InfectionType = INFECTION_TYPE::RESTORE_INF_CLASS;
 				break;
 			default:
 				break;
@@ -2816,7 +2816,7 @@ void CInfClassGameController::OnCharacterDeath(CInfClassCharacter *pVictim, cons
 	if(DamageType != DAMAGE_TYPE::GAME)
 	{
 		// Do not infect on disconnect or joining spec
-		pVictim->GetPlayer()->StartInfection(pKiller, ForceInfection);
+		pVictim->GetPlayer()->StartInfection(pKiller, InfectionType);
 	}
 
 	bool SelfKill = false;
@@ -3152,6 +3152,15 @@ int CInfClassGameController::ChooseHumanClass(const CPlayer *pPlayer) const
 
 int CInfClassGameController::ChooseInfectedClass(const CInfClassPlayer *pPlayer) const
 {
+	if(pPlayer->InfectionType() == INFECTION_TYPE::RESTORE_INF_CLASS)
+	{
+		int PrevClass = pPlayer->GetPreviousInfectedClass();
+		if(PrevClass != PLAYERCLASS_INVALID)
+		{
+			return PrevClass;
+		}
+	}
+
 	//Get information about existing infected
 	int nbInfected = 0;
 	std::map<int, int> nbClass;

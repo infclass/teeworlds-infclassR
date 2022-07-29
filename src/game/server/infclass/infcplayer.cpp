@@ -206,14 +206,14 @@ void CInfClassPlayer::SnapClientInfo(int SnappingClient, int SnappingClientMappe
 
 void CInfClassPlayer::HandleInfection()
 {
-	if(m_DoInfection == DO_INFECTION::NO)
+	if(m_InfectionType == INFECTION_TYPE::NO)
 	{
 		return;
 	}
-	if(IsZombie() && (m_DoInfection != DO_INFECTION::FORCED))
+	if(IsZombie() && (m_InfectionType == INFECTION_TYPE::REGULAR))
 	{
 		// Do not infect if inf class already set
-		m_DoInfection = DO_INFECTION::NO;
+		m_InfectionType = INFECTION_TYPE::NO;
 		return;
 	}
 
@@ -225,10 +225,10 @@ void CInfClassPlayer::HandleInfection()
 	const int PreviousClass = GetClass();
 	CInfClassPlayer *pInfectiousPlayer = GameController()->GetPlayer(m_InfectiousPlayerCID);
 
-	m_DoInfection = DO_INFECTION::NO;
+	m_InfectionType = INFECTION_TYPE::NO;
 	m_InfectiousPlayerCID = -1;
 
-	GameController()->OnPlayerInfected(this, pInfectiousPlayer, PreviousClass);
+	GameController()->DoPlayerInfection(this, pInfectiousPlayer, PreviousClass);
 }
 
 void CInfClassPlayer::KillCharacter(int Weapon)
@@ -371,18 +371,20 @@ void CInfClassPlayer::UpdateSkin()
 	}
 }
 
-void CInfClassPlayer::StartInfection(CPlayer *pInfectiousPlayer, bool force)
+void CInfClassPlayer::StartInfection(CPlayer *pInfectiousPlayer, INFECTION_TYPE InfectionType)
 {
-	if(!force && IsZombie())
+	dbg_assert(InfectionType != INFECTION_TYPE::NO, "Invalid infection");
+
+	if((InfectionType == INFECTION_TYPE::REGULAR) && IsZombie())
 		return;
 
-	m_DoInfection = force ? DO_INFECTION::FORCED : DO_INFECTION::REGULAR;
+	m_InfectionType = InfectionType;
 	m_InfectiousPlayerCID = pInfectiousPlayer ? pInfectiousPlayer->GetCID() : -1;
 }
 
 bool CInfClassPlayer::IsInfectionStarted() const
 {
-	return m_DoInfection != DO_INFECTION::NO;
+	return m_InfectionType != INFECTION_TYPE::NO;
 }
 
 void CInfClassPlayer::OpenMapMenu(int Menu)

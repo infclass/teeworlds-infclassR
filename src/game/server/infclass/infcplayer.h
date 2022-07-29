@@ -13,11 +13,11 @@ class CInfClassPlayerClass;
 #include <game/server/player.h>
 #include <game/server/skininfo.h>
 
-enum class DO_INFECTION
+enum class INFECTION_TYPE
 {
 	NO,
 	REGULAR,
-	FORCED,
+	RESTORE_INF_CLASS,
 };
 
 class CInfClassPlayer : public CPlayer
@@ -50,7 +50,8 @@ public:
 	void SetClass(int newClass) final;
 	void UpdateSkin();
 
-	void StartInfection(CPlayer* pInfectiousPlayer = nullptr, bool force = false);
+	INFECTION_TYPE InfectionType() const { return m_InfectionType; }
+	void StartInfection(CPlayer* pInfectiousPlayer = nullptr, INFECTION_TYPE InfectionType = INFECTION_TYPE::REGULAR);
 	bool IsInfectionStarted() const;
 
 	int MapMenu() const { return (m_Team != TEAM_SPECTATORS) ? m_MapMenu : 0; }
@@ -107,7 +108,7 @@ protected:
 
 	int m_RandomClassRoundId = 0;
 
-	DO_INFECTION m_DoInfection = DO_INFECTION::NO;
+	INFECTION_TYPE m_InfectionType = INFECTION_TYPE::NO;
 	int m_InfectiousPlayerCID = -1;
 
 	int m_SelfKillAttemptTick = -1;
