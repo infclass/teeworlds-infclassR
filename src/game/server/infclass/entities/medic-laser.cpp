@@ -46,8 +46,13 @@ bool CMedicLaser::OnCharacterHit(CInfClassCharacter *pHit)
 	}
 	else
 	{
-		int LastHumanClass = pHit->GetPlayer()->LastHumanClass();
-		pInfected->GetPlayer()->SetClass(LastHumanClass);
+		int PreviousClass = pHit->GetPlayer()->GetPreviousHumanClass();
+		if(PreviousClass == PLAYERCLASS_INVALID)
+		{
+			PreviousClass = PLAYERCLASS_MEDIC;
+		}
+
+		pInfected->GetPlayer()->SetClass(PreviousClass);
 		pInfected->Unfreeze();
 		pInfected->CancelSlowMotion();
 		pInfected->SetHealthArmor(1, 0);

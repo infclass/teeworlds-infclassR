@@ -69,6 +69,9 @@ public:
 	void SetRandomClassChoosen();
 	bool RandomClassChoosen() const;
 
+	int GetPreviousInfectedClass() const;
+	int GetPreviousHumanClass() const;
+
 	void AddSavedPosition(const vec2 Position);
 	bool LoadSavedPosition(vec2 *pOutput) const;
 
@@ -117,6 +120,8 @@ protected:
 
 	int m_GhoulLevel = 0;
 	int m_GhoulLevelTick = 0;
+
+	icArray<int, 3> m_PreviousClasses;
 	icArray<vec2, 1> m_SavedPositions;
 };
 

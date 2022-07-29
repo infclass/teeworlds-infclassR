@@ -297,9 +297,14 @@ void CInfClassPlayer::SetClass(int newClass)
 		}
 	}
 
-	if(newClass < END_HUMANCLASS)
+	if(m_class != PLAYERCLASS_INVALID)
 	{
-		m_LastHumanClass = newClass;
+		if(m_PreviousClasses.Size() == m_PreviousClasses.Capacity())
+		{
+			m_PreviousClasses.RemoveAt(0);
+		}
+
+		m_PreviousClasses.Add(m_class);
 	}
 
 	m_GhoulLevel = 0;
@@ -441,6 +446,34 @@ bool CInfClassPlayer::RandomClassChoosen() const
 	return m_RandomClassRoundId == GameController()->GetRoundId();
 }
 
+int CInfClassPlayer::GetPreviousInfectedClass() const
+{
+	for (int i = m_PreviousClasses.Size() - 1; i > 0; --i)
+	{
+		int Class = m_PreviousClasses.At(i);
+		if(IsInfectedClass(Class))
+		{
+			return Class;
+		}
+	}
+
+	return PLAYERCLASS_INVALID;
+}
+
+int CInfClassPlayer::GetPreviousHumanClass() const
+{
+	for (int i = m_PreviousClasses.Size() - 1; i > 0; --i)
+	{
+		int Class = m_PreviousClasses.At(i);
+		if(IsHumanClass(Class))
+		{
+			return Class;
+		}
+	}
+
+	return PLAYERCLASS_INVALID;
+}
+
 void CInfClassPlayer::AddSavedPosition(const vec2 Position)
 {
 	m_SavedPositions.Resize(1);
@@ -459,6 +492,8 @@ bool CInfClassPlayer::LoadSavedPosition(vec2 *pOutput) const
 void CInfClassPlayer::OnStartRound()
 {
 	SetClass(PLAYERCLASS_NONE);
+	m_PreviousClasses.Clear();
+
 	m_HumanTime = 0;
 
 	m_Kills = 0;

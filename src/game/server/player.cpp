@@ -58,7 +58,6 @@ void CPlayer::Reset()
 	m_HookProtection = false;
 	m_HookProtectionAutomatic = true;
 	m_class = PLAYERCLASS_NONE;
-	m_LastHumanClass = PLAYERCLASS_NONE;
 	m_InfectionTick = -1;
 	m_NumberKills = 0;
 	SetLanguage(Server()->GetClientLanguage(m_ClientID));
@@ -422,16 +421,6 @@ bool CPlayer::CanOverrideDefaultEmote() const
 int CPlayer::GetClass() const
 {
 	return m_class;
-}
-
-int CPlayer::LastHumanClass() const
-{
-	if(m_LastHumanClass == PLAYERCLASS_NONE)
-	{
-		return PLAYERCLASS_MEDIC; // if old class was not set, it defaults to medic
-	}
-
-	return m_LastHumanClass;
 }
 
 bool CPlayer::IsZombie() const

@@ -148,7 +148,6 @@ public:
 /* INFECTION MODIFICATION START ***************************************/
 protected:
 	int m_class;
-	int m_LastHumanClass;
 	int m_ScoreMode;
 	int m_DefaultScoreMode;
 	char m_aLanguage[16];
@@ -171,7 +170,6 @@ public:
 	
 	int GetClass() const;
 	virtual void SetClass(int newClass) = 0;
-	int LastHumanClass() const;
 	bool IsZombie() const;
 	bool IsActuallyZombie() const;
 	bool IsHuman() const;
