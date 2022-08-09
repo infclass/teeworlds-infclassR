@@ -180,6 +180,7 @@ public:
 protected:
 	void TickInfectionStarted();
 	void TickInfectionNotStarted();
+	int InfectHumans(int NumHumansToInfect);
 
 	void MaybeSendStatistics();
 	void AnnounceTheWinner(int NumHumans, int Seconds);
@@ -213,6 +214,8 @@ private:
 
 	CGameTeams m_Teams;
 
+	int m_InfUnbalancedTick;
+	float m_InfBalanceBoostFactor = 0;
 	array<vec2> m_HeroFlagPositions;
 	int m_HeroGiftTick = 0;
 
