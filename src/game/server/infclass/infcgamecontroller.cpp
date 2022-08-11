@@ -2905,7 +2905,7 @@ void CInfClassGameController::OnCharacterDeath(CInfClassCharacter *pVictim, cons
 
 	if(Context.DamageType == DAMAGE_TYPE::INFECTION_TILE)
 	{
-		int FreezeDuration = Config()->m_InfInfzoneFreezeDuration;
+		int FreezeDuration = m_Warmup > 0 ? 0 : Config()->m_InfInfzoneFreezeDuration;
 		if(FreezeDuration > 0)
 		{
 			pVictim->Freeze(FreezeDuration, Context.Killer, FREEZEREASON_INFECTION);
