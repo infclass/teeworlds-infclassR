@@ -1899,6 +1899,14 @@ int CInfClassGameController::GetMinimumInfected() const
 	return GetMinimumInfectedForPlayers(NumPlayers);
 }
 
+int CInfClassGameController::InfectedBonusArmor() const
+{
+	if((GameController()->GetMinimumInfected() == 1) && (GameServer()->GetZombieCount() == 1))
+		return 10;
+
+	return 0;
+}
+
 void CInfClassGameController::SendKillMessage(int Victim, DAMAGE_TYPE DamageType, int Killer, int Assistant)
 {
 	int DamageTypeInt = static_cast<int>(DamageType);
@@ -2895,11 +2903,7 @@ void CInfClassGameController::OnCharacterSpawned(CInfClassCharacter *pCharacter)
 	if(pCharacter->IsZombie())
 	{
 		FallInLoveIfInfectedEarly(pCharacter);
-
-		if((GetMinimumInfected() == 1) && (GameServer()->GetZombieCount() == 1))
-		{
-			pCharacter->GiveLonelyZombieBonus();
-		}
+		pCharacter->SetHealthArmor(10, InfectedBonusArmor());
 	}
 }
 

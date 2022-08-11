@@ -174,6 +174,7 @@ public:
 	void SortCharactersByDistance(const ClientsArray &Input, ClientsArray *pOutput, const vec2 &Center, const float MaxDistance = 0);
 	void GetSortedTargetsInRange(const vec2 &Center, const float Radius, const ClientsArray &SkipList, ClientsArray *pOutput);
 	int GetMinimumInfected() const;
+	int InfectedBonusArmor() const;
 
 	void SendKillMessage(int Victim, DAMAGE_TYPE DamageType, int Killer = -1, int Assistant = -1);
 

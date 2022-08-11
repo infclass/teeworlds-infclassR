@@ -181,7 +181,6 @@ public:
 
 	void GiveGift(int GiftType);
 	void GiveRandomClassSelectionBonus();
-	void GiveLonelyZombieBonus();
 	void MakeVisible();
 	void GrantSpawnProtection();
 

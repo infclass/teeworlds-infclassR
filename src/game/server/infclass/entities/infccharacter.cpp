@@ -97,9 +97,9 @@ void CInfClassCharacter::OnCharacterInInfectionZone()
 		if(Server()->Tick() >= m_HealTick + (Server()->TickSpeed()/g_Config.m_InfInfzoneHealRate))
 		{
 			m_HealTick = Server()->Tick();
-			if((GameController()->GetMinimumInfected() == 1) && (GameServer()->GetZombieCount() == 1))
+			int BonusArmor = GameController()->InfectedBonusArmor();
+			if(m_Armor < BonusArmor)
 			{
-				// See also: Character::GiveArmorIfLonely()
 				Heal(1);
 			}
 			else
@@ -2667,11 +2667,6 @@ void CInfClassCharacter::GiveGift(int GiftType)
 }
 
 void CInfClassCharacter::GiveRandomClassSelectionBonus()
-{
-	IncreaseArmor(10);
-}
-
-void CInfClassCharacter::GiveLonelyZombieBonus()
 {
 	IncreaseArmor(10);
 }
