@@ -1901,10 +1901,8 @@ int CInfClassGameController::GetMinimumInfected() const
 
 int CInfClassGameController::InfectedBonusArmor() const
 {
-	if((GameController()->GetMinimumInfected() == 1) && (GameServer()->GetZombieCount() == 1))
-		return 10;
-
-	return 0;
+	const float Factor = clamp<float>(m_InfBalanceBoostFactor, 0, 1);
+	return Factor * 10;
 }
 
 void CInfClassGameController::SendKillMessage(int Victim, DAMAGE_TYPE DamageType, int Killer, int Assistant)
@@ -2228,6 +2226,8 @@ void CInfClassGameController::TickInfectionStarted()
 	NumInfected += NewInfected;
 	NumHumans -= NewInfected;
 
+	UpdateBalanceFactors(NumHumans, NumInfected);
+
 	if(StartInfectionTrigger)
 	{
 		Iter.Reset();
@@ -2312,6 +2312,30 @@ int CInfClassGameController::InfectHumans(int NumHumansToInfect)
 	}
 
 	return ToInfect.Size();
+}
+
+void CInfClassGameController::UpdateBalanceFactors(int NumHumans, int NumInfected)
+{
+	if(NumInfected == 1)
+	{
+		m_InfBalanceBoostFactor = 1;
+		return;
+	}
+
+	const int NumPlayers = NumHumans + NumInfected;
+	const int NumMinimumInfected = GetMinimumInfectedForPlayers(NumPlayers);
+	const int PlayersToInfect = maximum<int>(0, NumMinimumInfected - NumInfected);
+	if(PlayersToInfect >= 2)
+	{
+		// ToInfect / MinInfected
+		// 2 / 3 = 0.66 // Could be 66% bonus but 'num infected = 1' already handled and gives 100%
+		// 2 / 4 = 0.5  // If min infected = 4 and there are two infected, they'll have 50% bonus (5 extra armor)
+		// 2 / 5 = 0.4  // ...
+		m_InfBalanceBoostFactor = static_cast<float>(PlayersToInfect) / NumMinimumInfected;
+		return;
+	}
+
+	m_InfBalanceBoostFactor = 0;
 }
 
 void CInfClassGameController::MaybeSendStatistics()

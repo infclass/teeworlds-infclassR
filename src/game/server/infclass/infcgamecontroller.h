@@ -182,6 +182,7 @@ protected:
 	void TickInfectionStarted();
 	void TickInfectionNotStarted();
 	int InfectHumans(int NumHumansToInfect);
+	void UpdateBalanceFactors(int NumHumans, int NumInfected);
 
 	void MaybeSendStatistics();
 	void AnnounceTheWinner(int NumHumans, int Seconds);
