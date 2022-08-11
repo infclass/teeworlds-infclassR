@@ -123,11 +123,6 @@ void CInfClassCharacter::OnCharacterInInfectionZone()
 		GameServer()->CreateSound(GetPos(), SOUND_PLAYER_DIE);
 
 		GetPlayer()->StartInfection(pKiller);
-
-		if (g_Config.m_InfInfzoneFreezeDuration > 0)
-		{
-			Freeze(g_Config.m_InfInfzoneFreezeDuration, GetCID(), FREEZEREASON_INFECTION);
-		}
 	}
 }
 

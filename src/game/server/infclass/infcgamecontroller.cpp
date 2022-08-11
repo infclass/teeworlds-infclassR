@@ -2902,6 +2902,15 @@ void CInfClassGameController::OnCharacterDeath(CInfClassCharacter *pVictim, cons
 	}
 
 	pVictim->GetPlayer()->m_RespawnTick = Server()->Tick() + RespawnDelay;
+
+	if(Context.DamageType == DAMAGE_TYPE::INFECTION_TILE)
+	{
+		int FreezeDuration = Config()->m_InfInfzoneFreezeDuration;
+		if(FreezeDuration > 0)
+		{
+			pVictim->Freeze(FreezeDuration, Context.Killer, FREEZEREASON_INFECTION);
+		}
+	}
 }
 
 void CInfClassGameController::OnCharacterSpawned(CInfClassCharacter *pCharacter)
