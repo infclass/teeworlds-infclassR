@@ -1104,7 +1104,6 @@ void IGameController::Tick()
 	}
 
 	DoActivityCheck();
-	DoWincheck();
 }
 
 
