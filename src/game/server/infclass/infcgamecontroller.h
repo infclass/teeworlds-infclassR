@@ -188,6 +188,7 @@ protected:
 
 	void MaybeSendStatistics();
 	void AnnounceTheWinner(int NumHumans, int Seconds);
+	void BroadcastInfectionComing(int InfectionTick);
 
 private:
 	void UpdateNinjaTargets();

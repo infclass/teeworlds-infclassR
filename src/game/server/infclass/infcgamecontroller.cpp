@@ -2166,6 +2166,8 @@ void CInfClassGameController::Tick()
 
 void CInfClassGameController::RoundTickBeforeInitialInfection()
 {
+	int InitialInfectionTick = m_RoundStartTick + Server()->TickSpeed() * GetInfectionDelay();
+	BroadcastInfectionComing(InitialInfectionTick);
 }
 
 void CInfClassGameController::RoundTickAfterInitialInfection()
@@ -2415,6 +2417,20 @@ void CInfClassGameController::AnnounceTheWinner(int NumHumans, int Seconds)
 	}
 
 	EndRound(ROUND_END_REASON::FINISHED);
+}
+
+void CInfClassGameController::BroadcastInfectionComing(int InfectionTick)
+{
+	if(InfectionTick <= Server()->Tick())
+		return;
+
+	int Seconds = (InfectionTick - Server()->Tick()) / Server()->TickSpeed() + 1;
+	GameServer()->SendBroadcast_Localization(-1,
+		BROADCAST_PRIORITY_GAMEANNOUNCE,
+		BROADCAST_DURATION_REALTIME,
+		_("Infection is coming in {sec:RemainingTime}"),
+		"RemainingTime", &Seconds,
+		nullptr);
 }
 
 bool CInfClassGameController::IsInfectionStarted() const
