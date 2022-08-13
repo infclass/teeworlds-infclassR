@@ -20,6 +20,12 @@ enum class INFECTION_TYPE
 	RESTORE_INF_CLASS,
 };
 
+enum class INFECTION_CAUSE
+{
+	GAME,
+	PLAYER,
+};
+
 class CInfClassPlayer : public CPlayer
 {
 	MACRO_ALLOC_POOL_ID()
@@ -51,6 +57,7 @@ public:
 	void UpdateSkin();
 
 	INFECTION_TYPE InfectionType() const { return m_InfectionType; }
+	INFECTION_CAUSE InfectionCause() const { return m_InfectionCause; }
 	void StartInfection(CPlayer* pInfectiousPlayer = nullptr, INFECTION_TYPE InfectionType = INFECTION_TYPE::REGULAR);
 	bool IsInfectionStarted() const;
 
@@ -109,6 +116,7 @@ protected:
 	int m_RandomClassRoundId = 0;
 
 	INFECTION_TYPE m_InfectionType = INFECTION_TYPE::NO;
+	INFECTION_CAUSE m_InfectionCause = INFECTION_CAUSE::GAME;
 	int m_InfectiousPlayerCID = -1;
 
 	int m_SelfKillAttemptTick = -1;
