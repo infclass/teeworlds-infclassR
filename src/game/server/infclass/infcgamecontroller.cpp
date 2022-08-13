@@ -2128,11 +2128,11 @@ void CInfClassGameController::Tick()
 		if(IsInfectionStarted())
 		{
 			m_InfectedStarted = true;
-			TickInfectionStarted();
+			RoundTickAfterInitialInfection();
 		}
 		else
 		{
-			TickInfectionNotStarted();
+			RoundTickBeforeInitialInfection();
 		}
 
 		DoWincheck();
@@ -2164,7 +2164,11 @@ void CInfClassGameController::Tick()
 	}
 }
 
-void CInfClassGameController::TickInfectionStarted()
+void CInfClassGameController::RoundTickBeforeInitialInfection()
+{
+}
+
+void CInfClassGameController::RoundTickAfterInitialInfection()
 {
 	bool StartInfectionTrigger = m_RoundStartTick + Server()->TickSpeed() * GetInfectionDelay() == Server()->Tick();
 
@@ -2257,10 +2261,6 @@ void CInfClassGameController::TickInfectionStarted()
 			}
 		}
 	}
-}
-
-void CInfClassGameController::TickInfectionNotStarted()
-{
 }
 
 int CInfClassGameController::InfectHumans(int NumHumansToInfect)

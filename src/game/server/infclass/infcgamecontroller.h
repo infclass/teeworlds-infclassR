@@ -181,8 +181,8 @@ public:
 	void SendKillMessage(int Victim, DAMAGE_TYPE DamageType, int Killer = -1, int Assistant = -1);
 
 protected:
-	void TickInfectionStarted();
-	void TickInfectionNotStarted();
+	void RoundTickBeforeInitialInfection();
+	void RoundTickAfterInitialInfection();
 	int InfectHumans(int NumHumansToInfect);
 	void UpdateBalanceFactors(int NumHumans, int NumInfected);
 
