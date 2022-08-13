@@ -64,6 +64,12 @@ ROUND_TYPE GetTypeByName(const char *pName)
 	return ROUND_TYPE::INVALID;
 }
 
+enum class ROUND_END_REASON
+{
+	FINISHED,
+	CANCELED,
+};
+
 CInfClassGameController::CInfClassGameController(class CGameContext *pGameServer)
 : IGameController(pGameServer), m_Teams(pGameServer)
 {
@@ -1777,13 +1783,22 @@ void CInfClassGameController::StartRound()
 }
 
 void CInfClassGameController::EndRound()
-{	
+{
+	// The EndRound() override is called only from the IGameController on map skipped or changed
+	EndRound(ROUND_END_REASON::CANCELED);
+}
+
+void CInfClassGameController::EndRound(ROUND_END_REASON Reason)
+{
 	m_InfectedStarted = false;
 	ResetFinalExplosion();
 	IGameController::EndRound();
 
-	MaybeSendStatistics();
-	Server()->OnRoundIsOver();
+	if(Reason == ROUND_END_REASON::FINISHED)
+	{
+		MaybeSendStatistics();
+		Server()->OnRoundIsOver();
+	}
 
 	switch(GetRoundType())
 	{
@@ -2399,7 +2414,7 @@ void CInfClassGameController::AnnounceTheWinner(int NumHumans, int Seconds)
 		GameServer()->SendChatTarget_Localization(-1, CHATCATEGORY_INFECTED, _("Infected won the round in {sec:RoundDuration}"), "RoundDuration", &Seconds, NULL);
 	}
 
-	EndRound();
+	EndRound(ROUND_END_REASON::FINISHED);
 }
 
 bool CInfClassGameController::IsInfectionStarted() const

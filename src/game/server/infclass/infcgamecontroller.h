@@ -19,6 +19,7 @@ struct ZoneData;
 
 enum class TAKEDAMAGEMODE;
 enum class DAMAGE_TYPE;
+enum class ROUND_END_REASON;
 
 using ClientsArray = icArray<int, 64>; // MAX_CLIENTS
 
@@ -77,6 +78,7 @@ public:
 	void DoWincheck() override;
 	void StartRound() override;
 	void EndRound() override;
+	void EndRound(ROUND_END_REASON Reason);
 	void DoTeamChange(class CPlayer *pPlayer, int Team, bool DoChatMsg = true) override;
 	bool TryRespawn(CInfClassPlayer *pPlayer, SpawnContext *pContext);
 	int ChooseHumanClass(const CPlayer *pPlayer) const;
