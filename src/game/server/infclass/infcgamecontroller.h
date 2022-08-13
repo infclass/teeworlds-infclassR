@@ -19,6 +19,7 @@ struct ZoneData;
 
 enum class TAKEDAMAGEMODE;
 enum class DAMAGE_TYPE;
+enum class ROUND_CANCELATION_REASON;
 enum class ROUND_END_REASON;
 
 using ClientsArray = icArray<int, 64>; // MAX_CLIENTS
@@ -75,6 +76,7 @@ public:
 	int OnCharacterDeath(class CCharacter *pVictim, class CPlayer *pKiller, int Weapon) override;
 	void OnCharacterDeath(CInfClassCharacter *pVictim, const DeathContext &Context);
 	void OnCharacterSpawned(CInfClassCharacter *pCharacter);
+	void CheckRoundFailed();
 	void DoWincheck() override;
 	void StartRound() override;
 	void EndRound() override;
@@ -187,6 +189,7 @@ protected:
 	void UpdateBalanceFactors(int NumHumans, int NumInfected);
 
 	void MaybeSendStatistics();
+	void CancelTheRound(ROUND_CANCELATION_REASON Reason);
 	void AnnounceTheWinner(int NumHumans, int Seconds);
 	void BroadcastInfectionComing(int InfectionTick);
 
@@ -239,4 +242,5 @@ private:
 	bool m_SuggestMoreRounds = false;
 	bool m_MoreRoundsSuggested = false;
 };
+
 #endif

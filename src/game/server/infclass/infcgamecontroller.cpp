@@ -64,6 +64,13 @@ ROUND_TYPE GetTypeByName(const char *pName)
 	return ROUND_TYPE::INVALID;
 }
 
+enum class ROUND_CANCELATION_REASON
+{
+	INVALID,
+	ALL_INFECTED_LEFT_THE_GAME,
+	EVERYONE_INFECTED_BY_THE_GAME,
+};
+
 enum class ROUND_END_REASON
 {
 	FINISHED,
@@ -2112,7 +2119,9 @@ void CInfClassGameController::Tick()
 			}
 		}
 	}
-	
+
+	CheckRoundFailed();
+
 	int NumHumans = 0;
 	int NumInfected = 0;
 	GetPlayerCounter(-1, NumHumans, NumInfected);
@@ -2172,7 +2181,8 @@ void CInfClassGameController::RoundTickBeforeInitialInfection()
 
 void CInfClassGameController::RoundTickAfterInitialInfection()
 {
-	bool StartInfectionTrigger = m_RoundStartTick + Server()->TickSpeed() * GetInfectionDelay() == Server()->Tick();
+	int InitialInfectionTick = m_RoundStartTick + Server()->TickSpeed() * GetInfectionDelay();
+	bool StartInfectionTrigger = InitialInfectionTick == Server()->Tick();
 
 	if(StartInfectionTrigger)
 	{
@@ -2380,6 +2390,23 @@ void CInfClassGameController::MaybeSendStatistics()
 		return;
 
 	Server()->SendStatistics();
+}
+
+void CInfClassGameController::CancelTheRound(ROUND_CANCELATION_REASON Reason)
+{
+	switch(Reason)
+	{
+	case ROUND_CANCELATION_REASON::INVALID:
+		return;
+	case ROUND_CANCELATION_REASON::ALL_INFECTED_LEFT_THE_GAME:
+		GameServer()->SendChatTarget_Localization(-1, CHATCATEGORY_INFECTED, _("The round canceled: All infected have left the game"), "RoundDuration", nullptr);
+		break;
+	case ROUND_CANCELATION_REASON::EVERYONE_INFECTED_BY_THE_GAME:
+		GameServer()->SendChatTarget_Localization(-1, CHATCATEGORY_INFECTED, _("The round canceled: All humans have left the game"), nullptr);
+		break;
+	}
+
+	EndRound(ROUND_END_REASON::CANCELED);
 }
 
 void CInfClassGameController::AnnounceTheWinner(int NumHumans, int Seconds)
@@ -2976,6 +3003,66 @@ void CInfClassGameController::OnCharacterSpawned(CInfClassCharacter *pCharacter)
 	{
 		FallInLoveIfInfectedEarly(pCharacter);
 		pCharacter->SetHealthArmor(10, InfectedBonusArmor());
+	}
+}
+
+void CInfClassGameController::CheckRoundFailed()
+{
+	if(m_Warmup)
+		return;
+
+	if(IsGameOver())
+		return;
+
+	if(Config()->m_InfTrainingMode)
+		return;
+
+	int NumHumans = 0;
+	int NumInfected = 0;
+	GetPlayerCounter(-1, NumHumans, NumInfected);
+
+	if((NumHumans == 0) && (NumInfected == 0))
+		return;
+
+	ROUND_CANCELATION_REASON Reason = ROUND_CANCELATION_REASON::INVALID;
+
+	if(NumInfected == 0)
+	{
+		if(m_RoundStartTick + Server()->TickSpeed() * (GetInfectionDelay() + 1) <= Server()->Tick())
+		{
+			Reason = ROUND_CANCELATION_REASON::ALL_INFECTED_LEFT_THE_GAME;
+		}
+	}
+
+	if(NumHumans == 0)
+	{
+		CInfClassPlayerIterator<PLAYERITER_INGAME> Iter(GameServer()->m_apPlayers);
+		bool HasNonGameInfectionCauses = false;
+		while(Iter.Next())
+		{
+			const CInfClassPlayer *pPlayer = Iter.Player();
+			if(pPlayer->InfectionCause() != INFECTION_CAUSE::GAME)
+			{
+				HasNonGameInfectionCauses = true;
+				break;
+			}
+		}
+
+		if(HasNonGameInfectionCauses)
+		{
+			// Okay, inf won
+		}
+		else
+		{
+			Reason = ROUND_CANCELATION_REASON::EVERYONE_INFECTED_BY_THE_GAME;
+		}
+	}
+
+	if(Reason != ROUND_CANCELATION_REASON::INVALID)
+	{
+		// Round failed: all infected left the game
+		// The infected didn't infect anyone. Cancel the round.
+		CancelTheRound(Reason);
 	}
 }
 
