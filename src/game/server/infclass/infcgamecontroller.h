@@ -190,7 +190,7 @@ protected:
 
 	void MaybeSendStatistics();
 	void CancelTheRound(ROUND_CANCELATION_REASON Reason);
-	void AnnounceTheWinner(int NumHumans, int Seconds);
+	void AnnounceTheWinner(int NumHumans);
 	void BroadcastInfectionComing(int InfectionTick);
 
 private:

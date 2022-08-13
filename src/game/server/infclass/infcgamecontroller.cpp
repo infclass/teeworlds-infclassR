@@ -1797,6 +1797,23 @@ void CInfClassGameController::EndRound()
 
 void CInfClassGameController::EndRound(ROUND_END_REASON Reason)
 {
+	{
+		int NumHumans = 0;
+		int NumInfected = 0;
+		GetPlayerCounter(-1, NumHumans, NumInfected);
+
+		const char *pWinnerTeam = Reason == ROUND_END_REASON::FINISHED ? (NumHumans > 0 ? "humans" : "zombies") : "none";
+		const char *pRoundType = toString(GetRoundType());
+
+		// Win check
+		const int Seconds = (Server()->Tick() - m_RoundStartTick) / ((float)Server()->TickSpeed());
+
+		char aBuf[512];
+		str_format(aBuf, sizeof(aBuf), "round_end winner='%s' survivors='%d' duration='%d' round='%d of %d' type='%s'",
+			pWinnerTeam,
+			NumHumans, Seconds, m_RoundCount + 1, g_Config.m_SvRoundsPerMap, pRoundType);
+		Console()->Print(IConsole::OUTPUT_LEVEL_DEBUG, "game", aBuf);
+	}
 	m_InfectedStarted = false;
 	ResetFinalExplosion();
 	IGameController::EndRound();
@@ -2409,17 +2426,8 @@ void CInfClassGameController::CancelTheRound(ROUND_CANCELATION_REASON Reason)
 	EndRound(ROUND_END_REASON::CANCELED);
 }
 
-void CInfClassGameController::AnnounceTheWinner(int NumHumans, int Seconds)
+void CInfClassGameController::AnnounceTheWinner(int NumHumans)
 {
-	const char *pWinnerTeam = NumHumans > 0 ? "humans" : "zombies";
-	const char *pRoundType = toString(GetRoundType());
-
-	char aBuf[512];
-	str_format(aBuf, sizeof(aBuf), "round_end winner='%s' survivors='%d' duration='%d' round='%d of %d' type='%s'",
-		pWinnerTeam,
-		NumHumans, Seconds, m_RoundCount+1, g_Config.m_SvRoundsPerMap, pRoundType);
-	Console()->Print(IConsole::OUTPUT_LEVEL_DEBUG, "game", aBuf);
-
 	if(NumHumans)
 	{
 		GameServer()->SendChatTarget_Localization_P(-1, CHATCATEGORY_HUMANS, NumHumans,
@@ -2448,6 +2456,7 @@ void CInfClassGameController::AnnounceTheWinner(int NumHumans, int Seconds)
 	}
 	else
 	{
+		const int Seconds = (Server()->Tick() - m_RoundStartTick) / ((float)Server()->TickSpeed());
 		GameServer()->SendChatTarget_Localization(-1, CHATCATEGORY_INFECTED, _("Infected won the round in {sec:RoundDuration}"), "RoundDuration", &Seconds, NULL);
 	}
 
@@ -3075,14 +3084,14 @@ void CInfClassGameController::DoWincheck()
 	int NumInfected = 0;
 	GetPlayerCounter(-1, NumHumans, NumInfected);
 
-	//Win check
-	const int Seconds = (Server()->Tick()-m_RoundStartTick)/((float)Server()->TickSpeed());
+	// Win check
 	if(m_InfectedStarted && NumHumans == 0 && NumInfected > 1)
 	{
-		AnnounceTheWinner(NumHumans, Seconds);
+		AnnounceTheWinner(NumHumans);
 		return;
 	}
 
+	const int Seconds = (Server()->Tick() - m_RoundStartTick) / ((float)Server()->TickSpeed());
 	//Start the final explosion if the time is over
 	if(m_InfectedStarted && !m_ExplosionStarted && GetTimeLimit() > 0 && Seconds >= GetTimeLimit() * 60)
 	{
@@ -3164,7 +3173,7 @@ void CInfClassGameController::DoWincheck()
 		//If no more explosions, game over, decide who win
 		if(!NewExplosion)
 		{
-			AnnounceTheWinner(NumHumans, Seconds);
+			AnnounceTheWinner(NumHumans);
 		}
 	}
 }
