@@ -2235,12 +2235,20 @@ void CInfClassGameController::RoundTickAfterInitialInfection()
 			GameServer()->SendChatTarget_Localization(-1, CHATCATEGORY_INFECTION,
 				_("The game is not balanced. Infection is coming."), nullptr);
 		}
-		else if(Server()->Tick() > m_InfUnbalancedTick + Server()->TickSpeed() * Config()->m_InfTeamBalanceSeconds)
+		else
 		{
-			// Force balance
-			NewInfected = InfectHumans(PlayersToInfect);
-			GameServer()->SendChatTarget_Localization(-1, CHATCATEGORY_INFECTION,
-				_("Someone was infected to balance the game"), nullptr);
+			int BalancingTick = m_InfUnbalancedTick + Server()->TickSpeed() * Config()->m_InfTeamBalanceSeconds;
+			if(Server()->Tick() > BalancingTick)
+			{
+				// Force balance
+				NewInfected = InfectHumans(PlayersToInfect);
+				GameServer()->SendChatTarget_Localization(-1, CHATCATEGORY_INFECTION,
+					_("Someone was infected to balance the game."), nullptr);
+			}
+			else
+			{
+				BroadcastInfectionComing(BalancingTick);
+			}
 		}
 	}
 
