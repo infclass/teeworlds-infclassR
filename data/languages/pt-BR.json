@@ -217,6 +217,10 @@
 		"value": "Infectados venceram a rodada em {sec:RoundDuration}"
 	},
 	{
+		"key": "Infection is coming in {sec:RemainingTime}",
+		"value": "A infec\u00e7\u00e3o chegar\u00e1 em {sec:RemainingTime}"
+	},
+	{
 		"key": "InfectionClass is a team game between humans and the infected.",
 		"value": "InfectionClass \u00e9 um jogo de equipe entre os humanos e os infectados."
 	},
@@ -314,7 +318,7 @@
 	},
 	{
 		"key": "Looper laser wall: {sec:RemainingTime}",
-		"value": "Parede com laser do Looper: {sec:RemainingTime}"
+		"value": "Parede com laser: {sec:RemainingTime}"
 	},
 	{
 		"key": "Loopers",
@@ -524,6 +528,10 @@
 		"value": "Soldados"
 	},
 	{
+		"key": "Someone was infected to balance the game.",
+		"value": "Algu\u00e9m foi infectado para equilibrar o jogo."
+	},
+	{
 		"key": "Sources: {str:SourceUrl} ",
 		"value": "Fontes: {str:SourceUrl} "
 	},
@@ -680,8 +688,16 @@
 		"value": "O seletor de classe ser\u00e1 exibido quando as rodadas come\u00e7arem"
 	},
 	{
+		"key": "The command is not available (enabled only in training mode)",
+		"value": "O comando n\u00e3o est\u00e1 dispon\u00edvel (ativo apenas no modo de treinamento)"
+	},
+	{
 		"key": "The flag gifts a health point, {int:NumArmorGift} armor and full ammo to all humans.",
 		"value": "A bandeira d\u00e1 um ponto de vida, {int:NumArmorGift} armadura e muni\u00e7\u00e3o completa para todos os humanos."
+	},
+	{
+		"key": "The game is not balanced. Infection is coming.",
+		"value": "O jogo n\u00e3o est\u00e1 balanceado. A infec\u00e7\u00e3o est\u00e1 chegando."
 	},
 	{
 		"key": "The gift to all humans is only applied when the flag is surrounded by hearts and armor.",
@@ -710,6 +726,14 @@
 	{
 		"key": "The locked position increases the Sniper's rifle damage from usual 10-13 to 20 damage points.",
 		"value": "A posi\u00e7\u00e3o travada aumenta o dano do rifle do Sniper de 10-13 para 20 pontos de dano."
+	},
+	{
+		"key": "The round canceled: All humans have left the game",
+		"value": "A rodada foi cancelada: Todos os humanos sa\u00edram do jogo"
+	},
+	{
+		"key": "The round canceled: All infected have left the game",
+		"value": "A rodada foi cancelada: Todos infectados deixaram o jogo"
 	},
 	{
 		"key": "The slime heals the infected and deals damage to humans.",
@@ -789,12 +813,36 @@
 		"value": "Muito poucos zumbis para reviver qualquer pessoa (menos de {int:MinZombies})"
 	},
 	{
+		"key": "Translation project: {str:Url}",
+		"value": "Projeto de tradu\u00e7\u00e3o: {str:Url}"
+	},
+	{
 		"key": "Two or more humans can form a taxi.",
 		"value": "Dois ou mais humanos podem formar um t\u00e1xi."
 	},
 	{
 		"key": "Type \u201c/help {str:ClassName}\u201d for more information about your class",
 		"value": "Digite \u201c/help {str:ClassName}\u201d para obter mais informa\u00e7\u00f5es sobre sua classe"
+	},
+	{
+		"key": "Unable to load the position: the character state is not valid",
+		"value": "N\u00e3o foi poss\u00edvel carregar a posi\u00e7\u00e3o: o estado do personagem n\u00e3o \u00e9 v\u00e1lido"
+	},
+	{
+		"key": "Unable to load the position: you have no character to load its position",
+		"value": "N\u00e3o foi poss\u00edvel carregar a posi\u00e7\u00e3o: voc\u00ea n\u00e3o tem personagem para carregar sua posi\u00e7\u00e3o"
+	},
+	{
+		"key": "Unable to save the position: the character does not stand on the ground",
+		"value": "N\u00e3o foi poss\u00edvel salvar a posi\u00e7\u00e3o: o personagem n\u00e3o fica no ch\u00e3o"
+	},
+	{
+		"key": "Unable to save the position: the character state is not valid",
+		"value": "N\u00e3o \u00e9 poss\u00edvel salvar a posi\u00e7\u00e3o: o estado do personagem n\u00e3o \u00e9 v\u00e1lido"
+	},
+	{
+		"key": "Unable to save the position: you have no character to save its position",
+		"value": "N\u00e3o foi poss\u00edvel salvar a posi\u00e7\u00e3o: voc\u00ea n\u00e3o tem nenhum personagem para salvar sua posi\u00e7\u00e3o"
 	},
 	{
 		"key": "Undead",
@@ -867,6 +915,14 @@
 	{
 		"key": "Voodoos",
 		"value": "Vudus"
+	},
+	{
+		"key": "Warning: {sec:RemainingTime} until a kick for inactivity",
+		"value": "Aviso: {sec:RemainingTime} at\u00e9 ser expulso por inatividade"
+	},
+	{
+		"key": "Warning: {sec:RemainingTime} until a move to spec for inactivity",
+		"value": "Aviso: {sec:RemainingTime} at\u00e9 ser movido para espectador por inatividade"
 	},
 	{
 		"key": "Web mode enabled",
@@ -1048,6 +1104,10 @@
 	{
 		"key": "Your account has been created and you are now logged.",
 		"value": "Sua conta foi criada e voc\u00ea est\u00e1 logado agora."
+	},
+	{
+		"key": "{str:PlayerName} changed the class to {str:ClassName}",
+		"value": "{str:PlayerName} mudou a sua classe para {str:ClassName}"
 	},
 	{
 		"key": "{str:PlayerName} changed their name to {str:NewName}",

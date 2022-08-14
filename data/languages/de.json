@@ -170,7 +170,7 @@
 	},
 	{
 		"key": "Hook protection enabled",
-		"value": "Verhakungsschutz eingeschalten"
+		"value": "Verhakungsschutz eingeschaltet"
 	},
 	{
 		"key": "How to translate the mod",
@@ -217,8 +217,12 @@
 		"value": "Die Erkrankten haben die Runde in {sec:RoundDuration} gewonnen"
 	},
 	{
+		"key": "Infection is coming in {sec:RemainingTime}",
+		"value": "Die Infizierten kommen in {sec:RemainingTime}"
+	},
+	{
 		"key": "InfectionClass is a team game between humans and the infected.",
-		"value": "InfectionClass ist ein Spiel zwischen \u00dcberlebenden und Erkrankten Zombies."
+		"value": "InfectionClass ist ein Spiel zwischen \u00dcberlebenden und erkrankten Zombies."
 	},
 	{
 		"key": "InfectionClass, by necropotame (version {str:VersionCode})",
@@ -524,6 +528,10 @@
 		"value": "Soldaten"
 	},
 	{
+		"key": "Someone was infected to balance the game.",
+		"value": "Jemand wurde infiziert, um das Spiel auszugleichen."
+	},
+	{
 		"key": "Sources: {str:SourceUrl} ",
 		"value": "Quellen: {str:SourceUrl} "
 	},
@@ -680,8 +688,16 @@
 		"value": "Du kannst wieder eine Klasse am Anfang jeder Runde w\u00e4hlen"
 	},
 	{
+		"key": "The command is not available (enabled only in training mode)",
+		"value": "Der Befehl ist nicht verf\u00fcgbar (nur im Trainingsmodus vorhanden)"
+	},
+	{
 		"key": "The flag gifts a health point, {int:NumArmorGift} armor and full ammo to all humans.",
 		"value": "Die Flagge verleiht einen Gesundheitspunkt, {int:NumArmorGift} R\u00fcstung und volle Munition an alle \u00dcberlebenden."
+	},
+	{
+		"key": "The game is not balanced. Infection is coming.",
+		"value": "Das Spiel ist nicht ausgeglichen, die Infektion kommt."
 	},
 	{
 		"key": "The gift to all humans is only applied when the flag is surrounded by hearts and armor.",
@@ -689,7 +705,7 @@
 	},
 	{
 		"key": "The goal for the humans is to survive until the army cleans the map.",
-		"value": "Das Ziel der \u00dcberlebenden ist es, Ansteckung zu vermeiden, bis die Armee eintrifft und die Karte bereinigt."
+		"value": "Das Ziel der \u00dcberlebenden ist es, Ansteckung zu vermeiden, bis die Armee eintrifft und die Karte s\u00e4ubert."
 	},
 	{
 		"key": "The goal for the infected is to infect all humans.",
@@ -710,6 +726,14 @@
 	{
 		"key": "The locked position increases the Sniper's rifle damage from usual 10-13 to 20 damage points.",
 		"value": "Die Feststellung erm\u00f6glicht eine Schadenserh\u00f6hung des Gewehrs von 10-13 auf 20 Schadenspunkte."
+	},
+	{
+		"key": "The round canceled: All humans have left the game",
+		"value": "Runde abgebrochen: Alle \u00dcberlebenden haben das Spiel verlassen"
+	},
+	{
+		"key": "The round canceled: All infected have left the game",
+		"value": "Runde abgebrochen: Alle Infizierten haben das Spiel verlassen"
 	},
 	{
 		"key": "The slime heals the infected and deals damage to humans.",
@@ -789,12 +813,36 @@
 		"value": "Zu wenig Zombies, um jemanden wiederzubeleben (weniger als {int:MinZombies})"
 	},
 	{
+		"key": "Translation project: {str:Url}",
+		"value": "Link zum \u00dcbersetzungsprojekt: {str:Url}"
+	},
+	{
 		"key": "Two or more humans can form a taxi.",
 		"value": "Zwei oder mehr \u00dcberlebende k\u00f6nnen ein Taxi bilden."
 	},
 	{
 		"key": "Type \u201c/help {str:ClassName}\u201d for more information about your class",
 		"value": "Gib \u00bb/help {str:ClassName}\u00ab ein f\u00fcr zus\u00e4tzliche Angaben in betreff auf deine Klasse"
+	},
+	{
+		"key": "Unable to load the position: the character state is not valid",
+		"value": "Position kann nicht geladen werden: Der Charakterzustand ist ung\u00fcltig"
+	},
+	{
+		"key": "Unable to load the position: you have no character to load its position",
+		"value": "Position kann nicht geladen werden: Du hast keinen Charakter dessen Position geladen werden k\u00f6nnte"
+	},
+	{
+		"key": "Unable to save the position: the character does not stand on the ground",
+		"value": "Position konnte nicht gespeichert werden: Der Charakter steht nicht auf dem Boden"
+	},
+	{
+		"key": "Unable to save the position: the character state is not valid",
+		"value": "Position konnte nicht gespeichert werden: Charakterzustand ung\u00fcltig"
+	},
+	{
+		"key": "Unable to save the position: you have no character to save its position",
+		"value": "Position konnte nicht gespeichert werden: Du hast keinen Charakter dessen Position gespeichert werden k\u00f6nnte"
 	},
 	{
 		"key": "Undead",
@@ -869,8 +917,16 @@
 		"value": "Voodoos"
 	},
 	{
+		"key": "Warning: {sec:RemainingTime} until a kick for inactivity",
+		"value": "Warnung: {sec:RemainingTime} bis du f\u00fcr Inaktivit\u00e4t gekickt wirst"
+	},
+	{
+		"key": "Warning: {sec:RemainingTime} until a move to spec for inactivity",
+		"value": "Warnung: {sec:RemainingTime} bis du zu einem Zuschauert gemacht wirst"
+	},
+	{
 		"key": "Web mode enabled",
-		"value": "Spinnennetz-Betrieb eingeschalten"
+		"value": "Spinnennetz-Betrieb eingeschaltet"
 	},
 	{
 		"key": "When an infected touches the wall, it dies.",
@@ -1048,6 +1104,10 @@
 	{
 		"key": "Your account has been created and you are now logged.",
 		"value": "Dein Konto ist erstellt worden, du bist jetzt angemeldet."
+	},
+	{
+		"key": "{str:PlayerName} changed the class to {str:ClassName}",
+		"value": "{str:PlayerName} hat sich zum {str:ClassName} ge\u00e4ndert"
 	},
 	{
 		"key": "{str:PlayerName} changed their name to {str:NewName}",
