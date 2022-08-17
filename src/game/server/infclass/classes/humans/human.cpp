@@ -152,21 +152,23 @@ void CInfClassHuman::CheckSuperWeaponAccess()
 	// Only scientists can receive white holes
 	if(GetPlayerClass() == PLAYERCLASS_SCIENTIST)
 	{
-		if(GameController()->WhiteHoleEnabled() && !m_HasWhiteHole) // Can't receive a white hole while having one available
+		if(!GameController()->WhiteHoleEnabled() || m_pCharacter->HasSuperWeaponIndicator())
 		{
-			// enable white hole probabilities
-			if(kills > g_Config.m_InfWhiteHoleMinimalKills)
-			{
-				if(random_int(0, 100) < g_Config.m_InfWhiteHoleProbability)
-				{
-					if(!m_pCharacter->HasSuperWeaponIndicator())
-					{
-						// Scientist-laser.cpp will make it unavailable after usage and reset player kills
-						GameServer()->SendChatTarget_Localization(GetCID(), CHATCATEGORY_SCORE, _("White hole found, adjusting scientific parameters..."), nullptr);
-						m_pCharacter->SetSuperWeaponIndicatorEnabled(true);
-					}
-				}
-			}
+			// Can't receive a super weapon while having one available
+			return;
+		}
+
+		// enable white hole probabilities
+		if(kills < Config()->m_InfWhiteHoleMinimalKills)
+		{
+			return;
+		}
+
+		if(random_prob(Config()->m_InfWhiteHoleProbability / 100.0f))
+		{
+			// Scientist-laser.cpp will make it unavailable after usage and reset player kills
+			GameServer()->SendChatTarget_Localization(GetCID(), CHATCATEGORY_SCORE, _("White hole found, adjusting scientific parameters..."), nullptr);
+			m_pCharacter->SetSuperWeaponIndicatorEnabled(true);
 		}
 	}
 }
