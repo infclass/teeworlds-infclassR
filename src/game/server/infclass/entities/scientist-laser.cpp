@@ -57,16 +57,21 @@ void CScientistLaser::DoBounce()
 	}
 
 	GameController()->CreateExplosion(m_Pos, m_Owner, m_DamageType);
+	CreateWhiteHole(GetPos(), To);
+}
 
-	//Create a white hole entity
+void CScientistLaser::CreateWhiteHole(const vec2 &CenterPos, const vec2 &To)
+{
+	// Create a white hole entity
 	CInfClassCharacter *pOwnerChar = GetOwnerCharacter();
-	if(pOwnerChar && pOwnerChar->m_HasWhiteHole)
+	if(!pOwnerChar || !pOwnerChar->m_HasWhiteHole)
 	{
-		new CGrowingExplosion(GameServer(), m_Pos, vec2(0.0, -1.0), m_Owner, 5, DAMAGE_TYPE::WHITE_HOLE);
-		new CWhiteHole(GameServer(), To, m_Owner);
-		
-		//Make it unavailable
-		pOwnerChar->m_HasWhiteHole = false;
-		pOwnerChar->m_HasIndicator = false;
+		return;
 	}
+	new CGrowingExplosion(GameServer(), CenterPos, vec2(0.0, -1.0), m_Owner, 5, DAMAGE_TYPE::WHITE_HOLE);
+	new CWhiteHole(GameServer(), To, m_Owner);
+
+	// Make it unavailable
+	pOwnerChar->m_HasWhiteHole = false;
+	pOwnerChar->m_HasIndicator = false;
 }

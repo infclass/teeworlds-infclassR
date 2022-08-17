@@ -13,8 +13,7 @@ public:
 protected:
 	bool OnCharacterHit(CInfClassCharacter *pHit) final;
 	void DoBounce() final;
-	void CreateWhiteHole(vec2 CenterPos);
-
+	void CreateWhiteHole(const vec2 &CenterPos, const vec2 &To);
 };
 
 #endif
