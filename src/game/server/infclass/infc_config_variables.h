@@ -146,7 +146,7 @@ MACRO_CONFIG_INT(InfBlindnessDuration, inf_blindness_duration, 2500, 0, 10000, C
 
 //SuperWeapons
 MACRO_CONFIG_INT(InfMinPlayersForWhiteHole, inf_min_players_for_white_hole, 8, 0, 30, CFGFLAG_SERVER, "Minimal number of players that are needed to enable white hole")
-MACRO_CONFIG_INT(InfWhiteHoleMinimalKills, inf_white_hole_minimal_kills, 6, 0, 30, CFGFLAG_SERVER, "Minimal number of kills before white hole become available")
+MACRO_CONFIG_INT(InfWhiteHoleMinimalKills, inf_white_hole_minimal_kills, 12, 0, 30, CFGFLAG_SERVER, "Minimal number of kills before white hole become available")
 MACRO_CONFIG_INT(InfWhiteHoleProbability, inf_white_hole_probability, 20, 0, 100, CFGFLAG_SERVER, "Probability of super weapon being available after MinimalKill requirement")
 MACRO_CONFIG_INT(InfWhiteHoleLifeSpan, inf_white_hole_life_span, 20, 0, 100, CFGFLAG_SERVER, "White hole life span")
 MACRO_CONFIG_INT(InfWhiteHoleRadius, inf_white_hole_radius, 430, 0, 500, CFGFLAG_SERVER, "Radius of white holes")
