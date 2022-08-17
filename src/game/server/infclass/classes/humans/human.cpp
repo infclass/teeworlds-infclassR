@@ -34,6 +34,7 @@ MACRO_ALLOC_POOL_ID_IMPL(CInfClassHuman, MAX_CLIENTS)
 CInfClassHuman::CInfClassHuman(CInfClassPlayer *pPlayer)
 	: CInfClassPlayerClass(pPlayer)
 {
+	m_BroadcastWhiteHoleReady = -100;
 }
 
 CInfClassHuman *CInfClassHuman::GetInstance(CInfClassPlayer *pCharacter)
@@ -140,6 +141,33 @@ void CInfClassHuman::GetAmmoRegenParams(int Weapon, WeaponRegenParams *pParams)
 	if((Config()->m_InfTaxi == 1) && m_pCharacter->IsPassenger())
 	{
 		pParams->RegenInterval = 0;
+	}
+}
+
+void CInfClassHuman::CheckSuperWeaponAccess()
+{
+	// check kills of player
+	int kills = m_pPlayer->GetNumberKills();
+
+	// Only scientists can receive white holes
+	if(GetPlayerClass() == PLAYERCLASS_SCIENTIST)
+	{
+		if(GameController()->WhiteHoleEnabled() && !m_HasWhiteHole) // Can't receive a white hole while having one available
+		{
+			// enable white hole probabilities
+			if(kills > g_Config.m_InfWhiteHoleMinimalKills)
+			{
+				if(random_int(0, 100) < g_Config.m_InfWhiteHoleProbability)
+				{
+					if(!m_pCharacter->HasSuperWeaponIndicator())
+					{
+						// Scientist-laser.cpp will make it unavailable after usage and reset player kills
+						GameServer()->SendChatTarget_Localization(GetCID(), CHATCATEGORY_SCORE, _("White hole found, adjusting scientific parameters..."), nullptr);
+						m_pCharacter->SetSuperWeaponIndicatorEnabled(true);
+					}
+				}
+			}
+		}
 	}
 }
 
@@ -837,7 +865,7 @@ void CInfClassHuman::BroadcastWeaponState()
 			}
 		}
 
-		if(m_pCharacter->m_BroadcastWhiteHoleReady+(2*Server()->TickSpeed()) > Server()->Tick())
+		if(m_BroadcastWhiteHoleReady + (2 * Server()->TickSpeed()) > Server()->Tick())
 		{
 			GameServer()->SendBroadcast_Localization(GetPlayer()->GetCID(),
 				BROADCAST_PRIORITY_WEAPONSTATE, BROADCAST_DURATION_REALTIME,
@@ -1188,4 +1216,22 @@ void CInfClassHuman::OnSlimeEffect(int Owner)
 {
 	int Count = Config()->m_InfSlimePoisonDamage;
 	Poison(Count, Owner, DAMAGE_TYPE::SLUG_SLIME);
+}
+
+bool CInfClassHuman::HasWhiteHole() const
+{
+	return m_HasWhiteHole;
+}
+
+void CInfClassHuman::GiveWhiteHole()
+{
+	m_HasWhiteHole = true;
+	m_BroadcastWhiteHoleReady = Server()->Tick();
+	GameServer()->SendChatTarget_Localization(GetCID(), CHATCATEGORY_SCORE, _("The white hole is ready, use the laser rifle to disrupt space-time"), nullptr);
+}
+
+void CInfClassHuman::RemoveWhiteHole()
+{
+	m_HasWhiteHole = false;
+	m_pCharacter->SetSuperWeaponIndicatorEnabled(false);
 }

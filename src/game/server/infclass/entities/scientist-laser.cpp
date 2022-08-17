@@ -4,12 +4,13 @@
 #include <game/server/gamecontext.h>
 #include "scientist-laser.h"
 
+#include <game/server/infclass/classes/humans/human.h>
 #include <game/server/infclass/damage_type.h>
 #include <game/server/infclass/infcgamecontroller.h>
 
-#include "white-hole.h"
 #include "growingexplosion.h"
 #include "infccharacter.h"
+#include "white-hole.h"
 
 CScientistLaser::CScientistLaser(CGameContext *pGameContext, vec2 Pos, vec2 Direction, float StartEnergy, int Owner, int Dmg)
 	: CInfClassLaser(pGameContext, Pos, Direction, StartEnergy, Owner, Dmg, CGameWorld::ENTTYPE_LASER)
@@ -64,7 +65,9 @@ void CScientistLaser::CreateWhiteHole(const vec2 &CenterPos, const vec2 &To)
 {
 	// Create a white hole entity
 	CInfClassCharacter *pOwnerChar = GetOwnerCharacter();
-	if(!pOwnerChar || !pOwnerChar->m_HasWhiteHole)
+	CInfClassHuman *pHuman = pOwnerChar ? CInfClassHuman::GetInstance(pOwnerChar->GetPlayer()) : nullptr;
+
+	if(!pHuman || !pHuman->HasWhiteHole())
 	{
 		return;
 	}
@@ -72,6 +75,5 @@ void CScientistLaser::CreateWhiteHole(const vec2 &CenterPos, const vec2 &To)
 	new CWhiteHole(GameServer(), To, m_Owner);
 
 	// Make it unavailable
-	pOwnerChar->m_HasWhiteHole = false;
-	pOwnerChar->m_HasIndicator = false;
+	pHuman->RemoveWhiteHole();
 }

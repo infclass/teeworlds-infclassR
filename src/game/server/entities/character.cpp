@@ -56,10 +56,8 @@ m_pConsole(pConsole)
 	m_NinjaVelocityBuff = 0;
 	m_NinjaStrengthBuff = 0;
 	m_NinjaAmmoBuff = 0;
-	m_HasWhiteHole = false;
 	m_HasIndicator = false;
 	m_TurretCount = 0;
-	m_BroadcastWhiteHoleReady = -100;
 	m_ResetKillsTime = 0;
 /* INFECTION MODIFICATION END *****************************************/
 }

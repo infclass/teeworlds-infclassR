@@ -4,6 +4,8 @@
 #include <engine/shared/config.h>
 #include "superweapon-indicator.h"
 
+#include <game/server/infclass/classes/humans/human.h>
+#include <game/server/infclass/entities/infccharacter.h>
 #include <game/server/infclass/infcgamecontroller.h>
 
 CSuperWeaponIndicator::CSuperWeaponIndicator(CGameContext *pGameContext, vec2 Pos, int Owner)
@@ -50,8 +52,13 @@ void CSuperWeaponIndicator::Snap(int SnappingClient)
 
 void CSuperWeaponIndicator::Tick()
 {
-	if(m_MarkedForDestroy) return;
-	if (!m_OwnerChar) return;
+	if(IsMarkedForDestroy())
+		return;
+	CInfClassCharacter *pOwnerChar = GetOwnerCharacter();
+	CInfClassHuman *pHuman = pOwnerChar ? CInfClassHuman::GetInstance(pOwnerChar->GetPlayer()) : nullptr;
+
+	if(!pHuman)
+		return;
 
 	//refresh indicator position
 	m_Pos = m_OwnerChar->m_Core.m_Pos;
@@ -63,17 +70,14 @@ void CSuperWeaponIndicator::Tick()
 			m_warmUpCounter--;
 		} else {
 			m_IsWarmingUp = false;
-			m_OwnerChar->m_HasWhiteHole = true;
-			m_OwnerChar->m_BroadcastWhiteHoleReady = Server()->Tick();
-			GameServer()->SendChatTarget_Localization(m_Owner, CHATCATEGORY_SCORE, _("The white hole is ready, use the laser rifle to disrupt space-time"), NULL);
+			pHuman->GiveWhiteHole();
 		}
 	} 
 	else 	
 	{
-		if (m_OwnerChar->m_HasWhiteHole == false)
+		if(!pOwnerChar->HasSuperWeaponIndicator())
 		{
 			GameWorld()->DestroyEntity(this);
-			return; // Do not proceed after destruction
 		} 
 	}
 }

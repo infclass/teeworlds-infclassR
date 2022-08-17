@@ -52,6 +52,8 @@ public:
 	bool IsHealingDisabled() const;
 	void DisableHealing(float Duration, int From, DAMAGE_TYPE DamageType);
 
+	virtual void CheckSuperWeaponAccess();
+
 	// Events
 	virtual void OnPlayerSnap(int SnappingClient, int InfClassVersion);
 

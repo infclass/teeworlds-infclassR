@@ -214,6 +214,9 @@ public:
 	void SetPassenger(CCharacter *pPassenger);
 	int GetInfZoneTick();
 
+	bool HasSuperWeaponIndicator() const;
+	void SetSuperWeaponIndicatorEnabled(bool Enabled);
+
 	using CCharacter::GameWorld;
 	using CCharacter::Server;
 

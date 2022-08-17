@@ -1478,7 +1478,25 @@ int CInfClassCharacter::GetInfZoneTick() // returns how many ticks long a player
 	if(m_InfZoneTick < 0)
 		return 0;
 
-	return Server()->Tick()-m_InfZoneTick;
+	return Server()->Tick() - m_InfZoneTick;
+}
+
+bool CInfClassCharacter::HasSuperWeaponIndicator() const
+{
+	return m_HasIndicator;
+}
+
+void CInfClassCharacter::SetSuperWeaponIndicatorEnabled(bool Enabled)
+{
+	if(m_HasIndicator == Enabled)
+		return;
+
+	// create an indicator object
+	if(Enabled)
+	{
+		new CSuperWeaponIndicator(GameServer(), GetPos(), GetCID());
+	}
+	m_HasIndicator = Enabled;
 }
 
 CGameWorld *CInfClassCharacter::GameWorld() const
@@ -2558,31 +2576,7 @@ void CInfClassCharacter::CheckSuperWeaponAccess()
 	if(m_ResetKillsTime)
 		return;
 
-	// check kills of player
-	int kills = m_pPlayer->GetNumberKills();
-
-	//Only scientists can receive white holes
-	if(GetPlayerClass() == PLAYERCLASS_SCIENTIST)
-	{
-		if(GameController()->WhiteHoleEnabled() && !m_HasWhiteHole) // Can't receive a white hole while having one available
-		{
-			// enable white hole probabilities
-			if (kills > g_Config.m_InfWhiteHoleMinimalKills) 
-			{
-				if (random_int(0,100) < g_Config.m_InfWhiteHoleProbability) 
-				{
-					//Scientist-laser.cpp will make it unavailable after usage and reset player kills
-					
-					//create an indicator object
-					if (m_HasIndicator == false) {
-						m_HasIndicator = true;
-						GameServer()->SendChatTarget_Localization(GetCID(), CHATCATEGORY_SCORE, _("White hole found, adjusting scientific parameters..."), NULL);
-						new CSuperWeaponIndicator(GameServer(), GetPos(), GetCID());
-					}
-				} 
-			} 
-		}
-	}
+	m_pClass->CheckSuperWeaponAccess();
 }
 
 void CInfClassCharacter::FireSoldierBomb()

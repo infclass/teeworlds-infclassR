@@ -214,9 +214,7 @@ protected:
 	vec2 m_SpawnPosition;
 
 public:
-	bool m_HasWhiteHole;
 	bool m_HasIndicator;
-	int m_BroadcastWhiteHoleReady; // used to broadcast "WhiteHole ready" for a short period of time
 	int m_LoveTick;
 	int m_HallucinationTick;
 	int m_SlipperyTick;

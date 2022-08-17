@@ -24,6 +24,8 @@ public:
 
 	void GetAmmoRegenParams(int Weapon, WeaponRegenParams *pParams) override;
 
+	void CheckSuperWeaponAccess() override;
+
 	void OnPlayerSnap(int SnappingClient, int InfClassVersion) override;
 
 	void OnCharacterPreCoreTick() override;
@@ -41,6 +43,9 @@ public:
 	void OnLaserFired(WeaponFireContext *pFireContext) override;
 
 	void OnSlimeEffect(int Owner) override;
+	bool HasWhiteHole() const;
+	void GiveWhiteHole();
+	void RemoveWhiteHole();
 
 protected:
 	void GiveClassAttributes() override;
@@ -57,9 +62,11 @@ protected:
 	bool FindPortalPosition(vec2 *pPosition);
 
 private:
+	int m_BroadcastWhiteHoleReady; // used to broadcast "WhiteHole ready" for a short period of time
 	int m_PositionLockTicksRemaining = 0;
 	int m_NinjaTargetTick = 0;
 	int m_NinjaTargetCID = -1;
+	bool m_HasWhiteHole;
 
 	CHeroFlag *m_pHeroFlag = nullptr;
 };
