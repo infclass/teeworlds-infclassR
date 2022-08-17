@@ -2539,6 +2539,9 @@ bool CInfClassGameController::WhiteHoleEnabled() const
 	if(GetRoundType() == ROUND_TYPE::FAST)
 		return false;
 
+	if(Server()->GetActivePlayerCount() < Config()->m_InfMinPlayersForWhiteHole)
+		return false;
+
 	return Config()->m_InfWhiteHoleProbability > 0;
 }
 
