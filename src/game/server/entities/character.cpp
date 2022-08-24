@@ -182,7 +182,7 @@ void CCharacter::HandleWaterJump()
 void CCharacter::DoWeaponSwitch()
 {
 /* INFECTION MODIFICATION START ***************************************/
-	if(m_QueuedWeapon == -1)
+	if(m_QueuedWeapon == -1 || !m_aWeapons[m_QueuedWeapon].m_Got)
 		return;
 /* INFECTION MODIFICATION END *****************************************/
 
