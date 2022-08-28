@@ -1856,7 +1856,7 @@ void CInfClassGameController::DoTeamChange(CPlayer *pBasePlayer, int Team, bool 
 		if(Team == TEAM_SPECTATORS)
 		{
 			GameServer()->SendChatTarget_Localization(-1, CHATCATEGORY_PLAYER, _("{str:PlayerName} joined the spectators"), "PlayerName", Server()->ClientName(ClientID), NULL);
-			Server()->InfecteClient(ClientID);
+			SetPlayerInfectedByGame(pPlayer);
 		}
 		else
 		{
@@ -2311,8 +2311,7 @@ int CInfClassGameController::InfectHumans(int NumHumansToInfect)
 		CInfClassPlayer *pPlayer = Iter.Player();
 		if(pPlayer->IsHuman())
 		{
-			const int ClientID = pPlayer->GetCID();
-			if(Server()->IsClientInfectedBefore(ClientID))
+			if(PlayerWasInfectedByGame(pPlayer))
 			{
 				UnfairCandidates.Add(pPlayer->GetCID());
 			}
@@ -2349,8 +2348,8 @@ int CInfClassGameController::InfectHumans(int NumHumansToInfect)
 
 	for(int ClientID : ToInfect)
 	{
-		Server()->InfecteClient(ClientID);
 		CInfClassPlayer *pPlayer = GetPlayer(ClientID);
+		SetPlayerInfectedByGame(pPlayer);
 
 		pPlayer->KillCharacter(); // Infect the player
 		pPlayer->StartInfection();
@@ -3503,6 +3502,16 @@ int CInfClassGameController::GetPlayerClassProbability(int PlayerClass) const
 
 	Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "server", "WARNING: Invalid GetPlayerClassProbability() call");
 	return 0;
+}
+
+bool CInfClassGameController::PlayerWasInfectedByGame(const CInfClassPlayer *pPlayer) const
+{
+	return Server()->IsClientInfectedBefore(pPlayer->GetCID());
+}
+
+void CInfClassGameController::SetPlayerInfectedByGame(const CInfClassPlayer *pPlayer)
+{
+	Server()->InfecteClient(pPlayer->GetCID());
 }
 
 ROUND_TYPE CInfClassGameController::GetRoundType() const
