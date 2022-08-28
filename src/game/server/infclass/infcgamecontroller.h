@@ -92,6 +92,7 @@ public:
 
 	bool PlayerWasInfectedByGame(const CInfClassPlayer *pPlayer) const;
 	void SetPlayerInfectedByGame(const CInfClassPlayer *pPlayer);
+	void UpdatePlayersInfectedByGame();
 
 	ROUND_TYPE GetRoundType() const;
 

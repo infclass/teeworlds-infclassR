@@ -369,7 +369,7 @@ public:
 	int GetClientInfclassVersion(int ClientID) const override;
 
 	virtual bool IsClientInfectedBefore(int ClientID);
-	virtual void SetClientInfectedBefore(int ClientID);
+	virtual void SetClientInfectedBefore(int ClientID, bool InfectedBefore);
 
 	virtual int GetClientAntiPing(int ClientID);
 	virtual void SetClientAntiPing(int ClientID, int Value);

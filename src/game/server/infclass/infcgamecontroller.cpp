@@ -3511,7 +3511,32 @@ bool CInfClassGameController::PlayerWasInfectedByGame(const CInfClassPlayer *pPl
 
 void CInfClassGameController::SetPlayerInfectedByGame(const CInfClassPlayer *pPlayer)
 {
-	Server()->SetClientInfectedBefore(pPlayer->GetCID());
+	Server()->SetClientInfectedBefore(pPlayer->GetCID(), true);
+
+	UpdatePlayersInfectedByGame();
+}
+
+void CInfClassGameController::UpdatePlayersInfectedByGame()
+{
+	CInfClassPlayerIterator<PLAYERITER_INGAME> Iter(GameServer()->m_apPlayers);
+
+	bool NonInfectedFound = false;
+	while(Iter.Next())
+	{
+		if(PlayerWasInfectedByGame(Iter.Player()))
+			continue;
+
+		NonInfectedFound = true;
+	}
+
+	if(NonInfectedFound)
+		return;
+
+	// New infection
+	for(int i = 0; i < MAX_CLIENTS; i++)
+	{
+		Server()->SetClientInfectedBefore(i, false);
+	}
 }
 
 ROUND_TYPE CInfClassGameController::GetRoundType() const

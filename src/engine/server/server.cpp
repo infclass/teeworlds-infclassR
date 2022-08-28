@@ -3252,26 +3252,9 @@ bool CServer::IsClientInfectedBefore(int ClientID)
 	return m_aClients[ClientID].m_WasInfected;
 }
 
-void CServer::SetClientInfectedBefore(int ClientID)
+void CServer::SetClientInfectedBefore(int ClientID, bool InfectedBefore)
 {
-	m_aClients[ClientID].m_WasInfected = true;
-	bool NonInfectedFound = false;
-	for(int i=0; i<MAX_CLIENTS; i++)
-	{
-		if(m_aClients[i].m_State == CServer::CClient::STATE_INGAME && m_aClients[i].m_WasInfected == false)
-		{
-			NonInfectedFound = true;
-			break;
-		}
-	}
-	
-	if(!NonInfectedFound)
-	{
-		for(int i=0; i<MAX_CLIENTS; i++)
-		{
-			m_aClients[i].m_WasInfected = false;
-		}
-	}
+	m_aClients[ClientID].m_WasInfected = InfectedBefore;
 }
 
 int CServer::GetClientAntiPing(int ClientID)
