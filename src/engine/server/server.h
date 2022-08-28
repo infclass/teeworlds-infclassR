@@ -169,8 +169,8 @@ public:
 		int m_DefaultScoreMode;
 		char m_aLanguage[16];
 		int m_WaitingTime;
-		int m_WasInfected;
-		
+		bool m_WasInfected;
+
 		bool m_Memory[NUM_CLIENTMEMORIES];
 		IServer::CClientSession m_Session;
 		IServer::CClientAccusation m_Accusation;
@@ -368,9 +368,9 @@ public:
 public:
 	int GetClientInfclassVersion(int ClientID) const override;
 
-	virtual int IsClientInfectedBefore(int ClientID);
-	virtual void InfecteClient(int ClientID);
-	
+	virtual bool IsClientInfectedBefore(int ClientID);
+	virtual void SetClientInfectedBefore(int ClientID);
+
 	virtual int GetClientAntiPing(int ClientID);
 	virtual void SetClientAntiPing(int ClientID, int Value);
 	

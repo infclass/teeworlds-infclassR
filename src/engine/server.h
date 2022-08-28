@@ -303,8 +303,8 @@ public:
 /* INFECTION MODIFICATION START ***************************************/
 	virtual int GetClientInfclassVersion(int ClientID) const = 0;
 
-	virtual int IsClientInfectedBefore(int ClientID) = 0;
-	virtual void InfecteClient(int ClientID) = 0;
+	virtual bool IsClientInfectedBefore(int ClientID) = 0;
+	virtual void SetClientInfectedBefore(int ClientID) = 0;
 	
 	virtual int GetClientNbRound(int ClientID) = 0;
 	

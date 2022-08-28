@@ -326,8 +326,8 @@ void CServer::CClient::Reset(bool ResetScore)
 	{
 		m_NbRound = 0;
 		m_WaitingTime = 0;
-		m_WasInfected = 0;
-		
+		m_WasInfected = false;
+
 		m_UserID = -1;
 #ifdef CONF_SQL
 		m_UserLevel = SQL_USERLEVEL_NORMAL;
@@ -339,9 +339,6 @@ void CServer::CClient::Reset(bool ResetScore)
 		m_DefaultScoreMode = PLAYERSCOREMODE_SCORE;
 		str_copy(m_aLanguage, "en", sizeof(m_aLanguage));
 
-		m_WaitingTime = 0;
-		m_WasInfected = 0;
-		
 		mem_zero(m_Memory, sizeof(m_Memory));
 		
 		m_Session.m_RoundId = -1;
@@ -567,7 +564,7 @@ int CServer::Init()
 		m_aClients[i].m_Snapshots.Init();
 		m_aClients[i].m_IsBot = false;
 		m_aClients[i].m_WaitingTime = 0;
-		m_aClients[i].m_WasInfected = 0;
+		m_aClients[i].m_WasInfected = false;
 		m_aClients[i].m_Accusation.m_Num = 0;
 		m_aClients[i].m_Latency = 0;
 	}
@@ -3250,18 +3247,18 @@ void CServer::GetClientAddr(int ClientID, NETADDR *pAddr) const
 }
 
 /* INFECTION MODIFICATION START ***************************************/
-int CServer::IsClientInfectedBefore(int ClientID)
+bool CServer::IsClientInfectedBefore(int ClientID)
 {
 	return m_aClients[ClientID].m_WasInfected;
 }
 
-void CServer::InfecteClient(int ClientID)
+void CServer::SetClientInfectedBefore(int ClientID)
 {
-	m_aClients[ClientID].m_WasInfected = 1;
+	m_aClients[ClientID].m_WasInfected = true;
 	bool NonInfectedFound = false;
 	for(int i=0; i<MAX_CLIENTS; i++)
 	{
-		if(m_aClients[i].m_State == CServer::CClient::STATE_INGAME && m_aClients[i].m_WasInfected == 0)
+		if(m_aClients[i].m_State == CServer::CClient::STATE_INGAME && m_aClients[i].m_WasInfected == false)
 		{
 			NonInfectedFound = true;
 			break;
@@ -3272,7 +3269,7 @@ void CServer::InfecteClient(int ClientID)
 	{
 		for(int i=0; i<MAX_CLIENTS; i++)
 		{
-			m_aClients[i].m_WasInfected = 0;
+			m_aClients[i].m_WasInfected = false;
 		}
 	}
 }

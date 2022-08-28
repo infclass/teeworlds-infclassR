@@ -3511,7 +3511,7 @@ bool CInfClassGameController::PlayerWasInfectedByGame(const CInfClassPlayer *pPl
 
 void CInfClassGameController::SetPlayerInfectedByGame(const CInfClassPlayer *pPlayer)
 {
-	Server()->InfecteClient(pPlayer->GetCID());
+	Server()->SetClientInfectedBefore(pPlayer->GetCID());
 }
 
 ROUND_TYPE CInfClassGameController::GetRoundType() const
