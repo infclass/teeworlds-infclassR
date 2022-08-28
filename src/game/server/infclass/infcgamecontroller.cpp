@@ -1856,7 +1856,7 @@ void CInfClassGameController::DoTeamChange(CPlayer *pBasePlayer, int Team, bool 
 		if(Team == TEAM_SPECTATORS)
 		{
 			GameServer()->SendChatTarget_Localization(-1, CHATCATEGORY_PLAYER, _("{str:PlayerName} joined the spectators"), "PlayerName", Server()->ClientName(ClientID), NULL);
-			SetPlayerInfectedByGame(pPlayer);
+			UpdatePlayersInfectedByGame();
 		}
 		else
 		{
