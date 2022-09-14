@@ -3354,7 +3354,7 @@ bool CInfClassGameController::TryRespawn(CInfClassPlayer *pPlayer, SpawnContext 
 	return false;
 }
 
-int CInfClassGameController::ChooseHumanClass(const CPlayer *pPlayer) const
+int CInfClassGameController::ChooseHumanClass(const CInfClassPlayer *pPlayer) const
 {
 	//Get information about existing humans
 	int nbSupport = 0;
@@ -3399,14 +3399,14 @@ int CInfClassGameController::ChooseHumanClass(const CPlayer *pPlayer) const
 		}
 	}
 
-	//Random is not fair enough. We keep the last two classes took by the player, and avoid to give him those again
-	if(GetRoundType() != ROUND_TYPE::FUN) { // if normal round is being played
-		for(unsigned int i=0; i<sizeof(pPlayer->m_LastHumanClasses)/sizeof(int); i++)
+	// Random is not fair enough. We keep the last classes took by the player, and avoid to give those again
+	if(GetRoundType() != ROUND_TYPE::FUN)
+	{
+		// if normal round is being played
+		int PrevClass = pPlayer->GetPreviousHumanClass();
+		if(PrevClass != PLAYERCLASS_INVALID)
 		{
-			if(pPlayer->m_LastHumanClasses[i] > START_HUMANCLASS && pPlayer->m_LastHumanClasses[i] < END_HUMANCLASS)
-			{
-				GetClassProbabilityRef(pPlayer->m_LastHumanClasses[i]) = 0.0f;
-			}
+			GetClassProbabilityRef(PrevClass) = 0.0f;
 		}
 	}
 	

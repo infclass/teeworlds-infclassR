@@ -192,8 +192,6 @@ public:
 	CTuningParams m_NextTuningParams;
 	
 	void HandleTuningParams();
-	
-	int m_LastHumanClasses[2];
 
 /* INFECTION MODIFICATION END *****************************************/
 

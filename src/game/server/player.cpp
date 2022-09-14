@@ -78,10 +78,6 @@ void CPlayer::Reset()
 	m_PrevTuningParams = *m_pGameServer->Tuning();
 	m_NextTuningParams = m_PrevTuningParams;
 	m_IsInGame = false;
-
-	for(unsigned int i=0; i<sizeof(m_LastHumanClasses)/sizeof(int); i++)
-		m_LastHumanClasses[i] = PLAYERCLASS_INVALID;
-
 /* INFECTION MODIFICATION END *****************************************/
 }
 

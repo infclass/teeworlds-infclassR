@@ -85,7 +85,7 @@ public:
 	void EndRound(ROUND_END_REASON Reason);
 	void DoTeamChange(class CPlayer *pPlayer, int Team, bool DoChatMsg = true) override;
 	bool TryRespawn(CInfClassPlayer *pPlayer, SpawnContext *pContext);
-	int ChooseHumanClass(const CPlayer *pPlayer) const;
+	int ChooseHumanClass(const CInfClassPlayer *pPlayer) const;
 	int ChooseInfectedClass(const CInfClassPlayer *pPlayer) const;
 	bool GetPlayerClassEnabled(int PlayerClass) const;
 	int GetMinPlayersForClass(int PlayerClass) const;
