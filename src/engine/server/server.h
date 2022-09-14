@@ -318,7 +318,6 @@ public:
 	static void ConKick(IConsole::IResult *pResult, void *pUser);
 	static void ConStatus(IConsole::IResult *pResult, void *pUser);
 	static void ConStatusExtended(IConsole::IResult *pResult, void *pUser);
-	static void ConOptionStatus(IConsole::IResult *pResult, void *pUser);
 	static void ConShutdown(IConsole::IResult *pResult, void *pUser);
 	static void ConRecord(IConsole::IResult *pResult, void *pUser);
 	static void ConStopRecord(IConsole::IResult *pResult, void *pUser);

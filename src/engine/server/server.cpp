@@ -2730,29 +2730,6 @@ void CServer::ConKick(IConsole::IResult *pResult, void *pUser)
 		pThis->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "Server", "Invalid client id");
 }
 
-/* INFECTION MODIFICATION START ***************************************/
-void CServer::ConOptionStatus(IConsole::IResult *pResult, void *pUser)
-{
-	char aBuf[1024];
-	CServer* pThis = static_cast<CServer *>(pUser);
-
-	for(int i = 0; i < MAX_CLIENTS; i++)
-	{
-		if(pThis->m_aClients[i].m_State == CClient::STATE_INGAME)
-		{
-			str_format(aBuf, sizeof(aBuf), "(#%02i) %s: [lang=%s] [alwaysrandom=%d]",
-				i,
-				pThis->ClientName(i),
-				pThis->m_aClients[i].m_aLanguage,
-				pThis->GetClientAlwaysRandom(i)
-			);
-			
-			pThis->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "Server", aBuf);
-		}
-	}
-}
-/* INFECTION MODIFICATION END *****************************************/
-
 void CServer::ConStatusExtended(IConsole::IResult *pResult, void *pUser)
 {
 	ConStatus(pResult, pUser);
@@ -3156,7 +3133,6 @@ void CServer::RegisterCommands()
 	Console()->Register("kick", "s<username or uid> ?r<reason>", CFGFLAG_SERVER, ConKick, this, "Kick player with specified id for any reason");
 	Console()->Register("status", "", CFGFLAG_SERVER, ConStatus, this, "List players");
 	Console()->Register("status_extended", "", CFGFLAG_SERVER, ConStatusExtended, this, "List players");
-	Console()->Register("option_status", "", CFGFLAG_SERVER, ConOptionStatus, this, "List player options");
 	Console()->Register("shutdown", "?r", CFGFLAG_SERVER, ConShutdown, this, "Shut down");
 	Console()->Register("logout", "", CFGFLAG_SERVER, ConLogout, this, "Logout of rcon");
 
