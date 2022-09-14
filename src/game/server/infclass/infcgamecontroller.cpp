@@ -1037,6 +1037,8 @@ void CInfClassGameController::RegisterChatCommands(IConsole *pConsole)
 	pConsole->Register("add_map_data", "s[mapname] i[timestamp]", CFGFLAG_SERVER, ConAddMapData, this, "Add map rotation data");
 	pConsole->Register("set_map_min_max_players", "s[mapname] i[min] ?i[max]", CFGFLAG_SERVER, ConSetMapMinMaxPlayers, this, "Set min/max players for a map");
 
+	Console()->Register("antiping", "i['0'|'1']", CFGFLAG_CHAT, ConAntiPing, this, "Try to improve your ping (reduce the traffic)");
+
 	pConsole->Register("set_class", "s[classname]", CFGFLAG_CHAT, ConUserSetClass, this, "Set the class of a player");
 	pConsole->Register("save_position", "", CFGFLAG_CHAT, ConSavePosition, this, "Save the current character position");
 	pConsole->Register("load_position", "", CFGFLAG_CHAT, ConLoadPosition, this, "Load (restore) the current character position");
@@ -1104,6 +1106,19 @@ void CInfClassGameController::ConLockClientName(IConsole::IResult *pResult, void
 	}
 
 	pPlayer->m_ClientNameLocked = Lock != 0;
+}
+
+void CInfClassGameController::ConAntiPing(IConsole::IResult *pResult, void *pUserData)
+{
+	CInfClassGameController *pSelf = (CInfClassGameController *)pUserData;
+	int ClientID = pResult->GetClientID();
+
+	int Arg = pResult->GetInteger(0);
+
+	if(Arg > 0)
+		pSelf->Server()->SetClientAntiPing(ClientID, 1);
+	else
+		pSelf->Server()->SetClientAntiPing(ClientID, 0);
 }
 
 void CInfClassGameController::ConUserSetClass(IConsole::IResult *pResult, void *pUserData)

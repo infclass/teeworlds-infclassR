@@ -288,7 +288,6 @@ private:
 	void ChatHelp(int ClientID, const char *pHelpPage);
 	bool WriteClassHelpPage(dynamic_string *pOutput, const char *pLanguage, PLAYERCLASS PlayerClass);
 	static void ConAlwaysRandom(IConsole::IResult *pResult, void *pUserData);
-	static void ConAntiPing(IConsole::IResult *pResult, void *pUserData);
 	static void ConLanguage(IConsole::IResult *pResult, void *pUserData);
 	static void ConCmdList(IConsole::IResult *pResult, void *pUserData);
 	static void ConChangeLog(IConsole::IResult *pResult, void *pUserData);

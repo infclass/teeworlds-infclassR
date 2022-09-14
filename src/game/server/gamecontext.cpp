@@ -4008,19 +4008,6 @@ bool CGameContext::WriteClassHelpPage(dynamic_string *pOutput, const char *pLang
 	return true;
 }
 
-void CGameContext::ConAntiPing(IConsole::IResult *pResult, void *pUserData)
-{
-	CGameContext *pSelf = (CGameContext *)pUserData;
-	int ClientID = pResult->GetClientID();
-	
-	int Arg = pResult->GetInteger(0);
-
-	if(Arg > 0)
-		pSelf->Server()->SetClientAntiPing(ClientID, 1);
-	else
-		pSelf->Server()->SetClientAntiPing(ClientID, 0);
-}
-
 void CGameContext::ConAlwaysRandom(IConsole::IResult *pResult, void *pUserData)
 {
 	CGameContext *pSelf = (CGameContext *)pUserData;
@@ -4284,7 +4271,6 @@ void CGameContext::OnConsoleInit()
 	Console()->Register("reload_changelog", "?i[page]", CFGFLAG_SERVER, ConReloadChangeLog, this, "Reload the changelog file");
 	Console()->Register("changelog", "?i[page]", CFGFLAG_CHAT, ConChangeLog, this, "Display a changelog page");
 	Console()->Register("alwaysrandom", "i[0|1]", CFGFLAG_CHAT, ConAlwaysRandom, this, "Display information about the mod");
-	Console()->Register("antiping", "i[0|1]", CFGFLAG_CHAT, ConAntiPing, this, "Try to improve your ping");
 
 	static char aLangs[256] = {};
 	if(!aLangs[0])
