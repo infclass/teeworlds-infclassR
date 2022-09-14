@@ -3382,31 +3382,37 @@ int CInfClassGameController::ChooseHumanClass(const CInfClassPlayer *pPlayer) co
 		return Probability[PlayerClass - START_HUMANCLASS - 1];
 	};
 
+	int AvailableClasses = 0;
 	for(int PlayerClass = START_HUMANCLASS + 1; PlayerClass < END_HUMANCLASS; ++PlayerClass)
 	{
 		double &ClassProbability = GetClassProbabilityRef(PlayerClass);
 		ClassProbability = GetPlayerClassEnabled(PlayerClass) ? 1.0f : 0.0f;
-		if(GetRoundType() == ROUND_TYPE::FUN)
+		if(GetRoundType() != ROUND_TYPE::FUN)
 		{
-			// We care only about the class enablement
-			continue;
+			CLASS_AVAILABILITY Availability = GetPlayerClassAvailability(PlayerClass);
+			if(Availability != CLASS_AVAILABILITY::AVAILABLE)
+			{
+				ClassProbability = 0.0f;
+			}
 		}
 
-		CLASS_AVAILABILITY Availability = GetPlayerClassAvailability(PlayerClass);
-		if(Availability != CLASS_AVAILABILITY::AVAILABLE)
+		if(ClassProbability > 0)
 		{
-			ClassProbability = 0.0f;
+			AvailableClasses++;
 		}
 	}
 
 	// Random is not fair enough. We keep the last classes took by the player, and avoid to give those again
 	if(GetRoundType() != ROUND_TYPE::FUN)
 	{
-		// if normal round is being played
-		int PrevClass = pPlayer->GetPreviousHumanClass();
-		if(PrevClass != PLAYERCLASS_INVALID)
+		if(AvailableClasses > 1)
 		{
-			GetClassProbabilityRef(PrevClass) = 0.0f;
+			// if normal round is being played
+			int PrevClass = pPlayer->GetPreviousHumanClass();
+			if(PrevClass != PLAYERCLASS_INVALID)
+			{
+				GetClassProbabilityRef(PrevClass) = 0.0f;
+			}
 		}
 	}
 	
