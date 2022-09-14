@@ -2265,11 +2265,13 @@ int CServer::Run()
 	m_PrintCBIndex = Console()->RegisterPrintCallback(g_Config.m_ConsoleOutputLevel, SendRconLineAuthed, this);
 
 	{
-		int Size = GameServer()->PersistentClientDataSize();
-		for(auto &Client : m_aClients)
+		// int Size = GameServer()->PersistentClientDataSize();
+		for(CClient &Client : m_aClients)
 		{
 			Client.m_HasPersistentData = false;
-			Client.m_pPersistentData = malloc(Size);
+			// The code is disabled to lazily allocate the data
+			// Client.m_pPersistentData = malloc(Size);
+			Client.m_pPersistentData = nullptr;
 		}
 	}
 
@@ -2427,10 +2429,15 @@ int CServer::Run()
 					// new map loaded
 
 					// ask the game to for the data it wants to persist past a map change
+					const int ClientDataSize = GameServer()->PersistentClientDataSize();
 					for(int i = 0; i < MAX_CLIENTS; i++)
 					{
 						if(m_aClients[i].m_State == CClient::STATE_INGAME)
 						{
+							if(!m_aClients[i].m_pPersistentData)
+							{
+								m_aClients[i].m_pPersistentData = malloc(ClientDataSize);
+							}
 							m_aClients[i].m_HasPersistentData = GameServer()->OnClientDataPersist(i, m_aClients[i].m_pPersistentData);
 						}
 					}
