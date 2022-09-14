@@ -4008,28 +4008,6 @@ bool CGameContext::WriteClassHelpPage(dynamic_string *pOutput, const char *pLang
 	return true;
 }
 
-void CGameContext::ConAlwaysRandom(IConsole::IResult *pResult, void *pUserData)
-{
-	CGameContext *pSelf = (CGameContext *)pUserData;
-	int ClientID = pResult->GetClientID();
-	const char* pLanguage = pSelf->m_apPlayers[ClientID]->GetLanguage();
-	
-	int Arg = pResult->GetInteger(0);
-
-	if(Arg > 0)
-	{
-		pSelf->Server()->SetClientAlwaysRandom(ClientID, 1);
-		const char* pTxtAlwaysRandomOn = pSelf->Server()->Localization()->Localize(pLanguage, _("A random class will be automatically attributed to you when rounds start"));
-		pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "alwaysrandom", pTxtAlwaysRandomOn);		
-	}
-	else
-	{
-		pSelf->Server()->SetClientAlwaysRandom(ClientID, 0);
-		const char* pTxtAlwaysRandomOff = pSelf->Server()->Localization()->Localize(pLanguage, _("The class selector will be displayed when rounds start"));
-		pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "alwaysrandom", pTxtAlwaysRandomOff);		
-	}
-}
-
 void CGameContext::ConLanguage(IConsole::IResult *pResult, void *pUserData)
 {
 	CGameContext *pSelf = (CGameContext *)pUserData;
@@ -4270,7 +4248,6 @@ void CGameContext::OnConsoleInit()
 	Console()->Register("help", "?s[page]", CFGFLAG_CHAT, ChatHelp, this, "Display help");
 	Console()->Register("reload_changelog", "?i[page]", CFGFLAG_SERVER, ConReloadChangeLog, this, "Reload the changelog file");
 	Console()->Register("changelog", "?i[page]", CFGFLAG_CHAT, ConChangeLog, this, "Display a changelog page");
-	Console()->Register("alwaysrandom", "i[0|1]", CFGFLAG_CHAT, ConAlwaysRandom, this, "Display information about the mod");
 
 	static char aLangs[256] = {};
 	if(!aLangs[0])

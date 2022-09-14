@@ -1042,6 +1042,7 @@ void CInfClassGameController::RegisterChatCommands(IConsole *pConsole)
 	pConsole->Register("add_map_data", "s[mapname] i[timestamp]", CFGFLAG_SERVER, ConAddMapData, this, "Add map rotation data");
 	pConsole->Register("set_map_min_max_players", "s[mapname] i[min] ?i[max]", CFGFLAG_SERVER, ConSetMapMinMaxPlayers, this, "Set min/max players for a map");
 
+	Console()->Register("alwaysrandom", "i['0'|'1']", CFGFLAG_CHAT, ConAlwaysRandom, this, "Set the preferred class to Random");
 	Console()->Register("antiping", "i['0'|'1']", CFGFLAG_CHAT, ConAntiPing, this, "Try to improve your ping (reduce the traffic)");
 
 	pConsole->Register("set_class", "s[classname]", CFGFLAG_CHAT, ConUserSetClass, this, "Set the class of a player");
@@ -1111,6 +1112,30 @@ void CInfClassGameController::ConLockClientName(IConsole::IResult *pResult, void
 	}
 
 	pPlayer->m_ClientNameLocked = Lock != 0;
+}
+
+void CInfClassGameController::ConAlwaysRandom(IConsole::IResult *pResult, void *pUserData)
+{
+	CInfClassGameController *pSelf = (CInfClassGameController *)pUserData;
+	int ClientID = pResult->GetClientID();
+
+	CInfClassPlayer *pPlayer = pSelf->GetPlayer(ClientID);
+	const char *pLanguage = pPlayer->GetLanguage();
+
+	int Arg = pResult->GetInteger(0);
+
+	if(Arg > 0)
+	{
+		pSelf->Server()->SetClientAlwaysRandom(ClientID, 1);
+		const char *pTxtAlwaysRandomOn = pSelf->Server()->Localization()->Localize(pLanguage, _("A random class will be automatically attributed to you when rounds start"));
+		pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "alwaysrandom", pTxtAlwaysRandomOn);
+	}
+	else
+	{
+		pSelf->Server()->SetClientAlwaysRandom(ClientID, 0);
+		const char *pTxtAlwaysRandomOff = pSelf->Server()->Localization()->Localize(pLanguage, _("The class selector will be displayed when rounds start"));
+		pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "alwaysrandom", pTxtAlwaysRandomOff);
+	}
 }
 
 void CInfClassGameController::ConAntiPing(IConsole::IResult *pResult, void *pUserData)
