@@ -143,7 +143,10 @@ public:
 	static void ConSetClientName(IConsole::IResult *pResult, void *pUserData);
 	static void ConRestoreClientName(IConsole::IResult *pResult, void *pUserData);
 	static void ConLockClientName(IConsole::IResult *pResult, void *pUserData);
+	static void ConPreferClass(IConsole::IResult *pResult, void *pUserData);
 	static void ConAlwaysRandom(IConsole::IResult *pResult, void *pUserData);
+	void SetPreferredClass(int ClientID, const char *pClassName);
+	void SetPreferredClass(int ClientID, int Class);
 	static void ConAntiPing(IConsole::IResult *pResult, void *pUserData);
 
 	static void ConUserSetClass(IConsole::IResult *pResult, void *pUserData);

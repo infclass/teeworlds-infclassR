@@ -1043,6 +1043,7 @@ void CInfClassGameController::RegisterChatCommands(IConsole *pConsole)
 	pConsole->Register("add_map_data", "s[mapname] i[timestamp]", CFGFLAG_SERVER, ConAddMapData, this, "Add map rotation data");
 	pConsole->Register("set_map_min_max_players", "s[mapname] i[min] ?i[max]", CFGFLAG_SERVER, ConSetMapMinMaxPlayers, this, "Set min/max players for a map");
 
+	Console()->Register("prefer_class", "s[classname]", CFGFLAG_CHAT, ConPreferClass, this, "Set the preferred human class to <classname>");
 	Console()->Register("alwaysrandom", "i['0'|'1']", CFGFLAG_CHAT, ConAlwaysRandom, this, "Set the preferred class to Random");
 	Console()->Register("antiping", "i['0'|'1']", CFGFLAG_CHAT, ConAntiPing, this, "Try to improve your ping (reduce the traffic)");
 
@@ -1115,27 +1116,75 @@ void CInfClassGameController::ConLockClientName(IConsole::IResult *pResult, void
 	pPlayer->m_ClientNameLocked = Lock != 0;
 }
 
+void CInfClassGameController::ConPreferClass(IConsole::IResult *pResult, void *pUserData)
+{
+	CInfClassGameController *pSelf = (CInfClassGameController *)pUserData;
+	int ClientID = pResult->GetClientID();
+
+	const char *pClassName = pResult->GetString(0);
+	pSelf->SetPreferredClass(ClientID, pClassName);
+}
+
 void CInfClassGameController::ConAlwaysRandom(IConsole::IResult *pResult, void *pUserData)
 {
 	CInfClassGameController *pSelf = (CInfClassGameController *)pUserData;
 	int ClientID = pResult->GetClientID();
 
-	CInfClassPlayer *pPlayer = pSelf->GetPlayer(ClientID);
-	const char *pLanguage = pPlayer->GetLanguage();
+	bool Random = pResult->GetInteger(0) > 0;
+	pSelf->SetPreferredClass(ClientID, Random ? PLAYERCLASS_RANDOM : PLAYERCLASS_INVALID);
+}
 
-	int Arg = pResult->GetInteger(0);
+void CInfClassGameController::SetPreferredClass(int ClientID, const char *pClassName)
+{
+	bool Ok = false;
+	int PlayerClass = GetClassByName(pClassName, &Ok);
 
-	if(Arg > 0)
+	if(!Ok)
 	{
-		pPlayer->SetPreferredClass(PLAYERCLASS_RANDOM);
-		const char *pTxtAlwaysRandomOn = pSelf->Server()->Localization()->Localize(pLanguage, _("A random class will be automatically attributed to you when rounds start"));
-		pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "alwaysrandom", pTxtAlwaysRandomOn);
+		GameServer()->SendChatTarget_Localization(ClientID, CHATCATEGORY_DEFAULT,
+			_("Unable to set preferred class: Invalid class name"), nullptr);
+		return;
 	}
-	else
+	SetPreferredClass(ClientID, PlayerClass);
+}
+
+void CInfClassGameController::SetPreferredClass(int ClientID, int Class)
+{
+	if(!IsHumanClass(Class))
 	{
-		pPlayer->SetPreferredClass(PLAYERCLASS_INVALID);
-		const char *pTxtAlwaysRandomOff = pSelf->Server()->Localization()->Localize(pLanguage, _("The class selector will be displayed when rounds start"));
-		pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "alwaysrandom", pTxtAlwaysRandomOff);
+		return;
+	}
+
+	CInfClassPlayer *pPlayer = GetPlayer(ClientID);
+	if(!pPlayer)
+	{
+		return;
+	}
+
+	pPlayer->SetPreferredClass(Class);
+
+	switch(Class)
+	{
+	case PLAYERCLASS_RANDOM:
+		GameServer()->SendChatTarget_Localization(ClientID, CHATCATEGORY_PLAYER,
+			_("A random class will be automatically attributed to you when round starts"),
+			nullptr);
+		break;
+	case PLAYERCLASS_INVALID:
+		GameServer()->SendChatTarget_Localization(ClientID, CHATCATEGORY_PLAYER,
+			_("The class selector will be displayed when round starts"),
+			nullptr);
+		break;
+	default:
+	{
+		const char *pClassDisplayName = GetClassDisplayName(Class);
+		const char *pTranslated = Server()->Localization()->Localize(pPlayer->GetLanguage(), pClassDisplayName);
+		GameServer()->SendChatTarget_Localization(ClientID, CHATCATEGORY_PLAYER,
+			_("Class {str:ClassName} will be automatically attributed to you when round starts"),
+			"ClassName", pTranslated,
+			nullptr);
+		break;
+	}
 	}
 }
 
@@ -3415,7 +3464,19 @@ int CInfClassGameController::ChooseHumanClass(const CInfClassPlayer *pPlayer) co
 			}
 		}
 	}
-	
+
+	int PreferredClass = pPlayer->GetPreferredClass();
+	if(PreferredClass != PLAYERCLASS_INVALID)
+	{
+		if(PreferredClass != PLAYERCLASS_RANDOM)
+		{
+			if(GetClassProbabilityRef(PreferredClass) > 0)
+			{
+				return PreferredClass;
+			}
+		}
+	}
+
 	return START_HUMANCLASS + 1 + random_distribution(Probability, Probability + NB_HUMANCLASS);
 }
 
