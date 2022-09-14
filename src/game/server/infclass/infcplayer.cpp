@@ -339,6 +339,9 @@ void CInfClassPlayer::SetClass(int newClass)
 
 	ResetNumberKills();
 
+	// Also reset the last move tick to fix Hero flag indicator
+	m_LastActionMoveTick = Server()->Tick();
+
 	if(m_pInfcPlayerClass)
 	{
 		m_pInfcPlayerClass->SetCharacter(nullptr);
