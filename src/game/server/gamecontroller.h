@@ -48,6 +48,9 @@ public:
 	static void AddMapTimestamp(const char *pMapName, int Timestamp);
 	static bool SetMapMinMaxPlayers(const char *pMapName, int MinPlayers, int MaxPlayers);
 
+	virtual int PersistentClientDataSize() const = 0;
+	virtual bool GetClientPersistentData(int ClientID, void *pData) const = 0;
+
 protected:
 	bool LoadMapConfig(const char *pMapName, CMapInfo *pInfo);
 
@@ -161,7 +164,7 @@ public:
 
 	void OnStartRound();
 
-	virtual CPlayer *CreatePlayer(int ClientID, bool IsSpectator) = 0;
+	virtual CPlayer *CreatePlayer(int ClientID, bool IsSpectator, void *pData) = 0;
 
 	//
 /* INFECTION MODIFICATION START ***************************************/

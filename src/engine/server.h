@@ -308,9 +308,6 @@ public:
 	
 	virtual int GetClientNbRound(int ClientID) = 0;
 	
-	virtual int GetClientAntiPing(int ClientID) = 0;
-	virtual void SetClientAntiPing(int ClientID, int Value) = 0;
-	
 	virtual int GetClientAlwaysRandom(int ClientID) = 0;
 	virtual void SetClientAlwaysRandom(int ClientID, int Value) = 0;
 	

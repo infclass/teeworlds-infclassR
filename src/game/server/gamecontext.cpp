@@ -1515,7 +1515,7 @@ bool CGameContext::OnClientDataPersist(int ClientID, void *pData)
 	pPersistent->m_IsSpectator = pPlayer->GetTeam() == TEAM_SPECTATORS;
 	pPersistent->m_ClientNameLocked = pPlayer->m_ClientNameLocked;
 
-	return true;
+	return m_pController->GetClientPersistentData(ClientID, pData);
 }
 
 void CGameContext::OnClientConnected(int ClientID, void *pData)
@@ -1530,7 +1530,7 @@ void CGameContext::OnClientConnected(int ClientID, void *pData)
 	}
 
 	dbg_assert(!m_apPlayers[ClientID], "non-free player slot");
-	m_apPlayers[ClientID] = m_pController->CreatePlayer(ClientID, Spec);
+	m_apPlayers[ClientID] = m_pController->CreatePlayer(ClientID, Spec, pData);
 	m_apPlayers[ClientID]->m_ClientNameLocked = NameLocked;
 	
 	//players[client_id].init(client_id);
@@ -4537,6 +4537,12 @@ bool CGameContext::IsClientReady(int ClientID) const
 bool CGameContext::IsClientPlayer(int ClientID) const
 {
 	return m_apPlayers[ClientID] && m_apPlayers[ClientID]->GetTeam() != TEAM_SPECTATORS;
+}
+
+int CGameContext::PersistentClientDataSize() const
+{
+	dbg_assert(m_pController != nullptr, "There must be a controller to query the client persistent data size");
+	return m_pController ? m_pController->PersistentClientDataSize() : 0;
 }
 
 const char *CGameContext::GameType() const { return m_pController && m_pController->m_pGameType ? m_pController->m_pGameType : ""; }

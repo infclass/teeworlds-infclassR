@@ -118,6 +118,7 @@ class CGameContext : public IGameServer
 
 	bool m_Resetting;
 
+public:
 	struct CPersistentClientData
 	{
 		bool m_IsSpectator;
@@ -249,7 +250,7 @@ public:
 	virtual bool IsClientReady(int ClientID) const;
 	virtual bool IsClientPlayer(int ClientID) const;
 
-	virtual int PersistentClientDataSize() const { return sizeof(CPersistentClientData); }
+	virtual int PersistentClientDataSize() const;
 
 	virtual const char *GameType() const;
 	virtual const char *Version() const;

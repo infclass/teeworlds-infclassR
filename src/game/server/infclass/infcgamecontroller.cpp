@@ -77,6 +77,11 @@ enum class ROUND_END_REASON
 	CANCELED,
 };
 
+struct InfclassPlayerPersistantData : public CGameContext::CPersistentClientData
+{
+	bool m_AntiPing = false;
+};
+
 CInfClassGameController::CInfClassGameController(class CGameContext *pGameServer)
 : IGameController(pGameServer), m_Teams(pGameServer)
 {
@@ -1114,6 +1119,8 @@ void CInfClassGameController::ConAntiPing(IConsole::IResult *pResult, void *pUse
 	int ClientID = pResult->GetClientID();
 
 	int Arg = pResult->GetInteger(0);
+	dbg_msg("server", "set_antiping ClientID=%d antiping=%d", ClientID, Arg);
+
 	CInfClassPlayer *pPlayer = pSelf->GetPlayer(ClientID);
 	pPlayer->SetAntiPingEnabled(Arg > 0);
 }
@@ -2678,7 +2685,7 @@ void CInfClassGameController::Snap(int SnappingClient)
 	pGameDataObj->m_FlagCarrierBlue = FLAG_ATSTAND;
 }
 
-CPlayer *CInfClassGameController::CreatePlayer(int ClientID, bool IsSpectator)
+CPlayer *CInfClassGameController::CreatePlayer(int ClientID, bool IsSpectator, void *pData)
 {
 	CInfClassPlayer *pPlayer = nullptr;
 	if(IsSpectator)
@@ -2691,6 +2698,12 @@ CPlayer *CInfClassGameController::CreatePlayer(int ClientID, bool IsSpectator)
 		pPlayer = new(ClientID) CInfClassPlayer(this, ClientID, StartTeam);
 	}
 
+	if(pData)
+	{
+		InfclassPlayerPersistantData *pPersistent = static_cast<InfclassPlayerPersistantData *>(pData);
+		pPlayer->SetAntiPingEnabled(pPersistent->m_AntiPing);
+	}
+
 	if(IsInfectionStarted())
 	{
 		int c = ChooseInfectedClass(pPlayer);
@@ -2698,6 +2711,22 @@ CPlayer *CInfClassGameController::CreatePlayer(int ClientID, bool IsSpectator)
 	}
 
 	return pPlayer;
+}
+
+int CInfClassGameController::PersistentClientDataSize() const
+{
+	return sizeof(InfclassPlayerPersistantData);
+}
+
+bool CInfClassGameController::GetClientPersistentData(int ClientID, void *pData) const
+{
+	const CInfClassPlayer *pPlayer = GetPlayer(ClientID);
+	if(!pPlayer)
+		return false;
+
+	InfclassPlayerPersistantData *pPersistent = static_cast<InfclassPlayerPersistantData *>(pData);
+	pPersistent->m_AntiPing = pPlayer->GetAntiPingEnabled();
+	return true;
 }
 
 void CInfClassGameController::SnapMapMenu(int SnappingClient, CNetObj_GameInfo *pGameInfoObj)

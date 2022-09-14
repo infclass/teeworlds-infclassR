@@ -111,6 +111,8 @@ protected:
 	CInfClassGameController *m_pGameController = nullptr;
 	CInfClassPlayerClass *m_pInfcPlayerClass = nullptr;
 
+	bool m_AntiPing = false;
+
 	int m_Kills = 0;
 	int m_Deaths = 0;
 	int m_Assists = 0;

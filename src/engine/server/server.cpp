@@ -334,7 +334,6 @@ void CServer::CClient::Reset(bool ResetScore)
 #endif
 		m_LogInstance = -1;
 		
-		m_AntiPing = 0;
 		m_AlwaysRandom = 0;
 		m_DefaultScoreMode = PLAYERSCOREMODE_SCORE;
 		str_copy(m_aLanguage, "en", sizeof(m_aLanguage));
@@ -2741,11 +2740,10 @@ void CServer::ConOptionStatus(IConsole::IResult *pResult, void *pUser)
 	{
 		if(pThis->m_aClients[i].m_State == CClient::STATE_INGAME)
 		{
-			str_format(aBuf, sizeof(aBuf), "(#%02i) %s: [lang=%s] [antiping=%d] [alwaysrandom=%d]",
+			str_format(aBuf, sizeof(aBuf), "(#%02i) %s: [lang=%s] [alwaysrandom=%d]",
 				i,
 				pThis->ClientName(i),
 				pThis->m_aClients[i].m_aLanguage,
-				pThis->GetClientAntiPing(i),
 				pThis->GetClientAlwaysRandom(i)
 			);
 			
@@ -3262,20 +3260,6 @@ bool CServer::IsClientInfectedBefore(int ClientID)
 void CServer::SetClientInfectedBefore(int ClientID, bool InfectedBefore)
 {
 	m_aClients[ClientID].m_WasInfected = InfectedBefore;
-}
-
-int CServer::GetClientAntiPing(int ClientID)
-{
-	if(ClientID < 0)
-		return 0;
-
-	return m_aClients[ClientID].m_AntiPing;
-}
-
-void CServer::SetClientAntiPing(int ClientID, int Value)
-{
-	dbg_msg("server", "set_antiping ClientID=%d antiping=%d", ClientID, Value);
-	m_aClients[ClientID].m_AntiPing = Value;
 }
 
 int CServer::GetClientAlwaysRandom(int ClientID)

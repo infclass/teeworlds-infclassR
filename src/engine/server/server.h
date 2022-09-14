@@ -164,7 +164,6 @@ public:
 		
 		int m_NbRound;
 		
-		int m_AntiPing;
 		int m_AlwaysRandom;
 		int m_DefaultScoreMode;
 		char m_aLanguage[16];
@@ -371,9 +370,6 @@ public:
 	virtual bool IsClientInfectedBefore(int ClientID);
 	virtual void SetClientInfectedBefore(int ClientID, bool InfectedBefore);
 
-	virtual int GetClientAntiPing(int ClientID);
-	virtual void SetClientAntiPing(int ClientID, int Value);
-	
 	virtual int GetClientAlwaysRandom(int ClientID);
 	virtual void SetClientAlwaysRandom(int ClientID, int Value);
 	
