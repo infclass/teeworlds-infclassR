@@ -2021,13 +2021,20 @@ void CInfClassCharacter::OpenClassChooser()
 		return;
 	}
 
-	if(!GameController()->IsClassChooserEnabled() || Server()->GetClientAlwaysRandom(GetCID()))
+	const int PreferredClass = GetPlayer()->GetPreferredClass();
+	if(!GameController()->IsClassChooserEnabled() || (PreferredClass != PLAYERCLASS_INVALID))
 	{
 		m_pPlayer->SetClass(GameController()->ChooseHumanClass(m_pPlayer));
-		GetPlayer()->SetRandomClassChoosen();
 
-		if(GameController()->IsClassChooserEnabled())
-			GiveRandomClassSelectionBonus();
+		if(PreferredClass == PLAYERCLASS_RANDOM)
+		{
+			GetPlayer()->SetRandomClassChoosen();
+
+			if(GameController()->IsClassChooserEnabled())
+			{
+				GiveRandomClassSelectionBonus();
+			}
+		}
 	}
 	else
 	{

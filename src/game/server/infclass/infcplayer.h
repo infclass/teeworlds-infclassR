@@ -48,6 +48,9 @@ public:
 	bool GetAntiPingEnabled() const;
 	void SetAntiPingEnabled(bool Enabled);
 
+	int GetPreferredClass() const { return m_PreferredClass; }
+	void SetPreferredClass(int Class);
+
 	void HandleInfection();
 	void KillCharacter(int Weapon = WEAPON_GAME) override;
 
@@ -111,6 +114,7 @@ protected:
 	CInfClassGameController *m_pGameController = nullptr;
 	CInfClassPlayerClass *m_pInfcPlayerClass = nullptr;
 
+	int m_PreferredClass;
 	bool m_AntiPing = false;
 
 	int m_Kills = 0;

@@ -333,8 +333,7 @@ void CServer::CClient::Reset(bool ResetScore)
 		m_UserLevel = SQL_USERLEVEL_NORMAL;
 #endif
 		m_LogInstance = -1;
-		
-		m_AlwaysRandom = 0;
+
 		m_DefaultScoreMode = PLAYERSCOREMODE_SCORE;
 		str_copy(m_aLanguage, "en", sizeof(m_aLanguage));
 
@@ -3236,16 +3235,6 @@ bool CServer::IsClientInfectedBefore(int ClientID)
 void CServer::SetClientInfectedBefore(int ClientID, bool InfectedBefore)
 {
 	m_aClients[ClientID].m_WasInfected = InfectedBefore;
-}
-
-int CServer::GetClientAlwaysRandom(int ClientID)
-{
-	return m_aClients[ClientID].m_AlwaysRandom;
-}
-
-void CServer::SetClientAlwaysRandom(int ClientID, int Value)
-{
-	m_aClients[ClientID].m_AlwaysRandom = Value;
 }
 
 int CServer::GetClientDefaultScoreMode(int ClientID)

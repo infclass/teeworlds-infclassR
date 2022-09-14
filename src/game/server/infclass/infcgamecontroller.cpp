@@ -80,6 +80,7 @@ enum class ROUND_END_REASON
 struct InfclassPlayerPersistantData : public CGameContext::CPersistentClientData
 {
 	bool m_AntiPing = false;
+	int m_PreferredClass = PLAYERCLASS_INVALID;
 };
 
 CInfClassGameController::CInfClassGameController(class CGameContext *pGameServer)
@@ -1126,13 +1127,13 @@ void CInfClassGameController::ConAlwaysRandom(IConsole::IResult *pResult, void *
 
 	if(Arg > 0)
 	{
-		pSelf->Server()->SetClientAlwaysRandom(ClientID, 1);
+		pPlayer->SetPreferredClass(PLAYERCLASS_RANDOM);
 		const char *pTxtAlwaysRandomOn = pSelf->Server()->Localization()->Localize(pLanguage, _("A random class will be automatically attributed to you when rounds start"));
 		pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "alwaysrandom", pTxtAlwaysRandomOn);
 	}
 	else
 	{
-		pSelf->Server()->SetClientAlwaysRandom(ClientID, 0);
+		pPlayer->SetPreferredClass(PLAYERCLASS_INVALID);
 		const char *pTxtAlwaysRandomOff = pSelf->Server()->Localization()->Localize(pLanguage, _("The class selector will be displayed when rounds start"));
 		pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "alwaysrandom", pTxtAlwaysRandomOff);
 	}
@@ -2726,6 +2727,7 @@ CPlayer *CInfClassGameController::CreatePlayer(int ClientID, bool IsSpectator, v
 	if(pData)
 	{
 		InfclassPlayerPersistantData *pPersistent = static_cast<InfclassPlayerPersistantData *>(pData);
+		pPlayer->SetPreferredClass(pPersistent->m_PreferredClass);
 		pPlayer->SetAntiPingEnabled(pPersistent->m_AntiPing);
 	}
 
@@ -2750,6 +2752,7 @@ bool CInfClassGameController::GetClientPersistentData(int ClientID, void *pData)
 		return false;
 
 	InfclassPlayerPersistantData *pPersistent = static_cast<InfclassPlayerPersistantData *>(pData);
+	pPersistent->m_PreferredClass = pPlayer->GetPreferredClass();
 	pPersistent->m_AntiPing = pPlayer->GetAntiPingEnabled();
 	return true;
 }

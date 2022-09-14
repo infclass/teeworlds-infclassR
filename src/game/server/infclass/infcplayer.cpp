@@ -17,6 +17,8 @@ CInfClassPlayer::CInfClassPlayer(CInfClassGameController *pGameController, int C
 	, m_pGameController(pGameController)
 {
 	m_class = PLAYERCLASS_INVALID;
+	m_PreferredClass = PLAYERCLASS_INVALID;
+
 	SetClass(PLAYERCLASS_NONE);
 }
 
@@ -283,6 +285,11 @@ bool CInfClassPlayer::GetAntiPingEnabled() const
 void CInfClassPlayer::SetAntiPingEnabled(bool Enabled)
 {
 	m_AntiPing = Enabled;
+}
+
+void CInfClassPlayer::SetPreferredClass(int Class)
+{
+	m_PreferredClass = Class;
 }
 
 CInfClassCharacter *CInfClassPlayer::GetCharacter()

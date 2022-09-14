@@ -164,7 +164,6 @@ public:
 		
 		int m_NbRound;
 		
-		int m_AlwaysRandom;
 		int m_DefaultScoreMode;
 		char m_aLanguage[16];
 		int m_WaitingTime;
@@ -369,9 +368,6 @@ public:
 	virtual bool IsClientInfectedBefore(int ClientID);
 	virtual void SetClientInfectedBefore(int ClientID, bool InfectedBefore);
 
-	virtual int GetClientAlwaysRandom(int ClientID);
-	virtual void SetClientAlwaysRandom(int ClientID, int Value);
-	
 	virtual int GetClientDefaultScoreMode(int ClientID);
 	virtual void SetClientDefaultScoreMode(int ClientID, int Value);
 	
