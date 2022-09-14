@@ -3375,12 +3375,16 @@ int CInfClassGameController::ChooseHumanClass(const CPlayer *pPlayer) const
 			nbSupport++;
 		nbClass[AnotherPlayerClass]++;
 	}
-	
+
 	double Probability[NB_HUMANCLASS];
-	
-	for (int PlayerClass = START_HUMANCLASS + 1; PlayerClass < END_HUMANCLASS; ++PlayerClass)
+
+	auto GetClassProbabilityRef = [&Probability](int PlayerClass) -> double & {
+		return Probability[PlayerClass - START_HUMANCLASS - 1];
+	};
+
+	for(int PlayerClass = START_HUMANCLASS + 1; PlayerClass < END_HUMANCLASS; ++PlayerClass)
 	{
-		double &ClassProbability = Probability[PlayerClass - START_HUMANCLASS - 1];
+		double &ClassProbability = GetClassProbabilityRef(PlayerClass);
 		ClassProbability = GetPlayerClassEnabled(PlayerClass) ? 1.0f : 0.0f;
 		if(GetRoundType() == ROUND_TYPE::FUN)
 		{
@@ -3401,7 +3405,7 @@ int CInfClassGameController::ChooseHumanClass(const CPlayer *pPlayer) const
 		{
 			if(pPlayer->m_LastHumanClasses[i] > START_HUMANCLASS && pPlayer->m_LastHumanClasses[i] < END_HUMANCLASS)
 			{
-				Probability[pPlayer->m_LastHumanClasses[i] - 1 - START_HUMANCLASS] = 0.0f;
+				GetClassProbabilityRef(pPlayer->m_LastHumanClasses[i]) = 0.0f;
 			}
 		}
 	}
