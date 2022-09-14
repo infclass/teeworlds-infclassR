@@ -1,4 +1,9 @@
-InfclassR v1.5.0_alpha3 (WIP)
+InfclassR v1.5.0_alpha4
+- Added '/prefer_class <classname>' chat command
+- Fixed Hero flag indicator on the class picked
+- Weapon change now allowed during ammo reload
+
+InfclassR v1.5.0_alpha3
 - White hole is now given right after 12 kills
 - Disable white hole for games with less than 8 players
 - Added broadcast message about coming infection
