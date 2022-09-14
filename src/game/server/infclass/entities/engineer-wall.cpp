@@ -2,12 +2,14 @@
 /* If you are missing that file, acquire a complete release at teeworlds.com.                */
 #include <base/math.h>
 #include <base/vmath.h>
+#include <engine/shared/config.h>
 #include <game/generated/protocol.h>
 #include <game/server/gamecontext.h>
 #include <game/server/infclass/classes/infcplayerclass.h>
 #include <game/server/infclass/classes/infected/infected.h>
 #include <game/server/infclass/damage_type.h>
-#include <engine/shared/config.h>
+#include <game/server/infclass/infcgamecontroller.h>
+#include <game/server/infclass/infcplayer.h>
 
 #include "engineer-wall.h"
 #include "infccharacter.h"
@@ -95,6 +97,9 @@ void CEngineerWall::Snap(int SnappingClient)
 		pInfClassObject->m_LifeSpan = m_LifeSpan;
 	}
 
+	const CInfClassPlayer *pPlayer = GameController()->GetPlayer(SnappingClient);
+	const bool AntiPing = pPlayer && pPlayer->GetAntiPingEnabled();
+
 	// Laser dieing animation
 	int LifeDiff = 0;
 	if (m_WallFlashTicks > 0) // flash laser for a few ticks when zombie jumps
@@ -135,7 +140,7 @@ void CEngineerWall::Snap(int SnappingClient)
 		pObj->m_FromY = (int)m_Pos2.y;
 		pObj->m_StartTick = Server()->Tick()-LifeDiff;
 	}
-	if(!Server()->GetClientAntiPing(SnappingClient))
+	if(!AntiPing)
 	{
 		CNetObj_Laser *pObj = static_cast<CNetObj_Laser *>(Server()->SnapNewItem(NETOBJTYPE_LASER, m_EndPointID, sizeof(CNetObj_Laser)));
 		if(!pObj)

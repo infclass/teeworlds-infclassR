@@ -7,6 +7,7 @@
 #include <game/server/infclass/classes/humans/human.h>
 #include <game/server/infclass/entities/infccharacter.h>
 #include <game/server/infclass/infcgamecontroller.h>
+#include <game/server/infclass/infcplayer.h>
 
 CSuperWeaponIndicator::CSuperWeaponIndicator(CGameContext *pGameContext, vec2 Pos, int Owner)
 	: CInfCEntity(pGameContext, CGameWorld::ENTTYPE_SUPERWEAPON_INDICATOR, Pos, Owner)
@@ -35,7 +36,11 @@ void CSuperWeaponIndicator::Snap(int SnappingClient)
 {
 	if(NetworkClipped(SnappingClient))
 		return;
-	if (Server()->GetClientAntiPing(SnappingClient))
+
+	const CInfClassPlayer *pPlayer = GameController()->GetPlayer(SnappingClient);
+	const bool AntiPing = pPlayer && pPlayer->GetAntiPingEnabled();
+
+	if(AntiPing)
 		return;
 
 	float time = (Server()->Tick()-m_StartTick)/(float)Server()->TickSpeed();

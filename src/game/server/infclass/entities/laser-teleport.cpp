@@ -1,7 +1,10 @@
 /* (c) Magnus Auvinen. See licence.txt in the root of the distribution for more information. */
 /* If you are missing that file, acquire a complete release at teeworlds.com.				 */
-#include <game/server/gamecontext.h>
 #include "laser-teleport.h"
+
+#include <game/server/gamecontext.h>
+#include <game/server/infclass/infcgamecontroller.h>
+#include <game/server/infclass/infcplayer.h>
 
 CLaserTeleport::CLaserTeleport(CGameContext *pGameContext, vec2 StartPos, vec2 EndPos)
 	: CInfCEntity(pGameContext, CGameWorld::ENTTYPE_LASER_TELEPORT)
@@ -22,7 +25,10 @@ void CLaserTeleport::Snap(int SnappingClient)
 {
 	m_LaserFired = true;
 
-	if (Server()->GetClientAntiPing(SnappingClient))
+	const CInfClassPlayer *pPlayer = GameController()->GetPlayer(SnappingClient);
+	const bool AntiPing = pPlayer && pPlayer->GetAntiPingEnabled();
+
+	if(AntiPing)
 		return;
 
 	CNetObj_Laser *pObj = static_cast<CNetObj_Laser *>(Server()->SnapNewItem(NETOBJTYPE_LASER, m_ID, sizeof(CNetObj_Laser)));

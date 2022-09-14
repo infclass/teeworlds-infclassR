@@ -10,6 +10,7 @@
 
 #include <game/server/infclass/damage_type.h>
 #include <game/server/infclass/infcgamecontroller.h>
+#include <game/server/infclass/infcplayer.h>
 
 #include "infc-laser.h"
 #include "infccharacter.h"
@@ -201,6 +202,9 @@ void CTurret::Snap(int SnappingClient)
 			return;
 	}
 
+	const CInfClassPlayer *pPlayer = GameController()->GetPlayer(SnappingClient);
+	const bool AntiPing = pPlayer && pPlayer->GetAntiPingEnabled();
+
 	float time = (Server()->Tick()-m_StartTick)/(float)Server()->TickSpeed();
 	float angle = fmodf(time*pi/2, 2.0f*pi);
 
@@ -215,7 +219,7 @@ void CTurret::Snap(int SnappingClient)
 	pObj->m_FromY = (int)m_Pos.y;
 	pObj->m_StartTick = Server()->Tick();
 
-	int Dots = Server()->GetClientAntiPing(SnappingClient) ? 2 : m_IDs.size() - 1;
+	int Dots = AntiPing ? 2 : m_IDs.size() - 1;
 
 	for(int i = 0; i < Dots; i++)
 	{

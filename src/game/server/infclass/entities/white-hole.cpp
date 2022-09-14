@@ -7,6 +7,7 @@
 
 #include <game/server/infclass/damage_type.h>
 #include <game/server/infclass/infcgamecontroller.h>
+#include <game/server/infclass/infcplayer.h>
 
 #include "growingexplosion.h"
 #include "infccharacter.h"
@@ -92,8 +93,12 @@ void CWhiteHole::Snap(int SnappingClient)
 	if(!DoSnapForClient(SnappingClient))
 		return;
 
+	const CInfClassPlayer *pPlayer = GameController()->GetPlayer(SnappingClient);
+	const bool AntiPing = pPlayer && pPlayer->GetAntiPingEnabled();
+
 	// Draw AntiPing white hole effect
-	if (Server()->GetClientAntiPing(SnappingClient)) {	
+	if(AntiPing)
+	{
 		int NumSide = 6;
 		float AngleStep = 2.0f * pi / NumSide;
 		float Radius = Config()->m_InfWhiteHoleRadius;

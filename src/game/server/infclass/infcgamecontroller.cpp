@@ -1114,11 +1114,8 @@ void CInfClassGameController::ConAntiPing(IConsole::IResult *pResult, void *pUse
 	int ClientID = pResult->GetClientID();
 
 	int Arg = pResult->GetInteger(0);
-
-	if(Arg > 0)
-		pSelf->Server()->SetClientAntiPing(ClientID, 1);
-	else
-		pSelf->Server()->SetClientAntiPing(ClientID, 0);
+	CInfClassPlayer *pPlayer = pSelf->GetPlayer(ClientID);
+	pPlayer->SetAntiPingEnabled(Arg > 0);
 }
 
 void CInfClassGameController::ConUserSetClass(IConsole::IResult *pResult, void *pUserData)

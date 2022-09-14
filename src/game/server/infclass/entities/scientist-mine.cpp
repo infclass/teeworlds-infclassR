@@ -5,6 +5,7 @@
 
 #include <game/server/infclass/damage_type.h>
 #include <game/server/infclass/infcgamecontroller.h>
+#include <game/server/infclass/infcplayer.h>
 
 #include "scientist-mine.h"
 
@@ -69,8 +70,11 @@ void CScientistMine::Snap(int SnappingClient)
 			return;
 	}
 
+	const CInfClassPlayer *pPlayer = GameController()->GetPlayer(SnappingClient);
+	const bool AntiPing = pPlayer && pPlayer->GetAntiPingEnabled();
+
 	int NumSide = CScientistMine::NUM_SIDE;
-	if(Server()->GetClientAntiPing(SnappingClient))
+	if(AntiPing)
 		NumSide = std::min(6, NumSide);
 	
 	float AngleStep = 2.0f * pi / NumSide;
@@ -90,8 +94,8 @@ void CScientistMine::Snap(int SnappingClient)
 		pObj->m_FromY = (int)PartPosEnd.y;
 		pObj->m_StartTick = Server()->Tick();
 	}
-	
-	if(!Server()->GetClientAntiPing(SnappingClient))
+
+	if(!AntiPing)
 	{
 		for(int i=0; i<CScientistMine::NUM_PARTICLES; i++)
 		{

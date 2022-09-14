@@ -6,6 +6,7 @@
 
 #include <game/server/infclass/classes/infcplayerclass.h>
 #include <game/server/infclass/infcgamecontroller.h>
+#include <game/server/infclass/infcplayer.h>
 
 #include <engine/server/roundstatistics.h>
 #include <engine/shared/config.h>
@@ -132,6 +133,9 @@ void CLooperWall::Snap(int SnappingClient)
 		pInfClassObject->m_LifeSpan = m_LifeSpan;
 	}
 
+	const CInfClassPlayer *pPlayer = GameController()->GetPlayer(SnappingClient);
+	const bool AntiPing = pPlayer && pPlayer->GetAntiPingEnabled();
+
 	// Laser dieing animation
 	int LifeDiff = 0;
 	if (m_LifeSpan < 1*Server()->TickSpeed())
@@ -170,7 +174,7 @@ void CLooperWall::Snap(int SnappingClient)
 		}
 		
 		// draws one dot at the end of each laser
-		if(!Server()->GetClientAntiPing(SnappingClient))
+		if(!AntiPing)
 		{
 			CNetObj_Laser *pObj = static_cast<CNetObj_Laser *>(Server()->SnapNewItem(NETOBJTYPE_LASER, m_EndPointIDs[i], sizeof(CNetObj_Laser)));
 			if(!pObj)
@@ -186,7 +190,7 @@ void CLooperWall::Snap(int SnappingClient)
 	}
 
 	// draw particles inside wall
-	if(!Server()->GetClientAntiPing(SnappingClient))
+	if(!AntiPing)
 	{
 		vec2 startPos = vec2(m_Pos2.x+dirVecT.x, m_Pos2.y+dirVecT.y);
 		dirVecT.x = -dirVecT.x*2.0f;

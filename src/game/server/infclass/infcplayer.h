@@ -45,6 +45,9 @@ public:
 	void SnapClientInfo(int SnappingClient, int SnappingClientMappedId) override;
 	int GetDefaultEmote() const override;
 
+	bool GetAntiPingEnabled() const;
+	void SetAntiPingEnabled(bool Enabled);
+
 	void HandleInfection();
 	void KillCharacter(int Weapon = WEAPON_GAME) override;
 

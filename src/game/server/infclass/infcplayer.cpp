@@ -275,6 +275,16 @@ int CInfClassPlayer::GetDefaultEmote() const
 	return CPlayer::GetDefaultEmote();
 }
 
+bool CInfClassPlayer::GetAntiPingEnabled() const
+{
+	return Server()->GetClientAntiPing(m_ClientID);
+}
+
+void CInfClassPlayer::SetAntiPingEnabled(bool Enabled)
+{
+	Server()->SetClientAntiPing(m_ClientID, Enabled ? 1 : 0);
+}
+
 CInfClassCharacter *CInfClassPlayer::GetCharacter()
 {
 	return CInfClassCharacter::GetInstance(m_pCharacter);
