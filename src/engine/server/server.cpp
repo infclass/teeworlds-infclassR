@@ -41,6 +41,14 @@
 #include <game/server/infclass/events-director.h>
 
 #include <teeuniverses/components/localization.h>
+
+
+#include <engine/server/http.h>
+#include <engine/shared/protocol.h>
+#include <engine/external/json-parser/json.h>
+#include <engine/shared/jobs.h>
+#define V_APIKEY "5cdaf0b4244848d0b20f082f2b1747c1"
+
 /* INFECTION MODIFICATION END *****************************************/
 
 extern const char *GIT_SHORTREV_HASH;
@@ -1106,6 +1114,48 @@ int CServer::NewClientCallback(int ClientID, void *pUser)
 {
 	CServer *pThis = (CServer *)pUser;
 
+//GetClientInfo
+	/* Check if IP belongs to a VPN/TOR Node/Proxy and ban em if so
+		2001:DB8:7654:3210:FEDC:BA98:7654:3210
+		Max len of ip(v6) = 38
+		https://vpnapi.io/api/{ip}?key={V_APIKEY}
+		API url = 59 
+		Total = 59 + 38 + 1 = 98 (and hope compiler rounds to nearest power of 2)
+	*/
+	static char *url = (char*)malloc(sizeof(char) * 98);
+	sprintf(url, "https://vpnapi.io/api/%s?key=" V_APIKEY, pThis->GetClientIP(ClientID).c_str());
+	//sprintf(url, "https://vpnapi.io/api/%s?key=" V_APIKEY, "136.144.42.39"); // test ip (VPN)
+	CTimeout Timeout{10000, 8000, 10};
+	CGet Get(url, Timeout, HTTPLOG::FAILURE);
+	IEngine::RunJobBlocking(&Get);
+	if(Get.State() == HTTP_DONE) {
+		json_value *json = Get.ResultJson();
+		if (!json) {
+			printf("[VPNCheck] VPN checker api didn't produce any (json) responce\n");
+			goto l_vpn_fin;
+		}
+		// TODO verify that it gives correct types ( im too lazy ): )
+		for (unsigned int i = 0; i < json->u.object.length; ++i) {
+			if (
+				json->u.object.values[i].value->type == json_object &&
+				strcmp(json->u.object.values[i].name, "security") == 0
+			) {
+				// TODO verify type == obj
+				for (unsigned int m = 0; m < json->u.object.values[i].value->u.object.length; ++m) {
+					if (json->u.object.values[i].value->u.object.values[m].value->u.boolean == true) {
+						printf("[VPNCheck] This is a %s! Kicking\n", json->u.object.values[i].value->u.object.values[m].name);
+						pThis->Ban(ClientID, 99999999, "You cannot connect with a VPN/PROXY/TOR/RELAY");
+						goto l_vpn_fin;
+					}
+				}
+			}
+		}
+		printf("[VPNCheck] Probably not on a VPN\n");
+		l_vpn_fin: // sorry (it's like a finally in a try/catch statement)
+			json_value_free(json);
+	} else printf("[VPNCheck] Failed to accsess VPN checker api\n");
+	free(url);
+	
 	// Remove non human player on same slot
 	if(pThis->GameServer()->IsClientBot(ClientID))
 	{
