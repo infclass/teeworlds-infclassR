@@ -287,6 +287,16 @@ void CInfClassPlayer::SetAntiPingEnabled(bool Enabled)
 	m_AntiPing = Enabled;
 }
 
+void CInfClassPlayer::SetInfectionTimestamp(int Timestamp)
+{
+	m_GameInfectionTimestamp = Timestamp;
+}
+
+int CInfClassPlayer::GetInfectionTimestamp() const
+{
+	return m_GameInfectionTimestamp;
+}
+
 void CInfClassPlayer::SetPreferredClass(int Class)
 {
 	m_PreferredClass = Class;

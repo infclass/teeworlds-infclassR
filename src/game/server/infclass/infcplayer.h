@@ -48,6 +48,9 @@ public:
 	bool GetAntiPingEnabled() const;
 	void SetAntiPingEnabled(bool Enabled);
 
+	void SetInfectionTimestamp(int Timestamp);
+	int GetInfectionTimestamp() const;
+
 	int GetPreferredClass() const { return m_PreferredClass; }
 	void SetPreferredClass(int Class);
 
@@ -123,6 +126,7 @@ protected:
 	int m_Score = 0;
 
 	int m_RandomClassRoundId = 0;
+	int m_GameInfectionTimestamp = 0;
 
 	INFECTION_TYPE m_InfectionType = INFECTION_TYPE::NO;
 	INFECTION_CAUSE m_InfectionCause = INFECTION_CAUSE::GAME;

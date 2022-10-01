@@ -81,6 +81,7 @@ struct InfclassPlayerPersistantData : public CGameContext::CPersistentClientData
 {
 	bool m_AntiPing = false;
 	int m_PreferredClass = PLAYERCLASS_INVALID;
+	int m_LastInfectionTime = 0;
 };
 
 CInfClassGameController::CInfClassGameController(class CGameContext *pGameServer)
@@ -1950,7 +1951,6 @@ void CInfClassGameController::DoTeamChange(CPlayer *pBasePlayer, int Team, bool 
 		if(Team == TEAM_SPECTATORS)
 		{
 			GameServer()->SendChatTarget_Localization(-1, CHATCATEGORY_PLAYER, _("{str:PlayerName} joined the spectators"), "PlayerName", Server()->ClientName(ClientID), NULL);
-			UpdatePlayersInfectedByGame();
 		}
 		else
 		{
@@ -2396,67 +2396,71 @@ void CInfClassGameController::RoundTickAfterInitialInfection()
 
 int CInfClassGameController::InfectHumans(int NumHumansToInfect)
 {
+	if(NumHumansToInfect == 0)
+		return 0;
+
 	CInfClassPlayerIterator<PLAYERITER_INGAME> Iter(GameServer()->m_apPlayers);
 	ClientsArray FairCandidates;
 	ClientsArray UnfairCandidates;
+
+	icArray<CInfClassPlayer *, 64> Humans;
 
 	while(Iter.Next())
 	{
 		CInfClassPlayer *pPlayer = Iter.Player();
 		if(pPlayer->IsHuman())
 		{
-			if(PlayerWasInfectedByGame(pPlayer))
-			{
-				UnfairCandidates.Add(pPlayer->GetCID());
-			}
-			else
-			{
-				FairCandidates.Add(pPlayer->GetCID());
-			}
+			Humans.Add(pPlayer);
 		}
 	}
 
-	if(NumHumansToInfect > FairCandidates.Size() + UnfairCandidates.Size())
+	if(NumHumansToInfect > Humans.Size())
 	{
 		// Makes no sense, must be a testing game
 		return 0;
 	}
 
-	ClientsArray ToInfect;
-	while(NumHumansToInfect > ToInfect.Size() && !FairCandidates.IsEmpty())
-	{
-		// "Fair infection"
-		int Random = random_int(0, FairCandidates.Size() - 1);
-		int ClientID = FairCandidates.At(Random);
-		FairCandidates.RemoveAt(Random);
-		ToInfect.Add(ClientID);
-	}
-	while(NumHumansToInfect > ToInfect.Size() && !UnfairCandidates.IsEmpty())
-	{
-		// "Next wave" infection
-		int Random = random_int(0, UnfairCandidates.Size() - 1);
-		int ClientID = UnfairCandidates.At(Random);
-		UnfairCandidates.RemoveAt(Random);
-		ToInfect.Add(ClientID);
-	}
+	const auto Sorter = [](const CInfClassPlayer *p1, const CInfClassPlayer *p2) -> bool {
+		const int ts1 = p1->GetInfectionTimestamp();
+		const int ts2 = p2->GetInfectionTimestamp();
+		if(ts1 == 0)
+		{
+			if(ts2 == 0)
+			{
+				return false;
+			}
+			return true;
+		}
 
-	for(int ClientID : ToInfect)
+		return ts1 < ts2;
+	};
+
+	std::stable_sort(Humans.begin(), Humans.end(), Sorter);
+
+	int Timestamp = time_timestamp();
+
+	int NewInfected = 0;
+	for(CInfClassPlayer *pPlayer : Humans)
 	{
-		CInfClassPlayer *pPlayer = GetPlayer(ClientID);
-		SetPlayerInfectedByGame(pPlayer);
+		pPlayer->SetInfectionTimestamp(Timestamp);
 
 		pPlayer->KillCharacter(); // Infect the player
 		pPlayer->StartInfection();
 		pPlayer->m_DieTick = m_RoundStartTick;
-		NumHumansToInfect--;
+		NewInfected++;
 
 		GameServer()->SendChatTarget_Localization(-1, CHATCATEGORY_INFECTION,
 			_("{str:VictimName} has been infected"),
 				"VictimName", Server()->ClientName(pPlayer->GetCID()),
 				nullptr);
+
+		if(NewInfected >= NumHumansToInfect)
+		{
+			break;
+		}
 	}
 
-	return ToInfect.Size();
+	return NewInfected;
 }
 
 void CInfClassGameController::UpdateBalanceFactors(int NumHumans, int NumInfected)
@@ -2778,6 +2782,7 @@ CPlayer *CInfClassGameController::CreatePlayer(int ClientID, bool IsSpectator, v
 		InfclassPlayerPersistantData *pPersistent = static_cast<InfclassPlayerPersistantData *>(pData);
 		pPlayer->SetPreferredClass(pPersistent->m_PreferredClass);
 		pPlayer->SetAntiPingEnabled(pPersistent->m_AntiPing);
+		pPlayer->SetInfectionTimestamp(pPersistent->m_LastInfectionTime);
 	}
 
 	if(IsInfectionStarted())
@@ -2803,6 +2808,7 @@ bool CInfClassGameController::GetClientPersistentData(int ClientID, void *pData)
 	InfclassPlayerPersistantData *pPersistent = static_cast<InfclassPlayerPersistantData *>(pData);
 	pPersistent->m_PreferredClass = pPlayer->GetPreferredClass();
 	pPersistent->m_AntiPing = pPlayer->GetAntiPingEnabled();
+	pPersistent->m_LastInfectionTime = pPlayer->GetInfectionTimestamp();
 	return true;
 }
 
@@ -3642,41 +3648,6 @@ int CInfClassGameController::GetPlayerClassProbability(int PlayerClass) const
 
 	Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "server", "WARNING: Invalid GetPlayerClassProbability() call");
 	return 0;
-}
-
-bool CInfClassGameController::PlayerWasInfectedByGame(const CInfClassPlayer *pPlayer) const
-{
-	return Server()->IsClientInfectedBefore(pPlayer->GetCID());
-}
-
-void CInfClassGameController::SetPlayerInfectedByGame(const CInfClassPlayer *pPlayer)
-{
-	Server()->SetClientInfectedBefore(pPlayer->GetCID(), true);
-
-	UpdatePlayersInfectedByGame();
-}
-
-void CInfClassGameController::UpdatePlayersInfectedByGame()
-{
-	CInfClassPlayerIterator<PLAYERITER_INGAME> Iter(GameServer()->m_apPlayers);
-
-	bool NonInfectedFound = false;
-	while(Iter.Next())
-	{
-		if(PlayerWasInfectedByGame(Iter.Player()))
-			continue;
-
-		NonInfectedFound = true;
-	}
-
-	if(NonInfectedFound)
-		return;
-
-	// New infection
-	for(int i = 0; i < MAX_CLIENTS; i++)
-	{
-		Server()->SetClientInfectedBefore(i, false);
-	}
 }
 
 ROUND_TYPE CInfClassGameController::GetRoundType() const

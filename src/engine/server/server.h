@@ -167,7 +167,6 @@ public:
 		int m_DefaultScoreMode;
 		char m_aLanguage[16];
 		int m_WaitingTime;
-		bool m_WasInfected;
 
 		bool m_Memory[NUM_CLIENTMEMORIES];
 		IServer::CClientSession m_Session;
@@ -364,9 +363,6 @@ public:
 
 public:
 	int GetClientInfclassVersion(int ClientID) const override;
-
-	virtual bool IsClientInfectedBefore(int ClientID);
-	virtual void SetClientInfectedBefore(int ClientID, bool InfectedBefore);
 
 	virtual int GetClientDefaultScoreMode(int ClientID);
 	virtual void SetClientDefaultScoreMode(int ClientID, int Value);

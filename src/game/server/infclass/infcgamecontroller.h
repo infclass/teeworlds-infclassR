@@ -92,10 +92,6 @@ public:
 	int GetClassPlayerLimit(int PlayerClass) const;
 	int GetPlayerClassProbability(int PlayerClass) const;
 
-	bool PlayerWasInfectedByGame(const CInfClassPlayer *pPlayer) const;
-	void SetPlayerInfectedByGame(const CInfClassPlayer *pPlayer);
-	void UpdatePlayersInfectedByGame();
-
 	ROUND_TYPE GetRoundType() const;
 
 	CLASS_AVAILABILITY GetPlayerClassAvailability(int PlayerClass) const;

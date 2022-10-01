@@ -326,7 +326,6 @@ void CServer::CClient::Reset(bool ResetScore)
 	{
 		m_NbRound = 0;
 		m_WaitingTime = 0;
-		m_WasInfected = false;
 
 		m_UserID = -1;
 #ifdef CONF_SQL
@@ -562,7 +561,6 @@ int CServer::Init()
 		m_aClients[i].m_Snapshots.Init();
 		m_aClients[i].m_IsBot = false;
 		m_aClients[i].m_WaitingTime = 0;
-		m_aClients[i].m_WasInfected = false;
 		m_aClients[i].m_Accusation.m_Num = 0;
 		m_aClients[i].m_Latency = 0;
 	}
@@ -3227,16 +3225,6 @@ void CServer::GetClientAddr(int ClientID, NETADDR *pAddr) const
 }
 
 /* INFECTION MODIFICATION START ***************************************/
-bool CServer::IsClientInfectedBefore(int ClientID)
-{
-	return m_aClients[ClientID].m_WasInfected;
-}
-
-void CServer::SetClientInfectedBefore(int ClientID, bool InfectedBefore)
-{
-	m_aClients[ClientID].m_WasInfected = InfectedBefore;
-}
-
 int CServer::GetClientDefaultScoreMode(int ClientID)
 {
 	return m_aClients[ClientID].m_DefaultScoreMode;
