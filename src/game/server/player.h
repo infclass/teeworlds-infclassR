@@ -138,7 +138,7 @@ protected:
 	int m_OverrideEmote;
 	int m_OverrideEmoteReset;
 
-	int64 m_LastEyeEmote;
+	int64_t m_LastEyeEmote;
 
 public:
 	virtual int GetDefaultEmote() const;

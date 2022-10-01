@@ -172,7 +172,7 @@ public:
 	bool HasActiveVote() const;
 
 	int m_VoteCreator;
-	int64 m_VoteCloseTime;
+	int64_t m_VoteCloseTime;
 	bool m_VoteUpdate;
 	int m_VotePos;
 	char m_aVoteDescription[VOTE_DESC_LENGTH];
@@ -414,8 +414,8 @@ public:
 	bool IsVersionBanned(int Version);
 };
 
-inline int64 CmaskAll() { return -1LL; }
-inline int64 CmaskOne(int ClientID) { return 1LL<<ClientID; }
-inline int64 CmaskAllExceptOne(int ClientID) { return CmaskAll()^CmaskOne(ClientID); }
-inline bool CmaskIsSet(int64 Mask, int ClientID) { return (Mask&CmaskOne(ClientID)) != 0; }
+inline int64_t CmaskAll() { return -1LL; }
+inline int64_t CmaskOne(int ClientID) { return 1LL<<ClientID; }
+inline int64_t CmaskAllExceptOne(int ClientID) { return CmaskAll()^CmaskOne(ClientID); }
+inline bool CmaskIsSet(int64_t Mask, int ClientID) { return (Mask&CmaskOne(ClientID)) != 0; }
 #endif

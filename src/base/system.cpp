@@ -14,6 +14,10 @@
 #include <sys/stat.h>
 #include <sys/types.h>
 
+#include <chrono>
+
+#include <cinttypes>
+
 #if defined(CONF_WEBSOCKETS)
 #include <engine/shared/websockets.h>
 #endif
@@ -1024,16 +1028,16 @@ void set_new_tick(void)
 }
 
 /* -----  time ----- */
-int64 time_get_impl(void)
+int64_t time_get_impl(void)
 {
-	static int64 last = 0;
+	static int64_t last = 0;
 	{
 #if defined(CONF_PLATFORM_MACOS)
 		static int got_timebase = 0;
 		mach_timebase_info_data_t timebase;
-		uint64 time;
-		uint64 q;
-		uint64 r;
+		uint64_t time;
+		uint64_t q;
+		uint64_t r;
 		if(!got_timebase)
 		{
 			mach_timebase_info(&timebase);
@@ -1053,7 +1057,7 @@ int64 time_get_impl(void)
 		last = (int64)spec.tv_sec * (int64)1000000 + (int64)spec.tv_nsec / 1000;
 		return last;
 #elif defined(CONF_FAMILY_WINDOWS)
-		int64 t;
+		int64_t t;
 		QueryPerformanceCounter((PLARGE_INTEGER)&t);
 		if(t < last) /* for some reason, QPC can return values in the past */
 			return last;
@@ -1065,9 +1069,9 @@ int64 time_get_impl(void)
 	}
 }
 
-int64 time_get(void)
+int64_t time_get(void)
 {
-	static int64 last = 0;
+	static int64_t last = 0;
 	if(new_tick == 0)
 		return last;
 	if(new_tick != -1)
@@ -1077,14 +1081,14 @@ int64 time_get(void)
 	return last;
 }
 
-int64 time_freq(void)
+int64_t time_freq(void)
 {
 #if defined(CONF_PLATFORM_MACOS)
 	return 1000000000;
 #elif defined(CONF_FAMILY_UNIX)
 	return 1000000;
 #elif defined(CONF_FAMILY_WINDOWS)
-	int64 t;
+	int64_t t;
 	QueryPerformanceFrequency((PLARGE_INTEGER)&t);
 	return t;
 #else
@@ -1092,7 +1096,7 @@ int64 time_freq(void)
 #endif
 }
 
-int64 time_get_microseconds(void)
+int64_t time_get_microseconds(void)
 {
 #if defined(CONF_FAMILY_WINDOWS)
 	return (time_get_impl() * (int64)1000000) / time_freq();
@@ -3129,7 +3133,7 @@ void str_timestamp(char *buffer, int buffer_size)
 #pragma GCC diagnostic pop
 #endif
 
-int str_time(int64 centisecs, int format, char *buffer, int buffer_size)
+int str_time(int64_t centisecs, int format, char *buffer, int buffer_size)
 {
 	const int sec = 100;
 	const int min = 60 * sec;
@@ -3148,24 +3152,24 @@ int str_time(int64 centisecs, int format, char *buffer, int buffer_size)
 	{
 	case TIME_DAYS:
 		if(centisecs >= day)
-			return str_format(buffer, buffer_size, "%lldd %02lld:%02lld:%02lld", centisecs / day,
+			return str_format(buffer, buffer_size, "%" PRId64 "d %02" PRId64 ":%02" PRId64 ":%02" PRId64, centisecs / day,
 				(centisecs % day) / hour, (centisecs % hour) / min, (centisecs % min) / sec);
-		// fall through
+		[[fallthrough]];
 	case TIME_HOURS:
 		if(centisecs >= hour)
-			return str_format(buffer, buffer_size, "%02lld:%02lld:%02lld", centisecs / hour,
+			return str_format(buffer, buffer_size, "%02" PRId64 ":%02" PRId64 ":%02" PRId64, centisecs / hour,
 				(centisecs % hour) / min, (centisecs % min) / sec);
-		// fall through
+		[[fallthrough]];
 	case TIME_MINS:
-		return str_format(buffer, buffer_size, "%02lld:%02lld", centisecs / min,
+		return str_format(buffer, buffer_size, "%02" PRId64 ":%02" PRId64, centisecs / min,
 			(centisecs % min) / sec);
 	case TIME_HOURS_CENTISECS:
 		if(centisecs >= hour)
-			return str_format(buffer, buffer_size, "%02lld:%02lld:%02lld.%02lld", centisecs / hour,
+			return str_format(buffer, buffer_size, "%02" PRId64 ":%02" PRId64 ":%02" PRId64 ".%02" PRId64, centisecs / hour,
 				(centisecs % hour) / min, (centisecs % min) / sec, centisecs % sec);
-		// fall through
+		[[fallthrough]];
 	case TIME_MINS_CENTISECS:
-		return str_format(buffer, buffer_size, "%02lld:%02lld.%02lld", centisecs / min,
+		return str_format(buffer, buffer_size, "%02" PRId64 ":%02" PRId64 ".%02" PRId64, centisecs / min,
 			(centisecs % min) / sec, centisecs % sec);
 	}
 

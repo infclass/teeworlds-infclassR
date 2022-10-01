@@ -707,7 +707,7 @@ void set_new_tick(void);
 	Remarks:
 		To know how fast the timer is ticking, see <time_freq>.
 */
-int64 time_get_impl(void);
+int64_t time_get_impl(void);
 
 /*
 	Function: time_get
@@ -720,7 +720,7 @@ int64 time_get_impl(void);
 		To know how fast the timer is ticking, see <time_freq>.
 		Uses <time_get_impl> to fetch the sample.
 */
-int64 time_get(void);
+int64_t time_get(void);
 
 /*
 	Function: time_freq
@@ -729,7 +729,7 @@ int64 time_get(void);
 	Returns:
 		Returns the frequency of the high resolution timer.
 */
-int64 time_freq(void);
+int64_t time_freq(void);
 
 /*
 	Function: time_timestamp
@@ -774,7 +774,7 @@ Fetches a sample from a high resolution timer and converts it in microseconds.
 Returns:
 Current value of the timer in microseconds.
 */
-int64 time_get_microseconds(void);
+int64_t time_get_microseconds(void);
 
 /* Group: Network General */
 typedef struct
@@ -1643,7 +1643,7 @@ enum
 		- Guarantees that buffer string will contain zero-termination, assuming
 		  buffer_size > 0.
 */
-int str_time(int64 centisecs, int format, char *buffer, int buffer_size);
+int str_time(int64_t centisecs, int format, char *buffer, int buffer_size);
 int str_time_float(float secs, int format, char *buffer, int buffer_size);
 
 /*

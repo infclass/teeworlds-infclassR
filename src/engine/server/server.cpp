@@ -43,6 +43,8 @@
 #include <teeuniverses/components/localization.h>
 /* INFECTION MODIFICATION END *****************************************/
 
+#include <cinttypes>
+
 extern const char *GIT_SHORTREV_HASH;
 
 static const char *StrLtrim(const char *pStr)
@@ -136,7 +138,7 @@ void CSnapIDPool::RemoveFirstTimeout()
 
 int CSnapIDPool::NewID()
 {
-	int64 Now = time_get();
+	int64_t Now = time_get();
 
 	// process timed ids
 	while(m_FirstTimed != -1 && m_aIDs[m_FirstTimed].m_Timeout < Now)
@@ -539,7 +541,7 @@ void CServer::Kick(int ClientID, const char *pReason)
 	return m_CurrentGameTick;
 }*/
 
-int64 CServer::TickStartTime(int Tick)
+int64_t CServer::TickStartTime(int Tick)
 {
 	return m_GameStartTime + (time_freq()*Tick)/SERVER_TICK_SPEED;
 }
@@ -1785,7 +1787,7 @@ void CServer::ProcessClientPacket(CNetChunk *pPacket)
 void CServer::SendServerInfoConnless(const NETADDR *pAddr, int Token, int Type)
 {
 	const int MaxRequests = g_Config.m_SvServerInfoPerSecond;
-	int64 Now = Tick();
+	int64_t Now = Tick();
 	if(abs(Now - m_ServerInfoFirstRequest) <= TickSpeed())
 	{
 		m_ServerInfoNumRequests++;
@@ -1824,8 +1826,8 @@ void CServer::SendServerInfoConnless(const NETADDR *pAddr, int Token, int Type)
 		char aBuf[256];
 		char aAddrStr[256];
 		net_addr_str(pAddr, aAddrStr, sizeof(aAddrStr), true);
-		str_format(aBuf, sizeof(aBuf), "Too many info requests from %s: %d > %d (Now = %lld, mSIFR = %lld)",
-				aAddrStr, m_ServerInfoNumRequests, MaxRequests, Now, m_ServerInfoFirstRequest);
+		str_format(aBuf, sizeof(aBuf), "Too many info requests from %s: %d > %d (Now = %" PRId64 ", mSIFR = %" PRId64 ")",
+			aAddrStr, m_ServerInfoNumRequests, MaxRequests, Now, m_ServerInfoFirstRequest);
 		Console()->Print(IConsole::OUTPUT_LEVEL_DEBUG, "inforequests", aBuf);
 		return;
 	}
@@ -2402,7 +2404,7 @@ int CServer::Run()
 				PumpNetwork();
 			set_new_tick();
 
-			int64 t = time_get();
+			int64_t t = time_get();
 			int NewTicks = 0;
 			
 #ifdef CONF_SQL
@@ -2584,7 +2586,7 @@ int CServer::Run()
 			else
 			{
 				set_new_tick();
-				int64 t = time_get();
+				int64_t t = time_get();
 				int x = (TickStartTime(m_CurrentGameTick + 1) - t) * 1000000 / time_freq() + 1;
 				if(x > 0)
 					net_socket_read_wait(m_NetServer.Socket(), x);

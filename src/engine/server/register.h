@@ -23,7 +23,7 @@ class CRegister
 		NETADDR m_Addr;
 		int m_Count;
 		int m_Valid;
-		int64 m_LastSend;
+		int64_t m_LastSend;
 	};
 
 	class CNetServer *m_pNetServer;
@@ -31,7 +31,7 @@ class CRegister
 	class IConsole *m_pConsole;
 
 	int m_RegisterState;
-	int64 m_RegisterStateStart;
+	int64_t m_RegisterStateStart;
 	int m_RegisterFirst;
 	int m_RegisterCount;
 

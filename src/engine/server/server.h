@@ -205,7 +205,7 @@ public:
 
 	IEngineMap *m_pMap;
 
-	int64 m_GameStartTime;
+	int64_t m_GameStartTime;
 	//int m_CurrentGameTick;
 	int m_RunServer;
 
@@ -215,7 +215,7 @@ public:
 	int m_RconAuthLevel;
 	int m_PrintCBIndex;
 
-	int64 m_Lastheartbeat;
+	int64_t m_Lastheartbeat;
 	//static NETADDR4 master_server;
 	
 	char m_aPreviousMap[64];
@@ -227,7 +227,7 @@ public:
 	unsigned int m_CurrentMapSize;
 
 	bool m_ServerInfoHighLoad;
-	int64 m_ServerInfoFirstRequest;
+	int64_t m_ServerInfoFirstRequest;
 	int m_ServerInfoNumRequests;
 	int64_t m_ServerInfoRequestLogTick;
 	int m_ServerInfoRequestLogRecords;
@@ -256,7 +256,7 @@ public:
 	bool DemoRecorder_IsRecording();
 
 	//int Tick()
-	int64 TickStartTime(int Tick);
+	int64_t TickStartTime(int Tick);
 	//int TickSpeed()
 
 	int Init();
@@ -428,7 +428,7 @@ public:
 	LOCK m_GameServerCmdLock;
 	LOCK m_ChallengeLock;
 	char m_aChallengeWinner[16];
-	int64 m_ChallengeRefreshTick;
+	int64_t m_ChallengeRefreshTick;
 	int m_ChallengeType;
 #endif
 	int m_LastRegistrationRequestId = 0;

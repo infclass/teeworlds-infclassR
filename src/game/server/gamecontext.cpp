@@ -361,7 +361,7 @@ void CGameContext::CallVote(int ClientID, const char *pDesc, const char *pCmd, c
 	if(m_VoteCloseTime)
 		return;
 
-	int64 Now = Server()->Tick();
+	int64_t Now = Server()->Tick();
 	CPlayer *pPlayer = m_apPlayers[ClientID];
 
 	if(!pPlayer)
@@ -4547,8 +4547,8 @@ int CGameContext::GetClientVersion(int ClientID) const
 
 bool CGameContext::RateLimitPlayerVote(int ClientID)
 {
-	int64 Now = Server()->Tick();
-	int64 TickSpeed = Server()->TickSpeed();
+	int64_t Now = Server()->Tick();
+	int64_t TickSpeed = Server()->TickSpeed();
 	CPlayer *pPlayer = m_apPlayers[ClientID];
 
 	if(g_Config.m_SvSpamprotection && pPlayer->m_LastVoteTry && pPlayer->m_LastVoteTry + TickSpeed * 3 > Now)
