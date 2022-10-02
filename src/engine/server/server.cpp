@@ -192,7 +192,7 @@ void CServerBan::InitServerBan(IConsole *pConsole, IStorage *pStorage, CServer* 
 	m_pServer = pServer;
 
 	// overwrites base command, todo: improve this
-	Console()->Register("ban", "s<clientid> ?i<minutes> ?r<reason>", CFGFLAG_SERVER|CFGFLAG_STORE, ConBanExt, this, "Ban player with ip/client id for x minutes for any reason");
+	Console()->Register("ban", "s[ip|id] ?i[minutes] r[reason]", CFGFLAG_SERVER | CFGFLAG_STORE, ConBanExt, this, "Ban player with ip/client id for x minutes for any reason");
 }
 
 template<class T>
@@ -3129,13 +3129,12 @@ void CServer::RegisterCommands()
 	m_pStorage = Kernel()->RequestInterface<IStorage>();
 
 	// register console commands
-	Console()->Register("kick", "s<username or uid> ?r<reason>", CFGFLAG_SERVER, ConKick, this, "Kick player with specified id for any reason");
-	Console()->Register("status", "", CFGFLAG_SERVER, ConStatus, this, "List players");
-	Console()->Register("status_extended", "", CFGFLAG_SERVER, ConStatusExtended, this, "List players");
-	Console()->Register("shutdown", "?r", CFGFLAG_SERVER, ConShutdown, this, "Shut down");
+	Console()->Register("kick", "i[id] ?r[reason]", CFGFLAG_SERVER, ConKick, this, "Kick player with specified id for any reason");
+	Console()->Register("status", "?r[name]", CFGFLAG_SERVER, ConStatus, this, "List players containing name or all players");
+	Console()->Register("shutdown", "?r[reason]", CFGFLAG_SERVER, ConShutdown, this, "Shut down");
 	Console()->Register("logout", "", CFGFLAG_SERVER, ConLogout, this, "Logout of rcon");
 
-	Console()->Register("record", "?s", CFGFLAG_SERVER|CFGFLAG_STORE, ConRecord, this, "Record to a file");
+	Console()->Register("record", "?s[file]", CFGFLAG_SERVER | CFGFLAG_STORE, ConRecord, this, "Record to a file");
 	Console()->Register("stoprecord", "", CFGFLAG_SERVER, ConStopRecord, this, "Stop recording");
 
 	Console()->Register("reload", "", CFGFLAG_SERVER, ConMapReload, this, "Reload the map");
@@ -3151,23 +3150,23 @@ void CServer::RegisterCommands()
 	Console()->Chain("mod_command", ConchainModCommandUpdate, this);
 	Console()->Chain("console_output_level", ConchainConsoleOutputLevelUpdate, this);
 
-	Console()->Register("mute", "s<clientid> ?i<minutes> ?r<reason>", CFGFLAG_SERVER, ConMute, this, "Mute player with specified id for x minutes for any reason");
-	Console()->Register("unmute", "s<clientid>", CFGFLAG_SERVER, ConUnmute, this, "Unmute player with specified id");
-	Console()->Register("whisper", "s<id> r<txt>", CFGFLAG_SERVER, ConWhisper, this, "Analogous to 'Say' but sent to a single client only");
-	
+	Console()->Register("mute", "s[clientid] ?i[minutes] ?r[reason]", CFGFLAG_SERVER, ConMute, this, "Mute player with specified id for x minutes for any reason");
+	Console()->Register("unmute", "s[clientid]", CFGFLAG_SERVER, ConUnmute, this, "Unmute player with specified id");
+	Console()->Register("whisper", "s[id] r[txt]", CFGFLAG_SERVER, ConWhisper, this, "Analogous to 'Say' but sent to a single client only");
+
 /* INFECTION MODIFICATION START ***************************************/
 #ifdef CONF_SQL
 	Console()->Register("inf_add_sqlserver", "ssssssi?i", CFGFLAG_SERVER, ConAddSqlServer, this, "add a sqlserver");
 	Console()->Register("inf_list_sqlservers", "s", CFGFLAG_SERVER, ConDumpSqlServers, this, "list all sqlservers readservers = r, writeservers = w");
 #endif
 
-	Console()->Register("inf_set_weapon_fire_delay", "i<weapon>i<msec>", CFGFLAG_SERVER, ConSetWeaponFireDelay, this,
-	                    "Set InfClass weapon fire delay");
-	Console()->Register("inf_set_weapon_ammo_regen", "i<weapon>i<msec>", CFGFLAG_SERVER, ConSetWeaponAmmoRegen, this,
-	                    "Set InfClass weapon ammo regen interval");
-	Console()->Register("inf_set_weapon_max_ammo", "i<weapon>i<ammo>", CFGFLAG_SERVER, ConSetWeaponMaxAmmo, this,
-	                    "Set InfClass weapon max ammo");
-/* INFECTION MODIFICATION END *****************************************/
+	Console()->Register("inf_set_weapon_fire_delay", "i[weapon] i[msec]", CFGFLAG_SERVER, ConSetWeaponFireDelay, this,
+		"Set InfClass weapon fire delay");
+	Console()->Register("inf_set_weapon_ammo_regen", "i[weapon] i[msec]", CFGFLAG_SERVER, ConSetWeaponAmmoRegen, this,
+		"Set InfClass weapon ammo regen interval");
+	Console()->Register("inf_set_weapon_max_ammo", "i[weapon] i[ammo]", CFGFLAG_SERVER, ConSetWeaponMaxAmmo, this,
+		"Set InfClass weapon max ammo");
+	/* INFECTION MODIFICATION END *****************************************/
 
 	// register console commands in sub parts
 	m_ServerBan.InitServerBan(Console(), Storage(), this);
