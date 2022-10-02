@@ -265,7 +265,7 @@ public:
 	int m_ChatPrintCBIndex;
 
 private:
-	static void ChatConsolePrintCallback(const char *pLine, void *pUser);
+	static void ChatConsolePrintCallback(const char *pLine, void *pUser, ColorRGBA PrintColor);
 
 	static void ConWhisper(IConsole::IResult *pResult, void *pUserData);
 	static void ConConverse(IConsole::IResult *pResult, void *pUserData);

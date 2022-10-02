@@ -1266,7 +1266,7 @@ void CServer::SendRconLine(int ClientID, const char *pLine)
 	SendMsg(&Msg, MSGFLAG_VITAL, ClientID);
 }
 
-void CServer::SendRconLineAuthed(const char *pLine, void *pUser)
+void CServer::SendRconLineAuthed(const char *pLine, void *pUser, ColorRGBA PrintColor)
 {
 	CServer *pThis = (CServer *)pUser;
 	static volatile int ReentryGuard = 0;
@@ -2369,7 +2369,7 @@ int CServer::Run()
 
 	m_NetServer.SetCallbacks(NewClientCallback, ClientRejoinCallback, DelClientCallback, this);
 
-	m_Econ.Init(Console(), &m_ServerBan);
+	m_Econ.Init(Config(), Console(), &m_ServerBan);
 
 	char aBuf[256];
 	str_format(aBuf, sizeof(aBuf), "server name is '%s'", g_Config.m_SvName);

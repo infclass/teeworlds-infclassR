@@ -291,7 +291,7 @@ public:
 	
 	void SendConnectionReady(int ClientID);
 	void SendRconLine(int ClientID, const char *pLine);
-	static void SendRconLineAuthed(const char *pLine, void *pUser);
+	static void SendRconLineAuthed(const char *pLine, void *pUser, ColorRGBA PrintColor);
 
 	void SendRconCmdAdd(const IConsole::CCommandInfo *pCommandInfo, int ClientID);
 	void SendRconCmdRem(const IConsole::CCommandInfo *pCommandInfo, int ClientID);

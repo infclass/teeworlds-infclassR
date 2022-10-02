@@ -2264,7 +2264,7 @@ void CGameContext::OnMessage(int MsgID, CUnpacker *pUnpacker, int ClientID)
 }
 
 /* DDNET MODIFICATION START *******************************************/
-void CGameContext::ChatConsolePrintCallback(const char *pLine, void *pUser)
+void CGameContext::ChatConsolePrintCallback(const char *pLine, void *pUser, ColorRGBA PrintColor)
 {
 	CGameContext *pSelf = (CGameContext *)pUser;
 	int ClientID = pSelf->m_ChatResponseTargetID;
