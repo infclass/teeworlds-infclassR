@@ -57,6 +57,7 @@
 #include <direct.h>
 #include <errno.h>
 #include <fcntl.h>
+#include <io.h>
 #include <process.h>
 #include <shellapi.h>
 #include <wincrypt.h>
@@ -277,15 +278,43 @@ void mem_zero(void *block, unsigned size)
 	memset(block, 0, size);
 }
 
-IOHANDLE io_open(const char *filename, int flags)
+IOHANDLE io_open_impl(const char *filename, int flags)
 {
-	if(flags == IOFLAG_READ)
+	dbg_assert(flags == (IOFLAG_READ | IOFLAG_SKIP_BOM) || flags == IOFLAG_READ || flags == IOFLAG_WRITE || flags == IOFLAG_APPEND, "flags must be read, read+skipbom, write or append");
+#if defined(CONF_FAMILY_WINDOWS)
+	WCHAR wBuffer[IO_MAX_PATH_LENGTH];
+	MultiByteToWideChar(CP_UTF8, 0, filename, -1, wBuffer, std::size(wBuffer));
+	if((flags & IOFLAG_READ) != 0)
+		return (IOHANDLE)_wfsopen(wBuffer, L"rb", _SH_DENYNO);
+	if(flags == IOFLAG_WRITE)
+		return (IOHANDLE)_wfsopen(wBuffer, L"wb", _SH_DENYNO);
+	if(flags == IOFLAG_APPEND)
+		return (IOHANDLE)_wfsopen(wBuffer, L"ab", _SH_DENYNO);
+	return 0x0;
+#else
+	if((flags & IOFLAG_READ) != 0)
 		return (IOHANDLE)fopen(filename, "rb");
 	if(flags == IOFLAG_WRITE)
 		return (IOHANDLE)fopen(filename, "wb");
 	if(flags == IOFLAG_APPEND)
 		return (IOHANDLE)fopen(filename, "ab");
 	return 0x0;
+#endif
+}
+
+IOHANDLE io_open(const char *filename, int flags)
+{
+	IOHANDLE result = io_open_impl(filename, flags);
+	unsigned char buf[3];
+	if((flags & IOFLAG_SKIP_BOM) == 0 || !result)
+	{
+		return result;
+	}
+	if(io_read(result, buf, sizeof(buf)) != 3 || buf[0] != 0xef || buf[1] != 0xbb || buf[2] != 0xbf)
+	{
+		io_seek(result, 0, IOSEEK_START);
+	}
+	return result;
 }
 
 unsigned io_read(IOHANDLE io, void *buffer, unsigned size)
@@ -364,8 +393,21 @@ int io_flush(IOHANDLE io)
 	return fflush((FILE *)io);
 }
 
-#define ASYNC_BUFSIZE 8 * 1024
-#define ASYNC_LOCAL_BUFSIZE 64 * 1024
+int io_sync(IOHANDLE io)
+{
+	if(io_flush(io))
+	{
+		return 1;
+	}
+#if defined(CONF_FAMILY_WINDOWS)
+	return FlushFileBuffers((HANDLE)_get_osfhandle(_fileno((FILE *)io))) == 0;
+#else
+	return fsync(fileno((FILE *)io)) != 0;
+#endif
+}
+
+#define ASYNC_BUFSIZE (8 * 1024)
+#define ASYNC_LOCAL_BUFSIZE (64 * 1024)
 
 // TODO: Use Thread Safety Analysis when this file is converted to C++
 struct ASYNCIO
