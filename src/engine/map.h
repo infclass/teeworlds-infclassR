@@ -3,8 +3,13 @@
 #ifndef ENGINE_MAP_H
 #define ENGINE_MAP_H
 
-#include <base/hash.h>
 #include "kernel.h"
+#include <base/hash.h>
+
+enum
+{
+	MAX_MAP_LENGTH = 128
+};
 
 class IMap : public IInterface
 {
@@ -14,12 +19,12 @@ public:
 	virtual int GetDataSize(int Index) = 0;
 	virtual void *GetDataSwapped(int Index) = 0;
 	virtual void UnloadData(int Index) = 0;
-	virtual void *GetItem(int Index, int *Type, int *pID) = 0;
+	virtual void *GetItem(int Index, int *pType, int *pID) = 0;
+	virtual int GetItemSize(int Index) = 0;
 	virtual void GetType(int Type, int *pStart, int *pNum) = 0;
 	virtual void *FindItem(int Type, int ID) = 0;
 	virtual int NumItems() = 0;
 };
-
 
 class IEngineMap : public IMap
 {
@@ -30,6 +35,8 @@ public:
 	virtual void Unload() = 0;
 	virtual SHA256_DIGEST Sha256() = 0;
 	virtual unsigned Crc() = 0;
+	virtual int MapSize() = 0;
+	virtual IOHANDLE File() = 0;
 };
 
 extern IEngineMap *CreateEngineMap();
