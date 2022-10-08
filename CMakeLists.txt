@@ -78,8 +78,6 @@ if(USE_CONAN)
 endif()
 
 if(USE_CONAN)
-  set(CMAKE_CXX_STANDARD 14)
-
   include(cmake/conan.cmake)
 
   conan_cmake_configure(
