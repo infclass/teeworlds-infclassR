@@ -192,8 +192,10 @@ function(set_glob VAR GLOBBING DIRECTORY) # ...
   file(${GLOBBING} GLOB_RESULT "${DIRECTORY}/*.c" "${DIRECTORY}/*.cpp" "${DIRECTORY}/*.h")
   list(SORT GLOB_RESULT)
   set(FILES)
+  set(RELATIVE_FILES)
   foreach(file ${ARGN})
-    list(APPEND FILES "${DIRECTORY}/${file}")
+    list(APPEND FILES "${PROJECT_SOURCE_DIR}/${DIRECTORY}/${file}")
+    list(APPEND RELATIVE_FILES "${DIRECTORY}/${file}")
   endforeach()
 
   if(NOT FILES STREQUAL GLOB_RESULT)
@@ -224,7 +226,7 @@ function(set_glob VAR GLOBBING DIRECTORY) # ...
     endif()
   endif()
 
-  set(${VAR} ${FILES} PARENT_SCOPE)
+  set(${VAR} ${RELATIVE_FILES} PARENT_SCOPE)
 endfunction()
 
 function(set_src VAR GLOBBING DIRECTORY) # ...
