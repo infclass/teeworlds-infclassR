@@ -229,7 +229,10 @@ macro(_conan_detect_compiler)
         elseif(CMAKE_VS_PLATFORM_TOOLSET AND (CMAKE_GENERATOR STREQUAL "Ninja"))
             set(_CONAN_SETTING_COMPILER_TOOLSET ${CMAKE_VS_PLATFORM_TOOLSET})
         endif()
-        else()
+
+        # Unset cppstd to remove it from the configuration and make the conf matching one of pre-builts
+        unset(_CONAN_SETTING_COMPILER_CPPSTD)
+    else()
         message(FATAL_ERROR "Conan: compiler setup not recognized")
     endif()
 
