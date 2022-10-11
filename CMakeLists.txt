@@ -299,6 +299,7 @@ if(NOT CMAKE_CROSSCOMPILING)
 endif()
 find_package(ZLIB REQUIRED)
 find_package(Crypto)
+find_package(Curl)
 if(MYSQL)
   find_package(MySQL)
 else()
@@ -344,6 +345,7 @@ function(show_dependency_status OUTPUT_NAME NAME)
   endif()
 endfunction()
 
+show_dependency_status("Curl" CURL)
 if(TARGET_OS AND TARGET_OS STREQUAL "mac")
   show_dependency_status("Dmg tools" DMGTOOLS)
 endif()
@@ -593,6 +595,7 @@ find_package(ICU REQUIRED COMPONENTS uc i18n)
 set(LIBS
   ZLIB::ZLIB
   ${PLATFORM_LIBS}
+  ${CURL_LIBRARIES}
   # Add pthreads (on non-Windows) at the end, so that other libraries can depend
   # on it.
   ICU::i18n
@@ -607,6 +610,7 @@ list(APPEND TARGETS_OWN engine-shared game-shared)
 
 target_link_libraries(engine-shared PUBLIC
   ZLIB::ZLIB
+  ${CURL_LIBRARIES}
   ${CMAKE_THREAD_LIBS_INIT}
 )
 
@@ -622,6 +626,7 @@ else()
 endif()
 
 target_link_libraries(game-shared PUBLIC
+  ${CURL_LIBRARIES}
   ZLIB::ZLIB
   ICU::i18n
   ICU::uc
@@ -631,7 +636,7 @@ add_library(pnglite STATIC
   ${CMAKE_CURRENT_SOURCE_DIR}/src/engine/external/pnglite/pnglite.c
   ${CMAKE_CURRENT_SOURCE_DIR}/src/engine/external/pnglite/pnglite.h
 )
-target_link_libraries(pnglite PRIVATE ZLIB::ZLIB)
+target_link_libraries(pnglite PRIVATE ZLIB::ZLIB curl)
 
 target_include_directories(pnglite PUBLIC
   ${CMAKE_CURRENT_SOURCE_DIR}/src/engine/external/pnglite
@@ -678,6 +683,8 @@ set_glob(ENGINE_SERVER GLOB src/engine/server
   sql_server.h
   sql_string_helpers.cpp
   sql_string_helpers.h
+  http.cpp
+  http.h
 )
 
 set_glob(GAME_SERVER GLOB_RECURSE src/game/server
