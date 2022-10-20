@@ -59,6 +59,7 @@ public:
 	void KillCharacter(int Weapon = WEAPON_GAME) override;
 
 	CInfClassCharacter *GetCharacter();
+	const CInfClassCharacter *GetCharacter() const;
 	CInfClassPlayerClass *GetCharacterClass() { return m_pInfcPlayerClass; }
 	const CInfClassPlayerClass *GetCharacterClass() const { return m_pInfcPlayerClass; }
 	void SetCharacterClass(CInfClassPlayerClass *pClass);

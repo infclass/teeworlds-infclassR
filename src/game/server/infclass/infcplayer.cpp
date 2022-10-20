@@ -305,6 +305,11 @@ CInfClassCharacter *CInfClassPlayer::GetCharacter()
 	return CInfClassCharacter::GetInstance(m_pCharacter);
 }
 
+const CInfClassCharacter *CInfClassPlayer::GetCharacter() const
+{
+	return static_cast<const CInfClassCharacter*>(m_pCharacter);
+}
+
 void CInfClassPlayer::SetCharacterClass(CInfClassPlayerClass *pClass)
 {
 	if(m_pInfcPlayerClass)
