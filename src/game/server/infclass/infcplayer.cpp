@@ -42,10 +42,8 @@ void CInfClassPlayer::TryRespawn()
 	CInfClassCharacter *pCharacter = new(m_ClientID) CInfClassCharacter(GameController());
 
 	m_pCharacter = pCharacter;
-	pCharacter->Spawn(this, Context.SpawnPos);
-	m_pInfcPlayerClass->SetCharacter(pCharacter);
-
-	pCharacter->OnCharacterSpawned(Context);
+	m_pCharacter->Spawn(this, Context.SpawnPos);
+	OnCharacterSpawned(Context);
 }
 
 void CInfClassPlayer::Tick()
@@ -547,6 +545,14 @@ void CInfClassPlayer::OnDeath()
 void CInfClassPlayer::OnAssist()
 {
 	++m_Assists;
+}
+
+void CInfClassPlayer::OnCharacterSpawned(const SpawnContext &Context)
+{
+	CInfClassCharacter *pCharacter = GetCharacter();
+
+	m_pInfcPlayerClass->SetCharacter(pCharacter);
+	pCharacter->OnCharacterSpawned(Context);
 }
 
 const char *CInfClassPlayer::GetClan(int SnappingClient) const

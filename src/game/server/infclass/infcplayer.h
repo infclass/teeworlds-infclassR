@@ -8,6 +8,7 @@ class CGameContext;
 class CInfClassCharacter;
 class CInfClassGameController;
 class CInfClassPlayerClass;
+struct SpawnContext;
 
 // We actually have to include player.h after all this stuff above.
 #include <game/server/player.h>
@@ -105,6 +106,7 @@ public:
 	int m_MapMenuItem = -1;
 
 protected:
+	virtual void OnCharacterSpawned(const SpawnContext &Context);
 	const char *GetClan(int SnappingClient = -1) const override;
 	void HandleAutoRespawn() override;
 
