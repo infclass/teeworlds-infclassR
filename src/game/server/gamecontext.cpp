@@ -1078,6 +1078,8 @@ void CGameContext::OnTick()
 		}
 	}
 	
+	m_pController->TickBeforeWorld();
+
 	// copy tuning
 	m_World.m_Core.m_Tuning = m_Tuning;
 	m_World.Tick();

@@ -121,6 +121,7 @@ public:
 
 	void DoTeamBalance();
 
+	virtual void TickBeforeWorld();
 	virtual void Tick();
 
 	virtual void Snap(int SnappingClient);

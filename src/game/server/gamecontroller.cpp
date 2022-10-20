@@ -1045,6 +1045,10 @@ bool IGameController::CanBeMovedOnBalance(int ClientID)
 	return true;
 }
 
+void IGameController::TickBeforeWorld()
+{
+}
+
 void IGameController::Tick()
 {
 	// do warmup
