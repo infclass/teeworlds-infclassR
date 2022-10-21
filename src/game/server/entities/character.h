@@ -58,7 +58,7 @@ public:
 
 	int NetworkClipped(int SnappingClient) const;
 
-	bool IsGrounded();
+	bool IsGrounded() const;
 
 	void SetWeapon(int W);
 	virtual void HandleWeaponSwitch();

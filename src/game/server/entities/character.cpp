@@ -132,11 +132,11 @@ void CCharacter::SetWeapon(int W)
 		SetActiveWeapon(0);
 }
 
-bool CCharacter::IsGrounded()
+bool CCharacter::IsGrounded() const
 {
-	if(GameServer()->Collision()->CheckPoint(GetPos().x+m_ProximityRadius/2, GetPos().y+m_ProximityRadius/2+5))
+	if(Collision()->CheckPoint(GetPos().x + m_ProximityRadius / 2, GetPos().y + m_ProximityRadius / 2 + 5))
 		return true;
-	if(GameServer()->Collision()->CheckPoint(GetPos().x-m_ProximityRadius/2, GetPos().y+m_ProximityRadius/2+5))
+	if(Collision()->CheckPoint(GetPos().x - m_ProximityRadius / 2, GetPos().y + m_ProximityRadius / 2 + 5))
 		return true;
 	return false;
 }
