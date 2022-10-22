@@ -2045,7 +2045,6 @@ int CInfClassGameController::InfectedBonusArmor() const
 
 void CInfClassGameController::SendKillMessage(int Victim, DAMAGE_TYPE DamageType, int Killer, int Assistant)
 {
-	int DamageTypeInt = static_cast<int>(DamageType);
 	int VanillaWeapon = DamageTypeToWeapon(DamageType);
 
 	if(Killer < 0)
@@ -2068,6 +2067,7 @@ void CInfClassGameController::SendKillMessage(int Victim, DAMAGE_TYPE DamageType
 	if(DamageType == DAMAGE_TYPE::DEATH_TILE)
 		VanillaWeapon = WEAPON_NINJA;
 
+	int DamageTypeInt = static_cast<int>(DamageType);
 	dbg_msg("inf-proto", "Sent kill message victim=%d, damage_type=%d, killer=%d, assistant=%d", Victim, DamageTypeInt, Killer, Assistant);
 
 	CNetMsg_Inf_KillMsg InfClassMsg;
