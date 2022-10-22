@@ -38,18 +38,7 @@ void CHeroFlag::FindPosition()
 
 void CHeroFlag::SetCoolDown()
 {
-	// Set cooldown for next flag depending on how many players are online
-	int PlayerCount = Server()->GetActivePlayerCount();
-	if (PlayerCount <= 1)
-	{
-		// only 1 player on, let him find as many flags as he wants
-		m_SpawnTick = Server()->Tick() + 2;
-		return;
-	}
-	float t = (8-PlayerCount) / 8.0f;
-	if (t < 0.0f) 
-		t = 0.0f;
-	m_SpawnTick = Server()->Tick() + Server()->TickSpeed() * (15+(120*t));
+	m_SpawnTick = Server()->Tick() + Server()->TickSpeed() * GameController()->GetHeroFlagCooldown();
 }
 
 void CHeroFlag::GiveGift(CInfClassCharacter *pHero)
@@ -150,9 +139,12 @@ void CHeroFlag::TickPaused()
 
 void CHeroFlag::Snap(int SnappingClient)
 {
-	if(Server()->Tick() < m_SpawnTick)
+	if(!IsAvailable())
 		return;
-	
+
+	if(Server()->Tick() < GetSpawnTick())
+		return;
+
 	if(NetworkClipped(SnappingClient))
 		return;
 	

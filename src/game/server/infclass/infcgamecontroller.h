@@ -100,6 +100,7 @@ public:
 	void DoPlayerInfection(CInfClassPlayer *pPlayer, CInfClassPlayer *pInfectiousPlayer, int PreviousClass);
 
 	void OnHeroFlagCollected(int ClientID);
+	float GetHeroFlagCooldown() const;
 
 	bool IsInfectionStarted() const;
 	bool CanJoinTeam(int Team, int ClientID) override;

@@ -240,11 +240,24 @@ void CInfClassGameController::OnHeroFlagCollected(int ClientID)
 	if(Tick < m_HeroGiftTick)
 		return;
 
-	float t = (8 - Server()->GetActivePlayerCount()) / 8.0f;
-	if (t < 0.0f)
+	m_HeroGiftTick = Tick + GetHeroFlagCooldown() * Server()->TickSpeed();
+}
+
+float CInfClassGameController::GetHeroFlagCooldown() const
+{
+	// Set cooldown for next flag depending on how many players are online
+	int PlayerCount = Server()->GetActivePlayerCount();
+	if(PlayerCount <= 1)
+	{
+		// only 1 player on, let him find as many flags as he wants
+		return 2.0 / Server()->TickSpeed();
+	}
+
+	float t = (8 - PlayerCount) / 8.0f;
+	if(t < 0.0f)
 		t = 0.0f;
 
-	m_HeroGiftTick = Tick + Server()->TickSpeed() * (15 + (120 * t));
+	return 15 + (120 * t);
 }
 
 bool CInfClassGameController::OnEntity(const char* pName, vec2 Pivot, vec2 P0, vec2 P1, vec2 P2, vec2 P3, int PosEnv)
