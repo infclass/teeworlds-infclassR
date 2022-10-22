@@ -193,12 +193,17 @@ void CInfClassHuman::OnPlayerSnap(int SnappingClient, int InfClassVersion)
 		switch(GetPlayerClass())
 		{
 		case PLAYERCLASS_HERO:
-		{
-			if(m_pHeroFlag)
+			if(m_pHeroFlag && m_pHeroFlag->IsAvailable())
 			{
-				pClassInfo->m_Data1 = m_pHeroFlag->IsAvailable() ? m_pHeroFlag->GetSpawnTick() : -1;
+				pClassInfo->m_Data1 = m_pHeroFlag->GetSpawnTick();
 			}
-		}
+			else
+			{
+				pClassInfo->m_Data1 = -1;
+			}
+			break;
+		default:
+			break;
 		}
 	}
 }
