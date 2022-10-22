@@ -190,7 +190,7 @@ public:
 	int GetMinimumInfected() const;
 	int InfectedBonusArmor() const;
 
-	void SendKillMessage(int Victim, DAMAGE_TYPE DamageType, int Killer = -1, int Assistant = -1);
+	void SendKillMessage(int Victim, const DeathContext &Context);
 
 protected:
 	void RoundTickBeforeInitialInfection();

@@ -825,7 +825,7 @@ bool CInfClassCharacter::TakeDamage(vec2 Force, float FloatDmg, int From, DAMAGE
 		DeathContext Context;
 		GetDeathContext(From, DamageType, &Context);
 
-		GameController()->SendKillMessage(GetCID(), Context.DamageType, Context.Killer, Context.Assistant);
+		GameController()->SendKillMessage(GetCID(), Context);
 	}
 /* INFECTION MODIFICATION END *****************************************/
 

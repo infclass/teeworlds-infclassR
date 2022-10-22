@@ -2043,9 +2043,12 @@ int CInfClassGameController::InfectedBonusArmor() const
 	return Factor * 10;
 }
 
-void CInfClassGameController::SendKillMessage(int Victim, DAMAGE_TYPE DamageType, int Killer, int Assistant)
+void CInfClassGameController::SendKillMessage(int Victim, const DeathContext &Context)
 {
+	DAMAGE_TYPE DamageType = Context.DamageType;
 	int VanillaWeapon = DamageTypeToWeapon(DamageType);
+	int Killer = Context.Killer;
+	int Assistant = Context.Assistant;
 
 	if(Killer < 0)
 	{
@@ -2058,7 +2061,7 @@ void CInfClassGameController::SendKillMessage(int Victim, DAMAGE_TYPE DamageType
 
 	// Old clients have no idea about DAMAGE_TILEs,
 	// and we don't need a different UI indication
-	if(DamageType == DAMAGE_TYPE::DAMAGE_TILE)
+	if(Context.DamageType == DAMAGE_TYPE::DAMAGE_TILE)
 	{
 		DamageType = DAMAGE_TYPE::DEATH_TILE;
 	}
@@ -2973,9 +2976,9 @@ int CInfClassGameController::OnCharacterDeath(class CCharacter *pAbstractVictim,
 
 void CInfClassGameController::OnCharacterDeath(CInfClassCharacter *pVictim, const DeathContext &Context)
 {
-	DAMAGE_TYPE DamageType = Context.DamageType;
-	int Killer = Context.Killer;
-	int Assistant = Context.Assistant;
+	const DAMAGE_TYPE DamageType = Context.DamageType;
+	const int Killer = Context.Killer;
+	const int Assistant = Context.Assistant;
 
 	dbg_msg("server", "OnCharacterDeath: victim: %d, DT: %d, killer: %d, assistant: %d", pVictim->GetCID(), static_cast<int>(DamageType), Killer, Assistant);
 
@@ -3025,7 +3028,7 @@ void CInfClassGameController::OnCharacterDeath(CInfClassCharacter *pVictim, cons
 		Server()->ClientName(pVictim->GetCID()), Weapon);
 	Console()->Print(IConsole::OUTPUT_LEVEL_DEBUG, "game", aBuf);
 
-	SendKillMessage(pVictim->GetCID(), DamageType, Killer, Assistant);
+	SendKillMessage(pVictim->GetCID(), Context);
 
 	if(pVictim->GetClass())
 	{
