@@ -36,7 +36,7 @@ void CHeroFlag::FindPosition()
 	m_HasSpawnPosition = GameController()->GetHeroFlagPosition(&m_Pos);
 }
 
-void CHeroFlag::SetCoolDown()
+void CHeroFlag::ResetCooldown()
 {
 	m_SpawnTick = Server()->Tick() + Server()->TickSpeed() * GameController()->GetHeroFlagCooldown();
 }
@@ -120,7 +120,7 @@ void CHeroFlag::Tick()
 	if(Len < GetProximityRadius() + pOwner->GetProximityRadius())
 	{
 		GiveGift(pOwner);
-		SetCoolDown();
+		ResetCooldown();
 		FindPosition();
 
 		if(Server()->GetActivePlayerCount() > 3)

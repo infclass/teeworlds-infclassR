@@ -25,14 +25,13 @@ public:
 
 	bool IsAvailable() const { return m_HasSpawnPosition; }
 	int GetSpawnTick() const { return m_SpawnTick; }
+	void ResetCooldown();
 
 	void Tick() override;
 	void TickPaused() override;
 	void Snap(int SnappingClient) override;
 
 private:
-	void SetCoolDown();
-
 	int m_SpawnTick = 0;
 	int m_IDs[SHIELD_COUNT];
 	bool m_HasSpawnPosition = false;
