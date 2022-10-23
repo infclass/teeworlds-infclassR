@@ -99,7 +99,7 @@ public:
 	CGameContext *GameServer() const { return m_pGameServer; }
 	IServer *Server() const { return CPlayer::Server(); }
 
-	void OnStartRound();
+	void ResetRoundData();
 
 	void OnKill();
 	void OnDeath();

@@ -554,7 +554,7 @@ bool CInfClassPlayer::LoadSavedPosition(vec2 *pOutput) const
 	return true;
 }
 
-void CInfClassPlayer::OnStartRound()
+void CInfClassPlayer::ResetRoundData()
 {
 	SetClass(PLAYERCLASS_NONE);
 	m_PreviousClasses.Clear();
