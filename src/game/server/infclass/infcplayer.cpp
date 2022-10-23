@@ -233,7 +233,16 @@ void CInfClassPlayer::HandleInfection()
 
 void CInfClassPlayer::KillCharacter(int Weapon)
 {
-	if((Weapon == WEAPON_SELF) && IsHuman())
+	if(!m_pCharacter)
+		return;
+
+	// Character actually died / removed from the world
+	const icArray<int, 2> EphemeralClasses = {
+		PLAYERCLASS_UNDEAD,
+		PLAYERCLASS_WITCH,
+	};
+
+	if((Weapon == WEAPON_SELF) && (IsHuman() || EphemeralClasses.Contains(GetClass())))
 	{
 		static const float SelfKillConfirmationTime = 3;
 		if(Server()->Tick() > m_SelfKillAttemptTick + Server()->TickSpeed() * SelfKillConfirmationTime)
@@ -251,17 +260,11 @@ void CInfClassPlayer::KillCharacter(int Weapon)
 
 	if(!m_pCharacter && (Weapon != WEAPON_GAME))
 	{
-		// Character actually died / removed from the world
-		constexpr PLAYERCLASS EphemeralClasses[] = {
-			PLAYERCLASS_UNDEAD,
-			PLAYERCLASS_WITCH,
-		};
-		for(PLAYERCLASS C : EphemeralClasses)
+		for(int i = m_PreviousClasses.Size() - 1; i >= 0; i--)
 		{
-			int Index= m_PreviousClasses.IndexOf(C);
-			if(Index >= 0)
+			if(EphemeralClasses.Contains(m_PreviousClasses.At(i)))
 			{
-				m_PreviousClasses.RemoveAt(Index);
+				m_PreviousClasses.RemoveAt(i);
 			}
 		}
 	}
