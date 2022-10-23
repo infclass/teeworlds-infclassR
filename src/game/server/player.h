@@ -41,6 +41,8 @@ public:
 	int GetClientVersion() const;
 	virtual bool IsBot() const { return false; }
 
+	virtual int GetScore(int SnappingClient) const;
+
 	virtual void Tick();
 	void PostTick();
 	virtual void Snap(int SnappingClient);

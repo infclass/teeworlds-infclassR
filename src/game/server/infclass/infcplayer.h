@@ -41,6 +41,8 @@ public:
 
 	void TryRespawn() override;
 
+	int GetScore(int SnappingClient) const override;
+
 	void Tick() override;
 	void Snap(int SnappingClient) override;
 	void SnapClientInfo(int SnappingClient, int SnappingClientMappedId) override;

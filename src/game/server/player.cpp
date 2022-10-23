@@ -214,30 +214,7 @@ void CPlayer::Snap(int SnappingClient)
 
 	SnapClientInfo(SnappingClient, id);
 
-	int SnapScoreMode = PLAYERSCOREMODE_SCORE;
-	if(GameServer()->GetPlayer(SnappingClient))
-	{
-		SnapScoreMode = GameServer()->m_apPlayers[SnappingClient]->GetScoreMode();
-	}
-	
-/* INFECTION MODIFICATION STRAT ***************************************/
-	int PlayerInfoScore = 0;
-
-	if(GetTeam() == TEAM_SPECTATORS)
-	{
-	}
-	else
-	{
-		if(SnapScoreMode == PLAYERSCOREMODE_TIME)
-		{
-			PlayerInfoScore = m_HumanTime/Server()->TickSpeed();
-		}
-		else
-		{
-			PlayerInfoScore = Server()->RoundStatistics()->PlayerScore(m_ClientID);
-		}
-	}
-/* INFECTION MODIFICATION END *****************************************/
+	int PlayerInfoScore = GetScore(SnappingClient);
 
 	CNetObj_PlayerInfo *pPlayerInfo = static_cast<CNetObj_PlayerInfo *>(Server()->SnapNewItem(NETOBJTYPE_PLAYERINFO, id, sizeof(CNetObj_PlayerInfo)));
 	if(!pPlayerInfo)
@@ -337,6 +314,11 @@ void CPlayer::OnDirectInput(CNetObj_PlayerInput *NewInput)
 int CPlayer::GetClientVersion() const
 {
 	return m_pGameServer->GetClientVersion(m_ClientID);
+}
+
+int CPlayer::GetScore(int SnappingClient) const
+{
+	return 0;
 }
 
 CCharacter *CPlayer::GetCharacter()

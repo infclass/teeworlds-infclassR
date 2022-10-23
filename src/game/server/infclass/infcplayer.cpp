@@ -1,5 +1,6 @@
 #include "infcplayer.h"
 
+#include <engine/server/roundstatistics.h>
 #include <engine/shared/config.h>
 #include <game/server/gamecontext.h>
 #include <game/server/infclass/infcgamecontroller.h>
@@ -44,6 +45,32 @@ void CInfClassPlayer::TryRespawn()
 	m_pCharacter = pCharacter;
 	m_pCharacter->Spawn(this, Context.SpawnPos);
 	OnCharacterSpawned(Context);
+}
+
+int CInfClassPlayer::GetScore(int SnappingClient) const
+{
+	int SnapScoreMode = PLAYERSCOREMODE_SCORE;
+	if(GameServer()->GetPlayer(SnappingClient))
+	{
+		SnapScoreMode = GameServer()->m_apPlayers[SnappingClient]->GetScoreMode();
+	}
+
+	if(GetTeam() == TEAM_SPECTATORS)
+	{
+	}
+	else
+	{
+		if(SnapScoreMode == PLAYERSCOREMODE_TIME)
+		{
+			return m_HumanTime / Server()->TickSpeed();
+		}
+		else
+		{
+			return Server()->RoundStatistics()->PlayerScore(m_ClientID);
+		}
+	}
+
+	return CPlayer::GetScore(SnappingClient);
 }
 
 void CInfClassPlayer::Tick()
