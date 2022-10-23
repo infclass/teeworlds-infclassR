@@ -83,6 +83,16 @@ public:
 		--m_Size;
 	}
 
+	bool RemoveOne(const T &Item)
+	{
+		int Index = IndexOf(Item);
+		if(Index < 0)
+			return false;
+
+		RemoveAt(Index);
+		return true;
+	}
+
 	void RemoveAt(int Index)
 	{
 		for(int i = Index; i < m_Size - 1; ++i)
