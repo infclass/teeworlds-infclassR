@@ -2012,36 +2012,7 @@ void CInfClassCharacter::OnMedicGrenadeFired(WeaponFireContext *pFireContext)
 
 void CInfClassCharacter::OpenClassChooser()
 {
-	CInfClassPlayer *pPlayer = GetPlayer();
-
-	if(GameController()->GetRoundType() == ROUND_TYPE::FUN)
-	{
-		pPlayer->SetRandomClassChoosen();
-		// Read this as "player didn't choose this class"
-		GiveRandomClassSelectionBonus();
-		pPlayer->CloseMapMenu();
-		return;
-	}
-
-	const int PreferredClass = pPlayer->GetPreferredClass();
-	if(!GameController()->IsClassChooserEnabled() || (PreferredClass != PLAYERCLASS_INVALID))
-	{
-		pPlayer->SetClass(GameController()->ChooseHumanClass(pPlayer));
-
-		if(PreferredClass == PLAYERCLASS_RANDOM)
-		{
-			pPlayer->SetRandomClassChoosen();
-
-			if(GameController()->IsClassChooserEnabled())
-			{
-				GiveRandomClassSelectionBonus();
-			}
-		}
-	}
-	else
-	{
-		pPlayer->OpenMapMenu(1);
-	}
+	GameController()->OnClassChooserRequested(this);
 }
 
 void CInfClassCharacter::HandleMapMenu()

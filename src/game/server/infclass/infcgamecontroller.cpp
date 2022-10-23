@@ -3162,6 +3162,40 @@ void CInfClassGameController::OnCharacterSpawned(CInfClassCharacter *pCharacter)
 	}
 }
 
+void CInfClassGameController::OnClassChooserRequested(CInfClassCharacter *pCharacter)
+{
+	CInfClassPlayer *pPlayer = pCharacter->GetPlayer();
+
+	if(GetRoundType() == ROUND_TYPE::FUN)
+	{
+		pPlayer->SetRandomClassChoosen();
+		// Read this as "player didn't choose this class"
+		pCharacter->GiveRandomClassSelectionBonus();
+		pPlayer->CloseMapMenu();
+		return;
+	}
+
+	const int PreferredClass = pPlayer->GetPreferredClass();
+	if(!IsClassChooserEnabled() || (PreferredClass != PLAYERCLASS_INVALID))
+	{
+		pPlayer->SetClass(ChooseHumanClass(pPlayer));
+
+		if(PreferredClass == PLAYERCLASS_RANDOM)
+		{
+			pPlayer->SetRandomClassChoosen();
+
+			if(IsClassChooserEnabled())
+			{
+				pCharacter->GiveRandomClassSelectionBonus();
+			}
+		}
+	}
+	else
+	{
+		pPlayer->OpenMapMenu(1);
+	}
+}
+
 void CInfClassGameController::CheckRoundFailed()
 {
 	if(m_Warmup)
