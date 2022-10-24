@@ -26,6 +26,7 @@ m_pConsole(pConsole)
 	m_Armor = 0;
 	
 /* INFECTION MODIFICATION START ***************************************/
+	m_MaxArmor = 10;
 	m_AirJumpCounter = 0;
 	m_FirstShot = true;
 	
@@ -746,7 +747,7 @@ bool CCharacter::IncreaseHealth(int Amount)
 
 bool CCharacter::IncreaseArmor(int Amount)
 {
-	if(m_Armor >= 10)
+	if(m_Armor >= m_MaxArmor)
 		return false;
 
 	SetHealthArmor(m_Health, m_Armor + Amount);
@@ -757,7 +758,7 @@ bool CCharacter::IncreaseArmor(int Amount)
 bool CCharacter::IncreaseOverallHp(int Amount)
 {
 	int MissingHealth = 10 - m_Health;
-	int MissingArmor = 10 - m_Armor;
+	int MissingArmor = m_MaxArmor - m_Armor;
 	int ExtraHealthAmount = clamp<int>(Amount, 0, MissingHealth);
 	int ExtraArmorAmount = clamp<int>(Amount - ExtraHealthAmount, 0, MissingArmor);
 
@@ -775,7 +776,7 @@ void CCharacter::SetHealthArmor(int HealthAmount, int ArmorAmount)
 	int TotalBefore = m_Health + m_Armor;
 
 	m_Health = clamp<int>(HealthAmount, 0, 10);
-	m_Armor = clamp<int>(ArmorAmount, 0, 10);
+	m_Armor = clamp<int>(ArmorAmount, 0, m_MaxArmor);
 
 	int TotalAfter = m_Health + m_Armor;
 
@@ -785,6 +786,11 @@ void CCharacter::SetHealthArmor(int HealthAmount, int ArmorAmount)
 int CCharacter::GetHealthArmorSum()
 {
 	return m_Health + m_Armor;
+}
+
+void CCharacter::SetMaxArmor(int Amount)
+{
+	m_MaxArmor = Amount;
 }
 
 void CCharacter::Die(int Killer, int Weapon)
@@ -859,7 +865,7 @@ void CCharacter::SnapCharacter(int SnappingClient, int ID)
 		(!g_Config.m_SvStrictSpectateMode && m_pPlayer->GetCID() == GameServer()->m_apPlayers[SnappingClient]->m_SpectatorID))
 	{
 		pCharacter->m_Health = m_Health;
-		pCharacter->m_Armor = m_Armor;
+		pCharacter->m_Armor = clamp<int>(m_Armor, 0, 10);
 		if(m_aWeapons[m_ActiveWeapon].m_Ammo > 0)
 			pCharacter->m_AmmoCount = m_aWeapons[m_ActiveWeapon].m_Ammo;
 	}

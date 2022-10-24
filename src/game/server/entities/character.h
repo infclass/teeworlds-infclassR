@@ -85,6 +85,8 @@ public:
 	void SetHealthArmor(int HealthAmount, int ArmorAmount);
 	int GetHealthArmorSum();
 
+	void SetMaxArmor(int Amount);
+
 	bool GiveWeapon(int Weapon, int Ammo);
 	void SetActiveWeapon(int Weapon);
 
@@ -146,6 +148,7 @@ protected:
 	int m_Armor;
 
 /* INFECTION MODIFICATION START ***************************************/
+	int m_MaxArmor;
 	//Dart
 public:
 	int m_DartLifeSpan;
