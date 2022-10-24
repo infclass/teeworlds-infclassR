@@ -95,7 +95,7 @@ public:
 
 	ROUND_TYPE GetRoundType() const;
 
-	CLASS_AVAILABILITY GetPlayerClassAvailability(int PlayerClass) const;
+	CLASS_AVAILABILITY GetPlayerClassAvailability(int PlayerClass, const CInfClassPlayer *pForPlayer = nullptr) const;
 	bool CanVote() override;
 	void OnPlayerDisconnect(CPlayer *pPlayer, int Type, const char *pReason) override;
 	void DoPlayerInfection(CInfClassPlayer *pPlayer, CInfClassPlayer *pInfectiousPlayer, int PreviousClass);

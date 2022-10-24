@@ -117,6 +117,7 @@ public:
 
 	void OpenClassChooser();
 	void HandleMapMenu();
+	void HandleMapMenuClicked();
 	void HandleWeaponsRegen();
 	void HandleHookDraining();
 	void HandleTeleports();

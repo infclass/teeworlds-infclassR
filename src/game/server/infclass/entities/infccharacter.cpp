@@ -2022,114 +2022,120 @@ void CInfClassCharacter::HandleMapMenu()
 	{
 		SetAntiFire();
 		pPlayer->CloseMapMenu();
+		return;
+	}
+
+	vec2 CursorPos = vec2(m_Input.m_TargetX, m_Input.m_TargetY);
+	if(length(CursorPos) < 100.0f)
+	{
+		pPlayer->m_MapMenuItem = -1;
+		GameServer()->SendBroadcast_Localization(GetCID(),
+			BROADCAST_PRIORITY_INTERFACE, BROADCAST_DURATION_REALTIME,
+			_("Choose your class"), NULL);
+
+		return;
+	}
+
+	float Angle = 2.0f * pi + atan2(CursorPos.x, -CursorPos.y);
+	float AngleStep = 2.0f * pi / static_cast<float>(CMapConverter::NUM_MENUCLASS);
+	int HoveredMenuItem = ((int)((Angle + AngleStep / 2.0f) / AngleStep)) % CMapConverter::NUM_MENUCLASS;
+	if(HoveredMenuItem == CMapConverter::MENUCLASS_RANDOM)
+	{
+		GameServer()->SendBroadcast_Localization(GetCID(),
+			BROADCAST_PRIORITY_INTERFACE, BROADCAST_DURATION_REALTIME, _("Random choice"), nullptr);
+		pPlayer->m_MapMenuItem = HoveredMenuItem;
 	}
 	else
 	{
-		vec2 CursorPos = vec2(m_Input.m_TargetX, m_Input.m_TargetY);
+		int NewClass = CInfClassGameController::MenuClassToPlayerClass(HoveredMenuItem);
+		CLASS_AVAILABILITY Availability = GameController()->GetPlayerClassAvailability(NewClass, pPlayer);
 
-		if(length(CursorPos) > 100.0f)
+		switch(Availability)
 		{
-			float Angle = 2.0f*pi+atan2(CursorPos.x, -CursorPos.y);
-			float AngleStep = 2.0f*pi/static_cast<float>(CMapConverter::NUM_MENUCLASS);
-			int HoveredMenuItem = ((int)((Angle+AngleStep/2.0f)/AngleStep))%CMapConverter::NUM_MENUCLASS;
-			if(HoveredMenuItem == CMapConverter::MENUCLASS_RANDOM)
-			{
-				GameServer()->SendBroadcast_Localization(GetCID(),
-					BROADCAST_PRIORITY_INTERFACE, BROADCAST_DURATION_REALTIME, _("Random choice"), NULL);
-				pPlayer->m_MapMenuItem = HoveredMenuItem;
-			}
-			else
-			{
-				int NewClass = CInfClassGameController::MenuClassToPlayerClass(HoveredMenuItem);
-				CLASS_AVAILABILITY Availability = GameController()->GetPlayerClassAvailability(NewClass);
-				switch(Availability)
-				{
-					case CLASS_AVAILABILITY::AVAILABLE:
-					{
-						const char *pClassName = CInfClassGameController::GetClassDisplayName(NewClass);
-						GameServer()->SendBroadcast_Localization(GetCID(),
-							BROADCAST_PRIORITY_INTERFACE, BROADCAST_DURATION_REALTIME,
-							pClassName, NULL);
-					}
-						break;
-					case CLASS_AVAILABILITY::DISABLED:
-						GameServer()->SendBroadcast_Localization(GetCID(),
-							BROADCAST_PRIORITY_INTERFACE, BROADCAST_DURATION_REALTIME,
-							_("The class is disabled"), NULL);
-						break;
-					case CLASS_AVAILABILITY::NEED_MORE_PLAYERS:
-					{
-						int MinPlayers = GameController()->GetMinPlayersForClass(NewClass);
-						GameServer()->SendBroadcast_Localization_P(GetCID(),
-							BROADCAST_PRIORITY_INTERFACE, BROADCAST_DURATION_REALTIME,
-							MinPlayers,
-							_P("Need at least {int:MinPlayers} player",
-							   "Need at least {int:MinPlayers} players"),
-							"MinPlayers", &MinPlayers,
-							NULL);
-					}
-						break;
-					case CLASS_AVAILABILITY::LIMIT_EXCEEDED:
-						GameServer()->SendBroadcast_Localization(GetCID(),
-							BROADCAST_PRIORITY_INTERFACE, BROADCAST_DURATION_REALTIME,
-							_("The class limit exceeded"), NULL);
-						break;
-				}
+		case CLASS_AVAILABILITY::AVAILABLE:
+		{
+			const char *pClassName = CInfClassGameController::GetClassDisplayName(NewClass);
+			GameServer()->SendBroadcast_Localization(GetCID(),
+				BROADCAST_PRIORITY_INTERFACE, BROADCAST_DURATION_REALTIME,
+				pClassName, nullptr);
+		}
+		break;
+		case CLASS_AVAILABILITY::DISABLED:
+			GameServer()->SendBroadcast_Localization(GetCID(),
+				BROADCAST_PRIORITY_INTERFACE, BROADCAST_DURATION_REALTIME,
+				_("The class is disabled"), nullptr);
+			break;
+		case CLASS_AVAILABILITY::NEED_MORE_PLAYERS:
+		{
+			int MinPlayers = GameController()->GetMinPlayersForClass(NewClass);
+			GameServer()->SendBroadcast_Localization_P(GetCID(),
+				BROADCAST_PRIORITY_INTERFACE, BROADCAST_DURATION_REALTIME,
+				MinPlayers,
+				_P("Need at least {int:MinPlayers} player",
+					"Need at least {int:MinPlayers} players"),
+				"MinPlayers", &MinPlayers,
+				nullptr);
+		}
+		break;
+		case CLASS_AVAILABILITY::LIMIT_EXCEEDED:
+			GameServer()->SendBroadcast_Localization(GetCID(),
+				BROADCAST_PRIORITY_INTERFACE, BROADCAST_DURATION_REALTIME,
+				_("The class limit exceeded"), nullptr);
+			break;
+		}
 
-				if(Availability == CLASS_AVAILABILITY::AVAILABLE)
-				{
-					pPlayer->m_MapMenuItem = HoveredMenuItem;
-				}
-				else
-				{
-					pPlayer->m_MapMenuItem = -1;
-				}
-			}
+		if(Availability == CLASS_AVAILABILITY::AVAILABLE)
+		{
+			pPlayer->m_MapMenuItem = HoveredMenuItem;
 		}
 		else
 		{
 			pPlayer->m_MapMenuItem = -1;
-			GameServer()->SendBroadcast_Localization(GetCID(),
-				BROADCAST_PRIORITY_INTERFACE, BROADCAST_DURATION_REALTIME,
-				_("Choose your class"), NULL);
-
-			return;
 		}
+	}
 
-		if(pPlayer->MapMenuClickable() && m_Input.m_Fire&1)
+	if(pPlayer->MapMenuClickable() && m_Input.m_Fire & 1)
+	{
+		HandleMapMenuClicked();
+	}
+}
+
+void CInfClassCharacter::HandleMapMenuClicked()
+{
+	bool Random = false;
+
+	CInfClassPlayer *pPlayer = GetPlayer();
+	int MenuClass = pPlayer->m_MapMenuItem;
+	int NewClass = CInfClassGameController::MenuClassToPlayerClass(MenuClass);
+	if(NewClass == PLAYERCLASS_RANDOM)
+	{
+		NewClass = GameController()->ChooseHumanClass(pPlayer);
+		Random = true;
+		pPlayer->SetRandomClassChoosen();
+	}
+	if(NewClass == PLAYERCLASS_INVALID)
+	{
+		return;
+	}
+
+	if(GameController()->GetPlayerClassAvailability(NewClass, pPlayer) == CLASS_AVAILABILITY::AVAILABLE)
+	{
+		SetAntiFire();
+		pPlayer->m_MapMenuItem = 0;
+		pPlayer->SetClass(NewClass);
+
+		char aBuf[256];
+		str_format(aBuf, sizeof(aBuf), "choose_class player='%s' class='%d' random='%d'",
+			Server()->ClientName(GetCID()), NewClass, Random);
+		GameServer()->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "game", aBuf);
+
+		if(Random)
 		{
-			bool Random = false;
-
-			int MenuClass = pPlayer->m_MapMenuItem;
-			int NewClass = CInfClassGameController::MenuClassToPlayerClass(MenuClass);
-			if(NewClass == PLAYERCLASS_NONE)
-			{
-				NewClass = GameController()->ChooseHumanClass(pPlayer);
-				Random = true;
-				pPlayer->SetRandomClassChoosen();
-			}
-			if(NewClass == PLAYERCLASS_INVALID)
-			{
-				return;
-			}
-
-			if(GameController()->GetPlayerClassAvailability(NewClass) == CLASS_AVAILABILITY::AVAILABLE)
-			{
-				SetAntiFire();
-				pPlayer->m_MapMenuItem = 0;
-				pPlayer->SetClass(NewClass);
-				
-				char aBuf[256];
-				str_format(aBuf, sizeof(aBuf), "choose_class player='%s' class='%d' random='%d'",
-					Server()->ClientName(GetCID()), NewClass, Random);
-				GameServer()->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "game", aBuf);
-
-				if(Random)
-				{
-					GiveRandomClassSelectionBonus();
-				}
-			}
+			GiveRandomClassSelectionBonus();
 		}
+
+		SetAntiFire();
+		pPlayer->CloseMapMenu();
 	}
 }
 

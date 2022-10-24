@@ -3499,7 +3499,7 @@ int CInfClassGameController::ChooseHumanClass(const CInfClassPlayer *pPlayer) co
 		ClassProbability = GetPlayerClassEnabled(PlayerClass) ? 1.0f : 0.0f;
 		if(GetRoundType() != ROUND_TYPE::FUN)
 		{
-			CLASS_AVAILABILITY Availability = GetPlayerClassAvailability(PlayerClass);
+			CLASS_AVAILABILITY Availability = GetPlayerClassAvailability(PlayerClass, pPlayer);
 			if(Availability != CLASS_AVAILABILITY::AVAILABLE)
 			{
 				ClassProbability = 0.0f;
@@ -3713,9 +3713,9 @@ ROUND_TYPE CInfClassGameController::GetRoundType() const
 	return m_RoundType;
 }
 
-CLASS_AVAILABILITY CInfClassGameController::GetPlayerClassAvailability(int PlayerClass) const
+CLASS_AVAILABILITY CInfClassGameController::GetPlayerClassAvailability(int PlayerClass, const CInfClassPlayer *pForPlayer) const
 {
-	if (!GetPlayerClassEnabled(PlayerClass))
+	if(!GetPlayerClassEnabled(PlayerClass))
 		return CLASS_AVAILABILITY::DISABLED;
 
 	int ActivePlayerCount = Server()->GetActivePlayerCount();
