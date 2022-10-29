@@ -645,14 +645,14 @@ int CInfClassGameController::GetClassByName(const char *pClassName, bool *pOk)
 		int PlayerClass = 0;
 	};
 
-	static const ExtraName extraNames[] =
-	{
+	static const ExtraName extraNames[] = {
 		ExtraName("bio", PLAYERCLASS_BIOLOGIST),
 		ExtraName("bios", PLAYERCLASS_BIOLOGIST),
 		ExtraName("engi", PLAYERCLASS_ENGINEER),
 		ExtraName("merc", PLAYERCLASS_MERCENARY),
 		ExtraName("mercs", PLAYERCLASS_MERCENARY),
 		ExtraName("sci", PLAYERCLASS_SCIENTIST),
+		ExtraName("random", PLAYERCLASS_RANDOM),
 	};
 	if(pOk)
 	{
