@@ -1827,41 +1827,43 @@ void CInfClassCharacter::OnHammerFired(WeaponFireContext *pFireContext)
 						pTarget->TakeDamage(Force, Damage, GetCID(), DamageType);
 					}
 				}
-				else if(GetPlayerClass() == PLAYERCLASS_BIOLOGIST || GetPlayerClass() == PLAYERCLASS_MERCENARY)
+				else
 				{
-					/* affects mercenary only if love bombs are disabled. */
-					if (pTarget->IsZombie())
+					if(pTarget->IsZombie())
 					{
-						pTarget->TakeDamage(Force, 20, GetCID(), DAMAGE_TYPE::HAMMER);
-					}
-				}
-				else if(GetPlayerClass() == PLAYERCLASS_MEDIC)
-				{
-					if (pTarget->IsZombie())
-					{
-						pTarget->TakeDamage(Force, 20, GetCID(), DAMAGE_TYPE::HAMMER);
+						int Damage = g_pData->m_Weapons.m_Hammer.m_pBase->m_Damage;
+						switch(GetPlayerClass())
+						{
+						case PLAYERCLASS_MEDIC:
+						/* affects mercenary only if love bombs are disabled. */
+						case PLAYERCLASS_MERCENARY:
+						case PLAYERCLASS_BIOLOGIST:
+							Damage = 20;
+							break;
+						default:
+							break;
+						}
+
+						pTarget->TakeDamage(Force, Damage, GetCID(), DAMAGE_TYPE::HAMMER);
 					}
 					else
 					{
-						if(pTarget->GetPlayerClass() != PLAYERCLASS_HERO)
+						if(GetPlayerClass() == PLAYERCLASS_MEDIC)
 						{
-							pTarget->GiveArmor(4, GetCID());
-							if(pTarget->m_Armor == 10 && pTarget->m_NeedFullHeal)
+							if(pTarget->GetPlayerClass() != PLAYERCLASS_HERO)
 							{
-								Server()->RoundStatistics()->OnScoreEvent(GetCID(), SCOREEVENT_HUMAN_HEALING, GetPlayerClass(), Server()->ClientName(GetCID()), Console());
-								GameServer()->SendScoreSound(GetCID());
-								pTarget->m_NeedFullHeal = false;
-								m_aWeapons[WEAPON_GRENADE].m_Ammo++;
+								pTarget->GiveArmor(4, GetCID());
+								if(pTarget->m_Armor == 10 && pTarget->m_NeedFullHeal)
+								{
+									Server()->RoundStatistics()->OnScoreEvent(GetCID(), SCOREEVENT_HUMAN_HEALING, GetPlayerClass(), Server()->ClientName(GetCID()), Console());
+									GameServer()->SendScoreSound(GetCID());
+									pTarget->m_NeedFullHeal = false;
+									m_aWeapons[WEAPON_GRENADE].m_Ammo++;
+								}
 							}
 						}
 					}
 				}
-				else
-				{
-					pTarget->TakeDamage(Force, g_pData->m_Weapons.m_Hammer.m_pBase->m_Damage,
-						GetCID(), DAMAGE_TYPE::HAMMER);
-				}
-/* INFECTION MODIFICATION END *****************************************/
 				Hits++;
 
 				// set his velocity to fast upward (for now)
