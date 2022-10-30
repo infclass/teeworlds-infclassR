@@ -48,6 +48,8 @@ public:
 	void GiveWhiteHole();
 	void RemoveWhiteHole();
 
+	void OnHeroFlagTaken(CInfClassCharacter *pHero);
+
 protected:
 	void GiveClassAttributes() override;
 	void DestroyChildEntities() override;

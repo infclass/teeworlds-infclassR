@@ -1253,3 +1253,61 @@ void CInfClassHuman::RemoveWhiteHole()
 	m_HasWhiteHole = false;
 	m_pCharacter->SetSuperWeaponIndicatorEnabled(false);
 }
+
+void CInfClassHuman::OnHeroFlagTaken(CInfClassCharacter *pHero)
+{
+	if(!m_pCharacter)
+		return;
+
+	m_pCharacter->SetEmote(EMOTE_HAPPY, Server()->Tick() + Server()->TickSpeed());
+	GameServer()->SendEmoticon(GetCID(), EMOTICON_MUSIC);
+
+	if(pHero != m_pCharacter)
+	{
+		m_pCharacter->GiveGift(GIFT_HEROFLAG);
+		return;
+	}
+
+	{
+		// Gift to self
+		m_pCharacter->SetHealthArmor(10, 10);
+		m_pCharacter->GiveWeapon(WEAPON_GUN, -1);
+		m_pCharacter->GiveWeapon(WEAPON_SHOTGUN, -1);
+		m_pCharacter->GiveWeapon(WEAPON_GRENADE, -1);
+		m_pCharacter->GiveWeapon(WEAPON_LASER, -1);
+
+		if(GameController()->AreTurretsEnabled())
+		{
+			int NewNumberOfTurrets = clamp<int>(m_pCharacter->m_TurretCount + Config()->m_InfTurretGive, 0, Config()->m_InfTurretMaxPerPlayer);
+			if(m_pCharacter->m_TurretCount != NewNumberOfTurrets)
+			{
+				if(m_pCharacter->m_TurretCount == 0)
+					m_pCharacter->GiveWeapon(WEAPON_HAMMER, -1);
+
+				m_pCharacter->m_TurretCount = NewNumberOfTurrets;
+
+				GameServer()->SendChatTarget_Localization_P(GetCID(), CHATCATEGORY_SCORE, m_pCharacter->m_TurretCount,
+					_P("You have {int:NumTurrets} turret available, use the Hammer to place it",
+						"You have {int:NumTurrets} turrets available, use the Hammer to place it"),
+					"NumTurrets", &m_pCharacter->m_TurretCount,
+					nullptr);
+			}
+		}
+	}
+
+	// Only increase your *own* character health when on cooldown
+	if(!GameController()->HeroGiftAvailable())
+		return;
+
+	GameController()->OnHeroFlagCollected(GetCID());
+
+	// Find other players
+	for(TEntityPtr<CInfClassCharacter> p = GameWorld()->FindFirst<CInfClassCharacter>(); p; ++p)
+	{
+		if(p->IsZombie() || p == m_pCharacter)
+			continue;
+
+		CInfClassHuman *pHumanClass = CInfClassHuman::GetInstance(p);
+		pHumanClass->OnHeroFlagTaken(m_pCharacter);
+	}
+}

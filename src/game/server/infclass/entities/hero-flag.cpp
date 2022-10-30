@@ -7,6 +7,7 @@
 #include <engine/server/roundstatistics.h>
 #include <engine/shared/config.h>
 
+#include <game/server/infclass/classes/humans/human.h>
 #include <game/server/infclass/entities/infccharacter.h>
 #include <game/server/infclass/infcgamecontroller.h>
 #include <game/server/infclass/infcplayer.h>
@@ -43,49 +44,13 @@ void CHeroFlag::ResetCooldown()
 
 void CHeroFlag::GiveGift(CInfClassCharacter *pHero)
 {
-	pHero->SetHealthArmor(10, 10);
-	pHero->GiveWeapon(WEAPON_SHOTGUN, -1);
-	pHero->GiveWeapon(WEAPON_GRENADE, -1);
-	pHero->GiveWeapon(WEAPON_LASER, -1);
-
-	pHero->SetEmote(EMOTE_HAPPY, Server()->Tick() + Server()->TickSpeed());
-	GameServer()->SendEmoticon(pHero->GetCID(), EMOTICON_MUSIC);
-
-	if(GameController()->AreTurretsEnabled())
+	CInfClassHuman *pHeroClass = CInfClassHuman::GetInstance(pHero);
+	if(!pHeroClass)
 	{
-		int NewNumberOfTurrets = clamp<int>(pHero->m_TurretCount + Config()->m_InfTurretGive, 0, Config()->m_InfTurretMaxPerPlayer);
-		if(pHero->m_TurretCount != NewNumberOfTurrets)
-		{
-			if(pHero->m_TurretCount == 0)
-				pHero->GiveWeapon(WEAPON_HAMMER, -1);
-
-			pHero->m_TurretCount = NewNumberOfTurrets;
-
-			GameServer()->SendChatTarget_Localization_P(pHero->GetCID(), CHATCATEGORY_SCORE, pHero->m_TurretCount,
-				_P("You have {int:NumTurrets} turret available, use the Hammer to place it",
-				   "You have {int:NumTurrets} turrets available, use the Hammer to place it"),
-				"NumTurrets", &pHero->m_TurretCount,
-				nullptr);
-		}
-	}
-
-	// Only increase your *own* character health when on cooldown
-	if(!GameController()->HeroGiftAvailable())
 		return;
-
-	GameController()->OnHeroFlagCollected(GetOwner());
-
-	// Find other players	
-	for(CInfClassCharacter *p = (CInfClassCharacter*) GameWorld()->FindFirst(CGameWorld::ENTTYPE_CHARACTER); p; p = (CInfClassCharacter *)p->TypeNext())
-	{
-		if(p->IsZombie() || p == pHero)
-			continue;
-
-		p->SetEmote(EMOTE_HAPPY, Server()->Tick() + Server()->TickSpeed());
-		GameServer()->SendEmoticon(p->GetCID(), EMOTICON_MUSIC);
-		
-		p->GiveGift(GIFT_HEROFLAG);
 	}
+
+	pHeroClass->OnHeroFlagTaken(pHero);
 }
 
 void CHeroFlag::Tick()
