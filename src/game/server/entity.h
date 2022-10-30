@@ -212,6 +212,16 @@ public:
 		return a.m_pData == b.m_pData;
 	}
 
+	friend bool operator==(const TEntityPtr &a, const T *b)
+	{
+		return a.m_pData == b;
+	}
+
+	friend bool operator==(const TEntityPtr &a, T *b)
+	{
+		return a.m_pData == b;
+	}
+
 private:
 	CEntity *m_pData = nullptr;
 };
