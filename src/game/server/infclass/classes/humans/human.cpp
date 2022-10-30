@@ -37,12 +37,23 @@ CInfClassHuman::CInfClassHuman(CInfClassPlayer *pPlayer)
 	m_BroadcastWhiteHoleReady = -100;
 }
 
-CInfClassHuman *CInfClassHuman::GetInstance(CInfClassPlayer *pCharacter)
+CInfClassHuman *CInfClassHuman::GetInstance(CInfClassPlayer *pPlayer)
 {
-	CInfClassPlayerClass *pClass = pCharacter ? pCharacter->GetCharacterClass() : nullptr;
+	CInfClassPlayerClass *pClass = pPlayer ? pPlayer->GetCharacterClass() : nullptr;
 	if(pClass && pClass->IsHuman())
 	{
 		return static_cast<CInfClassHuman*>(pClass);
+	}
+
+	return nullptr;
+}
+
+CInfClassHuman *CInfClassHuman::GetInstance(CInfClassCharacter *pCharacter)
+{
+	CInfClassPlayerClass *pClass = pCharacter ? pCharacter->GetClass() : nullptr;
+	if(pClass && pClass->IsHuman())
+	{
+		return static_cast<CInfClassHuman *>(pClass);
 	}
 
 	return nullptr;
