@@ -77,7 +77,7 @@ const CInfClassPlayer *CInfClassPlayerClass::GetPlayer() const
 	return m_pPlayer;
 }
 
-int CInfClassPlayerClass::GetCID()
+int CInfClassPlayerClass::GetCID() const
 {
 	const CInfClassPlayer *pPlayer = GetPlayer();
 	if(pPlayer)
@@ -360,7 +360,7 @@ void CInfClassPlayerClass::DestroyChildEntities()
 {
 }
 
-void CInfClassPlayerClass::BroadcastWeaponState()
+void CInfClassPlayerClass::BroadcastWeaponState() const
 {
 }
 

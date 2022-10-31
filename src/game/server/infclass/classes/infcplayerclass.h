@@ -88,7 +88,7 @@ public:
 	IServer *Server() const;
 	CInfClassPlayer *GetPlayer();
 	const CInfClassPlayer *GetPlayer() const;
-	int GetCID();
+	int GetCID() const;
 	vec2 GetPos() const;
 	vec2 GetDirection() const;
 	float GetProximityRadius() const;
@@ -96,7 +96,7 @@ public:
 protected:
 	virtual void GiveClassAttributes();
 	virtual void DestroyChildEntities();
-	virtual void BroadcastWeaponState();
+	virtual void BroadcastWeaponState() const;
 
 	CInfClassPlayer *m_pPlayer = nullptr;
 	CInfClassCharacter *m_pCharacter = nullptr;

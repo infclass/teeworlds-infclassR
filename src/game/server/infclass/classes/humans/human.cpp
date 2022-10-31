@@ -769,7 +769,7 @@ void CInfClassHuman::DestroyChildEntities()
 	m_pCharacter->UnlockPosition();
 }
 
-void CInfClassHuman::BroadcastWeaponState()
+void CInfClassHuman::BroadcastWeaponState() const
 {
 	const int CurrentTick = Server()->Tick();
 	int ClientVersion = Server()->GetClientInfclassVersion(GetCID());

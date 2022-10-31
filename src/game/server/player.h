@@ -177,8 +177,8 @@ public:
 	bool IsHuman() const;
 	bool IsSpectator() const;
 	bool IsKnownClass(int c);
-	
-	const char* GetLanguage();
+
+	const char *GetLanguage() const;
 	void SetLanguage(const char* pLanguage);
 
 	void SetOriginalName(const char *pName);

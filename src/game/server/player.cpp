@@ -464,7 +464,7 @@ const char *CPlayer::GetClan(int SnappingClient) const
 	return Server()->ClientClan(m_ClientID);
 }
 
-const char* CPlayer::GetLanguage()
+const char *CPlayer::GetLanguage() const
 {
 	return m_aLanguage;
 }

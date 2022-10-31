@@ -53,7 +53,7 @@ public:
 protected:
 	void GiveClassAttributes() override;
 	void DestroyChildEntities() override;
-	void BroadcastWeaponState() override;
+	void BroadcastWeaponState() const override;
 
 	void OnNinjaTargetKiller(bool Assisted);
 	void PlaceTurret(WeaponFireContext *pFireContext);

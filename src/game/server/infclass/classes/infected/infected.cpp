@@ -345,7 +345,7 @@ void CInfClassInfected::GiveClassAttributes()
 	m_VoodooTimeAlive = Server()->TickSpeed()*Config()->m_InfVoodooAliveTime;
 }
 
-void CInfClassInfected::BroadcastWeaponState()
+void CInfClassInfected::BroadcastWeaponState() const
 {
 	if(GetPlayerClass() == PLAYERCLASS_SPIDER)
 	{

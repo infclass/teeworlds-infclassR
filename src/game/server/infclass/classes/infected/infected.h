@@ -45,7 +45,7 @@ public:
 
 protected:
 	void GiveClassAttributes() override;
-	void BroadcastWeaponState() override;
+	void BroadcastWeaponState() const override;
 
 	void DoBoomerExplosion();
 
