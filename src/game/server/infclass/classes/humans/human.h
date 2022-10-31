@@ -56,6 +56,7 @@ protected:
 	void BroadcastWeaponState() override;
 
 	void OnNinjaTargetKiller(bool Assisted);
+	void PlaceTurret(WeaponFireContext *pFireContext);
 	void OnBlindingLaserFired(WeaponFireContext *pFireContext);
 	void OnBiologistLaserFired(WeaponFireContext *pFireContext);
 	void OnMercLaserFired(WeaponFireContext *pFireContext);
@@ -65,6 +66,7 @@ protected:
 	bool FindPortalPosition(vec2 *pPosition);
 
 private:
+	int m_TurretCount = 0;
 	int m_BroadcastWhiteHoleReady; // used to broadcast "WhiteHole ready" for a short period of time
 	int m_PositionLockTicksRemaining = 0;
 	int m_NinjaTargetTick = 0;

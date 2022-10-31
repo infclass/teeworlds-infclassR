@@ -231,7 +231,6 @@ public:
 	int m_NinjaAmmoBuff;
 	int m_RefreshTime;
 	//Mercenary
-	int m_TurretCount;
 	int m_ResetKillsTime;
 
 public:

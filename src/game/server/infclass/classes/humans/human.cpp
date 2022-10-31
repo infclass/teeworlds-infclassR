@@ -22,6 +22,7 @@
 #include <game/server/infclass/entities/scientist-laser.h>
 #include <game/server/infclass/entities/scientist-mine.h>
 #include <game/server/infclass/entities/soldier-bomb.h>
+#include <game/server/infclass/entities/turret.h>
 #include <game/server/infclass/entities/white-hole.h>
 #include <game/server/infclass/infcgamecontroller.h>
 #include <game/server/infclass/infcplayer.h>
@@ -426,6 +427,10 @@ void CInfClassHuman::OnHammerFired(WeaponFireContext *pFireContext)
 			{
 				m_pCharacter->LockPosition();
 			}
+			break;
+		case PLAYERCLASS_HERO:
+			PlaceTurret(pFireContext);
+			break;
 		default:
 			break;
 	}
@@ -637,6 +642,7 @@ void CInfClassHuman::OnLaserFired(WeaponFireContext *pFireContext)
 
 void CInfClassHuman::GiveClassAttributes()
 {
+	m_TurretCount = 0;
 	m_NinjaTargetTick = 0;
 	m_NinjaTargetCID = -1;
 
@@ -1058,7 +1064,7 @@ void CInfClassHuman::BroadcastWeaponState()
 
 		if(m_pCharacter->GetActiveWeapon() == WEAPON_HAMMER)
 		{
-			int Turrets = m_pCharacter->m_TurretCount;
+			int Turrets = m_TurretCount;
 			if(Turrets > 0)
 			{
 				int MaxTurrets = Config()->m_InfTurretMaxPerPlayer;
@@ -1124,6 +1130,33 @@ void CInfClassHuman::OnNinjaTargetKiller(bool Assisted)
 	int CooldownTicks = Server()->TickSpeed()*(10 + 3 * maximum(0, 16 - PlayerCounter));
 	m_NinjaTargetCID = -1;
 	m_NinjaTargetTick = Server()->Tick() + CooldownTicks;
+}
+
+void CInfClassHuman::PlaceTurret(WeaponFireContext *pFireContext)
+{
+	const vec2 Direction = GetDirection();
+
+	if(Config()->m_InfTurretEnable && m_TurretCount)
+	{
+		if(Config()->m_InfTurretEnableLaser)
+		{
+			new CTurret(GameServer(), GetPos(), GetCID(), Direction, CTurret::LASER);
+		}
+		else if(Config()->m_InfTurretEnablePlasma)
+		{
+			new CTurret(GameServer(), GetPos(), GetCID(), Direction, CTurret::PLASMA);
+		}
+
+		GameServer()->CreateSound(GetPos(), SOUND_GRENADE_FIRE);
+		m_TurretCount--;
+		char aBuf[256];
+		str_format(aBuf, sizeof(aBuf), "placed turret, %i left", m_TurretCount);
+		GameServer()->SendChatTarget_Localization(GetCID(), CHATCATEGORY_SCORE, aBuf, NULL);
+	}
+	else
+	{
+		pFireContext->NoAmmo = true;
+	}
 }
 
 void CInfClassHuman::OnBlindingLaserFired(WeaponFireContext *pFireContext)
@@ -1278,18 +1311,18 @@ void CInfClassHuman::OnHeroFlagTaken(CInfClassCharacter *pHero)
 
 		if(GameController()->AreTurretsEnabled())
 		{
-			int NewNumberOfTurrets = clamp<int>(m_pCharacter->m_TurretCount + Config()->m_InfTurretGive, 0, Config()->m_InfTurretMaxPerPlayer);
-			if(m_pCharacter->m_TurretCount != NewNumberOfTurrets)
+			int NewNumberOfTurrets = clamp<int>(m_TurretCount + Config()->m_InfTurretGive, 0, Config()->m_InfTurretMaxPerPlayer);
+			if(m_TurretCount != NewNumberOfTurrets)
 			{
-				if(m_pCharacter->m_TurretCount == 0)
+				if(m_TurretCount == 0)
 					m_pCharacter->GiveWeapon(WEAPON_HAMMER, -1);
 
-				m_pCharacter->m_TurretCount = NewNumberOfTurrets;
+				m_TurretCount = NewNumberOfTurrets;
 
-				GameServer()->SendChatTarget_Localization_P(GetCID(), CHATCATEGORY_SCORE, m_pCharacter->m_TurretCount,
+				GameServer()->SendChatTarget_Localization_P(GetCID(), CHATCATEGORY_SCORE, m_TurretCount,
 					_P("You have {int:NumTurrets} turret available, use the Hammer to place it",
 						"You have {int:NumTurrets} turrets available, use the Hammer to place it"),
-					"NumTurrets", &m_pCharacter->m_TurretCount,
+					"NumTurrets", &m_TurretCount,
 					nullptr);
 			}
 		}

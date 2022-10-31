@@ -1,4 +1,3 @@
-#include "blinding-laser.h"
 #include "infccharacter.h"
 
 #include <engine/server/mapconverter.h>
@@ -27,7 +26,6 @@
 #include <game/server/infclass/entities/slug-slime.h>
 #include <game/server/infclass/entities/soldier-bomb.h>
 #include <game/server/infclass/entities/superweapon-indicator.h>
-#include <game/server/infclass/entities/turret.h>
 #include <game/server/infclass/entities/white-hole.h>
 #include <game/server/infclass/infcgamecontroller.h>
 #include <game/server/infclass/infcplayer.h>
@@ -1601,27 +1599,7 @@ void CInfClassCharacter::OnHammerFired(WeaponFireContext *pFireContext)
 	}
 	else if(GetPlayerClass() == PLAYERCLASS_HERO)
 	{
-		if(g_Config.m_InfTurretEnable && m_TurretCount)
-		{
-			if (g_Config.m_InfTurretEnableLaser)
-			{
-				new CTurret(GameServer(), GetPos(), GetCID(), Direction, CTurret::LASER);
-			}
-			else if (g_Config.m_InfTurretEnablePlasma)
-			{
-				new CTurret(GameServer(), GetPos(), GetCID(), Direction, CTurret::PLASMA);
-			}
-
-			GameServer()->CreateSound(GetPos(), SOUND_GRENADE_FIRE);
-			m_TurretCount--;
-			char aBuf[256];
-			str_format(aBuf, sizeof(aBuf), "placed turret, %i left", m_TurretCount);
-			GameServer()->SendChatTarget_Localization(GetCID(), CHATCATEGORY_SCORE, aBuf, NULL);
-		}
-		else
-		{
-			pFireContext->NoAmmo = true;
-		}
+		// Moved to CInfClassHuman::OnHammerFired()
 	}
 	else if(GetPlayerClass() == PLAYERCLASS_SOLDIER)
 	{

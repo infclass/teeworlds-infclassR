@@ -58,7 +58,6 @@ m_pConsole(pConsole)
 	m_NinjaStrengthBuff = 0;
 	m_NinjaAmmoBuff = 0;
 	m_HasIndicator = false;
-	m_TurretCount = 0;
 	m_ResetKillsTime = 0;
 /* INFECTION MODIFICATION END *****************************************/
 }
