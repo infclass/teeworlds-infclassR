@@ -2587,8 +2587,9 @@ void CInfClassGameController::BroadcastInfectionComing(int InfectionTick)
 		return;
 
 	int Seconds = (InfectionTick - Server()->Tick()) / Server()->TickSpeed() + 1;
+	int Priority = Seconds <= 3 ? BROADCAST_PRIORITY_GAMEANNOUNCE : BROADCAST_PRIORITY_LOWEST;
 	GameServer()->SendBroadcast_Localization(-1,
-		BROADCAST_PRIORITY_GAMEANNOUNCE,
+		Priority,
 		BROADCAST_DURATION_REALTIME,
 		_("Infection is coming in {sec:RemainingTime}"),
 		"RemainingTime", &Seconds,
