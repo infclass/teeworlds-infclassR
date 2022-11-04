@@ -3266,8 +3266,8 @@ void CInfClassGameController::DoWincheck()
 	int NumInfected = 0;
 	GetPlayerCounter(-1, NumHumans, NumInfected);
 
-	// Win check
-	if(m_InfectedStarted && NumHumans == 0 && NumInfected > 1)
+	// One infected can win in some rounds; we have a check if this is a valid situation in CheckRoundFailed()
+	if(m_InfectedStarted && NumHumans == 0 && NumInfected >= 1)
 	{
 		AnnounceTheWinner(NumHumans);
 		return;
