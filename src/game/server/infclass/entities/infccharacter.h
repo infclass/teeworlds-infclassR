@@ -110,10 +110,6 @@ public:
 	void OnWeaponFired(WeaponFireContext *pFireContext);
 
 	void OnHammerFired(WeaponFireContext *pFireContext);
-	void OnGrenadeFired(WeaponFireContext *pFireContext);
-
-	void OnMercGrenadeFired(WeaponFireContext *pFireContext);
-	void OnMedicGrenadeFired(WeaponFireContext *pFireContext);
 
 	void OpenClassChooser();
 	void HandleMapMenu();
@@ -146,6 +142,8 @@ public:
 
 	int GetActiveWeapon() const { return m_ActiveWeapon; }
 	int GetReloadTimer() const { return m_ReloadTimer; }
+	void SetReloadTimer(int Ticks);
+	void SetReloadDuration(float Seconds);
 
 	vec2 GetHookPos() const;
 	int GetHookedPlayer() const;

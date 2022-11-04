@@ -11,8 +11,10 @@
 
 #include "growingexplosion.h"
 
-CScatterGrenade::CScatterGrenade(CGameContext *pGameContext, int Owner, vec2 Pos, vec2 Dir)
-	: CInfCEntity(pGameContext, CGameWorld::ENTTYPE_SCATTER_GRENADE, Pos, Owner)
+int CScatterGrenade::EntityId = CGameWorld::ENTTYPE_SCATTER_GRENADE;
+
+CScatterGrenade::CScatterGrenade(CGameContext *pGameContext, int Owner, vec2 Pos, vec2 Dir) :
+	CInfCEntity(pGameContext, CGameWorld::ENTTYPE_SCATTER_GRENADE, Pos, Owner)
 {
 	m_ActualPos = Pos;
 	m_ActualDir = Dir;

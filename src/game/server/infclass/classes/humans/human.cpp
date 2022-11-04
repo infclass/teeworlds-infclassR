@@ -12,6 +12,7 @@
 #include <game/server/infclass/entities/blinding-laser.h>
 #include <game/server/infclass/entities/bouncing-bullet.h>
 #include <game/server/infclass/entities/engineer-wall.h>
+#include <game/server/infclass/entities/growingexplosion.h>
 #include <game/server/infclass/entities/hero-flag.h>
 #include <game/server/infclass/entities/infccharacter.h>
 #include <game/server/infclass/entities/laser-teleport.h>
@@ -19,6 +20,7 @@
 #include <game/server/infclass/entities/medic-laser.h>
 #include <game/server/infclass/entities/merc-bomb.h>
 #include <game/server/infclass/entities/merc-laser.h>
+#include <game/server/infclass/entities/scatter-grenade.h>
 #include <game/server/infclass/entities/scientist-laser.h>
 #include <game/server/infclass/entities/scientist-mine.h>
 #include <game/server/infclass/entities/soldier-bomb.h>
@@ -554,6 +556,13 @@ void CInfClassHuman::OnShotgunFired(WeaponFireContext *pFireContext)
 
 void CInfClassHuman::OnGrenadeFired(WeaponFireContext *pFireContext)
 {
+	if(GetPlayerClass() == PLAYERCLASS_MERCENARY)
+	{
+		// Does not need the ammo in some cases
+		OnMercGrenadeFired(pFireContext);
+		return;
+	}
+
 	if(pFireContext->NoAmmo)
 		return;
 
@@ -581,8 +590,40 @@ void CInfClassHuman::OnGrenadeFired(WeaponFireContext *pFireContext)
 		{
 			pFireContext->FireAccepted = false;
 		}
+		break;
 	}
+	case PLAYERCLASS_MEDIC:
+		OnMedicGrenadeFired(pFireContext);
+		break;
 	default:
+	{
+		vec2 Direction = GetDirection();
+		vec2 ProjStartPos = GetPos() + Direction * GetProximityRadius() * 0.75f;
+		CProjectile *pProj = new CProjectile(GameContext(), WEAPON_GRENADE,
+			GetCID(),
+			ProjStartPos,
+			Direction,
+			(int)(Server()->TickSpeed() * GameServer()->Tuning()->m_GrenadeLifetime),
+			1, true, 0, SOUND_GRENADE_EXPLODE, DAMAGE_TYPE::GRENADE);
+
+		if(GetPlayerClass() == PLAYERCLASS_NINJA)
+		{
+			pProj->FlashGrenade();
+			pProj->SetFlashRadius(8);
+		}
+
+		// pack the Projectile and send it to the client Directly
+		CNetObj_Projectile p;
+		pProj->FillInfo(&p);
+
+		CMsgPacker Msg(NETMSGTYPE_SV_EXTRAPROJECTILE);
+		Msg.AddInt(1);
+		for(unsigned i = 0; i < sizeof(CNetObj_Projectile) / sizeof(int); i++)
+			Msg.AddInt(((int *)&p)[i]);
+		Server()->SendMsg(&Msg, MSGFLAG_VITAL, GetCID());
+
+		GameServer()->CreateSound(GetPos(), SOUND_GRENADE_FIRE);
+	}
 		break;
 	}
 }
@@ -1157,6 +1198,64 @@ void CInfClassHuman::PlaceTurret(WeaponFireContext *pFireContext)
 	{
 		pFireContext->NoAmmo = true;
 	}
+}
+
+void CInfClassHuman::OnMercGrenadeFired(WeaponFireContext *pFireContext)
+{
+	float BaseAngle = GetAngle(GetDirection());
+
+	// Find bomb
+	bool BombFound = false;
+
+	for(TEntityPtr<CScatterGrenade> pGrenade = GameWorld()->FindFirst<CScatterGrenade>(); pGrenade; ++pGrenade)
+	{
+		if(pGrenade->GetOwner() != GetCID())
+			continue;
+		pGrenade->Explode();
+		BombFound = true;
+	}
+
+	if(BombFound)
+	{
+		pFireContext->AmmoConsumed = 0;
+		pFireContext->NoAmmo = false;
+		return;
+	}
+
+	if(pFireContext->NoAmmo)
+		return;
+
+	int ShotSpread = 2;
+
+	CMsgPacker Msg(NETMSGTYPE_SV_EXTRAPROJECTILE);
+	Msg.AddInt(ShotSpread * 2 + 1);
+
+	for(int i = -ShotSpread; i <= ShotSpread; ++i)
+	{
+		float a = BaseAngle + random_float() / 3.0f;
+
+		CScatterGrenade *pProj = new CScatterGrenade(GameServer(), GetCID(), GetPos(), vec2(cosf(a), sinf(a)));
+
+		// pack the Projectile and send it to the client Directly
+		CNetObj_Projectile p;
+		pProj->FillInfo(&p);
+
+		for(unsigned i = 0; i < sizeof(CNetObj_Projectile) / sizeof(int); i++)
+			Msg.AddInt(((int *)&p)[i]);
+		Server()->SendMsg(&Msg, MSGFLAG_VITAL, GetCID());
+	}
+
+	GameServer()->CreateSound(GetPos(), SOUND_GRENADE_FIRE);
+
+	m_pCharacter->SetReloadDuration(0.25f);
+}
+
+void CInfClassHuman::OnMedicGrenadeFired(WeaponFireContext *pFireContext)
+{
+	int HealingExplosionRadius = 4;
+	new CGrowingExplosion(GameServer(), GetPos(), GetDirection(), GetCID(), HealingExplosionRadius, GROWING_EXPLOSION_EFFECT::HEAL_HUMANS);
+
+	GameServer()->CreateSound(GetPos(), SOUND_GRENADE_FIRE);
 }
 
 void CInfClassHuman::OnBlindingLaserFired(WeaponFireContext *pFireContext)

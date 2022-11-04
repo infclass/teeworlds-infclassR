@@ -57,6 +57,10 @@ protected:
 
 	void OnNinjaTargetKiller(bool Assisted);
 	void PlaceTurret(WeaponFireContext *pFireContext);
+
+	void OnMercGrenadeFired(WeaponFireContext *pFireContext);
+	void OnMedicGrenadeFired(WeaponFireContext *pFireContext);
+
 	void OnBlindingLaserFired(WeaponFireContext *pFireContext);
 	void OnBiologistLaserFired(WeaponFireContext *pFireContext);
 	void OnMercLaserFired(WeaponFireContext *pFireContext);

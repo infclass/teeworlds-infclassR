@@ -8,6 +8,8 @@
 class CScatterGrenade : public CInfCEntity
 {
 public:
+	static int EntityId;
+
 	CScatterGrenade(CGameContext *pGameContext, int Owner, vec2 Pos, vec2 Dir);
 
 	vec2 GetPos(float Time);
