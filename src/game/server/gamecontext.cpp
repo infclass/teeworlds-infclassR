@@ -2599,7 +2599,7 @@ void CGameContext::AddVote(const char *pDescription, const char *pCommand)
 	++m_NumVoteOptions;
 	int Len = str_length(pCommand);
 
-	pOption = (CVoteOptionServer *)m_pVoteOptionHeap->Allocate(sizeof(CVoteOptionServer) + Len);
+	pOption = (CVoteOptionServer *)m_pVoteOptionHeap->Allocate(sizeof(CVoteOptionServer) + Len, alignof(CVoteOptionServer));
 	pOption->m_pNext = 0;
 	pOption->m_pPrev = m_pVoteOptionLast;
 	if(pOption->m_pPrev)
@@ -2613,11 +2613,6 @@ void CGameContext::AddVote(const char *pDescription, const char *pCommand)
 	char aBuf[256];
 	str_format(aBuf, sizeof(aBuf), "added option '%s' '%s'", pOption->m_aDescription, pOption->m_aCommand);
 	Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "server", aBuf);
-
-	// inform clients about added option
-	CNetMsg_Sv_VoteOptionAdd OptionMsg;
-	OptionMsg.m_pDescription = pOption->m_aDescription;
-	Server()->SendPackMsg(&OptionMsg, MSGFLAG_VITAL, -1);
 }
 
 void CGameContext::ConRemoveVote(IConsole::IResult *pResult, void *pUserData)
