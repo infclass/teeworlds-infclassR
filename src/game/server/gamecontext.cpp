@@ -403,29 +403,34 @@ void CGameContext::SendChatTarget_Localization(int To, int Category, const char*
 	
 	va_list VarArgs;
 	va_start(VarArgs, pText);
-	
+
+	bool Sent = false;
 	for(int i = Start; i < End; i++)
 	{
 		if(m_apPlayers[i])
 		{
 			Buffer.clear();
 			Buffer.append(GetChatCategoryPrefix(Category));
-			if(To < 0 && i == 0)
-			{
-				// one message for record
-				dynamic_string tmpBuf;
-				tmpBuf.copy(Buffer);
-				Server()->Localization()->Format_VL(tmpBuf, "en", pText, VarArgs);
-				Msg.m_pMessage = tmpBuf.buffer();
-				Server()->SendPackMsg(&Msg, MSGFLAG_VITAL|MSGFLAG_NOSEND, -1);
-			}
 			Server()->Localization()->Format_VL(Buffer, m_apPlayers[i]->GetLanguage(), pText, VarArgs);
 			
 			Msg.m_pMessage = Buffer.buffer();
 			Server()->SendPackMsg(&Msg, MSGFLAG_VITAL|MSGFLAG_NORECORD, i);
+			Sent = true;
 		}
 	}
-	
+
+	if(To < 0 && Sent)
+	{
+		Buffer.clear();
+		Buffer.append(GetChatCategoryPrefix(Category));
+		// one message for record
+		dynamic_string tmpBuf;
+		tmpBuf.copy(Buffer);
+		Server()->Localization()->Format_VL(tmpBuf, "en", pText, VarArgs);
+		Msg.m_pMessage = tmpBuf.buffer();
+		Server()->SendPackMsg(&Msg, MSGFLAG_VITAL | MSGFLAG_NOSEND, -1);
+	}
+
 	va_end(VarArgs);
 }
 
@@ -442,7 +447,8 @@ void CGameContext::SendChatTarget_Localization_P(int To, int Category, int Numbe
 	
 	va_list VarArgs;
 	va_start(VarArgs, pText);
-	
+
+	bool Sent = false;
 	for(int i = Start; i < End; i++)
 	{
 		if(m_apPlayers[i])
@@ -452,10 +458,23 @@ void CGameContext::SendChatTarget_Localization_P(int To, int Category, int Numbe
 			Server()->Localization()->Format_VLP(Buffer, m_apPlayers[i]->GetLanguage(), Number, pText, VarArgs);
 			
 			Msg.m_pMessage = Buffer.buffer();
-			Server()->SendPackMsg(&Msg, MSGFLAG_VITAL, i);
+			Server()->SendPackMsg(&Msg, MSGFLAG_VITAL | MSGFLAG_NORECORD, i);
+			Sent = true;
 		}
 	}
-	
+
+	if(To < 0 && Sent)
+	{
+		Buffer.clear();
+		Buffer.append(GetChatCategoryPrefix(Category));
+		// one message for record
+		dynamic_string tmpBuf;
+		tmpBuf.copy(Buffer);
+		Server()->Localization()->Format_VLP(tmpBuf, "en", Number, pText, VarArgs);
+		Msg.m_pMessage = tmpBuf.buffer();
+		Server()->SendPackMsg(&Msg, MSGFLAG_VITAL | MSGFLAG_NOSEND, -1);
+	}
+
 	va_end(VarArgs);
 }
 
