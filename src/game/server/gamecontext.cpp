@@ -3795,9 +3795,11 @@ bool CGameContext::WriteClassHelpPage(dynamic_string *pOutput, const char *pLang
 {
 	dynamic_string &Buffer = *pOutput;
 
-	Buffer.append("~~ ");
-	Server()->Localization()->Format_L(Buffer, pLanguage, CInfClassGameController::GetClassDisplayName(PlayerClass), nullptr);
-	Buffer.append(" ~~");
+	auto MakeHeader = [this, &Buffer, pLanguage](const char *pText) {
+		Buffer.append("~~ ");
+		Server()->Localization()->Format_L(Buffer, pLanguage, pText, nullptr);
+		Buffer.append(" ~~");
+	};
 
 	auto AddText = [this, &Buffer, pLanguage](const char *pSeparator, const char *pText, const char *pArgName = nullptr, const void *pArgValue = nullptr) {
 		Buffer.append(pSeparator);
@@ -3831,6 +3833,8 @@ bool CGameContext::WriteClassHelpPage(dynamic_string *pOutput, const char *pLang
 	};
 
 	static const int HeroNumArmorGift = 4;
+
+	MakeHeader(CInfClassGameController::GetClassDisplayName(PlayerClass));
 
 	switch(PlayerClass)
 	{
