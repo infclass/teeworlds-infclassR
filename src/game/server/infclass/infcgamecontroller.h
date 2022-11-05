@@ -97,7 +97,7 @@ public:
 
 	CLASS_AVAILABILITY GetPlayerClassAvailability(int PlayerClass, const CInfClassPlayer *pForPlayer = nullptr) const;
 	bool CanVote() override;
-	void OnPlayerDisconnect(CPlayer *pPlayer, int Type, const char *pReason) override;
+	void OnPlayerDisconnect(CPlayer *pBasePlayer, int Type, const char *pReason) override;
 	void DoPlayerInfection(CInfClassPlayer *pPlayer, CInfClassPlayer *pInfectiousPlayer, int PreviousClass);
 
 	void OnHeroFlagCollected(int ClientID);

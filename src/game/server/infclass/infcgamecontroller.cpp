@@ -140,8 +140,9 @@ void CInfClassGameController::IncreaseCurrentRoundCounter()
 	MaybeSuggestMoreRounds();
 }
 
-void CInfClassGameController::OnPlayerDisconnect(CPlayer *pPlayer, int Type, const char *pReason)
+void CInfClassGameController::OnPlayerDisconnect(CPlayer *pBasePlayer, int Type, const char *pReason)
 {
+	CInfClassPlayer *pPlayer = CInfClassPlayer::GetInstance(pBasePlayer);
 	if(Type == CLIENTDROPTYPE_BAN) return;
 	if(Type == CLIENTDROPTYPE_KICK) return;
 	if(Type == CLIENTDROPTYPE_SHUTDOWN) return;	
