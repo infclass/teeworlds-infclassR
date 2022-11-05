@@ -211,6 +211,7 @@ private:
 	void ReservePlayerOwnSnapItems();
 	void FreePlayerOwnSnapItems();
 
+	void OnInfectionTriggered();
 	void MaybeSuggestMoreRounds();
 	void SnapMapMenu(int SnappingClient, CNetObj_GameInfo *pGameInfoObj);
 	void FallInLoveIfInfectedEarly(CInfClassCharacter *pCharacter);

@@ -1832,6 +1832,11 @@ void CInfClassGameController::FreePlayerOwnSnapItems()
 	Server()->SnapFreeID(m_PlayerOwnCursorID);
 }
 
+void CInfClassGameController::OnInfectionTriggered()
+{
+	MaybeSuggestMoreRounds();
+}
+
 void CInfClassGameController::MaybeSuggestMoreRounds()
 {
 	if(m_MoreRoundsSuggested)
@@ -2319,7 +2324,7 @@ void CInfClassGameController::RoundTickAfterInitialInfection()
 
 	if(StartInfectionTrigger)
 	{
-		MaybeSuggestMoreRounds();
+		OnInfectionTriggered();
 		m_InfUnbalancedTick = -1;
 	}
 
