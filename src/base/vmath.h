@@ -22,11 +22,14 @@ public:
 		T y, v;
 	};
 
-	vector2_base() = default;
-	vector2_base(T nx, T ny)
+	constexpr vector2_base() :
+		x(T()), y(T())
 	{
-		x = nx;
-		y = ny;
+	}
+
+	constexpr vector2_base(T nx, T ny) :
+		x(nx), y(ny)
+	{
 	}
 
 	vector2_base operator-() const { return vector2_base(-x, -y); }
