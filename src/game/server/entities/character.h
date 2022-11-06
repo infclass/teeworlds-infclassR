@@ -43,9 +43,6 @@ public:
 
 	class IConsole *Console() { return m_pConsole; }
 
-	//character's size
-	static const int ms_PhysSize = 28;
-
 	CCharacter(CGameWorld *pWorld, IConsole *pConsole);
 	~CCharacter() override;
 
