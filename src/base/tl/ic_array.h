@@ -1,13 +1,14 @@
 #ifndef BASE_TL_IC_ARRAY_H
 #define BASE_TL_IC_ARRAY_H
 
+#include <cstddef>
 #include <initializer_list>
 
 template <class T, int StackCapacity>
 class icArray
 {
 public:
-	icArray() = default;
+	constexpr icArray() = default;
 	icArray(std::initializer_list<T> list)
 	{
 		for(const T &Element : list)
@@ -16,9 +17,9 @@ public:
 		}
 	}
 
-	const T &At(int Index) const { return m_Data[Index]; }
-	T operator[](int Index) const { return m_Data[Index]; }
-	T &operator[](int Index) { return m_Data[Index]; }
+	const T &At(std::size_t Index) const { return m_Data[Index]; }
+	T operator[](std::size_t Index) const { return m_Data[Index]; }
+	T &operator[](std::size_t Index) { return m_Data[Index]; }
 
 	icArray &operator=(const icArray &Array) noexcept;
 
@@ -33,6 +34,12 @@ public:
 
 	const T *begin() const { return &m_Data[0]; }
 	const T *end() const { return &m_Data[m_Size]; }
+
+	void erase(const T *pItem)
+	{
+		std::ptrdiff_t Offset = pItem - begin();
+		RemoveAt(Offset);
+	}
 
 	T *Data() { return &m_Data; }
 	const T *Data() const { return &m_Data; }
@@ -93,9 +100,9 @@ public:
 		return true;
 	}
 
-	void RemoveAt(int Index)
+	void RemoveAt(std::size_t Index)
 	{
-		for(int i = Index; i < m_Size - 1; ++i)
+		for(std::size_t i = Index; i < m_Size - 1; ++i)
 		{
 			m_Data[i] = m_Data[i + 1];
 		}
