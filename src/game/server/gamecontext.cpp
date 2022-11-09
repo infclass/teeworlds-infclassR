@@ -72,9 +72,6 @@ void CGameContext::Construct(int Resetting)
 
 	if(Resetting==NO_RESET)
 		m_pVoteOptionHeap = new CHeap();
-	
-	m_FunRound = false;
-	m_FunRoundsPassed = 0;
 }
 
 CGameContext::CGameContext(int Resetting)
@@ -175,44 +172,6 @@ int CGameContext::GetZombieCount(int zombie_class) {
 			count++;
 	}
 	return count;
-}
-
-void CGameContext::SetAvailabilities(std::vector<int> value)
-{
-	static const int ValuesNumber = NB_HUMANCLASS;
-	if (value.size() < ValuesNumber)
-		value.resize(ValuesNumber, 0);
-
-	for (int PlayerClass = START_HUMANCLASS + 1; PlayerClass < END_HUMANCLASS; PlayerClass++)
-	{
-		const int ClassEnabledValue = value.at(PlayerClass - START_HUMANCLASS - 1);
-		Server()->SetPlayerClassEnabled(PlayerClass, ClassEnabledValue);
-	}
-}
-
-void CGameContext::SetProbabilities(std::vector<int> value)
-{
-	int *extraConfigValues[] =
-	{
-		// The order is still important!
-		&g_Config.m_InfGhoulThreshold,
-		&g_Config.m_InfGhoulStomachSize,
-	};
-	static const int ExtraValuesNumber = sizeof(extraConfigValues) / sizeof(extraConfigValues[0]);
-	static const int ValuesNumber = NB_INFECTEDCLASS + ExtraValuesNumber;
-	if (value.size() < ValuesNumber)
-		value.resize(ValuesNumber, 0);
-
-	for (int PlayerClass = START_INFECTEDCLASS + 1; PlayerClass < END_INFECTEDCLASS; PlayerClass++)
-	{
-		const int ClassProbability = value.at(PlayerClass - START_INFECTEDCLASS - 1);
-		Server()->SetPlayerClassProbability(PlayerClass, ClassProbability);
-	}
-	for (int i = 0; i < ExtraValuesNumber; ++i)
-	{
-		const int newValue = value.at(NB_INFECTEDCLASS + i);
-		*extraConfigValues[i] = newValue;
-	}
 }
 
 void CGameContext::CreateDamageInd(vec2 Pos, float Angle, int Amount, int64_t Mask)
@@ -2827,150 +2786,6 @@ void CGameContext::ConVote(IConsole::IResult *pResult, void *pUserData)
 	pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "server", aBuf);
 }
 
-void CGameContext::ConStartFunRound(IConsole::IResult *pResult, void *pUserData)
-{
-	CGameContext *pSelf = (CGameContext *)pUserData;
-	if(pSelf->m_FunRoundConfigurations.empty())
-	{
-		int ClientID = pResult->GetClientID();
-		const char *pErrorMessage = "Unable to start a fun round: rounds configuration is empty";
-		if(ClientID >= 0)
-		{
-			pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "server", pErrorMessage);
-		}
-		else
-		{
-			pSelf->SendChatTarget(-1, pErrorMessage);
-		}
-		return;
-	}
-	const int type = random_int(0, pSelf->m_FunRoundConfigurations.size() - 1);
-	const FunRoundConfiguration &Configuration = pSelf->m_FunRoundConfigurations[type];
-	pSelf->StartFunRound(Configuration);
-}
-
-void CGameContext::ConStartSpecialFunRound(IConsole::IResult *pResult, void *pUserData)
-{
-	CGameContext *pSelf = (CGameContext *)pUserData;
-	FunRoundConfiguration Configuration;
-
-	for (int argN = 0; argN < pResult->NumArguments(); ++argN)
-	{
-		const char *argument = pResult->GetString(argN);
-		const int PlayerClass = CInfClassGameController::GetClassByName(argument);
-		if ((PlayerClass > START_HUMANCLASS) && (PlayerClass < END_HUMANCLASS))
-		{
-			Configuration.HumanClass = PlayerClass;
-		}
-		if ((PlayerClass > START_INFECTEDCLASS) && (PlayerClass < END_INFECTEDCLASS))
-		{
-			Configuration.InfectedClass = PlayerClass;
-		}
-	}
-
-	if (!Configuration.HumanClass || !Configuration.InfectedClass)
-	{
-		pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "server", "invalid special fun round configuration");
-		return;
-	}
-	pSelf->StartFunRound(Configuration);
-}
-
-bool CGameContext::StartFunRound(const FunRoundConfiguration &Configuration)
-{
-	const char* title = g_Config.m_FunRoundTitle;
-	char aBuf[256];
-
-	if (m_FunRound) {
-		str_format(aBuf, sizeof(aBuf), "%s is not over yet", title);
-		SendChatTarget(-1, aBuf);
-		return true;
-	}
-	else if (m_FunRoundsPassed >= g_Config.m_FunRoundLimit) {
-		switch (g_Config.m_FunRoundLimit) {
-			case 1: str_format(aBuf, sizeof(aBuf), "%s can be played only once per map", title); break;
-			case 2: str_format(aBuf, sizeof(aBuf), "%s can be played only twice per map", title); break;
-			default: str_format(aBuf, sizeof(aBuf), "%s can be played only %d times per map", title, g_Config.m_FunRoundLimit);
-		}
-		SendChatTarget(-1, aBuf);
-		return true;
-	}
-
-	// Ugly cast for the sake of IServer cleanup. This method should be moved
-	//  to the GameController so there will be no cast in some future.
-	const CInfClassGameController *pInfGameController = static_cast<CInfClassGameController*>(m_pController);
-
-	// zombies
-	std::vector<int> infectedProbabilities;
-	for (int PlayerClass = START_INFECTEDCLASS + 1; PlayerClass < END_INFECTEDCLASS; PlayerClass++)
-	{
-		infectedProbabilities.push_back(pInfGameController->GetPlayerClassProbability(PlayerClass));
-	}
-	const auto extraConfigValues =
-	{
-		// The order is still important!
-		g_Config.m_InfGhoulThreshold,
-		g_Config.m_InfGhoulStomachSize,
-	};
-	for (const int &extraValue : extraConfigValues)
-	{
-		infectedProbabilities.push_back(extraValue);
-	}
-
-	// humans
-	std::vector<int> humanAvailabilities;
-	for (int PlayerClass = START_HUMANCLASS + 1; PlayerClass < END_HUMANCLASS; PlayerClass++)
-	{
-		humanAvailabilities.push_back(pInfGameController->GetPlayerClassEnabled(PlayerClass));
-	}
-
-	std::vector<const char*> phrases = {
-		", glhf!",
-		", not ez!",
-		" c:",
-		" xd",
-		", that's gg",
-		", good luck!"
-	};
-	const char* random_phrase = phrases[random_int(0, phrases.size()-1)];
-	SetProbabilities(std::vector<int>());
-	SetAvailabilities(std::vector<int>());
-	g_Config.m_InfGhoulStomachSize = g_Config.m_FunRoundGhoulStomachSize;
-
-	Server()->SetPlayerClassEnabled(Configuration.HumanClass, true);
-	Server()->SetPlayerClassProbability(Configuration.InfectedClass, 100);
-	const char *HumanClassText = CInfClassGameController::GetClassPluralDisplayName(Configuration.HumanClass);
-	const char *InfectedClassText = CInfClassGameController::GetClassPluralDisplayName(Configuration.InfectedClass);
-
-	str_format(aBuf, sizeof(aBuf), "%s! %s vs %s%s", title, InfectedClassText, HumanClassText, random_phrase);
-
-	m_FunRound = true;
-	m_pController->StartRound();
-	CreateSoundGlobal(SOUND_CTF_CAPTURE);
-	SendChatTarget(-1, aBuf);
-	m_DefaultAvailabilities = humanAvailabilities;
-	m_DefaultProbabilities = infectedProbabilities;
-	
-	for(int i = 0; i < MAX_CLIENTS; ++i)
-	{
-		CPlayer *pPlayer = m_apPlayers[i];
-		if(!pPlayer)
-			continue;
-
-		pPlayer->SetClass(Configuration.HumanClass);
-	}
-
-	return true;
-}
-
-void CGameContext::EndFunRound()
-{
-	SetAvailabilities(m_DefaultAvailabilities);
-	SetProbabilities(m_DefaultProbabilities);
-	m_FunRound = false;
-	m_FunRoundsPassed++;
-}
-
 void CGameContext::ConchainSpecialMotdupdate(IConsole::IResult *pResult, void *pUserData, IConsole::FCommandCallback pfnCallback, void *pCallbackUserData)
 {
 	pfnCallback(pResult, pCallbackUserData);
@@ -4159,48 +3974,6 @@ void CGameContext::ConReloadChangeLog(IConsole::IResult *pResult, void *pUserDat
 	pSelf->ReloadChangelog();
 }
 
-void CGameContext::ConClearFunRounds(IConsole::IResult *pResult, void *pUserData)
-{
-	CGameContext *pSelf = (CGameContext *)pUserData;
-	pSelf->m_FunRoundConfigurations.clear();
-	pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "server", "fun rounds cleared");
-}
-
-void CGameContext::ConAddFunRound(IConsole::IResult *pResult, void *pUserData)
-{
-	CGameContext *pSelf = (CGameContext *)pUserData;
-	FunRoundConfiguration Settings;
-
-	for (int argN = 0; argN < pResult->NumArguments(); ++argN)
-	{
-		const char *argument = pResult->GetString(argN);
-		const int PlayerClass = CInfClassGameController::GetClassByName(argument);
-		if ((PlayerClass > START_HUMANCLASS) && (PlayerClass < END_HUMANCLASS))
-		{
-			Settings.HumanClass = PlayerClass;
-		}
-		if ((PlayerClass > START_INFECTEDCLASS) && (PlayerClass < END_INFECTEDCLASS))
-		{
-			Settings.InfectedClass = PlayerClass;
-		}
-	}
-
-	if (!Settings.HumanClass || !Settings.InfectedClass)
-	{
-		pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "server", "invalid special fun round configuration");
-		return;
-	}
-	else
-	{
-		char aBuf[256];
-		const char *HumanClassText = CInfClassGameController::GetClassPluralDisplayName(Settings.HumanClass);
-		const char *InfectedClassText = CInfClassGameController::GetClassPluralDisplayName(Settings.InfectedClass);
-		str_format(aBuf, sizeof(aBuf), "Added fun round: %s vs %s", InfectedClassText, HumanClassText);
-		pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "server", aBuf);
-	}
-
-	pSelf->m_FunRoundConfigurations.push_back(Settings);
-}
 /* INFECTION MODIFICATION END *****************************************/
 
 void CGameContext::OnConsoleInit()
@@ -4235,11 +4008,6 @@ void CGameContext::OnConsoleInit()
 	Console()->Register("skip_map", "", CFGFLAG_SERVER, ConSkipMap, this, "Change map to the next in the rotation");
 	Console()->Register("queue_map", "?r[map]", CFGFLAG_SERVER, ConQueueMap, this, "Set the next map");
 	Console()->Register("add_map", "?r[map]", CFGFLAG_SERVER, ConAddMap, this, "Add a map to the maps rotation list");
-
-	Console()->Register("start_fun_round", "", CFGFLAG_SERVER, ConStartFunRound, this, "Start fun round");
-	Console()->Register("start_special_fun_round", "ss?s", CFGFLAG_SERVER, ConStartSpecialFunRound, this, "Start fun round");
-	Console()->Register("clear_fun_rounds", "", CFGFLAG_SERVER, ConClearFunRounds, this, "Start fun round");
-	Console()->Register("add_fun_round", "ss?s", CFGFLAG_SERVER, ConAddFunRound, this, "Start fun round");
 	
 	//Chat Command
 	Console()->Register("version", "", CFGFLAG_SERVER, ConVersion, this, "Display information about the server version and build");
@@ -4337,11 +4105,8 @@ void CGameContext::OnInit(/*class IKernel *pKernel*/)
 	//world = new GAMEWORLD;
 	//players = new CPlayer[MAX_CLIENTS];
 
-	Console()->ExecuteFile(g_Config.m_SvResetFile);
-
 	// select gametype
 	m_pController = new CInfClassGameController(this);
-
 	m_pController->RegisterChatCommands(Console());
 
 	// setup core world
@@ -4377,6 +4142,8 @@ void CGameContext::OnInit(/*class IKernel *pKernel*/)
 			}
 		}
 	}
+
+	Console()->ExecuteFile(g_Config.m_SvResetFile);
 
 	InitChangelog();
 	m_pController->InitSmartMapRotation();

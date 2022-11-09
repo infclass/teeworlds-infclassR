@@ -50,19 +50,6 @@
 #define BROADCAST_DURATION_REALTIME (0)
 #define BROADCAST_DURATION_GAMEANNOUNCE (Server()->TickSpeed()*2)
 
-struct FunRoundConfiguration
-{
-	FunRoundConfiguration() = default;
-	FunRoundConfiguration(int Infected, int Human)
-	: InfectedClass(Infected),
-	  HumanClass(Human)
-	{
-	}
-
-	int InfectedClass = 0;
-	int HumanClass = 0;
-};
-
 enum
 {
 	BROADCAST_PRIORITY_LOWEST=0,
@@ -106,8 +93,6 @@ class CGameContext : public IGameServer
 	static void ConClearVotes(IConsole::IResult *pResult, void *pUserData);
 	static void ConAddMapVotes(IConsole::IResult *pResult, void *pUserData);
 	static void ConVote(IConsole::IResult *pResult, void *pUserData);
-	static void ConStartFunRound(IConsole::IResult *pResult, void *pUserData);
-	static void ConStartSpecialFunRound(IConsole::IResult *pResult, void *pUserData);
 	static void ConchainSpecialMotdupdate(IConsole::IResult *pResult, void *pUserData, IConsole::FCommandCallback pfnCallback, void *pCallbackUserData);
 	static void ConchainSyncMapRotation(IConsole::IResult *pResult, void *pUserData, IConsole::FCommandCallback pfnCallback, void *pCallbackUserData);
 
@@ -152,15 +137,6 @@ public:
 	// InfClassR
 	int GetZombieCount();
 	int GetZombieCount(int zombie_class);
-
-	// InfClassR fun round
-	bool StartFunRound(const FunRoundConfiguration &Configuration);
-	void EndFunRound();
-	bool m_FunRound;
-	int m_FunRoundsPassed;
-	std::vector<int> m_DefaultAvailabilities, m_DefaultProbabilities;
-	void SetAvailabilities(std::vector<int> value);
-	void SetProbabilities(std::vector<int> value);
 
 	// voting
 	void StartVote(const char *pDesc, const char *pCommand, const char *pReason);
@@ -294,9 +270,6 @@ private:
 	void ConChangeLog(IConsole::IResult *pResult);
 	static void ConReloadChangeLog(IConsole::IResult *pResult, void *pUserData);
 
-	static void ConClearFunRounds(IConsole::IResult *pResult, void *pUserData);
-	static void ConAddFunRound(IConsole::IResult *pResult, void *pUserData);
-
 	bool PrivateMessage(const char* pStr, int ClientID, bool TeamChat);
 	void Whisper(int ClientID, char *pStr);
 	void WhisperID(int ClientID, int VictimID, const char *pMessage);
@@ -400,14 +373,12 @@ private:
 		int m_SnapID;
 	};
 	array<LoveDotState> m_LoveDots;
-	
-	int m_aHitSoundState[MAX_CLIENTS]; //1 for hit, 2 for kill (no sounds must be sent)	
+
+	int m_aHitSoundState[MAX_CLIENTS]; // 1 for hit, 2 for kill (no sounds must be sent)
 
 public:
-	std::vector<FunRoundConfiguration> m_FunRoundConfigurations;
-
 public:
-/* INFECTION MODIFICATION END *****************************************/
+	/* INFECTION MODIFICATION END *****************************************/
 	// InfClassR begin
 	std::ofstream fout;
 	// InfClassR end

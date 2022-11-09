@@ -1052,6 +1052,12 @@ void CInfClassGameController::RegisterChatCommands(IConsole *pConsole)
 
 	pConsole->Register("inf_set_class", "i[clientid] s[classname]", CFGFLAG_SERVER, ConSetClass, this, "Set the class of a player");
 	pConsole->Register("queue_round", "s[type]", CFGFLAG_SERVER, ConQueueSpecialRound, this, "Start a special round");
+
+	pConsole->Register("start_fun_round", "", CFGFLAG_SERVER, ConStartFunRound, this, "Start fun round");
+	pConsole->Register("start_special_fun_round", "s[classname] s[classname] ?s[more classes]", CFGFLAG_SERVER, ConStartSpecialFunRound, this, "Start fun round");
+	pConsole->Register("clear_fun_rounds", "", CFGFLAG_SERVER, ConClearFunRounds, this, "Start fun round");
+	pConsole->Register("add_fun_round", "s[classname] s[classname] ?s[more classes]", CFGFLAG_SERVER, ConAddFunRound, this, "Start fun round");
+
 	pConsole->Register("start_fast_round", "", CFGFLAG_SERVER, ConStartFastRound, this, "Start a faster gameplay round");
 	pConsole->Register("queue_fast_round", "", CFGFLAG_SERVER, ConQueueFastRound, this, "Queue a faster gameplay round");
 	pConsole->Register("queue_fun_round", "", CFGFLAG_SERVER, ConQueueFunRound, this, "Queue a fun gameplay round");
@@ -1303,24 +1309,33 @@ void CInfClassGameController::ConQueueSpecialRound(IConsole::IResult *pResult, v
 	pSelf->m_QueuedRoundType = Type;
 }
 
-void CInfClassGameController::ConStartFastRound(IConsole::IResult *pResult, void *pUserData)
+void CInfClassGameController::ConStartFunRound(IConsole::IResult *pResult, void *pUserData)
 {
 	CInfClassGameController *pSelf = (CInfClassGameController *)pUserData;
-	pSelf->m_QueuedRoundType = ROUND_TYPE::FAST;
-	pSelf->StartRound();
-}
+	if(pSelf->m_FunRoundConfigurations.empty())
+	{
+		int ClientID = pResult->GetClientID();
+		const char *pErrorMessage = "Unable to start fun round: rounds configuration is empty";
+		if(ClientID >= 0)
+		{
+			pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "server", pErrorMessage);
+		}
+		else
+		{
+			pSelf->GameServer()->SendChatTarget(-1, pErrorMessage);
+		}
+		return;
+	}
 
-void CInfClassGameController::ConQueueFastRound(IConsole::IResult *pResult, void *pUserData)
-{
-	CInfClassGameController *pSelf = (CInfClassGameController *)pUserData;
-	pSelf->m_QueuedRoundType = ROUND_TYPE::FAST;
+	pSelf->m_QueuedRoundType = ROUND_TYPE::FUN;
+	pSelf->StartRound();
 }
 
 void CInfClassGameController::ConQueueFunRound(IConsole::IResult *pResult, void *pUserData)
 {
 	CInfClassGameController *pSelf = (CInfClassGameController *)pUserData;
 
-	if(pSelf->GameServer()->m_FunRoundConfigurations.empty())
+	if(pSelf->m_FunRoundConfigurations.empty())
 	{
 		int ClientID = pResult->GetClientID();
 		const char *pErrorMessage = "Unable to start a fun round: rounds configuration is empty";
@@ -1336,6 +1351,91 @@ void CInfClassGameController::ConQueueFunRound(IConsole::IResult *pResult, void 
 	}
 
 	pSelf->m_QueuedRoundType = ROUND_TYPE::FUN;
+}
+
+void CInfClassGameController::ConStartSpecialFunRound(IConsole::IResult *pResult, void *pUserData)
+{
+#if 0
+	CInfClassGameController *pSelf = (CInfClassGameController *)pUserData;
+	FunRoundConfiguration Configuration;
+
+	for(int argN = 0; argN < pResult->NumArguments(); ++argN)
+	{
+		const char *argument = pResult->GetString(argN);
+		const int PlayerClass = CInfClassGameController::GetClassByName(argument);
+		if((PlayerClass > START_HUMANCLASS) && (PlayerClass < END_HUMANCLASS))
+		{
+			Configuration.HumanClass = PlayerClass;
+		}
+		if((PlayerClass > START_INFECTEDCLASS) && (PlayerClass < END_INFECTEDCLASS))
+		{
+			Configuration.InfectedClass = PlayerClass;
+		}
+	}
+
+	if(!Configuration.HumanClass || !Configuration.InfectedClass)
+	{
+		pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "server", "invalid special fun round configuration");
+		return;
+	}
+	pSelf->StartFunRound(Configuration);
+#endif
+}
+
+void CInfClassGameController::ConClearFunRounds(IConsole::IResult *pResult, void *pUserData)
+{
+	CInfClassGameController *pSelf = (CInfClassGameController *)pUserData;
+	pSelf->m_FunRoundConfigurations.clear();
+	pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "server", "fun rounds cleared");
+}
+
+void CInfClassGameController::ConAddFunRound(IConsole::IResult *pResult, void *pUserData)
+{
+	CInfClassGameController *pSelf = (CInfClassGameController *)pUserData;
+	FunRoundConfiguration Settings;
+
+	for(int argN = 0; argN < pResult->NumArguments(); ++argN)
+	{
+		const char *pArgument = pResult->GetString(argN);
+		const int PlayerClass = CInfClassGameController::GetClassByName(pArgument);
+		if((PlayerClass > START_HUMANCLASS) && (PlayerClass < END_HUMANCLASS))
+		{
+			Settings.HumanClass = PlayerClass;
+		}
+		if((PlayerClass > START_INFECTEDCLASS) && (PlayerClass < END_INFECTEDCLASS))
+		{
+			Settings.InfectedClass = PlayerClass;
+		}
+	}
+
+	if(!Settings.HumanClass || !Settings.InfectedClass)
+	{
+		pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "server", "invalid special fun round configuration");
+		return;
+	}
+	else
+	{
+		char aBuf[256];
+		const char *HumanClassText = CInfClassGameController::GetClassPluralDisplayName(Settings.HumanClass);
+		const char *InfectedClassText = CInfClassGameController::GetClassPluralDisplayName(Settings.InfectedClass);
+		str_format(aBuf, sizeof(aBuf), "Added fun round: %s vs %s", InfectedClassText, HumanClassText);
+		pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "server", aBuf);
+	}
+
+	pSelf->m_FunRoundConfigurations.push_back(Settings);
+}
+
+void CInfClassGameController::ConStartFastRound(IConsole::IResult *pResult, void *pUserData)
+{
+	CInfClassGameController *pSelf = (CInfClassGameController *)pUserData;
+	pSelf->m_QueuedRoundType = ROUND_TYPE::FAST;
+	pSelf->StartRound();
+}
+
+void CInfClassGameController::ConQueueFastRound(IConsole::IResult *pResult, void *pUserData)
+{
+	CInfClassGameController *pSelf = (CInfClassGameController *)pUserData;
+	pSelf->m_QueuedRoundType = ROUND_TYPE::FAST;
 }
 
 void CInfClassGameController::ConMapRotationStatus(IConsole::IResult *pResult, void *pUserData)
@@ -1816,7 +1916,7 @@ void CInfClassGameController::UpdateNinjaTargets()
 		}
 	}
 
-	if(InfectedCount < g_Config.m_InfNinjaMinInfected)
+	if(InfectedCount < Config()->m_InfNinjaMinInfected)
 	{
 		m_NinjaTargets.Clear();
 	}
@@ -1867,7 +1967,7 @@ void CInfClassGameController::StartRound()
 		break;
 	case ROUND_TYPE::FUN:
 	{
-		const auto Configs = GameServer()->m_FunRoundConfigurations;
+		const auto Configs = m_FunRoundConfigurations;
 		if (Configs.empty())
 		{
 			m_RoundType = ROUND_TYPE::NORMAL;
@@ -1875,7 +1975,7 @@ void CInfClassGameController::StartRound()
 		}
 		const int type = random_int(0, Configs.size() - 1);
 		const FunRoundConfiguration &Configuration = Configs[type];
-		GameServer()->StartFunRound(Configuration);
+		StartFunRound(Configuration);
 	}
 		break;
 	case ROUND_TYPE::FAST:
@@ -1930,7 +2030,7 @@ void CInfClassGameController::EndRound(ROUND_END_REASON Reason)
 		char aBuf[512];
 		str_format(aBuf, sizeof(aBuf), "round_end winner='%s' survivors='%d' duration='%d' round='%d of %d' type='%s'",
 			pWinnerTeam,
-			NumHumans, Seconds, m_RoundCount + 1, g_Config.m_SvRoundsPerMap, pRoundType);
+			NumHumans, Seconds, m_RoundCount + 1, Config()->m_SvRoundsPerMap, pRoundType);
 		Console()->Print(IConsole::OUTPUT_LEVEL_DEBUG, "game", aBuf);
 	}
 	m_InfectedStarted = false;
@@ -1949,7 +2049,7 @@ void CInfClassGameController::EndRound(ROUND_END_REASON Reason)
 	case ROUND_TYPE::FAST:
 		break;
 	case ROUND_TYPE::FUN:
-		GameServer()->EndFunRound();
+		EndFunRound();
 		break;
 	case ROUND_TYPE::INVALID:
 		break;
@@ -2038,6 +2138,44 @@ int CInfClassGameController::GetMinimumInfectedForPlayers(int PlayersNumber) con
 	}
 
 	return NumFirstInfected;
+}
+
+void CInfClassGameController::SetAvailabilities(std::vector<int> value)
+{
+	static const int ValuesNumber = NB_HUMANCLASS;
+	if(value.size() < ValuesNumber)
+		value.resize(ValuesNumber, 0);
+
+	for(int PlayerClass = START_HUMANCLASS + 1; PlayerClass < END_HUMANCLASS; PlayerClass++)
+	{
+		const int ClassEnabledValue = value.at(PlayerClass - START_HUMANCLASS - 1);
+		Server()->SetPlayerClassEnabled(PlayerClass, ClassEnabledValue);
+	}
+}
+
+void CInfClassGameController::SetProbabilities(std::vector<int> value)
+{
+	int *extraConfigValues[] =
+		{
+			// The order is still important!
+			&g_Config.m_InfGhoulThreshold,
+			&g_Config.m_InfGhoulStomachSize,
+		};
+	static const int ExtraValuesNumber = sizeof(extraConfigValues) / sizeof(extraConfigValues[0]);
+	static const int ValuesNumber = NB_INFECTEDCLASS + ExtraValuesNumber;
+	if(value.size() < ValuesNumber)
+		value.resize(ValuesNumber, 0);
+
+	for(int PlayerClass = START_INFECTEDCLASS + 1; PlayerClass < END_INFECTEDCLASS; PlayerClass++)
+	{
+		const int ClassProbability = value.at(PlayerClass - START_INFECTEDCLASS - 1);
+		Server()->SetPlayerClassProbability(PlayerClass, ClassProbability);
+	}
+	for(int i = 0; i < ExtraValuesNumber; ++i)
+	{
+		const int newValue = value.at(NB_INFECTEDCLASS + i);
+		*extraConfigValues[i] = newValue;
+	}
 }
 
 int CInfClassGameController::GetMinimumInfected() const
@@ -2269,7 +2407,7 @@ void CInfClassGameController::Tick()
 	m_InfectedStarted = false;
 
 	//If the game can start ...
-	if(!m_Warmup && m_GameOverTick == -1 && NumPlayers >= g_Config.m_InfMinPlayers)
+	if(!m_Warmup && m_GameOverTick == -1 && NumPlayers >= Config()->m_InfMinPlayers)
 	{
 		//If the infection started
 		if(IsInfectionStarted())
@@ -2736,6 +2874,77 @@ bool CInfClassGameController::IsPositionAvailableForHumans(const vec2 &Position)
 	}
 }
 
+void CInfClassGameController::StartFunRound(const FunRoundConfiguration &Configuration)
+{
+	const char *pTitle = Config()->m_FunRoundTitle;
+	char aBuf[256];
+
+	// zombies
+	std::vector<int> InfectedProbabilities;
+	for(int PlayerClass = START_INFECTEDCLASS + 1; PlayerClass < END_INFECTEDCLASS; PlayerClass++)
+	{
+		InfectedProbabilities.push_back(GetPlayerClassProbability(PlayerClass));
+	}
+	const auto extraConfigValues =
+		{
+			// The order is still important!
+			Config()->m_InfGhoulThreshold,
+			Config()->m_InfGhoulStomachSize,
+		};
+	for(const int &extraValue : extraConfigValues)
+	{
+		InfectedProbabilities.push_back(extraValue);
+	}
+
+	// humans
+	std::vector<int> HumanAvailabilities;
+	for(int PlayerClass = START_HUMANCLASS + 1; PlayerClass < END_HUMANCLASS; PlayerClass++)
+	{
+		HumanAvailabilities.push_back(GetPlayerClassEnabled(PlayerClass));
+	}
+
+	std::vector<const char *> phrases = {
+		", glhf!",
+		", not ez!",
+		" c:",
+		" xd",
+		", that's gg",
+		", good luck!"};
+	const char *random_phrase = phrases[random_int(0, phrases.size() - 1)];
+	SetProbabilities(std::vector<int>());
+	SetAvailabilities(std::vector<int>());
+	Config()->m_InfGhoulStomachSize = Config()->m_FunRoundGhoulStomachSize;
+
+	Server()->SetPlayerClassEnabled(Configuration.HumanClass, true);
+	Server()->SetPlayerClassProbability(Configuration.InfectedClass, 100);
+	const char *HumanClassText = CInfClassGameController::GetClassPluralDisplayName(Configuration.HumanClass);
+	const char *InfectedClassText = CInfClassGameController::GetClassPluralDisplayName(Configuration.InfectedClass);
+
+	str_format(aBuf, sizeof(aBuf), "%s! %s vs %s%s", pTitle, InfectedClassText, HumanClassText, random_phrase);
+
+	GameServer()->CreateSoundGlobal(SOUND_CTF_CAPTURE);
+	GameServer()->SendChatTarget(-1, aBuf);
+
+	m_DefaultAvailabilities = HumanAvailabilities;
+	m_DefaultProbabilities = InfectedProbabilities;
+
+	for(int i = 0; i < MAX_CLIENTS; ++i)
+	{
+		CInfClassPlayer *pPlayer = GetPlayer(i);
+		if(!pPlayer)
+			continue;
+
+		pPlayer->SetClass(Configuration.HumanClass);
+	}
+}
+
+void CInfClassGameController::EndFunRound()
+{
+	SetAvailabilities(m_DefaultAvailabilities);
+	SetProbabilities(m_DefaultProbabilities);
+	m_FunRoundsPassed++;
+}
+
 void CInfClassGameController::Snap(int SnappingClient)
 {
 	CNetObj_GameInfo *pGameInfoObj = (CNetObj_GameInfo *)Server()->SnapNewItem(NETOBJTYPE_GAMEINFO, 0, sizeof(CNetObj_GameInfo));
@@ -2753,7 +2962,7 @@ void CInfClassGameController::Snap(int SnappingClient)
 	pGameInfoObj->m_RoundStartTick = m_RoundStartTick;
 	pGameInfoObj->m_WarmupTimer = m_Warmup;
 
-	pGameInfoObj->m_ScoreLimit = g_Config.m_SvScorelimit;
+	pGameInfoObj->m_ScoreLimit = Config()->m_SvScorelimit;
 
 	int WholeMinutes = GetTimeLimit();
 	float FractionalPart = GetTimeLimit() - WholeMinutes;
@@ -2764,7 +2973,7 @@ void CInfClassGameController::Snap(int SnappingClient)
 		pGameInfoObj->m_RoundStartTick -= (1 - FractionalPart) * 60 * Server()->TickSpeed();
 	}
 
-	pGameInfoObj->m_RoundNum = (str_length(g_Config.m_SvMaprotation) && g_Config.m_SvRoundsPerMap) ? g_Config.m_SvRoundsPerMap : 0;
+	pGameInfoObj->m_RoundNum = (str_length(Config()->m_SvMaprotation) && Config()->m_SvRoundsPerMap) ? Config()->m_SvRoundsPerMap : 0;
 	pGameInfoObj->m_RoundCurrent = m_RoundCount+1;
 
 	SnapMapMenu(SnappingClient, pGameInfoObj);
@@ -3420,8 +3629,8 @@ bool CInfClassGameController::TryRespawn(CInfClassPlayer *pPlayer, SpawnContext 
 		
 	if(pPlayer->IsZombie() && m_ExplosionStarted)
 		return false;
-		
-	if(m_InfectedStarted && pPlayer->IsZombie() && random_prob(g_Config.m_InfProbaSpawnNearWitch / 100.0f))
+
+	if(m_InfectedStarted && pPlayer->IsZombie() && random_prob(Config()->m_InfProbaSpawnNearWitch / 100.0f))
 	{
 		CInfClassPlayerIterator<PLAYERITER_INGAME> Iter(GameServer()->m_apPlayers);
 		while(Iter.Next())
@@ -3600,7 +3809,7 @@ int CInfClassGameController::ChooseInfectedClass(const CInfClassPlayer *pPlayer)
 				}
 				break;
 			case PLAYERCLASS_GHOUL:
-				if (nbInfected < g_Config.m_InfGhoulThreshold)
+				if(nbInfected < Config()->m_InfGhoulThreshold)
 					ClassProbability = 0;
 				break;
 			case PLAYERCLASS_WITCH:
@@ -3629,25 +3838,25 @@ bool CInfClassGameController::GetPlayerClassEnabled(int PlayerClass) const
 	switch(PlayerClass)
 	{
 		case PLAYERCLASS_ENGINEER:
-			return g_Config.m_InfEnableEngineer;
+			return Config()->m_InfEnableEngineer;
 		case PLAYERCLASS_SOLDIER:
-			return g_Config.m_InfEnableSoldier;
+			return Config()->m_InfEnableSoldier;
 		case PLAYERCLASS_SCIENTIST:
-			return g_Config.m_InfEnableScientist;
+			return Config()->m_InfEnableScientist;
 		case PLAYERCLASS_BIOLOGIST:
-			return g_Config.m_InfEnableBiologist;
+			return Config()->m_InfEnableBiologist;
 		case PLAYERCLASS_MEDIC:
-			return g_Config.m_InfEnableMedic;
+			return Config()->m_InfEnableMedic;
 		case PLAYERCLASS_HERO:
-			return g_Config.m_InfEnableHero;
+			return Config()->m_InfEnableHero;
 		case PLAYERCLASS_NINJA:
-			return g_Config.m_InfEnableNinja;
+			return Config()->m_InfEnableNinja;
 		case PLAYERCLASS_MERCENARY:
-			return g_Config.m_InfEnableMercenary;
+			return Config()->m_InfEnableMercenary;
 		case PLAYERCLASS_SNIPER:
-			return g_Config.m_InfEnableSniper;
+			return Config()->m_InfEnableSniper;
 		case PLAYERCLASS_LOOPER:
-			return g_Config.m_InfEnableLooper;
+			return Config()->m_InfEnableLooper;
 		default:
 			return false;
 	}
@@ -3658,7 +3867,7 @@ int CInfClassGameController::GetMinPlayersForClass(int PlayerClass) const
 	switch (PlayerClass)
 	{
 		case PLAYERCLASS_ENGINEER:
-			return g_Config.m_InfMinPlayersForEngineer;
+			return Config()->m_InfMinPlayersForEngineer;
 		default:
 			return 0;
 	}
@@ -3669,13 +3878,13 @@ int CInfClassGameController::GetClassPlayerLimit(int PlayerClass) const
 	switch (PlayerClass)
 	{
 		case PLAYERCLASS_MEDIC:
-			return g_Config.m_InfMedicLimit;
+			return Config()->m_InfMedicLimit;
 		case PLAYERCLASS_HERO:
-			return g_Config.m_InfHeroLimit;
+			return Config()->m_InfHeroLimit;
 		case PLAYERCLASS_WITCH:
-			return g_Config.m_InfWitchLimit;
+			return Config()->m_InfWitchLimit;
 		default:
-			return g_Config.m_SvMaxClients;
+			return Config()->m_SvMaxClients;
 	}
 }
 
@@ -3684,27 +3893,27 @@ int CInfClassGameController::GetPlayerClassProbability(int PlayerClass) const
 	switch (PlayerClass)
 	{
 		case PLAYERCLASS_SMOKER:
-			return g_Config.m_InfProbaSmoker;
+			return Config()->m_InfProbaSmoker;
 		case PLAYERCLASS_BOOMER:
-			return g_Config.m_InfProbaBoomer;
+			return Config()->m_InfProbaBoomer;
 		case PLAYERCLASS_HUNTER:
-			return g_Config.m_InfProbaHunter;
+			return Config()->m_InfProbaHunter;
 		case PLAYERCLASS_BAT:
-			return g_Config.m_InfProbaBat;
+			return Config()->m_InfProbaBat;
 		case PLAYERCLASS_GHOST:
-			return g_Config.m_InfProbaGhost;
+			return Config()->m_InfProbaGhost;
 		case PLAYERCLASS_SPIDER:
-			return g_Config.m_InfProbaSpider;
+			return Config()->m_InfProbaSpider;
 		case PLAYERCLASS_GHOUL:
-			return g_Config.m_InfProbaGhoul;
+			return Config()->m_InfProbaGhoul;
 		case PLAYERCLASS_SLUG:
-			return g_Config.m_InfProbaSlug;
+			return Config()->m_InfProbaSlug;
 		case PLAYERCLASS_VOODOO:
-			return g_Config.m_InfProbaVoodoo;
+			return Config()->m_InfProbaVoodoo;
 		case PLAYERCLASS_WITCH:
-			return g_Config.m_InfProbaWitch;
+			return Config()->m_InfProbaWitch;
 		case PLAYERCLASS_UNDEAD:
-			return g_Config.m_InfProbaUndead;
+			return Config()->m_InfProbaUndead;
 		default:
 			break;
 	}
@@ -3715,9 +3924,6 @@ int CInfClassGameController::GetPlayerClassProbability(int PlayerClass) const
 
 ROUND_TYPE CInfClassGameController::GetRoundType() const
 {
-	if(GameServer()->m_FunRound)
-		return ROUND_TYPE::FUN;
-
 	return m_RoundType;
 }
 
@@ -3749,11 +3955,11 @@ CLASS_AVAILABILITY CInfClassGameController::GetPlayerClassAvailability(int Playe
 			nbSupport++;
 		nbClass[AnotherPlayerClass]++;
 	}
-	
-	if (IsDefenderClass(PlayerClass) && (nbDefender >= g_Config.m_InfDefenderLimit))
+
+	if(IsDefenderClass(PlayerClass) && (nbDefender >= Config()->m_InfDefenderLimit))
 		return CLASS_AVAILABILITY::LIMIT_EXCEEDED;
 
-	if (IsSupportClass(PlayerClass) && (nbSupport >= g_Config.m_InfSupportLimit))
+	if(IsSupportClass(PlayerClass) && (nbSupport >= Config()->m_InfSupportLimit))
 		return CLASS_AVAILABILITY::LIMIT_EXCEEDED;
 
 	if (nbClass[PlayerClass] >= GetClassPlayerLimit(PlayerClass))

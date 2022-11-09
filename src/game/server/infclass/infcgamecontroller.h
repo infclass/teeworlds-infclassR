@@ -43,6 +43,19 @@ enum class CLASS_AVAILABILITY
 
 static const char *toString(ROUND_TYPE RoundType);
 
+struct FunRoundConfiguration
+{
+	FunRoundConfiguration() = default;
+	FunRoundConfiguration(int Infected, int Human) :
+		InfectedClass(Infected),
+		HumanClass(Human)
+	{
+	}
+
+	int InfectedClass = 0;
+	int HumanClass = 0;
+};
+
 class CInfClassGameController : public IGameController
 {
 public:
@@ -121,6 +134,8 @@ public:
 	bool GetHeroFlagPosition(vec2 *pFlagPosition) const;
 	bool IsPositionAvailableForHumans(const vec2 &FlagPosition) const;
 
+	void StartFunRound(const FunRoundConfiguration &Configuration);
+	void EndFunRound();
 	void ResetFinalExplosion();
 	void SaveRoundRules();
 
@@ -155,9 +170,14 @@ public:
 	void ConSetClass(IConsole::IResult *pResult);
 
 	static void ConQueueSpecialRound(IConsole::IResult *pResult, void *pUserData);
+	static void ConStartFunRound(IConsole::IResult *pResult, void *pUserData);
+	static void ConQueueFunRound(IConsole::IResult *pResult, void *pUserData);
+	static void ConStartSpecialFunRound(IConsole::IResult *pResult, void *pUserData);
+	static void ConClearFunRounds(IConsole::IResult *pResult, void *pUserData);
+	static void ConAddFunRound(IConsole::IResult *pResult, void *pUserData);
+
 	static void ConStartFastRound(IConsole::IResult *pResult, void *pUserData);
 	static void ConQueueFastRound(IConsole::IResult *pResult, void *pUserData);
-	static void ConQueueFunRound(IConsole::IResult *pResult, void *pUserData);
 	static void ConMapRotationStatus(IConsole::IResult *pResult, void *pUserData);
 	static void ConSaveMapsData(IConsole::IResult *pResult, void *pUserData);
 	static void ConPrintMapsData(IConsole::IResult *pResult, void *pUserData);
@@ -219,6 +239,9 @@ private:
 	void GetPlayerCounter(int ClientException, int& NumHumans, int& NumInfected);
 	int GetMinimumInfectedForPlayers(int PlayersNumber) const;
 
+	void SetAvailabilities(std::vector<int> value);
+	void SetProbabilities(std::vector<int> value);
+
 	int RandomZombieToWitch();
 	bool IsSafeWitchCandidate(int ClientID) const;
 	ClientsArray m_WitchCallers;
@@ -248,7 +271,13 @@ private:
 
 	ROUND_TYPE m_RoundType = ROUND_TYPE::NORMAL;
 	ROUND_TYPE m_QueuedRoundType = ROUND_TYPE::NORMAL;
-	
+
+	std::vector<FunRoundConfiguration> m_FunRoundConfigurations;
+	int m_FunRoundsPassed = 0;
+
+	std::vector<int> m_DefaultAvailabilities;
+	std::vector<int> m_DefaultProbabilities;
+
 	bool m_InfectedStarted;
 	bool m_RoundStarted = false;
 	bool m_TurretsEnabled = false;
