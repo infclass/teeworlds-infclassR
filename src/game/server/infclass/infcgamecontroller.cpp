@@ -2527,7 +2527,7 @@ void CInfClassGameController::MaybeSendStatistics()
 		return;
 	}
 
-	if (GameServer()->m_FunRound)
+	if(GetRoundType() != ROUND_TYPE::NORMAL)
 		return;
 
 	Server()->SendStatistics();
