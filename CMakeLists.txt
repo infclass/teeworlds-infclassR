@@ -693,6 +693,7 @@ set_glob(GAME_SERVER GLOB_RECURSE src/game/server
   infclass/classes/infected/infected.cpp
   infclass/classes/infected/infected.h
   infclass/damage_type.h
+  infclass/death_context.h
   infclass/entities/biologist-laser.cpp
   infclass/entities/biologist-laser.h
   infclass/entities/biologist-mine.cpp
