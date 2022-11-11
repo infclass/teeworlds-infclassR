@@ -56,6 +56,10 @@ protected:
 	void BroadcastWeaponState() const override;
 
 	void OnNinjaTargetKiller(bool Assisted);
+
+	void SnapHero(int SnappingClient);
+	void SnapScientist(int SnappingClient);
+
 	void PlaceTurret(WeaponFireContext *pFireContext);
 
 	void OnMercGrenadeFired(WeaponFireContext *pFireContext);
