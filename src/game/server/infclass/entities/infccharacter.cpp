@@ -702,21 +702,23 @@ bool CInfClassCharacter::TakeDamage(vec2 Force, float FloatDmg, int From, DAMAGE
 	{
 		HandleDamage(From, Dmg, DamageType);
 
-		if(m_Armor)
+		int Armor = GetArmor();
+		if(Armor)
 		{
-			if(Dmg <= m_Armor)
+			if(Dmg <= Armor)
 			{
-				m_Armor -= Dmg;
+				Armor -= Dmg;
 				Dmg = 0;
 			}
 			else
 			{
-				Dmg -= m_Armor;
-				m_Armor = 0;
+				Dmg -= Armor;
+				Armor = 0;
 			}
 		}
 
-		m_Health -= Dmg;
+		int Health = GetHealth() - Dmg;
+		SetHealthArmor(Health, Armor);
 
 		if(From >= 0 && From != GetCID())
 			GameServer()->SendHitSound(From);
