@@ -309,77 +309,73 @@ void CInfClassHuman::OnCharacterTick()
 void CInfClassHuman::OnCharacterSnap(int SnappingClient)
 {
 	const int CurrentTick = Server()->Tick();
-	if(SnappingClient == m_pPlayer->GetCID())
+	if(SnappingClient != m_pPlayer->GetCID())
+		return;
+
+	switch(GetPlayerClass())
 	{
-		switch(GetPlayerClass())
+	case PLAYERCLASS_HERO:
+		if(m_pHeroFlag && Config()->m_InfHeroFlagIndicator)
 		{
-		case PLAYERCLASS_HERO:
-		{
-			if(m_pHeroFlag && Config()->m_InfHeroFlagIndicator)
+			int TickLimit = m_pPlayer->m_LastActionMoveTick + Config()->m_InfHeroFlagIndicatorTime * Server()->TickSpeed();
+			TickLimit = maximum(TickLimit, m_pHeroFlag->GetSpawnTick());
+
+			if(CurrentTick > TickLimit)
 			{
-				int TickLimit = m_pPlayer->m_LastActionMoveTick + Config()->m_InfHeroFlagIndicatorTime * Server()->TickSpeed();
-				TickLimit = maximum(TickLimit, m_pHeroFlag->GetSpawnTick());
+				CNetObj_Laser *pObj = static_cast<CNetObj_Laser *>(Server()->SnapNewItem(NETOBJTYPE_LASER, m_pCharacter->GetCursorID(), sizeof(CNetObj_Laser)));
+				if(!pObj)
+					return;
 
-				if(CurrentTick > TickLimit)
+				float Angle = atan2f(m_pHeroFlag->GetPos().y - GetPos().y, m_pHeroFlag->GetPos().x - GetPos().x);
+				vec2 vecDir = vec2(cos(Angle), sin(Angle));
+				vec2 Indicator = GetPos() + vecDir * 84.0f;
+				vec2 IndicatorM = GetPos() - vecDir * 84.0f;
+
+				// display laser beam for 0.5 seconds
+				int TickShowBeamTime = Server()->TickSpeed() * 0.5;
+				long TicksInactive = TickShowBeamTime - (Server()->Tick() - TickLimit);
+				if(g_Config.m_InfHeroFlagIndicatorTime > 0 && TicksInactive > 0)
 				{
-					CNetObj_Laser *pObj = static_cast<CNetObj_Laser *>(Server()->SnapNewItem(NETOBJTYPE_LASER, m_pCharacter->GetCursorID(), sizeof(CNetObj_Laser)));
-					if(!pObj)
-						return;
+					Indicator = IndicatorM + vecDir * 168.0f * (1.0f - (TicksInactive / (float)TickShowBeamTime));
 
-					float Angle = atan2f(m_pHeroFlag->GetPos().y-GetPos().y, m_pHeroFlag->GetPos().x-GetPos().x);
-					vec2 vecDir = vec2(cos(Angle), sin(Angle));
-					vec2 Indicator = GetPos() + vecDir * 84.0f;
-					vec2 IndicatorM = GetPos() - vecDir * 84.0f;
-
-					// display laser beam for 0.5 seconds
-					int TickShowBeamTime = Server()->TickSpeed() * 0.5;
-					long TicksInactive = TickShowBeamTime - (Server()->Tick()-TickLimit);
-					if(g_Config.m_InfHeroFlagIndicatorTime > 0 && TicksInactive > 0)
+					pObj->m_X = (int)Indicator.x;
+					pObj->m_Y = (int)Indicator.y;
+					pObj->m_FromX = (int)IndicatorM.x;
+					pObj->m_FromY = (int)IndicatorM.y;
+					if(TicksInactive < 4)
 					{
-						Indicator = IndicatorM + vecDir * 168.0f * (1.0f-(TicksInactive/(float)TickShowBeamTime));
-
-						pObj->m_X = (int)Indicator.x;
-						pObj->m_Y = (int)Indicator.y;
-						pObj->m_FromX = (int)IndicatorM.x;
-						pObj->m_FromY = (int)IndicatorM.y;
-						if(TicksInactive < 4)
-						{
-							pObj->m_StartTick = Server()->Tick()-(6-TicksInactive);
-						}
-						else
-						{
-							pObj->m_StartTick = Server()->Tick()-3;
-						}
+						pObj->m_StartTick = Server()->Tick() - (6 - TicksInactive);
 					}
 					else
 					{
-						pObj->m_X = (int)Indicator.x;
-						pObj->m_Y = (int)Indicator.y;
-						pObj->m_FromX = pObj->m_X;
-						pObj->m_FromY = pObj->m_Y;
-						pObj->m_StartTick = Server()->Tick();
+						pObj->m_StartTick = Server()->Tick() - 3;
 					}
 				}
-			}
-		}
-			break;
-		case PLAYERCLASS_SCIENTIST:
-		{
-			if(m_pCharacter->GetActiveWeapon() == WEAPON_GRENADE)
-			{
-				vec2 PortalPos;
-
-				if(FindPortalPosition(&PortalPos))
+				else
 				{
-					const int CursorID = GameController()->GetPlayerOwnCursorID(GetCID());
-					GameController()->SendHammerDot(PortalPos, CursorID);
+					pObj->m_X = (int)Indicator.x;
+					pObj->m_Y = (int)Indicator.y;
+					pObj->m_FromX = pObj->m_X;
+					pObj->m_FromY = pObj->m_Y;
+					pObj->m_StartTick = Server()->Tick();
 				}
 			}
 		}
-			break;
-		default:
-			break;
+		break;
+	case PLAYERCLASS_SCIENTIST:
+		if(m_pCharacter->GetActiveWeapon() == WEAPON_GRENADE)
+		{
+			vec2 PortalPos;
+
+			if(FindPortalPosition(&PortalPos))
+			{
+				const int CursorID = GameController()->GetPlayerOwnCursorID(GetCID());
+				GameController()->SendHammerDot(PortalPos, CursorID);
+			}
 		}
+		break;
+	default:
+		break;
 	}
 }
 
