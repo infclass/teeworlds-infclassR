@@ -93,6 +93,7 @@ public:
 	void Snap(int SnappingClient) override;
 	void SpecialSnapForClient(int SnappingClient, bool *pDoSnap);
 
+	void ResetNinjaHits();
 	void HandleNinja() override;
 	void HandleWeaponSwitch() override;
 
@@ -107,9 +108,8 @@ public:
 	bool GiveHealth(int HitPoints, int FromCID = -1);
 	bool GiveArmor(int HitPoints, int FromCID = -1);
 
-	void OnWeaponFired(WeaponFireContext *pFireContext);
-
-	void OnHammerFired(WeaponFireContext *pFireContext);
+	int GetHealth() const { return m_Health; }
+	int GetArmor() const { return m_Armor; }
 
 	void OpenClassChooser();
 	void HandleMapMenu();
@@ -176,8 +176,6 @@ public:
 	float WebHookLength() const;
 
 	void CheckSuperWeaponAccess();
-	void FireSoldierBomb();
-	void PlaceSlugSlime(WeaponFireContext *pFireContext);
 
 	void GiveGift(int GiftType);
 	void GiveRandomClassSelectionBonus();
@@ -255,7 +253,6 @@ protected:
 
 	int m_DamageTaken = 0;
 	icArray<CDamagePoint, 4> m_TakenDamageDetails;
-	bool m_NeedFullHeal = false;
 	bool m_PositionLocked = false;
 
 	int m_Invincible = 0;

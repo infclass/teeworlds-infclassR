@@ -1,4 +1,7 @@
 #include "infected.h"
+#include "game/server/entity.h"
+#include "game/server/gameworld.h"
+#include "game/server/infclass/entities/slug-slime.h"
 
 #include <engine/shared/config.h>
 #include <game/server/gamecontext.h>
@@ -329,6 +332,138 @@ void CInfClassInfected::OnCharacterDeath(DAMAGE_TYPE DamageType)
 	}
 }
 
+void CInfClassInfected::OnHammerFired(WeaponFireContext *pFireContext)
+{
+	if(GetPlayerClass() == PLAYERCLASS_BOOMER)
+	{
+		if(!m_pCharacter->IsFrozen() && !m_pCharacter->IsInLove())
+		{
+			pFireContext->FireAccepted = false;
+			m_pCharacter->Die(GetCID(), DAMAGE_TYPE::BOOMER_EXPLOSION);
+		}
+
+		return;
+	}
+
+	bool AutoFire = false;
+	bool FullAuto = false;
+
+	if(GetPlayerClass() == PLAYERCLASS_SLUG)
+		FullAuto = true;
+
+	if(m_pCharacter->CountFireInput().m_Presses)
+	{
+	}
+	else if(FullAuto && m_pCharacter->FireJustPressed() && pFireContext->AmmoAvailable)
+	{
+		AutoFire = true;
+	}
+
+	// reset objects Hit
+	int Hits = 0;
+	bool ShowAttackAnimation = false;
+
+	if(!AutoFire)
+	{
+		vec2 Direction = GetDirection();
+		vec2 ProjStartPos = GetPos() + Direction * GetProximityRadius() * 0.75f;
+
+		ShowAttackAnimation = true;
+
+		if(GetPlayerClass() == PLAYERCLASS_GHOST)
+		{
+			m_pCharacter->MakeVisible();
+		}
+
+		// Lookup for humans
+		ClientsArray Targets;
+		const float LookupDistance = m_pCharacter->GetProximityRadius() * 0.5f;
+
+		GameController()->GetSortedTargetsInRange(ProjStartPos, LookupDistance, ClientsArray({GetCID()}), &Targets);
+
+		for(const int TargetCID : Targets)
+		{
+			CInfClassCharacter *pTarget = GameController()->GetCharacter(TargetCID);
+
+			if(GameServer()->Collision()->IntersectLine(ProjStartPos, pTarget->GetPos()))
+				continue;
+
+			vec2 Dir;
+			if(length(pTarget->GetPos() - GetPos()) > 0.0f)
+				Dir = normalize(pTarget->GetPos() - GetPos());
+			else
+				Dir = vec2(0.f, -1.f);
+
+			vec2 Force = vec2(0.f, -1.f) + normalize(Dir + vec2(0.f, -1.1f)) * 10.0f;
+
+			if(pTarget->IsZombie())
+			{
+				if(pTarget->IsFrozen())
+				{
+					pTarget->TryUnfreeze(GetCID());
+				}
+				else
+				{
+					if(pTarget->Heal(4, GetCID()))
+					{
+						m_pCharacter->Heal(1);
+					}
+
+					if(!pTarget->GetPlayer()->HookProtectionEnabled())
+					{
+						pTarget->m_Core.m_Vel += Force;
+
+						if(-Force.y > 6.f)
+						{
+							const float HammerFlyHelperDuration = 20;
+							pTarget->AddHelper(GetCID(), HammerFlyHelperDuration);
+						}
+					}
+				}
+			}
+			else
+			{
+				if(!pTarget->GetClass()->CanBeHit())
+					continue;
+
+				int Damage = g_pData->m_Weapons.m_Hammer.m_pBase->m_Damage;
+				DAMAGE_TYPE DamageType = DAMAGE_TYPE::INFECTION_HAMMER;
+
+				if(GetPlayerClass() == PLAYERCLASS_BAT)
+				{
+					Damage = g_Config.m_InfBatDamage;
+					DamageType = DAMAGE_TYPE::BITE;
+				}
+
+				pTarget->TakeDamage(Force, Damage, GetCID(), DamageType);
+			}
+			Hits++;
+
+			CreateHammerHit(ProjStartPos, pTarget);
+		}
+	}
+
+	if(!ShowAttackAnimation)
+	{
+		pFireContext->FireAccepted = false;
+	}
+
+	// if we Hit anything, we have to wait for the reload
+	if(Hits)
+	{
+		m_pCharacter->SetReloadDuration(0.33f);
+	}
+	else if(GetPlayerClass() == PLAYERCLASS_SLUG)
+	{
+		PlaceSlugSlime(pFireContext);
+	}
+
+	if(pFireContext->FireAccepted)
+	{
+		GameServer()->CreateSound(GetPos(), SOUND_HAMMER_FIRE);
+	}
+}
+
 void CInfClassInfected::GiveClassAttributes()
 {
 	if(!m_pCharacter)
@@ -428,6 +563,43 @@ void CInfClassInfected::DoBoomerExplosion()
 	{
 		m_pPlayer->SetFollowTarget(pBestBFTarget->GetCID(), 5.0);
 		m_pPlayer->m_DieTick = Server()->Tick() + Server()->TickSpeed() * 10;
+	}
+}
+
+void CInfClassInfected::PlaceSlugSlime(WeaponFireContext *pFireContext)
+{
+	if(m_pCharacter->IsInLove())
+		return;
+
+	vec2 CheckPos = GetPos() + GetDirection() * 64.0f;
+	if(GameServer()->Collision()->IntersectLine(GetPos(), CheckPos, 0x0, &CheckPos))
+	{
+		static const float MinDistance = 84.0f;
+		float DistanceToTheNearestSlime = MinDistance * 2;
+		for(TEntityPtr<CSlugSlime> pSlime = GameWorld()->FindFirst<CSlugSlime>(); pSlime; ++pSlime)
+		{
+			const float d = distance(pSlime->GetPos(), GetPos());
+			if(d < DistanceToTheNearestSlime)
+			{
+				DistanceToTheNearestSlime = d;
+			}
+			if(d <= MinDistance / 2)
+			{
+				// Replenish the slime
+				if(pSlime->GetMaxLifeSpan() - pSlime->GetLifeSpan() > Server()->TickSpeed())
+				{
+					pSlime->Replenish(GetCID());
+					pFireContext->FireAccepted = true;
+					break;
+				}
+			}
+		}
+
+		if(DistanceToTheNearestSlime > MinDistance)
+		{
+			new CSlugSlime(GameServer(), CheckPos, GetCID());
+			pFireContext->FireAccepted = true;
+		}
 	}
 }
 

@@ -3,6 +3,7 @@
 
 #include "../infcplayerclass.h"
 
+#include <base/tl/ic_array.h>
 #include <game/server/alloc.h>
 
 class CHeroFlag;
@@ -13,6 +14,7 @@ class CInfClassHuman : public CInfClassPlayerClass
 
 public:
 	explicit CInfClassHuman(CInfClassPlayer *pPlayer);
+	~CInfClassHuman();
 
 	static CInfClassHuman *GetInstance(CInfClassPlayer *pPlayer);
 	static CInfClassHuman *GetInstance(CInfClassCharacter *pCharacter);
@@ -24,6 +26,7 @@ public:
 	static bool SetupSkin(const CSkinContext &Context, CWeakSkinInfo *pOutput, int DDNetVersion, int InfClassVersion);
 
 	void GetAmmoRegenParams(int Weapon, WeaponRegenParams *pParams) override;
+	bool CanBeHit() const override;
 
 	void CheckSuperWeaponAccess() override;
 
@@ -34,6 +37,7 @@ public:
 	void OnCharacterSnap(int SnappingClient) override;
 
 	void OnKilledCharacter(int Victim, bool Assisted) override;
+	void OnHumanHammerHitHuman(CInfClassCharacter *pTarget);
 
 	void OnHookAttachedPlayer() override;
 
@@ -58,8 +62,16 @@ protected:
 	void OnNinjaTargetKiller(bool Assisted);
 
 	void SnapHero(int SnappingClient);
+	void SnapEngineer(int SnappingClient);
+	void SnapLooper(int SnappingClient);
 	void SnapScientist(int SnappingClient);
 
+	void ActivateNinja(WeaponFireContext *pFireContext);
+	void PlaceEngineerWall(WeaponFireContext *pFireContext);
+	void PlaceLooperWall(WeaponFireContext *pFireContext);
+	void FireSoldierBomb(WeaponFireContext *pFireContext);
+	void FireMercenaryBomb(WeaponFireContext *pFireContext);
+	void PlaceScientistMine(WeaponFireContext *pFireContext);
 	void PlaceTurret(WeaponFireContext *pFireContext);
 
 	void OnMercGrenadeFired(WeaponFireContext *pFireContext);
@@ -74,6 +86,11 @@ protected:
 	bool FindPortalPosition(vec2 *pPosition);
 
 private:
+	bool m_FirstShot = false;
+	vec2 m_FirstShotCoord;
+
+	icArray<int, 2> m_BarrierHintIDs;
+
 	int m_TurretCount = 0;
 	int m_BroadcastWhiteHoleReady; // used to broadcast "WhiteHole ready" for a short period of time
 	int m_PositionLockTicksRemaining = 0;

@@ -27,17 +27,10 @@ CCharacter::CCharacter(CGameWorld *pWorld, IConsole *pConsole) :
 /* INFECTION MODIFICATION START ***************************************/
 	m_MaxArmor = 10;
 	m_AirJumpCounter = 0;
-	m_FirstShot = true;
-	
+
 	m_FlagID = Server()->SnapNewID();
 	m_HeartID = Server()->SnapNewID();
 	m_CursorID = Server()->SnapNewID();
-	m_BarrierHintID = Server()->SnapNewID();
-	m_BarrierHintIDs.set_size(2);
-	for(int i=0; i<2; i++)
-	{
-		m_BarrierHintIDs[i] = Server()->SnapNewID();
-	}
 	m_AntiFireTime = 0;
 	m_PainSoundTimer = 0;
 	m_IsFrozen = false;
@@ -1015,21 +1008,6 @@ void CCharacter::FreeChildSnapIDs()
 	{
 		Server()->SnapFreeID(m_CursorID);
 		m_CursorID = -1;
-	}
-
-	if(m_BarrierHintID >= 0)
-	{
-		Server()->SnapFreeID(m_BarrierHintID);
-		m_BarrierHintID = -1;
-	}
-
-	if(m_BarrierHintIDs[0] >= 0)
-	{
-		for(int i=0; i<2; i++)
-		{
-			Server()->SnapFreeID(m_BarrierHintIDs[i]);
-			m_BarrierHintIDs[i] = -1;
-		}
 	}
 }
 

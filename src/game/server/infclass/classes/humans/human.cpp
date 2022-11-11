@@ -38,6 +38,19 @@ CInfClassHuman::CInfClassHuman(CInfClassPlayer *pPlayer)
 	: CInfClassPlayerClass(pPlayer)
 {
 	m_BroadcastWhiteHoleReady = -100;
+
+	for(int i = 0; i < m_BarrierHintIDs.Capacity(); ++i)
+	{
+		m_BarrierHintIDs.Add(Server()->SnapNewID());
+	}
+}
+
+CInfClassHuman::~CInfClassHuman()
+{
+	for(int ID : m_BarrierHintIDs)
+	{
+		Server()->SnapFreeID(ID);
+	}
 }
 
 CInfClassHuman *CInfClassHuman::GetInstance(CInfClassPlayer *pPlayer)
@@ -156,6 +169,20 @@ void CInfClassHuman::GetAmmoRegenParams(int Weapon, WeaponRegenParams *pParams)
 	{
 		pParams->RegenInterval = 0;
 	}
+}
+
+bool CInfClassHuman::CanBeHit() const
+{
+	if(GetPlayerClass() == PLAYERCLASS_NINJA)
+	{
+		// Do not hit slashing ninjas
+		if(m_pCharacter->m_DartLifeSpan >= 0)
+		{
+			return false;
+		}
+	}
+
+	return true;
 }
 
 void CInfClassHuman::CheckSuperWeaponAccess()
@@ -313,8 +340,14 @@ void CInfClassHuman::OnCharacterSnap(int SnappingClient)
 	case PLAYERCLASS_HERO:
 		SnapHero(SnappingClient);
 		break;
+	case PLAYERCLASS_ENGINEER:
+		SnapEngineer(SnappingClient);
+		break;
 	case PLAYERCLASS_SCIENTIST:
 		SnapScientist(SnappingClient);
+		break;
+	case PLAYERCLASS_LOOPER:
+		SnapLooper(SnappingClient);
 		break;
 	default:
 		break;
@@ -333,6 +366,29 @@ void CInfClassHuman::OnKilledCharacter(int Victim, bool Assisted)
 		break;
 	default:
 		break;
+	}
+}
+
+void CInfClassHuman::OnHumanHammerHitHuman(CInfClassCharacter *pTarget)
+{
+	if(GetPlayerClass() == PLAYERCLASS_MEDIC)
+	{
+		if(pTarget->GetPlayerClass() != PLAYERCLASS_HERO)
+		{
+			const int HadArmor = pTarget->GetArmor();
+			if(HadArmor < 10)
+			{
+				pTarget->GiveArmor(4, GetCID());
+
+				if(pTarget->GetArmor() == 10)
+				{
+					Server()->RoundStatistics()->OnScoreEvent(GetCID(), SCOREEVENT_HUMAN_HEALING,
+						GetPlayerClass(), Server()->ClientName(GetCID()), GameServer()->Console());
+					GameServer()->SendScoreSound(GetCID());
+					m_pCharacter->AddAmmo(WEAPON_GRENADE, 1);
+				}
+			}
+		}
 	}
 }
 
@@ -358,21 +414,97 @@ void CInfClassHuman::OnHammerFired(WeaponFireContext *pFireContext)
 {
 	switch(GetPlayerClass())
 	{
-		case PLAYERCLASS_SNIPER:
-			if(m_pCharacter->PositionIsLocked())
-			{
-				m_pCharacter->UnlockPosition();
-			}
-			else if(PositionLockAvailable())
-			{
-				m_pCharacter->LockPosition();
-			}
+	case PLAYERCLASS_MERCENARY:
+		if(GameController()->MercBombsEnabled())
+		{
+			FireMercenaryBomb(pFireContext);
+			return;
+		}
+		else
+		{
 			break;
-		case PLAYERCLASS_HERO:
-			PlaceTurret(pFireContext);
-			break;
-		default:
-			break;
+		}
+	case PLAYERCLASS_SNIPER:
+		if(m_pCharacter->PositionIsLocked())
+		{
+			m_pCharacter->UnlockPosition();
+		}
+		else if(PositionLockAvailable())
+		{
+			m_pCharacter->LockPosition();
+		}
+		return;
+	case PLAYERCLASS_HERO:
+		PlaceTurret(pFireContext);
+		return;
+	case PLAYERCLASS_ENGINEER:
+		PlaceEngineerWall(pFireContext);
+		return;
+	case PLAYERCLASS_SOLDIER:
+		FireSoldierBomb(pFireContext);
+		return;
+	case PLAYERCLASS_NINJA:
+		ActivateNinja(pFireContext);
+		return;
+	case PLAYERCLASS_SCIENTIST:
+		PlaceScientistMine(pFireContext);
+		return;
+	case PLAYERCLASS_LOOPER:
+		PlaceLooperWall(pFireContext);
+		return;
+	default:
+		break;
+	}
+
+	const vec2 Direction = GetDirection();
+	const vec2 ProjStartPos = GetPos() + Direction * GetProximityRadius() * 0.75f;
+
+	// Lookup for humans
+	ClientsArray Targets;
+	const float LookupDistance = m_pCharacter->GetProximityRadius() * 0.5f;
+
+	GameController()->GetSortedTargetsInRange(ProjStartPos, LookupDistance, ClientsArray({GetCID()}), &Targets);
+
+	int Hits = 0;
+	for(const int TargetCID : Targets)
+	{
+		CInfClassCharacter *pTarget = GameController()->GetCharacter(TargetCID);
+
+		if(GameServer()->Collision()->IntersectLine(ProjStartPos, pTarget->GetPos()))
+			continue;
+
+		if(pTarget->IsZombie())
+		{
+			vec2 Dir;
+			if(length(pTarget->GetPos() - GetPos()) > 0.0f)
+				Dir = normalize(pTarget->GetPos() - GetPos());
+			else
+				Dir = vec2(0.f, -1.f);
+
+			vec2 Force = vec2(0.f, -1.f) + normalize(Dir + vec2(0.f, -1.1f)) * 10.0f;
+
+			int Damage = 20;
+			pTarget->TakeDamage(Force, Damage, GetCID(), DAMAGE_TYPE::HAMMER);
+		}
+		else
+		{
+			OnHumanHammerHitHuman(pTarget);
+		}
+
+		Hits++;
+
+		CreateHammerHit(ProjStartPos, pTarget);
+	}
+
+	// if we Hit anything, we have to wait for the reload
+	if(Hits)
+	{
+		m_pCharacter->SetReloadDuration(0.33f);
+	}
+
+	if(pFireContext->FireAccepted)
+	{
+		GameServer()->CreateSound(GetPos(), SOUND_HAMMER_FIRE);
 	}
 }
 
@@ -621,6 +753,8 @@ void CInfClassHuman::OnLaserFired(WeaponFireContext *pFireContext)
 
 void CInfClassHuman::GiveClassAttributes()
 {
+	m_FirstShot = true;
+
 	m_TurretCount = 0;
 	m_NinjaTargetTick = 0;
 	m_NinjaTargetCID = -1;
@@ -1166,6 +1300,74 @@ void CInfClassHuman::SnapHero(int SnappingClient)
 	}
 }
 
+void CInfClassHuman::SnapEngineer(int SnappingClient)
+{
+	const CInfClassPlayer *pDestClient = GameController()->GetPlayer(SnappingClient);
+	bool ShowFirstShot = (SnappingClient == -1) || (pDestClient && pDestClient->IsHuman());
+
+	if(ShowFirstShot && !m_FirstShot)
+	{
+		CEngineerWall *pCurrentWall = NULL;
+		for(CEngineerWall *pWall = (CEngineerWall *)GameWorld()->FindFirst(CGameWorld::ENTTYPE_ENGINEER_WALL); pWall; pWall = (CEngineerWall *)pWall->TypeNext())
+		{
+			if(pWall->GetOwner() == GetCID())
+			{
+				pCurrentWall = pWall;
+				break;
+			}
+		}
+
+		if(!pCurrentWall)
+		{
+			CNetObj_Laser *pObj = static_cast<CNetObj_Laser *>(Server()->SnapNewItem(NETOBJTYPE_LASER, m_BarrierHintIDs.First(), sizeof(CNetObj_Laser)));
+			if(!pObj)
+				return;
+
+			pObj->m_X = (int)m_FirstShotCoord.x;
+			pObj->m_Y = (int)m_FirstShotCoord.y;
+			pObj->m_FromX = (int)m_FirstShotCoord.x;
+			pObj->m_FromY = (int)m_FirstShotCoord.y;
+			pObj->m_StartTick = Server()->Tick();
+		}
+	}
+}
+
+void CInfClassHuman::SnapLooper(int SnappingClient)
+{
+	const CInfClassPlayer *pDestClient = GameController()->GetPlayer(SnappingClient);
+	bool ShowFirstShot = (SnappingClient == -1) || (pDestClient && pDestClient->IsHuman());
+
+	if(ShowFirstShot && !m_FirstShot)
+	{
+		CLooperWall *pCurrentWall = NULL;
+		for(CLooperWall *pWall = (CLooperWall *)GameWorld()->FindFirst(CGameWorld::ENTTYPE_LOOPER_WALL); pWall; pWall = (CLooperWall *)pWall->TypeNext())
+		{
+			if(pWall->GetOwner() == GetCID())
+			{
+				pCurrentWall = pWall;
+				break;
+			}
+		}
+
+		if(!pCurrentWall)
+		{
+			for(int i = 0; i < 2; i++)
+			{
+				CNetObj_Laser *pObj = static_cast<CNetObj_Laser *>(Server()->SnapNewItem(NETOBJTYPE_LASER, m_BarrierHintIDs[i], sizeof(CNetObj_Laser)));
+
+				if(!pObj)
+					return;
+
+				pObj->m_X = (int)m_FirstShotCoord.x - CLooperWall::THICKNESS * i + (CLooperWall::THICKNESS * 0.5);
+				pObj->m_Y = (int)m_FirstShotCoord.y;
+				pObj->m_FromX = (int)m_FirstShotCoord.x - CLooperWall::THICKNESS * i + (CLooperWall::THICKNESS * 0.5);
+				pObj->m_FromY = (int)m_FirstShotCoord.y;
+				pObj->m_StartTick = Server()->Tick();
+			}
+		}
+	}
+}
+
 void CInfClassHuman::SnapScientist(int SnappingClient)
 {
 	if(SnappingClient != m_pPlayer->GetCID())
@@ -1181,6 +1383,199 @@ void CInfClassHuman::SnapScientist(int SnappingClient)
 			GameController()->SendHammerDot(PortalPos, CursorID);
 		}
 	}
+}
+
+void CInfClassHuman::ActivateNinja(WeaponFireContext *pFireContext)
+{
+	if(m_pCharacter->m_DartLeft || m_pCharacter->m_InWater)
+	{
+		if(!m_pCharacter->m_InWater)
+			m_pCharacter->m_DartLeft--;
+
+		m_pCharacter->ResetNinjaHits();
+
+		m_pCharacter->m_DartDir = GetDirection();
+		m_pCharacter->m_DartLifeSpan = g_pData->m_Weapons.m_Ninja.m_Movetime * Server()->TickSpeed() / 1000;
+		m_pCharacter->m_DartOldVelAmount = length(m_pCharacter->m_Core.m_Vel);
+
+		GameServer()->CreateSound(GetPos(), SOUND_NINJA_HIT);
+	}
+}
+
+void CInfClassHuman::PlaceEngineerWall(WeaponFireContext *pFireContext)
+{
+	for(TEntityPtr<CEngineerWall> pWall = GameWorld()->FindFirst<CEngineerWall>(); pWall; ++pWall)
+	{
+		if(pWall->GetOwner() == GetCID())
+			GameWorld()->DestroyEntity(pWall);
+	}
+
+	if(m_FirstShot)
+	{
+		m_FirstShot = false;
+		m_FirstShotCoord = GetPos();
+	}
+	else if(distance(m_FirstShotCoord, GetPos()) > 10.0)
+	{
+		m_FirstShot = true;
+
+		for(int i = 0; i < 15; i++)
+		{
+			vec2 TestPos = m_FirstShotCoord + (GetPos() - m_FirstShotCoord) * (static_cast<float>(i) / 14.0f);
+			if(!GameController()->HumanWallAllowedInPos(TestPos))
+			{
+				pFireContext->FireAccepted = false;
+				pFireContext->NoAmmo = true;
+				break;
+			}
+		}
+
+		if(pFireContext->FireAccepted)
+		{
+			new CEngineerWall(GameServer(), m_FirstShotCoord, GetPos(), GetCID());
+			GameServer()->CreateSound(GetPos(), SOUND_LASER_FIRE);
+		}
+	}
+}
+
+void CInfClassHuman::PlaceLooperWall(WeaponFireContext *pFireContext)
+{
+	for(CLooperWall *pWall = (CLooperWall *)GameWorld()->FindFirst(CGameWorld::ENTTYPE_LOOPER_WALL); pWall; pWall = (CLooperWall *)pWall->TypeNext())
+	{
+		if(pWall->GetOwner() == GetCID())
+			GameWorld()->DestroyEntity(pWall);
+	}
+
+	if(m_FirstShot)
+	{
+		m_FirstShot = false;
+		m_FirstShotCoord = GetPos();
+	}
+	else if(distance(m_FirstShotCoord, GetPos()) > 10.0)
+	{
+		m_FirstShot = true;
+
+		for(int i = 0; i < 15; i++)
+		{
+			vec2 TestPos = m_FirstShotCoord + (GetPos() - m_FirstShotCoord) * (static_cast<float>(i) / 14.0f);
+			if(!GameController()->HumanWallAllowedInPos(TestPos))
+			{
+				pFireContext->FireAccepted = false;
+				pFireContext->NoAmmo = true;
+				break;
+			}
+		}
+
+		if(pFireContext->FireAccepted)
+		{
+			new CLooperWall(GameServer(), m_FirstShotCoord, GetPos(), GetCID());
+			GameServer()->CreateSound(GetPos(), SOUND_LASER_FIRE);
+		}
+	}
+}
+
+void CInfClassHuman::FireSoldierBomb(WeaponFireContext *pFireContext)
+{
+	vec2 ProjStartPos = GetPos() + GetDirection() * GetProximityRadius() * 0.75f;
+
+	for(CSoldierBomb *pBomb = (CSoldierBomb *)GameWorld()->FindFirst(CGameWorld::ENTTYPE_SOLDIER_BOMB); pBomb; pBomb = (CSoldierBomb *)pBomb->TypeNext())
+	{
+		if(pBomb->GetOwner() == GetCID())
+		{
+			pBomb->Explode();
+			return;
+		}
+	}
+
+	new CSoldierBomb(GameServer(), ProjStartPos, GetCID());
+	GameServer()->CreateSound(GetPos(), SOUND_GRENADE_FIRE);
+}
+
+void CInfClassHuman::FireMercenaryBomb(WeaponFireContext *pFireContext)
+{
+	CMercenaryBomb *pCurrentBomb = nullptr;
+	for(CMercenaryBomb *pBomb = (CMercenaryBomb *)GameWorld()->FindFirst(CGameWorld::ENTTYPE_MERCENARY_BOMB); pBomb; pBomb = (CMercenaryBomb *)pBomb->TypeNext())
+	{
+		if(pBomb->GetOwner() == GetCID())
+		{
+			pCurrentBomb = pBomb;
+			break;
+		}
+	}
+
+	if(pCurrentBomb)
+	{
+		float Distance = distance(pCurrentBomb->GetPos(), GetPos());
+		const float SafeDistance = 16;
+		if(pCurrentBomb->ReadyToExplode() || Distance > CMercenaryBomb::GetMaxRadius() + SafeDistance)
+		{
+			pCurrentBomb->Explode();
+		}
+		else
+		{
+			const float UpgradePoints = Distance <= CMercenaryBomb::GetMaxRadius() ? 2 : 0.5;
+			pCurrentBomb->Upgrade(UpgradePoints);
+		}
+	}
+	else
+	{
+		new CMercenaryBomb(GameServer(), GetPos(), GetCID());
+	}
+
+	m_pCharacter->SetReloadDuration(0.25f);
+}
+
+void CInfClassHuman::PlaceScientistMine(WeaponFireContext *pFireContext)
+{
+	vec2 Direction = GetDirection();
+	vec2 ProjStartPos = GetPos() + Direction * GetProximityRadius() * 0.75f;
+
+	bool FreeSpace = true;
+	int NbMine = 0;
+
+	int OlderMineTick = Server()->Tick() + 1;
+	CScientistMine *pOlderMine = 0;
+	CScientistMine *pIntersectMine = 0;
+
+	CScientistMine *p = (CScientistMine *)GameWorld()->FindFirst(CGameWorld::ENTTYPE_SCIENTIST_MINE);
+	while(p)
+	{
+		float d = distance(p->GetPos(), ProjStartPos);
+
+		if(p->GetOwner() == GetCID())
+		{
+			if(OlderMineTick > p->m_StartTick)
+			{
+				OlderMineTick = p->m_StartTick;
+				pOlderMine = p;
+			}
+			NbMine++;
+
+			if(d < 2.0f * g_Config.m_InfMineRadius)
+			{
+				if(pIntersectMine)
+					FreeSpace = false;
+				else
+					pIntersectMine = p;
+			}
+		}
+		else if(d < 2.0f * g_Config.m_InfMineRadius)
+			FreeSpace = false;
+
+		p = (CScientistMine *)p->TypeNext();
+	}
+
+	if(!FreeSpace)
+		return;
+
+	if(pIntersectMine) // Move the mine
+		GameWorld()->DestroyEntity(pIntersectMine);
+	else if(NbMine >= g_Config.m_InfMineLimit && pOlderMine)
+		GameWorld()->DestroyEntity(pOlderMine);
+
+	new CScientistMine(GameServer(), ProjStartPos, GetCID());
+
+	m_pCharacter->SetReloadDuration(0.5f);
 }
 
 void CInfClassHuman::PlaceTurret(WeaponFireContext *pFireContext)

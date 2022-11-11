@@ -39,6 +39,7 @@ public:
 	virtual void GetAmmoRegenParams(int Weapon, WeaponRegenParams *pParams);
 
 	virtual bool CanDie() const;
+	virtual bool CanBeHit() const;
 	virtual float GetGhoulPercent() const;
 
 	// Temp stuff
@@ -97,6 +98,8 @@ protected:
 	virtual void GiveClassAttributes();
 	virtual void DestroyChildEntities();
 	virtual void BroadcastWeaponState() const;
+
+	void CreateHammerHit(const vec2 &ProjStartPos, const CInfClassCharacter *pTarget);
 
 	CInfClassPlayer *m_pPlayer = nullptr;
 	CInfClassCharacter *m_pCharacter = nullptr;

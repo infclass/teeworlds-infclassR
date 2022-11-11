@@ -31,6 +31,8 @@ public:
 	void OnCharacterSpawned(const SpawnContext &Context) override;
 	void OnCharacterDeath(DAMAGE_TYPE DamageType) override;
 
+	void OnHammerFired(WeaponFireContext *pFireContext) override;
+
 	void OnSlimeEffect(int Owner) override;
 	void OnFloatingPointCollected(int Points) override;
 	void OnLaserWall();
@@ -48,6 +50,7 @@ protected:
 	void BroadcastWeaponState() const override;
 
 	void DoBoomerExplosion();
+	void PlaceSlugSlime(WeaponFireContext *pFireContext);
 
 	void SetHookOnLimit(bool OnLimit);
 

@@ -8,6 +8,8 @@
 class CSlugSlime : public CInfCEntity
 {
 public:
+	static int EntityId;
+
 	CSlugSlime(CGameContext *pGameContext, vec2 Pos, int Owner);
 
 	virtual void Tick();

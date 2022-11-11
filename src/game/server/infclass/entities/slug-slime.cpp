@@ -8,8 +8,10 @@
 #include "infccharacter.h"
 #include "slug-slime.h"
 
-CSlugSlime::CSlugSlime(CGameContext *pGameContext, vec2 Pos, int Owner)
-	: CInfCEntity(pGameContext, CGameWorld::ENTTYPE_SLUG_SLIME, Pos, Owner)
+int CSlugSlime::EntityId = CGameWorld::ENTTYPE_SLUG_SLIME;
+
+CSlugSlime::CSlugSlime(CGameContext *pGameContext, vec2 Pos, int Owner) :
+	CInfCEntity(pGameContext, EntityId, Pos, Owner)
 {
 	m_LifeSpan = Server()->TickSpeed()*Config()->m_InfSlimeDuration;
 	GameWorld()->InsertEntity(this);

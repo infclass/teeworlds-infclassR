@@ -185,8 +185,6 @@ protected:
 	virtual void OnTotalHealthChanged(int Difference) = 0;
 
 	int m_AirJumpCounter;
-	bool m_FirstShot;
-	vec2 m_FirstShotCoord;
 	int m_HookDmgTick;
 	int m_InvisibleTick;
 	bool m_IsInvisible;
@@ -197,8 +195,6 @@ protected:
 	
 	int m_FlagID;
 	int m_HeartID;
-	int m_BarrierHintID;
-	array<int> m_BarrierHintIDs;
 	int m_CursorID;
 	int m_AntiFireTime;
 	int m_PainSoundTimer;

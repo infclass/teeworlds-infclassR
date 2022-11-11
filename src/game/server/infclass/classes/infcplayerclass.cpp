@@ -154,6 +154,11 @@ bool CInfClassPlayerClass::CanDie() const
 	return true;
 }
 
+bool CInfClassPlayerClass::CanBeHit() const
+{
+	return true;
+}
+
 float CInfClassPlayerClass::GetGhoulPercent() const
 {
 	return 0;
@@ -362,6 +367,15 @@ void CInfClassPlayerClass::DestroyChildEntities()
 
 void CInfClassPlayerClass::BroadcastWeaponState() const
 {
+}
+
+void CInfClassPlayerClass::CreateHammerHit(const vec2 &ProjStartPos, const CInfClassCharacter *pTarget)
+{
+	const vec2 VecToTarget(pTarget->GetPos() - ProjStartPos);
+	if(length(VecToTarget) > 0.0f)
+		GameServer()->CreateHammerHit(pTarget->GetPos() - normalize(VecToTarget) * pTarget->GetProximityRadius() * 0.5f);
+	else
+		GameServer()->CreateHammerHit(ProjStartPos);
 }
 
 void CInfClassPlayerClass::UpdateSkin()

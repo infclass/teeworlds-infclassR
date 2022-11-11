@@ -14,15 +14,7 @@
 #include <game/server/infclass/classes/infected/infected.h>
 #include <game/server/infclass/damage_type.h>
 #include <game/server/infclass/death_context.h>
-#include <game/server/infclass/entities/engineer-wall.h>
-#include <game/server/infclass/entities/hero-flag.h>
-#include <game/server/infclass/entities/looper-wall.h>
-#include <game/server/infclass/entities/medic-grenade.h>
-#include <game/server/infclass/entities/merc-bomb.h>
 #include <game/server/infclass/entities/plasma.h>
-#include <game/server/infclass/entities/scientist-mine.h>
-#include <game/server/infclass/entities/slug-slime.h>
-#include <game/server/infclass/entities/soldier-bomb.h>
 #include <game/server/infclass/entities/superweapon-indicator.h>
 #include <game/server/infclass/entities/white-hole.h>
 #include <game/server/infclass/infcgamecontroller.h>
@@ -224,12 +216,6 @@ void CInfClassCharacter::Tick()
 		m_Core.m_Vel = vec2(0.0f, 0.0f);
 		m_Core.m_Pos = PrevPos;
 	}
-
-	//NeedHeal
-	if(m_Armor >= 10)
-	{
-		m_NeedFullHeal = false;
-	}
 }
 
 void CInfClassCharacter::TickDefered()
@@ -282,8 +268,7 @@ void CInfClassCharacter::Snap(int SnappingClient)
 
 void CInfClassCharacter::SpecialSnapForClient(int SnappingClient, bool *pDoSnap)
 {
-	CInfClassPlayer* pDestClient = GameController()->GetPlayer(SnappingClient);
-
+	CInfClassPlayer *pDestClient = GameController()->GetPlayer(SnappingClient);
 	CInfClassCharacter *pDestCharacter = GameController()->GetCharacter(SnappingClient);
 	if((GetCID() != SnappingClient) && pDestCharacter && pDestCharacter->IsBlind())
 	{
@@ -338,64 +323,11 @@ void CInfClassCharacter::SpecialSnapForClient(int SnappingClient, bool *pDoSnap)
 		pP->m_Type = POWERUP_HEALTH;
 		pP->m_Subtype = 0;
 	}
+}
 
-	bool ShowFirstShot = (SnappingClient == -1) || (pDestClient && pDestClient->IsHuman());
-	if(ShowFirstShot && GetPlayerClass() == PLAYERCLASS_ENGINEER && !m_FirstShot)
-	{
-		CEngineerWall* pCurrentWall = NULL;
-		for(CEngineerWall *pWall = (CEngineerWall*) GameWorld()->FindFirst(CGameWorld::ENTTYPE_ENGINEER_WALL); pWall; pWall = (CEngineerWall*) pWall->TypeNext())
-		{
-			if(pWall->GetOwner() == GetCID())
-			{
-				pCurrentWall = pWall;
-				break;
-			}
-		}
-
-		if(!pCurrentWall)
-		{
-			CNetObj_Laser *pObj = static_cast<CNetObj_Laser *>(Server()->SnapNewItem(NETOBJTYPE_LASER, m_BarrierHintID, sizeof(CNetObj_Laser)));
-			if(!pObj)
-				return;
-
-			pObj->m_X = (int)m_FirstShotCoord.x;
-			pObj->m_Y = (int)m_FirstShotCoord.y;
-			pObj->m_FromX = (int)m_FirstShotCoord.x;
-			pObj->m_FromY = (int)m_FirstShotCoord.y;
-			pObj->m_StartTick = Server()->Tick();
-			
-		}
-	}
-	if(ShowFirstShot && GetPlayerClass() == PLAYERCLASS_LOOPER && !m_FirstShot)
-	{
-		CLooperWall* pCurrentWall = NULL;
-		for(CLooperWall *pWall = (CLooperWall*) GameWorld()->FindFirst(CGameWorld::ENTTYPE_LOOPER_WALL); pWall; pWall = (CLooperWall*) pWall->TypeNext())
-		{
-			if(pWall->GetOwner() == GetCID())
-			{
-				pCurrentWall = pWall;
-				break;
-			}
-		}
-
-		if(!pCurrentWall)
-		{
-			for(int i=0; i<2; i++)
-			{
-
-				CNetObj_Laser *pObj = static_cast<CNetObj_Laser *>(Server()->SnapNewItem(NETOBJTYPE_LASER, m_BarrierHintIDs[i], sizeof(CNetObj_Laser)));
-
-				if(!pObj)
-					return;
-
-				pObj->m_X = (int)m_FirstShotCoord.x-CLooperWall::THICKNESS*i+(CLooperWall::THICKNESS*0.5);
-				pObj->m_Y = (int)m_FirstShotCoord.y;
-				pObj->m_FromX = (int)m_FirstShotCoord.x-CLooperWall::THICKNESS*i+(CLooperWall::THICKNESS*0.5);
-				pObj->m_FromY = (int)m_FirstShotCoord.y;
-				pObj->m_StartTick = Server()->Tick();
-			}
-		}
-	}
+void CInfClassCharacter::ResetNinjaHits()
+{
+	m_NumObjectsHit = 0;
 }
 
 void CInfClassCharacter::HandleNinja()
@@ -558,7 +490,7 @@ void CInfClassCharacter::FireWeapon()
 	FireContext.AmmoAvailable = m_aWeapons[m_ActiveWeapon].m_Ammo;
 	FireContext.NoAmmo = FireContext.AmmoAvailable == 0;
 
-	OnWeaponFired(&FireContext);
+	GetClass()->OnWeaponFired(&FireContext);
 
 	if(IsInLove() && FireContext.FireAccepted)
 	{
@@ -786,9 +718,6 @@ bool CInfClassCharacter::TakeDamage(vec2 Force, float FloatDmg, int From, DAMAGE
 
 		m_Health -= Dmg;
 
-		if(From != GetCID() && pKillerPlayer)
-			m_NeedFullHeal = true;
-
 		if(From >= 0 && From != GetCID())
 			GameServer()->SendHitSound(From);
 	}
@@ -989,20 +918,6 @@ void CInfClassCharacter::PrepareToDie(const DeathContext &Context, bool *pRefuse
 	if(GetClass())
 	{
 		GetClass()->PrepareToDie(Context, pRefusedToDie);
-	}
-}
-
-void CInfClassCharacter::OnWeaponFired(WeaponFireContext *pFireContext)
-{
-	GetClass()->OnWeaponFired(pFireContext);
-
-	switch(pFireContext->Weapon)
-	{
-	case WEAPON_HAMMER:
-		OnHammerFired(pFireContext);
-		break;
-	default:
-		break;
 	}
 }
 
@@ -1502,373 +1417,6 @@ const IServer *CInfClassCharacter::Server() const
 	return m_pGameController->GameWorld()->Server();
 }
 
-void CInfClassCharacter::OnHammerFired(WeaponFireContext *pFireContext)
-{
-	vec2 Direction = GetDirection();
-	vec2 ProjStartPos = GetPos()+Direction*GetProximityRadius()*0.75f;
-
-	bool AutoFire = false;
-	bool FullAuto = false;
-
-	if(GetPlayerClass() == PLAYERCLASS_SLUG)
-		FullAuto = true;
-
-	if(CountInput(m_LatestPrevInput.m_Fire, m_LatestInput.m_Fire).m_Presses)
-	{
-	}
-	else if(FullAuto && (m_LatestInput.m_Fire&1) && (pFireContext->AmmoAvailable))
-	{
-		AutoFire = true;
-	}
-
-	if(GetPlayerClass() == PLAYERCLASS_ENGINEER)
-	{
-		for(TEntityPtr<CEngineerWall> pWall = GameWorld()->FindFirst<CEngineerWall>(); pWall; ++pWall)
-		{
-			if(pWall->GetOwner() == GetCID())
-				GameWorld()->DestroyEntity(pWall);
-		}
-
-		if(m_FirstShot)
-		{
-			m_FirstShot = false;
-			m_FirstShotCoord = GetPos();
-		}
-		else if(distance(m_FirstShotCoord, GetPos()) > 10.0)
-		{
-			m_FirstShot = true;
-
-			for(int i=0; i<15; i++)
-			{
-				vec2 TestPos = m_FirstShotCoord + (GetPos() - m_FirstShotCoord)*(static_cast<float>(i)/14.0f);
-				if(!GameController()->HumanWallAllowedInPos(TestPos))
-				{
-					pFireContext->FireAccepted = false;
-					pFireContext->NoAmmo = true;
-					break;
-				}
-			}
-
-			if(pFireContext->FireAccepted)
-			{
-				new CEngineerWall(GameServer(), m_FirstShotCoord, GetPos(), GetCID());
-				GameServer()->CreateSound(GetPos(), SOUND_LASER_FIRE);
-			}
-		}
-	}
-	else if(GetPlayerClass() == PLAYERCLASS_LOOPER)
-	{
-		//Potential variable name conflicts with engineers wall (for example *pWall is used twice for both Looper and Engineer)
-		for(CLooperWall *pWall = (CLooperWall*) GameWorld()->FindFirst(CGameWorld::ENTTYPE_LOOPER_WALL); pWall; pWall = (CLooperWall*) pWall->TypeNext())
-		{
-			if(pWall->GetOwner() == GetCID())
-				GameWorld()->DestroyEntity(pWall);
-		}
-
-		if(m_FirstShot)
-		{
-			m_FirstShot = false;
-			m_FirstShotCoord = GetPos();
-		}
-		else if(distance(m_FirstShotCoord, GetPos()) > 10.0)
-		{
-			m_FirstShot = true;
-
-			for(int i=0; i<15; i++)
-			{
-				vec2 TestPos = m_FirstShotCoord + (GetPos() - m_FirstShotCoord)*(static_cast<float>(i)/14.0f);
-				if(!GameController()->HumanWallAllowedInPos(TestPos))
-				{
-					pFireContext->FireAccepted = false;
-					pFireContext->NoAmmo = true;
-					break;
-				}
-			}
-
-			if(pFireContext->FireAccepted)
-			{
-				new CLooperWall(GameServer(), m_FirstShotCoord, GetPos(), GetCID());
-				GameServer()->CreateSound(GetPos(), SOUND_LASER_FIRE);
-			}
-		}
-	}
-	else if(GetPlayerClass() == PLAYERCLASS_HERO)
-	{
-		// Moved to CInfClassHuman::OnHammerFired()
-	}
-	else if(GetPlayerClass() == PLAYERCLASS_SOLDIER)
-	{
-		FireSoldierBomb();
-	}
-	else if(GetPlayerClass() == PLAYERCLASS_SNIPER)
-	{
-		// Moved to CInfClassHuman::OnHammerFired()
-	}
-	else if(GetPlayerClass() == PLAYERCLASS_MERCENARY && GameController()->MercBombsEnabled())
-	{
-		CMercenaryBomb* pCurrentBomb = NULL;
-		for(CMercenaryBomb *pBomb = (CMercenaryBomb*) GameWorld()->FindFirst(CGameWorld::ENTTYPE_MERCENARY_BOMB); pBomb; pBomb = (CMercenaryBomb*) pBomb->TypeNext())
-		{
-			if(pBomb->GetOwner() == GetCID())
-			{
-				pCurrentBomb = pBomb;
-				break;
-			}
-		}
-
-		if(pCurrentBomb)
-		{
-			float Distance = distance(pCurrentBomb->GetPos(), GetPos());
-			const float SafeDistance = 16;
-			if(pCurrentBomb->ReadyToExplode() || Distance > CMercenaryBomb::GetMaxRadius() + SafeDistance)
-			{
-				pCurrentBomb->Explode();
-			}
-			else
-			{
-				const float UpgradePoints = Distance <= CMercenaryBomb::GetMaxRadius() ? 2 : 0.5;
-				pCurrentBomb->Upgrade(UpgradePoints);
-			}
-		}
-		else
-		{
-			new CMercenaryBomb(GameServer(), GetPos(), GetCID());
-		}
-
-		m_ReloadTimer = Server()->TickSpeed()/4;
-	}
-	else if(GetPlayerClass() == PLAYERCLASS_SCIENTIST)
-	{
-		bool FreeSpace = true;
-		int NbMine = 0;
-		
-		int OlderMineTick = Server()->Tick()+1;
-		CScientistMine* pOlderMine = 0;
-		CScientistMine* pIntersectMine = 0;
-		
-		CScientistMine* p = (CScientistMine*) GameWorld()->FindFirst(CGameWorld::ENTTYPE_SCIENTIST_MINE);
-		while(p)
-		{
-			float d = distance(p->GetPos(), ProjStartPos);
-			
-			if(p->GetOwner() == GetCID())
-			{
-				if(OlderMineTick > p->m_StartTick)
-				{
-					OlderMineTick = p->m_StartTick;
-					pOlderMine = p;
-				}
-				NbMine++;
-
-				if(d < 2.0f*g_Config.m_InfMineRadius)
-				{
-					if(pIntersectMine)
-						FreeSpace = false;
-					else
-						pIntersectMine = p;
-				}
-			}
-			else if(d < 2.0f*g_Config.m_InfMineRadius)
-				FreeSpace = false;
-			
-			p = (CScientistMine *)p->TypeNext();
-		}
-
-		if(FreeSpace)
-		{
-			if(pIntersectMine) //Move the mine
-				GameWorld()->DestroyEntity(pIntersectMine);
-			else if(NbMine >= g_Config.m_InfMineLimit && pOlderMine)
-				GameWorld()->DestroyEntity(pOlderMine);
-			
-			new CScientistMine(GameServer(), ProjStartPos, GetCID());
-			
-			m_ReloadTimer = Server()->TickSpeed()/2;
-		}
-	}
-	else if(GetPlayerClass() == PLAYERCLASS_NINJA)
-	{
-		if(m_DartLeft || m_InWater)
-		{
-			if(!m_InWater)
-				m_DartLeft--;
-
-			// reset Hit objects
-			m_NumObjectsHit = 0;
-
-			m_DartDir = Direction;
-			m_DartLifeSpan = g_pData->m_Weapons.m_Ninja.m_Movetime * Server()->TickSpeed() / 1000;
-			m_DartOldVelAmount = length(m_Core.m_Vel);
-
-			GameServer()->CreateSound(GetPos(), SOUND_NINJA_HIT);
-		}
-	}
-	else if(GetPlayerClass() == PLAYERCLASS_BOOMER)
-	{
-		if(!IsFrozen() && !IsInLove())
-		{
-			pFireContext->FireAccepted = false;
-			Die(GetCID(), DAMAGE_TYPE::BOOMER_EXPLOSION);
-		}
-	}
-	else
-	{
-/* INFECTION MODIFICATION END *****************************************/
-		// reset objects Hit
-		int Hits = 0;
-		bool ShowAttackAnimation = false;
-
-		// make sure that the slug will not auto-fire to attack
-		if(!AutoFire)
-		{
-			ShowAttackAnimation = true;
-
-			m_NumObjectsHit = 0;
-
-			if(GetPlayerClass() == PLAYERCLASS_GHOST)
-			{
-				m_IsInvisible = false;
-				m_InvisibleTick = Server()->Tick();
-			}
-
-			CInfClassCharacter *apEnts[MAX_CLIENTS];
-			int Num = GameWorld()->FindEntities(ProjStartPos, m_ProximityRadius*0.5f, (CEntity**)apEnts,
-														MAX_CLIENTS, CGameWorld::ENTTYPE_CHARACTER);
-
-			for (int i = 0; i < Num; ++i)
-			{
-				CInfClassCharacter *pTarget = apEnts[i];
-
-				if ((pTarget == this) || GameServer()->Collision()->IntersectLine(ProjStartPos, pTarget->GetPos(), NULL, NULL))
-					continue;
-
-				vec2 Dir;
-				if (length(pTarget->GetPos() - GetPos()) > 0.0f)
-					Dir = normalize(pTarget->GetPos() - GetPos());
-				else
-					Dir = vec2(0.f, -1.f);
-
-				vec2 Force = vec2(0.f, -1.f) + normalize(Dir + vec2(0.f, -1.1f)) * 10.0f;
-
-/* INFECTION MODIFICATION START ***************************************/
-				if(IsZombie())
-				{
-					if(pTarget->IsZombie())
-					{
-						if(pTarget->IsFrozen())
-						{
-							pTarget->TryUnfreeze(GetCID());
-						}
-						else
-						{
-							if(pTarget->Heal(4, GetCID()))
-							{
-								Heal(1);
-							}
-
-							if(!pTarget->GetPlayer()->HookProtectionEnabled())
-							{
-								pTarget->m_Core.m_Vel += Force;
-
-								if(-Force.y > 6.f)
-								{
-									const float HammerFlyHelperDuration = 20;
-									pTarget->AddHelper(GetCID(), HammerFlyHelperDuration);
-								}
-							}
-						}
-					}
-					else
-					{
-						if(pTarget->GetPlayerClass() == PLAYERCLASS_NINJA)
-						{
-							// Do not hit slashing ninjas
-							if(pTarget->m_DartLifeSpan >= 0)
-							{
-								continue;
-							}
-						}
-						int Damage = g_pData->m_Weapons.m_Hammer.m_pBase->m_Damage;
-						DAMAGE_TYPE DamageType = DAMAGE_TYPE::INFECTION_HAMMER;
-
-						if(GetPlayerClass() == PLAYERCLASS_BAT)
-						{
-							Damage = g_Config.m_InfBatDamage;
-							DamageType = DAMAGE_TYPE::BITE;
-						}
-
-						pTarget->TakeDamage(Force, Damage, GetCID(), DamageType);
-					}
-				}
-				else
-				{
-					if(pTarget->IsZombie())
-					{
-						int Damage = g_pData->m_Weapons.m_Hammer.m_pBase->m_Damage;
-						switch(GetPlayerClass())
-						{
-						case PLAYERCLASS_MEDIC:
-						/* affects mercenary only if love bombs are disabled. */
-						case PLAYERCLASS_MERCENARY:
-						case PLAYERCLASS_BIOLOGIST:
-							Damage = 20;
-							break;
-						default:
-							break;
-						}
-
-						pTarget->TakeDamage(Force, Damage, GetCID(), DAMAGE_TYPE::HAMMER);
-					}
-					else
-					{
-						if(GetPlayerClass() == PLAYERCLASS_MEDIC)
-						{
-							if(pTarget->GetPlayerClass() != PLAYERCLASS_HERO)
-							{
-								pTarget->GiveArmor(4, GetCID());
-								if(pTarget->m_Armor == 10 && pTarget->m_NeedFullHeal)
-								{
-									Server()->RoundStatistics()->OnScoreEvent(GetCID(), SCOREEVENT_HUMAN_HEALING, GetPlayerClass(), Server()->ClientName(GetCID()), Console());
-									GameServer()->SendScoreSound(GetCID());
-									pTarget->m_NeedFullHeal = false;
-									m_aWeapons[WEAPON_GRENADE].m_Ammo++;
-								}
-							}
-						}
-					}
-				}
-				Hits++;
-
-				// set his velocity to fast upward (for now)
-				if(length(pTarget->GetPos()-ProjStartPos) > 0.0f)
-					GameServer()->CreateHammerHit(pTarget->GetPos()-normalize(pTarget->GetPos()-ProjStartPos)*m_ProximityRadius*0.5f);
-				else
-					GameServer()->CreateHammerHit(ProjStartPos);
-			}
-		}
-
-		if(!ShowAttackAnimation)
-		{
-			pFireContext->FireAccepted = false;
-		}
-
-		// if we Hit anything, we have to wait for the reload
-		if(Hits)
-		{
-			m_ReloadTimer = Server()->TickSpeed()/3;
-		}
-		else if(GetPlayerClass() == PLAYERCLASS_SLUG)
-		{
-			PlaceSlugSlime(pFireContext);
-		}
-
-		if(pFireContext->FireAccepted)
-		{
-			GameServer()->CreateSound(GetPos(), SOUND_HAMMER_FIRE);
-		}
-	}
-}
-
 void CInfClassCharacter::OpenClassChooser()
 {
 	GameController()->OnClassChooserRequested(this);
@@ -2264,7 +1812,6 @@ void CInfClassCharacter::SetClass(CInfClassPlayerClass *pClass)
 	ClassSpawnAttributes();
 
 	m_QueuedWeapon = -1;
-	m_NeedFullHeal = false;
 	m_TakenDamageDetails.Clear();
 
 	GameServer()->CreatePlayerSpawn(GetPos());
@@ -2432,60 +1979,6 @@ void CInfClassCharacter::CheckSuperWeaponAccess()
 		return;
 
 	m_pClass->CheckSuperWeaponAccess();
-}
-
-void CInfClassCharacter::FireSoldierBomb()
-{
-	vec2 ProjStartPos = GetPos()+GetDirection()*GetProximityRadius()*0.75f;
-
-	for(CSoldierBomb *pBomb = (CSoldierBomb*) GameWorld()->FindFirst(CGameWorld::ENTTYPE_SOLDIER_BOMB); pBomb; pBomb = (CSoldierBomb*) pBomb->TypeNext())
-	{
-		if(pBomb->GetOwner() == GetCID())
-		{
-			pBomb->Explode();
-			return;
-		}
-	}
-
-	new CSoldierBomb(GameServer(), ProjStartPos, GetCID());
-	GameServer()->CreateSound(GetPos(), SOUND_GRENADE_FIRE);
-}
-
-void CInfClassCharacter::PlaceSlugSlime(WeaponFireContext *pFireContext)
-{
-	if(IsInLove())
-		return;
-
-	vec2 CheckPos = GetPos() + GetDirection() * 64.0f;
-	if(GameServer()->Collision()->IntersectLine(GetPos(), CheckPos, 0x0, &CheckPos))
-	{
-		static const float MinDistance = 84.0f;
-		float DistanceToTheNearestSlime = MinDistance * 2;
-		for(CSlugSlime* pSlime = (CSlugSlime*) GameWorld()->FindFirst(CGameWorld::ENTTYPE_SLUG_SLIME); pSlime; pSlime = (CSlugSlime*) pSlime->TypeNext())
-		{
-			const float d = distance(pSlime->GetPos(), GetPos());
-			if(d < DistanceToTheNearestSlime)
-			{
-				DistanceToTheNearestSlime = d;
-			}
-			if (d <= MinDistance / 2)
-			{
-				// Replenish the slime
-				if(pSlime->GetMaxLifeSpan() - pSlime->GetLifeSpan() > Server()->TickSpeed())
-				{
-					pSlime->Replenish(GetCID());
-					pFireContext->FireAccepted = true;
-					break;
-				}
-			}
-		}
-
-		if(DistanceToTheNearestSlime > MinDistance)
-		{
-			new CSlugSlime(GameServer(), CheckPos, GetCID());
-			pFireContext->FireAccepted = true;
-		}
-	}
 }
 
 void CInfClassCharacter::GiveGift(int GiftType)
@@ -2671,7 +2164,6 @@ void CInfClassCharacter::DestroyChildEntities()
 		}
 	}
 
-	m_FirstShot = true;
 	m_HookMode = 0;
 }
 
