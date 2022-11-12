@@ -12,6 +12,7 @@
 #include <game/server/entities/projectile.h>
 
 #include <game/server/infclass/classes/infected/infected.h>
+#include <game/server/infclass/damage_context.h>
 #include <game/server/infclass/damage_type.h>
 #include <game/server/infclass/death_context.h>
 #include <game/server/infclass/entities/plasma.h>
@@ -102,8 +103,13 @@ void CInfClassCharacter::OnCharacterInInfectionZone()
 			return;
 
 		DeathContext Context;
-		DAMAGE_TYPE DamageType = DAMAGE_TYPE::INFECTION_TILE;
-		GetDeathContext(GetCID(), DamageType, &Context);
+
+		SDamageContext DamageContext;
+		DamageContext.Killer = GetCID();
+		DamageContext.DamageType = DAMAGE_TYPE::INFECTION_TILE;
+		DamageContext.Mode = TAKEDAMAGEMODE::INFECTION;
+
+		GetDeathContext(DamageContext, &Context);
 
 		CInfClassPlayer *pKiller = GameController()->GetPlayer(Context.Killer);
 
@@ -522,41 +528,28 @@ void CInfClassCharacter::FireWeapon()
 	}
 }
 
-int CInfClassCharacter::ProcessDamageType(DAMAGE_TYPE DamageType, TAKEDAMAGEMODE *pMode, int *pDamage) const
+bool CInfClassCharacter::TakeDamage(const vec2 &Force, float FloatDmg, int From, DAMAGE_TYPE DamageType)
 {
-	TAKEDAMAGEMODE Mode;
-	int Weapon = CInfClassGameController::DamageTypeToWeapon(DamageType, &Mode);
-	int Damage = pDamage ? *pDamage : 0;
+	SDamageContext DamageContext;
+	DamageContext.Killer = From;
+	DamageContext.DamageType = DamageType;
+	DamageContext.Force = Force;
 
-	if(GetPlayerClass() == PLAYERCLASS_HERO)
 	{
-		if(Mode == TAKEDAMAGEMODE::INFECTION)
+		int Dmg = FloatDmg;
+		if(FloatDmg != Dmg)
 		{
-			Mode = TAKEDAMAGEMODE::NOINFECTION;
-			Damage = 12;
+			int ExtraDmg = random_prob(FloatDmg - Dmg) ? 1 : 0;
+			Dmg += ExtraDmg;
 		}
+		DamageContext.Damage = Dmg;
 	}
 
-	if(pMode)
-		*pMode = Mode;
+	DamageContext.Weapon = CInfClassGameController::DamageTypeToWeapon(DamageType, &DamageContext.Mode);
 
-	if(pDamage)
-		*pDamage = Damage;
-
-	return Weapon;
-}
-
-bool CInfClassCharacter::TakeDamage(vec2 Force, float FloatDmg, int From, DAMAGE_TYPE DamageType)
-{
-	int Dmg = FloatDmg;
-	if(FloatDmg != Dmg)
-	{
-		int ExtraDmg = random_prob(FloatDmg - Dmg) ? 1 : 0;
-		Dmg += ExtraDmg;
-	}
-
-	TAKEDAMAGEMODE Mode = TAKEDAMAGEMODE::NOINFECTION;
-	int Weapon = ProcessDamageType(DamageType, &Mode, &Dmg);
+	const int &Weapon = DamageContext.Weapon;
+	TAKEDAMAGEMODE &Mode = DamageContext.Mode;
+	int &Dmg = DamageContext.Damage;
 
 	/* INFECTION MODIFICATION START ***************************************/
 
@@ -579,10 +572,7 @@ bool CInfClassCharacter::TakeDamage(vec2 Force, float FloatDmg, int From, DAMAGE
 	{
 		Dmg = 0;
 		Mode = TAKEDAMAGEMODE::NOINFECTION;
-		if(!IsZombie())
-		{
-			Force *= 0.1f;
-		}
+		DamageContext.Force *= 0.1f;
 	}
 
 	if(m_Invincible >= 2)
@@ -590,49 +580,26 @@ bool CInfClassCharacter::TakeDamage(vec2 Force, float FloatDmg, int From, DAMAGE
 		Mode = TAKEDAMAGEMODE::NOINFECTION;
 	}
 
-	if((GetPlayerClass() == PLAYERCLASS_HUNTER) && (DamageType == DAMAGE_TYPE::MEDIC_SHOTGUN))
-	{
-		// Hunters are immune to shotgun force
-		Force = vec2(0, 0);
-	}
-
-	if(IsHuman() && (Weapon == WEAPON_NINJA))
-	{
-		// Humans are immune to Ninja's force
-		Force = vec2(0, 0);
-	}
+	GetClass()->OnCharacterDamage(&DamageContext);
 
 	const bool DmgFromHuman = pKillerPlayer && pKillerPlayer->IsHuman();
 	if(DmgFromHuman && (GetPlayerClass() == PLAYERCLASS_SOLDIER) && (Weapon == WEAPON_HAMMER))
 	{
 		// Soldier is immune to any traps force
-		Force = vec2(0, 0);
+		DamageContext.Force = vec2(0, 0);
 	}
 
-	if((From >= 0) && (From != GetCID()) && (Force.x || Force.y))
+	if((From >= 0) && (From != GetCID()) && (DamageContext.Force.x || DamageContext.Force.y))
 	{
 		const float CurrentSpeed = length(m_Core.m_Vel);
-		const float AddedForce = length(Force);
+		const float AddedForce = length(DamageContext.Force);
 		if(AddedForce > CurrentSpeed * 0.5)
 		{
 			UpdateLastEnforcer(From, AddedForce, DamageType, Server()->Tick());
 		}
 	}
 
-	m_Core.m_Vel += Force;
-
-	if(GetPlayerClass() == PLAYERCLASS_GHOUL)
-	{
-		int DamageAccepted = 0;
-		for(int i=0; i<Dmg; i++)
-		{
-			if(random_prob(m_pClass->GetGhoulPercent() * 0.33))
-				continue;
-
-			DamageAccepted++;
-		}
-		Dmg = DamageAccepted;
-	}
+	m_Core.m_Vel += DamageContext.Force;
 
 	if(IsInvincible())
 	{
@@ -732,7 +699,7 @@ bool CInfClassCharacter::TakeDamage(vec2 Force, float FloatDmg, int From, DAMAGE
 	if(m_Health <= 0)
 	{
 		DeathContext Context;
-		GetDeathContext(From, DamageType, &Context);
+		GetDeathContext(DamageContext, &Context);
 
 		Die(Context);
 		return false;
@@ -750,7 +717,7 @@ bool CInfClassCharacter::TakeDamage(vec2 Force, float FloatDmg, int From, DAMAGE
 		GameServer()->Console()->Print(IConsole::OUTPUT_LEVEL_DEBUG, "game", aBuf);
 
 		DeathContext Context;
-		GetDeathContext(From, DamageType, &Context);
+		GetDeathContext(DamageContext, &Context);
 
 		GameController()->SendKillMessage(GetCID(), Context);
 	}
@@ -1005,12 +972,15 @@ void CInfClassCharacter::ResetHelpers()
 	m_LastHelper.m_Tick = 0;
 }
 
-void CInfClassCharacter::GetDeathContext(int GivenKiller, DAMAGE_TYPE DamageType, DeathContext *pContext) const
+void CInfClassCharacter::GetDeathContext(const SDamageContext &DamageContext, DeathContext *pContext) const
 {
-	pContext->Killer = GivenKiller;
-	pContext->DamageType = DamageType;
+	pContext->Killer = DamageContext.Killer;
+	pContext->DamageType = DamageContext.DamageType;
 
-	switch(DamageType)
+	const int GivenKiller = DamageContext.Killer;
+	const DAMAGE_TYPE DamageType = DamageContext.DamageType;
+
+	switch(DamageContext.DamageType)
 	{
 	case DAMAGE_TYPE::GAME:
 	case DAMAGE_TYPE::GAME_FINAL_EXPLOSION:
@@ -1142,15 +1112,12 @@ void CInfClassCharacter::GetDeathContext(int GivenKiller, DAMAGE_TYPE DamageType
 
 	if(DirectKill && !m_TakenDamageDetails.IsEmpty())
 	{
-		TAKEDAMAGEMODE DamageMode;
-		ProcessDamageType(DamageType, &DamageMode);
-
 		// DirectDieCall means that this is a direct die() call.
 		// It means that the dealt damage does not matter.
 		bool DirectDieCall = m_TakenDamageDetails.Last().From != GivenKiller || m_TakenDamageDetails.Last().DamageType != DamageType;
 
 		bool SniperOneshot = (DamageType == DAMAGE_TYPE::SNIPER_RIFLE) && (m_TakenDamageDetails.Last().From == GivenKiller) && (m_TakenDamageDetails.Last().Amount >= 20);
-		bool InevitableDeath = DirectDieCall || (DamageMode == TAKEDAMAGEMODE::INFECTION) || SniperOneshot;
+		bool InevitableDeath = DirectDieCall || (DamageContext.Mode == TAKEDAMAGEMODE::INFECTION) || SniperOneshot;
 
 		if(InevitableDeath)
 		{
@@ -1707,8 +1674,13 @@ void CInfClassCharacter::Die(int Killer, DAMAGE_TYPE DamageType)
 {
 	dbg_msg("server", "CInfClassCharacter::Die: victim: %d, killer: %d, DT: %d", GetCID(), Killer, static_cast<int>(DamageType));
 
+	SDamageContext DamageContext;
+	DamageContext.Killer = Killer;
+	DamageContext.DamageType = DamageType;
+	CInfClassGameController::DamageTypeToWeapon(DamageType, &DamageContext.Mode);
+
 	DeathContext Context;
-	GetDeathContext(Killer, DamageType, &Context);
+	GetDeathContext(DamageContext, &Context);
 
 	Die(Context);
 }

@@ -29,6 +29,7 @@ public:
 	void OnCharacterTick() override;
 	void OnCharacterSnap(int SnappingClient) override;
 	void OnCharacterSpawned(const SpawnContext &Context) override;
+	void OnCharacterDamage(SDamageContext *pContext) override;
 	void OnCharacterDeath(DAMAGE_TYPE DamageType) override;
 
 	void OnHammerFired(WeaponFireContext *pFireContext) override;

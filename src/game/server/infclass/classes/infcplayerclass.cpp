@@ -288,6 +288,10 @@ void CInfClassPlayerClass::OnCharacterDeath(DAMAGE_TYPE DamageType)
 	DestroyChildEntities();
 }
 
+void CInfClassPlayerClass::OnCharacterDamage(SDamageContext *pContext)
+{
+}
+
 void CInfClassPlayerClass::OnKilledCharacter(int Victim, bool Assisted)
 {
 }

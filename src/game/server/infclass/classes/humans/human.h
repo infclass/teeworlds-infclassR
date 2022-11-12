@@ -35,6 +35,7 @@ public:
 	void OnCharacterPreCoreTick() override;
 	void OnCharacterTick() override;
 	void OnCharacterSnap(int SnappingClient) override;
+	void OnCharacterDamage(SDamageContext *pContext) override;
 
 	void OnKilledCharacter(int Victim, bool Assisted) override;
 	void OnHumanHammerHitHuman(CInfClassCharacter *pTarget);

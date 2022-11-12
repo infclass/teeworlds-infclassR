@@ -5,6 +5,7 @@
 
 #include <engine/shared/config.h>
 #include <game/server/gamecontext.h>
+#include <game/server/infclass/damage_context.h>
 #include <game/server/infclass/damage_type.h>
 #include <game/server/infclass/entities/infccharacter.h>
 #include <game/server/infclass/infcgamecontroller.h>
@@ -329,6 +330,34 @@ void CInfClassInfected::OnCharacterDeath(DAMAGE_TYPE DamageType)
 		{
 			DoBoomerExplosion();
 		}
+	}
+}
+
+void CInfClassInfected::OnCharacterDamage(SDamageContext *pContext)
+{
+	switch(GetPlayerClass())
+	{
+	case PLAYERCLASS_HUNTER:
+		if(pContext->DamageType == DAMAGE_TYPE::MEDIC_SHOTGUN)
+		{
+			pContext->Force = vec2(0, 0);
+		}
+		break;
+	case PLAYERCLASS_GHOUL:
+	{
+		int DamageAccepted = 0;
+		for(int i = 0; i < pContext->Damage; i++)
+		{
+			if(random_prob(GetGhoulPercent() * 0.33))
+				continue;
+
+			DamageAccepted++;
+		}
+		pContext->Damage = DamageAccepted;
+		break;
+	}
+	default:
+		break;
 	}
 }
 

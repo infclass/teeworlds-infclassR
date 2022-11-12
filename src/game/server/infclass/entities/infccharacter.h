@@ -12,6 +12,7 @@ class CWhiteHole;
 
 enum class DAMAGE_TYPE;
 
+struct SDamageContext;
 struct DeathContext;
 
 enum
@@ -99,9 +100,7 @@ public:
 
 	void FireWeapon() override;
 
-	int ProcessDamageType(DAMAGE_TYPE DamageType, TAKEDAMAGEMODE *pMode = nullptr, int *pDamage = nullptr) const;
-
-	bool TakeDamage(vec2 Force, float Dmg, int From, DAMAGE_TYPE DamageType);
+	bool TakeDamage(const vec2 &Force, float Dmg, int From, DAMAGE_TYPE DamageType);
 	bool TakeDamage(vec2 Force, int Dmg, int From, int Weapon, TAKEDAMAGEMODE Mode) override;
 
 	bool Heal(int HitPoints, int FromCID = -1);
@@ -198,7 +197,7 @@ public:
 	void AddHelper(int HelperCID, float Time);
 	void ResetHelpers();
 
-	void GetDeathContext(int GivenKiller, DAMAGE_TYPE GivenWeapon, DeathContext *pContext) const;
+	void GetDeathContext(const SDamageContext &DamageContext, DeathContext *pContext) const;
 
 	void UpdateLastHookers(const ClientsArray &Hookers, int HookerTick);
 

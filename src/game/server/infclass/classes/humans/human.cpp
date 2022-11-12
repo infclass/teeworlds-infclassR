@@ -7,6 +7,7 @@
 
 #include <game/server/entities/projectile.h>
 
+#include <game/server/infclass/damage_context.h>
 #include <game/server/infclass/damage_type.h>
 #include <game/server/infclass/entities/biologist-mine.h>
 #include <game/server/infclass/entities/blinding-laser.h>
@@ -351,6 +352,28 @@ void CInfClassHuman::OnCharacterSnap(int SnappingClient)
 		break;
 	default:
 		break;
+	}
+}
+
+void CInfClassHuman::OnCharacterDamage(SDamageContext *pContext)
+{
+	switch(GetPlayerClass())
+	{
+	case PLAYERCLASS_HERO:
+		if(pContext->Mode == TAKEDAMAGEMODE::INFECTION)
+		{
+			pContext->Mode = TAKEDAMAGEMODE::NOINFECTION;
+			pContext->Damage = 12;
+		}
+		break;
+	default:
+		break;
+	}
+
+	if(pContext->DamageType == DAMAGE_TYPE::NINJA)
+	{
+		// Humans are immune to Ninja's force
+		pContext->Force = vec2(0, 0);
 	}
 }
 

@@ -15,6 +15,7 @@ class CInfClassPlayer;
 class IServer;
 
 struct SpawnContext;
+struct SDamageContext;
 struct DeathContext;
 struct WeaponFireContext;
 struct WeaponRegenParams;
@@ -63,6 +64,7 @@ public:
 	virtual void OnCharacterSnap(int SnappingClient);
 	virtual void OnCharacterSpawned(const SpawnContext &Context);
 	virtual void OnCharacterDeath(DAMAGE_TYPE DamageType);
+	virtual void OnCharacterDamage(SDamageContext *pContext);
 
 	virtual void OnKilledCharacter(int Victim, bool Assisted);
 
