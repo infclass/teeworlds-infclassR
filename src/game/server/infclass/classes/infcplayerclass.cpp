@@ -159,6 +159,16 @@ bool CInfClassPlayerClass::CanBeHit() const
 	return true;
 }
 
+float CInfClassPlayerClass::GetHammerProjOffset() const
+{
+	return GetProximityRadius() * 0.75f;
+}
+
+float CInfClassPlayerClass::GetHammerRange() const
+{
+	return m_pCharacter ? m_pCharacter->GetProximityRadius() * 0.5f : 0;
+}
+
 float CInfClassPlayerClass::GetGhoulPercent() const
 {
 	return 0;

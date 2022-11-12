@@ -1,6 +1,7 @@
 #include "infected.h"
 #include "game/server/entity.h"
 #include "game/server/gameworld.h"
+#include "game/server/infclass/classes/infcplayerclass.h"
 #include "game/server/infclass/entities/slug-slime.h"
 
 #include <engine/shared/config.h>
@@ -394,8 +395,8 @@ void CInfClassInfected::OnHammerFired(WeaponFireContext *pFireContext)
 
 	if(!AutoFire)
 	{
-		vec2 Direction = GetDirection();
-		vec2 ProjStartPos = GetPos() + Direction * GetProximityRadius() * 0.75f;
+		const vec2 Direction = GetDirection();
+		const vec2 ProjStartPos = GetPos() + Direction * GetHammerProjOffset();
 
 		ShowAttackAnimation = true;
 
@@ -406,9 +407,7 @@ void CInfClassInfected::OnHammerFired(WeaponFireContext *pFireContext)
 
 		// Lookup for humans
 		ClientsArray Targets;
-		const float LookupDistance = m_pCharacter->GetProximityRadius() * 0.5f;
-
-		GameController()->GetSortedTargetsInRange(ProjStartPos, LookupDistance, ClientsArray({GetCID()}), &Targets);
+		GameController()->GetSortedTargetsInRange(ProjStartPos, GetHammerRange(), ClientsArray({GetCID()}), &Targets);
 
 		for(const int TargetCID : Targets)
 		{

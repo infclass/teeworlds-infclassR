@@ -480,13 +480,11 @@ void CInfClassHuman::OnHammerFired(WeaponFireContext *pFireContext)
 	}
 
 	const vec2 Direction = GetDirection();
-	const vec2 ProjStartPos = GetPos() + Direction * GetProximityRadius() * 0.75f;
+	const vec2 ProjStartPos = GetPos() + Direction * GetHammerProjOffset();
 
 	// Lookup for humans
 	ClientsArray Targets;
-	const float LookupDistance = m_pCharacter->GetProximityRadius() * 0.5f;
-
-	GameController()->GetSortedTargetsInRange(ProjStartPos, LookupDistance, ClientsArray({GetCID()}), &Targets);
+	GameController()->GetSortedTargetsInRange(ProjStartPos, GetHammerRange(), ClientsArray({GetCID()}), &Targets);
 
 	int Hits = 0;
 	for(const int TargetCID : Targets)
