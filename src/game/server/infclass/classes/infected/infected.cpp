@@ -271,21 +271,21 @@ void CInfClassInfected::OnCharacterSnap(int SnappingClient)
 	{
 		switch(GetPlayerClass())
 		{
-			case PLAYERCLASS_WITCH:
+		case PLAYERCLASS_WITCH:
+		{
+			if(m_pCharacter->GetActiveWeapon() == WEAPON_HAMMER)
 			{
-				if(m_pCharacter->GetActiveWeapon() == WEAPON_HAMMER)
+				vec2 SpawnPos;
+				if(FindWitchSpawnPosition(SpawnPos))
 				{
-					vec2 SpawnPos;
-					if(FindWitchSpawnPosition(SpawnPos))
-					{
-						const int CursorID = GameController()->GetPlayerOwnCursorID(GetCID());
-						GameController()->SendHammerDot(SpawnPos, CursorID);
-					}
+					const int CursorID = GameController()->GetPlayerOwnCursorID(GetCID());
+					GameController()->SendHammerDot(SpawnPos, CursorID);
 				}
 			}
-				break;
-			default:
-				break;
+			break;
+		}
+		default:
+			break;
 		}
 	}
 }
