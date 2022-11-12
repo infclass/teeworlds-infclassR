@@ -12,9 +12,9 @@
 #include <engine/shared/memheap.h>
 
 #include <game/collision.h>
+#include <game/infclass/classes.h>
 #include <game/layers.h>
 #include <game/voting.h>
-#include <game/server/classes.h>
 
 #include <teeuniverses/components/localization.h>
 

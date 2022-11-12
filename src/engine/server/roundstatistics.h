@@ -1,9 +1,9 @@
 #ifndef ENGINE_SERVER_ROUND_STATISTICS_H
 #define ENGINE_SERVER_ROUND_STATISTICS_H
 
-#include <engine/shared/protocol.h>
-#include <game/server/classes.h>
 #include <engine/console.h>
+#include <engine/shared/protocol.h>
+#include <game/infclass/classes.h>
 
 enum
 {

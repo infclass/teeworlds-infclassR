@@ -2,7 +2,7 @@
 
 #include <engine/server/roundstatistics.h>
 #include <engine/shared/config.h>
-#include <game/server/classes.h>
+#include <game/infclass/classes.h>
 #include <game/server/gamecontext.h>
 
 #include <game/server/entities/projectile.h>

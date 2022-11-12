@@ -5,8 +5,8 @@
 #include <game/server/infclass/events-director.h>
 
 #include <game/collision.h>
+#include <game/infclass/classes.h>
 #include <game/layers.h>
-#include <game/server/classes.h>
 #include <game/server/infclass/classes/humans/human.h>
 #include <game/server/infclass/infcgamecontroller.h>
 #include <game/server/teeinfo.h>

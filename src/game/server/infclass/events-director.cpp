@@ -2,7 +2,7 @@
 
 #include <engine/shared/config.h>
 
-#include <game/server/classes.h>
+#include <game/infclass/classes.h>
 #include <game/server/skininfo.h>
 
 #include <vector>

@@ -560,6 +560,7 @@ set_glob(GAME_SHARED GLOB src/game
   collision.h
   gamecore.cpp
   gamecore.h
+  infclass/classes.h
   layers.cpp
   layers.h
   mapitems.h
@@ -758,7 +759,6 @@ set_glob(GAME_SERVER GLOB_RECURSE src/game/server
   infclass/infcgamecontroller.h
   infclass/infcplayer.cpp
   infclass/infcplayer.h
-  classes.h
   entity.cpp
   entity.h
   eventhandler.cpp

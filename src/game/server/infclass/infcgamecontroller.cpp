@@ -4,6 +4,8 @@
 
 #include "events-director.h"
 
+#include "game/infclass/classes.h"
+
 #include <game/server/gamecontext.h>
 #include <game/server/infclass/classes/infcplayerclass.h>
 #include <game/server/infclass/damage_type.h>
