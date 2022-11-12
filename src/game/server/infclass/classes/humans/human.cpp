@@ -627,12 +627,13 @@ void CInfClassHuman::OnShotgunFired(WeaponFireContext *pFireContext)
 		}
 		else
 		{
+			int Damage = 1;
 			CProjectile *pProj = new CProjectile(GameContext(), WEAPON_SHOTGUN,
 				GetCID(),
 				ProjStartPos,
 				Direction,
-				(int)(Server()->TickSpeed()*LifeTime),
-				1, false, Force, -1, DamageType);
+				(int)(Server()->TickSpeed() * LifeTime),
+				Damage, false, Force, -1, DamageType);
 
 			// pack the Projectile and send it to the client Directly
 			CNetObj_Projectile p;
