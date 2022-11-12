@@ -12,12 +12,11 @@
 #include "infccharacter.h"
 #include "growingexplosion.h"
 
-CScientistMine::CScientistMine(CGameContext *pGameContext, vec2 Pos, int Owner)
-	: CPlacedObject(pGameContext, CGameWorld::ENTTYPE_SCIENTIST_MINE, Pos, Owner)
+CScientistMine::CScientistMine(CGameContext *pGameContext, vec2 Pos, int Owner) :
+	CPlacedObject(pGameContext, CGameWorld::ENTTYPE_SCIENTIST_MINE, Pos, Owner, pGameContext->Config()->m_InfMineRadius)
 {
 	m_InfClassObjectType = INFCLASS_OBJECT_TYPE_SCIENTIST_MINE;
 	GameWorld()->InsertEntity(this);
-	m_DetectionRadius = 60.0f;
 	m_StartTick = Server()->Tick();
 	
 	for(int i=0; i<NUM_IDS; i++)
@@ -44,13 +43,13 @@ void CScientistMine::Explode(int DetonatedBy)
 	if(OwnerChar)
 	{
 		float Dist = distance(m_Pos, OwnerChar->GetPos());
-		if(Dist < OwnerChar->GetProximityRadius()+Config()->m_InfMineRadius)
+		if(Dist < OwnerChar->GetProximityRadius() + GetProximityRadius())
 		{
 			OwnerChar->TakeDamage(vec2(0.0f, 0.0f), 4, DetonatedBy, DAMAGE_TYPE::SCIENTIST_MINE);
 		}
-		else if(Dist < OwnerChar->GetProximityRadius()+2*Config()->m_InfMineRadius)
+		else if(Dist < OwnerChar->GetProximityRadius() + 2 * GetProximityRadius())
 		{
-			float Alpha = (Dist - Config()->m_InfMineRadius-OwnerChar->GetProximityRadius())/Config()->m_InfMineRadius;
+			float Alpha = (Dist - GetProximityRadius() - OwnerChar->GetProximityRadius()) / GetProximityRadius();
 			OwnerChar->TakeDamage(vec2(0.0f, 0.0f), 4*Alpha, DetonatedBy, DAMAGE_TYPE::SCIENTIST_MINE);
 		}
 	}
@@ -61,7 +60,7 @@ void CScientistMine::Snap(int SnappingClient)
 	if(!DoSnapForClient(SnappingClient))
 		return;
 
-	float Radius = Config()->m_InfMineRadius;
+	float Radius = GetProximityRadius();
 
 	if(Server()->GetClientInfclassVersion(SnappingClient))
 	{
@@ -120,7 +119,7 @@ void CScientistMine::Tick()
 		if(!p->CanDie()) continue;
 
 		float Len = distance(p->GetPos(), m_Pos);
-		if(Len < p->GetProximityRadius()+Config()->m_InfMineRadius)
+		if(Len < p->GetProximityRadius() + GetProximityRadius())
 		{
 			MustExplode = true;
 			DetonatedBy = p->GetCID();

@@ -30,7 +30,6 @@ private:
 	
 public:
 	int m_StartTick;
-	float m_DetectionRadius;
 };
 
 #endif
