@@ -9,8 +9,10 @@
 
 int CBiologistMine::EntityId = CGameWorld::ENTTYPE_BIOLOGIST_MINE;
 
-CBiologistMine::CBiologistMine(CGameContext *pGameContext, vec2 Pos, vec2 EndPos, int Owner)
-	: CPlacedObject(pGameContext, EntityId, Pos, Owner)
+CBiologistMine::CBiologistMine(CGameContext *pGameContext, vec2 Pos, vec2 EndPos, int Owner, int Lasers, int Damage) :
+	CPlacedObject(pGameContext, EntityId, Pos, Owner),
+	m_Lasers(Lasers),
+	m_PerLaserDamage(Damage)
 {
 	m_InfClassObjectType = INFCLASS_OBJECT_TYPE_BIOLOGIST_MINE;
 	m_EndPos = EndPos;
@@ -32,11 +34,11 @@ CBiologistMine::~CBiologistMine()
 
 void CBiologistMine::Explode()
 {
-	float AngleStep = 2.0f * pi / 15.0f;
+	float AngleStep = 2.0f * pi / m_Lasers;
 	float RandomShift = random_float() * 2.0f * pi;
-	for(int i=0; i<15; i++)
+	for(int i = 0; i < m_Lasers; i++)
 	{
-		new CBiologistLaser(GameServer(), m_Pos, vec2(cos(RandomShift + AngleStep*i), sin(RandomShift + AngleStep*i)), m_Owner, 10);
+		new CBiologistLaser(GameServer(), m_Pos, vec2(cos(RandomShift + AngleStep * i), sin(RandomShift + AngleStep * i)), m_Owner, m_PerLaserDamage);
 	}
 	
 	GameWorld()->DestroyEntity(this);
