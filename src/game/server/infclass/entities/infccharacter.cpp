@@ -291,6 +291,31 @@ void CInfClassCharacter::Snap(int SnappingClient)
 	}
 
 	CCharacter::Snap(SnappingClient);
+
+	CNetObj_DDNetCharacter *pDDNetCharacter = static_cast<CNetObj_DDNetCharacter *>(Server()->SnapNewItem(NETOBJTYPE_DDNETCHARACTER, ID, sizeof(CNetObj_DDNetCharacter)));
+	if(!pDDNetCharacter)
+		return;
+
+	pDDNetCharacter->m_Flags = 0;
+
+	if(IsFrozen())
+		pDDNetCharacter->m_Flags |= CHARACTERFLAG_MOVEMENTS_DISABLED;
+
+	if(GetPlayerClass() == PLAYERCLASS_MERCENARY)
+	{
+		pDDNetCharacter->m_Flags |= CHARACTERFLAG_JETPACK;
+	}
+
+	if(GetPlayerClass() == PLAYERCLASS_SCIENTIST)
+	{
+		pDDNetCharacter->m_Flags |= CHARACTERFLAG_TELEGUN_GRENADE;
+	}
+
+	pDDNetCharacter->m_Jumps = m_Core.m_Jumps;
+	pDDNetCharacter->m_JumpedTotal = m_Core.m_JumpedTotal;
+
+	pDDNetCharacter->m_TargetX = m_Core.m_Input.m_TargetX;
+	pDDNetCharacter->m_TargetY = m_Core.m_Input.m_TargetY;
 }
 
 void CInfClassCharacter::SpecialSnapForClient(int SnappingClient, bool *pDoSnap)
