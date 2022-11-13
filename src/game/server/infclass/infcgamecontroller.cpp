@@ -1671,7 +1671,7 @@ void CInfClassGameController::ChatWitch(IConsole::IResult *pResult)
 		// Santa is a new Witch; allow only one Santa at time.
 		MaxWitches = 1;
 	}
-	if(GameServer()->GetZombieCount(PLAYERCLASS_WITCH) >= MaxWitches)
+	if(GetInfectedCount(PLAYERCLASS_WITCH) >= MaxWitches)
 	{
 		if(Winter)
 		{
@@ -3922,6 +3922,29 @@ int CInfClassGameController::GetPlayerClassProbability(int PlayerClass) const
 
 	Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "server", "WARNING: Invalid GetPlayerClassProbability() call");
 	return 0;
+}
+
+int CInfClassGameController::GetInfectedCount(int InfectedPlayerClass) const
+{
+	int Count = 0;
+	for(int i = 0; i < MAX_CLIENTS; i++)
+	{
+		const CInfClassPlayer *pPlayer = GetPlayer(i);
+		if(!pPlayer)
+			continue;
+
+		if(!pPlayer->IsActuallyZombie())
+			continue;
+
+		if(InfectedPlayerClass != PLAYERCLASS_INVALID)
+		{
+			if(pPlayer->GetClass() != InfectedPlayerClass)
+				continue;
+		}
+
+		Count++;
+	}
+	return Count;
 }
 
 ROUND_TYPE CInfClassGameController::GetRoundType() const

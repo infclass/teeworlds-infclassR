@@ -35,7 +35,7 @@ bool CMedicLaser::OnCharacterHit(CInfClassCharacter *pHit)
 			nullptr
 		);
 	}
-	else if(GameServer()->GetZombieCount() < MinimumInfected)
+	else if(GameController()->GetInfectedCount() < MinimumInfected)
 	{
 		GameServer()->SendBroadcast_Localization(m_Owner, BROADCAST_PRIORITY_GAMEANNOUNCE,
 			BROADCAST_DURATION_GAMEANNOUNCE,

@@ -134,9 +134,6 @@ public:
 	// helper functions
 	CPlayer *GetPlayer(int ClientID) const;
 	class CCharacter *GetPlayerChar(int ClientID);
-	// InfClassR
-	int GetZombieCount();
-	int GetZombieCount(int zombie_class);
 
 	// voting
 	void StartVote(const char *pDesc, const char *pCommand, const char *pReason);

@@ -3,6 +3,7 @@
 #ifndef GAME_SERVER_INFCLASS_GAMECONTROLLER_H
 #define GAME_SERVER_INFCLASS_GAMECONTROLLER_H
 
+#include <game/infclass/classes.h>
 #include <game/server/gamecontroller.h>
 #include <game/server/teams.h>
 
@@ -105,6 +106,8 @@ public:
 	int GetMinPlayersForClass(int PlayerClass) const;
 	int GetClassPlayerLimit(int PlayerClass) const;
 	int GetPlayerClassProbability(int PlayerClass) const;
+
+	int GetInfectedCount(int InfectedPlayerClass = PLAYERCLASS_INVALID) const;
 
 	ROUND_TYPE GetRoundType() const;
 

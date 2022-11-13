@@ -150,30 +150,6 @@ class CCharacter *CGameContext::GetPlayerChar(int ClientID)
 	return m_apPlayers[ClientID]->GetCharacter();
 }
 
-int CGameContext::GetZombieCount() {
-	int count = 0;
-	for(int i = 0; i < MAX_CLIENTS; i++)
-	{
-		if (!m_apPlayers[i])
-			continue;
-		if (m_apPlayers[i]->IsActuallyZombie())
-			count++;
-	}
-	return count;
-}
-
-int CGameContext::GetZombieCount(int zombie_class) {
-	int count = 0;
-	for(int i = 0; i < MAX_CLIENTS; i++)
-	{
-		if (!m_apPlayers[i])
-			continue;
-		if (m_apPlayers[i]->IsActuallyZombie() && m_apPlayers[i]->GetClass() == zombie_class)
-			count++;
-	}
-	return count;
-}
-
 void CGameContext::CreateDamageInd(vec2 Pos, float Angle, int Amount, int64_t Mask)
 {
 	float a = 3 * 3.14159f / 2 + Angle;

@@ -949,7 +949,7 @@ void CInfClassHuman::BroadcastWeaponState() const
 					NULL
 				);
 			}
-			else if (GameServer()->GetZombieCount() <= MIN_ZOMBIES)
+			else if(GameController()->GetInfectedCount() <= MIN_ZOMBIES)
 			{
 				int MinZombies = MIN_ZOMBIES+1;
 				GameServer()->SendBroadcast_Localization(GetPlayer()->GetCID(),
