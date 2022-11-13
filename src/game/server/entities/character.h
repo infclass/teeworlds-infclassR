@@ -20,9 +20,6 @@ enum FREEZEREASON
 	FREEZEREASON_INFECTION = 2,
 };
 
-#define GHOST_RADIUS 11
-#define GHOST_SEARCHMAP_SIZE (2*GHOST_RADIUS+1)
-
 enum class TAKEDAMAGEMODE
 {
 	NOINFECTION=0,
@@ -186,10 +183,6 @@ protected:
 
 	int m_AirJumpCounter;
 	int m_HookDmgTick;
-	int m_InvisibleTick;
-	bool m_IsInvisible;
-	int m_HealTick;
-	int m_BonusTick;
 	int m_InfZoneTick;
 	int m_ProtectionTick;
 	
@@ -204,9 +197,6 @@ protected:
 	bool m_IsInSlowMotion; //LooperClass changes here
 	FREEZEREASON m_FreezeReason;
 	int m_InAirTick;
-	
-	char m_GhostSearchMap[GHOST_SEARCHMAP_SIZE*GHOST_SEARCHMAP_SIZE];
-	
 	vec2 m_SpawnPosition;
 
 public:

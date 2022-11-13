@@ -37,14 +37,10 @@ CCharacter::CCharacter(CGameWorld *pWorld, IConsole *pConsole) :
 	m_IsInSlowMotion = false;
 	m_FrozenTime = -1;
 	m_DartLifeSpan = -1;
-	m_IsInvisible = false;
-	m_InvisibleTick = 0;
-	m_HealTick = 0;
 	m_InfZoneTick = -1;
 	m_InAirTick = 0;
 	m_InWater = 0;
 	m_ProtectionTick = 0;
-	m_BonusTick = 0;
 	m_WaterJumpLifeSpan = 0;
 	m_NinjaVelocityBuff = 0;
 	m_NinjaStrengthBuff = 0;
@@ -97,14 +93,6 @@ bool CCharacter::Spawn(CPlayer *pPlayer, vec2 Pos)
 
 void CCharacter::Destroy()
 {	
-/* INFECTION MODIFICATION START ***************************************/
-	FreeChildSnapIDs();
-	
-	if(m_pPlayer)
-		m_pPlayer->ResetNumberKills();
-	
-/* INFECTION MODIFICATION END *****************************************/
-
 	if(m_pPlayer)
 		GameServer()->m_World.m_Core.m_apCharacters[m_pPlayer->GetCID()] = 0;
 	m_Alive = false;
@@ -353,195 +341,6 @@ void CCharacter::Tick()
 
 	m_Core.m_Id = GetPlayer()->GetCID();
 /* INFECTION MODIFICATION START ***************************************/
-	//~ if(GameServer()->Collision()->CheckPhysicsFlag(m_Core.m_Pos, CCollision::COLFLAG_WATER))
-	//~ {
-		//~ if(m_InWater == 0)
-		//~ {
-			//~ m_InWater = 1;
-			//~ m_Core.m_Vel /= 2.0f;
-			//~ m_WaterJumpLifeSpan = 0;
-		//~ }
-	//~ }
-	//~ else
-		//~ m_InWater = 0;
-
-	--m_FrozenTime;
-	if(m_IsFrozen)
-	{
-		if(m_FrozenTime <= 0)
-		{
-			Unfreeze();
-		}
-		else
-		{
-			int FreezeSec = 1+(m_FrozenTime/Server()->TickSpeed());
-			GameServer()->SendBroadcast_Localization(m_pPlayer->GetCID(), BROADCAST_PRIORITY_EFFECTSTATE, BROADCAST_DURATION_REALTIME, _("You are frozen: {sec:EffectDuration}"), "EffectDuration", &FreezeSec, NULL);
-		}
-	}
-	
-	
-	if(m_SlowMotionTick > 0)
-	{
-		--m_SlowMotionTick;
-		
-		if(m_SlowMotionTick <= 0)
-		{
-			m_IsInSlowMotion = false;
-		}
-		else
-		{
-			int SloMoSec = 1+(m_SlowMotionTick/Server()->TickSpeed());
-			GameServer()->SendBroadcast_Localization(m_pPlayer->GetCID(), BROADCAST_PRIORITY_EFFECTSTATE, BROADCAST_DURATION_REALTIME, _("You are slowed: {sec:EffectDuration}"), "EffectDuration", &SloMoSec, NULL);
-		}
-	}
-	
-	if(m_AntiFireTime > 0)
-		--m_AntiFireTime;
-	
-	if(m_HallucinationTick > 0)
-		--m_HallucinationTick;
-	
-	if(m_LoveTick > 0)
-		--m_LoveTick;
-	
-	if(m_SlipperyTick > 0)
-		--m_SlipperyTick;
-	
-	if(m_ProtectionTick > 0)
-	{
-		--m_ProtectionTick;
-
-		// Player left spawn before protection ran out
-		if(m_InfZoneTick == -1)
-		{
-			if(!m_IsInvisible)
-			{
-				SetEmote(EMOTE_NORMAL, Server()->Tick() + Server()->TickSpeed());
-			}
-			m_ProtectionTick = 0;
-		}
-	}
-
-	//Ghost
-	if(GetPlayerClass() == PLAYERCLASS_GHOST)
-	{
-		if(Server()->Tick() < m_InvisibleTick + 3*Server()->TickSpeed() || IsFrozen() || IsInSlowMotion())
-		{
-			m_IsInvisible = false;
-		}
-		else
-		{
-			//Search nearest human
-			int cellGhostX = static_cast<int>(round(GetPos().x))/32;
-			int cellGhostY = static_cast<int>(round(GetPos().y))/32;
-			
-			vec2 SeedPos = vec2(16.0f, 16.0f) + vec2(
-				static_cast<float>(static_cast<int>(round(GetPos().x))/32)*32.0,
-				static_cast<float>(static_cast<int>(round(GetPos().y))/32)*32.0);
-			
-			for(int y=0; y<GHOST_SEARCHMAP_SIZE; y++)
-			{
-				for(int x=0; x<GHOST_SEARCHMAP_SIZE; x++)
-				{
-					vec2 Tile = SeedPos + vec2(32.0f*(x-GHOST_RADIUS), 32.0f*(y-GHOST_RADIUS));
-					if(GameServer()->Collision()->CheckPoint(Tile))
-					{
-						m_GhostSearchMap[y*GHOST_SEARCHMAP_SIZE+x] = 0x8;
-					}
-					else
-					{
-						m_GhostSearchMap[y*GHOST_SEARCHMAP_SIZE+x] = 0x0;
-					}
-				}
-			}
-			for(CCharacter *p = (CCharacter*) GameWorld()->FindFirst(CGameWorld::ENTTYPE_CHARACTER); p; p = (CCharacter *)p->TypeNext())
-			{
-				if(p->IsZombie()) continue;
-				
-				int cellHumanX = static_cast<int>(round(p->GetPos().x))/32;
-				int cellHumanY = static_cast<int>(round(p->GetPos().y))/32;
-				
-				int cellX = cellHumanX - cellGhostX + GHOST_RADIUS;
-				int cellY = cellHumanY - cellGhostY + GHOST_RADIUS;
-				
-				if(cellX >= 0 && cellX < GHOST_SEARCHMAP_SIZE && cellY >= 0 && cellY < GHOST_SEARCHMAP_SIZE)
-				{
-					m_GhostSearchMap[cellY * GHOST_SEARCHMAP_SIZE + cellX] |= 0x2;
-				}
-			}
-			m_GhostSearchMap[GHOST_RADIUS * GHOST_SEARCHMAP_SIZE + GHOST_RADIUS] |= 0x1;
-			bool HumanFound = false;
-			for(int i=0; i<GHOST_RADIUS; i++)
-			{
-				for(int y=0; y<GHOST_SEARCHMAP_SIZE; y++)
-				{
-					for(int x=0; x<GHOST_SEARCHMAP_SIZE; x++)
-					{
-						if(!((m_GhostSearchMap[y*GHOST_SEARCHMAP_SIZE+x] & 0x1) || (m_GhostSearchMap[y*GHOST_SEARCHMAP_SIZE+x] & 0x8)))
-						{
-							if(
-								(
-									(x > 0 && (m_GhostSearchMap[y*GHOST_SEARCHMAP_SIZE+x-1] & 0x1)) ||
-									(x < GHOST_SEARCHMAP_SIZE-1 && (m_GhostSearchMap[y*GHOST_SEARCHMAP_SIZE+x+1] & 0x1)) ||
-									(y > 0 && (m_GhostSearchMap[(y-1)*GHOST_SEARCHMAP_SIZE+x] & 0x1)) ||
-									(y < GHOST_SEARCHMAP_SIZE-1 && (m_GhostSearchMap[(y+1)*GHOST_SEARCHMAP_SIZE+x] & 0x1))
-								) ||
-								(
-									(random_prob(0.25f)) && (
-										(x > 0 && y > 0 && (m_GhostSearchMap[(y-1)*GHOST_SEARCHMAP_SIZE+x-1] & 0x1)) ||
-										(x > 0 && y < GHOST_SEARCHMAP_SIZE-1 && (m_GhostSearchMap[(y+1)*GHOST_SEARCHMAP_SIZE+x-1] & 0x1)) ||
-										(x < GHOST_SEARCHMAP_SIZE-1 && y > 0 && (m_GhostSearchMap[(y-1)*GHOST_SEARCHMAP_SIZE+x+1] & 0x1)) ||
-										(x < GHOST_SEARCHMAP_SIZE-1 && y < GHOST_SEARCHMAP_SIZE-1 && (m_GhostSearchMap[(y+1)*GHOST_SEARCHMAP_SIZE+x+1] & 0x1))
-									)
-								)
-							)
-							{
-								m_GhostSearchMap[y*GHOST_SEARCHMAP_SIZE+x] |= 0x4;
-								//~ if((Server()->Tick()%5 == 0) && i == (Server()->Tick()/5)%GHOST_RADIUS)
-								//~ {
-									//~ vec2 HintPos = vec2(
-										//~ 32.0f*(cellGhostX + (x - GHOST_RADIUS))+16.0f,
-										//~ 32.0f*(cellGhostY + (y - GHOST_RADIUS))+16.0f);
-									//~ GameServer()->CreateHammerHit(HintPos);
-								//~ }
-								if(m_GhostSearchMap[y*GHOST_SEARCHMAP_SIZE+x] & 0x2)
-								{
-									HumanFound = true;
-								}
-							}
-						}
-					}
-				}
-				for(int y=0; y<GHOST_SEARCHMAP_SIZE; y++)
-				{
-					for(int x=0; x<GHOST_SEARCHMAP_SIZE; x++)
-					{
-						if(m_GhostSearchMap[y*GHOST_SEARCHMAP_SIZE+x] & 0x4)
-						{
-							m_GhostSearchMap[y*GHOST_SEARCHMAP_SIZE+x] |= 0x1;
-						}
-					}
-				}
-			}
-			
-			if(HumanFound)
-			{
-				// TODO: Move the code and use CInfClassCharacter::MakeVisible()
-				if(m_IsInvisible)
-				{
-					GameServer()->CreatePlayerSpawn(GetPos());
-					m_IsInvisible = false;
-				}
-				
-				m_InvisibleTick = Server()->Tick();
-			}
-			else
-			{
-				m_IsInvisible = true;
-			}
-		}
-	}
-
 	PreCoreTick();
 
 	m_Core.m_Input = m_Input;

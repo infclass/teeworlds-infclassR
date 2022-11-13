@@ -68,6 +68,9 @@ struct SpawnContext
 	SPAWN_TYPE SpawnType = MapSpawn;
 };
 
+constexpr int GHOST_RADIUS = 11;
+constexpr int GHOST_SEARCHMAP_SIZE = (2 * GHOST_RADIUS + 1);
+
 using ClientsArray = icArray<int, 64>; // MAX_CLIENTS
 
 class CInfClassCharacter : public CCharacter
@@ -254,7 +257,14 @@ protected:
 	icArray<CDamagePoint, 4> m_TakenDamageDetails;
 	bool m_PositionLocked = false;
 
+	bool m_IsInvisible = false;
+	int m_InvisibleTick = 0;
 	int m_Invincible = 0;
+
+	char m_GhostSearchMap[GHOST_SEARCHMAP_SIZE * GHOST_SEARCHMAP_SIZE];
+
+	int m_HealTick = 0;
+	int m_BonusTick = 0;
 };
 
 inline const CInfClassCharacter *CInfClassCharacter::GetInstance(const CCharacter *pCharacter)
