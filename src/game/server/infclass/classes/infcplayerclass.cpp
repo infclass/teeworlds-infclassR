@@ -149,6 +149,19 @@ void CInfClassPlayerClass::GetAmmoRegenParams(int Weapon, WeaponRegenParams *pPa
 	pParams->MaxAmmo = Server()->GetMaxAmmo(InfWID);
 }
 
+int CInfClassPlayerClass::GetJumps() const
+{
+	// From DDNet:
+
+	// Special jump cases:
+	// Jumps == -1: A tee may only make one ground jump. Second jumped bit is always set
+	// Jumps == 0: A tee may not make a jump. Second jumped bit is always set
+	// Jumps == 1: A tee may do either a ground jump or an air jump. Second jumped bit is set after the first jump
+	// The second jumped bit can be overridden by special tiles so that the tee can nevertheless jump.
+
+	return 2; // Ground jump + Air jump
+}
+
 bool CInfClassPlayerClass::CanDie() const
 {
 	return true;
@@ -373,6 +386,7 @@ void CInfClassPlayerClass::GiveClassAttributes()
 	}
 
 	m_pCharacter->TakeAllWeapons();
+	m_pCharacter->m_Core.m_Jumps = GetJumps();
 }
 
 void CInfClassPlayerClass::DestroyChildEntities()

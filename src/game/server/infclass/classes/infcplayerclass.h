@@ -38,6 +38,7 @@ public:
 
 	virtual int GetDefaultEmote() const;
 	virtual void GetAmmoRegenParams(int Weapon, WeaponRegenParams *pParams);
+	virtual int GetJumps() const;
 
 	virtual bool CanDie() const;
 	virtual bool CanBeHit() const;

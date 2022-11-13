@@ -182,6 +182,19 @@ int CInfClassInfected::GetDefaultEmote() const
 	return EmoteNormal;
 }
 
+int CInfClassInfected::GetJumps() const
+{
+	switch(GetPlayerClass())
+	{
+	case PLAYERCLASS_HUNTER:
+		return 3;
+	case PLAYERCLASS_BAT:
+		return Config()->m_InfBatAirjumpLimit;
+	default:
+		return 2;
+	}
+}
+
 bool CInfClassInfected::CanDie() const
 {
 	if ((GetPlayerClass() == PLAYERCLASS_UNDEAD) && m_pCharacter->IsFrozen()) {

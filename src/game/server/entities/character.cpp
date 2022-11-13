@@ -26,7 +26,6 @@ CCharacter::CCharacter(CGameWorld *pWorld, IConsole *pConsole) :
 	
 /* INFECTION MODIFICATION START ***************************************/
 	m_MaxArmor = 10;
-	m_AirJumpCounter = 0;
 
 	m_FlagID = Server()->SnapNewID();
 	m_HeartID = Server()->SnapNewID();
@@ -380,29 +379,6 @@ void CCharacter::Tick()
 	HandleWeapons();
 
 	PostCoreTick();
-
-	if(GetPlayerClass() == PLAYERCLASS_HUNTER || GetPlayerClass() == PLAYERCLASS_SNIPER ||GetPlayerClass() == PLAYERCLASS_LOOPER)
-	{
-		if(IsGrounded()) m_AirJumpCounter = 0;
-		if(m_Core.m_TriggeredEvents&COREEVENT_AIR_JUMP && m_AirJumpCounter < 1)
-		{
-			m_Core.m_Jumped &= ~2;
-			m_AirJumpCounter++;
-		}
-	}
-
-	if(GetPlayerClass() == PLAYERCLASS_BAT)
-	{
-		if(IsGrounded() || g_Config.m_InfBatAirjumpLimit == 0)
-		{
-			m_AirJumpCounter = 0;
-		}
-		else if(m_Core.m_TriggeredEvents&COREEVENT_AIR_JUMP && m_AirJumpCounter < g_Config.m_InfBatAirjumpLimit)
-		{
-			m_Core.m_Jumped &= ~2;
-			m_AirJumpCounter++;
-		}
-	}
 
 /* INFECTION MODIFICATION END *****************************************/
 
@@ -994,6 +970,28 @@ int CCharacter::GetEffectiveHookMode() const
 
 void CCharacter::PostCoreTick()
 {
+	// following jump rules can be overridden by tiles, like Refill Jumps, Stopper and Wall Jump
+	if(m_Core.m_Jumps == -1)
+	{
+		// The player has only one ground jump, so his feet are always dark
+		m_Core.m_Jumped |= 2;
+	}
+	else if(m_Core.m_Jumps == 0)
+	{
+		// The player has no jumps at all, so his feet are always dark
+		m_Core.m_Jumped |= 2;
+	}
+	else if(m_Core.m_Jumps == 1 && m_Core.m_Jumped > 0)
+	{
+		// If the player has only one jump, each jump is the last one
+		m_Core.m_Jumped |= 2;
+	}
+	else if(m_Core.m_JumpedTotal < m_Core.m_Jumps - 1 && m_Core.m_Jumped > 1)
+	{
+		// The player has not yet used up all his jumps, so his feet remain light
+		m_Core.m_Jumped = 1;
+	}
+
 	int CurrentIndex = GameServer()->Collision()->GetMapIndex(m_Pos);
 	HandleSkippableTiles(CurrentIndex);
 	m_MoveRestrictions = GameServer()->Collision()->GetMoveRestrictions(nullptr, this, m_Pos, 18.0f, CurrentIndex);

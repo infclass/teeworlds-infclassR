@@ -230,6 +230,9 @@ public:
 	bool HasPassenger() const { return m_Passenger; }
 
 	int m_Jumped;
+	// m_JumpedTotal counts the jumps performed in the air
+	int m_JumpedTotal;
+	int m_Jumps;
 
 	int m_Direction;
 	int m_Angle;
@@ -255,6 +258,7 @@ public:
 	bool m_Solo;
 	bool m_NoCollision;
 	bool m_Super;
+	bool m_EndlessJump;
 	int m_FreezeStart;
 
 private:
@@ -266,7 +270,6 @@ public:
 	bool IsRecursePassenger(CCharacterCore *pMaybePassenger) const;
 	void TryBecomePassenger(CCharacterCore *pTaxi);
 	void SetPassenger(CCharacterCore *pPassenger);
-	void EnableJump();
 
 protected:
 	void UpdateTaxiPassengers();

@@ -172,6 +172,18 @@ void CInfClassHuman::GetAmmoRegenParams(int Weapon, WeaponRegenParams *pParams)
 	}
 }
 
+int CInfClassHuman::GetJumps() const
+{
+	switch(GetPlayerClass())
+	{
+	case PLAYERCLASS_SNIPER:
+	case PLAYERCLASS_LOOPER:
+		return 3;
+	default:
+		return 2;
+	}
+}
+
 bool CInfClassHuman::CanBeHit() const
 {
 	if(GetPlayerClass() == PLAYERCLASS_NINJA)

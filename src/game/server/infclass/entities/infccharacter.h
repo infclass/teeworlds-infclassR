@@ -160,8 +160,6 @@ public:
 	bool CanDie() const;
 
 	bool CanJump() const;
-	void EnableJump();
-	int GetAirJumps() const { return m_AirJumpCounter; }
 
 	int GetInAirTick() const { return m_InAirTick; }
 

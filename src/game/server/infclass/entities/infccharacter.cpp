@@ -1811,12 +1811,6 @@ void CInfClassCharacter::SetClass(CInfClassPlayerClass *pClass)
 
 	GameServer()->CreatePlayerSpawn(GetPos());
 
-	if(GetPlayerClass() == PLAYERCLASS_BAT) {
-		if(m_AirJumpCounter < g_Config.m_InfBatAirjumpLimit) {
-			EnableJump();
-			m_AirJumpCounter++;
-		}
-	}
 	if(GetPlayerClass() == PLAYERCLASS_NONE)
 	{
 		OpenClassChooser();
@@ -1902,11 +1896,6 @@ bool CInfClassCharacter::CanJump() const
 		return false;
 
 	return true;
-}
-
-void CInfClassCharacter::EnableJump()
-{
-	m_Core.EnableJump();
 }
 
 bool CInfClassCharacter::IsInvisible() const

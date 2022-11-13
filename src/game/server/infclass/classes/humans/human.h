@@ -26,6 +26,8 @@ public:
 	static bool SetupSkin(const CSkinContext &Context, CWeakSkinInfo *pOutput, int DDNetVersion, int InfClassVersion);
 
 	void GetAmmoRegenParams(int Weapon, WeaponRegenParams *pParams) override;
+	int GetJumps() const override;
+
 	bool CanBeHit() const override;
 
 	void CheckSuperWeaponAccess() override;

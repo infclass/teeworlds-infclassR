@@ -181,7 +181,6 @@ private:
 protected:
 	virtual void OnTotalHealthChanged(int Difference) = 0;
 
-	int m_AirJumpCounter;
 	int m_HookDmgTick;
 	int m_InfZoneTick;
 	int m_ProtectionTick;

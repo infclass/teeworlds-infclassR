@@ -22,6 +22,8 @@ public:
 	static bool SetupSkin(const CSkinContext &Context, CWeakSkinInfo *pOutput, int DDNetVersion, int InfClassVersion);
 
 	int GetDefaultEmote() const override;
+	int GetJumps() const override;
+
 	bool CanDie() const override;
 	bool CanBeUnfreezed() const;
 
