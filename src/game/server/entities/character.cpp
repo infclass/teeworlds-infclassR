@@ -671,19 +671,6 @@ void CCharacter::TickDefered()
 		GameServer()->Console()->Print(IConsole::OUTPUT_LEVEL_DEBUG, "game", aBuf);
 	}
 
-	int Events = m_Core.m_TriggeredEvents;
-	int Mask = CmaskAllExceptOne(m_pPlayer->GetCID());
-
-
-	if(Events&COREEVENT_HOOK_ATTACH_PLAYER) GameServer()->CreateSound(GetPos(), SOUND_HOOK_ATTACH_PLAYER, CmaskAll());
-	if(GetPlayerClass() != PLAYERCLASS_GHOST || !m_IsInvisible)
-	{
-		if(Events&COREEVENT_GROUND_JUMP) GameServer()->CreateSound(GetPos(), SOUND_PLAYER_JUMP, Mask);
-		if(Events&COREEVENT_HOOK_ATTACH_GROUND) GameServer()->CreateSound(GetPos(), SOUND_HOOK_ATTACH_GROUND, Mask);
-		if(Events&COREEVENT_HOOK_HIT_NOHOOK) GameServer()->CreateSound(GetPos(), SOUND_HOOK_NOATTACH, Mask);
-	}
-
-
 	if(m_pPlayer->GetTeam() == TEAM_SPECTATORS)
 	{
 		m_Pos.x = m_Input.m_TargetX;

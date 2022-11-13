@@ -238,6 +238,22 @@ void CInfClassCharacter::TickDefered()
 			GameServer()->CreateSound(GetPos(), SOUND_PLAYER_AIRJUMP, MaskOnlyBlind);
 		}
 	}
+
+	// Ghost events
+	int64_t MaskEsceptSelf = CmaskAllExceptOne(m_pPlayer->GetCID());
+
+	if(Events & COREEVENT_HOOK_ATTACH_PLAYER)
+		GameServer()->CreateSound(GetPos(), SOUND_HOOK_ATTACH_PLAYER, CmaskAll());
+
+	if(GetPlayerClass() != PLAYERCLASS_GHOST || !m_IsInvisible)
+	{
+		if(Events & COREEVENT_GROUND_JUMP)
+			GameServer()->CreateSound(GetPos(), SOUND_PLAYER_JUMP, MaskEsceptSelf);
+		if(Events & COREEVENT_HOOK_ATTACH_GROUND)
+			GameServer()->CreateSound(GetPos(), SOUND_HOOK_ATTACH_GROUND, MaskEsceptSelf);
+		if(Events & COREEVENT_HOOK_HIT_NOHOOK)
+			GameServer()->CreateSound(GetPos(), SOUND_HOOK_NOATTACH, MaskEsceptSelf);
+	}
 }
 
 void CInfClassCharacter::TickPaused()
