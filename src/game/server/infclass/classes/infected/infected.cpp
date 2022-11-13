@@ -205,37 +205,11 @@ void CInfClassInfected::OnCharacterPreCoreTick()
 
 	switch(GetPlayerClass())
 	{
-		case PLAYERCLASS_SPIDER:
-		{
-			if(m_pCharacter->WebHookLength() > 48.0f && m_pCharacter->GetHookedPlayer() < 0)
-			{
-				// Find other players
-				for(CInfClassCharacter *p = (CInfClassCharacter*) GameWorld()->FindFirst(CGameWorld::ENTTYPE_CHARACTER); p; p = (CInfClassCharacter *)p->TypeNext())
-				{
-					if(p->IsZombie())
-						continue;
-
-					vec2 IntersectPos;
-					if(!closest_point_on_line(GetPos(), m_pCharacter->GetHookPos(), p->GetPos(), IntersectPos))
-						continue;
-
-					float Len = distance(p->GetPos(), IntersectPos);
-					if(Len < p->GetProximityRadius())
-					{
-						m_pCharacter->SetHookedPlayer(p->GetCID());
-						// Note: typical Teeworlds clients restore m_HookMode = 1
-						// via "Direct weapon selection" / m_LatestInput.m_WantedWeapon
-						m_pCharacter->m_HookMode = 0;
-						m_pCharacter->m_Core.m_HookTick = 0;
-
-						break;
-					}
-				}
-			}
-		}
-			break;
-		default:
-			break;
+	case PLAYERCLASS_SPIDER:
+		SpiderPreCoreTick();
+		break;
+	default:
+		break;
 	}
 }
 
@@ -662,6 +636,35 @@ void CInfClassInfected::SetHookOnLimit(bool OnLimit)
 
 	m_HookOnTheLimit = OnLimit;
 	UpdateSkin();
+}
+
+void CInfClassInfected::SpiderPreCoreTick()
+{
+	if(m_pCharacter->WebHookLength() > 48.0f && m_pCharacter->GetHookedPlayer() < 0)
+	{
+		// Find other players
+		for(CInfClassCharacter *p = (CInfClassCharacter *)GameWorld()->FindFirst(CGameWorld::ENTTYPE_CHARACTER); p; p = (CInfClassCharacter *)p->TypeNext())
+		{
+			if(p->IsZombie())
+				continue;
+
+			vec2 IntersectPos;
+			if(!closest_point_on_line(GetPos(), m_pCharacter->GetHookPos(), p->GetPos(), IntersectPos))
+				continue;
+
+			float Len = distance(p->GetPos(), IntersectPos);
+			if(Len < p->GetProximityRadius())
+			{
+				m_pCharacter->SetHookedPlayer(p->GetCID());
+				// Note: typical Teeworlds clients restore m_HookMode = 1
+				// via "Direct weapon selection" / m_LatestInput.m_WantedWeapon
+				m_pCharacter->m_HookMode = 0;
+				m_pCharacter->m_Core.m_HookTick = 0;
+
+				break;
+			}
+		}
+	}
 }
 
 void CInfClassInfected::OnSlimeEffect(int Owner)

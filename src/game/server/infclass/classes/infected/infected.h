@@ -55,6 +55,8 @@ protected:
 
 	void SetHookOnLimit(bool OnLimit);
 
+	void SpiderPreCoreTick();
+
 	int m_SlimeHealTick = 0;
 	int m_LaserWallTick = 0;
 
