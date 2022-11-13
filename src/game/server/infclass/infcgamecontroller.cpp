@@ -1857,7 +1857,7 @@ void CInfClassGameController::SortCharactersByDistance(const ClientsArray &Input
 			continue;
 
 		const vec2 &CharPos = pChar->GetPos();
-		const float Distance = distance(CharPos, Center);
+		const float Distance = std::max<float>(0.f, distance(CharPos, Center) - pChar->GetProximityRadius());
 		if(MaxDistance && (Distance > MaxDistance))
 			continue;
 
