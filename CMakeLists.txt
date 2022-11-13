@@ -304,7 +304,7 @@ if(MYSQL)
 else()
   set(MYSQL_LIBRARIES)
 endif()
-find_package(PythonInterp REQUIRED)
+find_package(PythonInterp 3)
 find_package(Threads)
 
 if(GEOLOCATION)
@@ -356,6 +356,10 @@ endif()
 show_dependency_status("OpenSSL Crypto" CRYPTO)
 show_dependency_status("PythonInterp" PYTHONINTERP)
 show_dependency_status("Zlib" ZLIB)
+
+if(NOT(PYTHONINTERP_FOUND))
+  message(SEND_ERROR "You must install Python to compile ${CMAKE_PROJECT_NAME}")
+endif()
 
 if(TARGET_OS STREQUAL "windows")
   set(PLATFORM_LIBS ws2_32) # Windows sockets
