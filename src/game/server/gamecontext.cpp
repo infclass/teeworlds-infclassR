@@ -1616,18 +1616,18 @@ void CGameContext::OnCallVote(void *pRawMsg, int ClientID)
 	char aCmd[VOTE_CMD_LENGTH] = {0};
 	char aReason[VOTE_REASON_LENGTH] = "No reason given";
 	CNetMsg_Cl_CallVote *pMsg = (CNetMsg_Cl_CallVote *)pRawMsg;
-	if(!str_utf8_check(pMsg->m_Type) || !str_utf8_check(pMsg->m_Reason) || !str_utf8_check(pMsg->m_Value))
+	if(!str_utf8_check(pMsg->m_pType) || !str_utf8_check(pMsg->m_pReason) || !str_utf8_check(pMsg->m_pValue))
 	{
 		return;
 	}
-	if(pMsg->m_Reason[0])
+	if(pMsg->m_pReason[0])
 	{
-		str_copy(aReason, pMsg->m_Reason, sizeof(aReason));
+		str_copy(aReason, pMsg->m_pReason, sizeof(aReason));
 	}
 
-	if(str_comp_nocase(pMsg->m_Type, "kick") == 0)
+	if(str_comp_nocase(pMsg->m_pType, "kick") == 0)
 	{
-		int KickID = str_toint(pMsg->m_Value);
+		int KickID = str_toint(pMsg->m_pValue);
 		if(KickID < 0 || KickID >= MAX_CLIENTS || !m_apPlayers[KickID])
 		{
 			SendChatTarget(ClientID, "Invalid client id to kick");
@@ -1657,7 +1657,7 @@ void CGameContext::OnCallVote(void *pRawMsg, int ClientID)
 			return;
 		}
 
-		if(str_comp_nocase(pMsg->m_Type, "option") == 0)
+		if(str_comp_nocase(pMsg->m_pType, "option") == 0)
 		{
 			// this vote is not a kick/ban or spectate vote
 
@@ -1665,7 +1665,7 @@ void CGameContext::OnCallVote(void *pRawMsg, int ClientID)
 			CVoteOptionServer *pOption = m_pVoteOptionFirst;
 			while(pOption) // loop through all option votes to find out which vote it is
 			{
-				if(str_comp_nocase(pMsg->m_Value, pOption->m_aDescription) == 0) // found out which vote it is
+				if(str_comp_nocase(pMsg->m_pValue, pOption->m_aDescription) == 0) // found out which vote it is
 				{
 					if(!Console()->LineIsValid(pOption->m_aCommand))
 					{
@@ -1743,19 +1743,19 @@ void CGameContext::OnCallVote(void *pRawMsg, int ClientID)
 			{
 				if(Authed != IServer::AUTHED_ADMIN) // allow admins to call any vote they want
 				{
-					str_format(aChatmsg, sizeof(aChatmsg), "'%s' isn't an option on this server", pMsg->m_Value);
+					str_format(aChatmsg, sizeof(aChatmsg), "'%s' isn't an option on this server", pMsg->m_pValue);
 					SendChatTarget(ClientID, aChatmsg);
 					return;
 				}
 				else
 				{
-					str_format(aChatmsg, sizeof(aChatmsg), "'%s' called vote to change server option '%s'", Server()->ClientName(ClientID), pMsg->m_Value);
-					str_format(aDesc, sizeof(aDesc), "%s", pMsg->m_Value);
-					str_format(aCmd, sizeof(aCmd), "%s", pMsg->m_Value);
+					str_format(aChatmsg, sizeof(aChatmsg), "'%s' called vote to change server option '%s'", Server()->ClientName(ClientID), pMsg->m_pValue);
+					str_format(aDesc, sizeof(aDesc), "%s", pMsg->m_pValue);
+					str_format(aCmd, sizeof(aCmd), "%s", pMsg->m_pValue);
 				}
 			}
 		}
-		else if(str_comp_nocase(pMsg->m_Type, "spectate") == 0)
+		else if(str_comp_nocase(pMsg->m_pType, "spectate") == 0)
 		{
 			if(!g_Config.m_SvVoteSpectate)
 			{
@@ -1763,7 +1763,7 @@ void CGameContext::OnCallVote(void *pRawMsg, int ClientID)
 				return;
 			}
 
-			int SpectateID = str_toint(pMsg->m_Value);
+			int SpectateID = str_toint(pMsg->m_pValue);
 			if(SpectateID < 0 || SpectateID >= MAX_CLIENTS || !m_apPlayers[SpectateID] || m_apPlayers[SpectateID]->GetTeam() == TEAM_SPECTATORS)
 			{
 				SendChatTarget(ClientID, "Invalid client id to move");
