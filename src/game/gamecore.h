@@ -255,6 +255,7 @@ public:
 	bool m_Solo;
 	bool m_NoCollision;
 	bool m_Super;
+	int m_FreezeStart;
 
 private:
 	CTeamsCore *m_pTeams;

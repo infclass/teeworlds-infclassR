@@ -840,6 +840,8 @@ void CCharacter::Freeze(float Time, int Player, FREEZEREASON Reason)
 	m_FreezeReason = Reason;
 	
 	m_LastFreezer = Player;
+
+	m_Core.m_FreezeStart = Server()->Tick();
 }
 
 void CCharacter::Unfreeze()

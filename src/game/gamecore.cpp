@@ -84,6 +84,7 @@ void CCharacterCore::Reset()
 	m_Solo = false;
 	m_NoCollision = false;
 	m_Super = false;
+	m_FreezeStart = 0;
 
 	// Infclass Character
 	m_Passenger = nullptr;
