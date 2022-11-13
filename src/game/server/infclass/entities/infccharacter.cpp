@@ -302,6 +302,22 @@ void CInfClassCharacter::Snap(int SnappingClient)
 	pDDNetCharacter->m_Jumps = m_Core.m_Jumps;
 	pDDNetCharacter->m_JumpedTotal = m_Core.m_JumpedTotal;
 
+	// Send freeze info only to the version that can handle it correctly
+	if(IsZombie() && IsFrozen())
+	{
+		IServer::CClientInfo ClientInfo = {0};
+		if(SnappingClient != SERVER_DEMO_CLIENT)
+		{
+			Server()->GetClientInfo(SnappingClient, &ClientInfo);
+		}
+
+		if(ClientInfo.m_InfClassVersion > 150) // Later on: VERSION_INFC_DDNET_CHARACTER
+		{
+			pDDNetCharacter->m_FreezeStart = m_Core.m_FreezeStart;
+			pDDNetCharacter->m_FreezeEnd = Server()->Tick() + m_FrozenTime;
+		}
+	}
+
 	pDDNetCharacter->m_TargetX = m_Core.m_Input.m_TargetX;
 	pDDNetCharacter->m_TargetY = m_Core.m_Input.m_TargetY;
 }
