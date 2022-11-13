@@ -602,7 +602,7 @@ void CInfClassHuman::OnShotgunFired(WeaponFireContext *pFireContext)
 	for(int i = -ShotSpread; i <= ShotSpread; ++i)
 	{
 		float Spreading[] = {-0.21f, -0.14f, -0.070f, 0, 0.070f, 0.14f, 0.21f};
-		float a = GetAngle(Direction);
+		float a = angle(Direction);
 		a += Spreading[i + 3] * 2.0f * (0.25f + 0.75f * static_cast<float>(10 - pFireContext->AmmoAvailable)/10.0f);
 		float v = 1 - (absolute(i) / static_cast<float>(ShotSpread));
 		float Speed = mix<float>(GameServer()->Tuning()->m_ShotgunSpeeddiff, 1.0f, v);
@@ -1629,7 +1629,7 @@ void CInfClassHuman::PlaceTurret(WeaponFireContext *pFireContext)
 
 void CInfClassHuman::OnMercGrenadeFired(WeaponFireContext *pFireContext)
 {
-	float BaseAngle = GetAngle(GetDirection());
+	float BaseAngle = angle(GetDirection());
 
 	// Find bomb
 	bool BombFound = false;
