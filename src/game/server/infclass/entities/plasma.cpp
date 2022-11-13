@@ -8,6 +8,7 @@
 #include <game/server/gamecontext.h>
 
 #include <game/server/infclass/damage_type.h>
+#include <game/server/infclass/entities/infccharacter.h>
 #include <game/server/infclass/infcgamecontroller.h>
 
 CPlasma::CPlasma(CGameContext *pGameContext, vec2 Pos, int Owner, int TrackedPlayer, vec2 Direction, bool Freeze, bool Explosive)
@@ -35,10 +36,10 @@ void CPlasma::Tick()
 	m_LifeSpan--;
 	
 	// tracking, position and collision calculation
-	CCharacter *pTarget = GameServer()->GetPlayerChar(m_TrackedPlayer);
+	CInfClassCharacter *pTarget = GameController()->GetCharacter(m_TrackedPlayer);
 	if(pTarget)
 	{
-		float Dist = distance(m_Pos, pTarget->m_Pos);
+		float Dist = distance(GetPos(), pTarget->GetPos());
 		if(Dist < 24.0f)
 		{
 			//freeze or explode
@@ -51,8 +52,7 @@ void CPlasma::Tick()
 		}
 		else
 		{
-			
-			m_Dir = normalize(pTarget->m_Pos - m_Pos);
+			m_Dir = normalize(pTarget->GetPos() - GetPos());
 			m_Speed = clamp(Dist, 0.0f, 16.0f) * (1.0f - m_InitialAmount);
 			m_Pos += m_Dir*m_Speed;
 			
