@@ -17,6 +17,8 @@ CInfClassLaser::CInfClassLaser(CGameContext *pGameContext, vec2 Pos, vec2 Direct
 	m_Energy = StartEnergy;
 	m_Dir = Direction;
 	m_DamageType = DAMAGE_TYPE::NO_DAMAGE;
+	m_MaxBounces = GameServer()->Tuning()->m_LaserBounceNum;
+	m_BounceCost = GameServer()->Tuning()->m_LaserBounceCost;
 }
 
 CInfClassLaser::CInfClassLaser(CGameContext *pGameContext, vec2 Pos, vec2 Direction, float StartEnergy, int Owner, int Dmg, DAMAGE_TYPE DamageType)
@@ -85,10 +87,10 @@ void CInfClassLaser::DoBounce()
 			m_Pos = TempPos;
 			m_Dir = normalize(TempDir);
 
-			m_Energy -= distance(m_From, m_Pos) + GameServer()->Tuning()->m_LaserBounceCost;
+			m_Energy -= distance(m_From, m_Pos) + m_BounceCost;
 			m_Bounces++;
 
-			if(m_Bounces > GameServer()->Tuning()->m_LaserBounceNum)
+			if(m_Bounces > m_MaxBounces)
 				m_Energy = -1;
 
 			GameServer()->CreateSound(m_Pos, SOUND_LASER_BOUNCE);

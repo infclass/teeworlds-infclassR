@@ -9,6 +9,8 @@ CBiologistLaser::CBiologistLaser(CGameContext *pGameContext, vec2 Pos, vec2 Dire
 	CInfClassLaser(pGameContext, Pos, Direction, 400.0f, Owner, Dmg, CGameWorld::ENTTYPE_LASER)
 {
 	m_DamageType = DAMAGE_TYPE::BIOLOGIST_MINE;
+	m_MaxBounces = 4;
+	m_BounceCost = -100;
 
 	GameWorld()->InsertEntity(this);
 	DoBounce();
@@ -35,50 +37,4 @@ bool CBiologistLaser::HitCharacter(vec2 From, vec2 To)
 	}
 
 	return false;
-}
-
-void CBiologistLaser::DoBounce()
-{
-	m_EvalTick = Server()->Tick();
-
-	if(m_Energy < 0)
-	{
-		GameWorld()->DestroyEntity(this);
-		return;
-	}
-
-	vec2 To = m_Pos + m_Dir * m_Energy;
-
-	if(GameServer()->Collision()->IntersectLine(m_Pos, To, 0x0, &To))
-	{
-		HitCharacter(m_Pos, To);
-		
-		// intersected
-		m_From = m_Pos;
-		m_Pos = To;
-
-		vec2 TempPos = m_Pos;
-		vec2 TempDir = m_Dir * 4.0f;
-
-		GameServer()->Collision()->MovePoint(&TempPos, &TempDir, 1.0f, 0);
-		m_Pos = TempPos;
-		m_Dir = normalize(TempDir);
-
-		m_Energy += 100.0f;
-		m_Energy -= maximum(0.0f, distance(m_From, m_Pos));
-		m_Bounces++;
-
-		if(m_Bounces > 4)
-			m_Energy = -1;
-
-		GameServer()->CreateSound(m_Pos, SOUND_LASER_BOUNCE);
-	}
-	else
-	{
-		HitCharacter(m_Pos, To);
-		
-		m_From = m_Pos;
-		m_Pos = To;
-		m_Energy = -1;
-	}
 }

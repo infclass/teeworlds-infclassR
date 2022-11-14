@@ -29,6 +29,8 @@ protected:
 	DAMAGE_TYPE m_DamageType;
 	float m_Energy;
 	int m_Bounces = 0;
+	int m_MaxBounces = 0;
+	int m_BounceCost = 0;
 	int m_EvalTick = 0;
 	int m_Dmg = 0;
 };

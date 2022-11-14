@@ -12,7 +12,6 @@ public:
 
 protected:
 	bool HitCharacter(vec2 From, vec2 To) final;
-	void DoBounce() final;
 };
 
 #endif
