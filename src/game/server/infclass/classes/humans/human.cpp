@@ -1212,7 +1212,14 @@ void CInfClassHuman::BroadcastWeaponState() const
 		if(m_pCharacter->GetActiveWeapon() == WEAPON_HAMMER)
 		{
 			int Turrets = m_TurretCount;
-			if(Turrets > 0)
+			if(!GameController()->AreTurretsEnabled())
+			{
+				GameServer()->SendBroadcast_Localization(GetCID(),
+					BROADCAST_PRIORITY_WEAPONSTATE, BROADCAST_DURATION_REALTIME,
+					_("The turrets are not allowed by the game rules (at least right now)."),
+					nullptr);
+			}
+			else if(Turrets > 0)
 			{
 				int MaxTurrets = Config()->m_InfTurretMaxPerPlayer;
 				if(MaxTurrets == 1)
@@ -1616,7 +1623,7 @@ void CInfClassHuman::PlaceTurret(WeaponFireContext *pFireContext)
 {
 	const vec2 Direction = GetDirection();
 
-	if(Config()->m_InfTurretEnable && m_TurretCount)
+	if(GameController()->AreTurretsEnabled() && m_TurretCount)
 	{
 		if(Config()->m_InfTurretEnableLaser)
 		{

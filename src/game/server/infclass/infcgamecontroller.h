@@ -283,7 +283,6 @@ private:
 
 	bool m_InfectedStarted;
 	bool m_RoundStarted = false;
-	bool m_TurretsEnabled = false;
 	bool m_SuggestMoreRounds = false;
 	bool m_MoreRoundsSuggested = false;
 };

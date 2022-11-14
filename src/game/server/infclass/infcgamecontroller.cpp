@@ -593,7 +593,6 @@ void CInfClassGameController::ResetFinalExplosion()
 
 void CInfClassGameController::SaveRoundRules()
 {
-	m_TurretsEnabled = AreTurretsEnabled();
 }
 
 int CInfClassGameController::GetRoundTick() const
@@ -2793,9 +2792,6 @@ bool CInfClassGameController::AreTurretsEnabled() const
 {
 	if(!Config()->m_InfTurretEnable)
 		return false;
-
-	if(m_RoundStarted)
-		return m_TurretsEnabled;
 
 	return Server()->GetActivePlayerCount() >= Config()->m_InfMinPlayersForTurrets;
 }
