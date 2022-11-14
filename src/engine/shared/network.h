@@ -10,6 +10,8 @@
 
 #include <engine/message.h>
 
+#include <base/tl/array.h>
+
 /*
 
 CURRENT:

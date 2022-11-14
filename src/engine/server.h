@@ -9,6 +9,8 @@
 #include <game/generated/protocol.h>
 #include <engine/shared/protocol.h>
 
+#include <string>
+
 // When recording a demo on the server, the ClientID -1 is used
 enum
 {
