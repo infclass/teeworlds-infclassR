@@ -5,7 +5,7 @@ cmake_minimum_required(VERSION 3.7)
 project(InfclassR
     VERSION 1.5.0
 )
-set(VERSION_SUFFIX "_a2")
+set(VERSION_SUFFIX "_a5")
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
