@@ -157,16 +157,56 @@ inline CInfClassPlayer *CInfClassPlayer::GetInstance(CPlayer *pPlayer)
 	return static_cast<CInfClassPlayer *>(pPlayer);
 }
 
+enum
+{
+	PLAYERITER_ALL = 0x0,
+
+	PLAYERITER_COND_READY = 0x1,
+	PLAYERITER_COND_SPEC = 0x2,
+	PLAYERITER_COND_NOSPEC = 0x4,
+
+	PLAYERITER_INGAME = PLAYERITER_COND_READY | PLAYERITER_COND_NOSPEC,
+	PLAYERITER_SPECTATORS = PLAYERITER_COND_READY | PLAYERITER_COND_SPEC,
+};
+
 template<int FLAGS>
-class CInfClassPlayerIterator : public CPlayerIterator<FLAGS>
+class CInfClassPlayerIterator
 {
 public:
 	CInfClassPlayerIterator(CPlayer **ppPlayers) :
-		CPlayerIterator<FLAGS>(ppPlayers)
+		m_ppPlayers(ppPlayers)
 	{
+		Reset();
 	}
 
-	CInfClassPlayer *Player() { return static_cast<CInfClassPlayer *> (CPlayerIterator<FLAGS>::Player()); }
+	bool Next()
+	{
+		for(m_ClientID = m_ClientID + 1; m_ClientID < MAX_CLIENTS; m_ClientID++)
+		{
+			CPlayer *pPlayer = Player();
+
+			if(!pPlayer)
+				continue;
+			if((FLAGS & PLAYERITER_COND_READY) && (!pPlayer->m_IsInGame))
+				continue;
+			if((FLAGS & PLAYERITER_COND_NOSPEC) && (pPlayer->GetTeam() == TEAM_SPECTATORS))
+				continue;
+			if((FLAGS & PLAYERITER_COND_SPEC) && (pPlayer->GetTeam() != TEAM_SPECTATORS))
+				continue;
+
+			return true;
+		}
+
+		return false;
+	}
+
+	void Reset() { m_ClientID = -1; }
+	CInfClassPlayer *Player() { return static_cast<CInfClassPlayer *>(m_ppPlayers[m_ClientID]); }
+	int ClientID() { return m_ClientID; }
+
+private:
+	CPlayer **m_ppPlayers;
+	int m_ClientID;
 };
 
 #endif // GAME_SERVER_INFCLASS_PLAYER_H

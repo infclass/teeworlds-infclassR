@@ -179,11 +179,15 @@ void IGameController::DoActivityCheck()
 	int HumanMaxInactiveTimeSecs = Config()->m_InfInactiveHumansKickTime ? Config()->m_InfInactiveHumansKickTime : Config()->m_SvInactiveKickTime * 60;
 	int InfectedMaxInactiveTimeSecs = Config()->m_InfInactiveInfectedKickTime ? Config()->m_InfInactiveInfectedKickTime : Config()->m_SvInactiveKickTime * 60;
 
-	unsigned int nbPlayers=0;
-	CPlayerIterator<PLAYERITER_INGAME> Iter(GameServer()->m_apPlayers);
-	while(Iter.Next())
+	unsigned int nbPlayers = 0;
+
+	for(int i = 0; i < MAX_CLIENTS; ++i)
 	{
-		nbPlayers++;
+		if(GameServer()->m_apPlayers[i])
+			nbPlayers++;
+
+		if(nbPlayers > 2)
+			break;
 	}
 
 	if(nbPlayers < 2)
