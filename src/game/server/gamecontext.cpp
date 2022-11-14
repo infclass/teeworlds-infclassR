@@ -3570,10 +3570,10 @@ void CGameContext::ChatHelp(int ClientID, const char *pHelpPage)
 	else
 	{
 		bool Ok = true;
-		int PlayerClass = CInfClassGameController::GetClassByName(pHelpPage, &Ok);
+		PLAYERCLASS PlayerClass = CInfClassGameController::GetClassByName(pHelpPage, &Ok);
 		if(Ok)
 		{
-			WriteClassHelpPage(&Buffer, pLanguage, static_cast<PLAYERCLASS>(PlayerClass));
+			WriteClassHelpPage(&Buffer, pLanguage, PlayerClass);
 		}
 	}
 

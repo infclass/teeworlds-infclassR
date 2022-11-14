@@ -100,7 +100,7 @@ public:
 	void EndRound(ROUND_END_REASON Reason);
 	void DoTeamChange(class CPlayer *pPlayer, int Team, bool DoChatMsg = true) override;
 	bool TryRespawn(CInfClassPlayer *pPlayer, SpawnContext *pContext);
-	int ChooseHumanClass(const CInfClassPlayer *pPlayer) const;
+	PLAYERCLASS ChooseHumanClass(const CInfClassPlayer *pPlayer) const;
 	int ChooseInfectedClass(const CInfClassPlayer *pPlayer) const;
 	bool GetPlayerClassEnabled(int PlayerClass) const;
 	int GetMinPlayersForClass(int PlayerClass) const;
@@ -147,13 +147,13 @@ public:
 	static bool IsZombieClass(int PlayerClass);
 	static bool IsDefenderClass(int PlayerClass);
 	static bool IsSupportClass(int PlayerClass);
-	static int GetClassByName(const char *pClassName, bool *pOk = nullptr);
+	static PLAYERCLASS GetClassByName(const char *pClassName, bool *pOk = nullptr);
 	static const char *GetClassName(int PlayerClass);
 	static const char *GetClassPluralName(int PlayerClass);
 	static const char *GetClassDisplayName(int PlayerClass, const char *pDefaultText = nullptr);
 	static const char *GetClanForClass(int PlayerClass, const char *pDefaultText = nullptr);
 	static const char *GetClassPluralDisplayName(int PlayerClass);
-	static int MenuClassToPlayerClass(int MenuClass);
+	static PLAYERCLASS MenuClassToPlayerClass(int MenuClass);
 	static int DamageTypeToWeapon(DAMAGE_TYPE DamageType, TAKEDAMAGEMODE *pMode = nullptr);
 
 	void RegisterChatCommands(class IConsole *pConsole) override;
@@ -164,7 +164,7 @@ public:
 	static void ConPreferClass(IConsole::IResult *pResult, void *pUserData);
 	static void ConAlwaysRandom(IConsole::IResult *pResult, void *pUserData);
 	void SetPreferredClass(int ClientID, const char *pClassName);
-	void SetPreferredClass(int ClientID, int Class);
+	void SetPreferredClass(int ClientID, PLAYERCLASS Class);
 	static void ConAntiPing(IConsole::IResult *pResult, void *pUserData);
 
 	static void ConUserSetClass(IConsole::IResult *pResult, void *pUserData);

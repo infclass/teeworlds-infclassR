@@ -1469,7 +1469,7 @@ void CInfClassCharacter::HandleMapMenu()
 	}
 	else
 	{
-		int NewClass = CInfClassGameController::MenuClassToPlayerClass(HoveredMenuItem);
+		PLAYERCLASS NewClass = CInfClassGameController::MenuClassToPlayerClass(HoveredMenuItem);
 		CLASS_AVAILABILITY Availability = GameController()->GetPlayerClassAvailability(NewClass, pPlayer);
 
 		switch(Availability)
@@ -1528,7 +1528,7 @@ void CInfClassCharacter::HandleMapMenuClicked()
 
 	CInfClassPlayer *pPlayer = GetPlayer();
 	int MenuClass = pPlayer->m_MapMenuItem;
-	int NewClass = CInfClassGameController::MenuClassToPlayerClass(MenuClass);
+	PLAYERCLASS NewClass = CInfClassGameController::MenuClassToPlayerClass(MenuClass);
 	if(NewClass == PLAYERCLASS_RANDOM)
 	{
 		NewClass = GameController()->ChooseHumanClass(pPlayer);

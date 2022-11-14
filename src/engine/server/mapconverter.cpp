@@ -1065,8 +1065,8 @@ int CMapConverter::Finalize()
 				for(int i=0; i<NUM_MENUCLASS; i++) 
 				{
 					int ClassMask = 0;
-					
-					int PlayerClass = CInfClassGameController::MenuClassToPlayerClass(i);
+
+					PLAYERCLASS PlayerClass = CInfClassGameController::MenuClassToPlayerClass(i);
 					if(CInfClassGameController::IsDefenderClass(PlayerClass))
 						ClassMask = MASK_DEFENDER;
 					else if(CInfClassGameController::IsSupportClass(PlayerClass))

@@ -82,7 +82,7 @@ enum class ROUND_END_REASON
 struct InfclassPlayerPersistantData : public CGameContext::CPersistentClientData
 {
 	bool m_AntiPing = false;
-	int m_PreferredClass = PLAYERCLASS_INVALID;
+	PLAYERCLASS m_PreferredClass = PLAYERCLASS_INVALID;
 	int m_LastInfectionTime = 0;
 };
 
@@ -634,18 +634,17 @@ bool CInfClassGameController::IsSupportClass(int PlayerClass)
 	}
 }
 
-int CInfClassGameController::GetClassByName(const char *pClassName, bool *pOk)
+PLAYERCLASS CInfClassGameController::GetClassByName(const char *pClassName, bool *pOk)
 {
 	struct ExtraName
 	{
-		ExtraName(const char *pN, int Class)
-			: pName(pN)
-			, PlayerClass(Class)
+		ExtraName(const char *pN, PLAYERCLASS Class) :
+			pName(pN), PlayerClass(Class)
 		{
 		}
 
 		const char *pName = nullptr;
-		int PlayerClass = 0;
+		PLAYERCLASS PlayerClass = PLAYERCLASS_INVALID;
 	};
 
 	static const ExtraName extraNames[] = {
@@ -674,7 +673,7 @@ int CInfClassGameController::GetClassByName(const char *pClassName, bool *pOk)
 		const char *pSingularName = CInfClassGameController::GetClassName(PlayerClass);
 		const char *pPluralName = CInfClassGameController::GetClassPluralName(PlayerClass);
 		if((str_comp(pClassName, pSingularName) == 0) || (str_comp(pClassName, pPluralName) == 0)) {
-			return PlayerClass;
+			return static_cast<PLAYERCLASS>(PlayerClass);
 		}
 	}
 
@@ -910,9 +909,9 @@ const char *CInfClassGameController::GetClassPluralDisplayName(int PlayerClass)
 	}
 }
 
-int CInfClassGameController::MenuClassToPlayerClass(int MenuClass)
+PLAYERCLASS CInfClassGameController::MenuClassToPlayerClass(int MenuClass)
 {
-	int PlayerClass = PLAYERCLASS_INVALID;
+	PLAYERCLASS PlayerClass = PLAYERCLASS_INVALID;
 	switch(MenuClass)
 	{
 		case CMapConverter::MENUCLASS_MEDIC:
@@ -1165,7 +1164,7 @@ void CInfClassGameController::ConAlwaysRandom(IConsole::IResult *pResult, void *
 void CInfClassGameController::SetPreferredClass(int ClientID, const char *pClassName)
 {
 	bool Ok = false;
-	int PlayerClass = GetClassByName(pClassName, &Ok);
+	PLAYERCLASS PlayerClass = GetClassByName(pClassName, &Ok);
 
 	if(!Ok)
 	{
@@ -1176,7 +1175,7 @@ void CInfClassGameController::SetPreferredClass(int ClientID, const char *pClass
 	SetPreferredClass(ClientID, PlayerClass);
 }
 
-void CInfClassGameController::SetPreferredClass(int ClientID, int Class)
+void CInfClassGameController::SetPreferredClass(int ClientID, PLAYERCLASS Class)
 {
 	if(!IsHumanClass(Class))
 	{
@@ -1251,7 +1250,7 @@ void CInfClassGameController::ConUserSetClass(IConsole::IResult *pResult)
 		return;
 
 	bool Ok = false;
-	int PlayerClass = GetClassByName(pClassName, &Ok);
+	PLAYERCLASS PlayerClass = GetClassByName(pClassName, &Ok);
 	if(Ok)
 	{
 		pPlayer->SetClass(PlayerClass);
@@ -1284,7 +1283,7 @@ void CInfClassGameController::ConSetClass(IConsole::IResult *pResult)
 		return;
 
 	bool Ok = false;
-	int PlayerClass = GetClassByName(pClassName, &Ok);
+	PLAYERCLASS PlayerClass = GetClassByName(pClassName, &Ok);
 	if(Ok)
 	{
 		pPlayer->SetClass(PlayerClass);
@@ -1399,7 +1398,7 @@ void CInfClassGameController::ConAddFunRound(IConsole::IResult *pResult, void *p
 	for(int argN = 0; argN < pResult->NumArguments(); ++argN)
 	{
 		const char *pArgument = pResult->GetString(argN);
-		const int PlayerClass = CInfClassGameController::GetClassByName(pArgument);
+		const PLAYERCLASS PlayerClass = CInfClassGameController::GetClassByName(pArgument);
 		if((PlayerClass > START_HUMANCLASS) && (PlayerClass < END_HUMANCLASS))
 		{
 			Settings.HumanClass = PlayerClass;
@@ -3683,7 +3682,7 @@ bool CInfClassGameController::TryRespawn(CInfClassPlayer *pPlayer, SpawnContext 
 	return false;
 }
 
-int CInfClassGameController::ChooseHumanClass(const CInfClassPlayer *pPlayer) const
+PLAYERCLASS CInfClassGameController::ChooseHumanClass(const CInfClassPlayer *pPlayer) const
 {
 	//Get information about existing humans
 	int nbSupport = 0;
@@ -3745,7 +3744,7 @@ int CInfClassGameController::ChooseHumanClass(const CInfClassPlayer *pPlayer) co
 		}
 	}
 
-	int PreferredClass = pPlayer->GetPreferredClass();
+	PLAYERCLASS PreferredClass = pPlayer->GetPreferredClass();
 	if(PreferredClass != PLAYERCLASS_INVALID)
 	{
 		if(PreferredClass != PLAYERCLASS_RANDOM)
@@ -3757,7 +3756,8 @@ int CInfClassGameController::ChooseHumanClass(const CInfClassPlayer *pPlayer) co
 		}
 	}
 
-	return START_HUMANCLASS + 1 + random_distribution(Probability, Probability + NB_HUMANCLASS);
+	int Result = START_HUMANCLASS + 1 + random_distribution(Probability, Probability + NB_HUMANCLASS);
+	return static_cast<PLAYERCLASS>(Result);
 }
 
 int CInfClassGameController::ChooseInfectedClass(const CInfClassPlayer *pPlayer) const

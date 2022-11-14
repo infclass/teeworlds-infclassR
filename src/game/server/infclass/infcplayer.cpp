@@ -325,7 +325,7 @@ int CInfClassPlayer::GetInfectionTimestamp() const
 	return m_GameInfectionTimestamp;
 }
 
-void CInfClassPlayer::SetPreferredClass(int Class)
+void CInfClassPlayer::SetPreferredClass(PLAYERCLASS Class)
 {
 	m_PreferredClass = Class;
 }

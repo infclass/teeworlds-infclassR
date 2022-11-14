@@ -54,8 +54,8 @@ public:
 	void SetInfectionTimestamp(int Timestamp);
 	int GetInfectionTimestamp() const;
 
-	int GetPreferredClass() const { return m_PreferredClass; }
-	void SetPreferredClass(int Class);
+	PLAYERCLASS GetPreferredClass() const { return m_PreferredClass; }
+	void SetPreferredClass(PLAYERCLASS Class);
 
 	void HandleInfection();
 	void KillCharacter(int Weapon = WEAPON_GAME) override;
@@ -122,7 +122,7 @@ protected:
 	CInfClassGameController *m_pGameController = nullptr;
 	CInfClassPlayerClass *m_pInfcPlayerClass = nullptr;
 
-	int m_PreferredClass;
+	PLAYERCLASS m_PreferredClass;
 	bool m_AntiPing = false;
 
 	int m_Kills = 0;
