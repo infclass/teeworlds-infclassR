@@ -168,7 +168,7 @@ void CInfClassGameController::OnPlayerDisconnect(CPlayer *pBasePlayer, int Type,
 
 void CInfClassGameController::DoPlayerInfection(CInfClassPlayer *pPlayer, CInfClassPlayer *pInfectiousPlayer, int PreviousClass)
 {
-	int c = ChooseInfectedClass(pPlayer);
+	PLAYERCLASS c = ChooseInfectedClass(pPlayer);
 	pPlayer->SetClass(c);
 
 	FallInLoveIfInfectedEarly(pPlayer->GetCharacter());
@@ -681,7 +681,7 @@ PLAYERCLASS CInfClassGameController::GetClassByName(const char *pClassName, bool
 	{
 		*pOk = false;
 	}
-	return PLAYERCLASS_NONE;
+	return PLAYERCLASS_INVALID;
 }
 
 const char *CInfClassGameController::GetClassName(int PlayerClass)
@@ -1398,7 +1398,13 @@ void CInfClassGameController::ConAddFunRound(IConsole::IResult *pResult, void *p
 	for(int argN = 0; argN < pResult->NumArguments(); ++argN)
 	{
 		const char *pArgument = pResult->GetString(argN);
-		const PLAYERCLASS PlayerClass = CInfClassGameController::GetClassByName(pArgument);
+		bool Ok = true;
+		const PLAYERCLASS PlayerClass = CInfClassGameController::GetClassByName(pArgument, &Ok);
+		if(!Ok)
+		{
+			// Ignore other words (there can be "undeads vs heroes", ignore "vs" in such case)
+			continue;
+		}
 		if((PlayerClass > START_HUMANCLASS) && (PlayerClass < END_HUMANCLASS))
 		{
 			Settings.HumanClass = PlayerClass;
@@ -1409,7 +1415,7 @@ void CInfClassGameController::ConAddFunRound(IConsole::IResult *pResult, void *p
 		}
 	}
 
-	if(!Settings.HumanClass || !Settings.InfectedClass)
+	if((Settings.HumanClass == PLAYERCLASS_INVALID) || (Settings.InfectedClass == PLAYERCLASS_INVALID))
 	{
 		pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "server", "invalid special fun round configuration");
 		return;
@@ -2085,7 +2091,7 @@ void CInfClassGameController::DoTeamChange(CPlayer *pBasePlayer, int Team, bool 
 
 	if((Team != TEAM_SPECTATORS) && IsInfectionStarted() && !pPlayer->IsZombie())
 	{
-		int c = ChooseInfectedClass(pPlayer);
+		PLAYERCLASS c = ChooseInfectedClass(pPlayer);
 		pPlayer->SetClass(c);
 	}
 }
@@ -2382,9 +2388,10 @@ void CInfClassGameController::Tick()
 					//To avoid cheating, we assign to him the same class again.
 					if(pSession->m_RoundId == m_RoundId)
 					{
-						if(IsInfectedClass(pSession->m_Class) == IsInfectionStarted())
+						const PLAYERCLASS ClassFromSession = static_cast<PLAYERCLASS>(pSession->m_Class);
+						if(IsInfectedClass(ClassFromSession) == IsInfectionStarted())
 						{
-							Iter.Player()->SetClass(pSession->m_Class);
+							Iter.Player()->SetClass(ClassFromSession);
 						}
 					}
 
@@ -3025,7 +3032,7 @@ CPlayer *CInfClassGameController::CreatePlayer(int ClientID, bool IsSpectator, v
 
 	if(IsInfectionStarted())
 	{
-		int c = ChooseInfectedClass(pPlayer);
+		PLAYERCLASS c = ChooseInfectedClass(pPlayer);
 		pPlayer->SetClass(c);
 	}
 
@@ -3760,11 +3767,11 @@ PLAYERCLASS CInfClassGameController::ChooseHumanClass(const CInfClassPlayer *pPl
 	return static_cast<PLAYERCLASS>(Result);
 }
 
-int CInfClassGameController::ChooseInfectedClass(const CInfClassPlayer *pPlayer) const
+PLAYERCLASS CInfClassGameController::ChooseInfectedClass(const CInfClassPlayer *pPlayer) const
 {
 	// if(pPlayer->InfectionType() == INFECTION_TYPE::RESTORE_INF_CLASS)
 	{
-		int PrevClass = pPlayer->GetPreviousInfectedClass();
+		PLAYERCLASS PrevClass = pPlayer->GetPreviousInfectedClass();
 		if(PrevClass != PLAYERCLASS_INVALID)
 		{
 			return PrevClass;
@@ -3832,7 +3839,7 @@ int CInfClassGameController::ChooseInfectedClass(const CInfClassPlayer *pPlayer)
 		Server()->ClientName(pPlayer->GetCID()), Seconds, Class);
 	Console()->Print(IConsole::OUTPUT_LEVEL_DEBUG, "game", aBuf);
 
-	return Class;
+	return static_cast<PLAYERCLASS>(Class);
 }
 
 bool CInfClassGameController::GetPlayerClassEnabled(int PlayerClass) const

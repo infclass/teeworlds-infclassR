@@ -47,14 +47,14 @@ static const char *toString(ROUND_TYPE RoundType);
 struct FunRoundConfiguration
 {
 	FunRoundConfiguration() = default;
-	FunRoundConfiguration(int Infected, int Human) :
+	FunRoundConfiguration(PLAYERCLASS Infected, PLAYERCLASS Human) :
 		InfectedClass(Infected),
 		HumanClass(Human)
 	{
 	}
 
-	int InfectedClass = 0;
-	int HumanClass = 0;
+	PLAYERCLASS InfectedClass = PLAYERCLASS_INVALID;
+	PLAYERCLASS HumanClass = PLAYERCLASS_INVALID;
 };
 
 class CInfClassGameController : public IGameController
@@ -101,7 +101,7 @@ public:
 	void DoTeamChange(class CPlayer *pPlayer, int Team, bool DoChatMsg = true) override;
 	bool TryRespawn(CInfClassPlayer *pPlayer, SpawnContext *pContext);
 	PLAYERCLASS ChooseHumanClass(const CInfClassPlayer *pPlayer) const;
-	int ChooseInfectedClass(const CInfClassPlayer *pPlayer) const;
+	PLAYERCLASS ChooseInfectedClass(const CInfClassPlayer *pPlayer) const;
 	bool GetPlayerClassEnabled(int PlayerClass) const;
 	int GetMinPlayersForClass(int PlayerClass) const;
 	int GetClassPlayerLimit(int PlayerClass) const;

@@ -46,7 +46,7 @@ bool CMedicLaser::OnCharacterHit(CInfClassCharacter *pHit)
 	}
 	else
 	{
-		int PreviousClass = pHit->GetPlayer()->GetPreviousHumanClass();
+		PLAYERCLASS PreviousClass = pHit->GetPlayer()->GetPreviousHumanClass();
 		if(PreviousClass == PLAYERCLASS_INVALID)
 		{
 			PreviousClass = PLAYERCLASS_MEDIC;

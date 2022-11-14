@@ -351,9 +351,9 @@ void CInfClassPlayer::SetCharacterClass(CInfClassPlayerClass *pClass)
 	m_pInfcPlayerClass = pClass;
 }
 
-void CInfClassPlayer::SetClass(int newClass)
+void CInfClassPlayer::SetClass(PLAYERCLASS NewClass)
 {
-	if(m_class == newClass)
+	if(m_class == NewClass)
 		return;
 
 	if(m_class != PLAYERCLASS_INVALID)
@@ -379,7 +379,7 @@ void CInfClassPlayer::SetClass(int newClass)
 		m_pInfcPlayerClass->SetCharacter(nullptr);
 	}
 
-	m_class = newClass;
+	m_class = NewClass;
 
 	const bool HadHumanClass = GetCharacterClass() && GetCharacterClass()->IsHuman();
 	const bool HadInfectedClass = GetCharacterClass() && GetCharacterClass()->IsZombie();
@@ -511,11 +511,11 @@ bool CInfClassPlayer::RandomClassChoosen() const
 	return m_RandomClassRoundId == GameController()->GetRoundId();
 }
 
-int CInfClassPlayer::GetPreviousInfectedClass() const
+PLAYERCLASS CInfClassPlayer::GetPreviousInfectedClass() const
 {
 	for (int i = m_PreviousClasses.Size() - 1; i > 0; --i)
 	{
-		int Class = m_PreviousClasses.At(i);
+		PLAYERCLASS Class = m_PreviousClasses.At(i);
 		if(IsInfectedClass(Class))
 		{
 			return Class;
@@ -525,11 +525,11 @@ int CInfClassPlayer::GetPreviousInfectedClass() const
 	return PLAYERCLASS_INVALID;
 }
 
-int CInfClassPlayer::GetPreviousHumanClass() const
+PLAYERCLASS CInfClassPlayer::GetPreviousHumanClass() const
 {
 	for (int i = m_PreviousClasses.Size() - 1; i > 0; --i)
 	{
-		int Class = m_PreviousClasses.At(i);
+		PLAYERCLASS Class = m_PreviousClasses.At(i);
 		if(IsHumanClass(Class))
 		{
 			return Class;

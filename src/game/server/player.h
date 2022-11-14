@@ -149,7 +149,7 @@ public:
 
 /* INFECTION MODIFICATION START ***************************************/
 protected:
-	int m_class;
+	PLAYERCLASS m_class;
 	int m_ScoreMode;
 	int m_DefaultScoreMode;
 	char m_aLanguage[16];
@@ -171,7 +171,6 @@ public:
 	void ResetNumberKills();
 	
 	int GetClass() const;
-	virtual void SetClass(int newClass) = 0;
 	bool IsZombie() const;
 	bool IsActuallyZombie() const;
 	bool IsHuman() const;
