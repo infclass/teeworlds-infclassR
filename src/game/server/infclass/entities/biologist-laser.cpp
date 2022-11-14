@@ -1,27 +1,20 @@
 /* (c) Magnus Auvinen. See licence.txt in the root of the distribution for more information. */
 /* If you are missing that file, acquire a complete release at teeworlds.com.                */
-#include <game/generated/protocol.h>
-#include <game/server/gamecontext.h>
-
-#include <game/server/infclass/damage_type.h>
-#include <game/server/infclass/entities/infccharacter.h>
-
 #include "biologist-laser.h"
 
-CBiologistLaser::CBiologistLaser(CGameContext *pGameContext, vec2 Pos, vec2 Direction, int Owner, int Dmg)
-	: CInfCEntity(pGameContext, CGameWorld::ENTTYPE_LASER, Pos, Owner)
+#include <game/server/gamecontext.h>
+#include <game/server/infclass/entities/infccharacter.h>
+
+CBiologistLaser::CBiologistLaser(CGameContext *pGameContext, vec2 Pos, vec2 Direction, int Owner, int Dmg) :
+	CInfClassLaser(pGameContext, Pos, Direction, 400.0f, Owner, Dmg, CGameWorld::ENTTYPE_LASER)
 {
-	m_Dmg = Dmg;
-	m_Energy = 400.0f;
-	m_Dir = Direction;
-	m_Bounces = 0;
-	m_EvalTick = 0;
+	m_DamageType = DAMAGE_TYPE::BIOLOGIST_MINE;
+
 	GameWorld()->InsertEntity(this);
 	DoBounce();
 }
 
-
-void CBiologistLaser::HitCharacter(vec2 From, vec2 To)
+bool CBiologistLaser::HitCharacter(vec2 From, vec2 To)
 {
 	for(CInfClassCharacter *p = (CInfClassCharacter*) GameWorld()->FindFirst(CGameWorld::ENTTYPE_CHARACTER); p; p = (CInfClassCharacter *)p->TypeNext())
 	{
@@ -36,9 +29,12 @@ void CBiologistLaser::HitCharacter(vec2 From, vec2 To)
 		if(Len < p->m_ProximityRadius)
 		{
 			p->TakeDamage(vec2(0.f, 0.f), m_Dmg, m_Owner, DAMAGE_TYPE::BIOLOGIST_MINE);
-			break;
+			// Always return false to continue hits
+			return false;
 		}
 	}
+
+	return false;
 }
 
 void CBiologistLaser::DoBounce()
@@ -85,31 +81,4 @@ void CBiologistLaser::DoBounce()
 		m_Pos = To;
 		m_Energy = -1;
 	}
-}
-
-void CBiologistLaser::Tick()
-{
-	if(Server()->Tick() > m_EvalTick+(Server()->TickSpeed()*GameServer()->Tuning()->m_LaserBounceDelay)/1000.0f)
-		DoBounce();
-}
-
-void CBiologistLaser::TickPaused()
-{
-	++m_EvalTick;
-}
-
-void CBiologistLaser::Snap(int SnappingClient)
-{
-	if(NetworkClipped(SnappingClient))
-		return;
-
-	CNetObj_Laser *pObj = static_cast<CNetObj_Laser *>(Server()->SnapNewItem(NETOBJTYPE_LASER, m_ID, sizeof(CNetObj_Laser)));
-	if(!pObj)
-		return;
-
-	pObj->m_X = (int)m_Pos.x;
-	pObj->m_Y = (int)m_Pos.y;
-	pObj->m_FromX = (int)m_From.x;
-	pObj->m_FromY = (int)m_From.y;
-	pObj->m_StartTick = m_EvalTick;
 }

@@ -3,28 +3,16 @@
 #ifndef GAME_SERVER_ENTITIES_BIOLOGIST_LASER_H
 #define GAME_SERVER_ENTITIES_BIOLOGIST_LASER_H
 
-#include "infcentity.h"
+#include "infc-laser.h"
 
-class CBiologistLaser : public CInfCEntity
+class CBiologistLaser : public CInfClassLaser
 {
 public:
 	CBiologistLaser(CGameContext *pGameContext, vec2 Pos, vec2 Direction, int Owner, int Dmg);
 
-	virtual void Tick();
-	virtual void TickPaused();
-	virtual void Snap(int SnappingClient);
-	
 protected:
-	void HitCharacter(vec2 From, vec2 To);
-	void DoBounce();
-
-private:
-	vec2 m_From;
-	vec2 m_Dir;
-	float m_Energy;
-	int m_Bounces;
-	int m_EvalTick;
-	int m_Dmg;
+	bool HitCharacter(vec2 From, vec2 To) final;
+	void DoBounce() final;
 };
 
 #endif
