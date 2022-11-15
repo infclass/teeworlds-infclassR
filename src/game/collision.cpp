@@ -774,7 +774,7 @@ bool CCollision::AreConnected(vec2 Pos1, vec2 Pos2, float Radius)
 	if(distance(Pos1, Pos2) > Radius)
 		return false;
 	
-	int TileRadius = std::ceil(Radius/32.0f);
+	int TileRadius = (int)ceilf(Radius / 32.0f);
 	int CenterX = TileRadius;
 	int CenterY = TileRadius;
 	int Width = 2*TileRadius+1;
