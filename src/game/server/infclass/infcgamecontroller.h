@@ -110,6 +110,7 @@ public:
 	int GetInfectedCount(int InfectedPlayerClass = PLAYERCLASS_INVALID) const;
 
 	ROUND_TYPE GetRoundType() const;
+	void QueueRoundType(ROUND_TYPE RoundType);
 
 	CLASS_AVAILABILITY GetPlayerClassAvailability(int PlayerClass, const CInfClassPlayer *pForPlayer = nullptr) const;
 	bool CanVote() override;

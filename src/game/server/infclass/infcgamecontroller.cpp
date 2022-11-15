@@ -1306,7 +1306,7 @@ void CInfClassGameController::ConQueueSpecialRound(IConsole::IResult *pResult, v
 	{
 		return;
 	}
-	pSelf->m_QueuedRoundType = Type;
+	pSelf->QueueRoundType(Type);
 }
 
 void CInfClassGameController::ConStartFunRound(IConsole::IResult *pResult, void *pUserData)
@@ -1327,7 +1327,7 @@ void CInfClassGameController::ConStartFunRound(IConsole::IResult *pResult, void 
 		return;
 	}
 
-	pSelf->m_QueuedRoundType = ROUND_TYPE::FUN;
+	pSelf->QueueRoundType(ROUND_TYPE::FUN);
 	pSelf->StartRound();
 }
 
@@ -1350,7 +1350,7 @@ void CInfClassGameController::ConQueueFunRound(IConsole::IResult *pResult, void 
 		return;
 	}
 
-	pSelf->m_QueuedRoundType = ROUND_TYPE::FUN;
+	pSelf->QueueRoundType(ROUND_TYPE::FUN);
 }
 
 void CInfClassGameController::ConStartSpecialFunRound(IConsole::IResult *pResult, void *pUserData)
@@ -1434,14 +1434,14 @@ void CInfClassGameController::ConAddFunRound(IConsole::IResult *pResult, void *p
 void CInfClassGameController::ConStartFastRound(IConsole::IResult *pResult, void *pUserData)
 {
 	CInfClassGameController *pSelf = (CInfClassGameController *)pUserData;
-	pSelf->m_QueuedRoundType = ROUND_TYPE::FAST;
+	pSelf->QueueRoundType(ROUND_TYPE::FAST);
 	pSelf->StartRound();
 }
 
 void CInfClassGameController::ConQueueFastRound(IConsole::IResult *pResult, void *pUserData)
 {
 	CInfClassGameController *pSelf = (CInfClassGameController *)pUserData;
-	pSelf->m_QueuedRoundType = ROUND_TYPE::FAST;
+	pSelf->QueueRoundType(ROUND_TYPE::FAST);
 }
 
 void CInfClassGameController::ConMapRotationStatus(IConsole::IResult *pResult, void *pUserData)
@@ -1965,7 +1965,7 @@ CGameWorld *CInfClassGameController::GameWorld()
 void CInfClassGameController::StartRound()
 {
 	m_RoundType = m_QueuedRoundType;
-	m_QueuedRoundType = ROUND_TYPE::NORMAL;
+	QueueRoundType(ROUND_TYPE::NORMAL);
 
 	switch(GetRoundType())
 	{
@@ -3953,6 +3953,12 @@ int CInfClassGameController::GetInfectedCount(int InfectedPlayerClass) const
 ROUND_TYPE CInfClassGameController::GetRoundType() const
 {
 	return m_RoundType;
+}
+
+void CInfClassGameController::QueueRoundType(ROUND_TYPE RoundType)
+{
+	dbg_msg("controller", "Queued round: %s", toString(RoundType));
+	m_QueuedRoundType = RoundType;
 }
 
 CLASS_AVAILABILITY CInfClassGameController::GetPlayerClassAvailability(int PlayerClass, const CInfClassPlayer *pForPlayer) const
