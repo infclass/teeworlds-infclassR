@@ -465,13 +465,11 @@ set(BASE
   src/base/math.h
   src/base/system.cpp
   src/base/system.h
-  src/base/tl/algorithm.h
   src/base/tl/allocator.h
   src/base/tl/array.h
   src/base/tl/base.h
   src/base/tl/ic_array.h
   src/base/tl/range.h
-  src/base/tl/sorted_array.h
   src/base/tl/threading.h
   src/base/unicode/confusables.cpp
   src/base/unicode/confusables_data.h
