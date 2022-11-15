@@ -319,9 +319,15 @@ void CGameContext::SendChatTarget(int To, const char *pText)
 	Msg.m_pMessage = pText;
 	// only for demo record
 	if(To < 0)
-		Server()->SendPackMsg(&Msg, MSGFLAG_VITAL|MSGFLAG_NOSEND, -1);
+	{
+		Server()->SendPackMsg(&Msg, MSGFLAG_VITAL | MSGFLAG_NOSEND, -1);
 
-	Server()->SendPackMsg(&Msg, MSGFLAG_VITAL|MSGFLAG_NORECORD, To);
+		char aBuf[256];
+		str_format(aBuf, sizeof(aBuf), "*** %s", pText);
+		Console()->Print(IConsole::OUTPUT_LEVEL_ADDINFO, "chat", aBuf);
+	}
+
+	Server()->SendPackMsg(&Msg, MSGFLAG_VITAL | MSGFLAG_NORECORD, To);
 }
 
 /* INFECTION MODIFICATION START ***************************************/
@@ -364,6 +370,10 @@ void CGameContext::SendChatTarget_Localization(int To, int Category, const char*
 		Server()->Localization()->Format_VL(tmpBuf, "en", pText, VarArgs);
 		Msg.m_pMessage = tmpBuf.buffer();
 		Server()->SendPackMsg(&Msg, MSGFLAG_VITAL | MSGFLAG_NOSEND, -1);
+
+		char aBuf[256];
+		str_format(aBuf, sizeof(aBuf), "*** %s", Msg.m_pMessage);
+		Console()->Print(IConsole::OUTPUT_LEVEL_ADDINFO, "chat", aBuf);
 	}
 
 	va_end(VarArgs);
