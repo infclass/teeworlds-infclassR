@@ -4,7 +4,6 @@
 #define GAME_SERVER_GAMECONTEXT_H
 
 #include <base/tl/ic_array.h>
-#include <base/tl/string.h>
 
 #include <engine/server.h>
 #include <engine/storage.h>
@@ -24,6 +23,7 @@
 #include "gameworld.h"
 
 #include <fstream>
+#include <string>
 
 /*
 	Tick
@@ -324,7 +324,7 @@ private:
 	char m_VoteLanguage[MAX_CLIENTS][16];
 	int m_VoteBanClientID;
 	static bool m_ClientMuted[MAX_CLIENTS][MAX_CLIENTS]; // m_ClientMuted[i][j]: i muted j
-	static icArray<string, 256> m_aChangeLogEntries;
+	static icArray<std::string, 256> m_aChangeLogEntries;
 	static icArray<int, 16> m_aChangeLogPageIndices;
 	
 	class CBroadcastState

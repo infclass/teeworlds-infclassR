@@ -472,7 +472,6 @@ set(BASE
   src/base/tl/ic_array.h
   src/base/tl/range.h
   src/base/tl/sorted_array.h
-  src/base/tl/string.h
   src/base/tl/threading.h
   src/base/unicode/confusables.cpp
   src/base/unicode/confusables_data.h

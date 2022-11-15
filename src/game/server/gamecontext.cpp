@@ -32,7 +32,7 @@ enum
 
 /* INFECTION MODIFICATION START ***************************************/
 bool CGameContext::m_ClientMuted[MAX_CLIENTS][MAX_CLIENTS];
-icArray<string, 256> CGameContext::m_aChangeLogEntries;
+icArray<std::string, 256> CGameContext::m_aChangeLogEntries;
 icArray<int, 16> CGameContext::m_aChangeLogPageIndices;
 
 void CGameContext::OnSetAuthed(int ClientID, int Level)
@@ -484,9 +484,9 @@ void CGameContext::InitChangelog()
 
 void CGameContext::ReloadChangelog()
 {
-	for(string & Entry : m_aChangeLogEntries)
+	for(std::string &Entry : m_aChangeLogEntries)
 	{
-		Entry = nullptr;
+		Entry.clear();
 	}
 	m_aChangeLogEntries.Clear();
 	m_aChangeLogPageIndices.Clear();
@@ -3925,8 +3925,8 @@ void CGameContext::ConChangeLog(IConsole::IResult *pResult)
 
 	for(int i = From; i < To; ++i)
 	{
-		const char *pText = m_aChangeLogEntries.At(i);
-		SendChatTarget(ClientID, pText);
+		const std::string &Text = m_aChangeLogEntries.At(i);
+		SendChatTarget(ClientID, Text.c_str());
 	}
 
 	if(PageNumber != PagesInTotal)
