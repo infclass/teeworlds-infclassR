@@ -472,8 +472,10 @@ set(BASE
   src/base/tl/range.h
   src/base/tl/threading.h
   src/base/unicode/confusables.cpp
+  src/base/unicode/confusables.h
   src/base/unicode/confusables_data.h
   src/base/unicode/tolower.cpp
+  src/base/unicode/tolower.h
   src/base/unicode/tolower_data.h
   src/base/vmath.h
 )
