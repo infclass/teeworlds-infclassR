@@ -168,7 +168,7 @@ public:
 	void IncreaseNumberKills();
 	void ResetNumberKills();
 	
-	int GetClass() const;
+	PLAYERCLASS GetClass() const;
 	bool IsZombie() const;
 	bool IsActuallyZombie() const;
 	bool IsHuman() const;

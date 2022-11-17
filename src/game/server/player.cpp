@@ -396,9 +396,9 @@ bool CPlayer::CanOverrideDefaultEmote() const
 }
 
 /* INFECTION MODIFICATION START ***************************************/
-int CPlayer::GetClass() const
+PLAYERCLASS CPlayer::GetClass() const
 {
-	return m_class;
+	return static_cast<PLAYERCLASS>(m_class);
 }
 
 bool CPlayer::IsZombie() const
