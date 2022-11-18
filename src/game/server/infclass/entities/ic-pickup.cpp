@@ -102,14 +102,13 @@ void CIcPickup::Snap(int SnappingClient)
 	if(m_Type == IC_PICKUP_TYPE::INVALID)
 		return;
 
-	CNetObj_Pickup *pP = static_cast<CNetObj_Pickup *>(Server()->SnapNewItem(NETOBJTYPE_PICKUP, GetID(), sizeof(CNetObj_Pickup)));
-	if(!pP)
-		return;
+	if(m_Owner >= 0)
+	{
+		if(m_Owner != SnappingClient)
+			return;
+	}
 
-	pP->m_X = round_to_int(m_Pos.x);
-	pP->m_Y = round_to_int(m_Pos.y);
-	
-	int NetworkType = 0;
+	int NetworkType = -1;
 	switch(m_Type)
 	{
 	case IC_PICKUP_TYPE::HEALTH:
@@ -121,7 +120,17 @@ void CIcPickup::Snap(int SnappingClient)
 	case IC_PICKUP_TYPE::INVALID:
 		break;
 	}
-	
+
+	if(NetworkType < 0)
+		return;
+
+	CNetObj_Pickup *pP = static_cast<CNetObj_Pickup *>(Server()->SnapNewItem(NETOBJTYPE_PICKUP, GetID(), sizeof(CNetObj_Pickup)));
+	if(!pP)
+		return;
+
+	pP->m_X = round_to_int(m_Pos.x);
+	pP->m_Y = round_to_int(m_Pos.y);
+
 	pP->m_Type = NetworkType;
 }
 
