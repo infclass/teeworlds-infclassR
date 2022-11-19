@@ -596,28 +596,33 @@ void CInfClassHuman::OnShotgunFired(WeaponFireContext *pFireContext)
 		return;
 	
 	vec2 Direction = GetDirection();
-	vec2 ProjStartPos = GetPos()+Direction*GetProximityRadius()*0.75f;
+	vec2 ProjStartPos = GetPos() + Direction * GetProximityRadius() * 0.75f;
 
+	float Force = 2.0f;
 	int ShotSpread = 3;
-	if(GetPlayerClass() == PLAYERCLASS_BIOLOGIST)
+	DAMAGE_TYPE DamageType = DAMAGE_TYPE::SHOTGUN;
+
+	switch(GetPlayerClass())
+	{
+	case PLAYERCLASS_BIOLOGIST:
 		ShotSpread = 1;
+		break;
+	case PLAYERCLASS_MEDIC:
+		Force = 10.0f;
+		DamageType = DAMAGE_TYPE::MEDIC_SHOTGUN;
+		break;
+	default:
+		break;
+	}
 
 	CMsgPacker Msg(NETMSGTYPE_SV_EXTRAPROJECTILE);
 	Msg.AddInt(ShotSpread * 2 + 1);
 
-	float Force = 2.0f;
-	DAMAGE_TYPE DamageType = DAMAGE_TYPE::SHOTGUN;
-	if(GetPlayerClass() == PLAYERCLASS_MEDIC)
-	{
-		Force = 10.0f;
-		DamageType = DAMAGE_TYPE::MEDIC_SHOTGUN;
-	}
-
 	for(int i = -ShotSpread; i <= ShotSpread; ++i)
 	{
-		float Spreading[] = {-0.21f, -0.14f, -0.070f, 0, 0.070f, 0.14f, 0.21f};
+		const float Spreading = i * 0.07f;
 		float a = angle(Direction);
-		a += Spreading[i + 3] * 2.0f * (0.25f + 0.75f * static_cast<float>(10 - pFireContext->AmmoAvailable)/10.0f);
+		a += Spreading * 2.0f * (0.25f + 0.75f * static_cast<float>(10 - pFireContext->AmmoAvailable) / 10.0f);
 		float v = 1 - (absolute(i) / static_cast<float>(ShotSpread));
 		float Speed = mix<float>(GameServer()->Tuning()->m_ShotgunSpeeddiff, 1.0f, v);
 		vec2 Direction = vec2(cosf(a), sinf(a)) * Speed;
