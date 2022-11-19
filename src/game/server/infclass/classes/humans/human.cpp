@@ -153,17 +153,19 @@ void CInfClassHuman::GetAmmoRegenParams(int Weapon, WeaponRegenParams *pParams)
 	pParams->MaxAmmo = Server()->GetMaxAmmo(InfWID);
 	pParams->RegenInterval = Server()->GetAmmoRegenTime(InfWID);
 
-	if(InfWID == INFWEAPON_NINJA_GRENADE)
+	switch(InfWID)
 	{
+	case INFWEAPON_NINJA_GRENADE:
 		pParams->MaxAmmo = minimum(pParams->MaxAmmo + m_pCharacter->m_NinjaAmmoBuff, 10);
-	}
-
-	if(InfWID == INFWEAPON_MERCENARY_GUN)
-	{
-		if(m_pCharacter->GetInAirTick() > Server()->TickSpeed()*4)
+		break;
+	case INFWEAPON_MERCENARY_GUN:
+		if(m_pCharacter->GetInAirTick() > Server()->TickSpeed() * 4)
 		{
 			pParams->RegenInterval = 0;
 		}
+		break;
+	default:
+		break;
 	}
 
 	if((Config()->m_InfTaxi == 1) && m_pCharacter->IsPassenger())
