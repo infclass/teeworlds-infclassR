@@ -686,7 +686,7 @@ bool CInfClassCharacter::TakeDamage(const vec2 &Force, float FloatDmg, int From,
 	if(From == GetCID())
 	{
 		if(Mode == TAKEDAMAGEMODE::SELFHARM)
-			Dmg = maximum(1, Dmg/2);
+			Dmg = Dmg ? maximum(1, Dmg / 2) : 0;
 		else
 			return false;
 	}
