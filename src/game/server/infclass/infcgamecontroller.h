@@ -23,7 +23,7 @@ enum class DAMAGE_TYPE;
 enum class ROUND_CANCELATION_REASON;
 enum class ROUND_END_REASON;
 
-using ClientsArray = icArray<int, 64>; // MAX_CLIENTS
+using ClientsArray = icArray<int, MAX_CLIENTS>;
 
 enum class ROUND_TYPE
 {

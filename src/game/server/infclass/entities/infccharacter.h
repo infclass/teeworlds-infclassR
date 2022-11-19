@@ -71,7 +71,7 @@ struct SpawnContext
 constexpr int GHOST_RADIUS = 11;
 constexpr int GHOST_SEARCHMAP_SIZE = (2 * GHOST_RADIUS + 1);
 
-using ClientsArray = icArray<int, 64>; // MAX_CLIENTS
+using ClientsArray = icArray<int, MAX_CLIENTS>;
 
 class CInfClassCharacter : public CCharacter
 {
