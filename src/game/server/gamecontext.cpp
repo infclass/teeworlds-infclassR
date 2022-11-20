@@ -491,7 +491,7 @@ void CGameContext::SendChatTarget_Localization(int To, int Category, const char*
 	bool Sent = false;
 	for(int i = Start; i < End; i++)
 	{
-		if(m_apPlayers[i])
+		if(m_apPlayers[i] && !m_apPlayers[i]->IsBot())
 		{
 			Buffer.clear();
 			Buffer.append(GetChatCategoryPrefix(Category));
@@ -539,7 +539,7 @@ void CGameContext::SendChatTarget_Localization_P(int To, int Category, int Numbe
 	bool Sent = false;
 	for(int i = Start; i < End; i++)
 	{
-		if(m_apPlayers[i])
+		if(m_apPlayers[i] && !m_apPlayers[i]->IsBot())
 		{
 			Buffer.clear();
 			Buffer.append(GetChatCategoryPrefix(Category));
@@ -784,7 +784,7 @@ void CGameContext::SendBroadcast_Localization(int To, int Priority, int LifeSpan
 
 	for(int i = Start; i < End; i++)
 	{
-		if(m_apPlayers[i])
+		if(m_apPlayers[i] && !m_apPlayers[i]->IsBot())
 		{
 			Buffer.clear();
 			Server()->Localization()->Format_VL(Buffer, m_apPlayers[i]->GetLanguage(), pText, VarArgs);
@@ -807,13 +807,13 @@ void CGameContext::SendBroadcast_Localization_P(int To, int Priority, int LifeSp
 	
 	for(int i = Start; i < End; i++)
 	{
-		if(m_apPlayers[i])
+		if(m_apPlayers[i] && !m_apPlayers[i]->IsBot())
 		{
 			Server()->Localization()->Format_VLP(Buffer, m_apPlayers[i]->GetLanguage(), Number, pText, VarArgs);
 			AddBroadcast(i, Buffer.buffer(), Priority, LifeSpan);
 		}
 	}
-	
+
 	va_end(VarArgs);
 }
 
