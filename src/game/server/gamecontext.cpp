@@ -4337,9 +4337,7 @@ bool CGameContext::IsVersionBanned(int Version)
 
 int CGameContext::GetClientVersion(int ClientID) const
 {
-	IServer::CClientInfo Info = {0};
-	Server()->GetClientInfo(ClientID, &Info);
-	return Info.m_DDNetVersion;
+	return Server()->GetClientVersion(ClientID);
 }
 
 bool CGameContext::RateLimitPlayerVote(int ClientID)

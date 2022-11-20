@@ -25,8 +25,10 @@
 #include <engine/shared/protocol.h>
 #include <engine/shared/protocol_ex.h>
 #include <engine/shared/snapshot.h>
-#include <game/mapitems.h>
+
 #include <game/gamecore.h>
+#include <game/mapitems.h>
+#include <game/version.h>
 
 #include <mastersrv/mastersrv.h>
 
@@ -821,6 +823,18 @@ int CServer::DistinctClientCount() const
 	}
 
 	return ClientCount;
+}
+
+int CServer::GetClientVersion(int ClientID) const
+{
+	// Assume latest client version for server demos
+	if(ClientID == SERVER_DEMO_CLIENT)
+		return CLIENT_VERSIONNR;
+
+	CClientInfo Info;
+	if(GetClientInfo(ClientID, &Info))
+		return Info.m_DDNetVersion;
+	return VERSION_NONE;
 }
 
 static inline bool RepackMsg(const CMsgPacker *pMsg, CPacker &Packer)

@@ -276,7 +276,8 @@ public:
 	int ClientCount() const;
 	int DistinctClientCount() const;
 
-	virtual int SendMsg(CMsgPacker *pMsg, int Flags, int ClientID);
+	int GetClientVersion(int ClientID) const override;
+	int SendMsg(CMsgPacker *pMsg, int Flags, int ClientID) override;
 
 	void DoSnapshot();
 
