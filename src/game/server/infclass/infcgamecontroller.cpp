@@ -1833,6 +1833,11 @@ int CInfClassGameController::GetPlayerOwnCursorID(int ClientID) const
 	return m_PlayerOwnCursorID;
 }
 
+void CInfClassGameController::SortCharactersByDistance(ClientsArray *pCharacterIds, const vec2 &Center, const float MaxDistance)
+{
+	SortCharactersByDistance(*pCharacterIds, pCharacterIds, Center, MaxDistance);
+}
+
 void CInfClassGameController::SortCharactersByDistance(const ClientsArray &Input, ClientsArray *pOutput, const vec2 &Center, const float MaxDistance)
 {
 	struct DistanceItem
@@ -1885,11 +1890,11 @@ void CInfClassGameController::GetSortedTargetsInRange(const vec2 &Center, const 
 
 	for(int ClientID = 0; ClientID < MAX_CLIENTS; ++ClientID)
 	{
-		if(SkipList.Contains(ClientID))
-			continue;
-
 		const CCharacter *pChar = GetCharacter(ClientID);
 		if(!pChar)
+			continue;
+
+		if(SkipList.Contains(ClientID))
 			continue;
 
 		PossibleCIDs.Add(ClientID);
