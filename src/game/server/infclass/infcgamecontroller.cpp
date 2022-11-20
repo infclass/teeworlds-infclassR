@@ -2997,16 +2997,7 @@ void CInfClassGameController::Snap(int SnappingClient)
 	if(!pGameDataObj)
 		return;
 
-	//Search for witch
-	CInfClassPlayerIterator<PLAYERITER_INGAME> Iter(GameServer()->m_apPlayers);
-	while(Iter.Next())
-	{
-		if(Iter.Player()->GetClass() == PLAYERCLASS_WITCH)
-		{
-			pGameDataObj->m_FlagCarrierRed = Iter.ClientID();
-		}
-	}
-	
+	pGameDataObj->m_FlagCarrierRed = FLAG_ATSTAND;
 	pGameDataObj->m_FlagCarrierBlue = FLAG_ATSTAND;
 }
 
