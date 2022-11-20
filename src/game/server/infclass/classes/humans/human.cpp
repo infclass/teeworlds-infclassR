@@ -231,7 +231,7 @@ void CInfClassHuman::CheckSuperWeaponAccess()
 
 void CInfClassHuman::OnPlayerSnap(int SnappingClient, int InfClassVersion)
 {
-	if(InfClassVersion < 140)
+	if(InfClassVersion < VERSION_INFC_CLASS_INFO1)
 	{
 		// CNetObj_InfClassClassInfo introduced in v0.1.4
 		return;

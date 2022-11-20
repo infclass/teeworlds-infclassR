@@ -78,6 +78,7 @@ enum
 {
 	VERSION_INFC_100 = 100,
 	VERSION_INFC_FORCED_SPEC = 120,
+	VERSION_INFC_CLASS_INFO1 = 140,
 };
 
 // this should be revised
