@@ -398,8 +398,10 @@ void CGrowingExplosion::SetDamage(int Damage)
 int CGrowingExplosion::GetActualDamage()
 {
 	 if(m_Damage < 0)
-		 return 5+20*((float)(m_MaxGrowing - minimum(Server()->Tick() - m_StartTick, (int)m_MaxGrowing)))/(m_MaxGrowing);
+		 return 5 + 20.0f * (m_MaxGrowing - minimum(Server()->Tick() - m_StartTick, m_MaxGrowing)) / m_MaxGrowing;
 
+	 // Sci mine victim is typically hit on 2nd tick.
+	 // It means 5 + 20 * (6 - 2) / 6 = 5 + 13.333 = 18 dmg
 	 return m_Damage;
 }
 
