@@ -408,6 +408,8 @@ void CInfClassHuman::OnKilledCharacter(int Victim, bool Assisted)
 	if(!m_pCharacter)
 		return;
 
+	m_KillsProgression += Assisted ? 0.5f : 1.0f;
+
 	switch(GetPlayerClass())
 	{
 	case PLAYERCLASS_MERCENARY:
@@ -429,11 +431,7 @@ void CInfClassHuman::OnKilledCharacter(int Victim, bool Assisted)
 		}
 		break;
 	case PLAYERCLASS_SCIENTIST:
-		if(!Assisted)
-		{
-			m_KillsProgression += 1;
-			CheckSuperWeaponAccess();
-		}
+		CheckSuperWeaponAccess();
 		break;
 	default:
 		break;
