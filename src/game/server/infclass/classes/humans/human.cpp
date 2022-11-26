@@ -578,7 +578,8 @@ void CInfClassHuman::OnKilledCharacter(CInfClassCharacter *pVictim, const DeathC
 	case PLAYERCLASS_MERCENARY:
 		if(!Assisted)
 		{
-			m_pCharacter->AddAmmo(WEAPON_LASER, 3);
+			const int Bonus = GameController()->GetRoundType() == ERoundType::Survival ? 1 : 3;
+			m_pCharacter->AddAmmo(WEAPON_LASER, Bonus);
 		}
 		break;
 	case PLAYERCLASS_NINJA:
