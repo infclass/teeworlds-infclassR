@@ -3150,11 +3150,6 @@ void CInfClassGameController::RewardTheKiller(CInfClassCharacter *pVictim, CInfC
 			// set attacker's face to happy (taunt!)
 			pKillerCharacter->SetEmote(EMOTE_HAPPY, Server()->Tick() + Server()->TickSpeed());
 			pKillerCharacter->CheckSuperWeaponAccess();
-
-			if(pKillerCharacter->GetPlayerClass() == PLAYERCLASS_MERCENARY)
-			{
-				pKillerCharacter->AddAmmo(WEAPON_LASER, 3);
-			}
 		}
 	}
 

@@ -393,8 +393,17 @@ void CInfClassHuman::OnCharacterDamage(SDamageContext *pContext)
 
 void CInfClassHuman::OnKilledCharacter(int Victim, bool Assisted)
 {
+	if(!m_pCharacter)
+		return;
+
 	switch(GetPlayerClass())
 	{
+	case PLAYERCLASS_MERCENARY:
+		if(!Assisted)
+		{
+			m_pCharacter->AddAmmo(WEAPON_LASER, 3);
+		}
+		break;
 	case PLAYERCLASS_NINJA:
 		if(Victim == m_NinjaTargetCID)
 		{
