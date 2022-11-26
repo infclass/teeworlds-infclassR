@@ -142,6 +142,8 @@ public:
 	CInputCount CountFireInput() const;
 	bool FireJustPressed() const;
 
+	int GetAttackTick() const { return m_AttackTick; }
+	int GetLastNoAmmoSoundTick() const { return m_LastNoAmmoSound; }
 	int GetActiveWeapon() const { return m_ActiveWeapon; }
 	int GetReloadTimer() const { return m_ReloadTimer; }
 	void SetReloadTimer(int Ticks);
