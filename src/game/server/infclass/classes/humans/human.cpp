@@ -900,6 +900,7 @@ void CInfClassHuman::GiveClassAttributes()
 			m_pHeroFlag = new CHeroFlag(GameServer(), m_pPlayer->GetCID());
 	}
 
+	m_pPlayer->ResetNumberKills();
 	m_pCharacter->UnlockPosition();
 }
 
