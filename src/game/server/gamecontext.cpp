@@ -2190,6 +2190,11 @@ void CGameContext::OnCallVoteNetMessage(const CNetMsg_Cl_CallVote *pMsg, int Cli
 			SendChatTarget(ClientId, "You can't kick yourself");
 			return;
 		}
+		if(m_apPlayers[KickId]->IsBot())
+		{
+			SendChatTarget(ClientId, "Unable to kick a server-side bot");
+			return;
+		}
 		if(Server()->GetAuthedState(KickId) != IServer::AUTHED_NO)
 		{
 			SendChatTarget(ClientId, "You can't kick admins");
@@ -2323,6 +2328,11 @@ void CGameContext::OnCallVoteNetMessage(const CNetMsg_Cl_CallVote *pMsg, int Cli
 			if(SpectateId == ClientId)
 			{
 				SendChatTarget(ClientId, "You can't move yourself");
+				return;
+			}
+			if(m_apPlayers[SpectateId]->IsBot())
+			{
+				SendChatTarget(ClientId, "Unable to move a server-side bot to spectators");
 				return;
 			}
 			if(!Server()->ReverseTranslate(SpectateId, ClientId))
