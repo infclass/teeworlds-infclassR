@@ -1456,6 +1456,9 @@ void CGameContext::OnTick()
 					if(!m_apPlayers[i] || aVoteChecked[i])
 						continue;
 
+					if(m_apPlayers[i]->IsBot())
+						continue;
+
 					if(m_apPlayers[i]->GetTeam() == TEAM_SPECTATORS) // don't count in votes by spectators
 						continue;
 
