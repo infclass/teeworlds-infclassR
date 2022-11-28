@@ -1801,6 +1801,11 @@ void CInfClassCharacter::AddAmmo(int Weapon, int Ammo)
 	m_aWeapons[Weapon].m_Ammo = minimum(MaxAmmo, TargetAmmo);
 }
 
+int CInfClassCharacter::GetAmmo(int Weapon) const
+{
+	return m_aWeapons[Weapon].m_Ammo;
+}
+
 int CInfClassCharacter::GetCID() const
 {
 	if(m_pPlayer)
