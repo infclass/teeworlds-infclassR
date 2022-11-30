@@ -17,6 +17,8 @@ enum class IC_PICKUP_TYPE
 class CIcPickup : public CInfCEntity
 {
 public:
+	static int EntityId;
+
 	CIcPickup(CGameContext *pGameContext, IC_PICKUP_TYPE Type, vec2 Pos, int Owner = -1);
 
 	void Reset() final;

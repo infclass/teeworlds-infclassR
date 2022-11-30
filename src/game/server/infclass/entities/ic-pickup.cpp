@@ -10,8 +10,10 @@
 #include <game/server/infclass/entities/infccharacter.h>
 #include <game/server/infclass/infcgamecontroller.h>
 
-CIcPickup::CIcPickup(CGameContext *pGameContext, IC_PICKUP_TYPE Type, vec2 Pos, int Owner)
-	: CInfCEntity(pGameContext, CGameWorld::ENTTYPE_PICKUP, Pos, Owner, PickupPhysSize)
+int CIcPickup::EntityId = CGameWorld::ENTTYPE_PICKUP;
+
+CIcPickup::CIcPickup(CGameContext *pGameContext, IC_PICKUP_TYPE Type, vec2 Pos, int Owner) :
+	CInfCEntity(pGameContext, EntityId, Pos, Owner, PickupPhysSize)
 {
 	m_Type = Type;
 
