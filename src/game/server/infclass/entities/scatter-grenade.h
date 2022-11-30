@@ -20,6 +20,7 @@ public:
 	virtual void Explode();
 	virtual void Snap(int SnappingClient);
 	virtual void FlashGrenade();
+	void ExplodeOnContact();
 
 private:
 	vec2 m_ActualPos;
@@ -27,6 +28,7 @@ private:
 	vec2 m_Direction;
 	int m_StartTick;
 	bool m_IsFlashGrenade;
+	bool m_ExplodeOnContact = false;
 };
 
 #endif

@@ -47,9 +47,9 @@ void CScatterGrenade::Tick()
 	
 	m_ActualPos = CurPos;
 	m_ActualDir = normalize(CurPos - PrevPos);
-	
-	if(m_IsFlashGrenade) {
-		
+
+	if(m_ExplodeOnContact)
+	{
 		CCharacter *OwnerChar = GameServer()->GetPlayerChar(m_Owner);
 		CCharacter *TargetChr = GameServer()->m_World.IntersectCharacter(PrevPos, CurPos, 6.0f, CurPos, OwnerChar);
 		
@@ -58,7 +58,7 @@ void CScatterGrenade::Tick()
 			Explode();
 		}
 	}
-	
+
 	if(GameLayerClipped(CurPos))
 	{
 		GameWorld()->DestroyEntity(this);
@@ -153,4 +153,10 @@ void CScatterGrenade::Explode()
 void CScatterGrenade::FlashGrenade()
 {
 	m_IsFlashGrenade = true;
+	m_ExplodeOnContact = true;
+}
+
+void CScatterGrenade::ExplodeOnContact()
+{
+	m_ExplodeOnContact = true;
 }
