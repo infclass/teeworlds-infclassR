@@ -216,6 +216,13 @@ bool CInfClassHuman::CanBeHit() const
 	return true;
 }
 
+void CInfClassHuman::OnPlayerClassChanged()
+{
+	CInfClassPlayerClass::OnPlayerClassChanged();
+
+	ResetUpgradeLevel();
+}
+
 void CInfClassHuman::CheckSuperWeaponAccess()
 {
 	if(m_KillsProgression < 0)
@@ -2163,4 +2170,9 @@ void CInfClassHuman::OnWhiteHoleSpawned(CWhiteHole *pWhiteHole)
 
 	m_KillsProgression = -1;
 	m_ResetKillsTick = pWhiteHole->GetEndTick() + Server()->TickSpeed() * 3;
+}
+
+void CInfClassHuman::GiveUpgrade()
+{
+	m_UpgradeLevel++;
 }

@@ -52,7 +52,7 @@ public:
 	// Temp stuff
 	void UpdateSkin();
 	int GetPlayerClass() const;
-	void OnPlayerClassChanged();
+	virtual void OnPlayerClassChanged();
 
 	virtual void PrepareToDie(const DeathContext &Context, bool *pRefusedToDie);
 
@@ -90,6 +90,8 @@ public:
 	virtual void OnSlimeEffect(int Owner) = 0;
 	virtual void OnFloatingPointCollected(int Points);
 
+	virtual void GiveUpgrade() {}
+
 	CGameContext *GameContext() const;
 	CGameContext *GameServer() const;
 	CGameWorld *GameWorld() const;
@@ -105,6 +107,9 @@ public:
 	vec2 GetProjectileStartPos(float Offset) const;
 	float GetProximityRadius() const;
 
+	int GetUpgradeLevel() const;
+	void ResetUpgradeLevel();
+
 protected:
 	virtual void GiveClassAttributes();
 	virtual void DestroyChildEntities();
@@ -116,6 +121,7 @@ protected:
 	CInfClassCharacter *m_pCharacter = nullptr;
 	int m_NormalEmote;
 
+	int m_UpgradeLevel = 0;
 	int m_HealingDisabledTicks = 0;
 };
 

@@ -39,6 +39,7 @@ public:
 	void GiveGift(EGiftType GiftType);
 
 	bool CanBeHit() const override;
+	void OnPlayerClassChanged() override;
 
 	void OnPlayerSnap(int SnappingClient, int InfClassVersion) override;
 
@@ -70,6 +71,7 @@ public:
 	void UpgradeMercBomb(CMercenaryBomb *pBomb, float UpgradePoints);
 	void OnHeroFlagTaken(CInfClassCharacter *pHero);
 	void OnWhiteHoleSpawned(CWhiteHole *pWhiteHole);
+	void GiveUpgrade() override;
 
 protected:
 	void GiveClassAttributes() override;

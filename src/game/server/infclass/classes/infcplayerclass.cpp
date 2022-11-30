@@ -121,6 +121,16 @@ float CInfClassPlayerClass::GetProximityRadius() const
 	return 0;
 }
 
+int CInfClassPlayerClass::GetUpgradeLevel() const
+{
+	return m_UpgradeLevel;
+}
+
+void CInfClassPlayerClass::ResetUpgradeLevel()
+{
+	m_UpgradeLevel = 0;
+}
+
 void CInfClassPlayerClass::SetCharacter(CInfClassCharacter *character)
 {
 	if(m_pCharacter == character)
