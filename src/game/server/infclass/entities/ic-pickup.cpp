@@ -18,6 +18,17 @@ CIcPickup::CIcPickup(CGameContext *pGameContext, EICPickupType Type, vec2 Pos, i
 	m_Type = Type;
 
 	Reset();
+	switch(Type)
+	{
+	case EICPickupType::Health:
+		m_NetworkType = POWERUP_HEALTH;
+		break;
+	case EICPickupType::Armor:
+		m_NetworkType = POWERUP_ARMOR;
+		break;
+	case EICPickupType::Invalid:
+		break;
+	}
 
 	GameWorld()->InsertEntity(this);
 }
@@ -115,10 +126,7 @@ void CIcPickup::Snap(int SnappingClient)
 	switch(m_Type)
 	{
 	case EICPickupType::Health:
-		NetworkType = POWERUP_HEALTH;
-		break;
 	case EICPickupType::Armor:
-		NetworkType = POWERUP_ARMOR;
 		break;
 	case EICPickupType::Invalid:
 		break;

@@ -33,6 +33,7 @@ private:
 	EICPickupType m_Type = EICPickupType::Invalid;
 	int m_SpawnTick = 0;
 	float m_SpawnInterval = -1;
+	int m_NetworkType = 0;
 };
 
 #endif
