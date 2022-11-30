@@ -16,8 +16,8 @@ CIcPickup::CIcPickup(CGameContext *pGameContext, EICPickupType Type, vec2 Pos, i
 	CInfCEntity(pGameContext, EntityId, Pos, Owner, PickupPhysSize)
 {
 	m_Type = Type;
+	m_SpawnTick = -1;
 
-	Reset();
 	switch(Type)
 	{
 	case EICPickupType::Health:
@@ -35,6 +35,9 @@ CIcPickup::CIcPickup(CGameContext *pGameContext, EICPickupType Type, vec2 Pos, i
 
 void CIcPickup::Reset()
 {
+	if(m_Owner >= 0)
+		CInfCEntity::Reset();
+
 	m_SpawnTick = -1;
 }
 
@@ -56,10 +59,22 @@ void CIcPickup::Tick()
 	CInfCEntity::Tick();
 
 	// Check if a player intersected us
-	CInfClassCharacter *pChr = (CInfClassCharacter *)GameWorld()->ClosestEntity(m_Pos, PickupPhysSize, CGameWorld::ENTTYPE_CHARACTER, 0);
+	CInfClassCharacter *pChr = nullptr;
+	if(GetOwner() >= 0)
+	{
+		CInfClassCharacter *pOwner = GetOwnerCharacter();
+		if(pOwner && (distance(GetPos(), pOwner->GetPos()) < PickupPhysSize + pOwner->GetProximityRadius()))
+		{
+			pChr = pOwner;
+		}
+	}
+	else
+	{
+		pChr = (CInfClassCharacter *)GameWorld()->ClosestEntity(m_Pos, PickupPhysSize, CGameWorld::ENTTYPE_CHARACTER, 0);
+	}
+
 	if(pChr && pChr->IsAlive())
 	{
-		// player picked us up, is someone was hooking us, let them go
 		bool Picked = false;
 		switch(m_Type)
 		{
@@ -115,10 +130,10 @@ void CIcPickup::Snap(int SnappingClient)
 	if(m_Type == EICPickupType::Invalid)
 		return;
 
-	if(m_Owner >= 0)
+	const bool DoSnap = m_Owner < 0 || SnappingClient == SERVER_DEMO_CLIENT || SnappingClient == m_Owner;
+	if(!DoSnap)
 	{
-		if(m_Owner != SnappingClient)
-			return;
+		return;
 	}
 
 	int NetworkType = -1;
