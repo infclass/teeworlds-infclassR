@@ -252,6 +252,8 @@ public:
 	void ConSetInvincible(IConsole::IResult *pResult);
 	static void ConSetHookProtection(IConsole::IResult *pResult, void *pUserData);
 	void ConSetHookProtection(IConsole::IResult *pResult);
+	static void ConGiveUpgrade(IConsole::IResult *pResult, void *pUserData);
+	void ConGiveUpgrade(IConsole::IResult *pResult);
 
 	static void ChatWitch(IConsole::IResult *pResult, void *pUserData);
 	void ChatWitch(IConsole::IResult *pResult);

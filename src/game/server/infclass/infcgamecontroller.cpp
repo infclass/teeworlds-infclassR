@@ -1481,6 +1481,7 @@ void CInfClassGameController::RegisterChatCommands(IConsole *pConsole)
 	pConsole->Register("set_health_armor", "i[clientid] i[health] i[armor]", CFGFLAG_SERVER, ConSetHealthArmor, this, "Set the player health/armor");
 	pConsole->Register("set_invincible", "i[clientid] i[level]", CFGFLAG_SERVER, ConSetInvincible, this, "Set the player invincibility level (1 inv to damage, 2 inv to inf, 3 inv to death tiles");
 	pConsole->Register("set_hook_protection", "i[clientid] i[protection]", CFGFLAG_SERVER, ConSetHookProtection, this, "Enable the player hook protection (0 disabled, 1 enabled)");
+	pConsole->Register("give_upgrade", "i[clientid]", CFGFLAG_SERVER, ConGiveUpgrade, this, "Give an upgrade to the player");
 
 	pConsole->Register("inf_set_class", "i[clientid] s[classname]", CFGFLAG_SERVER, ConSetClass, this, "Set the class of a player");
 	pConsole->Register("queue_round", "s[type]", CFGFLAG_SERVER, ConQueueSpecialRound, this, "Start a special round");
@@ -2133,6 +2134,25 @@ void CInfClassGameController::ConSetHookProtection(IConsole::IResult *pResult)
 
 	bool Automatic = false;
 	pPlayer->SetHookProtection(Protection, Automatic);
+}
+
+void CInfClassGameController::ConGiveUpgrade(IConsole::IResult *pResult, void *pUserData)
+{
+	CInfClassGameController *pSelf = (CInfClassGameController *)pUserData;
+	return pSelf->ConGiveUpgrade(pResult);
+}
+
+void CInfClassGameController::ConGiveUpgrade(IConsole::IResult *pResult)
+{
+	int ClientID = pResult->GetInteger(0);
+
+	CInfClassPlayer *pPlayer = GetPlayer(ClientID);
+	if(!pPlayer || !pPlayer->GetCharacterClass())
+	{
+		return;
+	}
+
+	pPlayer->GetCharacterClass()->GiveUpgrade();
 }
 
 void CInfClassGameController::ChatWitch(IConsole::IResult *pResult, void *pUserData)
