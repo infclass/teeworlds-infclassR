@@ -172,6 +172,7 @@ public:
 	bool HasHallucination() const;
 	void TryUnfreeze(int UnfreezerCID = -1);
 	FREEZEREASON GetFreezeReason() const { return m_FreezeReason; }
+	int GetFreezer() const;
 
 	bool IsBlind() const { return m_BlindnessTicks > 0; }
 	void MakeBlind(int ClientID, float Duration);

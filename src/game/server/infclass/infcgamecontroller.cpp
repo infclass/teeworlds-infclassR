@@ -3134,13 +3134,33 @@ void CInfClassGameController::FallInLoveIfInfectedEarly(CInfClassCharacter *pCha
 	pCharacter->LoveEffect(LoveDuration);
 }
 
-void CInfClassGameController::RewardTheKiller(CInfClassCharacter *pVictim, CInfClassPlayer *pKiller, int Weapon)
+void CInfClassGameController::RewardTheKillers(CInfClassCharacter *pVictim, const DeathContext &Context)
 {
 	// do scoreing
-	if(!pKiller || Weapon == WEAPON_GAME)
+	if(Context.Killer < 0)
 		return;
 
-	if(pKiller != pVictim->GetPlayer())
+	int Weapon = DamageTypeToWeapon(Context.DamageType);
+	if(Weapon == WEAPON_GAME)
+		return;
+
+	CInfClassPlayer *pKiller = GetPlayer(Context.Killer);
+	CInfClassPlayer *pAssistant = GetPlayer(Context.Assistant);
+
+	if(pAssistant && pKiller && (pAssistant->IsHuman() == pVictim->IsHuman()))
+	{
+		// Do not reward the victim teammates-assistants
+		pAssistant = nullptr;
+	}
+
+	if(pKiller == pVictim->GetPlayer())
+	{
+		if(pKiller->IsHuman())
+		{
+			Server()->RoundStatistics()->OnScoreEvent(pKiller->GetCID(), SCOREEVENT_HUMAN_SUICIDE, pKiller->GetClass(), Server()->ClientName(pKiller->GetCID()), Console());
+		}
+	}
+	else
 	{
 		CInfClassCharacter *pKillerCharacter = pKiller->GetCharacter();
 		if(pKillerCharacter)
@@ -3150,42 +3170,51 @@ void CInfClassGameController::RewardTheKiller(CInfClassCharacter *pVictim, CInfC
 		}
 	}
 
-	if(pKiller->IsHuman())
+	if(pKiller->IsHuman() == pVictim->IsHuman())
 	{
-		CInfClassHuman *pKillerHuman = CInfClassHuman::GetInstance(pKiller);
+		// Do not process self or team kills
+		return;
+	}
 
-		if(pKiller == pVictim->GetPlayer())
+	if(pVictim->IsZombie())
+	{
+		int ScoreEvent = SCOREEVENT_KILL_INFECTED;
+		bool ClassSpecialProcessingEnabled = (GetRoundType() != ROUND_TYPE::FUN) || (GetPlayerClassProbability(pVictim->GetPlayerClass()) == 0);
+		if(ClassSpecialProcessingEnabled)
 		{
-			Server()->RoundStatistics()->OnScoreEvent(pKiller->GetCID(), SCOREEVENT_HUMAN_SUICIDE, pKiller->GetClass(), Server()->ClientName(pKiller->GetCID()), Console());
-		}
-		else
-		{
-			if(pVictim->IsZombie())
+			switch(pVictim->GetPlayerClass())
 			{
-				int ScoreEvent = SCOREEVENT_KILL_INFECTED;
-				bool ClassSpecialProcessingEnabled = (GetRoundType() != ROUND_TYPE::FUN) || (GetPlayerClassProbability(pVictim->GetPlayerClass()) == 0);
-				if(ClassSpecialProcessingEnabled)
-				{
-					switch(pVictim->GetPlayerClass())
-					{
-						case PLAYERCLASS_WITCH:
-							ScoreEvent = SCOREEVENT_KILL_WITCH;
-							GameServer()->SendChatTarget_Localization(pKiller->GetCID(), CHATCATEGORY_SCORE, _("You have killed a witch, +5 points"), NULL);
-							break;
-						case PLAYERCLASS_UNDEAD:
-							ScoreEvent = SCOREEVENT_KILL_UNDEAD;
-							GameServer()->SendChatTarget_Localization(pKiller->GetCID(), CHATCATEGORY_SCORE, _("You have killed an undead! +5 points"), NULL);
-							break;
-						default:
-							break;
-					}
-				}
-
-				Server()->RoundStatistics()->OnScoreEvent(pKiller->GetCID(), ScoreEvent, pKiller->GetClass(), Server()->ClientName(pKiller->GetCID()), Console());
-				GameServer()->SendScoreSound(pKiller->GetCID());
+			case PLAYERCLASS_WITCH:
+				ScoreEvent = SCOREEVENT_KILL_WITCH;
+				GameServer()->SendChatTarget_Localization(pKiller->GetCID(), CHATCATEGORY_SCORE, _("You have killed a witch, +5 points"), NULL);
+				break;
+			case PLAYERCLASS_UNDEAD:
+				ScoreEvent = SCOREEVENT_KILL_UNDEAD;
+				GameServer()->SendChatTarget_Localization(pKiller->GetCID(), CHATCATEGORY_SCORE, _("You have killed an undead! +5 points"), NULL);
+				break;
+			default:
+				break;
 			}
-		
-			pKillerHuman->OnKilledCharacter(pVictim->GetCID(), false);
+		}
+
+		Server()->RoundStatistics()->OnScoreEvent(pKiller->GetCID(), ScoreEvent, pKiller->GetClass(), Server()->ClientName(pKiller->GetCID()), Console());
+		GameServer()->SendScoreSound(pKiller->GetCID());
+	}
+
+	pKiller->GetCharacterClass()->OnKilledCharacter(pVictim->GetCID(), false);
+	if(pAssistant)
+	{
+		pAssistant->GetCharacterClass()->OnKilledCharacter(pVictim->GetCID(), false);
+	}
+
+	// Always reward the freezer
+	const int VictimFreezer = pVictim->GetFreezer();
+	if(VictimFreezer >= 0 && VictimFreezer != Context.Killer && VictimFreezer != Context.Assistant)
+	{
+		CInfClassPlayer *pFreezer = GetPlayer(VictimFreezer);
+		if(pFreezer)
+		{
+			pFreezer->GetCharacterClass()->OnKilledCharacter(pVictim->GetCID(), true);
 		}
 	}
 }
@@ -3204,20 +3233,9 @@ void CInfClassGameController::OnCharacterDeath(CInfClassCharacter *pVictim, cons
 
 	dbg_msg("server", "OnCharacterDeath: victim: %d, DT: %d, killer: %d, assistant: %d", pVictim->GetCID(), static_cast<int>(DamageType), Killer, Assistant);
 
-	CInfClassPlayer *pKiller = GetPlayer(Killer);
+	RewardTheKillers(pVictim, Context);
+
 	int Weapon = DamageTypeToWeapon(DamageType);
-	RewardTheKiller(pVictim, pKiller, Weapon);
-
-	//Add bonus point for ninja
-	if(pVictim->IsZombie() && pVictim->IsFrozen() && pVictim->m_LastFreezer >= 0)
-	{
-		CInfClassPlayer *pFreezer = GetPlayer(pVictim->m_LastFreezer);
-		if(pFreezer && pFreezer->GetCharacterClass() && pFreezer != pKiller)
-		{
-			pFreezer->GetCharacterClass()->OnKilledCharacter(pVictim->GetCID(), true);
-		}
-	}
-
 	static const icArray<DAMAGE_TYPE, 4> BadReasonsToDie = {
 		DAMAGE_TYPE::GAME, // Disconnect, joining spec, etc
 		DAMAGE_TYPE::KILL_COMMAND, // Self kill

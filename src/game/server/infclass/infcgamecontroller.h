@@ -240,7 +240,7 @@ private:
 	void MaybeSuggestMoreRounds();
 	void SnapMapMenu(int SnappingClient, CNetObj_GameInfo *pGameInfoObj);
 	void FallInLoveIfInfectedEarly(CInfClassCharacter *pCharacter);
-	void RewardTheKiller(CInfClassCharacter *pVictim, CInfClassPlayer *pKiller, int Weapon);
+	void RewardTheKillers(CInfClassCharacter *pVictim, const DeathContext &Context);
 	void GetPlayerCounter(int ClientException, int& NumHumans, int& NumInfected);
 	int GetMinimumInfectedForPlayers(int PlayersNumber) const;
 
