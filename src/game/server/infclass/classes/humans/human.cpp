@@ -802,6 +802,11 @@ void CInfClassHuman::OnHammerFired(WeaponFireContext *pFireContext)
 			vec2 Force = vec2(0.f, -1.f) + normalize(Dir + vec2(0.f, -1.1f)) * 10.0f;
 
 			int Damage = 20;
+			if(GameController()->GetRoundType() == ERoundType::Survival)
+			{
+				Damage = 5;
+			}
+
 			pTarget->TakeDamage(Force, Damage, GetCID(), DAMAGE_TYPE::HAMMER);
 		}
 		else
