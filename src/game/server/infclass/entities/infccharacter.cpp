@@ -933,6 +933,11 @@ void CInfClassCharacter::OnTotalHealthChanged(int Difference)
 	{
 		m_TakenDamageDetails.Clear();
 	}
+
+	if(m_pPlayer)
+	{
+		GetPlayer()->OnCharacterHPChanged();
+	}
 }
 
 void CInfClassCharacter::PrepareToDie(const DeathContext &Context, bool *pRefusedToDie)

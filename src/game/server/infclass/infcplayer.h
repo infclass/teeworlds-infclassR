@@ -106,6 +106,8 @@ public:
 	void OnDeath();
 	void OnAssist();
 
+	virtual void OnCharacterHPChanged(){};
+
 public:
 	int m_MapMenuItem = -1;
 
