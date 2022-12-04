@@ -71,7 +71,7 @@ public:
 
 	INFECTION_TYPE InfectionType() const { return m_InfectionType; }
 	INFECTION_CAUSE InfectionCause() const { return m_InfectionCause; }
-	void StartInfection(CPlayer* pInfectiousPlayer = nullptr, INFECTION_TYPE InfectionType = INFECTION_TYPE::REGULAR);
+	void StartInfection(int InfectiousPlayerCID = -1, INFECTION_TYPE InfectionType = INFECTION_TYPE::REGULAR);
 	bool IsInfectionStarted() const;
 
 	int MapMenu() const { return (m_Team != TEAM_SPECTATORS) ? m_MapMenu : 0; }

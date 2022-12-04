@@ -431,7 +431,7 @@ void CInfClassPlayer::UpdateSkin()
 	}
 }
 
-void CInfClassPlayer::StartInfection(CPlayer *pInfectiousPlayer, INFECTION_TYPE InfectionType)
+void CInfClassPlayer::StartInfection(int InfectiousPlayerCID, INFECTION_TYPE InfectionType)
 {
 	dbg_assert(InfectionType != INFECTION_TYPE::NO, "Invalid infection");
 
@@ -439,8 +439,8 @@ void CInfClassPlayer::StartInfection(CPlayer *pInfectiousPlayer, INFECTION_TYPE 
 		return;
 
 	m_InfectionType = InfectionType;
-	m_InfectiousPlayerCID = pInfectiousPlayer ? pInfectiousPlayer->GetCID() : -1;
-	m_InfectionCause = pInfectiousPlayer ? INFECTION_CAUSE::PLAYER : INFECTION_CAUSE::GAME;
+	m_InfectiousPlayerCID = InfectiousPlayerCID;
+	m_InfectionCause = InfectiousPlayerCID >= 0 ? INFECTION_CAUSE::PLAYER : INFECTION_CAUSE::GAME;
 }
 
 bool CInfClassPlayer::IsInfectionStarted() const

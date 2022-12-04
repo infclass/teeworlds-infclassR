@@ -112,12 +112,10 @@ void CInfClassCharacter::OnCharacterInInfectionZone()
 
 		GetDeathContext(DamageContext, &Context);
 
-		CInfClassPlayer *pKiller = GameController()->GetPlayer(Context.Killer);
-
 		GameController()->OnCharacterDeath(this, Context);
 		GameServer()->CreateSound(GetPos(), SOUND_PLAYER_DIE);
 
-		GetPlayer()->StartInfection(pKiller);
+		GetPlayer()->StartInfection(Context.Killer);
 	}
 }
 
@@ -747,7 +745,7 @@ bool CInfClassCharacter::TakeDamage(const vec2 &Force, float FloatDmg, int From,
 /* INFECTION MODIFICATION START ***************************************/
 	if(Mode == TAKEDAMAGEMODE::INFECTION)
 	{
-		GetPlayer()->StartInfection(pKillerPlayer);
+		GetPlayer()->StartInfection(DamageContext.Killer);
 
 		char aBuf[256];
 		str_format(aBuf, sizeof(aBuf), "kill killer='%s' victim='%s' weapon=%d",
