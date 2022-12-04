@@ -707,6 +707,17 @@ int CInfClassGameController::GetRoundTick() const
 	return Server()->Tick() - m_RoundStartTick;
 }
 
+int CInfClassGameController::GetInfectionTick() const
+{
+	return Server()->Tick() - GetInfectionStartTick();
+}
+
+int CInfClassGameController::GetInfectionStartTick() const
+{
+	const int InfectionTick = m_RoundStartTick + Server()->TickSpeed() * GetInfectionDelay();
+	return InfectionTick;
+}
+
 bool CInfClassGameController::IsDefenderClass(PLAYERCLASS PlayerClass)
 {
 	switch (PlayerClass)
@@ -2596,14 +2607,12 @@ void CInfClassGameController::OnGameRestart()
 
 void CInfClassGameController::RoundTickBeforeInitialInfection()
 {
-	int InitialInfectionTick = m_RoundStartTick + Server()->TickSpeed() * GetInfectionDelay();
-	BroadcastInfectionComing(InitialInfectionTick);
+	BroadcastInfectionComing(GetInfectionStartTick());
 }
 
 void CInfClassGameController::RoundTickAfterInitialInfection()
 {
-	int InitialInfectionTick = m_RoundStartTick + Server()->TickSpeed() * GetInfectionDelay();
-	bool StartInfectionTrigger = InitialInfectionTick == Server()->Tick();
+	bool StartInfectionTrigger = GetInfectionStartTick() == Server()->Tick();
 
 	if(StartInfectionTrigger)
 	{

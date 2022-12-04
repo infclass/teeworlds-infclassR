@@ -162,6 +162,8 @@ public:
 	void SaveRoundRules();
 
 	int GetRoundTick() const;
+	int GetInfectionTick() const;
+	int GetInfectionStartTick() const;
 
 	static bool IsDefenderClass(PLAYERCLASS PlayerClass);
 	static bool IsSupportClass(PLAYERCLASS PlayerClass);
