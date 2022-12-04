@@ -78,7 +78,7 @@ public:
 
 	virtual void HandleNinja() {};
 
-	void OnWeaponFired(WeaponFireContext *pFireContext);
+	virtual void OnWeaponFired(WeaponFireContext *pFireContext);
 
 	virtual void OnHammerFired(WeaponFireContext *pFireContext);
 	virtual void OnGunFired(WeaponFireContext *pFireContext);

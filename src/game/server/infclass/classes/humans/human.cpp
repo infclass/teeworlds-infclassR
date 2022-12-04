@@ -43,6 +43,8 @@ CInfClassHuman::CInfClassHuman(CInfClassPlayer *pPlayer)
 	: CInfClassPlayerClass(pPlayer)
 {
 	m_BroadcastWhiteHoleReady = -100;
+
+	ResetUpgrades();
 }
 
 CInfClassHuman *CInfClassHuman::GetInstance(CInfClassPlayer *pPlayer)
@@ -144,6 +146,9 @@ void CInfClassHuman::GetAmmoRegenParams(int Weapon, WeaponRegenParams *pParams)
 	pParams->MaxAmmo = Server()->GetMaxAmmo(InfWID);
 	pParams->RegenInterval = Server()->GetAmmoRegenTime(InfWID);
 
+	const float RegenIntervalModifier = m_WeaponRegenIntervalModifier[Weapon];
+	pParams->RegenInterval *= RegenIntervalModifier;
+
 	switch(InfWID)
 	{
 	case INFWEAPON::NINJA_GRENADE:
@@ -220,6 +225,7 @@ void CInfClassHuman::OnPlayerClassChanged()
 {
 	CInfClassPlayerClass::OnPlayerClassChanged();
 
+	ResetUpgrades();
 	ResetUpgradeLevel();
 }
 
@@ -733,6 +739,14 @@ void CInfClassHuman::HandleNinja()
 	}
 }
 
+void CInfClassHuman::OnWeaponFired(WeaponFireContext *pFireContext)
+{
+	const float ReloadIntervalModifier = m_WeaponReloadIntervalModifier[pFireContext->Weapon];
+	pFireContext->ReloadInterval *= ReloadIntervalModifier;
+
+	CInfClassPlayerClass::OnWeaponFired(pFireContext);
+}
+
 void CInfClassHuman::OnHammerFired(WeaponFireContext *pFireContext)
 {
 	switch(GetPlayerClass())
@@ -824,7 +838,7 @@ void CInfClassHuman::OnHammerFired(WeaponFireContext *pFireContext)
 	// if we Hit anything, we have to wait for the reload
 	if(Hits)
 	{
-		m_pCharacter->SetReloadDuration(0.33f);
+		pFireContext->ReloadInterval = 0.33f;
 	}
 
 	if(pFireContext->FireAccepted)
@@ -878,6 +892,7 @@ void CInfClassHuman::OnShotgunFired(WeaponFireContext *pFireContext)
 	vec2 ProjStartPos = GetProjectileStartPos(GetProximityRadius() * 0.75f);
 
 	float Force = 2.0f;
+	float SpreadingValue = 0.07f;
 	int ShotSpread = 3;
 	EDamageType DamageType = EDamageType::SHOTGUN;
 
@@ -896,7 +911,7 @@ void CInfClassHuman::OnShotgunFired(WeaponFireContext *pFireContext)
 
 	for(int i = -ShotSpread; i <= ShotSpread; ++i)
 	{
-		const float Spreading = i * 0.07f;
+		const float Spreading = i * SpreadingValue;
 		float a = angle(Direction);
 		a += Spreading * 2.0f * (0.25f + 0.75f * static_cast<float>(10 - pFireContext->AmmoAvailable) / 10.0f);
 		float v = 1 - (absolute(i) / static_cast<float>(ShotSpread));
@@ -978,7 +993,7 @@ void CInfClassHuman::OnLaserFired(WeaponFireContext *pFireContext)
 	}
 
 	vec2 Direction = GetDirection();
-	float StartEnergy = GameServer()->Tuning()->m_LaserReach;
+	float StartEnergy = GameServer()->Tuning()->m_LaserReach * m_LaserReachModifier;
 	int Damage = GameServer()->Tuning()->m_LaserDamage;
 	EDamageType DamageType = EDamageType::LASER;
 
@@ -1526,6 +1541,21 @@ void CInfClassHuman::BroadcastWeaponState() const
 			);
 		}
 	}
+}
+
+void CInfClassHuman::ResetUpgrades()
+{
+	for(float &Modifier : m_WeaponRegenIntervalModifier)
+	{
+		Modifier = 1.f;
+	}
+
+	for(float &Modifier : m_WeaponReloadIntervalModifier)
+	{
+		Modifier = 1.f;
+	}
+
+	m_LaserReachModifier = 1.0f;
 }
 
 void CInfClassHuman::OnNinjaTargetKiller(bool Assisted)

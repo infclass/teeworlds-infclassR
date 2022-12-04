@@ -57,6 +57,7 @@ public:
 
 	void HandleNinja() override;
 
+	void OnWeaponFired(WeaponFireContext *pFireContext) override;
 	void OnHammerFired(WeaponFireContext *pFireContext) override;
 	void OnGunFired(WeaponFireContext *pFireContext) override;
 	void OnShotgunFired(WeaponFireContext *pFireContext) override;
@@ -77,6 +78,8 @@ protected:
 	void GiveClassAttributes() override;
 	void DestroyChildEntities() override;
 	void BroadcastWeaponState() const override;
+
+	void ResetUpgrades();
 
 	void CheckSuperWeaponAccess();
 	void OnNinjaTargetKiller(bool Assisted);
@@ -111,6 +114,9 @@ private:
 	int m_BonusTick = 0;
 	int m_ResetKillsTick = 0;
 	float m_KillsProgression = 0;
+	float m_WeaponRegenIntervalModifier[NUM_WEAPONS];
+	float m_WeaponReloadIntervalModifier[NUM_WEAPONS];
+	float m_LaserReachModifier = 1.0f;
 	int m_TurretCount = 0;
 	int m_BroadcastWhiteHoleReady; // used to broadcast "WhiteHole ready" for a short period of time
 	int m_PositionLockTicksRemaining = 0;
