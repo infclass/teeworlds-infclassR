@@ -3091,27 +3091,28 @@ void CInfClassGameController::SnapMapMenu(int SnappingClient, CNetObj_GameInfo *
 		{
 			switch(Iter.Player()->GetClass())
 			{
-				case PLAYERCLASS_NINJA:
-				case PLAYERCLASS_MERCENARY:
-				case PLAYERCLASS_SNIPER:
-					Support++;
-					break;
-				case PLAYERCLASS_ENGINEER:
-				case PLAYERCLASS_SOLDIER:
-				case PLAYERCLASS_SCIENTIST:
-				case PLAYERCLASS_BIOLOGIST:
-					Defender++;
-					break;
-				case PLAYERCLASS_MEDIC:
-					Medic++;
-					break;
-				case PLAYERCLASS_HERO:
-					Hero++;
-					break;
-				case PLAYERCLASS_LOOPER:
-					Defender++;
-					break;
-					
+			case PLAYERCLASS_NINJA:
+			case PLAYERCLASS_MERCENARY:
+			case PLAYERCLASS_SNIPER:
+				Support++;
+				break;
+			case PLAYERCLASS_ENGINEER:
+			case PLAYERCLASS_SOLDIER:
+			case PLAYERCLASS_SCIENTIST:
+			case PLAYERCLASS_BIOLOGIST:
+				Defender++;
+				break;
+			case PLAYERCLASS_MEDIC:
+				Medic++;
+				break;
+			case PLAYERCLASS_HERO:
+				Hero++;
+				break;
+			case PLAYERCLASS_LOOPER:
+				Defender++;
+				break;
+			default:
+				break;
 			}
 		}
 
