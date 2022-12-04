@@ -780,7 +780,9 @@ void IGameController::CycleMap(bool Forced)
 		m_aMapWish[0] = 0;
 		return;
 	}
-	if(!Forced && m_RoundCount < g_Config.m_SvRoundsPerMap-1)
+
+	bool DoCycle = Forced;
+	if(!DoCycle)
 		return;
 
 	if(m_aQueuedMap[0] != 0)
@@ -1067,7 +1069,7 @@ void IGameController::Tick()
 			StartRound();
 	}
 
-	if(m_GameOverTick != -1)
+	if(IsGameOver())
 	{
 		// game over.. wait for restart
 		if(Server()->Tick() > m_GameOverTick+Server()->TickSpeed()*g_Config.m_InfShowScoreTime)
@@ -1084,7 +1086,6 @@ void IGameController::Tick()
 			if(!Server()->GetMapReload())
 			{
 				StartRound();
-				IncreaseCurrentRoundCounter();
 			}
 		}
 		else

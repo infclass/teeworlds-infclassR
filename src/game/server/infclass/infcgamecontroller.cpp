@@ -2081,6 +2081,8 @@ CGameWorld *CInfClassGameController::GameWorld()
 
 void CInfClassGameController::StartRound()
 {
+	const bool StartAfterGameOver = IsGameOver();
+
 	m_RoundType = m_QueuedRoundType;
 	QueueRoundType(ROUND_TYPE::NORMAL);
 
@@ -2127,6 +2129,11 @@ void CInfClassGameController::StartRound()
 	}
 
 	m_HeroGiftTick = 0;
+
+	if(StartAfterGameOver)
+	{
+		IncreaseCurrentRoundCounter();
+	}
 
 	OnStartRound();
 }
@@ -2528,10 +2535,11 @@ void CInfClassGameController::Tick()
 
 	const int NumPlayers = NumHumans + NumInfected;
 
+	bool Allowed = !m_Warmup;
 	m_InfectedStarted = false;
 
 	//If the game can start ...
-	if(!m_Warmup && m_GameOverTick == -1 && NumPlayers >= Config()->m_InfMinPlayers)
+	if(Allowed && m_GameOverTick == -1 && NumPlayers >= g_Config.m_InfMinPlayers)
 	{
 		//If the infection started
 		if(IsInfectionStarted())
@@ -3621,9 +3629,14 @@ void CInfClassGameController::DoWincheck()
 		return;
 	}
 
+	bool HumanVictoryConditionsMet = false;
 	const int Seconds = (Server()->Tick() - m_RoundStartTick) / ((float)Server()->TickSpeed());
+	if(GetTimeLimit() > 0 && Seconds >= GetTimeLimit() * 60)
+	{
+		HumanVictoryConditionsMet = true;
+	}
 	//Start the final explosion if the time is over
-	if(m_InfectedStarted && !m_ExplosionStarted && GetTimeLimit() > 0 && Seconds >= GetTimeLimit() * 60)
+	if(m_InfectedStarted && !m_ExplosionStarted && HumanVictoryConditionsMet)
 	{
 		for(TEntityPtr<CInfClassCharacter> p = GameWorld()->FindFirst<CInfClassCharacter>(); p; ++p)
 		{
@@ -4126,7 +4139,9 @@ CLASS_AVAILABILITY CInfClassGameController::GetPlayerClassAvailability(PLAYERCLA
 	if(IsSupportClass(PlayerClass) && (nbSupport >= Config()->m_InfSupportLimit))
 		return CLASS_AVAILABILITY::LIMIT_EXCEEDED;
 
-	if (nbClass[PlayerClass] >= GetClassPlayerLimit(PlayerClass))
+	int ClassLimit = GetClassPlayerLimit(PlayerClass);
+
+	if(nbClass[PlayerClass] >= ClassLimit)
 		return CLASS_AVAILABILITY::LIMIT_EXCEEDED;
 	
 	return CLASS_AVAILABILITY::AVAILABLE;
