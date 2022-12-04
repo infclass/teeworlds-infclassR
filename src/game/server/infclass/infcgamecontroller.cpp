@@ -2907,7 +2907,7 @@ void CInfClassGameController::StartFunRound(const FunRoundConfiguration &Configu
 
 	// zombies
 	std::vector<int> InfectedProbabilities;
-	for(int PlayerClass = START_INFECTEDCLASS + 1; PlayerClass < END_INFECTEDCLASS; PlayerClass++)
+	for(PLAYERCLASS PlayerClass : AllInfectedClasses())
 	{
 		InfectedProbabilities.push_back(GetPlayerClassProbability(PlayerClass));
 	}
@@ -2924,7 +2924,7 @@ void CInfClassGameController::StartFunRound(const FunRoundConfiguration &Configu
 
 	// humans
 	std::vector<int> HumanAvailabilities;
-	for(int PlayerClass = START_HUMANCLASS + 1; PlayerClass < END_HUMANCLASS; PlayerClass++)
+	for(PLAYERCLASS PlayerClass : AllHumanClasses())
 	{
 		HumanAvailabilities.push_back(GetPlayerClassEnabled(PlayerClass));
 	}
@@ -3195,11 +3195,12 @@ void CInfClassGameController::RewardTheKillers(CInfClassCharacter *pVictim, cons
 
 	if(pVictim->IsZombie())
 	{
+		PLAYERCLASS VictimClass = static_cast<PLAYERCLASS>(pVictim->GetPlayerClass());
 		int ScoreEvent = SCOREEVENT_KILL_INFECTED;
-		bool ClassSpecialProcessingEnabled = (GetRoundType() != ROUND_TYPE::FUN) || (GetPlayerClassProbability(pVictim->GetPlayerClass()) == 0);
+		bool ClassSpecialProcessingEnabled = (GetRoundType() != ROUND_TYPE::FUN) || (GetPlayerClassProbability(VictimClass) == 0);
 		if(ClassSpecialProcessingEnabled)
 		{
-			switch(pVictim->GetPlayerClass())
+			switch(VictimClass)
 			{
 			case PLAYERCLASS_WITCH:
 				ScoreEvent = SCOREEVENT_KILL_WITCH;
@@ -3295,14 +3296,15 @@ void CInfClassGameController::OnCharacterDeath(CInfClassCharacter *pVictim, cons
 	INFECTION_TYPE InfectionType = INFECTION_TYPE::REGULAR;
 	bool ClassSpecialProcessingEnabled = true;
 
-	if((GetRoundType() == ROUND_TYPE::FUN) && !pVictim->IsHuman() && GetPlayerClassProbability(pVictim->GetPlayerClass()))
+	PLAYERCLASS VictimClass = static_cast<PLAYERCLASS>(pVictim->GetPlayerClass());
+	if((GetRoundType() == ROUND_TYPE::FUN) && !pVictim->IsHuman() && GetPlayerClassProbability(VictimClass))
 	{
 		ClassSpecialProcessingEnabled = false;
 	}
 
 	if(ClassSpecialProcessingEnabled)
 	{
-		switch(pVictim->GetPlayerClass())
+		switch(VictimClass)
 		{
 			case PLAYERCLASS_WITCH:
 				GameServer()->SendBroadcast_Localization(-1, BROADCAST_PRIORITY_GAMEANNOUNCE, BROADCAST_DURATION_GAMEANNOUNCE, _("The witch is dead"), NULL);
@@ -3321,7 +3323,7 @@ void CInfClassGameController::OnCharacterDeath(CInfClassCharacter *pVictim, cons
 	else
 	{
 		// Still send the traditional 'whoosh' sound
-		if(pVictim->GetPlayerClass() == PLAYERCLASS_WITCH)
+		if(VictimClass == PLAYERCLASS_WITCH)
 		{
 			GameServer()->CreateSoundGlobal(SOUND_CTF_RETURN);
 		}
@@ -3737,7 +3739,7 @@ PLAYERCLASS CInfClassGameController::ChooseHumanClass(const CInfClassPlayer *pPl
 	};
 
 	int AvailableClasses = 0;
-	for(int PlayerClass = START_HUMANCLASS + 1; PlayerClass < END_HUMANCLASS; ++PlayerClass)
+	for(PLAYERCLASS PlayerClass : AllHumanClasses())
 	{
 		double &ClassProbability = GetClassProbabilityRef(PlayerClass);
 		ClassProbability = GetPlayerClassEnabled(PlayerClass) ? 1.0f : 0.0f;
@@ -3816,7 +3818,7 @@ PLAYERCLASS CInfClassGameController::ChooseInfectedClass(const CInfClassPlayer *
 	int InitiallyInfected = GetMinimumInfectedForPlayers(PlayersCount);
 	
 	double Probability[NB_INFECTEDCLASS];
-	for (int PlayerClass = START_INFECTEDCLASS + 1; PlayerClass < END_INFECTEDCLASS; ++PlayerClass)
+	for(PLAYERCLASS PlayerClass : AllInfectedClasses())
 	{
 		double &ClassProbability = Probability[PlayerClass - START_INFECTEDCLASS - 1];
 		ClassProbability = GetPlayerClassProbability(PlayerClass);
@@ -3842,7 +3844,7 @@ PLAYERCLASS CInfClassGameController::ChooseInfectedClass(const CInfClassPlayer *
 				break;
 			case PLAYERCLASS_WITCH:
 			case PLAYERCLASS_UNDEAD:
-				if ((nbInfected <= 2) || nbClass[PlayerClass] > 0)
+				if((nbInfected <= 2) || nbClass[PlayerClass] > 0)
 					ClassProbability = 0;
 				break;
 			default:
@@ -3861,89 +3863,91 @@ PLAYERCLASS CInfClassGameController::ChooseInfectedClass(const CInfClassPlayer *
 	return static_cast<PLAYERCLASS>(Class);
 }
 
-bool CInfClassGameController::GetPlayerClassEnabled(int PlayerClass) const
+bool CInfClassGameController::GetPlayerClassEnabled(PLAYERCLASS PlayerClass) const
 {
 	switch(PlayerClass)
 	{
-		case PLAYERCLASS_ENGINEER:
-			return Config()->m_InfEnableEngineer;
-		case PLAYERCLASS_SOLDIER:
-			return Config()->m_InfEnableSoldier;
-		case PLAYERCLASS_SCIENTIST:
-			return Config()->m_InfEnableScientist;
-		case PLAYERCLASS_BIOLOGIST:
-			return Config()->m_InfEnableBiologist;
-		case PLAYERCLASS_MEDIC:
-			return Config()->m_InfEnableMedic;
-		case PLAYERCLASS_HERO:
-			return Config()->m_InfEnableHero;
-		case PLAYERCLASS_NINJA:
-			return Config()->m_InfEnableNinja;
-		case PLAYERCLASS_MERCENARY:
-			return Config()->m_InfEnableMercenary;
-		case PLAYERCLASS_SNIPER:
-			return Config()->m_InfEnableSniper;
-		case PLAYERCLASS_LOOPER:
-			return Config()->m_InfEnableLooper;
-		default:
-			return false;
+	case PLAYERCLASS_ENGINEER:
+		return Config()->m_InfEnableEngineer;
+	case PLAYERCLASS_SOLDIER:
+		return Config()->m_InfEnableSoldier;
+	case PLAYERCLASS_SCIENTIST:
+		return Config()->m_InfEnableScientist;
+	case PLAYERCLASS_BIOLOGIST:
+		return Config()->m_InfEnableBiologist;
+	case PLAYERCLASS_MEDIC:
+		return Config()->m_InfEnableMedic;
+	case PLAYERCLASS_HERO:
+		return Config()->m_InfEnableHero;
+	case PLAYERCLASS_NINJA:
+		return Config()->m_InfEnableNinja;
+	case PLAYERCLASS_MERCENARY:
+		return Config()->m_InfEnableMercenary;
+	case PLAYERCLASS_SNIPER:
+		return Config()->m_InfEnableSniper;
+	case PLAYERCLASS_LOOPER:
+		return Config()->m_InfEnableLooper;
+	default:
+		break;
+	}
+
+	return false;
+}
+
+int CInfClassGameController::GetMinPlayersForClass(PLAYERCLASS PlayerClass) const
+{
+	switch(PlayerClass)
+	{
+	case PLAYERCLASS_ENGINEER:
+		return Config()->m_InfMinPlayersForEngineer;
+	default:
+		return 0;
 	}
 }
 
-int CInfClassGameController::GetMinPlayersForClass(int PlayerClass) const
+int CInfClassGameController::GetClassPlayerLimit(PLAYERCLASS PlayerClass) const
 {
-	switch (PlayerClass)
+	switch(PlayerClass)
 	{
-		case PLAYERCLASS_ENGINEER:
-			return Config()->m_InfMinPlayersForEngineer;
-		default:
-			return 0;
+	case PLAYERCLASS_MEDIC:
+		return Config()->m_InfMedicLimit;
+	case PLAYERCLASS_HERO:
+		return Config()->m_InfHeroLimit;
+	case PLAYERCLASS_WITCH:
+		return Config()->m_InfWitchLimit;
+	default:
+		return Config()->m_SvMaxClients;
 	}
 }
 
-int CInfClassGameController::GetClassPlayerLimit(int PlayerClass) const
+int CInfClassGameController::GetPlayerClassProbability(PLAYERCLASS PlayerClass) const
 {
-	switch (PlayerClass)
+	switch(PlayerClass)
 	{
-		case PLAYERCLASS_MEDIC:
-			return Config()->m_InfMedicLimit;
-		case PLAYERCLASS_HERO:
-			return Config()->m_InfHeroLimit;
-		case PLAYERCLASS_WITCH:
-			return Config()->m_InfWitchLimit;
-		default:
-			return Config()->m_SvMaxClients;
-	}
-}
-
-int CInfClassGameController::GetPlayerClassProbability(int PlayerClass) const
-{
-	switch (PlayerClass)
-	{
-		case PLAYERCLASS_SMOKER:
-			return Config()->m_InfProbaSmoker;
-		case PLAYERCLASS_BOOMER:
-			return Config()->m_InfProbaBoomer;
-		case PLAYERCLASS_HUNTER:
-			return Config()->m_InfProbaHunter;
-		case PLAYERCLASS_BAT:
-			return Config()->m_InfProbaBat;
-		case PLAYERCLASS_GHOST:
-			return Config()->m_InfProbaGhost;
-		case PLAYERCLASS_SPIDER:
-			return Config()->m_InfProbaSpider;
-		case PLAYERCLASS_GHOUL:
-			return Config()->m_InfProbaGhoul;
-		case PLAYERCLASS_SLUG:
-			return Config()->m_InfProbaSlug;
-		case PLAYERCLASS_VOODOO:
-			return Config()->m_InfProbaVoodoo;
-		case PLAYERCLASS_WITCH:
-			return Config()->m_InfProbaWitch;
-		case PLAYERCLASS_UNDEAD:
-			return Config()->m_InfProbaUndead;
-		default:
-			break;
+	case PLAYERCLASS_SMOKER:
+		return Config()->m_InfProbaSmoker;
+	case PLAYERCLASS_BOOMER:
+		return Config()->m_InfProbaBoomer;
+	case PLAYERCLASS_HUNTER:
+		return Config()->m_InfProbaHunter;
+	case PLAYERCLASS_BAT:
+		return Config()->m_InfProbaBat;
+	case PLAYERCLASS_GHOST:
+		return Config()->m_InfProbaGhost;
+	case PLAYERCLASS_SPIDER:
+		return Config()->m_InfProbaSpider;
+	case PLAYERCLASS_GHOUL:
+		return Config()->m_InfProbaGhoul;
+	case PLAYERCLASS_SLUG:
+		return Config()->m_InfProbaSlug;
+	case PLAYERCLASS_VOODOO:
+		return Config()->m_InfProbaVoodoo;
+	case PLAYERCLASS_WITCH:
+		return Config()->m_InfProbaWitch;
+	case PLAYERCLASS_UNDEAD:
+		return Config()->m_InfProbaUndead;
+	default:
+		break;
 	}
 
 	Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "server", "WARNING: Invalid GetPlayerClassProbability() call");
@@ -3984,7 +3988,7 @@ void CInfClassGameController::QueueRoundType(ROUND_TYPE RoundType)
 	m_QueuedRoundType = RoundType;
 }
 
-CLASS_AVAILABILITY CInfClassGameController::GetPlayerClassAvailability(int PlayerClass, const CInfClassPlayer *pForPlayer) const
+CLASS_AVAILABILITY CInfClassGameController::GetPlayerClassAvailability(PLAYERCLASS PlayerClass, const CInfClassPlayer *pForPlayer) const
 {
 	if(!GetPlayerClassEnabled(PlayerClass))
 		return CLASS_AVAILABILITY::DISABLED;
@@ -3997,7 +4001,7 @@ CLASS_AVAILABILITY CInfClassGameController::GetPlayerClassAvailability(int Playe
 	int nbSupport = 0;
 	int nbDefender = 0;
 	std::map<int, int> nbClass;
-	for (int PlayerClass = START_HUMANCLASS + 1; PlayerClass < END_HUMANCLASS; ++PlayerClass)
+	for(PLAYERCLASS PlayerClass : AllHumanClasses())
 		nbClass[PlayerClass] = 0;
 
 	CInfClassPlayerIterator<PLAYERITER_INGAME> Iter(GameServer()->m_apPlayers);

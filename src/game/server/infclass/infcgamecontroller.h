@@ -111,17 +111,17 @@ public:
 	bool TryRespawn(CInfClassPlayer *pPlayer, SpawnContext *pContext);
 	PLAYERCLASS ChooseHumanClass(const CInfClassPlayer *pPlayer) const;
 	PLAYERCLASS ChooseInfectedClass(const CInfClassPlayer *pPlayer) const;
-	bool GetPlayerClassEnabled(int PlayerClass) const;
-	int GetMinPlayersForClass(int PlayerClass) const;
-	int GetClassPlayerLimit(int PlayerClass) const;
-	int GetPlayerClassProbability(int PlayerClass) const;
+	bool GetPlayerClassEnabled(PLAYERCLASS PlayerClass) const;
+	int GetMinPlayersForClass(PLAYERCLASS PlayerClass) const;
+	int GetClassPlayerLimit(PLAYERCLASS PlayerClass) const;
+	int GetPlayerClassProbability(PLAYERCLASS PlayerClass) const;
 
 	int GetInfectedCount(int InfectedPlayerClass = PLAYERCLASS_INVALID) const;
 
 	ROUND_TYPE GetRoundType() const;
 	void QueueRoundType(ROUND_TYPE RoundType);
 
-	CLASS_AVAILABILITY GetPlayerClassAvailability(int PlayerClass, const CInfClassPlayer *pForPlayer = nullptr) const;
+	CLASS_AVAILABILITY GetPlayerClassAvailability(PLAYERCLASS PlayerClass, const CInfClassPlayer *pForPlayer = nullptr) const;
 	bool CanVote() override;
 	void OnPlayerDisconnect(CPlayer *pBasePlayer, int Type, const char *pReason) override;
 	void DoPlayerInfection(CInfClassPlayer *pPlayer, CInfClassPlayer *pInfectiousPlayer, int PreviousClass);
