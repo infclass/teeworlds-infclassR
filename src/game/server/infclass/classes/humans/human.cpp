@@ -401,6 +401,12 @@ void CInfClassHuman::OnKilledCharacter(int Victim, bool Assisted)
 			OnNinjaTargetKiller(Assisted);
 		}
 		break;
+	case PLAYERCLASS_MEDIC:
+		if(!Assisted)
+		{
+			m_pCharacter->AddAmmo(WEAPON_GRENADE, 1);
+		}
+		break;
 	default:
 		break;
 	}
