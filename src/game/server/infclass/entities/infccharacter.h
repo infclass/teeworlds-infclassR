@@ -48,6 +48,7 @@ struct WeaponFireContext
 	int AmmoAvailable = 0;
 	int AmmoConsumed = 0;
 	bool NoAmmo = false;
+	float ReloadInterval = 0;
 };
 
 struct WeaponRegenParams

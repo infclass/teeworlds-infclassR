@@ -535,12 +535,15 @@ void CInfClassCharacter::FireWeapon()
 		return;
 	}
 
+	const int InfWeaponID = GetInfWeaponID(m_ActiveWeapon);
+
 	WeaponFireContext FireContext;
 	FireContext.Weapon = m_ActiveWeapon;
 	FireContext.FireAccepted = true;
 	FireContext.AmmoConsumed = 1;
 	FireContext.AmmoAvailable = m_aWeapons[m_ActiveWeapon].m_Ammo;
 	FireContext.NoAmmo = FireContext.AmmoAvailable == 0;
+	FireContext.ReloadInterval = Server()->GetFireDelay(InfWeaponID) / 1000.0f;
 
 	GetClass()->OnWeaponFired(&FireContext);
 
@@ -570,7 +573,7 @@ void CInfClassCharacter::FireWeapon()
 
 	if(!m_ReloadTimer)
 	{
-		m_ReloadTimer = Server()->GetFireDelay(GetInfWeaponID(m_ActiveWeapon)) * Server()->TickSpeed() / 1000;
+		SetReloadDuration(FireContext.ReloadInterval);
 	}
 }
 
