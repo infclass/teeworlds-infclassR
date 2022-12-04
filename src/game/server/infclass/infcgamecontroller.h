@@ -254,6 +254,8 @@ public:
 	void ConSetHookProtection(IConsole::IResult *pResult);
 	static void ConGiveUpgrade(IConsole::IResult *pResult, void *pUserData);
 	void ConGiveUpgrade(IConsole::IResult *pResult);
+	static void ConSetDrop(IConsole::IResult *pResult, void *pUserData);
+	void ConSetDrop(IConsole::IResult *pResult);
 
 	static void ChatWitch(IConsole::IResult *pResult, void *pUserData);
 	void ChatWitch(IConsole::IResult *pResult);
@@ -288,6 +290,7 @@ protected:
 	void CancelTheRound(ROUND_CANCELATION_REASON Reason);
 	void AnnounceTheWinner(int NumHumans);
 	void BroadcastInfectionComing(int InfectionTick);
+	void MaybeDropPickup(const CInfClassCharacter *pVictim);
 
 private:
 	void UpdateNinjaTargets();

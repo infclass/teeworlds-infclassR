@@ -114,6 +114,9 @@ public:
 
 	PLAYERCLASS GetPlayerClass() const;
 
+	int GetDropLevel() const { return m_DropLevel; }
+	void SetDropLevel(int Level);
+
 	void OpenClassChooser();
 	void HandleMapMenu();
 	void HandleMapMenuClicked();
@@ -268,6 +271,7 @@ protected:
 	int m_FlagID;
 	int m_HeartID;
 	int m_CursorID;
+	int m_DropLevel = 0;
 
 	CHelperInfo m_LastHelper;
 	ClientsArray m_LastHookers;

@@ -1482,6 +1482,7 @@ void CInfClassGameController::RegisterChatCommands(IConsole *pConsole)
 	pConsole->Register("set_invincible", "i[clientid] i[level]", CFGFLAG_SERVER, ConSetInvincible, this, "Set the player invincibility level (1 inv to damage, 2 inv to inf, 3 inv to death tiles");
 	pConsole->Register("set_hook_protection", "i[clientid] i[protection]", CFGFLAG_SERVER, ConSetHookProtection, this, "Enable the player hook protection (0 disabled, 1 enabled)");
 	pConsole->Register("give_upgrade", "i[clientid]", CFGFLAG_SERVER, ConGiveUpgrade, this, "Give an upgrade to the player");
+	pConsole->Register("inf_set_drop", "i[clientid] ?i[level]", CFGFLAG_SERVER, ConSetDrop, this, "Make the character drop an upgrade on killed or died");
 
 	pConsole->Register("inf_set_class", "i[clientid] s[classname]", CFGFLAG_SERVER, ConSetClass, this, "Set the class of a player");
 	pConsole->Register("queue_round", "s[type]", CFGFLAG_SERVER, ConQueueSpecialRound, this, "Start a special round");
@@ -2153,6 +2154,31 @@ void CInfClassGameController::ConGiveUpgrade(IConsole::IResult *pResult)
 	}
 
 	pPlayer->GetCharacterClass()->GiveUpgrade();
+}
+
+void CInfClassGameController::ConSetDrop(IConsole::IResult *pResult, void *pUserData)
+{
+	CInfClassGameController *pSelf = (CInfClassGameController *)pUserData;
+	return pSelf->ConSetDrop(pResult);
+}
+
+void CInfClassGameController::ConSetDrop(IConsole::IResult *pResult)
+{
+	const int ClientID = pResult->GetInteger(0);
+	CInfClassCharacter *pCharacter = GetCharacter(ClientID);
+	if(!pCharacter || !pCharacter->IsAlive())
+	{
+		return;
+	}
+
+	const int UnreasonableMaxLevel = 99;
+	const int DropLevel = pResult->NumArguments() > 1 ? pResult->GetInteger(1) : UnreasonableMaxLevel;
+	if(DropLevel < 0)
+	{
+		return;
+	}
+
+	pCharacter->SetDropLevel(DropLevel);
 }
 
 void CInfClassGameController::ChatWitch(IConsole::IResult *pResult, void *pUserData)
@@ -3392,6 +3418,77 @@ void CInfClassGameController::BroadcastInfectionComing(int InfectionTick)
 		nullptr);
 }
 
+void CInfClassGameController::MaybeDropPickup(const CInfClassCharacter *pVictim)
+{
+	const int DropMaxLevel = pVictim->GetDropLevel();
+	if(DropMaxLevel <= 0)
+		return;
+
+	const vec2 Pos = pVictim->GetPos();
+	const int ZoneIndex = GetDamageZoneValueAt(Pos);
+
+	icArray<int, 4> BadIndices = {
+		ZONE_DAMAGE_DEATH,
+		ZONE_DAMAGE_DEATH_NOUNDEAD,
+		// ZONE_DAMAGE_DAMAGE,
+		// ZONE_DAMAGE_DAMAGE_HUMANS,
+	};
+
+	if(pVictim->IsInfected())
+	{
+		// An infected would drop a pickup for humans
+		// but humans won't be able to get it from infected zone
+		BadIndices.Add(ZONE_DAMAGE_INFECTION);
+	}
+
+	if(BadIndices.Contains(ZoneIndex))
+	{
+		// No drop if noone will be able to pick it up
+		return;
+	}
+
+	ClientsArray HasSpawnedPickups;
+	for(TEntityPtr<CIcPickup> pPickup = GameWorld()->FindFirst<CIcPickup>(); pPickup; ++pPickup)
+	{
+		int Owner = pPickup->GetOwner();
+		if(Owner >= 0 && !HasSpawnedPickups.Contains(Owner))
+		{
+			HasSpawnedPickups.Add(Owner);
+		}
+	}
+
+	for(int ClientID = 0; ClientID < MAX_CLIENTS; ++ClientID)
+	{
+		const CInfClassCharacter *pCharacter = GetCharacter(ClientID);
+		if(!pCharacter)
+			continue;
+
+		if(pCharacter->IsHuman() == pVictim->IsHuman())
+		{
+			// No drop from teammates
+			continue;
+		}
+
+		const CInfClassPlayerClass *pClass = pCharacter->GetClass();
+		if(pClass->GetUpgradeLevel() >= DropMaxLevel)
+		{
+			// The player already has an upgrade of this level
+			continue;
+		}
+
+		SClassUpgrade Upgrade = pClass->GetNextUpgrade();
+		if(!Upgrade.IsValid())
+			continue;
+
+		if(HasSpawnedPickups.Contains(ClientID))
+			continue;
+
+		CIcPickup *p = new CIcPickup(GameServer(), EICPickupType::ClassUpgrade, Pos, ClientID);
+		p->SetUpgrade(Upgrade);
+		p->Spawn();
+	}
+}
+
 bool CInfClassGameController::IsInfectionStarted() const
 {
 	if(Config()->m_InfTrainingMode)
@@ -4124,6 +4221,15 @@ void CInfClassGameController::OnCharacterDeath(CInfClassCharacter *pVictim, cons
 				new CFlyingPoint(GameServer(), pVictim->m_Pos, p->GetCID(), Points, pVictim->m_Core.m_Vel);
 			}
 		}
+	}
+
+	static const icArray<EDamageType, 2> ReasonsForNoDrop = {
+		EDamageType::GAME_INFECTION,
+		EDamageType::GAME,
+	};
+	if(!ReasonsForNoDrop.Contains(DamageType))
+	{
+		MaybeDropPickup(pVictim);
 	}
 
 	char aBuf[256];

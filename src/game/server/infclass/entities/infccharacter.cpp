@@ -67,6 +67,8 @@ void CInfClassCharacter::OnCharacterSpawned(const SpawnContext &Context)
 	m_HallucinationTick = -1;
 	m_SlipperyTick = -1;
 	m_LastFreezer = -1;
+	m_DropLevel = 0;
+
 	ResetHelpers();
 	m_LastHookers.Clear();
 	m_LastHookerTick = -1;
@@ -822,6 +824,11 @@ PLAYERCLASS CInfClassCharacter::GetPlayerClass() const
 		return PLAYERCLASS_NONE;
 	else
 		return m_pPlayer->GetClass();
+}
+
+void CInfClassCharacter::SetDropLevel(int Level)
+{
+	m_DropLevel = Level;
 }
 
 void CInfClassCharacter::HandleDamage(int From, int Damage, EDamageType DamageType)
