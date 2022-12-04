@@ -575,6 +575,23 @@ void CInfClassGameController::SendHammerDot(const vec2 &Pos, int SnapID)
 	pObj->m_StartTick = Server()->Tick();
 }
 
+bool CInfClassGameController::SnapLaserObject(const SSnapContext &Context, int SnapID, const vec2 &To, const vec2 &From, int StartTick, int Owner, int Type)
+{
+	{
+		CNetObj_Laser *pObj = static_cast<CNetObj_Laser *>(Server()->SnapNewItem(NETOBJTYPE_LASER, SnapID, sizeof(CNetObj_Laser)));
+		if(!pObj)
+			return false;
+
+		pObj->m_X = (int)To.x;
+		pObj->m_Y = (int)To.y;
+		pObj->m_FromX = (int)From.x;
+		pObj->m_FromY = (int)From.y;
+		pObj->m_StartTick = StartTick;
+	}
+
+	return true;
+}
+
 void CInfClassGameController::ResetFinalExplosion()
 {
 	m_ExplosionStarted = false;

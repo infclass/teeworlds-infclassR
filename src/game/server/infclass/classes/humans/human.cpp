@@ -1401,15 +1401,10 @@ void CInfClassHuman::SnapEngineer(int SnappingClient)
 
 		if(!pCurrentWall)
 		{
-			CNetObj_Laser *pObj = static_cast<CNetObj_Laser *>(Server()->SnapNewItem(NETOBJTYPE_LASER, m_BarrierHintIDs.First(), sizeof(CNetObj_Laser)));
-			if(!pObj)
-				return;
+			SSnapContext Context;
+			Context.Version = GameServer()->GetClientVersion(SnappingClient);
 
-			pObj->m_X = (int)m_FirstShotCoord.x;
-			pObj->m_Y = (int)m_FirstShotCoord.y;
-			pObj->m_FromX = (int)m_FirstShotCoord.x;
-			pObj->m_FromY = (int)m_FirstShotCoord.y;
-			pObj->m_StartTick = Server()->Tick();
+			GameController()->SnapLaserObject(Context, m_BarrierHintIDs.First(), m_FirstShotCoord, m_FirstShotCoord, Server()->Tick(), GetCID());
 		}
 	}
 }

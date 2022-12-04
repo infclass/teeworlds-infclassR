@@ -12,6 +12,7 @@
 #include <game/server/infclass/infcplayer.h>
 
 #include "engineer-wall.h"
+#include "game/server/infclass/entities/infcentity.h"
 #include "infccharacter.h"
 
 const float g_BarrierMaxLength = 300.0;
@@ -129,30 +130,15 @@ void CEngineerWall::Snap(int SnappingClient)
 	else
 		LifeDiff = -Server()->TickSpeed()*2;
 
-	{
-		CNetObj_Laser *pObj = static_cast<CNetObj_Laser *>(Server()->SnapNewItem(NETOBJTYPE_LASER, m_ID, sizeof(CNetObj_Laser)));
-		if(!pObj)
-			return;
+	SSnapContext Context;
+	Context.Version = GameServer()->GetClientVersion(SnappingClient);
 
-		pObj->m_X = (int)m_Pos.x;
-		pObj->m_Y = (int)m_Pos.y;
-		pObj->m_FromX = (int)m_Pos2.x;
-		pObj->m_FromY = (int)m_Pos2.y;
-		pObj->m_StartTick = Server()->Tick()-LifeDiff;
-	}
+	GameController()->SnapLaserObject(Context, GetID(), m_Pos, m_Pos2, Server()->Tick() - LifeDiff, m_Owner);
+
 	if(!AntiPing)
 	{
-		CNetObj_Laser *pObj = static_cast<CNetObj_Laser *>(Server()->SnapNewItem(NETOBJTYPE_LASER, m_EndPointID, sizeof(CNetObj_Laser)));
-		if(!pObj)
-			return;
-		
 		vec2 Pos = m_Pos2;
-
-		pObj->m_X = (int)Pos.x;
-		pObj->m_Y = (int)Pos.y;
-		pObj->m_FromX = (int)Pos.x;
-		pObj->m_FromY = (int)Pos.y;
-		pObj->m_StartTick = Server()->Tick();
+		GameController()->SnapLaserObject(Context, m_EndPointID, Pos, Pos, Server()->Tick(), m_Owner);
 	}
 }
 
