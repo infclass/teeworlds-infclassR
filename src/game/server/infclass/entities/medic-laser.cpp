@@ -44,6 +44,13 @@ bool CMedicLaser::OnCharacterHit(CInfClassCharacter *pHit)
 			nullptr
 		);
 	}
+	else if(pHit->GetArmor() > 10)
+	{
+		GameServer()->SendBroadcast_Localization(m_Owner, BROADCAST_PRIORITY_GAMEANNOUNCE,
+			BROADCAST_DURATION_GAMEANNOUNCE,
+			_("The target is too strong, the cure won't work"),
+			nullptr);
+	}
 	else
 	{
 		PLAYERCLASS PreviousClass = pHit->GetPlayer()->GetPreviousHumanClass();
