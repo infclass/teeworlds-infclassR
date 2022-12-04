@@ -385,7 +385,7 @@ void CInfClassCharacter::ResetNinjaHits()
 void CInfClassCharacter::HandleNinja()
 {
 /* INFECTION MODIFICATION START ***************************************/
-	if(GetInfWeaponID(m_ActiveWeapon) != INFWEAPON_NINJA_HAMMER)
+	if(GetInfWeaponID(m_ActiveWeapon) != INFWEAPON::NINJA_HAMMER)
 		return;
 /* INFECTION MODIFICATION END *****************************************/
 
@@ -515,8 +515,8 @@ void CInfClassCharacter::FireWeapon()
 	bool WillFire = false;
 	if(CountInput(m_LatestPrevInput.m_Fire, m_LatestInput.m_Fire).m_Presses)
 		WillFire = true;
-	else if(FullAuto && (m_LatestInput.m_Fire&1) && (m_aWeapons[m_ActiveWeapon].m_Ammo || (GetInfWeaponID(m_ActiveWeapon) == INFWEAPON_MERCENARY_GRENADE)
-																					   || (GetInfWeaponID(m_ActiveWeapon) == INFWEAPON_MEDIC_GRENADE)))
+	else if(FullAuto && (m_LatestInput.m_Fire&1) && (m_aWeapons[m_ActiveWeapon].m_Ammo || (GetInfWeaponID(m_ActiveWeapon) == INFWEAPON::MERCENARY_GRENADE)
+																					   || (GetInfWeaponID(m_ActiveWeapon) == INFWEAPON::MEDIC_GRENADE)))
 	{
 		WillFire = true;
 	}
@@ -535,7 +535,7 @@ void CInfClassCharacter::FireWeapon()
 		return;
 	}
 
-	const int InfWeaponID = GetInfWeaponID(m_ActiveWeapon);
+	const INFWEAPON InfWeaponID = GetInfWeaponID(m_ActiveWeapon);
 
 	WeaponFireContext FireContext;
 	FireContext.Weapon = m_ActiveWeapon;
@@ -1788,10 +1788,10 @@ void CInfClassCharacter::TakeAllWeapons()
 
 void CInfClassCharacter::AddAmmo(int Weapon, int Ammo)
 {
-	int InfWID = GetInfWeaponID(Weapon);
+	INFWEAPON InfWID = GetInfWeaponID(Weapon);
 	int MaxAmmo = Server()->GetMaxAmmo(InfWID);
 
-	if(InfWID == INFWEAPON_NINJA_GRENADE)
+	if(InfWID == INFWEAPON::NINJA_GRENADE)
 		MaxAmmo = minimum(MaxAmmo + m_NinjaAmmoBuff, 10);
 
 	if(Ammo <= 0)

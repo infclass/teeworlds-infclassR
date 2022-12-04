@@ -358,27 +358,22 @@ public:
 	
 /* INFECTION MODIFICATION START ***************************************/
 public:
-	int m_InfAmmoRegenTime[NB_INFWEAPON];
-	int m_InfFireDelay[NB_INFWEAPON];
-	int m_InfMaxAmmo[NB_INFWEAPON];
-
-public:
 	int GetClientInfclassVersion(int ClientID) const override;
 
 	virtual int GetClientDefaultScoreMode(int ClientID);
 	virtual void SetClientDefaultScoreMode(int ClientID, int Value);
-	
-	virtual const char* GetClientLanguage(int ClientID);
-	virtual void SetClientLanguage(int ClientID, const char* pLanguage);
-	
-	virtual int GetFireDelay(int WID);
-	virtual void SetFireDelay(int WID, int Time);
-	
-	virtual int GetAmmoRegenTime(int WID);
-	virtual void SetAmmoRegenTime(int WID, int Time);
-	
-	virtual int GetMaxAmmo(int WID);
-	virtual void SetMaxAmmo(int WID, int n);
+
+	virtual const char *GetClientLanguage(int ClientID);
+	virtual void SetClientLanguage(int ClientID, const char *pLanguage);
+
+	int GetFireDelay(INFWEAPON WID) override;
+	void SetFireDelay(INFWEAPON WID, int Time) override;
+
+	int GetAmmoRegenTime(INFWEAPON WID) override;
+	void SetAmmoRegenTime(INFWEAPON WID, int Time) override;
+
+	int GetMaxAmmo(INFWEAPON WID) override;
+	void SetMaxAmmo(INFWEAPON WID, int n) override;
 
 	virtual int GetClientNbRound(int ClientID);
 	
@@ -435,6 +430,10 @@ public:
 	int m_LastRegistrationRequestId = 0;
 
 	int m_TimeShiftUnit;
+
+	int m_InfAmmoRegenTime[NB_INFWEAPON];
+	int m_InfFireDelay[NB_INFWEAPON];
+	int m_InfMaxAmmo[NB_INFWEAPON];
 
 public:
 	void AddGameServerCmd(CGameServerCmd* pCmd);

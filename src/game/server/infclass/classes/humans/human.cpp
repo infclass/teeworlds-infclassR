@@ -149,16 +149,16 @@ bool CInfClassHuman::SetupSkin(const CSkinContext &Context, CWeakSkinInfo *pOutp
 
 void CInfClassHuman::GetAmmoRegenParams(int Weapon, WeaponRegenParams *pParams)
 {
-	int InfWID = m_pCharacter->GetInfWeaponID(Weapon);
+	INFWEAPON InfWID = m_pCharacter->GetInfWeaponID(Weapon);
 	pParams->MaxAmmo = Server()->GetMaxAmmo(InfWID);
 	pParams->RegenInterval = Server()->GetAmmoRegenTime(InfWID);
 
 	switch(InfWID)
 	{
-	case INFWEAPON_NINJA_GRENADE:
+	case INFWEAPON::NINJA_GRENADE:
 		pParams->MaxAmmo = minimum(pParams->MaxAmmo + m_pCharacter->m_NinjaAmmoBuff, 10);
 		break;
-	case INFWEAPON_MERCENARY_GUN:
+	case INFWEAPON::MERCENARY_GUN:
 		if(m_pCharacter->GetInAirTick() > Server()->TickSpeed() * 4)
 		{
 			pParams->RegenInterval = 0;

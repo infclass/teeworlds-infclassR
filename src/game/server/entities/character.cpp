@@ -243,10 +243,10 @@ void CCharacter::SetAntiFire()
 
 bool CCharacter::GiveWeapon(int Weapon, int Ammo)
 {
-	int InfWID = GetInfWeaponID(Weapon);
+	INFWEAPON InfWID = GetInfWeaponID(Weapon);
 	int MaxAmmo = Server()->GetMaxAmmo(InfWID);
-	
-	if(InfWID == INFWEAPON_NINJA_GRENADE)
+
+	if(InfWID == INFWEAPON::NINJA_GRENADE)
 		MaxAmmo = minimum(MaxAmmo + m_NinjaAmmoBuff, 10);
 	
 	if(Ammo < 0)
@@ -592,7 +592,7 @@ void CCharacter::SnapCharacter(int SnappingClient, int ID)
 	pCharacter->m_Armor = 0;
 
 /* INFECTION MODIFICATION START ***************************************/
-	if(GetInfWeaponID(m_ActiveWeapon) == INFWEAPON_NINJA_HAMMER)
+	if(GetInfWeaponID(m_ActiveWeapon) == INFWEAPON::NINJA_HAMMER)
 	{
 		Weapon = WEAPON_NINJA;
 	}
@@ -624,9 +624,9 @@ void CCharacter::SnapCharacter(int SnappingClient, int ID)
 	}
 
 /* INFECTION MODIFICATION START ***************************************/
-	if(GetInfWeaponID(m_ActiveWeapon) == INFWEAPON_MERCENARY_GUN)
+	if(GetInfWeaponID(m_ActiveWeapon) == INFWEAPON::MERCENARY_GUN)
 	{
-		pCharacter->m_AmmoCount /= (Server()->GetMaxAmmo(INFWEAPON_MERCENARY_GUN)/10);
+		pCharacter->m_AmmoCount /= (Server()->GetMaxAmmo(INFWEAPON::MERCENARY_GUN) / 10);
 	}
 /* INFECTION MODIFICATION END *****************************************/
 
@@ -863,16 +863,16 @@ void CCharacter::SlowMotionEffect(float Duration, int FromCID)
 	}
 }
 
-int CCharacter::GetInfWeaponID(int WID) const
+INFWEAPON CCharacter::GetInfWeaponID(int WID) const
 {
 	if(WID == WEAPON_HAMMER)
 	{
 		switch(GetPlayerClass())
 		{
 			case PLAYERCLASS_NINJA:
-				return INFWEAPON_NINJA_HAMMER;
+				return INFWEAPON::NINJA_HAMMER;
 			default:
-				return INFWEAPON_HAMMER;
+				return INFWEAPON::HAMMER;
 		}
 	}
 	else if(WID == WEAPON_GUN)
@@ -880,24 +880,24 @@ int CCharacter::GetInfWeaponID(int WID) const
 		switch(GetPlayerClass())
 		{
 			case PLAYERCLASS_MERCENARY:
-				return INFWEAPON_MERCENARY_GUN;
+				return INFWEAPON::MERCENARY_GUN;
 			default:
-				return INFWEAPON_GUN;
+				return INFWEAPON::GUN;
 		}
-		return INFWEAPON_GUN;
+		return INFWEAPON::GUN;
 	}
 	else if(WID == WEAPON_SHOTGUN)
 	{
 		switch(GetPlayerClass())
 		{
 			case PLAYERCLASS_MEDIC:
-				return INFWEAPON_MEDIC_SHOTGUN;
+				return INFWEAPON::MEDIC_SHOTGUN;
 			case PLAYERCLASS_HERO:
-				return INFWEAPON_HERO_SHOTGUN;
+				return INFWEAPON::HERO_SHOTGUN;
 			case PLAYERCLASS_BIOLOGIST:
-				return INFWEAPON_BIOLOGIST_SHOTGUN;
+				return INFWEAPON::BIOLOGIST_SHOTGUN;
 			default:
-				return INFWEAPON_SHOTGUN;
+				return INFWEAPON::SHOTGUN;
 		}
 	}
 	else if(WID == WEAPON_GRENADE)
@@ -905,21 +905,21 @@ int CCharacter::GetInfWeaponID(int WID) const
 		switch(GetPlayerClass())
 		{
 			case PLAYERCLASS_MERCENARY:
-				return INFWEAPON_MERCENARY_GRENADE;
+				return INFWEAPON::MERCENARY_GRENADE;
 			case PLAYERCLASS_MEDIC:
-				return INFWEAPON_MEDIC_GRENADE;
+				return INFWEAPON::MEDIC_GRENADE;
 			case PLAYERCLASS_SOLDIER:
-				return INFWEAPON_SOLDIER_GRENADE;
+				return INFWEAPON::SOLDIER_GRENADE;
 			case PLAYERCLASS_NINJA:
-				return INFWEAPON_NINJA_GRENADE;
+				return INFWEAPON::NINJA_GRENADE;
 			case PLAYERCLASS_SCIENTIST:
-				return INFWEAPON_SCIENTIST_GRENADE;
+				return INFWEAPON::SCIENTIST_GRENADE;
 			case PLAYERCLASS_HERO:
-				return INFWEAPON_HERO_GRENADE;
+				return INFWEAPON::HERO_GRENADE;
 			case PLAYERCLASS_LOOPER:
-				return INFWEAPON_LOOPER_GRENADE;
+				return INFWEAPON::LOOPER_GRENADE;
 			default:
-				return INFWEAPON_GRENADE;
+				return INFWEAPON::GRENADE;
 		}
 	}
 	else if(WID == WEAPON_LASER)
@@ -927,34 +927,34 @@ int CCharacter::GetInfWeaponID(int WID) const
 		switch(GetPlayerClass())
 		{
 			case PLAYERCLASS_ENGINEER:
-				return INFWEAPON_ENGINEER_LASER;
+				return INFWEAPON::ENGINEER_LASER;
 			case PLAYERCLASS_NINJA:
-				return INFWEAPON_BLINDING_LASER;
+				return INFWEAPON::BLINDING_LASER;
 			case PLAYERCLASS_LOOPER:
-				return INFWEAPON_LOOPER_LASER;
+				return INFWEAPON::LOOPER_LASER;
 			case PLAYERCLASS_SCIENTIST:
-				return INFWEAPON_SCIENTIST_LASER;
+				return INFWEAPON::SCIENTIST_LASER;
 			case PLAYERCLASS_SNIPER:
-				return INFWEAPON_SNIPER_LASER;
+				return INFWEAPON::SNIPER_LASER;
 			case PLAYERCLASS_HERO:
-				return INFWEAPON_HERO_LASER;
+				return INFWEAPON::HERO_LASER;
 			case PLAYERCLASS_BIOLOGIST:
-				return INFWEAPON_BIOLOGIST_LASER;
+				return INFWEAPON::BIOLOGIST_LASER;
 			case PLAYERCLASS_MEDIC:
-				return INFWEAPON_MEDIC_LASER;
+				return INFWEAPON::MEDIC_LASER;
 			case PLAYERCLASS_MERCENARY:
-				return INFWEAPON_MERCENARY_LASER;
+				return INFWEAPON::MERCENARY_LASER;
 			default:
-				return INFWEAPON_LASER;
+				return INFWEAPON::LASER;
 		}
 	}
 	else if(WID == WEAPON_NINJA)
 	{
-		return INFWEAPON_NINJA;
+		return INFWEAPON::NINJA;
 	}
 	else
 	{
-		return INFWEAPON_NONE;
+		return INFWEAPON::NONE;
 	}
 }
 

@@ -18,49 +18,50 @@ enum
 };
 
 /* INFECTION MODIFICATION START ***************************************/
-enum INFWEAPON
+enum class INFWEAPON
 {
-	INFWEAPON_NONE,
-	INFWEAPON_HAMMER,
-	INFWEAPON_GUN,
-	INFWEAPON_SHOTGUN,
-	INFWEAPON_GRENADE,
-	INFWEAPON_LASER,
-	INFWEAPON_NINJA,
-	
-	INFWEAPON_ENGINEER_LASER,
-	
-	INFWEAPON_SNIPER_LASER,
-	
-	INFWEAPON_SOLDIER_GRENADE,
-	
-	INFWEAPON_SCIENTIST_GRENADE,
-	INFWEAPON_SCIENTIST_LASER,
-	
-	INFWEAPON_MEDIC_GRENADE,
-	INFWEAPON_MEDIC_LASER,
-	INFWEAPON_MEDIC_SHOTGUN,
-	
-	INFWEAPON_HERO_GRENADE,
-	INFWEAPON_HERO_LASER,
-	INFWEAPON_HERO_SHOTGUN,
-	
-	INFWEAPON_BIOLOGIST_SHOTGUN,
-	INFWEAPON_BIOLOGIST_LASER,
-	
-	INFWEAPON_LOOPER_LASER,
-	INFWEAPON_LOOPER_GRENADE,
-	
-	INFWEAPON_NINJA_HAMMER,
-	INFWEAPON_NINJA_GRENADE,
-	
-	INFWEAPON_MERCENARY_GUN,
-	INFWEAPON_MERCENARY_GRENADE,
-	INFWEAPON_MERCENARY_LASER,
+	NONE,
+	HAMMER,
+	GUN,
+	SHOTGUN,
+	GRENADE,
+	LASER,
+	NINJA,
 
-	INFWEAPON_BLINDING_LASER,
-	NB_INFWEAPON
+	ENGINEER_LASER,
+
+	SNIPER_LASER,
+
+	SOLDIER_GRENADE,
+
+	SCIENTIST_GRENADE,
+	SCIENTIST_LASER,
+
+	MEDIC_GRENADE,
+	MEDIC_LASER,
+	MEDIC_SHOTGUN,
+
+	HERO_GRENADE,
+	HERO_LASER,
+	HERO_SHOTGUN,
+
+	BIOLOGIST_SHOTGUN,
+	BIOLOGIST_LASER,
+
+	LOOPER_LASER,
+	LOOPER_GRENADE,
+
+	NINJA_HAMMER,
+	NINJA_GRENADE,
+
+	MERCENARY_GUN,
+	MERCENARY_GRENADE,
+	MERCENARY_LASER,
+
+	BLINDING_LASER,
 };
+
+constexpr int NB_INFWEAPON = static_cast<int>(INFWEAPON::BLINDING_LASER) + 1;
 
 enum
 {
@@ -323,16 +324,16 @@ public:
 	
 	virtual const char* GetClientLanguage(int ClientID) = 0;
 	virtual void SetClientLanguage(int ClientID, const char* pLanguage) = 0;
-	
-	virtual int GetFireDelay(int WID) = 0;
-	virtual void SetFireDelay(int WID, int Time) = 0;
-	
-	virtual int GetAmmoRegenTime(int WID) = 0;
-	virtual void SetAmmoRegenTime(int WID, int Time) = 0;
-	
-	virtual int GetMaxAmmo(int WID) = 0;
-	virtual void SetMaxAmmo(int WID, int n) = 0;
-	
+
+	virtual int GetFireDelay(INFWEAPON WID) = 0;
+	virtual void SetFireDelay(INFWEAPON WID, int Time) = 0;
+
+	virtual int GetAmmoRegenTime(INFWEAPON WID) = 0;
+	virtual void SetAmmoRegenTime(INFWEAPON WID, int Time) = 0;
+
+	virtual int GetMaxAmmo(INFWEAPON WID) = 0;
+	virtual void SetMaxAmmo(INFWEAPON WID, int n) = 0;
+
 	virtual void SetPlayerClassEnabled(int PlayerClass, bool Enabled) = 0;
 
 	virtual void SetPlayerClassProbability(int PlayerClass, int Probability) = 0;

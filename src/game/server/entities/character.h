@@ -4,13 +4,15 @@
 #define GAME_SERVER_ENTITIES_CHARACTER_H
 
 #include <base/tl/array.h>
-#include <game/server/entity.h>
-#include <game/generated/server_data.h>
 #include <game/generated/protocol.h>
+#include <game/generated/server_data.h>
+#include <game/server/entity.h>
 
 #include <game/gamecore.h>
 
 class CGameTeams;
+
+enum class INFWEAPON;
 
 /* INFECTION MODIFICATION START ***************************************/
 enum FREEZEREASON
@@ -232,8 +234,8 @@ public:
 	void LoveEffect(float Time);
 	void HallucinationEffect();
 	void SlipperyEffect();
-	int GetInfWeaponID(int WID) const;
-/* INFECTION MODIFICATION END *****************************************/
+	INFWEAPON GetInfWeaponID(int WID) const;
+	/* INFECTION MODIFICATION END *****************************************/
 
 	int GetEffectiveHookMode() const;
 
