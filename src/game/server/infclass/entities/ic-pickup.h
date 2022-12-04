@@ -5,6 +5,8 @@
 
 #include "infcentity.h"
 
+#include <base/tl/ic_array.h>
+
 const int PickupPhysSize = 20;
 
 enum class EICPickupType
@@ -12,7 +14,10 @@ enum class EICPickupType
 	Invalid,
 	Health,
 	Armor,
+	ClassUpgrade,
 };
+
+struct SClassUpgrade;
 
 class CIcPickup : public CInfCEntity
 {
@@ -28,12 +33,14 @@ public:
 	
 	void Spawn(float Delay = 0);
 	void SetRespawnInterval(float Seconds);
+	void SetUpgrade(const SClassUpgrade &Upgrade);
 
 private:
 	EICPickupType m_Type = EICPickupType::Invalid;
 	int m_SpawnTick = 0;
 	float m_SpawnInterval = -1;
 	int m_NetworkType = 0;
+	int m_NetworkSubtype = 0;
 };
 
 #endif

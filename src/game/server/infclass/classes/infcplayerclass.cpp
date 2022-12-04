@@ -203,6 +203,11 @@ bool CInfClassPlayerClass::CanBeUnfreezed() const
 	return true;
 }
 
+SClassUpgrade CInfClassPlayerClass::GetNextUpgrade() const
+{
+	return SClassUpgrade::Invalid();
+}
+
 float CInfClassPlayerClass::GetHammerProjOffset() const
 {
 	return GetProximityRadius() * 0.75f;

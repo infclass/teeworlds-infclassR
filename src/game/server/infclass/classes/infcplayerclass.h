@@ -22,6 +22,31 @@ struct WeaponRegenParams;
 
 enum class EDamageType;
 
+struct SClassUpgrade
+{
+	SClassUpgrade() = default;
+	explicit SClassUpgrade(int T) :
+		Type(T)
+	{
+	}
+
+	explicit SClassUpgrade(int T, int S) :
+		Type(T)
+	{
+		Subtype = S;
+	}
+
+	int Type = 0;
+	int Subtype = 0;
+
+	bool IsValid() const { return Type >= 0; }
+
+	static SClassUpgrade Invalid()
+	{
+		return SClassUpgrade(-1);
+	}
+};
+
 class CInfClassPlayerClass
 {
 public:
@@ -44,6 +69,7 @@ public:
 	virtual bool CanDie() const;
 	virtual bool CanBeHit() const;
 	virtual bool CanBeUnfreezed() const;
+	virtual SClassUpgrade GetNextUpgrade() const;
 
 	float GetHammerProjOffset() const;
 	virtual float GetHammerRange() const;

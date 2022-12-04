@@ -221,6 +221,11 @@ bool CInfClassHuman::CanBeHit() const
 	return true;
 }
 
+SClassUpgrade CInfClassHuman::GetNextUpgrade() const
+{
+	return SClassUpgrade::Invalid();
+}
+
 void CInfClassHuman::OnPlayerClassChanged()
 {
 	CInfClassPlayerClass::OnPlayerClassChanged();

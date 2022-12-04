@@ -7,6 +7,7 @@
 #include <game/server/gamecontext.h>
 #include <game/server/player.h>
 
+#include <game/server/infclass/classes/infcplayerclass.h>
 #include <game/server/infclass/entities/infccharacter.h>
 #include <game/server/infclass/infcgamecontroller.h>
 
@@ -26,6 +27,7 @@ CIcPickup::CIcPickup(CGameContext *pGameContext, EICPickupType Type, vec2 Pos, i
 	case EICPickupType::Armor:
 		m_NetworkType = POWERUP_ARMOR;
 		break;
+	case EICPickupType::ClassUpgrade:
 	case EICPickupType::Invalid:
 		break;
 	}
@@ -93,7 +95,23 @@ void CIcPickup::Tick()
 				GameServer()->CreateSound(m_Pos, SOUND_PICKUP_ARMOR);
 			}
 			break;
+		case EICPickupType::ClassUpgrade:
+			pChr->GetClass()->GiveUpgrade();
 
+			if(m_NetworkType == POWERUP_ARMOR)
+			{
+				GameServer()->CreateSound(m_Pos, SOUND_PICKUP_ARMOR);
+			}
+			else if(m_NetworkSubtype == WEAPON_GRENADE)
+			{
+				GameServer()->CreateSound(m_Pos, SOUND_PICKUP_GRENADE);
+			}
+			else
+			{
+				GameServer()->CreateSound(m_Pos, SOUND_PICKUP_SHOTGUN);
+			}
+			Picked = true;
+			break;
 		default:
 			break;
 		};
@@ -152,6 +170,9 @@ void CIcPickup::Snap(int SnappingClient)
 	{
 	case EICPickupType::Health:
 	case EICPickupType::Armor:
+	case EICPickupType::ClassUpgrade:
+		NetworkType = m_NetworkType;
+		Subtype = m_NetworkSubtype;
 		break;
 	case EICPickupType::Invalid:
 		break;
@@ -172,4 +193,10 @@ void CIcPickup::Spawn(float Delay)
 void CIcPickup::SetRespawnInterval(float Seconds)
 {
 	m_SpawnInterval = Seconds;
+}
+
+void CIcPickup::SetUpgrade(const SClassUpgrade &Upgrade)
+{
+	m_NetworkType = Upgrade.Type;
+	m_NetworkSubtype = Upgrade.Subtype;
 }
