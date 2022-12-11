@@ -1301,6 +1301,7 @@ void CInfClassGameController::RegisterChatCommands(IConsole *pConsole)
 
 	pConsole->Register("inf_set_class", "i[clientid] s[classname]", CFGFLAG_SERVER, ConSetClass, this, "Set the class of a player");
 	pConsole->Register("queue_round", "s[type]", CFGFLAG_SERVER, ConQueueSpecialRound, this, "Start a special round");
+	pConsole->Register("start_round", "?s[type]", CFGFLAG_SERVER, ConStartRound, this, "Start a special round");
 
 	pConsole->Register("start_fun_round", "", CFGFLAG_SERVER, ConStartFunRound, this, "Start fun round");
 	pConsole->Register("start_special_fun_round", "s[classname] s[classname] ?s[more classes]", CFGFLAG_SERVER, ConStartSpecialFunRound, this, "Start fun round");
@@ -1584,6 +1585,24 @@ void CInfClassGameController::ConQueueSpecialRound(IConsole::IResult *pResult, v
 		return;
 	}
 	pSelf->QueueRoundType(Type);
+}
+
+void CInfClassGameController::ConStartRound(IConsole::IResult *pResult, void *pUserData)
+{
+	CInfClassGameController *pSelf = (CInfClassGameController *)pUserData;
+	const char *pRoundTypeName = pResult->NumArguments() > 0 ? pResult->GetString(0) : nullptr;
+	if(pRoundTypeName)
+	{
+		ERoundType Type = fromString<ERoundType>(pRoundTypeName);
+
+		if(Type == ERoundType::Invalid)
+		{
+			return;
+		}
+		pSelf->QueueRoundType(Type);
+	}
+
+	pSelf->StartRound();
 }
 
 void CInfClassGameController::ConStartFunRound(IConsole::IResult *pResult, void *pUserData)

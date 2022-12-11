@@ -210,6 +210,7 @@ public:
 	static FunRoundConfiguration ParseFunRoundConfigArguments(IConsole::IResult *pResult);
 
 	static void ConQueueSpecialRound(IConsole::IResult *pResult, void *pUserData);
+	static void ConStartRound(IConsole::IResult *pResult, void *pUserData);
 	static void ConStartFunRound(IConsole::IResult *pResult, void *pUserData);
 	static void ConQueueFunRound(IConsole::IResult *pResult, void *pUserData);
 	static void ConStartSpecialFunRound(IConsole::IResult *pResult, void *pUserData);
