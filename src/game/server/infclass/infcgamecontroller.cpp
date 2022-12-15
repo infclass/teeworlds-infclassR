@@ -2539,7 +2539,7 @@ void CInfClassGameController::Tick()
 	m_InfectedStarted = false;
 
 	//If the game can start ...
-	if(Allowed && m_GameOverTick == -1 && NumPlayers >= g_Config.m_InfMinPlayers)
+	if(Allowed && m_GameOverTick == -1 && NumPlayers >= GetMinPlayers())
 	{
 		//If the infection started
 		if(IsInfectionStarted())
@@ -4091,6 +4091,11 @@ int CInfClassGameController::GetInfectedCount(PLAYERCLASS InfectedPlayerClass) c
 		Count++;
 	}
 	return Count;
+}
+
+int CInfClassGameController::GetMinPlayers() const
+{
+	return Config()->m_InfMinPlayers;
 }
 
 ROUND_TYPE CInfClassGameController::GetRoundType() const

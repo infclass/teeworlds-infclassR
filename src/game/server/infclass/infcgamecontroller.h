@@ -118,6 +118,7 @@ public:
 	int GetPlayerClassProbability(PLAYERCLASS PlayerClass) const;
 
 	int GetInfectedCount(PLAYERCLASS InfectedPlayerClass = PLAYERCLASS_INVALID) const;
+	int GetMinPlayers() const;
 
 	ROUND_TYPE GetRoundType() const;
 	void QueueRoundType(ROUND_TYPE RoundType);
