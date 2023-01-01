@@ -2581,6 +2581,19 @@ void CInfClassGameController::Tick()
 	}
 }
 
+void CInfClassGameController::OnGameRestart()
+{
+	for(int i = 0; i < MAX_CLIENTS; i++)
+	{
+		if(GameServer()->m_apPlayers[i])
+		{
+			GameServer()->m_apPlayers[i]->SetScoreMode(Server()->GetClientDefaultScoreMode(i));
+		}
+	}
+
+	IGameController::OnGameRestart();
+}
+
 void CInfClassGameController::RoundTickBeforeInitialInfection()
 {
 	int InitialInfectionTick = m_RoundStartTick + Server()->TickSpeed() * GetInfectionDelay();

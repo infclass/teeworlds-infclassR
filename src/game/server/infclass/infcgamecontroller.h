@@ -73,6 +73,7 @@ public:
 	void IncreaseCurrentRoundCounter() override;
 
 	void Tick() override;
+	void OnGameRestart() override;
 	void Snap(int SnappingClient) override;
 
 	CPlayer *CreatePlayer(int ClientID, bool IsSpectator, void *pData) override;

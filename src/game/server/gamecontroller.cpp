@@ -1074,19 +1074,7 @@ void IGameController::Tick()
 		// game over.. wait for restart
 		if(Server()->Tick() > m_GameOverTick+Server()->TickSpeed()*g_Config.m_InfShowScoreTime)
 		{
-			for(int i = 0; i < MAX_CLIENTS; i++)
-			{
-				if(GameServer()->m_apPlayers[i])
-				{
-					GameServer()->m_apPlayers[i]->SetScoreMode(Server()->GetClientDefaultScoreMode(i));
-				}
-			}
-			
-			CycleMap();
-			if(!Server()->GetMapReload())
-			{
-				StartRound();
-			}
+			OnGameRestart();
 		}
 		else
 		{
@@ -1119,6 +1107,14 @@ void IGameController::Tick()
 	DoActivityCheck();
 }
 
+void IGameController::OnGameRestart()
+{
+	CycleMap();
+	if(!Server()->GetMapReload())
+	{
+		StartRound();
+	}
+}
 
 bool IGameController::IsTeamplay() const
 {

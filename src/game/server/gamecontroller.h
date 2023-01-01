@@ -129,6 +129,7 @@ public:
 
 	virtual void TickBeforeWorld();
 	virtual void Tick();
+	virtual void OnGameRestart();
 
 	virtual void Snap(int SnappingClient);
 	
