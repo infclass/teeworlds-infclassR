@@ -3401,6 +3401,9 @@ bool CInfClassGameController::IsClassChooserEnabled() const
 
 int CInfClassGameController::GetTaxiMode() const
 {
+	if(GetRoundType() == ERoundType::Survival)
+		return 0;
+
 	return Config()->m_InfTaxi;
 }
 
