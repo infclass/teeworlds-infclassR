@@ -1089,22 +1089,6 @@ void IGameController::Tick()
 		{
 			OnGameRestart();
 		}
-		else
-		{
-			int ScoreMode = PLAYERSCOREMODE_SCORE;
-			if((Server()->Tick() - m_GameOverTick) > Server()->TickSpeed() * (g_Config.m_InfShowScoreTime/2.0f))
-			{
-				ScoreMode = PLAYERSCOREMODE_TIME;
-			}
-			
-			for(int i = 0; i < MAX_CLIENTS; i++)
-			{
-				if(GameServer()->m_apPlayers[i])
-				{
-					GameServer()->m_apPlayers[i]->SetScoreMode(ScoreMode);
-				}
-			}
-		}
 	}
 
 	// game is Paused

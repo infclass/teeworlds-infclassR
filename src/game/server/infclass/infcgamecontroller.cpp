@@ -2517,6 +2517,27 @@ bool CInfClassGameController::IsSafeWitchCandidate(int ClientID) const
 void CInfClassGameController::Tick()
 {
 	IGameController::Tick();
+
+	if(IsGameOver())
+	{
+		// game over.. wait for restart
+		if(Server()->Tick() <= m_GameOverTick + Server()->TickSpeed() * Config()->m_InfShowScoreTime)
+		{
+			int ScoreMode = PLAYERSCOREMODE_SCORE;
+			if((Server()->Tick() - m_GameOverTick) > Server()->TickSpeed() * (Config()->m_InfShowScoreTime / 2.0f))
+			{
+				ScoreMode = PLAYERSCOREMODE_TIME;
+			}
+
+			for(int i = 0; i < MAX_CLIENTS; i++)
+			{
+				if(GameServer()->m_apPlayers[i])
+				{
+					GameServer()->m_apPlayers[i]->SetScoreMode(ScoreMode);
+				}
+			}
+		}
+	}
 	
 	//Check session
 	{
