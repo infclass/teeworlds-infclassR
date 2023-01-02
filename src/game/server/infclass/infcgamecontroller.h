@@ -143,6 +143,7 @@ public:
 	bool MercBombsEnabled() const;
 	bool WhiteHoleEnabled() const;
 	bool IsClassChooserEnabled() const;
+	int GetTaxiMode() const;
 
 	float GetTimeLimit() const;
 	float GetInfectionDelay() const;

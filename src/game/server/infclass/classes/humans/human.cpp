@@ -493,7 +493,7 @@ void CInfClassHuman::OnHookAttachedPlayer()
 	if(m_pCharacter->IsPassenger())
 		return;
 
-	if(!Config()->m_InfTaxi)
+	if(!GameController()->GetTaxiMode())
 		return;
 
 	CCharacter *pHookedCharacter = GameController()->GetCharacter(m_pCharacter->GetHookedPlayer());

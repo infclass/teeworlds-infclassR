@@ -2955,6 +2955,11 @@ bool CInfClassGameController::IsClassChooserEnabled() const
 	return Config()->m_InfClassChooser;
 }
 
+int CInfClassGameController::GetTaxiMode() const
+{
+	return Config()->m_InfTaxi;
+}
+
 float CInfClassGameController::GetTimeLimit() const
 {
 	if(Config()->m_InfTrainingMode)
