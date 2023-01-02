@@ -4653,6 +4653,17 @@ bool CInfClassGameController::GetPlayerClassEnabled(PLAYERCLASS PlayerClass) con
 	{
 		return PlayerClass == m_FunRoundConfiguration.HumanClass;
 	}
+	if(GetRoundType() == ERoundType::Survival)
+	{
+		switch(PlayerClass)
+		{
+		case PLAYERCLASS_ENGINEER:
+		case PLAYERCLASS_SOLDIER:
+			return false;
+		default:
+			break;
+		}
+	}
 
 	switch(PlayerClass)
 	{
