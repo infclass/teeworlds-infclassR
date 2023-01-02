@@ -20,8 +20,10 @@
 #include <engine/shared/config.h>
 #include <engine/server/mapconverter.h>
 #include <engine/server/roundstatistics.h>
+#include <engine/shared/config.h>
 #include <engine/shared/network.h>
 #include <game/mapitems.h>
+#include <iterator>
 #include <time.h>
 
 #include <engine/message.h>
@@ -708,6 +710,48 @@ EZoneTele CInfClassGameController::GetTeleportZoneValueAt(const vec2 &Pos, ZoneD
 int CInfClassGameController::GetBonusZoneValueAt(const vec2 &Pos, ZoneData *pData) const
 {
 	return GetZoneValueAt(m_ZoneHandle_icBonus, Pos, pData);
+}
+
+void CInfClassGameController::ExecuteFileEx(const char *pBaseName)
+{
+	char aBuf[256];
+	const char *pFileName = pBaseName;
+	{
+		const char aPlayersNumberVar[] = "${players_number}";
+		const char *pPlayersNumber = str_find(pFileName, aPlayersNumberVar);
+		if(pPlayersNumber)
+		{
+			int ClientException = -1;
+			int NumHumans;
+			int NumInfected;
+			GetPlayerCounter(ClientException, NumHumans, NumInfected);
+			int Count = NumHumans + NumInfected;
+
+			str_copy(aBuf, pFileName);
+			const std::ptrdiff_t Offset = pPlayersNumber - pFileName;
+			str_format(aBuf + Offset, std::size(aBuf) - Offset, "%d%s", Count, pPlayersNumber + std::size(aPlayersNumberVar) - 1);
+			pFileName = &aBuf[0];
+		}
+	}
+
+	{
+		const char aMapNameVar[] = "${map_name}";
+		const char *pVarIndex = str_find(pFileName, aMapNameVar);
+		if(pVarIndex)
+		{
+			if(pFileName != &aBuf[0])
+			{
+				str_copy(aBuf, pFileName);
+			}
+
+			const char *pMapName = Server()->GetMapName();
+			const std::ptrdiff_t Offset = pVarIndex - pFileName;
+			str_format(aBuf + Offset, std::size(aBuf) - Offset, "%s%s", pMapName, pVarIndex + std::size(aMapNameVar) - 1);
+			pFileName = &aBuf[0];
+		}
+	}
+
+	Console()->ExecuteFile(pFileName, -1, true);
 }
 
 void CInfClassGameController::CreateExplosion(const vec2 &Pos, int Owner, DAMAGE_TYPE DamageType, float DamageFactor)
