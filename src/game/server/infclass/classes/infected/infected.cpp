@@ -551,9 +551,12 @@ void CInfClassInfected::OnHammerFired(WeaponFireContext *pFireContext)
 				}
 				else
 				{
-					if(pTarget->Heal(4, GetCID()))
+					if(GameController()->GetRoundType() != ERoundType::Survival)
 					{
-						m_pCharacter->Heal(1);
+						if(pTarget->Heal(4, GetCID()))
+						{
+							m_pCharacter->Heal(1);
+						}
 					}
 
 					if(!pTarget->GetPlayer()->HookProtectionEnabled())
