@@ -857,6 +857,8 @@ void CInfClassHuman::GiveClassAttributes()
 	m_NinjaTargetTick = 0;
 	m_NinjaTargetCID = -1;
 
+	RemoveWhiteHole();
+
 	CInfClassPlayerClass::GiveClassAttributes();
 
 	if(!m_pCharacter)
@@ -1901,7 +1903,11 @@ void CInfClassHuman::GiveWhiteHole()
 void CInfClassHuman::RemoveWhiteHole()
 {
 	m_HasWhiteHole = false;
-	m_pCharacter->SetSuperWeaponIndicatorEnabled(false);
+
+	if(m_pCharacter)
+	{
+		m_pCharacter->SetSuperWeaponIndicatorEnabled(false);
+	}
 }
 
 void CInfClassHuman::OnHeroFlagTaken(CInfClassCharacter *pHero)
