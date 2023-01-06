@@ -509,12 +509,12 @@ void CInfClassInfected::OnHammerFired(WeaponFireContext *pFireContext)
 
 void CInfClassInfected::GiveClassAttributes()
 {
+	CInfClassPlayerClass::GiveClassAttributes();
+
 	if(!m_pCharacter)
 	{
 		return;
 	}
-
-	CInfClassPlayerClass::GiveClassAttributes();
 
 	m_pCharacter->GiveWeapon(WEAPON_HAMMER, -1);
 	m_pCharacter->SetActiveWeapon(WEAPON_HAMMER);

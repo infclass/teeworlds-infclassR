@@ -857,12 +857,12 @@ void CInfClassHuman::GiveClassAttributes()
 	m_NinjaTargetTick = 0;
 	m_NinjaTargetCID = -1;
 
+	CInfClassPlayerClass::GiveClassAttributes();
+
 	if(!m_pCharacter)
 	{
 		return;
 	}
-
-	CInfClassPlayerClass::GiveClassAttributes();
 
 	switch(GetPlayerClass())
 	{
@@ -963,11 +963,6 @@ void CInfClassHuman::GiveClassAttributes()
 
 void CInfClassHuman::DestroyChildEntities()
 {
-	if(!m_pCharacter)
-	{
-		return;
-	}
-
 	m_PositionLockTicksRemaining = 0;
 	m_NinjaTargetTick = 0;
 	m_NinjaTargetCID = -1;
@@ -978,6 +973,14 @@ void CInfClassHuman::DestroyChildEntities()
 		// delete m_pHeroFlag;
 		m_pHeroFlag = nullptr;
 	}
+
+	CInfClassPlayerClass::DestroyChildEntities();
+
+	if(!m_pCharacter)
+	{
+		return;
+	}
+
 	m_pCharacter->UnlockPosition();
 }
 
