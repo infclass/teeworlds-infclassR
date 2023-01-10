@@ -655,6 +655,10 @@ void CInfClassPlayer::OnAssist()
 void CInfClassPlayer::SetMaxHP(int MaxHP)
 {
 	m_MaxHP = MaxHP;
+	if(m_pInfcPlayerClass)
+	{
+		m_pInfcPlayerClass->UpdateSkin();
+	}
 }
 
 void CInfClassPlayer::OnCharacterSpawned(const SpawnContext &Context)

@@ -59,6 +59,11 @@ void CInfClassInfected::SetupSkinContext(CSkinContext *pOutput, bool ForSameTeam
 		pOutput->ExtraData1 = 0;
 		break;
 	}
+
+	if(m_pPlayer && (m_pPlayer->GetMaxHP() > 20))
+	{
+		pOutput->Highlight = true;
+	}
 }
 
 bool CInfClassInfected::SetupSkin(const CSkinContext &Context, CWeakSkinInfo *pOutput, int DDNetVersion, int InfClassVersion)
@@ -88,6 +93,11 @@ bool CInfClassInfected::SetupSkin(const CSkinContext &Context, CWeakSkinInfo *pO
 		pOutput->UseCustomColor = 1;
 		pOutput->ColorBody = 3866368;
 		pOutput->ColorFeet = 2866368;
+
+		if(Context.Highlight)
+		{
+			pOutput->ColorFeet = 16776744;
+		}
 		break;
 	case PLAYERCLASS_GHOST:
 		pOutput->pSkinName = "twintri";

@@ -4,8 +4,9 @@
 class CSkinContext
 {
 public:
-	int PlayerClass;
-	int ExtraData1;
+	int PlayerClass = 0;
+	int ExtraData1 = 0;
+	bool Highlight = 0;
 };
 
 class CWeakSkinInfo
