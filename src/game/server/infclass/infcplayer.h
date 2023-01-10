@@ -106,6 +106,11 @@ public:
 	void OnDeath();
 	void OnAssist();
 
+	int GetMaxHP() const { return m_MaxHP; }
+	void SetMaxHP(int MaxHP);
+
+	int GetKills() const { return m_Kills; }
+
 	virtual void OnCharacterHPChanged(){};
 
 public:
@@ -130,6 +135,8 @@ protected:
 
 	PLAYERCLASS m_PreferredClass;
 	bool m_AntiPing = false;
+
+	int m_MaxHP = 0;
 
 	int m_Kills = 0;
 	int m_Deaths = 0;

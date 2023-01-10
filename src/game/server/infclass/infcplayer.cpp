@@ -598,6 +598,11 @@ void CInfClassPlayer::OnAssist()
 	++m_Assists;
 }
 
+void CInfClassPlayer::SetMaxHP(int MaxHP)
+{
+	m_MaxHP = MaxHP;
+}
+
 void CInfClassPlayer::OnCharacterSpawned(const SpawnContext &Context)
 {
 	CInfClassCharacter *pCharacter = GetCharacter();
