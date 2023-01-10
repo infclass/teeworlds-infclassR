@@ -598,6 +598,7 @@ set(BASE
   src/base/tl/array.h
   src/base/tl/base.h
   src/base/tl/ic_array.h
+  src/base/tl/ic_enum.h
   src/base/tl/range.h
   src/base/tl/threading.h
   src/base/unicode/confusables.cpp
