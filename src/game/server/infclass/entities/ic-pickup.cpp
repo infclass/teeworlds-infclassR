@@ -130,7 +130,17 @@ void CIcPickup::Snap(int SnappingClient)
 	if(m_Type == EICPickupType::Invalid)
 		return;
 
-	const bool DoSnap = m_Owner < 0 || SnappingClient == SERVER_DEMO_CLIENT || SnappingClient == m_Owner;
+	const CPlayer *pSnappingPlayer = GameServer()->GetPlayer(SnappingClient);
+
+	bool DoSnap = m_Owner < 0 || SnappingClient == m_Owner || SnappingClient == SERVER_DEMO_CLIENT;
+	if(!DoSnap)
+	{
+		if(pSnappingPlayer && pSnappingPlayer->GetTeam() == TEAM_SPECTATORS)
+		{
+			DoSnap = pSnappingPlayer->m_SpectatorID < 0 || pSnappingPlayer->m_SpectatorID == m_Owner;
+		}
+	}
+
 	if(!DoSnap)
 	{
 		return;
