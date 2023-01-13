@@ -42,6 +42,8 @@ else()
   set(TARGET_ARCH)
 endif()
 
+set(AUTO_DEPENDENCIES_DEFAULT OFF)
+
 find_package(MaxMindDB QUIET)
 set(GEOLOCATION_DEFAULT ${MaxMindDB_FOUND})
 
@@ -56,6 +58,7 @@ option(USE_CONAN "Use Conan for dependencies" ${USE_CONAN_DEFAULT})
 option(GEOLOCATION "Enable geolocation support" ${GEOLOCATION_DEFAULT})
 option(MYSQL "Enable mysql support" OFF)
 option(TOOLS "Compile tools" ON)
+option(DOWNLOAD_GTEST "Download and compile GTest" ${AUTO_DEPENDENCIES_DEFAULT})
 
 # Set the default build type to Release
 if(NOT(CMAKE_BUILD_TYPE))
@@ -299,6 +302,10 @@ if(NOT CMAKE_CROSSCOMPILING)
 endif()
 find_package(ZLIB REQUIRED)
 find_package(Crypto)
+if(DOWNLOAD_GTEST)
+  find_package(Git)
+endif()
+find_package(GTest)
 if(MYSQL)
   find_package(MySQL)
 else()
@@ -350,6 +357,9 @@ endif()
 if(TARGET_OS AND TARGET_OS STREQUAL "mac")
   show_dependency_status("Hdiutil" HDIUTIL)
 endif()
+if(DOWNLOAD_GTEST)
+  show_dependency_status("Git" GIT)
+endif()
 if(MYSQL)
   show_dependency_status("MySQL" MYSQL)
 endif()
@@ -359,6 +369,18 @@ show_dependency_status("Zlib" ZLIB)
 
 if(NOT(PYTHONINTERP_FOUND))
   message(SEND_ERROR "You must install Python to compile ${CMAKE_PROJECT_NAME}")
+endif()
+if(NOT(GTEST_FOUND))
+  if(DOWNLOAD_GTEST)
+    if(GIT_FOUND)
+      message(STATUS "Automatically downloading GTest to be able to run tests")
+    else()
+      set(DOWNLOAD_GTEST OFF)
+      message(WARNING "To automatically download GTest, you have to install Git")
+    endif()
+  else()
+    message(STATUS "To run the tests, you have to install GTest")
+  endif()
 endif()
 
 if(TARGET_OS STREQUAL "windows")
@@ -373,6 +395,58 @@ else()
     set(PLATFORM_LIBS rt) # clock_gettime for glibc < 2.17
   else()
     set(PLATFORM_LIBS)
+  endif()
+endif()
+
+########################################################################
+# DOWNLOAD GTEST
+########################################################################
+
+if(NOT(GTEST_FOUND) AND DOWNLOAD_GTEST)
+  set(DDNET_GTEST_VERSION 5c8ca58edfb304b2dd5e6061f83387470826dd87) # master as of 2021-04-07
+  configure_file(cmake/Download_GTest_CMakeLists.txt.in googletest-download/CMakeLists.txt)
+  execute_process(COMMAND ${CMAKE_COMMAND} -G "${CMAKE_GENERATOR}" .
+    RESULT_VARIABLE result
+    WORKING_DIRECTORY ${PROJECT_BINARY_DIR}/googletest-download
+  )
+  if(result)
+    message(WARNING "CMake step for googletest failed: ${result}")
+    set(DOWNLOAD_GTEST OFF)
+  else()
+    execute_process(COMMAND ${CMAKE_COMMAND} --build .
+      RESULT_VARIABLE result
+      WORKING_DIRECTORY ${PROJECT_BINARY_DIR}/googletest-download
+    )
+    if(result)
+      message(WARNING "Build step for googletest failed: ${result}")
+      set(DOWNLOAD_GTEST OFF)
+    else()
+      # Prevent overriding the parent project's compiler/linker settings on Windows
+      set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
+
+      # Add googletest directly to our build. This defines the gtest target.
+      add_subdirectory(
+        ${PROJECT_BINARY_DIR}/googletest-src
+        ${PROJECT_BINARY_DIR}/googletest-build
+        EXCLUDE_FROM_ALL
+      )
+
+      if(MSVC)
+        foreach(target gtest gmock)
+          set_property(TARGET ${target} PROPERTY MSVC_RUNTIME_LIBRARY MultiThreaded$<${DBG}:Debug>)
+          # `/w` disables all warnings. This is needed because `gtest` enables
+          # `/WX` (equivalent of `-Werror`) for some reason, breaking builds
+          # when MSVS adds new warnings.
+          target_compile_options(${target} PRIVATE /w)
+        endforeach()
+      endif()
+
+      set(GTEST_LIBRARIES gtest gmock)
+      set(GTEST_INCLUDE_DIRS)
+      if(CMAKE_VERSION VERSION_LESS 2.8.11)
+        set(GTEST_INCLUDE_DIRS "${gtest_SOURCE_DIR}/include" "${gmock_SOURCE_DIR}/include")
+      endif()
+    endif()
   endif()
 endif()
 
