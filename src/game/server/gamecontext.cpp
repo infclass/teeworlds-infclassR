@@ -2261,7 +2261,33 @@ void CGameContext::ConConverse(IConsole::IResult *pResult, void *pUserData)
 
 void CGameContext::ConWhisper(IConsole::IResult *pResult, void *pUserData)
 {
-	// This will never be called
+	CGameContext *pThis = (CGameContext *)pUserData;
+
+	const char *pStrClientID = pResult->GetString(0);
+	const char *pText = pResult->GetString(1);
+
+	if(!str_isallnum(pStrClientID))
+	{
+		pThis->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "Server", "Invalid client id");
+		return;
+	}
+
+	int ToClientID = str_toint(pStrClientID);
+	const CPlayer *pPlayer = pThis->GetPlayer(ToClientID);
+	if(!pPlayer)
+	{
+		pThis->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "Server", "Invalid client id");
+		return;
+	}
+
+	pThis->SendChatTarget(ToClientID, pText);
+
+	// Confirm message sent
+	char aBuf[1024];
+	str_format(aBuf, sizeof(aBuf), "Whisper '%s' sent to %s",
+		pText,
+		pThis->Server()->ClientName(ToClientID));
+	pThis->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "Server", aBuf);
 }
 
 void CGameContext::ConTuneParam(IConsole::IResult *pResult, void *pUserData)
