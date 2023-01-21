@@ -7,6 +7,7 @@
 #include <game/server/alloc.h>
 
 class CHeroFlag;
+class CWhiteHole;
 
 class CInfClassHuman : public CInfClassPlayerClass
 {
@@ -29,8 +30,6 @@ public:
 	int GetJumps() const override;
 
 	bool CanBeHit() const override;
-
-	void CheckSuperWeaponAccess() override;
 
 	void OnPlayerSnap(int SnappingClient, int InfClassVersion) override;
 
@@ -56,12 +55,14 @@ public:
 	void RemoveWhiteHole();
 
 	void OnHeroFlagTaken(CInfClassCharacter *pHero);
+	void OnWhiteHoleSpawned(const CWhiteHole *pWhiteHole);
 
 protected:
 	void GiveClassAttributes() override;
 	void DestroyChildEntities() override;
 	void BroadcastWeaponState() const override;
 
+	void CheckSuperWeaponAccess();
 	void OnNinjaTargetKiller(bool Assisted);
 
 	void SnapHero(int SnappingClient);
@@ -94,6 +95,8 @@ private:
 
 	icArray<int, 2> m_BarrierHintIDs;
 
+	int m_ResetKillsTime = 0;
+	int m_KillsProgression = 0;
 	int m_TurretCount = 0;
 	int m_BroadcastWhiteHoleReady; // used to broadcast "WhiteHole ready" for a short period of time
 	int m_PositionLockTicksRemaining = 0;

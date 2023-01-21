@@ -45,7 +45,6 @@ CCharacter::CCharacter(CGameWorld *pWorld, IConsole *pConsole) :
 	m_NinjaStrengthBuff = 0;
 	m_NinjaAmmoBuff = 0;
 	m_HasIndicator = false;
-	m_ResetKillsTime = 0;
 /* INFECTION MODIFICATION END *****************************************/
 }
 
@@ -381,13 +380,6 @@ void CCharacter::Tick()
 	PostCoreTick();
 
 /* INFECTION MODIFICATION END *****************************************/
-
-	if(m_ResetKillsTime)
-	{
-		m_ResetKillsTime--;
-		if(!m_ResetKillsTime)
-			GetPlayer()->ResetNumberKills();
-	}
 
 	// Previnput
 	m_PrevInput = m_Input;

@@ -222,10 +222,6 @@ void CInfClassPlayerClass::DisableHealing(float Duration, int From, DAMAGE_TYPE 
 	m_HealingDisabledTicks = maximum<int>(m_HealingDisabledTicks, Duration * Server()->TickSpeed());
 }
 
-void CInfClassPlayerClass::CheckSuperWeaponAccess()
-{
-}
-
 void CInfClassPlayerClass::OnPlayerSnap(int SnappingClient, int InfClassVersion)
 {
 }

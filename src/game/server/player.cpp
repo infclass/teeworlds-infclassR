@@ -59,7 +59,6 @@ void CPlayer::Reset()
 	m_HookProtectionAutomatic = true;
 	m_class = PLAYERCLASS_NONE;
 	m_InfectionTick = -1;
-	m_NumberKills = 0;
 	SetLanguage(Server()->GetClientLanguage(m_ClientID));
 	for(int i=0; i<NB_PLAYERCLASS; i++)
 	{
@@ -434,24 +433,6 @@ int CPlayer::GetScoreMode()
 void CPlayer::SetScoreMode(int Mode)
 {
 	m_ScoreMode = Mode;
-}
-
-int CPlayer::GetNumberKills()
-{
-	if( GetClass() == PLAYERCLASS_NONE )
-		return 0;
-	else
-		return m_NumberKills;
-}
-
-void CPlayer::IncreaseNumberKills()
-{
-	m_NumberKills++;
-}
-
-void CPlayer::ResetNumberKills()
-{
-	m_NumberKills = 0;
 }
 
 const char *CPlayer::GetName(int SnappingClient) const

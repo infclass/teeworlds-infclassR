@@ -5,6 +5,7 @@
 #include <game/server/gamecontext.h>
 #include <engine/shared/config.h>
 
+#include <game/server/infclass/classes/humans/human.h>
 #include <game/server/infclass/damage_type.h>
 #include <game/server/infclass/infcgamecontroller.h>
 #include <game/server/infclass/infcplayer.h>
@@ -36,7 +37,8 @@ CWhiteHole::CWhiteHole(CGameContext *pGameContext, vec2 CenterPos, int Owner)
 	CInfClassCharacter *pOwner = GetOwnerCharacter();
 	if(pOwner)
 	{
-		pOwner->OnWhiteHoleSpawned(this);
+		CInfClassHuman *pHuman = CInfClassHuman::GetInstance(pOwner);
+		pHuman->OnWhiteHoleSpawned(this);
 	}
 }
 

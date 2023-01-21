@@ -32,10 +32,6 @@ CInfClassCharacter::CInfClassCharacter(CInfClassGameController *pGameController)
 CInfClassCharacter::~CInfClassCharacter()
 {
 	FreeChildSnapIDs();
-
-	if(m_pPlayer)
-		m_pPlayer->ResetNumberKills();
-
 	ResetClassObject();
 }
 
@@ -170,12 +166,6 @@ void CInfClassCharacter::OnCharacterInDamageZone(float Damage)
 		constexpr int DamageFrom = -1;
 		m_pClass->DisableHealing(DamageDisablesHealingForSeconds, DamageFrom, DamageType);
 	}
-}
-
-void CInfClassCharacter::OnWhiteHoleSpawned(const CWhiteHole *pWhiteHole)
-{
-	GetPlayer()->ResetNumberKills();
-	m_ResetKillsTime = pWhiteHole->LifeSpan() + Server()->TickSpeed() * 3;
 }
 
 void CInfClassCharacter::Destroy()
@@ -1988,14 +1978,6 @@ float CInfClassCharacter::WebHookLength() const
 		return 0;
 
 	return distance(m_Core.m_Pos, m_Core.m_HookPos);
-}
-
-void CInfClassCharacter::CheckSuperWeaponAccess()
-{
-	if(m_ResetKillsTime)
-		return;
-
-	m_pClass->CheckSuperWeaponAccess();
 }
 
 void CInfClassCharacter::GiveGift(int GiftType)

@@ -214,8 +214,7 @@ public:
 	int m_NinjaStrengthBuff;
 	int m_NinjaAmmoBuff;
 	int m_RefreshTime;
-	//Mercenary
-	int m_ResetKillsTime;
+	// Mercenary
 
 public:
 	void FreeChildSnapIDs();

@@ -152,8 +152,6 @@ protected:
 	int m_DefaultScoreMode;
 	char m_aLanguage[16];
 
-	int m_NumberKills;
-
 public:
 	int m_Authed;
 	int m_HumanTime;
@@ -164,9 +162,6 @@ public:
 	
 	int GetScoreMode();
 	void SetScoreMode(int Mode);
-	int GetNumberKills();
-	void IncreaseNumberKills();
-	void ResetNumberKills();
 	
 	PLAYERCLASS GetClass() const;
 	bool IsZombie() const;

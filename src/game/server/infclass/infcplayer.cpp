@@ -369,8 +369,6 @@ void CInfClassPlayer::SetClass(PLAYERCLASS NewClass)
 	m_GhoulLevel = 0;
 	m_GhoulLevelTick = 0;
 
-	ResetNumberKills();
-
 	// Also reset the last move tick to fix Hero flag indicator
 	m_LastActionMoveTick = Server()->Tick();
 

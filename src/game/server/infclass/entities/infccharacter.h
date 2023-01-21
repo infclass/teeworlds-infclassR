@@ -89,7 +89,6 @@ public:
 	void OnCharacterOutOfInfectionZone();
 	void OnCharacterInBonusZoneTick();
 	void OnCharacterInDamageZone(float Damage);
-	void OnWhiteHoleSpawned(const CWhiteHole *pWhiteHole);
 
 	void Destroy() override;
 	void Tick() override;
@@ -178,8 +177,6 @@ public:
 	void MakeBlind(int ClientID, float Duration);
 
 	float WebHookLength() const;
-
-	void CheckSuperWeaponAccess();
 
 	void GiveGift(int GiftType);
 	void GiveRandomClassSelectionBonus();

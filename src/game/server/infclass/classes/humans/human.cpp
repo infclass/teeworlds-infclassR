@@ -202,8 +202,11 @@ bool CInfClassHuman::CanBeHit() const
 
 void CInfClassHuman::CheckSuperWeaponAccess()
 {
+	if(m_ResetKillsTime)
+		return;
+
 	// check kills of player
-	int kills = m_pPlayer->GetNumberKills();
+	int Kills = m_KillsProgression;
 
 	// Only scientists can receive white holes
 	if(GetPlayerClass() == PLAYERCLASS_SCIENTIST)
@@ -215,7 +218,7 @@ void CInfClassHuman::CheckSuperWeaponAccess()
 		}
 
 		// enable white hole probabilities
-		if(kills < Config()->m_InfWhiteHoleMinimalKills)
+		if(Kills < Config()->m_InfWhiteHoleMinimalKills)
 		{
 			return;
 		}
@@ -346,6 +349,15 @@ void CInfClassHuman::OnCharacterTick()
 		break;
 	}
 	}
+
+	if(m_ResetKillsTime)
+	{
+		m_ResetKillsTime--;
+		if(!m_ResetKillsTime)
+		{
+			m_KillsProgression = 0;
+		}
+	}
 }
 
 void CInfClassHuman::OnCharacterSnap(int SnappingClient)
@@ -414,6 +426,13 @@ void CInfClassHuman::OnKilledCharacter(int Victim, bool Assisted)
 		if(!Assisted)
 		{
 			m_pCharacter->AddAmmo(WEAPON_GRENADE, 1);
+		}
+		break;
+	case PLAYERCLASS_SCIENTIST:
+		if(!Assisted)
+		{
+			m_KillsProgression += 1;
+			CheckSuperWeaponAccess();
 		}
 		break;
 	default:
@@ -811,6 +830,7 @@ void CInfClassHuman::GiveClassAttributes()
 {
 	m_FirstShot = true;
 
+	m_ResetKillsTime = 0;
 	m_TurretCount = 0;
 	m_NinjaTargetTick = 0;
 	m_NinjaTargetCID = -1;
@@ -915,7 +935,7 @@ void CInfClassHuman::GiveClassAttributes()
 			m_pHeroFlag = new CHeroFlag(GameServer(), m_pPlayer->GetCID());
 	}
 
-	m_pPlayer->ResetNumberKills();
+	m_KillsProgression = 0;
 	m_pCharacter->UnlockPosition();
 }
 
@@ -1913,4 +1933,10 @@ void CInfClassHuman::OnHeroFlagTaken(CInfClassCharacter *pHero)
 		CInfClassHuman *pHumanClass = CInfClassHuman::GetInstance(p);
 		pHumanClass->OnHeroFlagTaken(m_pCharacter);
 	}
+}
+
+void CInfClassHuman::OnWhiteHoleSpawned(const CWhiteHole *pWhiteHole)
+{
+	m_KillsProgression = 0;
+	m_ResetKillsTime = pWhiteHole->LifeSpan() + Server()->TickSpeed() * 3;
 }
