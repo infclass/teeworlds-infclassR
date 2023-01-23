@@ -2305,17 +2305,6 @@ void CInfClassCharacter::ClassSpawnAttributes()
 	}
 
 	SetHealthArmor(10, Armor);
-
-	if(PlayerClass != PLAYERCLASS_NONE)
-	{
-		GameServer()->SendBroadcast_ClassIntro(m_pPlayer->GetCID(), PlayerClass);
-		if(!m_pPlayer->IsKnownClass(PlayerClass))
-		{
-			const char *className = CInfClassGameController::GetClassName(PlayerClass);
-			GameServer()->SendChatTarget_Localization(m_pPlayer->GetCID(), CHATCATEGORY_DEFAULT, _("Type “/help {str:ClassName}” for more information about your class"), "ClassName", className, NULL);
-			m_pPlayer->m_knownClass[PlayerClass] = true;
-		}
-	}
 }
 
 void CInfClassCharacter::DestroyChildEntities()

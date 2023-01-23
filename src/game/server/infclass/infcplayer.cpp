@@ -415,6 +415,8 @@ void CInfClassPlayer::SetClass(PLAYERCLASS NewClass)
 		}
 	}
 	m_pInfcPlayerClass->OnPlayerClassChanged();
+
+	SendClassIntro();
 }
 
 void CInfClassPlayer::UpdateSkin()
@@ -638,4 +640,28 @@ void CInfClassPlayer::HandleAutoRespawn()
 bool CInfClassPlayer::IsForcedToSpectate() const
 {
 	return !IsSpectator() && (!m_pCharacter || !m_pCharacter->IsAlive()) && TargetToFollow() >= 0;
+}
+
+void CInfClassPlayer::SendClassIntro()
+{
+	const PLAYERCLASS Class = GetClass();
+	if(!IsBot() && (Class != PLAYERCLASS_NONE))
+	{
+		const char *pClassName = CInfClassGameController::GetClassDisplayName(Class);
+		const char *pTranslated = Server()->Localization()->Localize(GetLanguage(), pClassName);
+
+		if(IsHuman())
+			GameServer()->SendBroadcast_Localization(GetCID(), BROADCAST_PRIORITY_GAMEANNOUNCE, BROADCAST_DURATION_GAMEANNOUNCE,
+				_("You are a human: {str:ClassName}"), "ClassName", pTranslated, NULL);
+		else
+			GameServer()->SendBroadcast_Localization(GetCID(), BROADCAST_PRIORITY_GAMEANNOUNCE, BROADCAST_DURATION_GAMEANNOUNCE,
+				_("You are an infected: {str:ClassName}"), "ClassName", pTranslated, NULL);
+
+		if(!IsKnownClass(Class))
+		{
+			const char *className = CInfClassGameController::GetClassName(Class);
+			GameServer()->SendChatTarget_Localization(GetCID(), CHATCATEGORY_DEFAULT, _("Type “/help {str:ClassName}” for more information about your class"), "ClassName", className, NULL);
+			m_knownClass[Class] = true;
+		}
+	}
 }

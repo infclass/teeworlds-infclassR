@@ -115,6 +115,8 @@ protected:
 
 	bool IsForcedToSpectate() const;
 
+	void SendClassIntro();
+
 	CSkinContext m_SameTeamSkinContext;
 	CSkinContext m_DiffTeamSkinContext;
 	SkinGetter m_SkinGetter;

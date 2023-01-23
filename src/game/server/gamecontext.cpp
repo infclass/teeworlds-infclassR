@@ -679,19 +679,6 @@ void CGameContext::SendBroadcast_Localization_P(int To, int Priority, int LifeSp
 	va_end(VarArgs);
 }
 
-void CGameContext::SendBroadcast_ClassIntro(int ClientID, int Class)
-{
-	const char *pClassName = CInfClassGameController::GetClassDisplayName(Class);
-	const char *pTranslated = Server()->Localization()->Localize(m_apPlayers[ClientID]->GetLanguage(), pClassName);
-	
-	if(Class < END_HUMANCLASS)
-		SendBroadcast_Localization(ClientID, BROADCAST_PRIORITY_GAMEANNOUNCE, BROADCAST_DURATION_GAMEANNOUNCE,
-			_("You are a human: {str:ClassName}"), "ClassName", pTranslated, NULL);
-	else
-		SendBroadcast_Localization(ClientID, BROADCAST_PRIORITY_GAMEANNOUNCE, BROADCAST_DURATION_GAMEANNOUNCE,
-			_("You are an infected: {str:ClassName}"), "ClassName", pTranslated, NULL);
-}
-
 /* INFECTION MODIFICATION END *****************************************/
 
 void CGameContext::SendChat(int ChatterClientID, int Team, const char *pText)
