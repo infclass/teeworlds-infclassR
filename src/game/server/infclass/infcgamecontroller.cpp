@@ -186,7 +186,7 @@ void CInfClassGameController::DoPlayerInfection(CInfClassPlayer *pPlayer, CInfCl
 	}
 
 	const int InfectedByCID = pInfectiousPlayer->GetCID();
-	if(!IsZombieClass(PreviousClass) && (pPlayer != pInfectiousPlayer))
+	if(!IsInfectedClass(PreviousClass) && (pPlayer != pInfectiousPlayer))
 	{
 		if(pInfectiousPlayer->IsHuman())
 		{
@@ -615,11 +615,6 @@ void CInfClassGameController::SaveRoundRules()
 int CInfClassGameController::GetRoundTick() const
 {
 	return Server()->Tick() - m_RoundStartTick;
-}
-
-bool CInfClassGameController::IsZombieClass(int PlayerClass)
-{
-	return (PlayerClass > START_INFECTEDCLASS) && (PlayerClass < END_INFECTEDCLASS);
 }
 
 bool CInfClassGameController::IsDefenderClass(int PlayerClass)
