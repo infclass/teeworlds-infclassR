@@ -2,6 +2,7 @@
 #define GAME_SERVER_INFCLASS_ENTITIES_CHARACTER_H
 
 #include <base/tl/ic_array.h>
+#include <game/infclass/classes.h>
 #include <game/server/entities/character.h>
 
 class CGameContext;
@@ -112,6 +113,8 @@ public:
 
 	int GetHealth() const { return m_Health; }
 	int GetArmor() const { return m_Armor; }
+
+	PLAYERCLASS GetPlayerClass() const;
 
 	void OpenClassChooser();
 	void HandleMapMenu();

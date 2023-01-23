@@ -116,7 +116,7 @@ public:
 	int GetClassPlayerLimit(PLAYERCLASS PlayerClass) const;
 	int GetPlayerClassProbability(PLAYERCLASS PlayerClass) const;
 
-	int GetInfectedCount(int InfectedPlayerClass = PLAYERCLASS_INVALID) const;
+	int GetInfectedCount(PLAYERCLASS InfectedPlayerClass = PLAYERCLASS_INVALID) const;
 
 	ROUND_TYPE GetRoundType() const;
 	void QueueRoundType(ROUND_TYPE RoundType);
@@ -124,7 +124,7 @@ public:
 	CLASS_AVAILABILITY GetPlayerClassAvailability(PLAYERCLASS PlayerClass, const CInfClassPlayer *pForPlayer = nullptr) const;
 	bool CanVote() override;
 	void OnPlayerDisconnect(CPlayer *pBasePlayer, int Type, const char *pReason) override;
-	void DoPlayerInfection(CInfClassPlayer *pPlayer, CInfClassPlayer *pInfectiousPlayer, int PreviousClass);
+	void DoPlayerInfection(CInfClassPlayer *pPlayer, CInfClassPlayer *pInfectiousPlayer, PLAYERCLASS PreviousClass);
 
 	void OnHeroFlagCollected(int ClientID);
 	float GetHeroFlagCooldown() const;
@@ -154,14 +154,14 @@ public:
 
 	int GetRoundTick() const;
 
-	static bool IsDefenderClass(int PlayerClass);
-	static bool IsSupportClass(int PlayerClass);
+	static bool IsDefenderClass(PLAYERCLASS PlayerClass);
+	static bool IsSupportClass(PLAYERCLASS PlayerClass);
 	static PLAYERCLASS GetClassByName(const char *pClassName, bool *pOk = nullptr);
-	static const char *GetClassName(int PlayerClass);
-	static const char *GetClassPluralName(int PlayerClass);
-	static const char *GetClassDisplayName(int PlayerClass, const char *pDefaultText = nullptr);
-	static const char *GetClanForClass(int PlayerClass, const char *pDefaultText = nullptr);
-	static const char *GetClassPluralDisplayName(int PlayerClass);
+	static const char *GetClassName(PLAYERCLASS PlayerClass);
+	static const char *GetClassPluralName(PLAYERCLASS PlayerClass);
+	static const char *GetClassDisplayName(PLAYERCLASS PlayerClass, const char *pDefaultText = nullptr);
+	static const char *GetClanForClass(PLAYERCLASS PlayerClass, const char *pDefaultText = nullptr);
+	static const char *GetClassPluralDisplayName(PLAYERCLASS PlayerClass);
 	static PLAYERCLASS MenuClassToPlayerClass(int MenuClass);
 	static int DamageTypeToWeapon(DAMAGE_TYPE DamageType, TAKEDAMAGEMODE *pMode = nullptr);
 

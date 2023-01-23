@@ -345,12 +345,12 @@ void CCharacter::Tick()
 	
 	CCharacterCore::CParams CoreTickParams(&m_pPlayer->m_NextTuningParams);
 	//~ CCharacterCore::CParams CoreTickParams(&GameWorld()->m_Core.m_Tuning);
-	
-	if(GetPlayerClass() == PLAYERCLASS_SPIDER)
+
+	if(PrivateGetPlayerClass() == PLAYERCLASS_SPIDER)
 	{
 		CoreTickParams.m_HookGrabTime = g_Config.m_InfSpiderHookTime*SERVER_TICK_SPEED;
 	}
-	if(GetPlayerClass() == PLAYERCLASS_BAT)
+	if(PrivateGetPlayerClass() == PLAYERCLASS_BAT)
 	{
 		CoreTickParams.m_HookGrabTime = g_Config.m_InfBatHookTime*SERVER_TICK_SPEED;
 	}
@@ -589,13 +589,13 @@ void CCharacter::SnapCharacter(int SnappingClient, int ID)
 		Weapon = WEAPON_NINJA;
 	}
 
-	if(GetPlayerClass() == PLAYERCLASS_SPIDER)
+	if(PrivateGetPlayerClass() == PLAYERCLASS_SPIDER)
 	{
 		pCharacter->m_HookTick -= (g_Config.m_InfSpiderHookTime - 1) * SERVER_TICK_SPEED-SERVER_TICK_SPEED/5;
 		if(pCharacter->m_HookTick < 0)
 			pCharacter->m_HookTick = 0;
 	}
-	if(GetPlayerClass() == PLAYERCLASS_BAT)
+	if(PrivateGetPlayerClass() == PLAYERCLASS_BAT)
 	{
 		pCharacter->m_HookTick -= (g_Config.m_InfBatHookTime - 1) * SERVER_TICK_SPEED - SERVER_TICK_SPEED/5;
 		if(pCharacter->m_HookTick < 0)
@@ -738,7 +738,7 @@ vec2 CCharacter::GetDirection() const
 	return normalize(vec2(m_LatestInput.m_TargetX, m_LatestInput.m_TargetY));
 }
 
-int CCharacter::GetPlayerClass() const
+int CCharacter::PrivateGetPlayerClass() const
 {
 	if(!m_pPlayer)
 		return PLAYERCLASS_NONE;
@@ -859,7 +859,7 @@ INFWEAPON CCharacter::GetInfWeaponID(int WID) const
 {
 	if(WID == WEAPON_HAMMER)
 	{
-		switch(GetPlayerClass())
+		switch(PrivateGetPlayerClass())
 		{
 			case PLAYERCLASS_NINJA:
 				return INFWEAPON::NINJA_HAMMER;
@@ -869,7 +869,7 @@ INFWEAPON CCharacter::GetInfWeaponID(int WID) const
 	}
 	else if(WID == WEAPON_GUN)
 	{
-		switch(GetPlayerClass())
+		switch(PrivateGetPlayerClass())
 		{
 			case PLAYERCLASS_MERCENARY:
 				return INFWEAPON::MERCENARY_GUN;
@@ -880,7 +880,7 @@ INFWEAPON CCharacter::GetInfWeaponID(int WID) const
 	}
 	else if(WID == WEAPON_SHOTGUN)
 	{
-		switch(GetPlayerClass())
+		switch(PrivateGetPlayerClass())
 		{
 			case PLAYERCLASS_MEDIC:
 				return INFWEAPON::MEDIC_SHOTGUN;
@@ -894,7 +894,7 @@ INFWEAPON CCharacter::GetInfWeaponID(int WID) const
 	}
 	else if(WID == WEAPON_GRENADE)
 	{
-		switch(GetPlayerClass())
+		switch(PrivateGetPlayerClass())
 		{
 			case PLAYERCLASS_MERCENARY:
 				return INFWEAPON::MERCENARY_GRENADE;
@@ -916,7 +916,7 @@ INFWEAPON CCharacter::GetInfWeaponID(int WID) const
 	}
 	else if(WID == WEAPON_LASER)
 	{
-		switch(GetPlayerClass())
+		switch(PrivateGetPlayerClass())
 		{
 			case PLAYERCLASS_ENGINEER:
 				return INFWEAPON::ENGINEER_LASER;

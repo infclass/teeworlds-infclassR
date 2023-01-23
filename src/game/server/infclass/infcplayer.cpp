@@ -249,7 +249,7 @@ void CInfClassPlayer::HandleInfection()
 		m_InfectionTick = Server()->Tick();
 	}
 
-	const int PreviousClass = GetClass();
+	const PLAYERCLASS PreviousClass = GetClass();
 	CInfClassPlayer *pInfectiousPlayer = GameController()->GetPlayer(m_InfectiousPlayerCID);
 
 	m_InfectionType = INFECTION_TYPE::NO;

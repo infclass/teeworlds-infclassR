@@ -1,4 +1,5 @@
 #include "infccharacter.h"
+#include "game/infclass/classes.h"
 
 #include <engine/server/mapconverter.h>
 #include <engine/server/roundstatistics.h>
@@ -866,6 +867,14 @@ bool CInfClassCharacter::GiveArmor(int HitPoints, int FromCID)
 	}
 
 	return Armored;
+}
+
+PLAYERCLASS CInfClassCharacter::GetPlayerClass() const
+{
+	if(!m_pPlayer)
+		return PLAYERCLASS_NONE;
+	else
+		return m_pPlayer->GetClass();
 }
 
 void CInfClassCharacter::HandleDamage(int From, int Damage, DAMAGE_TYPE DamageType)
@@ -2293,7 +2302,7 @@ void CInfClassCharacter::ClassSpawnAttributes()
 	int Armor = m_Armor;
 	m_IsInvisible = false;
 
-	const int PlayerClass = GetPlayerClass();
+	const PLAYERCLASS PlayerClass = GetPlayerClass();
 	const bool isHuman = PlayerClass < END_HUMANCLASS; // PLAYERCLASS_NONE is also a human (not infected) class
 	if(isHuman)
 	{

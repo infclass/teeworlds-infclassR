@@ -170,6 +170,8 @@ public:
 	bool CanCollide(int ClientID);
 
 private:
+	int PrivateGetPlayerClass() const;
+
 	// info for dead reckoning
 	int m_ReckoningTick; // tick that we are performing dead reckoning From
 	CCharacterCore m_SendCore; // core that we should send
@@ -219,7 +221,6 @@ public:
 public:
 	void FreeChildSnapIDs();
 	vec2 GetDirection() const;
-	int GetPlayerClass() const;
 
 	bool IsZombie() const;
 	bool IsHuman() const;

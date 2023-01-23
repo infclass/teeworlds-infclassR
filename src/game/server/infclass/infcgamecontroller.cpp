@@ -166,7 +166,7 @@ void CInfClassGameController::OnPlayerDisconnect(CPlayer *pBasePlayer, int Type,
 	IGameController::OnPlayerDisconnect(pPlayer, Type, pReason);
 }
 
-void CInfClassGameController::DoPlayerInfection(CInfClassPlayer *pPlayer, CInfClassPlayer *pInfectiousPlayer, int PreviousClass)
+void CInfClassGameController::DoPlayerInfection(CInfClassPlayer *pPlayer, CInfClassPlayer *pInfectiousPlayer, PLAYERCLASS PreviousClass)
 {
 	PLAYERCLASS c = ChooseInfectedClass(pPlayer);
 	pPlayer->SetClass(c);
@@ -617,7 +617,7 @@ int CInfClassGameController::GetRoundTick() const
 	return Server()->Tick() - m_RoundStartTick;
 }
 
-bool CInfClassGameController::IsDefenderClass(int PlayerClass)
+bool CInfClassGameController::IsDefenderClass(PLAYERCLASS PlayerClass)
 {
 	switch (PlayerClass)
 	{
@@ -632,7 +632,7 @@ bool CInfClassGameController::IsDefenderClass(int PlayerClass)
 	}
 }
 
-bool CInfClassGameController::IsSupportClass(int PlayerClass)
+bool CInfClassGameController::IsSupportClass(PLAYERCLASS PlayerClass)
 {
 	switch (PlayerClass)
 	{
@@ -679,7 +679,7 @@ PLAYERCLASS CInfClassGameController::GetClassByName(const char *pClassName, bool
 		}
 	}
 
-	for (int PlayerClass = 0; PlayerClass < NB_PLAYERCLASS; ++PlayerClass)
+	for(PLAYERCLASS PlayerClass : AllPlayerClasses())
 	{
 		const char *pSingularName = CInfClassGameController::GetClassName(PlayerClass);
 		const char *pPluralName = CInfClassGameController::GetClassPluralName(PlayerClass);
@@ -695,7 +695,7 @@ PLAYERCLASS CInfClassGameController::GetClassByName(const char *pClassName, bool
 	return PLAYERCLASS_INVALID;
 }
 
-const char *CInfClassGameController::GetClassName(int PlayerClass)
+const char *CInfClassGameController::GetClassName(PLAYERCLASS PlayerClass)
 {
 	switch (PlayerClass)
 	{
@@ -751,7 +751,7 @@ const char *CInfClassGameController::GetClassName(int PlayerClass)
 	}
 }
 
-const char *CInfClassGameController::GetClassPluralName(int PlayerClass)
+const char *CInfClassGameController::GetClassPluralName(PLAYERCLASS PlayerClass)
 {
 	switch (PlayerClass)
 	{
@@ -804,7 +804,7 @@ const char *CInfClassGameController::GetClassPluralName(int PlayerClass)
 	}
 }
 
-const char *CInfClassGameController::GetClassDisplayName(int PlayerClass, const char *pDefaultText)
+const char *CInfClassGameController::GetClassDisplayName(PLAYERCLASS PlayerClass, const char *pDefaultText)
 {
 	switch (PlayerClass)
 	{
@@ -858,7 +858,7 @@ const char *CInfClassGameController::GetClassDisplayName(int PlayerClass, const 
 	}
 }
 
-const char *CInfClassGameController::GetClanForClass(int PlayerClass, const char *pDefaultText)
+const char *CInfClassGameController::GetClanForClass(PLAYERCLASS PlayerClass, const char *pDefaultText)
 {
 	switch (PlayerClass)
 	{
@@ -867,7 +867,7 @@ const char *CInfClassGameController::GetClanForClass(int PlayerClass, const char
 	}
 }
 
-const char *CInfClassGameController::GetClassPluralDisplayName(int PlayerClass)
+const char *CInfClassGameController::GetClassPluralDisplayName(PLAYERCLASS PlayerClass)
 {
 	switch (PlayerClass)
 	{
@@ -3718,7 +3718,7 @@ PLAYERCLASS CInfClassGameController::ChooseHumanClass(const CInfClassPlayer *pPl
 	CInfClassPlayerIterator<PLAYERITER_INGAME> Iter(GameServer()->m_apPlayers);
 	while(Iter.Next())
 	{
-		const int AnotherPlayerClass = Iter.Player()->GetClass();
+		const PLAYERCLASS AnotherPlayerClass = Iter.Player()->GetClass();
 		if ((AnotherPlayerClass < START_HUMANCLASS + 1) || (AnotherPlayerClass > END_HUMANCLASS - 1))
 			continue;
 		if (IsDefenderClass(AnotherPlayerClass))
@@ -3950,7 +3950,7 @@ int CInfClassGameController::GetPlayerClassProbability(PLAYERCLASS PlayerClass) 
 	return 0;
 }
 
-int CInfClassGameController::GetInfectedCount(int InfectedPlayerClass) const
+int CInfClassGameController::GetInfectedCount(PLAYERCLASS InfectedPlayerClass) const
 {
 	int Count = 0;
 	for(int i = 0; i < MAX_CLIENTS; i++)
@@ -4003,7 +4003,7 @@ CLASS_AVAILABILITY CInfClassGameController::GetPlayerClassAvailability(PLAYERCLA
 	CInfClassPlayerIterator<PLAYERITER_INGAME> Iter(GameServer()->m_apPlayers);
 	while(Iter.Next())
 	{
-		const int AnotherPlayerClass = Iter.Player()->GetClass();
+		const PLAYERCLASS AnotherPlayerClass = Iter.Player()->GetClass();
 		if ((AnotherPlayerClass < START_HUMANCLASS + 1) || (AnotherPlayerClass > END_HUMANCLASS - 1))
 			continue;
 		if (IsDefenderClass(AnotherPlayerClass))
