@@ -209,6 +209,7 @@ public:
 	virtual void OnSnap(int ClientID);
 	virtual void OnPostSnap();
 
+	void *PreProcessMsg(int *pMsgID, CUnpacker *pUnpacker, int ClientID);
 	void CensorMessage(char *pCensoredMessage, const char *pMessage, int Size);
 	virtual void OnMessage(int MsgID, CUnpacker *pUnpacker, int ClientID);
 

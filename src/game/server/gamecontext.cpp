@@ -1792,6 +1792,24 @@ void CGameContext::OnCallVote(void *pRawMsg, int ClientID)
 	}
 }
 
+void *CGameContext::PreProcessMsg(int *pMsgID, CUnpacker *pUnpacker, int ClientID)
+{
+	void *pRawMsg = m_NetObjHandler.SecureUnpackMsg(*pMsgID, pUnpacker);
+
+	if(!pRawMsg)
+	{
+		if(g_Config.m_Debug)
+		{
+			int MsgID = *pMsgID;
+			char aBuf[256];
+			str_format(aBuf, sizeof(aBuf), "dropped weird message '%s' (%d), failed on '%s'", m_NetObjHandler.GetMsgName(MsgID), MsgID, m_NetObjHandler.FailedMsgOn());
+			Console()->Print(IConsole::OUTPUT_LEVEL_DEBUG, "server", aBuf);
+		}
+	}
+
+	return pRawMsg;
+}
+
 void CGameContext::CensorMessage(char *pCensoredMessage, const char *pMessage, int Size)
 {
 	str_copy(pCensoredMessage, pMessage, Size);
@@ -1799,9 +1817,13 @@ void CGameContext::CensorMessage(char *pCensoredMessage, const char *pMessage, i
 
 void CGameContext::OnMessage(int MsgID, CUnpacker *pUnpacker, int ClientID)
 {
-	void *pRawMsg = m_NetObjHandler.SecureUnpackMsg(MsgID, pUnpacker);
+	void *pRawMsg = PreProcessMsg(&MsgID, pUnpacker, ClientID);
+
+	if(!pRawMsg)
+		return;
+
 	CPlayer *pPlayer = m_apPlayers[ClientID];
-	
+
 	if(pPlayer && MsgID == NETMSGTYPE_CL_ISDDNETLEGACY)
 	{
 		int DDNetVersion = pUnpacker->GetInt();
@@ -1819,17 +1841,6 @@ void CGameContext::OnMessage(int MsgID, CUnpacker *pUnpacker, int ClientID)
 	if(!pPlayer && Server()->GetClientNbRound(ClientID) == 0)
 	{
 		Server()->Kick(ClientID, "Kicked (is probably a dummy)");
-		return;
-	}
-
-	if(!pRawMsg)
-	{
-		if(g_Config.m_Debug)
-		{
-			char aBuf[256];
-			str_format(aBuf, sizeof(aBuf), "dropped weird message '%s' (%d), failed on '%s'", m_NetObjHandler.GetMsgName(MsgID), MsgID, m_NetObjHandler.FailedMsgOn());
-			Console()->Print(IConsole::OUTPUT_LEVEL_DEBUG, "server", aBuf);
-		}
 		return;
 	}
 
@@ -2131,22 +2142,48 @@ void CGameContext::OnMessage(int MsgID, CUnpacker *pUnpacker, int ClientID)
 			pPlayer->KillCharacter(WEAPON_SELF);
 		}
 	}
-	else
+
+	if(MsgID == NETMSGTYPE_CL_STARTINFO)
 	{
-		if(MsgID == NETMSGTYPE_CL_STARTINFO)
+		if(Server()->ClientIngame(ClientID))
+			return;
+
+		if(pPlayer->m_IsReady)
+			return;
+
+		CNetMsg_Cl_StartInfo *pMsg = (CNetMsg_Cl_StartInfo *)pRawMsg;
+
+		if(!str_utf8_check(pMsg->m_pName))
 		{
-			if(pPlayer->m_IsReady)
-				return;
+			Server()->Kick(ClientID, "name is not valid utf8");
+			return;
+		}
+		if(!str_utf8_check(pMsg->m_pClan))
+		{
+			Server()->Kick(ClientID, "clan is not valid utf8");
+			return;
+		}
+		if(!str_utf8_check(pMsg->m_pSkin))
+		{
+			Server()->Kick(ClientID, "skin is not valid utf8");
+			return;
+		}
 
-			CNetMsg_Cl_StartInfo *pMsg = (CNetMsg_Cl_StartInfo *)pRawMsg;
-			pPlayer->m_LastChangeInfo = Server()->Tick();
+		pPlayer->m_LastChangeInfo = Server()->Tick();
 
-			// set start infos
-/* INFECTION MODIFICATION START ***************************************/
-			Server()->SetClientName(ClientID, pMsg->m_pName);
-			Server()->SetClientClan(ClientID, pMsg->m_pClan);
-			Server()->SetClientCountry(ClientID, pMsg->m_Country);
+		// set start infos
+		Server()->SetClientName(ClientID, pMsg->m_pName);
+		// trying to set client name can delete the player object, check if it still exists
+		if(!m_apPlayers[ClientID])
+		{
+			return;
+		}
+		Server()->SetClientClan(ClientID, pMsg->m_pClan);
+		Server()->SetClientCountry(ClientID, pMsg->m_Country);
 
+		/* INFECTION MODIFICATION START ***************************************/
+		if(!Server()->GetClientMemory(ClientID, CLIENTMEMORY_LANGUAGESELECTION))
+		{
 #ifdef CONF_GEOLOCATION
 			std::string ip = Server()->GetClientIP(ClientID);
 			int LocatedCountry = Geolocation::get_country_iso_numeric_code(ip);
@@ -2156,60 +2193,56 @@ void CGameContext::OnMessage(int MsgID, CUnpacker *pUnpacker, int ClientID)
 #else
 			int LocatedCountry = -1;
 #endif // CONF_GEOLOCATION
-			
-			if(!Server()->GetClientMemory(ClientID, CLIENTMEMORY_LANGUAGESELECTION))
+
+			const char *const pLangFromClient = CLocalization::LanguageCodeByCountryCode(pMsg->m_Country);
+			const char *const pLangForIp = CLocalization::LanguageCodeByCountryCode(LocatedCountry);
+
+			const char *const pDefaultLang = "en";
+			const char *pLangForVote = "";
+
+			if(pLangFromClient[0] && (str_comp(pLangFromClient, pDefaultLang) != 0))
+				pLangForVote = pLangFromClient;
+			else if(pLangForIp[0] && (str_comp(pLangForIp, pDefaultLang) != 0))
+				pLangForVote = pLangForIp;
+
+			dbg_msg("lang", "init_language ClientID=%d, lang from flag: \"%s\", lang for IP: \"%s\"", ClientID, pLangFromClient, pLangForIp);
+
+			SetClientLanguage(ClientID, pDefaultLang);
+
+			if(pLangForVote[0])
 			{
-				const char * const pLangFromClient = CLocalization::LanguageCodeByCountryCode(pMsg->m_Country);
-				const char * const pLangForIp = CLocalization::LanguageCodeByCountryCode(LocatedCountry);
-
-				const char * const pDefaultLang = "en";
-				const char *pLangForVote = "";
-
-				if(pLangFromClient[0] && (str_comp(pLangFromClient, pDefaultLang) != 0))
-					pLangForVote = pLangFromClient;
-				else if(pLangForIp[0] && (str_comp(pLangForIp, pDefaultLang) != 0))
-					pLangForVote = pLangForIp;
-
-				dbg_msg("lang", "init_language ClientID=%d, lang from flag: \"%s\", lang for IP: \"%s\"", ClientID, pLangFromClient, pLangForIp);
-
-				SetClientLanguage(ClientID, pDefaultLang);
-
-				if(pLangForVote[0])
-				{
-					CNetMsg_Sv_VoteSet Msg;
-					Msg.m_Timeout = 10;
-					Msg.m_pReason = "";
-					str_copy(m_VoteLanguage[ClientID], pLangForVote, sizeof(m_VoteLanguage[ClientID]));
-					Msg.m_pDescription = Server()->Localization()->Localize(m_VoteLanguage[ClientID], _("Switch language to english?"));
-					Server()->SendPackMsg(&Msg, MSGFLAG_VITAL, ClientID);
-					m_VoteLanguageTick[ClientID] = 10*Server()->TickSpeed();
-				}
-				else
-				{
-					SendChatTarget_Localization(ClientID, CHATCATEGORY_DEFAULT, _("You can change the language of this mod using the command /language."), NULL);
-					SendChatTarget_Localization(ClientID, CHATCATEGORY_DEFAULT, _("If your language is not available, you can help with translation (/help translate)."), NULL);
-				}
-				
-				Server()->SetClientMemory(ClientID, CLIENTMEMORY_LANGUAGESELECTION, true);
+				CNetMsg_Sv_VoteSet Msg;
+				Msg.m_Timeout = 10;
+				Msg.m_pReason = "";
+				str_copy(m_VoteLanguage[ClientID], pLangForVote, sizeof(m_VoteLanguage[ClientID]));
+				Msg.m_pDescription = Server()->Localization()->Localize(m_VoteLanguage[ClientID], _("Switch language to english?"));
+				Server()->SendPackMsg(&Msg, MSGFLAG_VITAL, ClientID);
+				m_VoteLanguageTick[ClientID] = 10 * Server()->TickSpeed();
 			}
-			
-/* INFECTION MODIFICATION END *****************************************/
+			else
+			{
+				SendChatTarget_Localization(ClientID, CHATCATEGORY_DEFAULT, _("You can change the language of this mod using the command /language."), NULL);
+				SendChatTarget_Localization(ClientID, CHATCATEGORY_DEFAULT, _("If your language is not available, you can help with translation (/help translate)."), NULL);
+			}
 
-			// send vote options
-			CNetMsg_Sv_VoteClearOptions ClearMsg;
-			Server()->SendPackMsg(&ClearMsg, MSGFLAG_VITAL, ClientID);
-
-			// begin sending vote options
-			pPlayer->m_SendVoteIndex = 0;
-
-			// send tuning parameters to client
-			SendTuningParams(ClientID);
-
-			// client is ready to enter
-			pPlayer->m_IsReady = true;
-			CNetMsg_Sv_ReadyToEnter m;
-			Server()->SendPackMsg(&m, MSGFLAG_VITAL|MSGFLAG_FLUSH, ClientID);
+			Server()->SetClientMemory(ClientID, CLIENTMEMORY_LANGUAGESELECTION, true);
 		}
+		/* INFECTION MODIFICATION END *****************************************/
+
+		// send clear vote options
+		CNetMsg_Sv_VoteClearOptions ClearMsg;
+		Server()->SendPackMsg(&ClearMsg, MSGFLAG_VITAL, ClientID);
+
+		// begin sending vote options
+		pPlayer->m_SendVoteIndex = 0;
+
+		// send tuning parameters to client
+		SendTuningParams(ClientID);
+
+		// client is ready to enter
+		pPlayer->m_IsReady = true;
+		CNetMsg_Sv_ReadyToEnter m;
+		Server()->SendPackMsg(&m, MSGFLAG_VITAL | MSGFLAG_FLUSH, ClientID);
 	}
 }
 
