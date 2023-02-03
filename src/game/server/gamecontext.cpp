@@ -43,6 +43,11 @@ void CGameContext::OnSetAuthed(int ClientID, int Level)
 
 /* INFECTION MODIFICATION END *****************************************/
 
+bool CheckClientID(int ClientID)
+{
+	return ClientID >= 0 && ClientID < MAX_CLIENTS;
+}
+
 void CGameContext::Construct(int Resetting)
 {
 	m_Resetting = 0;
@@ -687,6 +692,12 @@ void CGameContext::SendChat(int ChatterClientID, int Team, const char *pText, in
 	str_copy(aText, pText, sizeof(aText));
 	if(ChatterClientID >= 0 && ChatterClientID < MAX_CLIENTS)
 		str_format(aBuf, sizeof(aBuf), "%d:%d:%s: %s", ChatterClientID, Team, Server()->ClientName(ChatterClientID), pText);
+	else if(ChatterClientID == -2)
+	{
+		str_format(aBuf, sizeof(aBuf), "### %s", aText);
+		str_copy(aText, aBuf, sizeof(aText));
+		ChatterClientID = -1;
+	}
 	else
 		str_format(aBuf, sizeof(aBuf), "*** %s", aText);
 	Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, Team != CHAT_ALL ? "teamchat" : "chat", aBuf);
@@ -2280,6 +2291,26 @@ void CGameContext::ChatConsolePrintCallback(const char *pLine, void *pUser, Colo
 void CGameContext::ConConverse(IConsole::IResult *pResult, void *pUserData)
 {
 	// This will never be called
+}
+
+void CGameContext::ConMe(IConsole::IResult *pResult, void *pUserData)
+{
+	CGameContext *pSelf = (CGameContext *)pUserData;
+	if(!CheckClientID(pResult->m_ClientID))
+		return;
+
+	char aBuf[256 + 24];
+
+	str_format(aBuf, 256 + 24, "'%s' %s",
+		pSelf->Server()->ClientName(pResult->m_ClientID),
+		pResult->GetString(0));
+	if(g_Config.m_SvSlashMe)
+		pSelf->SendChat(-2, CGameContext::CHAT_ALL, aBuf, pResult->m_ClientID);
+	else
+		pSelf->Console()->Print(
+			IConsole::OUTPUT_LEVEL_STANDARD,
+			"chatresp",
+			"/me is disabled on this server");
 }
 
 void CGameContext::ConWhisper(IConsole::IResult *pResult, void *pUserData)
@@ -4130,6 +4161,7 @@ void CGameContext::OnConsoleInit()
 
 #define CHAT_COMMAND(name, params, flags, callback, userdata, help) m_pConsole->Register(name, params, flags, callback, userdata, help);
 	// From ddracechat.h
+	CHAT_COMMAND("me", "r[message]", CFGFLAG_CHAT | CFGFLAG_SERVER | CFGFLAG_NONTEEHISTORIC, ConMe, this, "Like the famous irc command '/me says hi' will display '<yourname> says hi'")
 	CHAT_COMMAND("w", "s[player name] r[message]", CFGFLAG_CHAT | CFGFLAG_SERVER | CFGFLAG_NONTEEHISTORIC, ConWhisper, this, "Whisper something to someone (private message)")
 	CHAT_COMMAND("whisper", "s[player name] r[message]", CFGFLAG_CHAT | CFGFLAG_SERVER | CFGFLAG_NONTEEHISTORIC, ConWhisper, this, "Whisper something to someone (private message)")
 	CHAT_COMMAND("c", "r[message]", CFGFLAG_CHAT | CFGFLAG_SERVER | CFGFLAG_NONTEEHISTORIC, ConConverse, this, "Converse with the last person you whispered to (private message)")
