@@ -165,6 +165,8 @@ public:
 	static PLAYERCLASS MenuClassToPlayerClass(int MenuClass);
 	static int DamageTypeToWeapon(DAMAGE_TYPE DamageType, TAKEDAMAGEMODE *pMode = nullptr);
 
+	int GetPlayerTeam(int ClientID) const override;
+
 	void RegisterChatCommands(class IConsole *pConsole) override;
 
 	static void ConSetClientName(IConsole::IResult *pResult, void *pUserData);

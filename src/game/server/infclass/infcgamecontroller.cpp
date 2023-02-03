@@ -1052,6 +1052,11 @@ int CInfClassGameController::DamageTypeToWeapon(DAMAGE_TYPE DamageType, TAKEDAMA
 	return Weapon;
 }
 
+int CInfClassGameController::GetPlayerTeam(int ClientID) const
+{
+	return m_Teams.m_Core.Team(ClientID);
+}
+
 void CInfClassGameController::RegisterChatCommands(IConsole *pConsole)
 {
 	pConsole->Register("restore_client_name", "i[clientid]", CFGFLAG_SERVER, ConRestoreClientName, this, "Set the name of a player");

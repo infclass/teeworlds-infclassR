@@ -179,6 +179,7 @@ public:
 	/*
 
 	*/
+	virtual int GetPlayerTeam(int ClientID) const = 0;
 	virtual const char *GetTeamName(int Team);
 	virtual int GetAutoTeam(int NotThisID);
 	virtual bool CanJoinTeam(int Team, int NotThisID);
