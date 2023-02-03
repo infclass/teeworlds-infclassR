@@ -953,6 +953,8 @@ CConsole::CConsole(int FlagMask)
 	Register("toggle", "s[config-option] i[value 1] i[value 2]", CFGFLAG_SERVER | CFGFLAG_CLIENT, ConToggle, this, "Toggle config value");
 	Register("+toggle", "s[config-option] i[value 1] i[value 2]", CFGFLAG_CLIENT, ConToggleStroke, this, "Toggle config value via keypress");
 
+	Register("adjust", "s[config-variable] i[signed value]", CFGFLAG_SERVER, ConAdjustVariable, this, "Adjust the variable value (add the given delta)");
+
 	Register("access_level", "s[command] ?i[accesslevel]", CFGFLAG_SERVER, ConCommandAccess, this, "Specify command accessibility (admin = 0, moderator = 1, helper = 2, all = 3)");
 	Register("access_status", "i[accesslevel]", CFGFLAG_SERVER, ConCommandStatus, this, "List all commands which are accessible for admin = 0, moderator = 1, helper = 2, all = 3");
 	Register("cmdlist", "", CFGFLAG_SERVER | CFGFLAG_CHAT, ConUserCommandStatus, this, "List all commands which are accessible for users");
@@ -1306,4 +1308,64 @@ void CConsole::CResult::SetVictim(const char *pVictim)
 		m_Victim = VICTIM_ALL;
 	else
 		m_Victim = clamp<int>(str_toint(pVictim), 0, MAX_CLIENTS - 1);
+}
+
+void CConsole::ConAdjustVariable(IConsole::IResult *pResult, void *pUserData)
+{
+	CConsole *pConsole = (CConsole *)pUserData;
+
+	if(pResult->NumArguments() != 2)
+	{
+		pConsole->Print(OUTPUT_LEVEL_STANDARD, "Console", "Invalid usage. Use: increase <variable> <amount>");
+		return;
+	}
+
+	const char *pVariableName = pResult->GetString(0);
+	int Val = pResult->GetInteger(1);
+
+	CCommand *pCommand = pConsole->FindCommand(pVariableName, pConsole->m_FlagMask);
+	if(!pCommand || (pCommand->m_Flags & CFGFLAG_ECON))
+	{
+		// Ignore the command for ECON variables
+		pConsole->Print(OUTPUT_LEVEL_STANDARD, "Console", "The variable does not exist");
+		return;
+	}
+
+	FCommandCallback pfnCallback = pCommand->m_pfnCallback;
+	void *pCommandUserData = pCommand->m_pUserData;
+
+	// check for chain
+	if(pCommand->m_pfnCallback == Con_Chain)
+	{
+		CChain *pChainInfo = static_cast<CChain *>(pCommand->m_pUserData);
+		pfnCallback = pChainInfo->m_pfnCallback;
+		pCommandUserData = pChainInfo->m_pCallbackUserData;
+	}
+
+	char aBuf[256];
+	aBuf[0] = 0;
+	if(pfnCallback == IntVariableCommand)
+	{
+		CIntVariableData *pData = static_cast<CIntVariableData *>(pCommandUserData);
+
+		Val = *(pData->m_pVariable) + Val;
+		// do clamping
+		if(pData->m_Min != pData->m_Max)
+		{
+			if(Val < pData->m_Min)
+				Val = pData->m_Min;
+			if(pData->m_Max != 0 && Val > pData->m_Max)
+				Val = pData->m_Max;
+		}
+
+		*(pData->m_pVariable) = Val;
+		str_format(aBuf, sizeof(aBuf), "%s %d", pCommand->m_pName, *pData->m_pVariable);
+	}
+	else
+	{
+		str_format(aBuf, sizeof(aBuf), "'%s' is not an integer variable", pCommand->m_pName);
+	}
+
+	if(aBuf[0])
+		pConsole->Print(OUTPUT_LEVEL_STANDARD, "Console", aBuf);
 }
