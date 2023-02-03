@@ -2,6 +2,7 @@
 #include "teamscore.h"
 #include <base/math.h>
 #include <engine/shared/config.h>
+#include <game/generated/protocol.h>
 
 CTeamsCore::CTeamsCore()
 {
@@ -15,7 +16,7 @@ bool CTeamsCore::SameTeam(int ClientID1, int ClientID2) const
 
 int CTeamsCore::Team(int ClientID) const
 {
-	return m_Team[ClientID];
+	return m_IsInfected[ClientID] ? TEAM_RED : TEAM_BLUE;
 }
 
 void CTeamsCore::Team(int ClientID, int Team)

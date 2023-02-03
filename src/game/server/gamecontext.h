@@ -185,7 +185,7 @@ public:
 	// network
 	void CallVote(int ClientID, const char *aDesc, const char *aCmd, const char *pReason, const char *aChatmsg);
 	void SendChatTarget(int To, const char *pText);
-	void SendChat(int ClientID, int Team, const char *pText);
+	void SendChat(int ClientID, int Team, const char *pText, int SpamProtectionClientID = -1);
 	void SendEmoticon(int ClientID, int Emoticon);
 	void SendWeaponPickup(int ClientID, int Weapon);
 	void SendMotd(int ClientID);

@@ -681,26 +681,30 @@ void CGameContext::SendBroadcast_Localization_P(int To, int Priority, int LifeSp
 
 /* INFECTION MODIFICATION END *****************************************/
 
-void CGameContext::SendChat(int ChatterClientID, int Team, const char *pText)
+void CGameContext::SendChat(int ChatterClientID, int Team, const char *pText, int SpamProtectionClientID)
 {
-	char aBuf[256];
+	char aBuf[256], aText[256];
+	str_copy(aText, pText, sizeof(aText));
 	if(ChatterClientID >= 0 && ChatterClientID < MAX_CLIENTS)
 		str_format(aBuf, sizeof(aBuf), "%d:%d:%s: %s", ChatterClientID, Team, Server()->ClientName(ChatterClientID), pText);
 	else
-		str_format(aBuf, sizeof(aBuf), "*** %s", pText);
-	Console()->Print(IConsole::OUTPUT_LEVEL_ADDINFO, Team!=CHAT_ALL?"teamchat":"chat", aBuf);
+		str_format(aBuf, sizeof(aBuf), "*** %s", aText);
+	Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, Team != CHAT_ALL ? "teamchat" : "chat", aBuf);
 
-	if(pText && pText[0] == '!' && Config()->m_SvFilterChatCommands)
+	if(aText[0] == '!' && Config()->m_SvFilterChatCommands)
 	{
 		return;
 	}
+
+	if(SpamProtectionClientID < 0)
+		SpamProtectionClientID = ChatterClientID;
 
 	if(Team == CGameContext::CHAT_ALL)
 	{
 		CNetMsg_Sv_Chat Msg;
 		Msg.m_Team = 0;
 		Msg.m_ClientID = ChatterClientID;
-		Msg.m_pMessage = pText;
+		Msg.m_pMessage = aText;
 
 		// pack one for the recording only
 		Server()->SendPackMsg(&Msg, MSGFLAG_VITAL|MSGFLAG_NOSEND, SERVER_DEMO_CLIENT);
@@ -708,7 +712,7 @@ void CGameContext::SendChat(int ChatterClientID, int Team, const char *pText)
 		// send to the clients that did not mute chatter
 		for(int i = 0; i < MAX_CLIENTS; i++)
 		{
-			if(m_apPlayers[i] && !CGameContext::m_ClientMuted[i][ChatterClientID])
+			if(m_apPlayers[i] && !CGameContext::m_ClientMuted[i][SpamProtectionClientID])
 			{
 				Server()->SendPackMsg(&Msg, MSGFLAG_VITAL|MSGFLAG_NORECORD, i);
 			}
@@ -719,26 +723,31 @@ void CGameContext::SendChat(int ChatterClientID, int Team, const char *pText)
 		CNetMsg_Sv_Chat Msg;
 		Msg.m_Team = 1;
 		Msg.m_ClientID = ChatterClientID;
-		Msg.m_pMessage = pText;
+		Msg.m_pMessage = aText;
 
 		// pack one for the recording only
 		Server()->SendPackMsg(&Msg, MSGFLAG_VITAL|MSGFLAG_NOSEND, SERVER_DEMO_CLIENT);
 
 		// send to the clients
-		for(int i = 0; i < MAX_CLIENTS; i++)
+		for(int i = 0; i < Server()->MaxClients(); i++)
 		{
-/* INFECTION MODIFICATION START ***************************************/
-			if(m_apPlayers[i])
+			if(m_apPlayers[i] != 0)
 			{
-				int PlayerTeam = (m_apPlayers[i]->IsZombie() ? CGameContext::CHAT_RED : CGameContext::CHAT_BLUE );
-				if(m_apPlayers[i]->GetTeam() == TEAM_SPECTATORS) PlayerTeam = CGameContext::CHAT_SPEC;
-				
-				if(PlayerTeam == Team && !CGameContext::m_ClientMuted[i][ChatterClientID])
+				if(Team == CHAT_SPEC)
 				{
-					Server()->SendPackMsg(&Msg, MSGFLAG_VITAL|MSGFLAG_NORECORD, i);
+					if(m_apPlayers[i]->GetTeam() == CHAT_SPEC)
+					{
+						Server()->SendPackMsg(&Msg, MSGFLAG_VITAL | MSGFLAG_NORECORD, i);
+					}
+				}
+				else
+				{
+					if(m_pController->GetPlayerTeam(i) == Team && m_apPlayers[i]->GetTeam() != CHAT_SPEC)
+					{
+						Server()->SendPackMsg(&Msg, MSGFLAG_VITAL | MSGFLAG_NORECORD, i);
+					}
 				}
 			}
-/* INFECTION MODIFICATION END *****************************************/
 		}
 	}
 }
@@ -1888,17 +1897,11 @@ void CGameContext::OnMessage(int MsgID, CUnpacker *pUnpacker, int ClientID)
 			if(Length == 0 || (g_Config.m_SvSpamprotection && pPlayer->m_LastChat && pPlayer->m_LastChat+Server()->TickSpeed() * ((31 + Length) / 32) > Server()->Tick()))
 				return;
 
-/* INFECTION MODIFICATION START ***************************************/
+			int GameTeam = m_pController->GetPlayerTeam(pPlayer->GetCID());
 			if(Team)
-			{
-				if(pPlayer->GetTeam() == TEAM_SPECTATORS)
-					Team = CGameContext::CHAT_SPEC;
-				else
-					Team = (pPlayer->IsZombie() ? CGameContext::CHAT_RED : CGameContext::CHAT_BLUE);
-			}
+				Team = ((pPlayer->GetTeam() == TEAM_SPECTATORS) ? CHAT_SPEC : GameTeam);
 			else
 				Team = CHAT_ALL;
-/* INFECTION MODIFICATION END *****************************************/
 
 			pPlayer->m_LastChat = Server()->Tick();
 			
