@@ -18,7 +18,7 @@ public:
 	};
 	
 public:
-	CBiologistMine(CGameContext *pGameContext, vec2 Pos, vec2 EndPos, int Owner, int Lasers, int Damage);
+	CBiologistMine(CGameContext *pGameContext, vec2 Pos, vec2 EndPos, int Owner, int Lasers, int Damage, int Vertices = NUM_SIDE);
 	virtual ~CBiologistMine();
 
 	virtual void Snap(int SnappingClient);
@@ -28,6 +28,7 @@ public:
 
 private:
 	int m_IDs[NUM_IDS];
+	int m_Vertices = 0;
 	int m_Lasers = 0;
 	int m_PerLaserDamage = 0;
 
