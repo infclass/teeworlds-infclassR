@@ -535,6 +535,7 @@ set(BASE
   src/base/hash_ctxt.h
   src/base/hash_libtomcrypt.cpp
   src/base/hash_openssl.cpp
+  src/base/lock_scope.h
   src/base/math.cpp
   src/base/math.h
   src/base/system.cpp
