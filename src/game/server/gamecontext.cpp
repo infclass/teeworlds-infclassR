@@ -1512,11 +1512,6 @@ void CGameContext::OnClientConnected(int ClientID, void *pData)
 	m_apPlayers[ClientID] = m_pController->CreatePlayer(ClientID, Spec, pData);
 	m_apPlayers[ClientID]->m_ClientNameLocked = NameLocked;
 	
-	//players[client_id].init(client_id);
-	//players[client_id].client_id = client_id;
-
-	(void)m_pController->CheckTeamBalance();
-
 #ifdef CONF_DEBUG
 	if(g_Config.m_DbgDummies)
 	{
@@ -1551,20 +1546,23 @@ void CGameContext::OnClientDrop(int ClientID, int Type, const char *pReason)
 {
 	AbortVoteKickOnDisconnect(ClientID);
 	m_pController->OnPlayerDisconnect(m_apPlayers[ClientID], Type, pReason);
-
 	delete m_apPlayers[ClientID];
 	m_apPlayers[ClientID] = 0;
 
-	Server()->RoundStatistics()->ResetPlayer(ClientID);
-
-	(void)m_pController->CheckTeamBalance();
 	m_VoteUpdate = true;
 
 	// update spectator modes
-	for(int i = 0; i < MAX_CLIENTS; ++i)
+	for(auto &pPlayer : m_apPlayers)
 	{
-		if(m_apPlayers[i] && m_apPlayers[i]->m_SpectatorID == ClientID)
-			m_apPlayers[i]->m_SpectatorID = SPEC_FREEVIEW;
+		if(pPlayer && pPlayer->m_SpectatorID == ClientID)
+			pPlayer->m_SpectatorID = SPEC_FREEVIEW;
+	}
+
+	// update conversation targets
+	for(auto &pPlayer : m_apPlayers)
+	{
+		if(pPlayer && pPlayer->m_LastWhisperTo == ClientID)
+			pPlayer->m_LastWhisperTo = -1;
 	}
 
 	for(int i = 0; i < MAX_CLIENTS; i++)
@@ -1574,12 +1572,6 @@ void CGameContext::OnClientDrop(int ClientID, int Type, const char *pReason)
 		
 		// reset mutes for everyone that muted this player
 		CGameContext::m_ClientMuted[i][ClientID] = false;
-	}
-	// InfClassR end
-	for(int i = 0; i < MAX_CLIENTS; ++i)
-	{
-		if(m_apPlayers[i] && m_apPlayers[i]->m_LastWhisperTo == ClientID)
-			m_apPlayers[i]->m_LastWhisperTo = -1;
 	}
 }
 
@@ -2087,8 +2079,6 @@ void CGameContext::OnMessage(int MsgID, CUnpacker *pUnpacker, int ClientID)
 					if(pPlayer->GetTeam() == TEAM_SPECTATORS || pMsg->m_Team == TEAM_SPECTATORS)
 						m_VoteUpdate = true;
 					m_pController->DoTeamChange(pPlayer, pMsg->m_Team);
-
-					(void)m_pController->CheckTeamBalance();
 					pPlayer->m_TeamChangeTick = Server()->Tick();
 				}
 				else
@@ -2576,9 +2566,8 @@ void CGameContext::ConSetTeam(IConsole::IResult *pResult, void *pUserData)
 	str_format(aBuf, sizeof(aBuf), "moved client %d to team %d", ClientID, Team);
 	pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "server", aBuf);
 
-	pSelf->m_apPlayers[ClientID]->m_TeamChangeTick = pSelf->Server()->Tick()+pSelf->Server()->TickSpeed()*Delay*60;
+	pSelf->m_apPlayers[ClientID]->m_TeamChangeTick = pSelf->Server()->Tick() + pSelf->Server()->TickSpeed() * Delay * 60;
 	pSelf->m_pController->DoTeamChange(pSelf->m_apPlayers[ClientID], Team);
-	(void)pSelf->m_pController->CheckTeamBalance();
 }
 
 void CGameContext::ConSetTeamAll(IConsole::IResult *pResult, void *pUserData)
@@ -2590,12 +2579,9 @@ void CGameContext::ConSetTeamAll(IConsole::IResult *pResult, void *pUserData)
 	str_format(aBuf, sizeof(aBuf), "All players were moved to the %s", pSelf->m_pController->GetTeamName(Team));
 	pSelf->SendChatTarget(-1, aBuf);
 
-	for(int i = 0; i < MAX_CLIENTS; ++i)
-		if(pSelf->m_apPlayers[i])
-			pSelf->m_pController->DoTeamChange(pSelf->m_apPlayers[i], Team, false);
-
-	// TODO: Remove
-	(void)pSelf->m_pController->CheckTeamBalance();
+	for(auto &pPlayer : pSelf->m_apPlayers)
+		if(pPlayer)
+			pSelf->m_pController->DoTeamChange(pPlayer, Team, false);
 }
 
 void CGameContext::ConAddVote(IConsole::IResult *pResult, void *pUserData)

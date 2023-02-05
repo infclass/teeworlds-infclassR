@@ -1175,37 +1175,6 @@ bool IGameController::CanJoinTeam(int Team, int NotThisID)
 	return NumbersAreOk;
 }
 
-bool IGameController::CheckTeamBalance()
-{
-	if(!IsTeamplay() || !g_Config.m_SvTeambalanceTime)
-		return true;
-
-	int aT[2] = {0, 0};
-	for(int i = 0; i < MAX_CLIENTS; i++)
-	{
-		CPlayer *pP = GameServer()->m_apPlayers[i];
-		if(pP && pP->GetTeam() != TEAM_SPECTATORS)
-			aT[pP->GetTeam()]++;
-	}
-
-	char aBuf[256];
-	if(absolute(aT[0]-aT[1]) >= 2)
-	{
-		str_format(aBuf, sizeof(aBuf), "Teams are NOT balanced (red=%d blue=%d)", aT[0], aT[1]);
-		GameServer()->Console()->Print(IConsole::OUTPUT_LEVEL_DEBUG, "game", aBuf);
-		if(GameServer()->m_pController->m_UnbalancedTick == -1)
-			GameServer()->m_pController->m_UnbalancedTick = Server()->Tick();
-		return false;
-	}
-	else
-	{
-		str_format(aBuf, sizeof(aBuf), "Teams are balanced (red=%d blue=%d)", aT[0], aT[1]);
-		GameServer()->Console()->Print(IConsole::OUTPUT_LEVEL_DEBUG, "game", aBuf);
-		GameServer()->m_pController->m_UnbalancedTick = -1;
-		return true;
-	}
-}
-
 bool IGameController::CanChangeTeam(CPlayer *pPlayer, int JoinTeam)
 {
 	int aT[2] = {0, 0};

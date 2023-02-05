@@ -183,7 +183,6 @@ public:
 	virtual const char *GetTeamName(int Team);
 	virtual int GetAutoTeam(int NotThisID);
 	virtual bool CanJoinTeam(int Team, int NotThisID);
-	bool CheckTeamBalance();
 	bool CanChangeTeam(CPlayer *pPplayer, int JoinTeam);
 	int ClampTeam(int Team);
 
