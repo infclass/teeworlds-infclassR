@@ -1757,10 +1757,13 @@ int fs_storage_path(const char *appname, char *path, int max);
 int fs_is_dir(const char *path);
 
 /*
-	Function: fs_getmtime
-		Gets the modification time of a file
+    Function: fs_is_relative_path
+        Checks whether a given path is relative or absolute.
+
+    Returns:
+        Returns 1 if relative, 0 if absolute.
 */
-time_t fs_getmtime(const char *path);
+int fs_is_relative_path(const char *path);
 
 /*
 	Function: fs_chdir

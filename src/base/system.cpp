@@ -2371,13 +2371,15 @@ int fs_is_dir(const char *path)
 #endif
 }
 
-time_t fs_getmtime(const char *path)
+int fs_is_relative_path(const char *path)
 {
-	struct stat sb;
-	if(stat(path, &sb) == -1)
-		return 0;
-
-	return sb.st_mtime;
+#if defined(CONF_FAMILY_WINDOWS)
+	WCHAR wPath[IO_MAX_PATH_LENGTH];
+	dbg_assert(MultiByteToWideChar(CP_UTF8, 0, path, -1, wPath, std::size(wPath)) > 0, "MultiByteToWideChar failure");
+	return PathIsRelativeW(wPath) ? 1 : 0;
+#else
+	return path[0] == '/' ? 0 : 1; // yes, it's that simple
+#endif
 }
 
 int fs_chdir(const char *path)
