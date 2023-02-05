@@ -170,7 +170,7 @@ void CSnapIDPool::FreeID(int ID)
 	}
 }
 
-void CServerBan::InitServerBan(IConsole *pConsole, IStorage *pStorage, CServer* pServer)
+void CServerBan::InitServerBan(IConsole *pConsole, IStorage *pStorage, CServer *pServer)
 {
 	CNetBan::Init(pConsole, pStorage);
 
@@ -178,6 +178,8 @@ void CServerBan::InitServerBan(IConsole *pConsole, IStorage *pStorage, CServer* 
 
 	// overwrites base command, todo: improve this
 	Console()->Register("ban", "s[ip|id] ?i[minutes] r[reason]", CFGFLAG_SERVER | CFGFLAG_STORE, ConBanExt, this, "Ban player with ip/client id for x minutes for any reason");
+	Console()->Register("ban_region", "s[region] s[ip|id] ?i[minutes] r[reason]", CFGFLAG_SERVER | CFGFLAG_STORE, ConBanRegion, this, "Ban player in a region");
+	Console()->Register("ban_region_range", "s[region] s[first ip] s[last ip] ?i[minutes] r[reason]", CFGFLAG_SERVER | CFGFLAG_STORE, ConBanRegionRange, this, "Ban range in a region");
 }
 
 template<class T>
@@ -212,7 +214,7 @@ int CServerBan::BanExt(T *pBanPool, const typename T::CDataType *pData, int Seco
 			if(Server()->m_aClients[i].m_State == CServer::CClient::STATE_EMPTY)
 				continue;
 
-			if(Server()->m_aClients[i].m_Authed != CServer::AUTHED_NO && NetMatch(pData, Server()->m_NetServer.ClientAddr(i)))
+			if(Server()->m_aClients[i].m_Authed != AUTHED_NO && NetMatch(pData, Server()->m_NetServer.ClientAddr(i)))
 			{
 				Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "net_ban", "ban error (command denied)");
 				return -1;
@@ -225,15 +227,10 @@ int CServerBan::BanExt(T *pBanPool, const typename T::CDataType *pData, int Seco
 		return Result;
 
 	// drop banned clients
-
-	// don't drop it like that. just kick the desired guy
 	typename T::CDataType Data = *pData;
 	for(int i = 0; i < MAX_CLIENTS; ++i)
 	{
 		if(Server()->m_aClients[i].m_State == CServer::CClient::STATE_EMPTY)
-			continue;
-
-		if(m_BanID != i) // don't drop it like that. just kick the desired guy
 			continue;
 
 		if(NetMatch(&Data, Server()->m_NetServer.ClientAddr(i)))
@@ -264,32 +261,45 @@ int CServerBan::BanRange(const CNetRange *pRange, int Seconds, const char *pReas
 
 void CServerBan::ConBanExt(IConsole::IResult *pResult, void *pUser)
 {
-	CServerBan *pThis = static_cast<CServerBan*>(pUser);
+	CServerBan *pThis = static_cast<CServerBan *>(pUser);
 
 	const char *pStr = pResult->GetString(0);
-	int Minutes = pResult->NumArguments()>1 ? clamp(pResult->GetInteger(1), 0, 44640) : 30;
-	const char *pReason = pResult->NumArguments()>2 ? pResult->GetString(2) : "No reason given";
-	pThis->m_BanID = -1;
+	int Minutes = pResult->NumArguments() > 1 ? clamp(pResult->GetInteger(1), 0, 525600) : 10;
+	const char *pReason = pResult->NumArguments() > 2 ? pResult->GetString(2) : "Follow the server rules. Type /rules into the chat.";
 
 	if(str_isallnum(pStr))
 	{
 		int ClientID = str_toint(pStr);
 		if(ClientID < 0 || ClientID >= MAX_CLIENTS || pThis->Server()->m_aClients[ClientID].m_State == CServer::CClient::STATE_EMPTY)
 			pThis->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "net_ban", "ban error (invalid client id)");
-		else if(ClientID >= 0 && ClientID < MAX_CLIENTS && pThis->Server()->m_aClients[ClientID].m_IsBot)
-			pThis->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "net_ban", "ban error (command denied)");
 		else
-		{
-			pThis->m_BanID = ClientID; //to ban the right guy, not his brother or so :P
-			if(pThis->BanAddr(pThis->Server()->m_NetServer.ClientAddr(ClientID), Minutes*60, pReason) != 0) //error occured
-				pThis->Server()->Kick(ClientID, pReason);
-		}
+			pThis->BanAddr(pThis->Server()->m_NetServer.ClientAddr(ClientID), Minutes * 60, pReason);
 	}
 	else
 		ConBan(pResult, pUser);
 }
 
-/* INFECTION MODIFICATION START ***************************************/
+void CServerBan::ConBanRegion(IConsole::IResult *pResult, void *pUser)
+{
+	const char *pRegion = pResult->GetString(0);
+	if(str_comp_nocase(pRegion, g_Config.m_SvRegionName))
+		return;
+
+	pResult->RemoveArgument(0);
+	ConBanExt(pResult, pUser);
+}
+
+void CServerBan::ConBanRegionRange(IConsole::IResult *pResult, void *pUser)
+{
+	CServerBan *pServerBan = static_cast<CServerBan *>(pUser);
+
+	const char *pRegion = pResult->GetString(0);
+	if(str_comp_nocase(pRegion, g_Config.m_SvRegionName))
+		return;
+
+	pResult->RemoveArgument(0);
+	ConBanRange(pResult, static_cast<CNetBan *>(pServerBan));
+}
 
 void CServer::CClient::Reset(bool ResetScore)
 {
@@ -420,7 +430,7 @@ bool CServer::SetClientNameImpl(int ClientID, const char *pNameRequest, bool Set
 	if(m_aClients[ClientID].m_State < CClient::STATE_READY)
 		return false;
 
-	CNameBan *pBanned = IsNameBanned(pNameRequest, m_aNameBans.base_ptr(), m_aNameBans.size());
+	CNameBan *pBanned = IsNameBanned(pNameRequest, m_vNameBans);
 	if(pBanned)
 	{
 		if(m_aClients[ClientID].m_State == CClient::STATE_READY && Set)
@@ -2783,21 +2793,20 @@ void CServer::ConNameBan(IConsole::IResult *pResult, void *pUser)
 	int Distance = pResult->NumArguments() > 1 ? pResult->GetInteger(1) : str_length(pName) / 3;
 	int IsSubstring = pResult->NumArguments() > 2 ? pResult->GetInteger(2) : 0;
 
-	for(int i = 0; i < pThis->m_aNameBans.size(); i++)
+	for(auto &Ban : pThis->m_vNameBans)
 	{
-		CNameBan *pBan = &pThis->m_aNameBans[i];
-		if(str_comp(pBan->m_aName, pName) == 0)
+		if(str_comp(Ban.m_aName, pName) == 0)
 		{
-			str_format(aBuf, sizeof(aBuf), "changed name='%s' distance=%d old_distance=%d is_substring=%d old_is_substring=%d reason='%s' old_reason='%s'", pName, Distance, pBan->m_Distance, IsSubstring, pBan->m_IsSubstring, pReason, pBan->m_aReason);
+			str_format(aBuf, sizeof(aBuf), "changed name='%s' distance=%d old_distance=%d is_substring=%d old_is_substring=%d reason='%s' old_reason='%s'", pName, Distance, Ban.m_Distance, IsSubstring, Ban.m_IsSubstring, pReason, Ban.m_aReason);
 			pThis->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "name_ban", aBuf);
-			pBan->m_Distance = Distance;
-			pBan->m_IsSubstring = IsSubstring;
-			str_copy(pBan->m_aReason, pReason, sizeof(pBan->m_aReason));
+			Ban.m_Distance = Distance;
+			Ban.m_IsSubstring = IsSubstring;
+			str_copy(Ban.m_aReason, pReason);
 			return;
 		}
 	}
 
-	pThis->m_aNameBans.add(CNameBan(pName, Distance, IsSubstring, pReason));
+	pThis->m_vNameBans.emplace_back(pName, Distance, IsSubstring, pReason);
 	str_format(aBuf, sizeof(aBuf), "added name='%s' distance=%d is_substring=%d reason='%s'", pName, Distance, IsSubstring, pReason);
 	pThis->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "name_ban", aBuf);
 }
@@ -2807,15 +2816,15 @@ void CServer::ConNameUnban(IConsole::IResult *pResult, void *pUser)
 	CServer *pThis = (CServer *)pUser;
 	const char *pName = pResult->GetString(0);
 
-	for(int i = 0; i < pThis->m_aNameBans.size(); i++)
+	for(size_t i = 0; i < pThis->m_vNameBans.size(); i++)
 	{
-		CNameBan *pBan = &pThis->m_aNameBans[i];
+		CNameBan *pBan = &pThis->m_vNameBans[i];
 		if(str_comp(pBan->m_aName, pName) == 0)
 		{
 			char aBuf[128];
 			str_format(aBuf, sizeof(aBuf), "removed name='%s' distance=%d is_substring=%d reason='%s'", pBan->m_aName, pBan->m_Distance, pBan->m_IsSubstring, pBan->m_aReason);
 			pThis->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "name_ban", aBuf);
-			pThis->m_aNameBans.remove_index(i);
+			pThis->m_vNameBans.erase(pThis->m_vNameBans.begin() + i);
 		}
 	}
 }
@@ -2824,11 +2833,10 @@ void CServer::ConNameBans(IConsole::IResult *pResult, void *pUser)
 {
 	CServer *pThis = (CServer *)pUser;
 
-	for(int i = 0; i < pThis->m_aNameBans.size(); i++)
+	for(auto &Ban : pThis->m_vNameBans)
 	{
-		CNameBan *pBan = &pThis->m_aNameBans[i];
 		char aBuf[128];
-		str_format(aBuf, sizeof(aBuf), "name='%s' distance=%d is_substring=%d reason='%s'", pBan->m_aName, pBan->m_Distance, pBan->m_IsSubstring, pBan->m_aReason);
+		str_format(aBuf, sizeof(aBuf), "name='%s' distance=%d is_substring=%d reason='%s'", Ban.m_aName, Ban.m_Distance, Ban.m_IsSubstring, Ban.m_aReason);
 		pThis->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "name_ban", aBuf);
 	}
 }

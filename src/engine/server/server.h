@@ -68,26 +68,25 @@ public:
 	void FreeID(int ID);
 };
 
-
 class CServerBan : public CNetBan
 {
 	class CServer *m_pServer;
 
-	template<class T> int BanExt(T *pBanPool, const typename T::CDataType *pData, int Seconds, const char *pReason);
+	template<class T>
+	int BanExt(T *pBanPool, const typename T::CDataType *pData, int Seconds, const char *pReason);
 
 public:
 	class CServer *Server() const { return m_pServer; }
 
-	void InitServerBan(class IConsole *pConsole, class IStorage *pStorage, class CServer* pServer);
+	void InitServerBan(class IConsole *pConsole, class IStorage *pStorage, class CServer *pServer);
 
-	virtual int BanAddr(const NETADDR *pAddr, int Seconds, const char *pReason);
-	virtual int BanRange(const CNetRange *pRange, int Seconds, const char *pReason);
+	int BanAddr(const NETADDR *pAddr, int Seconds, const char *pReason) override;
+	int BanRange(const CNetRange *pRange, int Seconds, const char *pReason) override;
 
 	static void ConBanExt(class IConsole::IResult *pResult, void *pUser);
-
-	int m_BanID;
+	static void ConBanRegion(class IConsole::IResult *pResult, void *pUser);
+	static void ConBanRegionRange(class IConsole::IResult *pResult, void *pUser);
 };
-
 
 class CServer : public IServer
 {
@@ -244,7 +243,7 @@ public:
 
 	int m_RconRestrict;
 
-	array<CNameBan> m_aNameBans;
+	std::vector<CNameBan> m_vNameBans;
 
 	CServer();
 	virtual ~CServer();
