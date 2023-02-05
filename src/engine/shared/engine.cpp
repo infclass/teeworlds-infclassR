@@ -14,7 +14,7 @@ CHostLookup::CHostLookup() = default;
 
 CHostLookup::CHostLookup(const char *pHostname, int Nettype)
 {
-	str_copy(m_aHostname, pHostname, sizeof(m_aHostname));
+	str_copy(m_aHostname, pHostname);
 	m_Nettype = Nettype;
 }
 
@@ -72,6 +72,12 @@ public:
 			dbg_msg("engine", "unknown endian");
 #endif
 
+			char aVersionStr[128];
+			if(!os_version_str(aVersionStr, sizeof(aVersionStr)))
+			{
+				dbg_msg("engine", "operation system version: %s", aVersionStr);
+			}
+
 			// init the network
 			net_init();
 			CNetBase::Init();
@@ -95,6 +101,8 @@ public:
 		if(!m_pConsole || !m_pStorage)
 			return;
 
+		char aFullPath[IO_MAX_PATH_LENGTH];
+		m_pStorage->GetCompletePath(IStorage::TYPE_SAVE, "dumps/", aFullPath, sizeof(aFullPath));
 		m_pConsole->Register("dbg_lognetwork", "", CFGFLAG_SERVER | CFGFLAG_CLIENT, Con_DbgLognetwork, this, "Log the network");
 	}
 

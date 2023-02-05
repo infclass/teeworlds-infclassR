@@ -4,6 +4,11 @@
 #include "econ.h"
 #include "netban.h"
 
+CEcon::CEcon() :
+	m_Ready(false)
+{
+}
+
 int CEcon::NewClientCallback(int ClientID, void *pUser)
 {
 	CEcon *pThis = (CEcon *)pUser;
@@ -72,7 +77,7 @@ void CEcon::Init(CConfig *pConfig, IConsole *pConsole, CNetBan *pNetBan)
 		BindAddr.port = g_Config.m_EcPort;
 	}
 
-	if(m_NetConsole.Open(BindAddr, pNetBan, 0))
+	if(m_NetConsole.Open(BindAddr, pNetBan))
 	{
 		m_NetConsole.SetCallbacks(NewClientCallback, DelClientCallback, this);
 		m_Ready = true;

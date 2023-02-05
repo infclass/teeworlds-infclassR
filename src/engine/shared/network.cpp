@@ -6,6 +6,8 @@
 #include "huffman.h"
 #include "network.h"
 
+const unsigned char SECURITY_TOKEN_MAGIC[4] = {'T', 'K', 'E', 'N'};
+
 void CNetRecvUnpacker::Clear()
 {
 	m_Valid = false;
@@ -128,8 +130,8 @@ void CNetBase::SendPacket(NETSOCKET Socket, NETADDR *pAddr, CNetPacketConstruct 
 	int HeaderSize = NET_PACKETHEADERSIZE;
 	if(Sixup)
 	{
-		HeaderSize += 4;
-		mem_copy(&aBuffer[3], &SecurityToken, 4);
+		HeaderSize += sizeof(SecurityToken);
+		mem_copy(&aBuffer[3], &SecurityToken, sizeof(SecurityToken));
 	}
 	else if(SecurityToken != NET_SECURITY_TOKEN_UNSUPPORTED)
 	{
@@ -195,10 +197,7 @@ int CNetBase::UnpackPacket(unsigned char *pBuffer, int Size, CNetPacketConstruct
 {
 	// check the size
 	if(Size < NET_PACKETHEADERSIZE || Size > NET_MAX_PACKETSIZE)
-	{
-		//dbg_msg("", "packet too small, %d", Size);
 		return -1;
-	}
 
 	// log the data
 	if(ms_DataLogRecv)
@@ -215,18 +214,17 @@ int CNetBase::UnpackPacket(unsigned char *pBuffer, int Size, CNetPacketConstruct
 
 	if(pPacket->m_Flags & NET_PACKETFLAG_CONNLESS)
 	{
-		if(Size < 1)
-			return -1;
-
 		Sixup = (pBuffer[0] & 0x3) == 1;
+		if(Sixup && (pSecurityToken == nullptr || pResponseToken == nullptr))
+			return -1;
 		int Offset = Sixup ? 9 : 6;
 		if(Size < Offset)
 			return -1;
 
 		if(Sixup)
 		{
-			mem_copy(pSecurityToken, &pBuffer[1], 4);
-			mem_copy(pResponseToken, &pBuffer[5], 4);
+			mem_copy(pSecurityToken, &pBuffer[1], sizeof(*pSecurityToken));
+			mem_copy(pResponseToken, &pBuffer[5], sizeof(*pResponseToken));
 		}
 
 		pPacket->m_Flags = NET_PACKETFLAG_CONNLESS;
@@ -245,6 +243,8 @@ int CNetBase::UnpackPacket(unsigned char *pBuffer, int Size, CNetPacketConstruct
 	{
 		if(pPacket->m_Flags & NET_PACKETFLAG_UNUSED)
 			Sixup = true;
+		if(Sixup && pSecurityToken == nullptr)
+			return -1;
 		int DataStart = Sixup ? 7 : NET_PACKETHEADERSIZE;
 		if(Size < DataStart)
 			return -1;
@@ -264,7 +264,7 @@ int CNetBase::UnpackPacket(unsigned char *pBuffer, int Size, CNetPacketConstruct
 				Flags |= NET_PACKETFLAG_COMPRESSION;
 			pPacket->m_Flags = Flags;
 
-			mem_copy(pSecurityToken, &pBuffer[3], 4);
+			mem_copy(pSecurityToken, &pBuffer[3], sizeof(*pSecurityToken));
 		}
 
 		if(pPacket->m_Flags & NET_PACKETFLAG_COMPRESSION)
@@ -343,23 +343,23 @@ unsigned char *CNetChunkHeader::Unpack(unsigned char *pData, int Split)
 	return pData + 2;
 }
 
-int CNetBase::IsSeqInBackroom(int Seq, int Ack)
+bool CNetBase::IsSeqInBackroom(int Seq, int Ack)
 {
 	int Bottom = (Ack - NET_MAX_SEQUENCE / 2);
 	if(Bottom < 0)
 	{
 		if(Seq <= Ack)
-			return 1;
+			return true;
 		if(Seq >= (Bottom + NET_MAX_SEQUENCE))
-			return 1;
+			return true;
 	}
 	else
 	{
 		if(Seq <= Ack && Seq >= Bottom)
-			return 1;
+			return true;
 	}
 
-	return 0;
+	return false;
 }
 
 IOHANDLE CNetBase::ms_DataLogSent = 0;

@@ -1,17 +1,17 @@
 /* (c) Magnus Auvinen. See licence.txt in the root of the distribution for more information. */
 /* If you are missing that file, acquire a complete release at teeworlds.com.                */
-#include <ctype.h>
+#include <atomic>
+#include <cctype>
+#include <cmath>
+#include <cstdarg>
+#include <cstdio>
+#include <cstring>
 #include <iterator> // std::size
-#include <math.h>
-#include <stdarg.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <time.h>
+#include <string_view>
 
 #include "system.h"
 
-#include <sys/stat.h>
+#include "lock_scope.h"
 #include "logger.h"
 
 #include <sys/types.h>
@@ -25,15 +25,16 @@
 #endif
 
 #if defined(CONF_FAMILY_UNIX)
-#include <signal.h>
+#include <csignal>
+#include <sys/stat.h>
 #include <sys/time.h>
+#include <sys/utsname.h>
 #include <sys/wait.h>
 #include <unistd.h>
 
 /* unix net includes */
 #include <arpa/inet.h>
-#include <errno.h>
-#include <fcntl.h>
+#include <cerrno>
 #include <netdb.h>
 #include <netinet/in.h>
 #include <pthread.h>
@@ -50,23 +51,29 @@
 #define _task_user_
 
 #include <Carbon/Carbon.h>
+#include <mach-o/dyld.h>
 #include <mach/mach_time.h>
 #endif
 
 #elif defined(CONF_FAMILY_WINDOWS)
 #define WIN32_LEAN_AND_MEAN
 #undef _WIN32_WINNT
-#define _WIN32_WINNT 0x0501 /* required for mingw to get getaddrinfo to work */
+// 0x0501 (Windows XP) is required for mingw to get getaddrinfo to work
+// 0x0600 (Windows Vista) is required to use RegGetValueW and RegDeleteTreeW
+#define _WIN32_WINNT 0x0600
 #include <windows.h>
 #include <winsock2.h>
 #include <ws2tcpip.h>
 
-#include <direct.h>
-#include <errno.h>
-#include <fcntl.h>
+#include <cerrno>
+#include <fenv.h>
 #include <io.h>
+#include <objbase.h>
 #include <process.h>
+#include <share.h>
 #include <shellapi.h>
+#include <shlobj.h> // SHChangeNotify
+#include <shlwapi.h>
 #include <wincrypt.h>
 #else
 #error NOT IMPLEMENTED
@@ -85,19 +92,80 @@ IOHANDLE io_stdin()
 IOHANDLE io_stdout() { return (IOHANDLE)stdout; }
 IOHANDLE io_stderr() { return (IOHANDLE)stderr; }
 
-typedef struct
+IOHANDLE io_current_exe()
 {
-	DBG_LOGGER logger;
-	DBG_LOGGER_FINISH finish;
-	void *user;
-} DBG_LOGGER_DATA;
-
-static DBG_LOGGER_DATA loggers[16];
-static int num_loggers = 0;
+	// From https://stackoverflow.com/a/1024937.
+#if defined(CONF_FAMILY_WINDOWS)
+	wchar_t wpath[IO_MAX_PATH_LENGTH];
+	char path[IO_MAX_PATH_LENGTH];
+	if(GetModuleFileNameW(NULL, wpath, std::size(wpath)) == 0 || GetLastError() != ERROR_SUCCESS)
+	{
+		return 0;
+	}
+	if(WideCharToMultiByte(CP_UTF8, 0, wpath, -1, path, sizeof(path), NULL, NULL) == 0)
+	{
+		dbg_assert(GetLastError() == ERROR_INSUFFICIENT_BUFFER, "WideCharToMultiByte failure");
+		return 0;
+	}
+	return io_open(path, IOFLAG_READ);
+#elif defined(CONF_PLATFORM_MACOS)
+	char path[IO_MAX_PATH_LENGTH];
+	uint32_t path_size = sizeof(path);
+	if(_NSGetExecutablePath(path, &path_size))
+	{
+		return 0;
+	}
+	return io_open(path, IOFLAG_READ);
+#else
+	static const char *NAMES[] = {
+		"/proc/self/exe", // Linux, Android
+		"/proc/curproc/exe", // NetBSD
+		"/proc/curproc/file", // DragonFly
+	};
+	for(auto &name : NAMES)
+	{
+		IOHANDLE result = io_open(name, IOFLAG_READ);
+		if(result)
+		{
+			return result;
+		}
+	}
+	return 0;
+#endif
+}
 
 static NETSTATS network_stats = {0};
 
-static NETSOCKET invalid_socket = {NETTYPE_INVALID, -1, -1};
+#define VLEN 128
+#define PACKETSIZE 1400
+typedef struct
+{
+#ifdef CONF_PLATFORM_LINUX
+	int pos;
+	int size;
+	struct mmsghdr msgs[VLEN];
+	struct iovec iovecs[VLEN];
+	char bufs[VLEN][PACKETSIZE];
+	char sockaddrs[VLEN][128];
+#else
+	char buf[PACKETSIZE];
+#endif
+} NETSOCKET_BUFFER;
+
+void net_buffer_init(NETSOCKET_BUFFER *buffer);
+void net_buffer_reinit(NETSOCKET_BUFFER *buffer);
+void net_buffer_simple(NETSOCKET_BUFFER *buffer, char **buf, int *size);
+
+struct NETSOCKET_INTERNAL
+{
+	int type;
+	int ipv4sock;
+	int ipv6sock;
+	int web_ipv4sock;
+
+	NETSOCKET_BUFFER buffer;
+};
+static NETSOCKET_INTERNAL invalid_socket = {NETTYPE_INVALID, -1, -1, -1};
 
 #define AF_WEBSOCKET_INET (0xee)
 
@@ -400,7 +468,7 @@ static void aio_thread(void *user)
 	ASYNCIO *aio = (ASYNCIO *)user;
 
 	lock_wait(aio->lock);
-	while(1)
+	while(true)
 	{
 		struct BUFFERS buffers;
 		int result_io_error;
@@ -601,11 +669,8 @@ void aio_write_newline(ASYNCIO *aio)
 
 int aio_error(ASYNCIO *aio)
 {
-	int result;
-	lock_wait(aio->lock);
-	result = aio->error;
-	lock_unlock(aio->lock);
-	return result;
+	CLockScope ls(aio->lock);
+	return aio->error;
 }
 
 void aio_free(ASYNCIO *aio)
@@ -621,23 +686,25 @@ void aio_free(ASYNCIO *aio)
 
 void aio_close(ASYNCIO *aio)
 {
-	lock_wait(aio->lock);
-	aio->finish = ASYNCIO_CLOSE;
-	lock_unlock(aio->lock);
+	{
+		CLockScope ls(aio->lock);
+		aio->finish = ASYNCIO_CLOSE;
+	}
 	sphore_signal(&aio->sphore);
 }
 
 void aio_wait(ASYNCIO *aio)
 {
 	void *thread;
-	lock_wait(aio->lock);
-	thread = aio->thread;
-	aio->thread = 0;
-	if(aio->finish == ASYNCIO_RUNNING)
 	{
-		aio->finish = ASYNCIO_EXIT;
+		CLockScope ls(aio->lock);
+		thread = aio->thread;
+		aio->thread = 0;
+		if(aio->finish == ASYNCIO_RUNNING)
+		{
+			aio->finish = ASYNCIO_EXIT;
+		}
 	}
-	lock_unlock(aio->lock);
 	sphore_signal(&aio->sphore);
 	thread_wait(thread);
 }
@@ -656,6 +723,9 @@ static unsigned long __stdcall thread_run(void *user)
 #error not implemented
 #endif
 {
+#if defined(CONF_FAMILY_WINDOWS)
+	CWindowsComLifecycle WindowsComLifecycle(false);
+#endif
 	struct THREAD_RUN *data = (THREAD_RUN *)user;
 	void (*threadfunc)(void *) = data->threadfunc;
 	void *u = data->u;
@@ -672,7 +742,12 @@ void *thread_init(void (*threadfunc)(void *), void *u, const char *name)
 #if defined(CONF_FAMILY_UNIX)
 	{
 		pthread_t id;
-		int result = pthread_create(&id, NULL, thread_run, data);
+		pthread_attr_t attr;
+		pthread_attr_init(&attr);
+#if defined(CONF_PLATFORM_MACOS)
+		pthread_attr_set_qos_class_np(&attr, QOS_CLASS_USER_INTERACTIVE, 0);
+#endif
+		int result = pthread_create(&id, &attr, thread_run, data);
 		if(result != 0)
 		{
 			dbg_msg("thread", "creating %s thread failed: %d", name, result);
@@ -701,7 +776,7 @@ void thread_wait(void *thread)
 #endif
 }
 
-void thread_yield(void)
+void thread_yield()
 {
 #if defined(CONF_FAMILY_UNIX)
 	int result = sched_yield();
@@ -709,20 +784,6 @@ void thread_yield(void)
 		dbg_msg("thread", "yield failed: %d", errno);
 #elif defined(CONF_FAMILY_WINDOWS)
 	Sleep(0);
-#else
-#error not implemented
-#endif
-}
-
-void thread_sleep(int microseconds)
-{
-#if defined(CONF_FAMILY_UNIX)
-	int result = usleep(microseconds);
-	/* ignore signal interruption */
-	if(result == -1 && errno != EINTR)
-		dbg_msg("thread", "sleep failed: %d", errno);
-#elif defined(CONF_FAMILY_WINDOWS)
-	Sleep(microseconds / 1000);
 #else
 #error not implemented
 #endif
@@ -757,7 +818,7 @@ typedef CRITICAL_SECTION LOCKINTERNAL;
 #error not implemented on this platform
 #endif
 
-LOCK lock_create(void)
+LOCK lock_create()
 {
 	LOCKINTERNAL *lock = (LOCKINTERNAL *)malloc(sizeof(*lock));
 #if defined(CONF_FAMILY_UNIX)
@@ -853,8 +914,10 @@ void sphore_destroy(SEMAPHORE *sem) { CloseHandle((HANDLE)*sem); }
 void sphore_init(SEMAPHORE *sem)
 {
 	char aBuf[64];
-	str_format(aBuf, sizeof(aBuf), "/%d-ddnet.tw-%p", pid(), (void *)sem);
+	str_format(aBuf, sizeof(aBuf), "%p", (void *)sem);
 	*sem = sem_open(aBuf, O_CREAT | O_EXCL, S_IRWXU | S_IRWXG, 0);
+	if(*sem == SEM_FAILED)
+		dbg_msg("sphore", "init failed: %d", errno);
 }
 void sphore_wait(SEMAPHORE *sem) { sem_wait(*sem); }
 void sphore_signal(SEMAPHORE *sem) { sem_post(*sem); }
@@ -862,7 +925,7 @@ void sphore_destroy(SEMAPHORE *sem)
 {
 	char aBuf[64];
 	sem_close(*sem);
-	str_format(aBuf, sizeof(aBuf), "/%d-ddnet.tw-%p", pid(), (void *)sem);
+	str_format(aBuf, sizeof(aBuf), "%p", (void *)sem);
 	sem_unlink(aBuf);
 }
 #elif defined(CONF_FAMILY_UNIX)
@@ -874,8 +937,12 @@ void sphore_init(SEMAPHORE *sem)
 
 void sphore_wait(SEMAPHORE *sem)
 {
-	if(sem_wait(sem) != 0)
-		dbg_msg("sphore", "wait failed: %d", errno);
+	do
+	{
+		errno = 0;
+		if(sem_wait(sem) != 0)
+			dbg_msg("sphore", "wait failed: %d", errno);
+	} while(errno == EINTR);
 }
 
 void sphore_signal(SEMAPHORE *sem)
@@ -892,54 +959,22 @@ void sphore_destroy(SEMAPHORE *sem)
 
 static int new_tick = -1;
 
-void set_new_tick(void)
+void set_new_tick()
 {
 	new_tick = 1;
 }
 
 /* -----  time ----- */
-int64_t time_get_impl(void)
+static_assert(std::chrono::steady_clock::is_steady, "Compiler does not support steady clocks, it might be out of date.");
+static_assert(std::chrono::steady_clock::period::den / std::chrono::steady_clock::period::num >= 1000000000, "Compiler has a bad timer precision and might be out of date.");
+static const std::chrono::time_point<std::chrono::steady_clock> tw_start_time = std::chrono::steady_clock::now();
+
+int64_t time_get_impl()
 {
-	static int64_t last = 0;
-	{
-#if defined(CONF_PLATFORM_MACOS)
-		static int got_timebase = 0;
-		mach_timebase_info_data_t timebase;
-		uint64_t time;
-		uint64_t q;
-		uint64_t r;
-		if(!got_timebase)
-		{
-			mach_timebase_info(&timebase);
-		}
-		time = mach_absolute_time();
-		q = time / timebase.denom;
-		r = time % timebase.denom;
-		last = q * timebase.numer + r * timebase.numer / timebase.denom;
-		return last;
-#elif defined(CONF_FAMILY_UNIX)
-		struct timespec spec;
-		if(clock_gettime(CLOCK_MONOTONIC, &spec) != 0)
-		{
-			dbg_msg("clock", "gettime failed: %d", errno);
-			return 0;
-		}
-		last = (int64)spec.tv_sec * (int64)1000000 + (int64)spec.tv_nsec / 1000;
-		return last;
-#elif defined(CONF_FAMILY_WINDOWS)
-		int64_t t;
-		QueryPerformanceCounter((PLARGE_INTEGER)&t);
-		if(t < last) /* for some reason, QPC can return values in the past */
-			return last;
-		last = t;
-		return t;
-#else
-#error not implemented
-#endif
-	}
+	return std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::steady_clock::now() - tw_start_time).count();
 }
 
-int64_t time_get(void)
+int64_t time_get()
 {
 	static int64_t last = 0;
 	if(new_tick == 0)
@@ -951,28 +986,10 @@ int64_t time_get(void)
 	return last;
 }
 
-int64_t time_freq(void)
+int64_t time_freq()
 {
-#if defined(CONF_PLATFORM_MACOS)
-	return 1000000000;
-#elif defined(CONF_FAMILY_UNIX)
-	return 1000000;
-#elif defined(CONF_FAMILY_WINDOWS)
-	int64_t t;
-	QueryPerformanceFrequency((PLARGE_INTEGER)&t);
-	return t;
-#else
-#error not implemented
-#endif
-}
-
-int64_t time_get_microseconds(void)
-{
-#if defined(CONF_FAMILY_WINDOWS)
-	return (time_get_impl() * (int64)1000000) / time_freq();
-#else
-	return time_get_impl() / (time_freq() / 1000 / 1000);
-#endif
+	using namespace std::chrono_literals;
+	return std::chrono::nanoseconds(1s).count();
 }
 
 /* -----  network ----- */
@@ -1039,6 +1056,11 @@ static void sockaddr_to_netaddr(const struct sockaddr *src, NETADDR *dst)
 int net_addr_comp(const NETADDR *a, const NETADDR *b)
 {
 	return mem_comp(a, b, sizeof(NETADDR));
+}
+
+bool NETADDR::operator==(const NETADDR &other) const
+{
+	return net_addr_comp(this, &other) == 0;
 }
 
 int net_addr_comp_noport(const NETADDR *a, const NETADDR *b)
@@ -1162,7 +1184,7 @@ static int priv_net_extract(const char *hostname, char *host, int max_host, int 
 
 		i++;
 		if(hostname[i] == ':')
-			*port = atol(hostname + i + 1);
+			*port = str_toint(hostname + i + 1);
 	}
 	else
 	{
@@ -1172,13 +1194,13 @@ static int priv_net_extract(const char *hostname, char *host, int max_host, int 
 		host[i] = 0;
 
 		if(hostname[i] == ':')
-			*port = atol(hostname + i + 1);
+			*port = str_toint(hostname + i + 1);
 	}
 
 	return 0;
 }
 
-int net_host_lookup(const char *hostname, NETADDR *addr, int types)
+int net_host_lookup_impl(const char *hostname, NETADDR *addr, int types)
 {
 	struct addrinfo hints;
 	struct addrinfo *result = NULL;
@@ -1199,10 +1221,6 @@ int net_host_lookup(const char *hostname, NETADDR *addr, int types)
 		hints.ai_family = AF_INET;
 	else if(types == NETTYPE_IPV6)
 		hints.ai_family = AF_INET6;
-#if defined(CONF_WEBSOCKETS)
-	if(types & NETTYPE_WEBSOCKET_IPV4)
-		hints.ai_family = AF_INET;
-#endif
 
 	e = getaddrinfo(host, NULL, &hints, &result);
 
@@ -1221,6 +1239,25 @@ int net_host_lookup(const char *hostname, NETADDR *addr, int types)
 	return 0;
 }
 
+int net_host_lookup(const char *hostname, NETADDR *addr, int types)
+{
+	const char *ws_hostname = str_startswith(hostname, "ws://");
+	if(ws_hostname)
+	{
+		if((types & NETTYPE_WEBSOCKET_IPV4) == 0)
+		{
+			return -1;
+		}
+		int result = net_host_lookup_impl(ws_hostname, addr, NETTYPE_IPV4);
+		if(result == 0 && addr->type == NETTYPE_IPV4)
+		{
+			addr->type = NETTYPE_WEBSOCKET_IPV4;
+		}
+		return result;
+	}
+	return net_host_lookup_impl(hostname, addr, types & ~NETTYPE_WEBSOCKET_IPV4);
+}
+
 static int parse_int(int *out, const char **str)
 {
 	int i = 0;
@@ -1231,7 +1268,7 @@ static int parse_int(int *out, const char **str)
 	i = **str - '0';
 	(*str)++;
 
-	while(1)
+	while(true)
 	{
 		if(**str < '0' || **str > '9')
 		{
@@ -1297,7 +1334,7 @@ int net_addr_from_str(NETADDR *addr, const char *string)
 			int size;
 			sa6.sin6_family = AF_INET6;
 			size = (int)sizeof(sa6);
-			if(WSAStringToAddress(buf, AF_INET6, NULL, (struct sockaddr *)&sa6, &size) != 0)
+			if(WSAStringToAddressA(buf, AF_INET6, NULL, (struct sockaddr *)&sa6, &size) != 0)
 				return -1;
 		}
 #else
@@ -1350,6 +1387,8 @@ int net_addr_from_str(NETADDR *addr, const char *string)
 			if(parse_uint16(&addr->port, &str))
 				return -1;
 		}
+		if(*str != '\0')
+			return -1;
 
 		addr->type = NETTYPE_IPV4;
 	}
@@ -1370,32 +1409,52 @@ static void priv_net_close_socket(int sock)
 static int priv_net_close_all_sockets(NETSOCKET sock)
 {
 	/* close down ipv4 */
-	if(sock.ipv4sock >= 0)
+	if(sock->ipv4sock >= 0)
 	{
-		priv_net_close_socket(sock.ipv4sock);
-		sock.ipv4sock = -1;
-		sock.type &= ~NETTYPE_IPV4;
+		priv_net_close_socket(sock->ipv4sock);
+		sock->ipv4sock = -1;
+		sock->type &= ~NETTYPE_IPV4;
 	}
 
 #if defined(CONF_WEBSOCKETS)
 	/* close down websocket_ipv4 */
-	if(sock.web_ipv4sock >= 0)
+	if(sock->web_ipv4sock >= 0)
 	{
-		websocket_destroy(sock.web_ipv4sock);
-		sock.web_ipv4sock = -1;
-		sock.type &= ~NETTYPE_WEBSOCKET_IPV4;
+		websocket_destroy(sock->web_ipv4sock);
+		sock->web_ipv4sock = -1;
+		sock->type &= ~NETTYPE_WEBSOCKET_IPV4;
 	}
 #endif
 
 	/* close down ipv6 */
-	if(sock.ipv6sock >= 0)
+	if(sock->ipv6sock >= 0)
 	{
-		priv_net_close_socket(sock.ipv6sock);
-		sock.ipv6sock = -1;
-		sock.type &= ~NETTYPE_IPV6;
+		priv_net_close_socket(sock->ipv6sock);
+		sock->ipv6sock = -1;
+		sock->type &= ~NETTYPE_IPV6;
 	}
+
+	free(sock);
 	return 0;
 }
+
+#if defined(CONF_FAMILY_WINDOWS)
+static char *windows_format_system_message(unsigned long error)
+{
+	WCHAR *wide_message;
+	const DWORD flags = FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS | FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_MAX_WIDTH_MASK;
+	if(FormatMessageW(flags, NULL, error, 0, (LPWSTR)&wide_message, 0, NULL) == 0)
+	{
+		return nullptr;
+	}
+	int len = WideCharToMultiByte(CP_UTF8, 0, wide_message, -1, NULL, 0, NULL, NULL);
+	dbg_assert(len > 0, "WideCharToMultiByte failure");
+	char *message = (char *)malloc(len * sizeof(*message));
+	dbg_assert(WideCharToMultiByte(CP_UTF8, 0, wide_message, -1, message, len, NULL, NULL) == len, "WideCharToMultiByte failure");
+	LocalFree(wide_message);
+	return message;
+}
+#endif
 
 static int priv_net_create_socket(int domain, int type, struct sockaddr *addr, int sockaddrlen)
 {
@@ -1406,11 +1465,10 @@ static int priv_net_create_socket(int domain, int type, struct sockaddr *addr, i
 	if(sock < 0)
 	{
 #if defined(CONF_FAMILY_WINDOWS)
-		char buf[128];
 		int error = WSAGetLastError();
-		if(FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS, 0, error, 0, buf, sizeof(buf), 0) == 0)
-			buf[0] = 0;
-		dbg_msg("net", "failed to create socket with domain %d and type %d (%d '%s')", domain, type, error, buf);
+		char *message = windows_format_system_message(error);
+		dbg_msg("net", "failed to create socket with domain %d and type %d (%d '%s')", domain, type, error, message == nullptr ? "unknown error" : message);
+		free(message);
 #else
 		dbg_msg("net", "failed to create socket with domain %d and type %d (%d '%s')", domain, type, errno, strerror(errno));
 #endif
@@ -1443,11 +1501,10 @@ static int priv_net_create_socket(int domain, int type, struct sockaddr *addr, i
 	if(e != 0)
 	{
 #if defined(CONF_FAMILY_WINDOWS)
-		char buf[128];
 		int error = WSAGetLastError();
-		if(FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS, 0, error, 0, buf, sizeof(buf), 0) == 0)
-			buf[0] = 0;
-		dbg_msg("net", "failed to bind socket with domain %d and type %d (%d '%s')", domain, type, error, buf);
+		char *message = windows_format_system_message(error);
+		dbg_msg("net", "failed to bind socket with domain %d and type %d (%d '%s')", domain, type, error, message == nullptr ? "unknown error" : message);
+		free(message);
 #else
 		dbg_msg("net", "failed to bind socket with domain %d and type %d (%d '%s')", domain, type, errno, strerror(errno));
 #endif
@@ -1459,16 +1516,22 @@ static int priv_net_create_socket(int domain, int type, struct sockaddr *addr, i
 	return sock;
 }
 
+int net_socket_type(NETSOCKET sock)
+{
+	return sock->type;
+}
+
 NETSOCKET net_udp_create(NETADDR bindaddr)
 {
-	NETSOCKET sock = invalid_socket;
+	NETSOCKET sock = (NETSOCKET_INTERNAL *)malloc(sizeof(*sock));
+	*sock = invalid_socket;
 	NETADDR tmpbindaddr = bindaddr;
 	int broadcast = 1;
+	int socket = -1;
 
 	if(bindaddr.type & NETTYPE_IPV4)
 	{
 		struct sockaddr_in addr;
-		int socket = -1;
 
 		/* bind, we should check for error */
 		tmpbindaddr.type = NETTYPE_IPV4;
@@ -1476,8 +1539,8 @@ NETSOCKET net_udp_create(NETADDR bindaddr)
 		socket = priv_net_create_socket(AF_INET, SOCK_DGRAM, (struct sockaddr *)&addr, sizeof(addr));
 		if(socket >= 0)
 		{
-			sock.type |= NETTYPE_IPV4;
-			sock.ipv4sock = socket;
+			sock->type |= NETTYPE_IPV4;
+			sock->ipv4sock = socket;
 
 			/* set broadcast */
 			if(setsockopt(socket, SOL_SOCKET, SO_BROADCAST, (const char *)&broadcast, sizeof(broadcast)) != 0)
@@ -1492,11 +1555,9 @@ NETSOCKET net_udp_create(NETADDR bindaddr)
 			}
 		}
 	}
-
 #if defined(CONF_WEBSOCKETS)
 	if(bindaddr.type & NETTYPE_WEBSOCKET_IPV4)
 	{
-		int socket = -1;
 		char addr_str[NETADDR_MAXSTRSIZE];
 
 		/* bind, we should check for error */
@@ -1507,8 +1568,8 @@ NETSOCKET net_udp_create(NETADDR bindaddr)
 
 		if(socket >= 0)
 		{
-			sock.type |= NETTYPE_WEBSOCKET_IPV4;
-			sock.web_ipv4sock = socket;
+			sock->type |= NETTYPE_WEBSOCKET_IPV4;
+			sock->web_ipv4sock = socket;
 		}
 	}
 #endif
@@ -1516,7 +1577,6 @@ NETSOCKET net_udp_create(NETADDR bindaddr)
 	if(bindaddr.type & NETTYPE_IPV6)
 	{
 		struct sockaddr_in6 addr;
-		int socket = -1;
 
 		/* bind, we should check for error */
 		tmpbindaddr.type = NETTYPE_IPV6;
@@ -1524,8 +1584,8 @@ NETSOCKET net_udp_create(NETADDR bindaddr)
 		socket = priv_net_create_socket(AF_INET6, SOCK_DGRAM, (struct sockaddr *)&addr, sizeof(addr));
 		if(socket >= 0)
 		{
-			sock.type |= NETTYPE_IPV6;
-			sock.ipv6sock = socket;
+			sock->type |= NETTYPE_IPV6;
+			sock->ipv6sock = socket;
 
 			/* set broadcast */
 			if(setsockopt(socket, SOL_SOCKET, SO_BROADCAST, (const char *)&broadcast, sizeof(broadcast)) != 0)
@@ -1541,8 +1601,18 @@ NETSOCKET net_udp_create(NETADDR bindaddr)
 		}
 	}
 
-	/* set non-blocking */
-	net_set_non_blocking(sock);
+	if(socket < 0)
+	{
+		free(sock);
+		sock = nullptr;
+	}
+	else
+	{
+		/* set non-blocking */
+		net_set_non_blocking(sock);
+
+		net_buffer_init(&sock->buffer);
+	}
 
 	/* return */
 	return sock;
@@ -1554,7 +1624,7 @@ int net_udp_send(NETSOCKET sock, const NETADDR *addr, const void *data, int size
 
 	if(addr->type & NETTYPE_IPV4)
 	{
-		if(sock.ipv4sock >= 0)
+		if(sock->ipv4sock >= 0)
 		{
 			struct sockaddr_in sa;
 			if(addr->type & NETTYPE_LINK_BROADCAST)
@@ -1567,7 +1637,7 @@ int net_udp_send(NETSOCKET sock, const NETADDR *addr, const void *data, int size
 			else
 				netaddr_to_sockaddr_in(addr, &sa);
 
-			d = sendto((int)sock.ipv4sock, (const char *)data, size, 0, (struct sockaddr *)&sa, sizeof(sa));
+			d = sendto((int)sock->ipv4sock, (const char *)data, size, 0, (struct sockaddr *)&sa, sizeof(sa));
 		}
 		else
 			dbg_msg("net", "can't send ipv4 traffic to this socket");
@@ -1576,11 +1646,11 @@ int net_udp_send(NETSOCKET sock, const NETADDR *addr, const void *data, int size
 #if defined(CONF_WEBSOCKETS)
 	if(addr->type & NETTYPE_WEBSOCKET_IPV4)
 	{
-		if(sock.web_ipv4sock >= 0)
+		if(sock->web_ipv4sock >= 0)
 		{
 			char addr_str[NETADDR_MAXSTRSIZE];
 			str_format(addr_str, sizeof(addr_str), "%d.%d.%d.%d", addr->ip[0], addr->ip[1], addr->ip[2], addr->ip[3]);
-			d = websocket_send(sock.web_ipv4sock, (const unsigned char *)data, size, addr_str, addr->port);
+			d = websocket_send(sock->web_ipv4sock, (const unsigned char *)data, size, addr_str, addr->port);
 		}
 
 		else
@@ -1590,7 +1660,7 @@ int net_udp_send(NETSOCKET sock, const NETADDR *addr, const void *data, int size
 
 	if(addr->type & NETTYPE_IPV6)
 	{
-		if(sock.ipv6sock >= 0)
+		if(sock->ipv6sock >= 0)
 		{
 			struct sockaddr_in6 sa;
 			if(addr->type & NETTYPE_LINK_BROADCAST)
@@ -1605,7 +1675,7 @@ int net_udp_send(NETSOCKET sock, const NETADDR *addr, const void *data, int size
 			else
 				netaddr_to_sockaddr_in6(addr, &sa);
 
-			d = sendto((int)sock.ipv6sock, (const char *)data, size, 0, (struct sockaddr *)&sa, sizeof(sa));
+			d = sendto((int)sock->ipv6sock, (const char *)data, size, 0, (struct sockaddr *)&sa, sizeof(sa));
 		}
 		else
 			dbg_msg("net", "can't send ipv6 traffic to this socket");
@@ -1631,84 +1701,110 @@ int net_udp_send(NETSOCKET sock, const NETADDR *addr, const void *data, int size
 	return d;
 }
 
-void net_init_mmsgs(MMSGS *m)
+void net_buffer_init(NETSOCKET_BUFFER *buffer)
 {
 #if defined(CONF_PLATFORM_LINUX)
 	int i;
-	m->pos = 0;
-	m->size = 0;
-	mem_zero(m->msgs, sizeof(m->msgs));
-	mem_zero(m->iovecs, sizeof(m->iovecs));
-	mem_zero(m->sockaddrs, sizeof(m->sockaddrs));
+	buffer->pos = 0;
+	buffer->size = 0;
+	mem_zero(buffer->msgs, sizeof(buffer->msgs));
+	mem_zero(buffer->iovecs, sizeof(buffer->iovecs));
+	mem_zero(buffer->sockaddrs, sizeof(buffer->sockaddrs));
 	for(i = 0; i < VLEN; ++i)
 	{
-		m->iovecs[i].iov_base = m->bufs[i];
-		m->iovecs[i].iov_len = PACKETSIZE;
-		m->msgs[i].msg_hdr.msg_iov = &(m->iovecs[i]);
-		m->msgs[i].msg_hdr.msg_iovlen = 1;
-		m->msgs[i].msg_hdr.msg_name = &(m->sockaddrs[i]);
-		m->msgs[i].msg_hdr.msg_namelen = sizeof(m->sockaddrs[i]);
+		buffer->iovecs[i].iov_base = buffer->bufs[i];
+		buffer->iovecs[i].iov_len = PACKETSIZE;
+		buffer->msgs[i].msg_hdr.msg_iov = &(buffer->iovecs[i]);
+		buffer->msgs[i].msg_hdr.msg_iovlen = 1;
+		buffer->msgs[i].msg_hdr.msg_name = &(buffer->sockaddrs[i]);
+		buffer->msgs[i].msg_hdr.msg_namelen = sizeof(buffer->sockaddrs[i]);
 	}
 #endif
 }
 
-int net_udp_recv(NETSOCKET sock, NETADDR *addr, void *buffer, int maxsize, MMSGS *m, unsigned char **data)
+void net_buffer_reinit(NETSOCKET_BUFFER *buffer)
+{
+#if defined(CONF_PLATFORM_LINUX)
+	for(int i = 0; i < VLEN; i++)
+	{
+		buffer->msgs[i].msg_hdr.msg_namelen = sizeof(buffer->sockaddrs[i]);
+	}
+#endif
+}
+
+void net_buffer_simple(NETSOCKET_BUFFER *buffer, char **buf, int *size)
+{
+#if defined(CONF_PLATFORM_LINUX)
+	*buf = buffer->bufs[0];
+	*size = sizeof(buffer->bufs[0]);
+#else
+	*buf = buffer->buf;
+	*size = sizeof(buffer->buf);
+#endif
+}
+
+int net_udp_recv(NETSOCKET sock, NETADDR *addr, unsigned char **data)
 {
 	char sockaddrbuf[128];
 	int bytes = 0;
 
 #if defined(CONF_PLATFORM_LINUX)
-	if(sock.ipv4sock >= 0)
+	if(sock->ipv4sock >= 0)
 	{
-		if(m->pos >= m->size)
+		if(sock->buffer.pos >= sock->buffer.size)
 		{
-			m->size = recvmmsg(sock.ipv4sock, m->msgs, VLEN, 0, NULL);
-			m->pos = 0;
+			net_buffer_reinit(&sock->buffer);
+			sock->buffer.size = recvmmsg(sock->ipv4sock, sock->buffer.msgs, VLEN, 0, NULL);
+			sock->buffer.pos = 0;
 		}
 	}
 
-	if(sock.ipv6sock >= 0)
+	if(sock->ipv6sock >= 0)
 	{
-		if(m->pos >= m->size)
+		if(sock->buffer.pos >= sock->buffer.size)
 		{
-			m->size = recvmmsg(sock.ipv6sock, m->msgs, VLEN, 0, NULL);
-			m->pos = 0;
+			net_buffer_reinit(&sock->buffer);
+			sock->buffer.size = recvmmsg(sock->ipv6sock, sock->buffer.msgs, VLEN, 0, NULL);
+			sock->buffer.pos = 0;
 		}
 	}
 
-	if(m->pos < m->size)
+	if(sock->buffer.pos < sock->buffer.size)
 	{
-		sockaddr_to_netaddr((struct sockaddr *)&(m->sockaddrs[m->pos]), addr);
-		bytes = m->msgs[m->pos].msg_len;
-		*data = (unsigned char *)m->bufs[m->pos];
-		m->pos++;
+		sockaddr_to_netaddr((struct sockaddr *)&(sock->buffer.sockaddrs[sock->buffer.pos]), addr);
+		bytes = sock->buffer.msgs[sock->buffer.pos].msg_len;
+		*data = (unsigned char *)sock->buffer.bufs[sock->buffer.pos];
+		sock->buffer.pos++;
 		network_stats.recv_bytes += bytes;
 		network_stats.recv_packets++;
 		return bytes;
 	}
 #else
-	if(bytes == 0 && sock.ipv4sock >= 0)
+	if(sock->ipv4sock >= 0)
 	{
 		socklen_t fromlen = sizeof(struct sockaddr_in);
-		bytes = recvfrom(sock.ipv4sock, (char *)buffer, maxsize, 0, (struct sockaddr *)&sockaddrbuf, &fromlen);
-		*data = (unsigned char *)buffer;
+		bytes = recvfrom(sock->ipv4sock, sock->buffer.buf, sizeof(sock->buffer.buf), 0, (struct sockaddr *)&sockaddrbuf, &fromlen);
+		*data = (unsigned char *)sock->buffer.buf;
 	}
 
-	if(bytes <= 0 && sock.ipv6sock >= 0)
+	if(bytes <= 0 && sock->ipv6sock >= 0)
 	{
 		socklen_t fromlen = sizeof(struct sockaddr_in6);
-		bytes = recvfrom(sock.ipv6sock, (char *)buffer, maxsize, 0, (struct sockaddr *)&sockaddrbuf, &fromlen);
-		*data = (unsigned char *)buffer;
+		bytes = recvfrom(sock->ipv6sock, sock->buffer.buf, sizeof(sock->buffer.buf), 0, (struct sockaddr *)&sockaddrbuf, &fromlen);
+		*data = (unsigned char *)sock->buffer.buf;
 	}
 #endif
 
 #if defined(CONF_WEBSOCKETS)
-	if(bytes <= 0 && sock.web_ipv4sock >= 0)
+	if(bytes <= 0 && sock->web_ipv4sock >= 0)
 	{
+		char *buf;
+		int size;
+		net_buffer_simple(&sock->buffer, &buf, &size);
 		socklen_t fromlen = sizeof(struct sockaddr);
 		struct sockaddr_in *sockaddrbuf_in = (struct sockaddr_in *)&sockaddrbuf;
-		bytes = websocket_recv(sock.web_ipv4sock, (unsigned char *)buffer, maxsize, sockaddrbuf_in, fromlen);
-		*data = (unsigned char *)buffer;
+		bytes = websocket_recv(sock->web_ipv4sock, (unsigned char *)buf, size, sockaddrbuf_in, fromlen);
+		*data = (unsigned char *)buf;
 		sockaddrbuf_in->sin_family = AF_WEBSOCKET_INET;
 	}
 #endif
@@ -1732,13 +1828,14 @@ int net_udp_close(NETSOCKET sock)
 
 NETSOCKET net_tcp_create(NETADDR bindaddr)
 {
-	NETSOCKET sock = invalid_socket;
+	NETSOCKET sock = (NETSOCKET_INTERNAL *)malloc(sizeof(*sock));
+	*sock = invalid_socket;
 	NETADDR tmpbindaddr = bindaddr;
+	int socket = -1;
 
 	if(bindaddr.type & NETTYPE_IPV4)
 	{
 		struct sockaddr_in addr;
-		int socket = -1;
 
 		/* bind, we should check for error */
 		tmpbindaddr.type = NETTYPE_IPV4;
@@ -1746,15 +1843,14 @@ NETSOCKET net_tcp_create(NETADDR bindaddr)
 		socket = priv_net_create_socket(AF_INET, SOCK_STREAM, (struct sockaddr *)&addr, sizeof(addr));
 		if(socket >= 0)
 		{
-			sock.type |= NETTYPE_IPV4;
-			sock.ipv4sock = socket;
+			sock->type |= NETTYPE_IPV4;
+			sock->ipv4sock = socket;
 		}
 	}
 
 	if(bindaddr.type & NETTYPE_IPV6)
 	{
 		struct sockaddr_in6 addr;
-		int socket = -1;
 
 		/* bind, we should check for error */
 		tmpbindaddr.type = NETTYPE_IPV6;
@@ -1762,9 +1858,15 @@ NETSOCKET net_tcp_create(NETADDR bindaddr)
 		socket = priv_net_create_socket(AF_INET6, SOCK_STREAM, (struct sockaddr *)&addr, sizeof(addr));
 		if(socket >= 0)
 		{
-			sock.type |= NETTYPE_IPV6;
-			sock.ipv6sock = socket;
+			sock->type |= NETTYPE_IPV6;
+			sock->ipv6sock = socket;
 		}
+	}
+
+	if(socket < 0)
+	{
+		free(sock);
+		sock = nullptr;
 	}
 
 	/* return */
@@ -1774,22 +1876,22 @@ NETSOCKET net_tcp_create(NETADDR bindaddr)
 int net_set_non_blocking(NETSOCKET sock)
 {
 	unsigned long mode = 1;
-	if(sock.ipv4sock >= 0)
+	if(sock->ipv4sock >= 0)
 	{
 #if defined(CONF_FAMILY_WINDOWS)
-		ioctlsocket(sock.ipv4sock, FIONBIO, (unsigned long *)&mode);
+		ioctlsocket(sock->ipv4sock, FIONBIO, (unsigned long *)&mode);
 #else
-		if(ioctl(sock.ipv4sock, FIONBIO, (unsigned long *)&mode) == -1)
+		if(ioctl(sock->ipv4sock, FIONBIO, (unsigned long *)&mode) == -1)
 			dbg_msg("socket", "setting ipv4 non-blocking failed: %d", errno);
 #endif
 	}
 
-	if(sock.ipv6sock >= 0)
+	if(sock->ipv6sock >= 0)
 	{
 #if defined(CONF_FAMILY_WINDOWS)
-		ioctlsocket(sock.ipv6sock, FIONBIO, (unsigned long *)&mode);
+		ioctlsocket(sock->ipv6sock, FIONBIO, (unsigned long *)&mode);
 #else
-		if(ioctl(sock.ipv6sock, FIONBIO, (unsigned long *)&mode) == -1)
+		if(ioctl(sock->ipv6sock, FIONBIO, (unsigned long *)&mode) == -1)
 			dbg_msg("socket", "setting ipv6 non-blocking failed: %d", errno);
 #endif
 	}
@@ -1800,22 +1902,22 @@ int net_set_non_blocking(NETSOCKET sock)
 int net_set_blocking(NETSOCKET sock)
 {
 	unsigned long mode = 0;
-	if(sock.ipv4sock >= 0)
+	if(sock->ipv4sock >= 0)
 	{
 #if defined(CONF_FAMILY_WINDOWS)
-		ioctlsocket(sock.ipv4sock, FIONBIO, (unsigned long *)&mode);
+		ioctlsocket(sock->ipv4sock, FIONBIO, (unsigned long *)&mode);
 #else
-		if(ioctl(sock.ipv4sock, FIONBIO, (unsigned long *)&mode) == -1)
+		if(ioctl(sock->ipv4sock, FIONBIO, (unsigned long *)&mode) == -1)
 			dbg_msg("socket", "setting ipv4 blocking failed: %d", errno);
 #endif
 	}
 
-	if(sock.ipv6sock >= 0)
+	if(sock->ipv6sock >= 0)
 	{
 #if defined(CONF_FAMILY_WINDOWS)
-		ioctlsocket(sock.ipv6sock, FIONBIO, (unsigned long *)&mode);
+		ioctlsocket(sock->ipv6sock, FIONBIO, (unsigned long *)&mode);
 #else
-		if(ioctl(sock.ipv6sock, FIONBIO, (unsigned long *)&mode) == -1)
+		if(ioctl(sock->ipv6sock, FIONBIO, (unsigned long *)&mode) == -1)
 			dbg_msg("socket", "setting ipv6 blocking failed: %d", errno);
 #endif
 	}
@@ -1826,10 +1928,10 @@ int net_set_blocking(NETSOCKET sock)
 int net_tcp_listen(NETSOCKET sock, int backlog)
 {
 	int err = -1;
-	if(sock.ipv4sock >= 0)
-		err = listen(sock.ipv4sock, backlog);
-	if(sock.ipv6sock >= 0)
-		err = listen(sock.ipv6sock, backlog);
+	if(sock->ipv4sock >= 0)
+		err = listen(sock->ipv4sock, backlog);
+	if(sock->ipv6sock >= 0)
+		err = listen(sock->ipv6sock, backlog);
 	return err;
 }
 
@@ -1838,36 +1940,41 @@ int net_tcp_accept(NETSOCKET sock, NETSOCKET *new_sock, NETADDR *a)
 	int s;
 	socklen_t sockaddr_len;
 
-	*new_sock = invalid_socket;
+	*new_sock = nullptr;
 
-	if(sock.ipv4sock >= 0)
+	if(sock->ipv4sock >= 0)
 	{
 		struct sockaddr_in addr;
 		sockaddr_len = sizeof(addr);
 
-		s = accept(sock.ipv4sock, (struct sockaddr *)&addr, &sockaddr_len);
+		s = accept(sock->ipv4sock, (struct sockaddr *)&addr, &sockaddr_len);
 
 		if(s != -1)
 		{
 			sockaddr_to_netaddr((const struct sockaddr *)&addr, a);
-			new_sock->type = NETTYPE_IPV4;
-			new_sock->ipv4sock = s;
+
+			*new_sock = (NETSOCKET_INTERNAL *)malloc(sizeof(**new_sock));
+			**new_sock = invalid_socket;
+			(*new_sock)->type = NETTYPE_IPV4;
+			(*new_sock)->ipv4sock = s;
 			return s;
 		}
 	}
 
-	if(sock.ipv6sock >= 0)
+	if(sock->ipv6sock >= 0)
 	{
 		struct sockaddr_in6 addr;
 		sockaddr_len = sizeof(addr);
 
-		s = accept(sock.ipv6sock, (struct sockaddr *)&addr, &sockaddr_len);
+		s = accept(sock->ipv6sock, (struct sockaddr *)&addr, &sockaddr_len);
 
 		if(s != -1)
 		{
+			*new_sock = (NETSOCKET_INTERNAL *)malloc(sizeof(**new_sock));
+			**new_sock = invalid_socket;
 			sockaddr_to_netaddr((const struct sockaddr *)&addr, a);
-			new_sock->type = NETTYPE_IPV6;
-			new_sock->ipv6sock = s;
+			(*new_sock)->type = NETTYPE_IPV6;
+			(*new_sock)->ipv6sock = s;
 			return s;
 		}
 	}
@@ -1881,14 +1988,14 @@ int net_tcp_connect(NETSOCKET sock, const NETADDR *a)
 	{
 		struct sockaddr_in addr;
 		netaddr_to_sockaddr_in(a, &addr);
-		return connect(sock.ipv4sock, (struct sockaddr *)&addr, sizeof(addr));
+		return connect(sock->ipv4sock, (struct sockaddr *)&addr, sizeof(addr));
 	}
 
 	if(a->type & NETTYPE_IPV6)
 	{
 		struct sockaddr_in6 addr;
 		netaddr_to_sockaddr_in6(a, &addr);
-		return connect(sock.ipv6sock, (struct sockaddr *)&addr, sizeof(addr));
+		return connect(sock->ipv6sock, (struct sockaddr *)&addr, sizeof(addr));
 	}
 
 	return -1;
@@ -1909,10 +2016,10 @@ int net_tcp_send(NETSOCKET sock, const void *data, int size)
 {
 	int bytes = -1;
 
-	if(sock.ipv4sock >= 0)
-		bytes = send((int)sock.ipv4sock, (const char *)data, size, 0);
-	if(sock.ipv6sock >= 0)
-		bytes = send((int)sock.ipv6sock, (const char *)data, size, 0);
+	if(sock->ipv4sock >= 0)
+		bytes = send((int)sock->ipv4sock, (const char *)data, size, 0);
+	if(sock->ipv6sock >= 0)
+		bytes = send((int)sock->ipv6sock, (const char *)data, size, 0);
 
 	return bytes;
 }
@@ -1921,10 +2028,10 @@ int net_tcp_recv(NETSOCKET sock, void *data, int maxsize)
 {
 	int bytes = -1;
 
-	if(sock.ipv4sock >= 0)
-		bytes = recv((int)sock.ipv4sock, (char *)data, maxsize, 0);
-	if(sock.ipv6sock >= 0)
-		bytes = recv((int)sock.ipv6sock, (char *)data, maxsize, 0);
+	if(sock->ipv4sock >= 0)
+		bytes = recv((int)sock->ipv4sock, (char *)data, maxsize, 0);
+	if(sock->ipv6sock >= 0)
+		bytes = recv((int)sock->ipv6sock, (char *)data, maxsize, 0);
 
 	return bytes;
 }
@@ -1979,7 +2086,7 @@ void net_unix_set_addr(UNIXSOCKETADDR *addr, const char *path)
 {
 	mem_zero(addr, sizeof(*addr));
 	addr->sun_family = AF_UNIX;
-	str_copy(addr->sun_path, path, sizeof(addr->sun_path));
+	str_copy(addr->sun_path, path);
 }
 
 void net_unix_close(UNIXSOCKET sock)
@@ -1988,7 +2095,7 @@ void net_unix_close(UNIXSOCKET sock)
 }
 #endif
 
-#if defined (CONF_FAMILY_WINDOWS)
+#if defined(CONF_FAMILY_WINDOWS)
 static inline time_t filetime_to_unixtime(LPFILETIME filetime)
 {
 	time_t t;
@@ -2000,7 +2107,7 @@ static inline time_t filetime_to_unixtime(LPFILETIME filetime)
 	li.QuadPart -= 11644473600LL; // Windows epoch is in the past
 
 	t = li.QuadPart;
-	return t == li.QuadPart ? t : (time_t)-1;
+	return t == (time_t)li.QuadPart ? t : (time_t)-1;
 }
 #endif
 
@@ -2010,29 +2117,26 @@ void fs_listdir(const char *dir, FS_LISTDIR_CALLBACK cb, int type, void *user)
 	WIN32_FIND_DATAW finddata;
 	HANDLE handle;
 	char buffer[IO_MAX_PATH_LENGTH];
-	char buffer2[IO_MAX_PATH_LENGTH];
 	WCHAR wBuffer[IO_MAX_PATH_LENGTH];
-	int length;
 
 	str_format(buffer, sizeof(buffer), "%s/*", dir);
-	MultiByteToWideChar(CP_UTF8, 0, buffer, IO_MAX_PATH_LENGTH, wBuffer, IO_MAX_PATH_LENGTH);
+	dbg_assert(MultiByteToWideChar(CP_UTF8, 0, buffer, -1, wBuffer, std::size(wBuffer)) > 0, "MultiByteToWideChar failure");
 
 	handle = FindFirstFileW(wBuffer, &finddata);
 	if(handle == INVALID_HANDLE_VALUE)
 		return;
 
-	str_format(buffer, sizeof(buffer), "%s/", dir);
-	length = str_length(buffer);
-
 	/* add all the entries */
 	do
 	{
-		WideCharToMultiByte(CP_UTF8, 0, finddata.cFileName, -1, buffer2, IO_MAX_PATH_LENGTH, NULL, NULL);
-		str_copy(buffer+length, buffer2, (int)sizeof(buffer)-length);
-		if(cb(buffer2, fs_is_dir(buffer), type, user))
+		if(WideCharToMultiByte(CP_UTF8, 0, finddata.cFileName, -1, buffer, sizeof(buffer), NULL, NULL) == 0)
+		{
+			dbg_assert(GetLastError() == ERROR_INSUFFICIENT_BUFFER, "WideCharToMultiByte failure");
+			continue;
+		}
+		if(cb(buffer, (finddata.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) != 0, type, user))
 			break;
-	}
-	while(FindNextFileW(handle, &finddata));
+	} while(FindNextFileW(handle, &finddata));
 
 	FindClose(handle);
 #else
@@ -2049,7 +2153,7 @@ void fs_listdir(const char *dir, FS_LISTDIR_CALLBACK cb, int type, void *user)
 
 	while((entry = readdir(d)) != NULL)
 	{
-		str_copy(buffer+length, entry->d_name, (int)sizeof(buffer)-length);
+		str_copy(buffer + length, entry->d_name, (int)sizeof(buffer) - length);
 		if(cb(entry->d_name, fs_is_dir(buffer), type, user))
 			break;
 	}
@@ -2065,35 +2169,32 @@ void fs_listdir_fileinfo(const char *dir, FS_LISTDIR_CALLBACK_FILEINFO cb, int t
 	WIN32_FIND_DATAW finddata;
 	HANDLE handle;
 	char buffer[IO_MAX_PATH_LENGTH];
-	char buffer2[IO_MAX_PATH_LENGTH];
 	WCHAR wBuffer[IO_MAX_PATH_LENGTH];
-	int length;
 
 	str_format(buffer, sizeof(buffer), "%s/*", dir);
-	MultiByteToWideChar(CP_UTF8, 0, buffer, IO_MAX_PATH_LENGTH, wBuffer, IO_MAX_PATH_LENGTH);
+	dbg_assert(MultiByteToWideChar(CP_UTF8, 0, buffer, -1, wBuffer, std::size(wBuffer)) > 0, "MultiByteToWideChar failure");
 
 	handle = FindFirstFileW(wBuffer, &finddata);
 	if(handle == INVALID_HANDLE_VALUE)
 		return;
 
-	str_format(buffer, sizeof(buffer), "%s/", dir);
-	length = str_length(buffer);
-
 	/* add all the entries */
 	do
 	{
-		WideCharToMultiByte(CP_UTF8, 0, finddata.cFileName, -1, buffer2, IO_MAX_PATH_LENGTH, NULL, NULL);
-		str_copy(buffer+length, buffer2, (int)sizeof(buffer)-length);
+		if(WideCharToMultiByte(CP_UTF8, 0, finddata.cFileName, -1, buffer, sizeof(buffer), NULL, NULL) == 0)
+		{
+			dbg_assert(GetLastError() == ERROR_INSUFFICIENT_BUFFER, "WideCharToMultiByte failure");
+			continue;
+		}
 
 		CFsFileInfo info;
-		info.m_pName = buffer2;
+		info.m_pName = buffer;
 		info.m_TimeCreated = filetime_to_unixtime(&finddata.ftCreationTime);
 		info.m_TimeModified = filetime_to_unixtime(&finddata.ftLastWriteTime);
 
-		if(cb(&info, fs_is_dir(buffer), type, user))
+		if(cb(&info, (finddata.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) != 0, type, user))
 			break;
-	}
-	while(FindNextFileW(handle, &finddata));
+	} while(FindNextFileW(handle, &finddata));
 
 	FindClose(handle);
 #else
@@ -2113,7 +2214,7 @@ void fs_listdir_fileinfo(const char *dir, FS_LISTDIR_CALLBACK_FILEINFO cb, int t
 	{
 		CFsFileInfo info;
 
-		str_copy(buffer+length, entry->d_name, (int)sizeof(buffer)-length);
+		str_copy(buffer + length, entry->d_name, (int)sizeof(buffer) - length);
 		fs_file_time(buffer, &created, &modified);
 
 		info.m_pName = entry->d_name;
@@ -2132,29 +2233,44 @@ void fs_listdir_fileinfo(const char *dir, FS_LISTDIR_CALLBACK_FILEINFO cb, int t
 int fs_storage_path(const char *appname, char *path, int max)
 {
 #if defined(CONF_FAMILY_WINDOWS)
-	char *home = getenv("APPDATA");
+	WCHAR *home = _wgetenv(L"APPDATA");
 	if(!home)
 		return -1;
-	_snprintf(path, max, "%s/%s", home, appname);
+	char buffer[IO_MAX_PATH_LENGTH];
+	if(WideCharToMultiByte(CP_UTF8, 0, home, -1, buffer, sizeof(buffer), NULL, NULL) == 0)
+	{
+		dbg_assert(GetLastError() == ERROR_INSUFFICIENT_BUFFER, "WideCharToMultiByte failure");
+		return -1;
+	}
+	str_format(path, max, "%s/%s", buffer, appname);
 	return 0;
+#elif defined(CONF_PLATFORM_ANDROID)
+	// just use the data directory
+	return -1;
 #else
 	char *home = getenv("HOME");
-#if !defined(CONF_PLATFORM_MACOS)
-	int i;
-#endif
 	if(!home)
 		return -1;
 
 #if defined(CONF_PLATFORM_HAIKU)
 	str_format(path, max, "%s/config/settings/%s", home, appname);
-	return 0;
-#endif
-
-#if defined(CONF_PLATFORM_MACOS)
-	snprintf(path, max, "%s/Library/Application Support/%s", home, appname);
+#elif defined(CONF_PLATFORM_MACOS)
+	str_format(path, max, "%s/Library/Application Support/%s", home, appname);
 #else
-	snprintf(path, max, "%s/.%s", home, appname);
-	for(i = str_length(home) + 2; path[i]; i++)
+	if(str_comp(appname, "Teeworlds") == 0)
+	{
+		// fallback for old directory for Teeworlds compatibility
+		str_format(path, max, "%s/.%s", home, appname);
+	}
+	else
+	{
+		char *data_home = getenv("XDG_DATA_HOME");
+		if(data_home)
+			str_format(path, max, "%s/%s", data_home, appname);
+		else
+			str_format(path, max, "%s/.local/share/%s", home, appname);
+	}
+	for(int i = str_length(path) - str_length(appname); path[i]; i++)
 		path[i] = tolower((unsigned char)path[i]);
 #endif
 
@@ -2166,7 +2282,7 @@ int fs_makedir_rec_for(const char *path)
 {
 	char buffer[1024 * 2];
 	char *p;
-	str_copy(buffer, path, sizeof(buffer));
+	str_copy(buffer, path);
 	for(p = buffer + 1; *p != '\0'; p++)
 	{
 		if(*p == '/' && *(p + 1) != '\0')
@@ -2183,9 +2299,11 @@ int fs_makedir_rec_for(const char *path)
 int fs_makedir(const char *path)
 {
 #if defined(CONF_FAMILY_WINDOWS)
-	if(_mkdir(path) == 0)
+	WCHAR wBuffer[IO_MAX_PATH_LENGTH];
+	dbg_assert(MultiByteToWideChar(CP_UTF8, 0, path, -1, wBuffer, std::size(wBuffer)) > 0, "MultiByteToWideChar failure");
+	if(CreateDirectoryW(wBuffer, NULL) != 0)
 		return 0;
-	if(errno == EEXIST)
+	if(GetLastError() == ERROR_ALREADY_EXISTS)
 		return 0;
 	return -1;
 #else
@@ -2205,7 +2323,9 @@ int fs_makedir(const char *path)
 int fs_removedir(const char *path)
 {
 #if defined(CONF_FAMILY_WINDOWS)
-	if(_rmdir(path) == 0)
+	WCHAR wPath[IO_MAX_PATH_LENGTH];
+	dbg_assert(MultiByteToWideChar(CP_UTF8, 0, path, -1, wPath, std::size(wPath)) > 0, "MultiByteToWideChar failure");
+	if(RemoveDirectoryW(wPath) != 0)
 		return 0;
 	return -1;
 #else
@@ -2218,26 +2338,15 @@ int fs_removedir(const char *path)
 int fs_is_dir(const char *path)
 {
 #if defined(CONF_FAMILY_WINDOWS)
-	/* TODO: do this smarter */
-	WIN32_FIND_DATA finddata;
-	HANDLE handle;
-	char buffer[1024 * 2];
-	str_format(buffer, sizeof(buffer), "%s/*", path);
-
-	if((handle = FindFirstFileA(buffer, &finddata)) == INVALID_HANDLE_VALUE)
-		return 0;
-
-	FindClose(handle);
-	return 1;
+	WCHAR wPath[IO_MAX_PATH_LENGTH];
+	dbg_assert(MultiByteToWideChar(CP_UTF8, 0, path, -1, wPath, std::size(wPath)) > 0, "MultiByteToWideChar failure");
+	DWORD attributes = GetFileAttributesW(wPath);
+	return attributes != INVALID_FILE_ATTRIBUTES && (attributes & FILE_ATTRIBUTE_DIRECTORY) ? 1 : 0;
 #else
 	struct stat sb;
 	if(stat(path, &sb) == -1)
 		return 0;
-
-	if(S_ISDIR(sb.st_mode))
-		return 1;
-	else
-		return 0;
+	return S_ISDIR(sb.st_mode) ? 1 : 0;
 #endif
 }
 
@@ -2256,10 +2365,16 @@ int fs_chdir(const char *path)
 {
 	if(fs_is_dir(path))
 	{
+#if defined(CONF_FAMILY_WINDOWS)
+		WCHAR wBuffer[IO_MAX_PATH_LENGTH];
+		dbg_assert(MultiByteToWideChar(CP_UTF8, 0, path, -1, wBuffer, std::size(wBuffer)) > 0, "MultiByteToWideChar failure");
+		return SetCurrentDirectoryW(wBuffer) != 0 ? 0 : 1;
+#else
 		if(chdir(path))
 			return 1;
 		else
 			return 0;
+#endif
 	}
 	else
 		return 1;
@@ -2267,10 +2382,17 @@ int fs_chdir(const char *path)
 
 char *fs_getcwd(char *buffer, int buffer_size)
 {
-	if(buffer == 0)
-		return 0;
 #if defined(CONF_FAMILY_WINDOWS)
-	return _getcwd(buffer, buffer_size);
+	WCHAR wBuffer[IO_MAX_PATH_LENGTH];
+	DWORD result = GetCurrentDirectoryW(std::size(wBuffer), wBuffer);
+	if(result == 0 || result > std::size(wBuffer))
+		return nullptr;
+	if(WideCharToMultiByte(CP_UTF8, 0, wBuffer, -1, buffer, buffer_size, NULL, NULL) == 0)
+	{
+		dbg_assert(GetLastError() == ERROR_INSUFFICIENT_BUFFER, "WideCharToMultiByte failure");
+		return nullptr;
+	}
+	return buffer;
 #else
 	return getcwd(buffer, buffer_size);
 #endif
@@ -2296,7 +2418,9 @@ int fs_parent_dir(char *path)
 int fs_remove(const char *filename)
 {
 #if defined(CONF_FAMILY_WINDOWS)
-	return _unlink(filename) != 0;
+	WCHAR wFilename[IO_MAX_PATH_LENGTH];
+	dbg_assert(MultiByteToWideChar(CP_UTF8, 0, filename, -1, wFilename, std::size(wFilename)) > 0, "MultiByteToWideChar failure");
+	return DeleteFileW(wFilename) == 0;
 #else
 	return unlink(filename) != 0;
 #endif
@@ -2305,7 +2429,11 @@ int fs_remove(const char *filename)
 int fs_rename(const char *oldname, const char *newname)
 {
 #if defined(CONF_FAMILY_WINDOWS)
-	if(MoveFileEx(oldname, newname, MOVEFILE_REPLACE_EXISTING | MOVEFILE_COPY_ALLOWED) == 0)
+	WCHAR wOldname[IO_MAX_PATH_LENGTH];
+	WCHAR wNewname[IO_MAX_PATH_LENGTH];
+	dbg_assert(MultiByteToWideChar(CP_UTF8, 0, oldname, -1, wOldname, std::size(wOldname)) > 0, "MultiByteToWideChar failure");
+	dbg_assert(MultiByteToWideChar(CP_UTF8, 0, newname, -1, wNewname, std::size(wNewname)) > 0, "MultiByteToWideChar failure");
+	if(MoveFileExW(wOldname, wNewname, MOVEFILE_REPLACE_EXISTING | MOVEFILE_COPY_ALLOWED) == 0)
 		return 1;
 #else
 	if(rename(oldname, newname) != 0)
@@ -2321,7 +2449,7 @@ int fs_file_time(const char *name, time_t *created, time_t *modified)
 	HANDLE handle;
 	WCHAR wBuffer[IO_MAX_PATH_LENGTH];
 
-	MultiByteToWideChar(CP_UTF8, 0, name, -1, wBuffer, std::size(wBuffer));
+	dbg_assert(MultiByteToWideChar(CP_UTF8, 0, name, -1, wBuffer, std::size(wBuffer)) > 0, "MultiByteToWideChar failure");
 	handle = FindFirstFileW(wBuffer, &finddata);
 	if(handle == INVALID_HANDLE_VALUE)
 		return 1;
@@ -2379,22 +2507,22 @@ int net_socket_read_wait(NETSOCKET sock, int time)
 	tv.tv_usec = time % 1000000;
 	sockid = 0;
 
-	FD_ZERO(&readfds);
-	if(sock.ipv4sock >= 0)
+	FD_ZERO(&readfds); // NOLINT(clang-analyzer-security.insecureAPI.bzero)
+	if(sock->ipv4sock >= 0)
 	{
-		FD_SET(sock.ipv4sock, &readfds);
-		sockid = sock.ipv4sock;
+		FD_SET(sock->ipv4sock, &readfds);
+		sockid = sock->ipv4sock;
 	}
-	if(sock.ipv6sock >= 0)
+	if(sock->ipv6sock >= 0)
 	{
-		FD_SET(sock.ipv6sock, &readfds);
-		if(sock.ipv6sock > sockid)
-			sockid = sock.ipv6sock;
+		FD_SET(sock->ipv6sock, &readfds);
+		if(sock->ipv6sock > sockid)
+			sockid = sock->ipv6sock;
 	}
 #if defined(CONF_WEBSOCKETS)
-	if(sock.web_ipv4sock >= 0)
+	if(sock->web_ipv4sock >= 0)
 	{
-		int maxfd = websocket_fd_set(sock.web_ipv4sock, &readfds);
+		int maxfd = websocket_fd_set(sock->web_ipv4sock, &readfds);
 		if(maxfd > sockid)
 		{
 			sockid = maxfd;
@@ -2409,13 +2537,13 @@ int net_socket_read_wait(NETSOCKET sock, int time)
 	else
 		select(sockid + 1, &readfds, NULL, NULL, &tv);
 
-	if(sock.ipv4sock >= 0 && FD_ISSET(sock.ipv4sock, &readfds))
+	if(sock->ipv4sock >= 0 && FD_ISSET(sock->ipv4sock, &readfds))
 		return 1;
 #if defined(CONF_WEBSOCKETS)
-	if(sock.web_ipv4sock >= 0 && FD_ISSET(sockid, &readfds))
+	if(sock->web_ipv4sock >= 0 && FD_ISSET(sockid, &readfds))
 		return 1;
 #endif
-	if(sock.ipv6sock >= 0 && FD_ISSET(sock.ipv6sock, &readfds))
+	if(sock->ipv6sock >= 0 && FD_ISSET(sock->ipv6sock, &readfds))
 		return 1;
 
 	return 0;
@@ -2485,23 +2613,28 @@ void str_append(char *dst, const char *src, int dst_size)
 	}
 
 	dst[dst_size - 1] = 0; /* assure null termination */
+	str_utf8_fix_truncation(dst);
 }
 
 void str_copy(char *dst, const char *src, int dst_size)
 {
-	strncpy(dst, src, dst_size - 1);
-	dst[dst_size - 1] = 0; /* assure null termination */
+	dst[0] = '\0';
+	strncat(dst, src, dst_size - 1);
+	str_utf8_fix_truncation(dst);
 }
 
 void str_utf8_truncate(char *dst, int dst_size, const char *src, int truncation_len)
 {
 	int size = -1;
-	int cursor = 0;
+	const char *cursor = src;
 	int pos = 0;
-	while(pos <= truncation_len && cursor < dst_size && size != cursor)
+	while(pos <= truncation_len && cursor - src < dst_size && size != cursor - src)
 	{
-		size = cursor;
-		cursor = str_utf8_forward(src, cursor);
+		size = cursor - src;
+		if(str_utf8_decode(&cursor) == 0)
+		{
+			break;
+		}
 		pos++;
 	}
 	str_copy(dst, src, size + 1);
@@ -2524,44 +2657,49 @@ int str_length(const char *str)
 
 int str_format(char *buffer, int buffer_size, const char *format, ...)
 {
-	int ret;
 #if defined(CONF_FAMILY_WINDOWS)
 	va_list ap;
 	va_start(ap, format);
-	ret = _vsnprintf(buffer, buffer_size, format, ap);
+	_vsprintf_p(buffer, buffer_size, format, ap);
 	va_end(ap);
 
 	buffer[buffer_size - 1] = 0; /* assure null termination */
-
-	/* _vsnprintf is documented to return negative values on truncation, but
-	 * in practice we didn't see that. let's handle it anyway just in case. */
-	if(ret < 0)
-		ret = buffer_size - 1;
 #else
 	va_list ap;
 	va_start(ap, format);
-	ret = vsnprintf(buffer, buffer_size, format, ap);
+	vsnprintf(buffer, buffer_size, format, ap);
 	va_end(ap);
 
 	/* null termination is assured by definition of vsnprintf */
 #endif
-
-	/* a return value of buffer_size or more indicates truncated output */
-	if(ret >= buffer_size)
-		ret = buffer_size - 1;
-
-	return ret;
+	return str_utf8_fix_truncation(buffer);
 }
 
-char *str_trim_words(char *str, int words)
+const char *str_trim_words(const char *str, int words)
 {
+	while(*str && str_isspace(*str))
+		str++;
 	while(words && *str)
 	{
-		if(isspace(*str) && !isspace(*(str + 1)))
+		if(str_isspace(*str) && !str_isspace(*(str + 1)))
 			words--;
 		str++;
 	}
 	return str;
+}
+
+bool str_has_cc(const char *str)
+{
+	unsigned char *s = (unsigned char *)str;
+	while(*s)
+	{
+		if(*s < 32)
+		{
+			return true;
+		}
+		s++;
+	}
+	return false;
 }
 
 /* makes sure that the string only contains the characters between 32 and 255 */
@@ -2610,7 +2748,7 @@ void str_clean_whitespaces(char *str_in)
 		read++;
 
 	/* end of read string is detected in the loop */
-	while(1)
+	while(true)
 	{
 		/* skip whitespace */
 		int found_whitespace = 0;
@@ -2633,28 +2771,28 @@ void str_clean_whitespaces(char *str_in)
 
 char *str_skip_to_whitespace(char *str)
 {
-	while(*str && (*str != ' ' && *str != '\t' && *str != '\n'))
+	while(*str && !str_isspace(*str))
 		str++;
 	return str;
 }
 
 const char *str_skip_to_whitespace_const(const char *str)
 {
-	while(*str && (*str != ' ' && *str != '\t' && *str != '\n'))
+	while(*str && !str_isspace(*str))
 		str++;
 	return str;
 }
 
 char *str_skip_whitespaces(char *str)
 {
-	while(*str && (*str == ' ' || *str == '\t' || *str == '\n' || *str == '\r'))
+	while(*str && str_isspace(*str))
 		str++;
 	return str;
 }
 
 const char *str_skip_whitespaces_const(const char *str)
 {
-	while(*str && (*str == ' ' || *str == '\t' || *str == '\n' || *str == '\r'))
+	while(*str && str_isspace(*str))
 		str++;
 	return str;
 }
@@ -2709,14 +2847,28 @@ int str_comp_filenames(const char *a, const char *b)
 				return 1;
 			else if(*b >= '0' && *b <= '9')
 				return -1;
-			else if(result)
+			else if(result || *a == '\0' || *b == '\0')
 				return result;
 		}
 
-		if(*a != *b)
-			break;
+		result = tolower(*a) - tolower(*b);
+		if(result)
+			return result;
 	}
 	return *a - *b;
+}
+
+const char *str_startswith_nocase(const char *str, const char *prefix)
+{
+	int prefixl = str_length(prefix);
+	if(str_comp_nocase_num(str, prefix, prefixl) == 0)
+	{
+		return str + prefixl;
+	}
+	else
+	{
+		return 0;
+	}
 }
 
 const char *str_startswith(const char *str, const char *prefix)
@@ -2725,6 +2877,26 @@ const char *str_startswith(const char *str, const char *prefix)
 	if(str_comp_num(str, prefix, prefixl) == 0)
 	{
 		return str + prefixl;
+	}
+	else
+	{
+		return 0;
+	}
+}
+
+const char *str_endswith_nocase(const char *str, const char *suffix)
+{
+	int strl = str_length(str);
+	int suffixl = str_length(suffix);
+	const char *strsuffix;
+	if(strl < suffixl)
+	{
+		return 0;
+	}
+	strsuffix = str + strl - suffixl;
+	if(str_comp_nocase(strsuffix, suffix) == 0)
+	{
+		return strsuffix;
 	}
 	else
 	{
@@ -2881,18 +3053,31 @@ const char *str_rchr(const char *haystack, char needle)
 	return strrchr(haystack, needle);
 }
 
+int str_countchr(const char *haystack, char needle)
+{
+	int count = 0;
+	while(*haystack)
+	{
+		if(*haystack == needle)
+			count++;
+		haystack++;
+	}
+	return count;
+}
+
 void str_hex(char *dst, int dst_size, const void *data, int data_size)
 {
 	static const char hex[] = "0123456789ABCDEF";
-	int b;
-
-	for(b = 0; b < data_size && b < dst_size / 4 - 4; b++)
+	int data_index;
+	int dst_index;
+	for(data_index = 0, dst_index = 0; data_index < data_size && dst_index < dst_size - 3; data_index++)
 	{
-		dst[b * 3] = hex[((const unsigned char *)data)[b] >> 4];
-		dst[b * 3 + 1] = hex[((const unsigned char *)data)[b] & 0xf];
-		dst[b * 3 + 2] = ' ';
-		dst[b * 3 + 3] = 0;
+		dst[data_index * 3] = hex[((const unsigned char *)data)[data_index] >> 4];
+		dst[data_index * 3 + 1] = hex[((const unsigned char *)data)[data_index] & 0xf];
+		dst[data_index * 3 + 2] = ' ';
+		dst_index += 3;
 	}
+	dst[dst_index] = '\0';
 }
 
 static int hexval(char x)
@@ -2925,11 +3110,10 @@ static int hexval(char x)
 	}
 }
 
-static int byteval(const char *byte, unsigned char *dst)
+static int byteval(const char *hex, unsigned char *dst)
 {
-	int v1 = -1, v2 = -1;
-	v1 = hexval(byte[0]);
-	v2 = hexval(byte[1]);
+	int v1 = hexval(hex[0]);
+	int v2 = hexval(hex[1]);
 
 	if(v1 < 0 || v2 < 0)
 		return 1;
@@ -2953,6 +3137,152 @@ int str_hex_decode(void *dst, int dst_size, const char *src)
 			return 1;
 	}
 	return 0;
+}
+
+void str_base64(char *dst, int dst_size, const void *data_raw, int data_size)
+{
+	static const char DIGITS[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
+
+	const unsigned char *data = (const unsigned char *)data_raw;
+	unsigned value = 0;
+	int num_bits = 0;
+	int i = 0;
+	int o = 0;
+
+	dst_size -= 1;
+	dst[dst_size] = 0;
+	while(true)
+	{
+		if(num_bits < 6 && i < data_size)
+		{
+			value = (value << 8) | data[i];
+			num_bits += 8;
+			i += 1;
+		}
+		if(o == dst_size)
+		{
+			return;
+		}
+		if(num_bits > 0)
+		{
+			unsigned padded;
+			if(num_bits >= 6)
+			{
+				padded = (value >> (num_bits - 6)) & 0x3f;
+			}
+			else
+			{
+				padded = (value << (6 - num_bits)) & 0x3f;
+			}
+			dst[o] = DIGITS[padded];
+			num_bits -= 6;
+			o += 1;
+		}
+		else if(o % 4 != 0)
+		{
+			dst[o] = '=';
+			o += 1;
+		}
+		else
+		{
+			dst[o] = 0;
+			return;
+		}
+	}
+}
+
+static int base64_digit_value(char digit)
+{
+	if('A' <= digit && digit <= 'Z')
+	{
+		return digit - 'A';
+	}
+	else if('a' <= digit && digit <= 'z')
+	{
+		return digit - 'a' + 26;
+	}
+	else if('0' <= digit && digit <= '9')
+	{
+		return digit - '0' + 52;
+	}
+	else if(digit == '+')
+	{
+		return 62;
+	}
+	else if(digit == '/')
+	{
+		return 63;
+	}
+	return -1;
+}
+
+int str_base64_decode(void *dst_raw, int dst_size, const char *data)
+{
+	unsigned char *dst = (unsigned char *)dst_raw;
+	int data_len = str_length(data);
+
+	int i;
+	int o = 0;
+
+	if(data_len % 4 != 0)
+	{
+		return -3;
+	}
+	if(data_len / 4 * 3 > dst_size)
+	{
+		// Output buffer too small.
+		return -2;
+	}
+	for(i = 0; i < data_len; i += 4)
+	{
+		int num_output_bytes = 3;
+		char copy[4];
+		int d[4];
+		int value;
+		int b;
+		mem_copy(copy, data + i, sizeof(copy));
+		if(i == data_len - 4)
+		{
+			if(copy[3] == '=')
+			{
+				copy[3] = 'A';
+				num_output_bytes = 2;
+				if(copy[2] == '=')
+				{
+					copy[2] = 'A';
+					num_output_bytes = 1;
+				}
+			}
+		}
+		d[0] = base64_digit_value(copy[0]);
+		d[1] = base64_digit_value(copy[1]);
+		d[2] = base64_digit_value(copy[2]);
+		d[3] = base64_digit_value(copy[3]);
+		if(d[0] == -1 || d[1] == -1 || d[2] == -1 || d[3] == -1)
+		{
+			// Invalid digit.
+			return -1;
+		}
+		value = (d[0] << 18) | (d[1] << 12) | (d[2] << 6) | d[3];
+		for(b = 0; b < 3; b++)
+		{
+			unsigned char byte_value = (value >> (16 - 8 * b)) & 0xff;
+			if(b < num_output_bytes)
+			{
+				dst[o] = byte_value;
+				o += 1;
+			}
+			else
+			{
+				if(byte_value != 0)
+				{
+					// Padding not zeroed.
+					return -2;
+				}
+			}
+		}
+	}
+	return o;
 }
 
 #ifdef __GNUC__
@@ -3027,7 +3357,7 @@ int str_time(int64_t centisecs, int format, char *buffer, int buffer_size)
 
 int str_time_float(float secs, int format, char *buffer, int buffer_size)
 {
-	return str_time(llroundf(secs * 100.0), format, buffer, buffer_size);
+	return str_time(llroundf(secs * 100), format, buffer, buffer_size);
 }
 
 void str_escape(char **dst, const char *src, const char *end)
@@ -3070,7 +3400,10 @@ void net_stats(NETSTATS *stats_inout)
 	*stats_inout = network_stats;
 }
 
-int str_isspace(char c) { return c == ' ' || c == '\n' || c == '\t'; }
+int str_isspace(char c)
+{
+	return c == ' ' || c == '\n' || c == '\r' || c == '\t';
+}
 
 char str_uppercase(char c)
 {
@@ -3090,10 +3423,10 @@ int str_isallnum(const char *str)
 	return 1;
 }
 
-int str_toint(const char *str) { return atoi(str); }
+int str_toint(const char *str) { return str_toint_base(str, 10); }
 int str_toint_base(const char *str, int base) { return strtol(str, NULL, base); }
 unsigned long str_toulong_base(const char *str, int base) { return strtoul(str, NULL, base); }
-float str_tofloat(const char *str) { return atof(str); }
+float str_tofloat(const char *str) { return strtod(str, NULL); }
 
 int str_utf8_comp_nocase(const char *a, const char *b)
 {
@@ -3230,41 +3563,31 @@ int str_utf8_rewind(const char *str, int cursor)
 	return cursor;
 }
 
+int str_utf8_fix_truncation(char *str)
+{
+	int len = str_length(str);
+	if(len > 0)
+	{
+		int last_char_index = str_utf8_rewind(str, len);
+		const char *last_char = str + last_char_index;
+		// Fix truncated UTF-8.
+		if(str_utf8_decode(&last_char) == -1)
+		{
+			str[last_char_index] = 0;
+			return last_char_index;
+		}
+	}
+	return len;
+}
+
 int str_utf8_forward(const char *str, int cursor)
 {
-	const char *buf = str + cursor;
-	if(!buf[0])
+	const char *ptr = str + cursor;
+	if(str_utf8_decode(&ptr) == 0)
+	{
 		return cursor;
-
-	if((*buf & 0x80) == 0x0) /* 0xxxxxxx */
-		return cursor + 1;
-	else if((*buf & 0xE0) == 0xC0) /* 110xxxxx */
-	{
-		if(!buf[1])
-			return cursor + 1;
-		return cursor + 2;
 	}
-	else if((*buf & 0xF0) == 0xE0) /* 1110xxxx */
-	{
-		if(!buf[1])
-			return cursor + 1;
-		if(!buf[2])
-			return cursor + 2;
-		return cursor + 3;
-	}
-	else if((*buf & 0xF8) == 0xF0) /* 11110xxx */
-	{
-		if(!buf[1])
-			return cursor + 1;
-		if(!buf[2])
-			return cursor + 2;
-		if(!buf[3])
-			return cursor + 3;
-		return cursor + 4;
-	}
-
-	/* invalid */
-	return cursor + 1;
+	return ptr - str;
 }
 
 int str_utf8_encode(char *ptr, int chr)
@@ -3300,37 +3623,11 @@ int str_utf8_encode(char *ptr, int chr)
 	return 0;
 }
 
-int str_utf16le_encode(char *ptr, int chr)
-{
-	if(chr < 0x10000)
-	{
-		ptr[0] = chr;
-		ptr[1] = chr >> 0x8;
-		return 2;
-	}
-	else if(chr <= 0x10FFFF)
-	{
-		int U = chr - 0x10000;
-		int W1 = 0xD800, W2 = 0xDC00;
-
-		W1 |= ((U >> 10) & 0x3FF);
-		W2 |= (U & 0x3FF);
-
-		ptr[0] = W1;
-		ptr[1] = W1 >> 0x8;
-		ptr[2] = W2;
-		ptr[3] = W2 >> 0x8;
-		return 4;
-	}
-
-	return 0;
-}
-
 static unsigned char str_byte_next(const char **ptr)
 {
-	unsigned char byte = **ptr;
+	unsigned char byte_value = **ptr;
 	(*ptr)++;
-	return byte;
+	return byte_value;
 }
 
 static void str_byte_rewind(const char **ptr)
@@ -3346,37 +3643,37 @@ int str_utf8_decode(const char **ptr)
 	int utf8_code_point = 0;
 	int utf8_bytes_seen = 0;
 	int utf8_bytes_needed = 0;
-	while(1)
+	while(true)
 	{
-		unsigned char byte = str_byte_next(ptr);
+		unsigned char byte_value = str_byte_next(ptr);
 		if(utf8_bytes_needed == 0)
 		{
-			if(byte <= 0x7F)
+			if(byte_value <= 0x7F)
 			{
-				return byte;
+				return byte_value;
 			}
-			else if(0xC2 <= byte && byte <= 0xDF)
+			else if(0xC2 <= byte_value && byte_value <= 0xDF)
 			{
 				utf8_bytes_needed = 1;
-				utf8_code_point = byte - 0xC0;
+				utf8_code_point = byte_value - 0xC0;
 			}
-			else if(0xE0 <= byte && byte <= 0xEF)
+			else if(0xE0 <= byte_value && byte_value <= 0xEF)
 			{
-				if(byte == 0xE0)
+				if(byte_value == 0xE0)
 					utf8_lower_boundary = 0xA0;
-				if(byte == 0xED)
+				if(byte_value == 0xED)
 					utf8_upper_boundary = 0x9F;
 				utf8_bytes_needed = 2;
-				utf8_code_point = byte - 0xE0;
+				utf8_code_point = byte_value - 0xE0;
 			}
-			else if(0xF0 <= byte && byte <= 0xF4)
+			else if(0xF0 <= byte_value && byte_value <= 0xF4)
 			{
-				if(byte == 0xF0)
+				if(byte_value == 0xF0)
 					utf8_lower_boundary = 0x90;
-				if(byte == 0xF4)
+				if(byte_value == 0xF4)
 					utf8_upper_boundary = 0x8F;
 				utf8_bytes_needed = 3;
-				utf8_code_point = byte - 0xF0;
+				utf8_code_point = byte_value - 0xF0;
 			}
 			else
 			{
@@ -3385,7 +3682,7 @@ int str_utf8_decode(const char **ptr)
 			utf8_code_point = utf8_code_point << (6 * utf8_bytes_needed);
 			continue;
 		}
-		if(!(utf8_lower_boundary <= byte && byte <= utf8_upper_boundary))
+		if(!(utf8_lower_boundary <= byte_value && byte_value <= utf8_upper_boundary))
 		{
 			// Resetting variables not necessary, will be done when
 			// the function is called again.
@@ -3395,7 +3692,7 @@ int str_utf8_decode(const char **ptr)
 		utf8_lower_boundary = 0x80;
 		utf8_upper_boundary = 0xBF;
 		utf8_bytes_seen += 1;
-		utf8_code_point = utf8_code_point + ((byte - 0x80) << (6 * (utf8_bytes_needed - utf8_bytes_seen)));
+		utf8_code_point = utf8_code_point + ((byte_value - 0x80) << (6 * (utf8_bytes_needed - utf8_bytes_seen)));
 		if(utf8_bytes_seen != utf8_bytes_needed)
 		{
 			continue;
@@ -3418,9 +3715,24 @@ int str_utf8_check(const char *str)
 	return 1;
 }
 
-void str_utf8_copy(char *dst, const char *src, int dst_size)
+void str_utf8_stats(const char *str, int max_size, int max_count, int *size, int *count)
 {
-	str_utf8_truncate(dst, dst_size, src, dst_size);
+	const char *cursor = str;
+	*size = 0;
+	*count = 0;
+	while(*size < max_size && *count < max_count)
+	{
+		if(str_utf8_decode(&cursor) == 0)
+		{
+			break;
+		}
+		if(cursor - str >= max_size)
+		{
+			break;
+		}
+		*size = cursor - str;
+		++(*count);
+	}
 }
 
 unsigned str_quickhash(const char *str)
@@ -3478,15 +3790,30 @@ const char *str_next_token(const char *str, const char *delim, char *buffer, int
 
 int bytes_be_to_int(const unsigned char *bytes)
 {
-	return ((bytes[0] & 0xff) << 24) | ((bytes[1] & 0xff) << 16) | ((bytes[2] & 0xff) << 8) | (bytes[3] & 0xff);
+	int Result;
+	unsigned char *pResult = (unsigned char *)&Result;
+	for(unsigned i = 0; i < sizeof(int); i++)
+	{
+#if defined(CONF_ARCH_ENDIAN_BIG)
+		pResult[i] = bytes[i];
+#else
+		pResult[i] = bytes[sizeof(int) - i - 1];
+#endif
+	}
+	return Result;
 }
 
 void int_to_bytes_be(unsigned char *bytes, int value)
 {
-	bytes[0] = (value >> 24) & 0xff;
-	bytes[1] = (value >> 16) & 0xff;
-	bytes[2] = (value >> 8) & 0xff;
-	bytes[3] = value & 0xff;
+	const unsigned char *pValue = (const unsigned char *)&value;
+	for(unsigned i = 0; i < sizeof(int); i++)
+	{
+#if defined(CONF_ARCH_ENDIAN_BIG)
+		bytes[i] = pValue[i];
+#else
+		bytes[sizeof(int) - i - 1] = pValue[i];
+#endif
+	}
 }
 
 unsigned bytes_be_to_uint(const unsigned char *bytes)
@@ -3558,14 +3885,21 @@ void cmdline_free(int argc, const char **argv)
 PROCESS shell_execute(const char *file)
 {
 #if defined(CONF_FAMILY_WINDOWS)
-	SHELLEXECUTEINFOA info;
-	mem_zero(&info, sizeof(SHELLEXECUTEINFOA));
-	info.cbSize = sizeof(SHELLEXECUTEINFOA);
-	info.lpVerb = "open";
-	info.lpFile = file;
+	WCHAR wBuffer[IO_MAX_PATH_LENGTH];
+	dbg_assert(MultiByteToWideChar(CP_UTF8, 0, file, -1, wBuffer, std::size(wBuffer)) > 0, "MultiByteToWideChar failure");
+	SHELLEXECUTEINFOW info;
+	mem_zero(&info, sizeof(SHELLEXECUTEINFOW));
+	info.cbSize = sizeof(SHELLEXECUTEINFOW);
+	info.lpVerb = L"open";
+	info.lpFile = wBuffer;
 	info.nShow = SW_SHOWMINNOACTIVE;
 	info.fMask = SEE_MASK_NOCLOSEPROCESS;
-	ShellExecuteEx(&info);
+	// Save and restore the FPU control word because ShellExecute might change it
+	fenv_t floating_point_environment;
+	int fegetenv_result = fegetenv(&floating_point_environment);
+	ShellExecuteExW(&info);
+	if(fegetenv_result == 0)
+		fesetenv(&floating_point_environment);
 	return info.hProcess;
 #elif defined(CONF_FAMILY_UNIX)
 	char *argv[2];
@@ -3579,7 +3913,7 @@ PROCESS shell_execute(const char *file)
 	}
 	if(pid == 0)
 	{
-		execv(file, argv);
+		execvp(file, argv);
 		_exit(1);
 	}
 	return pid;
@@ -3599,32 +3933,63 @@ int kill_process(PROCESS process)
 
 int open_link(const char *link)
 {
-	char aBuf[512];
 #if defined(CONF_FAMILY_WINDOWS)
-	str_format(aBuf, sizeof(aBuf), "start %s", link);
-	return (uintptr_t)ShellExecuteA(NULL, "open", link, NULL, NULL, SW_SHOWDEFAULT) > 32;
+	WCHAR wBuffer[IO_MAX_PATH_LENGTH];
+	dbg_assert(MultiByteToWideChar(CP_UTF8, 0, link, -1, wBuffer, std::size(wBuffer)) > 0, "MultiByteToWideChar failure");
+	SHELLEXECUTEINFOW info;
+	mem_zero(&info, sizeof(SHELLEXECUTEINFOW));
+	info.cbSize = sizeof(SHELLEXECUTEINFOW);
+	info.lpVerb = NULL; // NULL to use the default verb, as "open" may not be available
+	info.lpFile = wBuffer;
+	info.nShow = SW_SHOWNORMAL;
+	// The SEE_MASK_NOASYNC flag ensures that the ShellExecuteEx function
+	// finishes its DDE conversation before it returns, so it's not necessary
+	// to pump messages in the calling thread.
+	// The SEE_MASK_FLAG_NO_UI flag suppresses error messages that would pop up
+	// when the link cannot be opened, e.g. when a folder does not exist.
+	// The SEE_MASK_ASYNCOK flag is not used. It would allow the call to
+	// ShellExecuteEx to return earlier, but it also prevents us from doing
+	// our own error handling, as the function would always return TRUE.
+	info.fMask = SEE_MASK_NOASYNC | SEE_MASK_FLAG_NO_UI;
+	// Save and restore the FPU control word because ShellExecute might change it
+	fenv_t floating_point_environment;
+	int fegetenv_result = fegetenv(&floating_point_environment);
+	BOOL success = ShellExecuteExW(&info);
+	if(fegetenv_result == 0)
+		fesetenv(&floating_point_environment);
+	return success;
 #elif defined(CONF_PLATFORM_LINUX)
-	str_format(aBuf, sizeof(aBuf), "xdg-open %s >/dev/null 2>&1 &", link);
-	return system(aBuf) == 0;
+	const int pid = fork();
+	if(pid == 0)
+		execlp("xdg-open", "xdg-open", link, nullptr);
+	return pid > 0;
 #elif defined(CONF_FAMILY_UNIX)
-	str_format(aBuf, sizeof(aBuf), "open %s &", link);
-	return system(aBuf) == 0;
+	const int pid = fork();
+	if(pid == 0)
+		execlp("open", "open", link, nullptr);
+	return pid > 0;
 #endif
 }
 
-int os_is_winxp_or_lower(void)
+int open_file(const char *path)
 {
-#if defined(CONF_FAMILY_WINDOWS)
-	static const DWORD WINXP_MAJOR = 5;
-	static const DWORD WINXP_MINOR = 1;
-	OSVERSIONINFO ver;
-	mem_zero(&ver, sizeof(OSVERSIONINFO));
-	ver.dwOSVersionInfoSize = sizeof(OSVERSIONINFO);
-	GetVersionEx(&ver);
-	return ver.dwMajorVersion < WINXP_MAJOR ||
-	       (ver.dwMajorVersion == WINXP_MAJOR && ver.dwMinorVersion <= WINXP_MINOR);
+#if defined(CONF_PLATFORM_MACOS)
+	return open_link(path);
 #else
-	return 0;
+	// Create a file link so the path can contain forward and
+	// backward slashes. But the file link must be absolute.
+	char buf[512];
+	char workingDir[IO_MAX_PATH_LENGTH];
+	if(fs_is_relative_path(path))
+	{
+		if(!fs_getcwd(workingDir, sizeof(workingDir)))
+			return 0;
+		str_append(workingDir, "/", sizeof(workingDir));
+	}
+	else
+		workingDir[0] = '\0';
+	str_format(buf, sizeof(buf), "file://%s%s", workingDir, path);
+	return open_link(buf);
 #endif
 }
 
@@ -3670,7 +4035,36 @@ int secure_random_init()
 #endif
 }
 
-void generate_password(char *buffer, unsigned length, unsigned short *random, unsigned random_length)
+int secure_random_uninit()
+{
+	if(!secure_random_data.initialized)
+	{
+		return 0;
+	}
+#if defined(CONF_FAMILY_WINDOWS)
+	if(CryptReleaseContext(secure_random_data.provider, 0))
+	{
+		secure_random_data.initialized = 0;
+		return 0;
+	}
+	else
+	{
+		return 1;
+	}
+#else
+	if(!io_close(secure_random_data.urandom))
+	{
+		secure_random_data.initialized = 0;
+		return 0;
+	}
+	else
+	{
+		return 1;
+	}
+#endif
+}
+
+void generate_password(char *buffer, unsigned length, const unsigned short *random, unsigned random_length)
 {
 	static const char VALUES[] = "ABCDEFGHKLMNPRSTUVWXYZabcdefghjkmnopqt23456789";
 	static const size_t NUM_VALUES = sizeof(VALUES) - 1; // Disregard the '\0'.
@@ -3751,7 +4145,7 @@ int secure_rand_below(int below)
 {
 	unsigned int mask = find_next_power_of_two_minus_one(below);
 	dbg_assert(below > 0, "below must be positive");
-	while(1)
+	while(true)
 	{
 		unsigned int n;
 		secure_random_fill(&n, sizeof(n));
@@ -3762,4 +4156,530 @@ int secure_rand_below(int below)
 		}
 	}
 }
+
+int os_version_str(char *version, int length)
+{
+#if defined(CONF_FAMILY_WINDOWS)
+	const WCHAR *module_path = L"kernel32.dll";
+	DWORD handle;
+	DWORD size = GetFileVersionInfoSizeW(module_path, &handle);
+	if(!size)
+	{
+		return 1;
+	}
+	void *data = malloc(size);
+	if(!GetFileVersionInfoW(module_path, handle, size, data))
+	{
+		free(data);
+		return 1;
+	}
+	VS_FIXEDFILEINFO *fileinfo;
+	UINT unused;
+	if(!VerQueryValueW(data, L"\\", (void **)&fileinfo, &unused))
+	{
+		free(data);
+		return 1;
+	}
+	str_format(version, length, "Windows %hu.%hu.%hu.%hu",
+		HIWORD(fileinfo->dwProductVersionMS),
+		LOWORD(fileinfo->dwProductVersionMS),
+		HIWORD(fileinfo->dwProductVersionLS),
+		LOWORD(fileinfo->dwProductVersionLS));
+	free(data);
+	return 0;
+#else
+	struct utsname u;
+	if(uname(&u))
+	{
+		return 1;
+	}
+	char extra[128];
+	extra[0] = 0;
+
+	do
+	{
+		IOHANDLE os_release = io_open("/etc/os-release", IOFLAG_READ);
+		char buf[4096];
+		int read;
+		int offset;
+		char *newline;
+		if(!os_release)
+		{
+			break;
+		}
+		read = io_read(os_release, buf, sizeof(buf) - 1);
+		io_close(os_release);
+		buf[read] = 0;
+		if(str_startswith(buf, "PRETTY_NAME="))
+		{
+			offset = 0;
+		}
+		else
+		{
+			const char *found = str_find(buf, "\nPRETTY_NAME=");
+			if(!found)
+			{
+				break;
+			}
+			offset = found - buf + 1;
+		}
+		newline = (char *)str_find(buf + offset, "\n");
+		if(newline)
+		{
+			*newline = 0;
+		}
+		str_format(extra, sizeof(extra), "; %s", buf + offset + 12);
+	} while(false);
+
+	str_format(version, length, "%s %s (%s, %s)%s", u.sysname, u.release, u.machine, u.version, extra);
+	return 0;
+#endif
+}
+
+#if defined(CONF_EXCEPTION_HANDLING)
+#if defined(CONF_FAMILY_WINDOWS)
+static HMODULE exception_handling_module = nullptr;
+#endif
+
+void init_exception_handler()
+{
+#if defined(CONF_FAMILY_WINDOWS)
+	const char *module_name = "exchndl.dll";
+	exception_handling_module = LoadLibraryA(module_name);
+	if(exception_handling_module == nullptr)
+	{
+		dbg_msg("exception_handling", "failed to load exception handling library '%s' (error %ld)", module_name, GetLastError());
+	}
+#else
+#error exception handling not implemented
+#endif
+}
+
+void set_exception_handler_log_file(const char *log_file_path)
+{
+#if defined(CONF_FAMILY_WINDOWS)
+	if(exception_handling_module != nullptr)
+	{
+		WCHAR wBuffer[IO_MAX_PATH_LENGTH];
+		dbg_assert(MultiByteToWideChar(CP_UTF8, 0, log_file_path, -1, wBuffer, std::size(wBuffer)) > 0, "MultiByteToWideChar failure");
+		// Intentional
+#ifdef __MINGW32__
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wcast-function-type"
+#endif
+		const char *function_name = "ExcHndlSetLogFileNameW";
+		auto exception_log_file_path_func = (BOOL(APIENTRY *)(const WCHAR *))(GetProcAddress(exception_handling_module, function_name));
+#ifdef __MINGW32__
+#pragma GCC diagnostic pop
+#endif
+		if(exception_log_file_path_func == nullptr)
+			dbg_msg("exception_handling", "could not find function '%s' in exception handling library (error %ld)", function_name, GetLastError());
+		else
+			exception_log_file_path_func(wBuffer);
+	}
+#else
+#error exception handling not implemented
+#endif
+}
+#endif
+}
+
+std::chrono::nanoseconds time_get_nanoseconds()
+{
+	return std::chrono::nanoseconds(time_get_impl());
+}
+
+int net_socket_read_wait(NETSOCKET sock, std::chrono::nanoseconds nanoseconds)
+{
+	using namespace std::chrono_literals;
+	return ::net_socket_read_wait(sock, (nanoseconds / std::chrono::nanoseconds(1us).count()).count());
+}
+
+#if defined(CONF_FAMILY_WINDOWS)
+// See https://learn.microsoft.com/en-us/windows/win32/learnwin32/initializing-the-com-library
+CWindowsComLifecycle::CWindowsComLifecycle(bool HasWindow)
+{
+	HRESULT result = CoInitializeEx(NULL, (HasWindow ? COINIT_APARTMENTTHREADED : COINIT_MULTITHREADED) | COINIT_DISABLE_OLE1DDE);
+	dbg_assert(result != S_FALSE, "COM library already initialized on this thread");
+	dbg_assert(result == S_OK, "COM library initialization failed");
+}
+CWindowsComLifecycle::~CWindowsComLifecycle()
+{
+	CoUninitialize();
+}
+
+static void windows_print_error(const char *system, const char *prefix, HRESULT error)
+{
+	char *message = windows_format_system_message(error);
+	dbg_msg(system, "%s: %s", prefix, message == nullptr ? "unknown error" : message);
+	free(message);
+}
+
+static std::wstring utf8_to_wstring(const char *str)
+{
+	const int orig_length = str_length(str);
+	int size_needed = MultiByteToWideChar(CP_UTF8, 0, str, orig_length, NULL, 0);
+	std::wstring wide_string(size_needed, '\0');
+	dbg_assert(MultiByteToWideChar(CP_UTF8, 0, str, orig_length, &wide_string[0], size_needed) == size_needed, "MultiByteToWideChar failure");
+	return wide_string;
+}
+
+static std::wstring filename_from_path(const std::wstring &path)
+{
+	const size_t pos = path.find_last_of(L"/\\");
+	return pos == std::wstring::npos ? path : path.substr(pos + 1);
+}
+
+bool shell_register_protocol(const char *protocol_name, const char *executable, bool *updated)
+{
+	const std::wstring protocol_name_wide = utf8_to_wstring(protocol_name);
+	const std::wstring executable_wide = utf8_to_wstring(executable);
+
+	// Open registry key for protocol associations of the current user
+	HKEY handle_subkey_classes;
+	const LRESULT result_subkey_classes = RegOpenKeyExW(HKEY_CURRENT_USER, L"SOFTWARE\\Classes", 0, KEY_ALL_ACCESS, &handle_subkey_classes);
+	if(result_subkey_classes != ERROR_SUCCESS)
+	{
+		windows_print_error("shell_register_protocol", "Error opening registry key", result_subkey_classes);
+		return false;
+	}
+
+	// Create the protocol key
+	HKEY handle_subkey_protocol;
+	const LRESULT result_subkey_protocol = RegCreateKeyExW(handle_subkey_classes, protocol_name_wide.c_str(), 0, NULL, 0, KEY_ALL_ACCESS, NULL, &handle_subkey_protocol, NULL);
+	RegCloseKey(handle_subkey_classes);
+	if(result_subkey_protocol != ERROR_SUCCESS)
+	{
+		windows_print_error("shell_register_protocol", "Error creating registry key", result_subkey_protocol);
+		return false;
+	}
+
+	// Set the default value for the key, which specifies the name of the display name of the protocol
+	const std::wstring value_protocol = L"URL:" + protocol_name_wide + L" Protocol";
+	const LRESULT result_value_protocol = RegSetValueExW(handle_subkey_protocol, L"", 0, REG_SZ, (BYTE *)value_protocol.c_str(), (value_protocol.length() + 1) * sizeof(wchar_t));
+	if(result_value_protocol != ERROR_SUCCESS)
+	{
+		windows_print_error("shell_register_protocol", "Error setting registry value", result_value_protocol);
+		RegCloseKey(handle_subkey_protocol);
+		return false;
+	}
+
+	// Set the "URL Protocol" value, to specify that this key describes a URL protocol
+	const LRESULT result_value_empty = RegSetValueEx(handle_subkey_protocol, L"URL Protocol", 0, REG_SZ, (BYTE *)L"", sizeof(wchar_t));
+	if(result_value_empty != ERROR_SUCCESS)
+	{
+		windows_print_error("shell_register_protocol", "Error setting registry value", result_value_empty);
+		RegCloseKey(handle_subkey_protocol);
+		return false;
+	}
+
+	// Create the "DefaultIcon" subkey
+	HKEY handle_subkey_icon;
+	const LRESULT result_subkey_icon = RegCreateKeyExW(handle_subkey_protocol, L"DefaultIcon", 0, NULL, 0, KEY_ALL_ACCESS, NULL, &handle_subkey_icon, NULL);
+	if(result_subkey_icon != ERROR_SUCCESS)
+	{
+		windows_print_error("shell_register_protocol", "Error creating registry key", result_subkey_icon);
+		RegCloseKey(handle_subkey_protocol);
+		return false;
+	}
+
+	// Set the default value for the key, which specifies the icon associated with the protocol
+	const std::wstring value_icon = L"\"" + executable_wide + L"\",0";
+	const LRESULT result_value_icon = RegSetValueExW(handle_subkey_icon, L"", 0, REG_SZ, (BYTE *)value_icon.c_str(), (value_icon.length() + 1) * sizeof(wchar_t));
+	RegCloseKey(handle_subkey_icon);
+	if(result_value_icon != ERROR_SUCCESS)
+	{
+		windows_print_error("shell_register_protocol", "Error setting registry value", result_value_icon);
+		RegCloseKey(handle_subkey_protocol);
+		return false;
+	}
+
+	// Create the "shell\open\command" subkeys
+	HKEY handle_subkey_shell_open_command;
+	const LRESULT result_subkey_shell_open_command = RegCreateKeyExW(handle_subkey_protocol, L"shell\\open\\command", 0, NULL, 0, KEY_ALL_ACCESS, NULL, &handle_subkey_shell_open_command, NULL);
+	RegCloseKey(handle_subkey_protocol);
+	if(result_subkey_shell_open_command != ERROR_SUCCESS)
+	{
+		windows_print_error("shell_register_protocol", "Error creating registry key", result_subkey_shell_open_command);
+		return false;
+	}
+
+	// Get the previous default value for the key, so we can determine if it changed
+	wchar_t old_value_executable[MAX_PATH + 16];
+	DWORD old_size_executable = sizeof(old_value_executable);
+	const LRESULT result_old_value_executable = RegGetValueW(handle_subkey_shell_open_command, NULL, L"", RRF_RT_REG_SZ, NULL, (BYTE *)old_value_executable, &old_size_executable);
+	const std::wstring value_executable = L"\"" + executable_wide + L"\" \"%1\"";
+	if(result_old_value_executable != ERROR_SUCCESS || wcscmp(old_value_executable, value_executable.c_str()) != 0)
+	{
+		// Set the default value for the key, which specifies the executable command associated with the protocol
+		const LRESULT result_value_executable = RegSetValueExW(handle_subkey_shell_open_command, L"", 0, REG_SZ, (BYTE *)value_executable.c_str(), (value_executable.length() + 1) * sizeof(wchar_t));
+		RegCloseKey(handle_subkey_shell_open_command);
+		if(result_value_executable != ERROR_SUCCESS)
+		{
+			windows_print_error("shell_register_protocol", "Error setting registry value", result_value_executable);
+			return false;
+		}
+
+		*updated = true;
+	}
+	else
+	{
+		RegCloseKey(handle_subkey_shell_open_command);
+	}
+
+	return true;
+}
+
+bool shell_register_extension(const char *extension, const char *description, const char *executable_name, const char *executable, bool *updated)
+{
+	const std::wstring extension_wide = utf8_to_wstring(extension);
+	const std::wstring executable_name_wide = utf8_to_wstring(executable_name);
+	const std::wstring description_wide = executable_name_wide + L" " + utf8_to_wstring(description);
+	const std::wstring program_id_wide = executable_name_wide + extension_wide;
+	const std::wstring executable_wide = utf8_to_wstring(executable);
+
+	// Open registry key for file associations of the current user
+	HKEY handle_subkey_classes;
+	const LRESULT result_subkey_classes = RegOpenKeyExW(HKEY_CURRENT_USER, L"SOFTWARE\\Classes", 0, KEY_ALL_ACCESS, &handle_subkey_classes);
+	if(result_subkey_classes != ERROR_SUCCESS)
+	{
+		windows_print_error("shell_register_extension", "Error opening registry key", result_subkey_classes);
+		return false;
+	}
+
+	// Create the program ID key
+	HKEY handle_subkey_program_id;
+	const LRESULT result_subkey_program_id = RegCreateKeyExW(handle_subkey_classes, program_id_wide.c_str(), 0, NULL, 0, KEY_ALL_ACCESS, NULL, &handle_subkey_program_id, NULL);
+	if(result_subkey_program_id != ERROR_SUCCESS)
+	{
+		windows_print_error("shell_register_extension", "Error creating registry key", result_subkey_program_id);
+		RegCloseKey(handle_subkey_classes);
+		return false;
+	}
+
+	// Set the default value for the key, which specifies the file type description for legacy applications
+	const LRESULT result_description_default = RegSetValueExW(handle_subkey_program_id, L"", 0, REG_SZ, (BYTE *)description_wide.c_str(), (description_wide.length() + 1) * sizeof(wchar_t));
+	if(result_description_default != ERROR_SUCCESS)
+	{
+		windows_print_error("shell_register_extension", "Error setting registry value", result_description_default);
+		RegCloseKey(handle_subkey_program_id);
+		RegCloseKey(handle_subkey_classes);
+		return false;
+	}
+
+	// Set the "FriendlyTypeName" value, which specifies the file type description for modern applications
+	const LRESULT result_description_friendly = RegSetValueExW(handle_subkey_program_id, L"FriendlyTypeName", 0, REG_SZ, (BYTE *)description_wide.c_str(), (description_wide.length() + 1) * sizeof(wchar_t));
+	if(result_description_friendly != ERROR_SUCCESS)
+	{
+		windows_print_error("shell_register_extension", "Error setting registry value", result_description_friendly);
+		RegCloseKey(handle_subkey_program_id);
+		RegCloseKey(handle_subkey_classes);
+		return false;
+	}
+
+	// Create the "DefaultIcon" subkey
+	HKEY handle_subkey_icon;
+	const LRESULT result_subkey_icon = RegCreateKeyExW(handle_subkey_program_id, L"DefaultIcon", 0, NULL, 0, KEY_ALL_ACCESS, NULL, &handle_subkey_icon, NULL);
+	if(result_subkey_icon != ERROR_SUCCESS)
+	{
+		windows_print_error("register_protocol", "Error creating registry key", result_subkey_icon);
+		RegCloseKey(handle_subkey_program_id);
+		RegCloseKey(handle_subkey_classes);
+		return false;
+	}
+
+	// Set the default value for the key, which specifies the icon associated with the program ID
+	const std::wstring value_icon = L"\"" + executable_wide + L"\",0";
+	const LRESULT result_value_icon = RegSetValueExW(handle_subkey_icon, L"", 0, REG_SZ, (BYTE *)value_icon.c_str(), (value_icon.length() + 1) * sizeof(wchar_t));
+	RegCloseKey(handle_subkey_icon);
+	if(result_value_icon != ERROR_SUCCESS)
+	{
+		windows_print_error("register_protocol", "Error setting registry value", result_value_icon);
+		RegCloseKey(handle_subkey_program_id);
+		RegCloseKey(handle_subkey_classes);
+		return false;
+	}
+
+	// Create the "shell\open\command" subkeys
+	HKEY handle_subkey_shell_open_command;
+	const LRESULT result_subkey_shell_open_command = RegCreateKeyExW(handle_subkey_program_id, L"shell\\open\\command", 0, NULL, 0, KEY_ALL_ACCESS, NULL, &handle_subkey_shell_open_command, NULL);
+	RegCloseKey(handle_subkey_program_id);
+	if(result_subkey_shell_open_command != ERROR_SUCCESS)
+	{
+		windows_print_error("shell_register_extension", "Error creating registry key", result_subkey_shell_open_command);
+		RegCloseKey(handle_subkey_classes);
+		return false;
+	}
+
+	// Get the previous default value for the key, so we can determine if it changed
+	wchar_t old_value_executable[MAX_PATH + 16];
+	DWORD old_size_executable = sizeof(old_value_executable);
+	const LRESULT result_old_value_executable = RegGetValueW(handle_subkey_shell_open_command, NULL, L"", RRF_RT_REG_SZ, NULL, (BYTE *)old_value_executable, &old_size_executable);
+	const std::wstring value_executable = L"\"" + executable_wide + L"\" \"%1\"";
+	if(result_old_value_executable != ERROR_SUCCESS || wcscmp(old_value_executable, value_executable.c_str()) != 0)
+	{
+		// Set the default value for the key, which specifies the executable command associated with the application
+		const LRESULT result_value_executable = RegSetValueExW(handle_subkey_shell_open_command, L"", 0, REG_SZ, (BYTE *)value_executable.c_str(), (value_executable.length() + 1) * sizeof(wchar_t));
+		RegCloseKey(handle_subkey_shell_open_command);
+		if(result_value_executable != ERROR_SUCCESS)
+		{
+			windows_print_error("shell_register_extension", "Error setting registry value", result_value_executable);
+			RegCloseKey(handle_subkey_classes);
+			return false;
+		}
+
+		*updated = true;
+	}
+
+	// Create the file extension key
+	HKEY handle_subkey_extension;
+	const LRESULT result_subkey_extension = RegCreateKeyExW(handle_subkey_classes, extension_wide.c_str(), 0, NULL, 0, KEY_ALL_ACCESS, NULL, &handle_subkey_extension, NULL);
+	RegCloseKey(handle_subkey_classes);
+	if(result_subkey_extension != ERROR_SUCCESS)
+	{
+		windows_print_error("shell_register_extension", "Error creating registry key", result_subkey_extension);
+		return false;
+	}
+
+	// Get the previous default value for the key, so we can determine if it changed
+	wchar_t old_value_application[128];
+	DWORD old_size_application = sizeof(old_value_application);
+	const LRESULT result_old_value_application = RegGetValueW(handle_subkey_extension, NULL, L"", RRF_RT_REG_SZ, NULL, (BYTE *)old_value_application, &old_size_application);
+	if(result_old_value_application != ERROR_SUCCESS || wcscmp(old_value_application, program_id_wide.c_str()) != 0)
+	{
+		// Set the default value for the key, which associates the file extension with the program ID
+		const LRESULT result_value_application = RegSetValueExW(handle_subkey_extension, L"", 0, REG_SZ, (BYTE *)program_id_wide.c_str(), (program_id_wide.length() + 1) * sizeof(wchar_t));
+		RegCloseKey(handle_subkey_extension);
+		if(result_value_application != ERROR_SUCCESS)
+		{
+			windows_print_error("shell_register_extension", "Error setting registry value", result_value_application);
+			return false;
+		}
+
+		*updated = true;
+	}
+	else
+	{
+		RegCloseKey(handle_subkey_extension);
+	}
+
+	return true;
+}
+
+bool shell_register_application(const char *name, const char *executable, bool *updated)
+{
+	const std::wstring name_wide = utf8_to_wstring(name);
+	const std::wstring executable_filename = filename_from_path(utf8_to_wstring(executable));
+
+	// Open registry key for application registrations
+	HKEY handle_subkey_applications;
+	const LRESULT result_subkey_applications = RegOpenKeyExW(HKEY_CURRENT_USER, L"SOFTWARE\\Classes\\Applications", 0, KEY_ALL_ACCESS, &handle_subkey_applications);
+	if(result_subkey_applications != ERROR_SUCCESS)
+	{
+		windows_print_error("shell_register_application", "Error opening registry key", result_subkey_applications);
+		return false;
+	}
+
+	// Create the program key
+	HKEY handle_subkey_program;
+	const LRESULT result_subkey_program = RegCreateKeyExW(handle_subkey_applications, executable_filename.c_str(), 0, NULL, 0, KEY_ALL_ACCESS, NULL, &handle_subkey_program, NULL);
+	RegCloseKey(handle_subkey_applications);
+	if(result_subkey_program != ERROR_SUCCESS)
+	{
+		windows_print_error("shell_register_application", "Error creating registry key", result_subkey_program);
+		return false;
+	}
+
+	// Get the previous default value for the key, so we can determine if it changed
+	wchar_t old_value_executable[MAX_PATH];
+	DWORD old_size_executable = sizeof(old_value_executable);
+	const LRESULT result_old_value_executable = RegGetValueW(handle_subkey_program, NULL, L"FriendlyAppName", RRF_RT_REG_SZ, NULL, (BYTE *)old_value_executable, &old_size_executable);
+	if(result_old_value_executable != ERROR_SUCCESS || wcscmp(old_value_executable, name_wide.c_str()) != 0)
+	{
+		// Set the "FriendlyAppName" value, which specifies the displayed name of the application
+		const LRESULT result_program_name = RegSetValueExW(handle_subkey_program, L"FriendlyAppName", 0, REG_SZ, (BYTE *)name_wide.c_str(), (name_wide.length() + 1) * sizeof(wchar_t));
+		RegCloseKey(handle_subkey_program);
+		if(result_program_name != ERROR_SUCCESS)
+		{
+			windows_print_error("shell_register_application", "Error setting registry value", result_program_name);
+			return false;
+		}
+
+		*updated = true;
+	}
+	else
+	{
+		RegCloseKey(handle_subkey_program);
+	}
+
+	return true;
+}
+
+bool shell_unregister_class(const char *shell_class, bool *updated)
+{
+	const std::wstring class_wide = utf8_to_wstring(shell_class);
+
+	// Open registry key for protocol and file associations of the current user
+	HKEY handle_subkey_classes;
+	const LRESULT result_subkey_classes = RegOpenKeyExW(HKEY_CURRENT_USER, L"SOFTWARE\\Classes", 0, KEY_ALL_ACCESS, &handle_subkey_classes);
+	if(result_subkey_classes != ERROR_SUCCESS)
+	{
+		windows_print_error("shell_unregister_class", "Error opening registry key", result_subkey_classes);
+		return false;
+	}
+
+	// Delete the registry keys for the shell class (protocol or program ID)
+	LRESULT result_delete = RegDeleteTreeW(handle_subkey_classes, class_wide.c_str());
+	RegCloseKey(handle_subkey_classes);
+	if(result_delete == ERROR_SUCCESS)
+	{
+		*updated = true;
+	}
+	else if(result_delete != ERROR_FILE_NOT_FOUND)
+	{
+		windows_print_error("shell_unregister_class", "Error deleting registry key", result_delete);
+		return false;
+	}
+
+	return true;
+}
+
+bool shell_unregister_application(const char *executable, bool *updated)
+{
+	const std::wstring executable_filename = filename_from_path(utf8_to_wstring(executable));
+
+	// Open registry key for application registrations
+	HKEY handle_subkey_applications;
+	const LRESULT result_subkey_applications = RegOpenKeyExW(HKEY_CURRENT_USER, L"SOFTWARE\\Classes\\Applications", 0, KEY_ALL_ACCESS, &handle_subkey_applications);
+	if(result_subkey_applications != ERROR_SUCCESS)
+	{
+		windows_print_error("shell_unregister_application", "Error opening registry key", result_subkey_applications);
+		return false;
+	}
+
+	// Delete the registry keys for the application description
+	LRESULT result_delete = RegDeleteTreeW(handle_subkey_applications, executable_filename.c_str());
+	RegCloseKey(handle_subkey_applications);
+	if(result_delete == ERROR_SUCCESS)
+	{
+		*updated = true;
+	}
+	else if(result_delete != ERROR_FILE_NOT_FOUND)
+	{
+		windows_print_error("shell_unregister_application", "Error deleting registry key", result_delete);
+		return false;
+	}
+
+	return true;
+}
+
+void shell_update()
+{
+	SHChangeNotify(SHCNE_ASSOCCHANGED, SHCNF_IDLIST, NULL, NULL);
+}
+#endif
+
+size_t std::hash<NETADDR>::operator()(const NETADDR &Addr) const noexcept
+{
+	return std::hash<std::string_view>{}(std::string_view((const char *)&Addr, sizeof(Addr)));
 }

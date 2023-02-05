@@ -6,6 +6,8 @@
 #include <engine/console.h>
 
 class CConfig;
+class CNetBan;
+class ColorRGBA;
 
 class CEcon
 {
@@ -45,9 +47,10 @@ class CEcon
 	static int DelClientCallback(int ClientID, int Type, const char *pReason, void *pUser);
 
 public:
+	CEcon();
 	IConsole *Console() { return m_pConsole; }
 
-	void Init(CConfig *pConfig, IConsole *pConsole, class CNetBan *pNetBan);
+	void Init(CConfig *pConfig, IConsole *pConsole, CNetBan *pNetBan);
 	void Update();
 	void Send(int ClientID, const char *pLine);
 	void Shutdown();

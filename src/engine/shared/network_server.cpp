@@ -3,14 +3,11 @@
 #include <base/hash_ctxt.h>
 #include <base/system.h>
 
-#include <engine/console.h>
-
 #include "config.h"
 #include "netban.h"
 #include "network.h"
 #include <engine/message.h>
 #include <engine/shared/protocol.h>
-#include <game/generated/protocol.h>
 
 const int DummyMapCrc = 0x6c760ac4;
 unsigned char g_aDummyMapData[] = {
@@ -46,26 +43,20 @@ static SECURITY_TOKEN ToSecurityToken(const unsigned char *pData)
 	return (int)pData[0] | (pData[1] << 8) | (pData[2] << 16) | (pData[3] << 24);
 }
 
-bool CNetServer::Open(NETADDR BindAddr, CNetBan *pNetBan, int MaxClients, int MaxClientsPerIP, int Flags)
+bool CNetServer::Open(NETADDR BindAddr, CNetBan *pNetBan, int MaxClients, int MaxClientsPerIP)
 {
 	// zero out the whole structure
 	mem_zero(this, sizeof(*this));
 
 	// open socket
 	m_Socket = net_udp_create(BindAddr);
-	if(!m_Socket.type)
+	if(!m_Socket)
 		return false;
 
 	m_Address = BindAddr;
 	m_pNetBan = pNetBan;
 
-	// clamp clients
-	m_MaxClients = MaxClients;
-	if(m_MaxClients > NET_MAX_CLIENTS)
-		m_MaxClients = NET_MAX_CLIENTS;
-	if(m_MaxClients < 1)
-		m_MaxClients = 1;
-
+	m_MaxClients = clamp(MaxClients, 1, (int)NET_MAX_CLIENTS);
 	m_MaxClientsPerIP = MaxClientsPerIP;
 
 	m_NumConAttempts = 0;
@@ -79,8 +70,6 @@ bool CNetServer::Open(NETADDR BindAddr, CNetBan *pNetBan, int MaxClients, int Ma
 	for(auto &Slot : m_aSlots)
 		Slot.m_Connection.Init(m_Socket, true);
 
-	net_init_mmsgs(&m_MMSGS);
-
 	return true;
 }
 
@@ -92,9 +81,10 @@ int CNetServer::SetCallbacks(NETFUNC_NEWCLIENT pfnNewClient, NETFUNC_DELCLIENT p
 	return 0;
 }
 
-int CNetServer::SetCallbacks(NETFUNC_NEWCLIENT pfnNewClient, NETFUNC_CLIENTREJOIN pfnClientRejoin, NETFUNC_DELCLIENT pfnDelClient, void *pUser)
+int CNetServer::SetCallbacks(NETFUNC_NEWCLIENT pfnNewClient, NETFUNC_NEWCLIENT_NOAUTH pfnNewClientNoAuth, NETFUNC_CLIENTREJOIN pfnClientRejoin, NETFUNC_DELCLIENT pfnDelClient, void *pUser)
 {
 	m_pfnNewClient = pfnNewClient;
+	m_pfnNewClientNoAuth = pfnNewClientNoAuth;
 	m_pfnClientRejoin = pfnClientRejoin;
 	m_pfnDelClient = pfnDelClient;
 	m_pUser = pUser;
@@ -103,20 +93,15 @@ int CNetServer::SetCallbacks(NETFUNC_NEWCLIENT pfnNewClient, NETFUNC_CLIENTREJOI
 
 int CNetServer::Close()
 {
-	// TODO: implement me
-	return 0;
+	if(!m_Socket)
+		return 0;
+	return net_udp_close(m_Socket);
 }
 
 int CNetServer::Drop(int ClientID, int Type, const char *pReason)
 {
 	// TODO: insert lots of checks here
-	/*NETADDR Addr = ClientAddr(ClientID);
 
-	dbg_msg("net_server", "client dropped. cid=%d ip=%d.%d.%d.%d reason=\"%s\"",
-		ClientID,
-		Addr.ip[0], Addr.ip[1], Addr.ip[2], Addr.ip[3],
-		pReason
-		);*/
 	if(m_pfnDelClient)
 		m_pfnDelClient(ClientID, Type, pReason, m_pUser);
 
@@ -141,6 +126,11 @@ int CNetServer::Update()
 	return 0;
 }
 
+SECURITY_TOKEN CNetServer::GetGlobalToken()
+{
+	static NETADDR NullAddr = {0};
+	return GetToken(NullAddr);
+}
 SECURITY_TOKEN CNetServer::GetToken(const NETADDR &Addr)
 {
 	SHA256_CTX Sha256;
@@ -278,7 +268,7 @@ int CNetServer::TryAcceptClient(NETADDR &Addr, SECURITY_TOKEN SecurityToken, boo
 	if(VanillaAuth)
 		m_pfnNewClientNoAuth(Slot, m_pUser);
 	else
-		m_pfnNewClient(Slot, m_pUser);
+		m_pfnNewClient(Slot, m_pUser, Sixup);
 
 	return Slot; // done
 }
@@ -636,7 +626,7 @@ int CNetServer::Recv(CNetChunk *pChunk, SECURITY_TOKEN *pResponseToken)
 
 		// TODO: empty the recvinfo
 		unsigned char *pData;
-		int Bytes = net_udp_recv(m_Socket, &Addr, m_RecvUnpacker.m_aBuffer, NET_MAX_PACKETSIZE, &m_MMSGS, &pData);
+		int Bytes = net_udp_recv(m_Socket, &Addr, &pData);
 
 		// no more packets for now
 		if(Bytes <= 0)
@@ -658,7 +648,7 @@ int CNetServer::Recv(CNetChunk *pChunk, SECURITY_TOKEN *pResponseToken)
 		{
 			if(m_RecvUnpacker.m_Data.m_Flags & NET_PACKETFLAG_CONNLESS)
 			{
-				if(Sixup && Token != GetToken(Addr))
+				if(Sixup && Token != GetToken(Addr) && Token != GetGlobalToken())
 					continue;
 
 				pChunk->m_Flags = NETSENDFLAG_CONNLESS;
@@ -744,8 +734,8 @@ int CNetServer::Send(CNetChunk *pChunk)
 	else
 	{
 		int Flags = 0;
-		dbg_assert(pChunk->m_ClientID >= 0, "errornous client id");
-		dbg_assert(pChunk->m_ClientID < MaxClients(), "errornous client id");
+		dbg_assert(pChunk->m_ClientID >= 0, "erroneous client id");
+		dbg_assert(pChunk->m_ClientID < MaxClients(), "erroneous client id");
 
 		if(pChunk->m_Flags & NETSENDFLAG_VITAL)
 			Flags = NET_CHUNKFLAG_VITAL;
@@ -827,7 +817,7 @@ const char *CNetServer::ErrorString(int ClientID)
 
 const char* CNetServer::GetCaptcha(const NETADDR* pAddr, bool Debug)
 {
-	if(!m_lCaptcha.size())
+	if(!m_vCaptcha.size())
 		return "???";
 
 	unsigned int IpHash = 0;
@@ -836,7 +826,7 @@ const char* CNetServer::GetCaptcha(const NETADDR* pAddr, bool Debug)
 		IpHash |= (pAddr->ip[i]<<(i*8));
 	}
 
-	unsigned int CaptchaId = IpHash%m_lCaptcha.size();
+	unsigned int CaptchaId = IpHash % m_vCaptcha.size();
 
 	if(Debug)
 	{
@@ -844,12 +834,12 @@ const char* CNetServer::GetCaptcha(const NETADDR* pAddr, bool Debug)
 		net_addr_str(pAddr, aBuf, 64, 0);
 	}
 
-	return m_lCaptcha[CaptchaId].m_aText;
+	return m_vCaptcha[CaptchaId].m_aText;
 }
 
 void CNetServer::AddCaptcha(const char* pText)
 {
 	CCaptcha Captcha;
-	str_copy(Captcha.m_aText, pText, sizeof(Captcha));
-	m_lCaptcha.add(Captcha);
+	str_copy(Captcha.m_aText, pText);
+	m_vCaptcha.emplace_back(Captcha);
 }

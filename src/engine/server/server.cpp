@@ -549,16 +549,17 @@ int64_t CServer::TickStartTime(int Tick)
 
 int CServer::Init()
 {
-	for(int i = 0; i < MAX_CLIENTS; i++)
+	for(auto &Client : m_aClients)
 	{
-		m_aClients[i].m_State = CClient::STATE_EMPTY;
-		m_aClients[i].m_aName[0] = 0;
-		m_aClients[i].m_aClan[0] = 0;
-		m_aClients[i].m_Country = -1;
-		m_aClients[i].m_Snapshots.Init();
-		m_aClients[i].m_IsBot = false;
-		m_aClients[i].m_Accusation.m_Num = 0;
-		m_aClients[i].m_Latency = 0;
+		Client.m_State = CClient::STATE_EMPTY;
+		Client.m_aName[0] = 0;
+		Client.m_aClan[0] = 0;
+		Client.m_Country = -1;
+		Client.m_Snapshots.Init();
+		Client.m_IsBot = false;
+		Client.m_Accusation.m_Num = 0;
+		Client.m_ShowIps = false;
+		Client.m_Latency = 0;
 	}
 
 	m_CurrentGameTick = 0;
@@ -1117,7 +1118,12 @@ int CServer::DelBot(int ClientID)
 	return 0;
 }
 
-int CServer::NewClientCallback(int ClientID, void *pUser)
+int CServer::NewClientNoAuthCallback(int ClientID, void *pUser)
+{
+	return NewClientCallback(ClientID, pUser, false);
+}
+
+int CServer::NewClientCallback(int ClientID, void *pUser, bool Sixup)
 {
 	CServer *pThis = (CServer *)pUser;
 
@@ -1128,7 +1134,6 @@ int CServer::NewClientCallback(int ClientID, void *pUser)
 	}
 
 	pThis->m_aClients[ClientID].m_State = CClient::STATE_PREAUTH;
-	pThis->m_aClients[ClientID].m_SupportsMapSha256 = false;
 	pThis->m_aClients[ClientID].m_aName[0] = 0;
 	pThis->m_aClients[ClientID].m_aClan[0] = 0;
 	pThis->m_aClients[ClientID].m_Country = -1;
@@ -1181,16 +1186,14 @@ int CServer::DelClientCallback(int ClientID, int Type, const char *pReason, void
 
 	net_addr_str(pThis->m_NetServer.ClientAddr(ClientID), aAddrStr, sizeof(aAddrStr), true);
 	char aBuf[256];
-	str_format(aBuf, sizeof(aBuf), "client dropped. cid=%d addr=%s reason='%s'", ClientID, aAddrStr,	pReason);
+	str_format(aBuf, sizeof(aBuf), "client dropped. cid=%d addr=<{%s}> reason='%s'", ClientID, aAddrStr, pReason);
 	pThis->Console()->Print(IConsole::OUTPUT_LEVEL_ADDINFO, "server", aBuf);
-
 
 	// notify the mod about the drop
 	if(pThis->m_aClients[ClientID].m_State >= CClient::STATE_READY)
 		pThis->GameServer()->OnClientDrop(ClientID, Type, pReason);
 
 	pThis->m_aClients[ClientID].m_State = CClient::STATE_EMPTY;
-	pThis->m_aClients[ClientID].m_SupportsMapSha256 = false;
 	pThis->m_aClients[ClientID].m_aName[0] = 0;
 	pThis->m_aClients[ClientID].m_aClan[0] = 0;
 	pThis->m_aClients[ClientID].m_Country = -1;
@@ -1582,13 +1585,13 @@ void CServer::ProcessClientPacket(CNetChunk *pPacket)
 		}
 		else if(Msg == NETMSG_READY)
 		{
-			if((pPacket->m_Flags&NET_CHUNKFLAG_VITAL) != 0 && m_aClients[ClientID].m_State == CClient::STATE_CONNECTING)
+			if((pPacket->m_Flags & NET_CHUNKFLAG_VITAL) != 0 && (m_aClients[ClientID].m_State == CClient::STATE_CONNECTING))
 			{
 				char aAddrStr[NETADDR_MAXSTRSIZE];
 				net_addr_str(m_NetServer.ClientAddr(ClientID), aAddrStr, sizeof(aAddrStr), true);
 
 				char aBuf[256];
-				str_format(aBuf, sizeof(aBuf), "player is ready. ClientID=%d addr=%s secure=%s", ClientID, aAddrStr, m_NetServer.HasSecurityToken(ClientID)?"yes":"no");
+				str_format(aBuf, sizeof(aBuf), "player is ready. ClientID=%d addr=<{%s}> secure=%s", ClientID, aAddrStr, m_NetServer.HasSecurityToken(ClientID) ? "yes" : "no");
 				Console()->Print(IConsole::OUTPUT_LEVEL_ADDINFO, "server", aBuf);
 
 				void *pPersistentData = 0;
@@ -1605,7 +1608,7 @@ void CServer::ProcessClientPacket(CNetChunk *pPacket)
 		}
 		else if(Msg == NETMSG_ENTERGAME)
 		{
-			if((pPacket->m_Flags&NET_CHUNKFLAG_VITAL) != 0 && m_aClients[ClientID].m_State == CClient::STATE_READY && GameServer()->IsClientReady(ClientID))
+			if((pPacket->m_Flags & NET_CHUNKFLAG_VITAL) != 0 && m_aClients[ClientID].m_State == CClient::STATE_READY && GameServer()->IsClientReady(ClientID))
 			{
 				char aAddrStr[NETADDR_MAXSTRSIZE];
 				net_addr_str(m_NetServer.ClientAddr(ClientID), aAddrStr, sizeof(aAddrStr), true);
@@ -2247,22 +2250,22 @@ void CServer::PumpNetwork(bool PacketWaiting)
 	m_Econ.Update();
 }
 
-char *CServer::GetMapName()
+const char *CServer::GetMapName() const
 {
 	// get the name of the map without his path
-	char *pMapShortName = &g_Config.m_SvMap[0];
-	for(int i = 0; i < str_length(g_Config.m_SvMap)-1; i++)
+	const char *pMapShortName = &Config()->m_SvMap[0];
+	for(int i = 0; i < str_length(Config()->m_SvMap) - 1; i++)
 	{
-		if(g_Config.m_SvMap[i] == '/' || g_Config.m_SvMap[i] == '\\')
-			pMapShortName = &g_Config.m_SvMap[i+1];
+		if(Config()->m_SvMap[i] == '/' || Config()->m_SvMap[i] == '\\')
+			pMapShortName = &Config()->m_SvMap[i + 1];
 	}
 	return pMapShortName;
 }
 
 void CServer::ChangeMap(const char *pMap)
 {
-	str_copy(g_Config.m_SvMap, pMap, sizeof(g_Config.m_SvMap));
-	m_MapReload = str_comp(g_Config.m_SvMap, m_aCurrentMap) != 0;
+	str_copy(Config()->m_SvMap, pMap);
+	m_MapReload = str_comp(Config()->m_SvMap, m_aCurrentMap) != 0;
 }
 
 int CServer::LoadMap(const char *pMapName)
@@ -2403,12 +2406,14 @@ int CServer::Run()
 
 	BindAddr.type = NetType;
 
-	int Port = g_Config.m_SvPort;
-	BindAddr.port = Port;
-	if(!m_NetServer.Open(BindAddr, &m_ServerBan, g_Config.m_SvMaxClients, g_Config.m_SvMaxClientsPerIP, 0))
+	int Port = Config()->m_SvPort;
+	for(BindAddr.port = Port != 0 ? Port : 8303; !m_NetServer.Open(BindAddr, &m_ServerBan, Config()->m_SvMaxClients, Config()->m_SvMaxClientsPerIP); BindAddr.port++)
 	{
-		dbg_msg("server", "couldn't open socket. port %d might already be in use", g_Config.m_SvPort);
-		return -1;
+		if(Port != 0 || BindAddr.port >= 8310)
+		{
+			dbg_msg("server", "couldn't open socket. port %d might already be in use", BindAddr.port);
+			return -1;
+		}
 	}
 
 	if(Port == 0)
@@ -2424,7 +2429,7 @@ int CServer::Run()
 		}
 	}
 
-	m_NetServer.SetCallbacks(NewClientCallback, ClientRejoinCallback, DelClientCallback, this);
+	m_NetServer.SetCallbacks(NewClientCallback, NewClientNoAuthCallback, ClientRejoinCallback, DelClientCallback, this);
 
 	m_Econ.Init(Config(), Console(), &m_ServerBan);
 
@@ -2636,11 +2641,11 @@ int CServer::Run()
 	// disconnect all clients on shutdown
 	for(int i = 0; i < MAX_CLIENTS; ++i)
 	{
-		if((m_aClients[i].m_State != CClient::STATE_EMPTY) && ! m_aClients[i].m_IsBot)
+		if((m_aClients[i].m_State != CClient::STATE_EMPTY) && !m_aClients[i].m_IsBot)
 			m_NetServer.Drop(i, CLIENTDROPTYPE_SHUTDOWN, pDisconnectReason);
-
-		m_Econ.Shutdown();
 	}
+
+	m_Econ.Shutdown();
 
 	GameServer()->OnShutdown();
 	m_pMap->Unload();

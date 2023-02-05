@@ -19,18 +19,23 @@
 
 int main(int argc, const char **argv) // ignore_convention
 {
-	cmdline_fix(&argc, &argv);
+	CCmdlineFix CmdlineFix(&argc, &argv);
 	bool Silent = false;
-#if defined(CONF_FAMILY_WINDOWS)
-	for(int i = 1; i < argc; i++) // ignore_convention
+
+	for(int i = 1; i < argc; i++)
 	{
-		if(str_comp("-s", argv[i]) == 0 || str_comp("--silent", argv[i]) == 0) // ignore_convention
+		if(str_comp("-s", argv[i]) == 0 || str_comp("--silent", argv[i]) == 0)
 		{
 			Silent = true;
+#if defined(CONF_FAMILY_WINDOWS)
 			ShowWindow(GetConsoleWindow(), SW_HIDE);
+#endif
 			break;
 		}
 	}
+
+#if defined(CONF_FAMILY_WINDOWS)
+	CWindowsComLifecycle WindowsComLifecycle(false);
 #endif
 
 	std::vector<std::shared_ptr<ILogger>> vpLoggers;
@@ -145,7 +150,6 @@ int main(int argc, const char **argv) // ignore_convention
 	// free
 	delete pKernel;
 
-	cmdline_free(argc, argv);
 	return Ret;
 }
 

@@ -189,23 +189,22 @@ public:
 	virtual int SendMsg(CMsgPacker *pMsg, int Flags, int ClientID) = 0;
 
 	template<class T>
-	int SendPackMsg(T *pMsg, int Flags, int ClientID)
+	inline int SendPackMsg(const T *pMsg, int Flags, int ClientID)
 	{
-		int result = 0;
+		int Result = 0;
 		T tmp;
 		if (ClientID == -1)
 		{
-			for(int i = 0; i < MAX_CLIENTS; i++)
+			for(int i = 0; i < MaxClients(); i++)
 				if(ClientIngame(i))
 				{
-					mem_copy(&tmp, pMsg, sizeof(T));
-					result = SendPackMsgTranslate(&tmp, Flags, i);
+					Result = SendPackMsgOne(pMsg, Flags, i);
 				}
-		} else {
-			mem_copy(&tmp, pMsg, sizeof(T));
-			result = SendPackMsgTranslate(&tmp, Flags, ClientID);
 		}
-		return result;
+		else
+			Result = SendPackMsgOne(pMsg, Flags, ClientID);
+
+		return Result;
 	}
 
 	template<class T>
@@ -214,29 +213,38 @@ public:
 		return SendPackMsgOne(pMsg, Flags, ClientID);
 	}
 
-	int SendPackMsgTranslate(CNetMsg_Sv_Emoticon *pMsg, int Flags, int ClientID)
+	int SendPackMsgTranslate(const CNetMsg_Sv_Emoticon *pMsg, int Flags, int ClientID)
 	{
-		return Translate(pMsg->m_ClientID, ClientID) && SendPackMsgOne(pMsg, Flags, ClientID);
+		CNetMsg_Sv_Emoticon MsgCopy;
+		mem_copy(&MsgCopy, pMsg, sizeof(MsgCopy));
+		return Translate(MsgCopy.m_ClientID, ClientID) && SendPackMsgOne(&MsgCopy, Flags, ClientID);
 	}
 
-	char msgbuf[1000];
-
-	int SendPackMsgTranslate(CNetMsg_Sv_Chat *pMsg, int Flags, int ClientID)
+	int SendPackMsgTranslate(const CNetMsg_Sv_Chat *pMsg, int Flags, int ClientID)
 	{
-		if (pMsg->m_ClientID >= 0 && !Translate(pMsg->m_ClientID, ClientID))
+		CNetMsg_Sv_Chat MsgCopy;
+		mem_copy(&MsgCopy, pMsg, sizeof(MsgCopy));
+
+		char aBuf[1000];
+		if(MsgCopy.m_ClientID >= 0 && !Translate(MsgCopy.m_ClientID, ClientID))
 		{
-			str_format(msgbuf, sizeof(msgbuf), "%s: %s", ClientName(pMsg->m_ClientID), pMsg->m_pMessage);
-			pMsg->m_pMessage = msgbuf;
-			pMsg->m_ClientID = VANILLA_MAX_CLIENTS - 1;
+			str_format(aBuf, sizeof(aBuf), "%s: %s", ClientName(MsgCopy.m_ClientID), MsgCopy.m_pMessage);
+			MsgCopy.m_pMessage = aBuf;
+			MsgCopy.m_ClientID = VANILLA_MAX_CLIENTS - 1;
 		}
-		return SendPackMsgOne(pMsg, Flags, ClientID);
+
+		return SendPackMsgOne(&MsgCopy, Flags, ClientID);
 	}
 
-	int SendPackMsgTranslate(CNetMsg_Sv_KillMsg *pMsg, int Flags, int ClientID)
+	int SendPackMsgTranslate(const CNetMsg_Sv_KillMsg *pMsg, int Flags, int ClientID)
 	{
-		if (!Translate(pMsg->m_Victim, ClientID)) return 0;
-		if (!Translate(pMsg->m_Killer, ClientID)) pMsg->m_Killer = pMsg->m_Victim;
-		return SendPackMsgOne(pMsg, Flags, ClientID);
+		CNetMsg_Sv_KillMsg MsgCopy;
+		mem_copy(&MsgCopy, pMsg, sizeof(MsgCopy));
+		if(!Translate(MsgCopy.m_Victim, ClientID))
+			return 0;
+		if(!Translate(MsgCopy.m_Killer, ClientID))
+			MsgCopy.m_Killer = MsgCopy.m_Victim;
+		return SendPackMsgOne(&MsgCopy, Flags, ClientID);
 	}
 
 	template<class T>
@@ -377,6 +385,8 @@ public:
 	virtual int* GetIdMap(int ClientID) = 0;
 
 	virtual int GetActivePlayerCount() = 0;
+
+	virtual const char *GetMapName() const = 0;
 };
 
 class IGameServer : public IInterface

@@ -145,7 +145,6 @@ public:
 
 		// connection state info
 		int m_State;
-		bool m_SupportsMapSha256;
 		int m_Latency;
 		int m_SnapRate;
 		bool m_Quitting;
@@ -291,9 +290,12 @@ public:
 
 	int NewBot(int ClientID);
 	int DelBot(int ClientID);
-	static int ClientRejoinCallback(int ClientID, void *pUser);
-	static int NewClientCallback(int ClientID, void *pUser);
+
+	static int NewClientCallback(int ClientID, void *pUser, bool Sixup);
+	static int NewClientNoAuthCallback(int ClientID, void *pUser);
 	static int DelClientCallback(int ClientID, int Type, const char *pReason, void *pUser);
+
+	static int ClientRejoinCallback(int ClientID, void *pUser);
 
 	void SendMap(int ClientID);
 	void SendMapData(int ClientID, int Chunk);
@@ -317,7 +319,7 @@ public:
 
 	bool GetMapReload() const override { return m_MapReload; }
 	void ChangeMap(const char *pMap) override;
-	char *GetMapName();
+	const char *GetMapName() const override;
 	int LoadMap(const char *pMapName);
 
 	void InitRegister(CNetServer *pNetServer, IEngineMasterServer *pMasterServer, IConsole *pConsole);
