@@ -2144,49 +2144,52 @@ void CServer::UpdateServerInfo()
 	}
 }
 
-void CServer::PumpNetwork()
+void CServer::PumpNetwork(bool PacketWaiting)
 {
 	CNetChunk Packet;
 	SECURITY_TOKEN ResponseToken;
 
 	m_NetServer.Update();
 
-	// process packets
-	while(m_NetServer.Recv(&Packet, &ResponseToken))
+	if(PacketWaiting)
 	{
-		if(Packet.m_ClientID == -1)
+		// process packets
+		while(m_NetServer.Recv(&Packet, &ResponseToken))
 		{
-			// stateless
-			if(!m_Register.RegisterProcessPacket(&Packet))
+			if(Packet.m_ClientID == -1)
 			{
-				int ExtraToken = 0;
-				int Type = -1;
-				if(Packet.m_DataSize >= (int)sizeof(SERVERBROWSE_GETINFO)+1 &&
-					mem_comp(Packet.m_pData, SERVERBROWSE_GETINFO, sizeof(SERVERBROWSE_GETINFO)) == 0)
+				// stateless
+				if(!m_Register.RegisterProcessPacket(&Packet))
 				{
-					if(Packet.m_Flags&NETSENDFLAG_EXTENDED)
+					int ExtraToken = 0;
+					int Type = -1;
+					if(Packet.m_DataSize >= (int)sizeof(SERVERBROWSE_GETINFO) + 1 &&
+						mem_comp(Packet.m_pData, SERVERBROWSE_GETINFO, sizeof(SERVERBROWSE_GETINFO)) == 0)
 					{
-						Type = SERVERINFO_EXTENDED;
-						ExtraToken = (Packet.m_aExtraData[0] << 8) | Packet.m_aExtraData[1];
+						if(Packet.m_Flags & NETSENDFLAG_EXTENDED)
+						{
+							Type = SERVERINFO_EXTENDED;
+							ExtraToken = (Packet.m_aExtraData[0] << 8) | Packet.m_aExtraData[1];
+						}
+						else
+							Type = SERVERINFO_VANILLA;
 					}
-					else
-						Type = SERVERINFO_VANILLA;
-				}
-				else if(Packet.m_DataSize >= (int)sizeof(SERVERBROWSE_GETINFO_64_LEGACY)+1 &&
-					mem_comp(Packet.m_pData, SERVERBROWSE_GETINFO_64_LEGACY, sizeof(SERVERBROWSE_GETINFO_64_LEGACY)) == 0)
-				{
-					Type = SERVERINFO_64_LEGACY;
-				}
-				if(Type != -1)
-				{
-					int Token = ((unsigned char *)Packet.m_pData)[sizeof(SERVERBROWSE_GETINFO)];
-					Token |= ExtraToken << 8;
-					SendServerInfoConnless(&Packet.m_Address, Token, Type);
+					else if(Packet.m_DataSize >= (int)sizeof(SERVERBROWSE_GETINFO_64_LEGACY) + 1 &&
+							mem_comp(Packet.m_pData, SERVERBROWSE_GETINFO_64_LEGACY, sizeof(SERVERBROWSE_GETINFO_64_LEGACY)) == 0)
+					{
+						Type = SERVERINFO_64_LEGACY;
+					}
+					if(Type != -1)
+					{
+						int Token = ((unsigned char *)Packet.m_pData)[sizeof(SERVERBROWSE_GETINFO)];
+						Token |= ExtraToken << 8;
+						SendServerInfoConnless(&Packet.m_Address, Token, Type);
+					}
 				}
 			}
+			else
+				ProcessClientPacket(&Packet);
 		}
-		else
-			ProcessClientPacket(&Packet);
 	}
 
 	m_ServerBan.Update();
@@ -2401,6 +2404,7 @@ int CServer::Run()
 	// start game
 	{
 		bool NonActive = false;
+		bool PacketWaiting = false;
 
 		m_Lastheartbeat = 0;
 		m_GameStartTime = time_get();
@@ -2408,7 +2412,8 @@ int CServer::Run()
 		while(m_RunServer)
 		{
 			if(NonActive)
-				PumpNetwork();
+				PumpNetwork(PacketWaiting);
+
 			set_new_tick();
 
 			int64_t t = time_get();
@@ -2563,13 +2568,18 @@ int CServer::Run()
 			m_Register.RegisterUpdate(m_NetServer.NetType());
 
 			if(!NonActive)
-				PumpNetwork();
+				PumpNetwork(PacketWaiting);
 
 			NonActive = true;
 
-			for(int c = 0; c < MAX_CLIENTS; c++)
-				if(m_aClients[c].m_State != CClient::STATE_EMPTY)
+			for(const auto &Client : m_aClients)
+			{
+				if(Client.m_State != CClient::STATE_EMPTY)
+				{
 					NonActive = false;
+					break;
+				}
+			}
 
 			// wait for incoming data
 			if(NonActive)
@@ -2588,15 +2598,17 @@ int CServer::Run()
 				if(Config()->m_SvShutdownWhenEmpty)
 					m_RunServer = false;
 				else
-					net_socket_read_wait(m_NetServer.Socket(), 1000000);
+					PacketWaiting = net_socket_read_wait(m_NetServer.Socket(), 1000000);
 			}
 			else
 			{
+				m_ReloadedWhenEmpty = false;
+
 				set_new_tick();
-				int64_t t = time_get();
+				t = time_get();
 				int x = (TickStartTime(m_CurrentGameTick + 1) - t) * 1000000 / time_freq() + 1;
-				if(x > 0)
-					net_socket_read_wait(m_NetServer.Socket(), x);
+
+				PacketWaiting = x > 0 ? net_socket_read_wait(m_NetServer.Socket(), x) : true;
 			}
 		}
 	}

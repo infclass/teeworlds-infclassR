@@ -310,7 +310,7 @@ public:
 	void SendServerInfoConnless(const NETADDR *pAddr, int Token, int Type);
 	void UpdateServerInfo();
 
-	void PumpNetwork();
+	void PumpNetwork(bool PacketWaiting);
 
 	bool GetMapReload() const override { return m_MapReload; }
 	void ChangeMap(const char *pMap) override;
