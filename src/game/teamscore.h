@@ -23,11 +23,11 @@ enum
 
 class CTeamsCore
 {
-	int m_Team[MAX_CLIENTS];
-	bool m_IsSolo[MAX_CLIENTS];
+	int m_aTeam[MAX_CLIENTS];
+	bool m_aIsSolo[MAX_CLIENTS];
 
-	bool m_IsInfected[MAX_CLIENTS];
-	bool m_IsProtected[MAX_CLIENTS];
+	bool m_aIsInfected[MAX_CLIENTS];
+	bool m_aIsProtected[MAX_CLIENTS];
 
 public:
 	bool m_IsDDRace16;
@@ -45,29 +45,12 @@ public:
 	void Team(int ClientID, int Team);
 
 	void Reset();
-	void SetSolo(int ClientID, bool Value)
-	{
-		dbg_assert(ClientID >= 0 && ClientID < MAX_CLIENTS, "Invalid client id");
-		m_IsSolo[ClientID] = Value;
-	}
 
-	bool GetSolo(int ClientID) const
-	{
-		if(ClientID < 0 || ClientID >= MAX_CLIENTS)
-			return false;
-		return m_IsSolo[ClientID];
-	}
+	void SetSolo(int ClientID, bool Value);
+	bool GetSolo(int ClientID) const;
 
-	void SetInfected(int ClientID, bool Value)
-	{
-		dbg_assert(ClientID >= 0 && ClientID < MAX_CLIENTS, "Invalid client id");
-		m_IsInfected[ClientID] = Value;
-	}
-	void SetProtected(int ClientID, bool Value)
-	{
-		dbg_assert(ClientID >= 0 && ClientID < MAX_CLIENTS, "Invalid client id");
-		m_IsProtected[ClientID] = Value;
-	}
+	void SetInfected(int ClientID, bool Value);
+	void SetProtected(int ClientID, bool Value);
 };
 
 #endif
