@@ -557,6 +557,9 @@ set(BASE
 set(teeuniverses_SOURCES
   src/teeuniverses/components/localization.cpp
   src/teeuniverses/components/localization.h
+  src/teeuniverses/system/string.h
+  src/teeuniverses/tl/allocator.h
+  src/teeuniverses/tl/hashtable.h
 )
 
 set_glob(ENGINE_INTERFACE GLOB src/engine
