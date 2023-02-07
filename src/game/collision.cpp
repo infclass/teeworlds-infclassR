@@ -236,14 +236,15 @@ int CCollision::GetTile(int x, int y) const
 // TODO: rewrite this smarter!
 int CCollision::IntersectLine(vec2 Pos0, vec2 Pos1, vec2 *pOutCollision, vec2 *pOutBeforeCollision) const
 {
-	float Distance = distance(Pos0, Pos1);
+	vec2 Pos1Pos0 = Pos1 - Pos0;
+	float Distance = length(Pos1Pos0);
 	int End(Distance+1);
 	vec2 Last = Pos0;
 
 	for(int i = 0; i < End; i++)
 	{
 		float a = i/Distance;
-		vec2 Pos = mix(Pos0, Pos1, a);
+		vec2 Pos = Pos0 + Pos1Pos0 * a;
 		if(CheckPoint(Pos.x, Pos.y))
 		{
 			if(pOutCollision)
