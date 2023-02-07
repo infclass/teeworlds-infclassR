@@ -227,8 +227,9 @@ int CCollision::GetTile(int x, int y) const
 	int Ny = clamp(y / 32, 0, m_Height - 1);
 	int pos = Ny * m_Width + Nx;
 
-	if(m_pTiles[pos].m_Index >= TILE_SOLID && m_pTiles[pos].m_Index <= TILE_NOLASER)
-		return m_pTiles[pos].m_Index;
+	int Index = m_pTiles[pos].m_Index;
+	if(Index >= TILE_SOLID && Index <= TILE_NOLASER)
+		return Index;
 	return 0;
 }
 
