@@ -196,7 +196,6 @@ public:
 		CUuid m_ConnectionID;
 
 		int m_InfClassVersion;
-		bool m_CustClt;
 	};
 
 	CClient m_aClients[MAX_CLIENTS];
@@ -478,7 +477,6 @@ public:
 
 	virtual const char *GetPreviousMapName() const;
 	virtual int* GetIdMap(int ClientID);
-	virtual void SetCustClt(int ClientID);
 };
 
 extern CServer *CreateServer();

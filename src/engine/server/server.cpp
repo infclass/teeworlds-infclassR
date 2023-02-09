@@ -553,7 +553,6 @@ int CServer::Init()
 		m_aClients[i].m_State = CClient::STATE_EMPTY;
 		m_aClients[i].m_aName[0] = 0;
 		m_aClients[i].m_aClan[0] = 0;
-		m_aClients[i].m_CustClt = 0;
 		m_aClients[i].m_Country = -1;
 		m_aClients[i].m_Snapshots.Init();
 		m_aClients[i].m_IsBot = false;
@@ -690,7 +689,6 @@ int CServer::GetClientInfo(int ClientID, CClientInfo *pInfo) const
 		pInfo->m_Latency = m_aClients[ClientID].m_Latency;
 		pInfo->m_DDNetVersion = m_aClients[ClientID].m_DDNetVersion >= 0 ? m_aClients[ClientID].m_DDNetVersion : VERSION_VANILLA;
 		pInfo->m_InfClassVersion = m_aClients[ClientID].m_InfClassVersion;
-		pInfo->m_CustClt = m_aClients[ClientID].m_CustClt;
 		return 1;
 	}
 	return 0;
@@ -1126,12 +1124,10 @@ int CServer::NewClientCallback(int ClientID, void *pUser)
 	pThis->m_aClients[ClientID].m_Country = -1;
 	pThis->m_aClients[ClientID].m_Authed = AUTHED_NO;
 	pThis->m_aClients[ClientID].m_AuthTries = 0;
-	pThis->m_aClients[ClientID].m_CustClt = 0;
 	pThis->m_aClients[ClientID].m_pRconCmdToSend = 0;
 	pThis->m_aClients[ClientID].m_Quitting = false;
 	
 	memset(&pThis->m_aClients[ClientID].m_Addr, 0, sizeof(NETADDR));
-	pThis->m_aClients[ClientID].m_CustClt = 0;
 	pThis->m_aClients[ClientID].Reset();
 	
 	//Getback session about the client
@@ -1633,9 +1629,13 @@ void CServer::ProcessClientPacket(CNetChunk *pPacket)
 			const char *pCmd = Unpacker.GetString();
 			if(Unpacker.Error() == 0 && !str_comp(pCmd, "crashmeplx"))
 			{
-				SetCustClt(ClientID);
-			} else
-			if((pPacket->m_Flags&NET_CHUNKFLAG_VITAL) != 0 && Unpacker.Error() == 0 && m_aClients[ClientID].m_Authed)
+				int Version = m_aClients[ClientID].m_DDNetVersion;
+				if(GameServer()->PlayerExists(ClientID) && Version < VERSION_DDNET_OLD)
+				{
+					m_aClients[ClientID].m_DDNetVersion = VERSION_DDNET_OLD;
+				}
+			}
+			else if((pPacket->m_Flags & NET_CHUNKFLAG_VITAL) != 0 && Unpacker.Error() == 0 && m_aClients[ClientID].m_Authed)
 			{
 				char aBuf[256];
 				str_format(aBuf, sizeof(aBuf), "ClientID=%d rcon='%s'", ClientID, pCmd);
@@ -5039,11 +5039,6 @@ int CServer::GetUserLevel(int ClientID)
 int* CServer::GetIdMap(int ClientID)
 {
 	return (int*)(IdMap + VANILLA_MAX_CLIENTS * ClientID);
-}
-
-void CServer::SetCustClt(int ClientID)
-{
-	m_aClients[ClientID].m_CustClt = 1;
 }
 
 CServer *CreateServer() { return new CServer(); }

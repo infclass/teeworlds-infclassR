@@ -3,6 +3,8 @@
 #ifndef ENGINE_SERVER_H
 #define ENGINE_SERVER_H
 
+#include <base/math.h>
+
 #include "kernel.h"
 #include "message.h"
 
@@ -128,7 +130,6 @@ public:
 		int m_Latency;
 		int m_DDNetVersion;
 		int m_InfClassVersion;
-		bool m_CustClt;
 	};
 	
 	struct CClientSession
@@ -248,39 +249,33 @@ public:
 		return SendMsg(&Packer, Flags, ClientID);
 	}
 
-	bool Translate(int& target, int client)
+	bool Translate(int &Target, int Client)
 	{
-		if(client == SERVER_DEMO_CLIENT)
+		if(GetClientVersion(Client) >= VERSION_DDNET_OLD)
 			return true;
-
-		CClientInfo info;
-		GetClientInfo(client, &info);
-		if (info.m_CustClt)
-			return true;
-		int* map = GetIdMap(client);
-		bool found = false;
-		for (int i = 0; i < VANILLA_MAX_CLIENTS; i++)
+		int *pMap = GetIdMap(Client);
+		bool Found = false;
+		for(int i = 0; i < VANILLA_MAX_CLIENTS; i++)
 		{
-			if (target == map[i])
+			if(Target == pMap[i])
 			{
-				target = i;
-				found = true;
+				Target = i;
+				Found = true;
 				break;
 			}
 		}
-		return found;
+		return Found;
 	}
 
-	bool ReverseTranslate(int& target, int client)
+	bool ReverseTranslate(int &Target, int Client)
 	{
-		CClientInfo info;
-		GetClientInfo(client, &info);
-		if (info.m_CustClt)
+		if(GetClientVersion(Client) >= VERSION_DDNET_OLD)
 			return true;
-		int* map = GetIdMap(client);
-		if (map[target] == -1)
+		Target = clamp(Target, 0, VANILLA_MAX_CLIENTS - 1);
+		int *pMap = GetIdMap(Client);
+		if(pMap[Target] == -1)
 			return false;
-		target = map[target];
+		Target = pMap[Target];
 		return true;
 	}
 
@@ -381,7 +376,6 @@ public:
 
 	virtual const char *GetPreviousMapName() const = 0;
 	virtual int* GetIdMap(int ClientID) = 0;
-	virtual void SetCustClt(int ClientID) = 0;
 
 	virtual int GetActivePlayerCount() = 0;
 };
@@ -444,8 +438,9 @@ public:
 	virtual void SendMOTD_Localization(int To, const char* pText, ...) = 0;
 	
 	virtual void OnSetAuthed(int ClientID, int Level) = 0;
-	
-/* INFECTION MODIFICATION END *****************************************/
+	virtual bool PlayerExists(int ClientID) const = 0;
+
+	/* INFECTION MODIFICATION END *****************************************/
 };
 
 extern IGameServer *CreateGameServer();

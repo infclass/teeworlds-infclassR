@@ -231,6 +231,8 @@ public:
 	virtual const char *NetVersion() const;
 	int GetClientVersion(int ClientID) const;
 
+	bool PlayerExists(int ClientID) const override { return m_apPlayers[ClientID]; }
+
 	bool RateLimitPlayerVote(int ClientID);
 
 /* INFECTION MODIFICATION START ***************************************/
