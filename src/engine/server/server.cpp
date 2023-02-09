@@ -355,7 +355,7 @@ CServer::CServer() : m_DemoRecorder(&m_SnapshotDelta)
 	m_CurrentGameTick = 0;
 	m_RunServer = 1;
 
-	str_copy(m_aShutdownReason, "Server shutdown", sizeof(m_aShutdownReason));
+	m_aShutdownReason[0] = 0;
 
 	m_pCurrentMapData = 0;
 	m_CurrentMapSize = 0;
@@ -2616,11 +2616,15 @@ int CServer::Run()
 	if(Config()->m_SvShutdownFile[0])
 		Console()->ExecuteFile(Config()->m_SvShutdownFile);
 
+	const char *pDisconnectReason = "Server shutdown";
+	if(m_aShutdownReason[0])
+		pDisconnectReason = m_aShutdownReason;
+
 	// disconnect all clients on shutdown
 	for(int i = 0; i < MAX_CLIENTS; ++i)
 	{
 		if((m_aClients[i].m_State != CClient::STATE_EMPTY) && ! m_aClients[i].m_IsBot)
-			m_NetServer.Drop(i, CLIENTDROPTYPE_SHUTDOWN, m_aShutdownReason);
+			m_NetServer.Drop(i, CLIENTDROPTYPE_SHUTDOWN, pDisconnectReason);
 
 		m_Econ.Shutdown();
 	}
@@ -2860,7 +2864,7 @@ void CServer::ConShutdown(IConsole::IResult *pResult, void *pUser)
 	const char *pReason = pResult->GetString(0);
 	if(pReason[0])
 	{
-		str_copy(pThis->m_aShutdownReason, pReason, sizeof(pThis->m_aShutdownReason));
+		str_copy(pThis->m_aShutdownReason, pReason);
 	}
 }
 
