@@ -2,89 +2,74 @@
 /* If you are missing that file, acquire a complete release at teeworlds.com.                */
 #include <base/logger.h>
 #include <base/system.h>
-#include <base/math.h>
-#include <engine/external/pnglite/pnglite.h>
+#include <engine/gfx/image_loader.h>
+#include <engine/gfx/image_manipulation.h>
+#include <engine/graphics.h>
 
-typedef struct
+int DilateFile(const char *pFilename)
 {
-	unsigned char r, g, b, a;
-} CPixel;
-
-static void Dilate(int w, int h, CPixel *pSrc, CPixel *pDest)
-{
-	int ix, iy;
-	const int xo[] = {0, -1, 1, 0};
-	const int yo[] = {-1, 0, 0, 1};
-
-	int m = 0;
-	for(int y = 0; y < h; y++)
+	IOHANDLE File = io_open(pFilename, IOFLAG_READ);
+	if(File)
 	{
-		for(int x = 0; x < w; x++, m++)
-		{
-			pDest[m] = pSrc[m];
-			if(pSrc[m].a)
-				continue;
+		io_seek(File, 0, IOSEEK_END);
+		unsigned int FileSize = io_tell(File);
+		io_seek(File, 0, IOSEEK_START);
+		TImageByteBuffer ByteBuffer;
+		SImageByteBuffer ImageByteBuffer(&ByteBuffer);
 
-			for(int c = 0; c < 4; c++)
+		ByteBuffer.resize(FileSize);
+		io_read(File, &ByteBuffer.front(), FileSize);
+
+		io_close(File);
+
+		CImageInfo Img;
+
+		uint8_t *pImgBuffer = NULL;
+		EImageFormat ImageFormat;
+		int PngliteIncompatible;
+		if(LoadPNG(ImageByteBuffer, pFilename, PngliteIncompatible, Img.m_Width, Img.m_Height, pImgBuffer, ImageFormat))
+		{
+			if(ImageFormat != IMAGE_FORMAT_RGBA)
 			{
-				ix = clamp(x + xo[c], 0, w-1);
-				iy = clamp(y + yo[c], 0, h-1);
-				int k = iy*w+ix;
-				if(pSrc[k].a)
-				{
-					pDest[m] = pSrc[k];
-					pDest[m].a = 255;
-					break;
-				}
+				free(pImgBuffer);
+				dbg_msg("dilate", "%s: not an RGBA image", pFilename);
+				return -1;
+			}
+
+			Img.m_pData = pImgBuffer;
+
+			unsigned char *pBuffer = (unsigned char *)Img.m_pData;
+
+			int w = Img.m_Width;
+			int h = Img.m_Height;
+
+			DilateImage(pBuffer, w, h, 4);
+
+			// save here
+			IOHANDLE SaveFile = io_open(pFilename, IOFLAG_WRITE);
+			if(SaveFile)
+			{
+				TImageByteBuffer ByteBuffer2;
+				SImageByteBuffer ImageByteBuffer2(&ByteBuffer2);
+
+				if(SavePNG(IMAGE_FORMAT_RGBA, (const uint8_t *)pBuffer, ImageByteBuffer2, w, h))
+					io_write(SaveFile, &ByteBuffer2.front(), ByteBuffer2.size());
+				io_close(SaveFile);
+
+				free(pBuffer);
 			}
 		}
+		else
+		{
+			dbg_msg("dilate", "failed unknown image format: %s", pFilename);
+			return -1;
+		}
 	}
-}
-
-static void CopyAlpha(int w, int h, CPixel *pSrc, CPixel *pDest)
-{
-	int m = 0;
-	for(int y = 0; y < h; y++)
-		for(int x = 0; x < w; x++, m++)
-			pDest[m].a = pSrc[m].a;
-}
-
-int DilateFile(const char *pFileName)
-{
-	png_t Png;
-	CPixel *pBuffer[3] = {0,0,0};
-
-	png_init(0, 0);
-	png_open_file(&Png, pFileName);
-
-	if(Png.color_type != PNG_TRUECOLOR_ALPHA)
+	else
 	{
-		dbg_msg("dilate", "%s: not an RGBA image", pFileName);
-		return 1;
+		dbg_msg("dilate", "failed to open image file. filename='%s'", pFilename);
+		return -1;
 	}
-
-	pBuffer[0] = (CPixel *)malloc(Png.width * Png.height * sizeof(CPixel));
-	pBuffer[1] = (CPixel *)malloc(Png.width * Png.height * sizeof(CPixel));
-	pBuffer[2] = (CPixel *)malloc(Png.width * Png.height * sizeof(CPixel));
-	png_get_data(&Png, (unsigned char *)pBuffer[0]);
-	png_close_file(&Png);
-
-	int w = Png.width;
-	int h = Png.height;
-
-	Dilate(w, h, pBuffer[0], pBuffer[1]);
-	for(int i = 0; i < 5; i++)
-	{
-		Dilate(w, h, pBuffer[1], pBuffer[2]);
-		Dilate(w, h, pBuffer[2], pBuffer[1]);
-	}
-
-	CopyAlpha(w, h, pBuffer[0], pBuffer[1]);
-
-	// save here
-	png_open_file_write(&Png, pFileName);
-	png_set_data(&Png, w, h, 8, PNG_TRUECOLOR_ALPHA, (unsigned char *)pBuffer[1]);
-	png_close_file(&Png);
 
 	return 0;
 }

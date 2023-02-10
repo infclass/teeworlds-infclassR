@@ -2,6 +2,8 @@
 
 #include <base/color.h>
 
+#include <engine/gfx/image_loader.h>
+
 #include <game/server/infclass/events-director.h>
 
 #include <game/collision.h>
@@ -10,8 +12,6 @@
 #include <game/server/infclass/classes/humans/human.h>
 #include <game/server/infclass/infcgamecontroller.h>
 #include <game/server/teeinfo.h>
-
-#include <pnglite.h>
 
 #include <limits>
 
@@ -83,48 +83,56 @@ int CClientGameTileGetter::GetClientGameTileIndex(int TileX, int TileY) const
 
 int LoadPNG(CImageInfo *pImg, const char *pFilename)
 {
-	unsigned char *pBuffer;
-	png_t Png;
-
-	int Error = png_open_file(&Png, pFilename);
-	if(Error != PNG_NO_ERROR)
+	char aCompleteFilename[IO_MAX_PATH_LENGTH];
+	IOHANDLE File = io_open(pFilename, IOFLAG_READ);
+	if(File)
 	{
-		dbg_msg("MapConverter", "failed to open image file. filename='%s', pnglite: %s", pFilename, png_error_string(Error));
-		if(Error != PNG_FILE_ERROR)
-			png_close_file(&Png);
-		return 0;
-	}
+		io_seek(File, 0, IOSEEK_END);
+		unsigned int FileSize = io_tell(File);
+		io_seek(File, 0, IOSEEK_START);
 
-	if(Png.depth != 8 || (Png.color_type != PNG_TRUECOLOR && Png.color_type != PNG_TRUECOLOR_ALPHA) || Png.width > (2 << 12) || Png.height > (2 << 12))
-	{
-		dbg_msg("MapConverter", "invalid image format. filename='%s'", pFilename);
-		png_close_file(&Png);
-		return 0;
-	}
+		TImageByteBuffer ByteBuffer;
+		SImageByteBuffer ImageByteBuffer(&ByteBuffer);
 
-	pBuffer = (unsigned char *)malloc((size_t)Png.width * Png.height * Png.bpp);
-	Error = png_get_data(&Png, pBuffer);
-	if(Error != PNG_NO_ERROR)
-	{
-		dbg_msg("MapConverter", "failed to read image. filename='%s', pnglite: %s", pFilename, png_error_string(Error));
-		free(pBuffer);
-		png_close_file(&Png);
-		return 0;
-	}
-	png_close_file(&Png);
+		ByteBuffer.resize(FileSize);
+		io_read(File, &ByteBuffer.front(), FileSize);
 
-	pImg->m_Width = Png.width;
-	pImg->m_Height = Png.height;
-	if(Png.color_type == PNG_TRUECOLOR)
-		pImg->m_Format = CImageInfo::FORMAT_RGB;
-	else if(Png.color_type == PNG_TRUECOLOR_ALPHA)
-		pImg->m_Format = CImageInfo::FORMAT_RGBA;
+		io_close(File);
+
+		uint8_t *pImgBuffer = NULL;
+		EImageFormat ImageFormat;
+		int PngliteIncompatible;
+		if(::LoadPNG(ImageByteBuffer, pFilename, PngliteIncompatible, pImg->m_Width, pImg->m_Height, pImgBuffer, ImageFormat))
+		{
+			pImg->m_pData = pImgBuffer;
+
+			if(ImageFormat == IMAGE_FORMAT_RGB) // ignore_convention
+				pImg->m_Format = CImageInfo::FORMAT_RGB;
+			else if(ImageFormat == IMAGE_FORMAT_RGBA) // ignore_convention
+				pImg->m_Format = CImageInfo::FORMAT_RGBA;
+			else
+			{
+				free(pImgBuffer);
+				return 0;
+			}
+
+			if(PngliteIncompatible != 0)
+			{
+				dbg_msg("game/png", "\"%s\" is not compatible with pnglite and cannot be loaded by old DDNet versions: ", pFilename);
+			}
+		}
+		else
+		{
+			dbg_msg("game/png", "image had unsupported image format. filename='%s'", pFilename);
+			return 0;
+		}
+	}
 	else
 	{
-		free(pBuffer);
+		dbg_msg("game/png", "failed to open file. filename='%s'", pFilename);
 		return 0;
 	}
-	pImg->m_pData = pBuffer;
+
 	return 1;
 }
 
@@ -1241,8 +1249,6 @@ int CMapConverter::Finalize()
 
 bool CMapConverter::CreateMap(const char* pFilename)
 {
-	png_init(0, 0);
-
 	char aBuf[512];
 	if(!m_DataFile.Open(Storage(), pFilename))
 	{

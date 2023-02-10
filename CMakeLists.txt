@@ -311,6 +311,7 @@ if(MYSQL)
 else()
   set(MYSQL_LIBRARIES)
 endif()
+find_package(PNG)
 find_package(PythonInterp 3)
 find_package(Threads)
 
@@ -364,11 +365,15 @@ if(MYSQL)
   show_dependency_status("MySQL" MYSQL)
 endif()
 show_dependency_status("OpenSSL Crypto" CRYPTO)
+show_dependency_status("PNG" PNG)
 show_dependency_status("PythonInterp" PYTHONINTERP)
 show_dependency_status("Zlib" ZLIB)
 
 if(NOT(PYTHONINTERP_FOUND))
   message(SEND_ERROR "You must install Python to compile ${CMAKE_PROJECT_NAME}")
+endif()
+if(NOT(PNG_FOUND))
+  message(SEND_ERROR "You must install libpng to compile ${CMAKE_PROJECT_NAME}")
 endif()
 if(NOT(GTEST_FOUND))
   if(DOWNLOAD_GTEST)
@@ -571,6 +576,7 @@ set_glob(ENGINE_INTERFACE GLOB src/engine
   console.h
   demo.h
   engine.h
+  graphics.h
   kernel.h
   map.h
   masterserver.h
@@ -578,6 +584,7 @@ set_glob(ENGINE_INTERFACE GLOB src/engine
   server.h
   storage.h
   uuid.h
+  warning.h
 )
 set_glob(ENGINE_SHARED GLOB src/engine/shared
   compression.cpp
@@ -636,7 +643,12 @@ set_glob(ENGINE_SHARED GLOB src/engine/shared
   uuid_manager.cpp
   uuid_manager.h
 )
-
+set_src(ENGINE_GFX GLOB src/engine/gfx
+  image_loader.cpp
+  image_loader.h
+  image_manipulation.cpp
+  image_manipulation.h
+)
 set_glob(GAME_SHARED GLOB src/game
   animation.cpp
   animation.h
@@ -687,9 +699,10 @@ set(LIBS
 )
 
 # Targets
+add_library(engine-gfx EXCLUDE_FROM_ALL STATIC ${ENGINE_GFX})
 add_library(engine-shared EXCLUDE_FROM_ALL STATIC ${ENGINE_INTERFACE} ${ENGINE_SHARED} ${ENGINE_UUID_SHARED} ${BASE})
 add_library(game-shared EXCLUDE_FROM_ALL STATIC ${GAME_SHARED} ${GAME_GENERATED_SHARED} ${teeuniverses_SOURCES})
-list(APPEND TARGETS_OWN engine-shared game-shared)
+list(APPEND TARGETS_OWN engine-gfx engine-shared game-shared)
 
 target_link_libraries(engine-shared PUBLIC
   ZLIB::ZLIB
@@ -713,26 +726,13 @@ target_link_libraries(game-shared PUBLIC
   ICU::uc
 )
 
-add_library(pnglite STATIC
-  ${CMAKE_CURRENT_SOURCE_DIR}/src/engine/external/pnglite/pnglite.c
-  ${CMAKE_CURRENT_SOURCE_DIR}/src/engine/external/pnglite/pnglite.h
-)
-target_link_libraries(pnglite PRIVATE ZLIB::ZLIB)
-
-target_include_directories(pnglite PUBLIC
-  ${CMAKE_CURRENT_SOURCE_DIR}/src/engine/external/pnglite
-)
-add_library(pnglite::pnglite ALIAS pnglite)
-
-list(APPEND TARGETS_DEP pnglite)
-
 include_directories(SYSTEM
   ${CMAKE_CURRENT_SOURCE_DIR}/src
   ${CMAKE_CURRENT_BINARY_DIR}/src
 )
 
-target_link_libraries(engine-shared PUBLIC
-  pnglite::pnglite
+target_link_libraries(engine-gfx PUBLIC
+  PNG::PNG
 )
 
 ########################################################################
@@ -905,15 +905,15 @@ if(TOOLS)
       string(REGEX REPLACE "\\.cpp$" "" TOOL "${T}")
       set(TOOL_DEPS ${DEPS})
       set(TOOL_LIBS ${LIBS})
+      unset(EXTRA_TOOL_SRC)
       if(TOOL MATCHES "^(dilate|map_convert_07|map_optimize|map_extract|map_replace_image)$")
-        list(APPEND TOOL_DEPS ${PNGLITE_DEP})
-        list(APPEND TOOL_LIBS ${PNGLITE_LIBRARIES})
-        list(APPEND TOOL_INCLUDE_DIRS ${PNGLITE_INCLUDE_DIRS})
+        list(APPEND TOOL_LIBS engine-gfx)
       endif()
       if(TOOL MATCHES "^config_")
         list(APPEND EXTRA_TOOL_SRC "src/tools/config_common.h")
       endif()
       if(TOOL MATCHES "^(map_convert_for_client)$")
+        list(APPEND TOOL_LIBS engine-gfx)
         list(APPEND EXTRA_TOOL_SRC ${SERVER_SRC})
       endif()
       set(EXCLUDE_FROM_ALL)
@@ -1040,6 +1040,7 @@ target_link_libraries(Server ${LIBS_SERVER})
 list(APPEND TARGETS_OWN Server)
 list(APPEND TARGETS_LINK Server)
 
+target_link_libraries(Server engine-gfx)
 target_link_libraries(Server engine-shared)
 target_link_libraries(Server game-shared)
 target_link_libraries(Server ICU::i18n)
