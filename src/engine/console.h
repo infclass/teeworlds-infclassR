@@ -9,6 +9,7 @@
 
 static const ColorRGBA gs_ConsoleDefaultColor(1, 1, 1, 1);
 
+enum LEVEL : char;
 class IConsole : public IInterface
 {
 	MACRO_INTERFACE("console", 0)
@@ -117,6 +118,8 @@ public:
 	virtual void SetAccessLevel(int AccessLevel) = 0;
 
 	virtual void ResetServerGameSettings() = 0;
+
+	static LEVEL ToLogLevel(int ConsoleLevel);
 
 	// DDRace
 

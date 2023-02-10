@@ -1,6 +1,11 @@
 #include <engine/server/server.h>
+#include <engine/server/server_logger.h>
+
+#include <engine/shared/assertion_logger.h>
 #include <engine/shared/config.h>
 #include <engine/storage.h>
+
+#include <game/version.h>
 
 #include <teeuniverses/components/localization.h>
 
@@ -21,11 +26,29 @@ int main(int argc, const char **argv) // ignore_convention
 	{
 		if(str_comp("-s", argv[i]) == 0 || str_comp("--silent", argv[i]) == 0) // ignore_convention
 		{
+			Silent = true;
 			ShowWindow(GetConsoleWindow(), SW_HIDE);
 			break;
 		}
 	}
 #endif
+
+	std::vector<std::shared_ptr<ILogger>> vpLoggers;
+#if defined(CONF_PLATFORM_ANDROID)
+	vpLoggers.push_back(std::shared_ptr<ILogger>(log_logger_android()));
+#else
+	if(!Silent)
+	{
+		vpLoggers.push_back(std::shared_ptr<ILogger>(log_logger_stdout()));
+	}
+#endif
+	std::shared_ptr<CFutureLogger> pFutureFileLogger = std::make_shared<CFutureLogger>();
+	vpLoggers.push_back(pFutureFileLogger);
+	std::shared_ptr<CFutureLogger> pFutureConsoleLogger = std::make_shared<CFutureLogger>();
+	vpLoggers.push_back(pFutureConsoleLogger);
+	std::shared_ptr<CFutureLogger> pFutureAssertionLogger = std::make_shared<CFutureLogger>();
+	vpLoggers.push_back(pFutureAssertionLogger);
+	log_set_global_logger(log_logger_collection(std::move(vpLoggers)).release());
 
 	if(secure_random_init() != 0)
 	{
@@ -43,7 +66,7 @@ int main(int argc, const char **argv) // ignore_convention
 	IKernel *pKernel = IKernel::Create();
 
 	// create the components
-	IEngine *pEngine = CreateEngine("Teeworlds", Silent, 2);
+	IEngine *pEngine = CreateEngine(GAME_NAME, pFutureConsoleLogger, 2);
 	IEngineMap *pEngineMap = CreateEngineMap();
 	IGameServer *pGameServer = CreateGameServer();
 	IConsole *pConsole = CreateConsole(CFGFLAG_SERVER|CFGFLAG_ECON);
@@ -95,10 +118,23 @@ int main(int argc, const char **argv) // ignore_convention
 	pConsole->ExecuteFile("autoexec.cfg");
 
 	// parse the command line arguments
-	if(argc > 1) // ignore_convention
-		pConsole->ParseArguments(argc-1, &argv[1]); // ignore_convention
+	if(argc > 1)
+		pConsole->ParseArguments(argc - 1, &argv[1]);
 
-	pEngine->InitLogfile();
+	log_set_loglevel((LEVEL)g_Config.m_Loglevel);
+	if(g_Config.m_Logfile[0])
+	{
+		IOHANDLE Logfile = pStorage->OpenFile(g_Config.m_Logfile, IOFLAG_WRITE, IStorage::TYPE_SAVE_OR_ABSOLUTE);
+		if(Logfile)
+		{
+			pFutureFileLogger->Set(log_logger_file(Logfile));
+		}
+		else
+		{
+			dbg_msg("client", "failed to open '%s' for logging", g_Config.m_Logfile);
+		}
+	}
+	pEngine->SetAdditionalLogger(std::make_unique<CServerLogger>(pServer));
 
 	// run the server
 	dbg_msg("server", "starting...");

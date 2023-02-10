@@ -536,6 +536,9 @@ set(BASE
   src/base/hash_libtomcrypt.cpp
   src/base/hash_openssl.cpp
   src/base/lock_scope.h
+  src/base/log.cpp
+  src/base/log.h
+  src/base/logger.h
   src/base/math.cpp
   src/base/math.h
   src/base/system.cpp
@@ -753,6 +756,8 @@ set_glob(ENGINE_SERVER GLOB src/engine/server
   roundstatistics.h
   server.cpp
   server.h
+  server_logger.cpp
+  server_logger.h
   sql_connector.cpp
   sql_connector.h
   sql_job.cpp
@@ -1122,6 +1127,11 @@ foreach(target ${TARGETS_OWN})
     target_compile_options(${target} PRIVATE /wd4244) # Possible loss of data (float -> int, int -> float, etc.).
     target_compile_options(${target} PRIVATE /wd4267) # Possible loss of data (size_t - int on win64).
     target_compile_options(${target} PRIVATE /wd4800) # Implicit conversion of int to bool.
+  endif()
+  if(TARGET_OS STREQUAL "windows")
+    target_compile_definitions(${target} PRIVATE NOMINMAX) # windows.h shouldn't define min/max macros
+    target_compile_definitions(${target} PRIVATE UNICODE) # Windows headers
+    target_compile_definitions(${target} PRIVATE _UNICODE) # C-runtime
   endif()
 
   target_compile_definitions(${target} PRIVATE $<$<CONFIG:Debug>:CONF_DEBUG>)

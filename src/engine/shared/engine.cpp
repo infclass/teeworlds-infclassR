@@ -1,6 +1,7 @@
 /* (c) Magnus Auvinen. See licence.txt in the root of the distribution for more information. */
 /* If you are missing that file, acquire a complete release at teeworlds.com.                */
 
+#include <base/logger.h>
 #include <base/system.h>
 
 #include <engine/console.h>
@@ -29,6 +30,10 @@ public:
 	IStorage *m_pStorage;
 	bool m_Logging;
 
+	std::shared_ptr<CFutureLogger> m_pFutureLogger;
+
+	char m_aAppName[256];
+
 	static void Con_DbgLognetwork(IConsole::IResult *pResult, void *pUserData)
 	{
 		CEngine *pEngine = static_cast<CEngine *>(pUserData);
@@ -51,14 +56,12 @@ public:
 		}
 	}
 
-	CEngine(bool Test, const char *pAppname, bool Silent, int Jobs)
+	CEngine(bool Test, const char *pAppname, std::shared_ptr<CFutureLogger> pFutureLogger, int Jobs) :
+		m_pFutureLogger(std::move(pFutureLogger))
 	{
+		str_copy(m_aAppName, pAppname);
 		if(!Test)
 		{
-			if(!Silent)
-				dbg_logger_stdout();
-			dbg_logger_debugger();
-
 			//
 			dbg_msg("engine", "running on %s-%s-%s", CONF_FAMILY_STRING, CONF_PLATFORM_STRING, CONF_ARCH_STRING);
 #ifdef CONF_ARCH_ENDIAN_LITTLE
@@ -95,18 +98,16 @@ public:
 		m_pConsole->Register("dbg_lognetwork", "", CFGFLAG_SERVER | CFGFLAG_CLIENT, Con_DbgLognetwork, this, "Log the network");
 	}
 
-	void InitLogfile()
-	{
-		// open logfile if needed
-		if(g_Config.m_Logfile[0])
-			dbg_logger_file(g_Config.m_Logfile);
-	}
-
 	void AddJob(std::shared_ptr<IJob> pJob) override
 	{
 		if(g_Config.m_Debug)
 			dbg_msg("engine", "job added");
 		m_JobPool.Add(std::move(pJob));
+	}
+
+	void SetAdditionalLogger(std::unique_ptr<ILogger> &&pLogger) override
+	{
+		m_pFutureLogger->Set(std::move(pLogger));
 	}
 };
 
@@ -115,5 +116,5 @@ void IEngine::RunJobBlocking(IJob *pJob)
 	CJobPool::RunBlocking(pJob);
 }
 
-IEngine *CreateEngine(const char *pAppname, bool Silent, int Jobs) { return new CEngine(false, pAppname, Silent, Jobs); }
-IEngine *CreateTestEngine(const char *pAppname, int Jobs) { return new CEngine(true, pAppname, true, Jobs); }
+IEngine *CreateEngine(const char *pAppname, std::shared_ptr<CFutureLogger> pFutureLogger, int Jobs) { return new CEngine(false, pAppname, std::move(pFutureLogger), Jobs); }
+IEngine *CreateTestEngine(const char *pAppname, int Jobs) { return new CEngine(true, pAppname, nullptr, Jobs); }

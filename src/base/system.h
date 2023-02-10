@@ -32,26 +32,25 @@
 extern "C" {
 #endif
 
-/* Group: Debug */
-/*
-	Function: dbg_assert
-		Breaks into the debugger based on a test.
+/**
+ * @defgroup Debug
+ *
+ * Utilities for debugging.
+ */
 
-	Parameters:
-		test - Result of the test.
-		msg - Message that should be printed if the test fails.
-
-	Remarks:
-		Does nothing in release version
-
-	See Also:
-		<dbg_break>
-*/
-#ifdef CONF_DEBUG
+/**
+ * @ingroup Debug
+ *
+ * Breaks into the debugger based on a test.
+ *
+ * @param test Result of the test.
+ * @param msg Message that should be printed if the test fails.
+ *
+ * @remark Also works in release mode.
+ *
+ * @see dbg_break
+ */
 #define dbg_assert(test, msg) dbg_assert_imp(__FILE__, __LINE__, test, msg)
-#else
-#define dbg_assert(test, msg)
-#endif
 void dbg_assert_imp(const char *filename, int line, int test, const char *msg);
 
 #ifdef __clang_analyzer__
@@ -66,38 +65,43 @@ void dbg_assert_imp(const char *filename, int line, int test, const char *msg);
 #define GNUC_ATTRIBUTE(x)
 #endif
 
-/*
-	Function: dbg_break
-		Breaks into the debugger.
+/**
+ * Checks whether the program is currently shutting down due to a failed
+ * assert.
+ *
+ * @ingroup Debug
+ *
+ * @return indication whether the program is currently shutting down due to a
+ * failed assert.
+ */
+bool dbg_assert_has_failed();
 
-	Remarks:
-		Does nothing in release version
-
-	See Also:
-		<dbg_assert>
-*/
-#ifdef CONF_DEBUG
-#define dbg_break() dbg_break_imp()
-#else
-#define dbg_break()
+/**
+ * Breaks into the debugger.
+ *
+ * @ingroup Debug
+ * @remark Also works in release mode.
+ *
+ * @see dbg_assert
+ */
+#if defined(__cplusplus)
+[[noreturn]]
 #endif
-void dbg_break_imp(void);
+void
+dbg_break();
 
-/*
-	Function: dbg_msg
-
-	Prints a debug message.
-
-	Parameters:
-		sys - A string that describes what system the message belongs to
-		fmt - A printf styled format string.
-
-	Remarks:
-		Also works in release version
-
-	See Also:
-		<dbg_assert>
-*/
+/**
+ * Prints a debug message.
+ *
+ * @ingroup Debug
+ *
+ * @param sys A string that describes what system the message belongs to.
+ * @param fmt A printf styled format string.
+ *
+ * @remark Also works in release mode.
+ *
+ * @see dbg_assert
+ */
 void dbg_msg(const char *sys, const char *fmt, ...)
 	GNUC_ATTRIBUTE((format(printf, 2, 3)));
 

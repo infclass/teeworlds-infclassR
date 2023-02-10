@@ -2,19 +2,22 @@
 /* If you are missing that file, acquire a complete release at teeworlds.com.                */
 #include <base/system.h>
 
-enum { NUM_SOCKETS = 64 };
+enum
+{
+	NUM_SOCKETS = 64
+};
 
 void Run(NETADDR Dest)
 {
 	NETSOCKET aSockets[NUM_SOCKETS];
 
-	for(int i = 0; i < NUM_SOCKETS; i++)
+	for(auto &Socket : aSockets)
 	{
 		NETADDR BindAddr = {NETTYPE_IPV4, {0}, 0};
-	 	aSockets[i] = net_udp_create(BindAddr);
+		Socket = net_udp_create(BindAddr);
 	}
 
-	while(1)
+	while(true)
 	{
 		unsigned char aData[1024];
 		int Size = 0;
@@ -30,9 +33,8 @@ void Run(NETADDR Dest)
 
 int main(int argc, const char **argv)
 {
-	cmdline_fix(&argc, &argv);
+	CCmdlineFix CmdlineFix(&argc, &argv);
 	NETADDR Dest = {NETTYPE_IPV4, {127, 0, 0, 1}, 8303};
 	Run(Dest);
-	cmdline_free(argc, argv);
 	return 0;
 }

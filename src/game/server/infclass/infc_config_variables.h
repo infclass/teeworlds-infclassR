@@ -1,5 +1,7 @@
 // NO INCLUDE GUARDS!
 
+MACRO_CONFIG_STR(PlayerLogfile, playerlogfile, 128, "", CFGFLAG_SERVER, "Filename to log joined players info to")
+
 MACRO_CONFIG_STR(AboutSourceUrl, about_source_url, 128, "https://github.com/InfectionDust/teeworlds-infclassR", CFGFLAG_SERVER, "The server source code URL")
 MACRO_CONFIG_STR(AboutTranslationUrl, about_translation_url, 128, "https://crowdin.com/translate/infectiondust", CFGFLAG_SERVER, "The translation site URL")
 MACRO_CONFIG_STR(AboutContactsDiscord, about_contacts_discord, 128, "https://infclass.github.io/discord", CFGFLAG_SERVER, "Discord server invite URL")

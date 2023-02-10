@@ -2,6 +2,7 @@
 /* If you are missing that file, acquire a complete release at teeworlds.com.                */
 
 #include <base/color.h>
+#include <base/log.h>
 #include <base/math.h>
 #include <base/system.h>
 
@@ -314,17 +315,40 @@ char *CConsole::Format(char *pBuf, int Size, const char *pFrom, const char *pStr
 	return pBuf;
 }
 
+LEVEL IConsole::ToLogLevel(int Level)
+{
+	switch(Level)
+	{
+	case IConsole::OUTPUT_LEVEL_STANDARD:
+		return LEVEL_INFO;
+	case IConsole::OUTPUT_LEVEL_ADDINFO:
+		return LEVEL_DEBUG;
+	case IConsole::OUTPUT_LEVEL_DEBUG:
+		return LEVEL_TRACE;
+	}
+	dbg_assert(0, "invalid log level");
+	return LEVEL_INFO;
+}
+
+LOG_COLOR ColorToLogColor(ColorRGBA Color)
+{
+	return LOG_COLOR{
+		(uint8_t)(Color.r * 255.0),
+		(uint8_t)(Color.g * 255.0),
+		(uint8_t)(Color.b * 255.0)};
+}
+
 void CConsole::Print(int Level, const char *pFrom, const char *pStr, ColorRGBA PrintColor)
 {
-	dbg_msg(pFrom, "%s", pStr);
-	for(int i = 0; i < m_NumPrintCB; ++i)
+	LEVEL LogLevel = IConsole::ToLogLevel(Level);
+	// if the color is pure white, use default terminal color
+	if(mem_comp(&PrintColor, &gs_ConsoleDefaultColor, sizeof(ColorRGBA)) != 0)
 	{
-		if(Level <= m_aPrintCB[i].m_OutputLevel && m_aPrintCB[i].m_pfnPrintCallback)
-		{
-			char aBuf[1024];
-			str_format(aBuf, sizeof(aBuf), "[%s]: %s", pFrom, pStr);
-			m_aPrintCB[i].m_pfnPrintCallback(aBuf, m_aPrintCB[i].m_pPrintCallbackUserdata, PrintColor);
-		}
+		log_log_color(LogLevel, ColorToLogColor(PrintColor), pFrom, "%s", pStr);
+	}
+	else
+	{
+		log_log(LogLevel, pFrom, "%s", pStr);
 	}
 }
 

@@ -11,4 +11,5 @@
 
 #define LAST_COMPILE_DATE __DATE__
 extern const char *GIT_SHORTREV_HASH;
+#define GAME_NAME "Infclass"
 #endif

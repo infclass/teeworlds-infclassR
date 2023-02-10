@@ -12,6 +12,8 @@
 #include "system.h"
 
 #include <sys/stat.h>
+#include "logger.h"
+
 #include <sys/types.h>
 
 #include <chrono>
@@ -99,173 +101,41 @@ static NETSOCKET invalid_socket = {NETTYPE_INVALID, -1, -1};
 
 #define AF_WEBSOCKET_INET (0xee)
 
+std::atomic_bool dbg_assert_failing = false;
+
+bool dbg_assert_has_failed()
+{
+	return dbg_assert_failing.load(std::memory_order_acquire);
+}
+
 void dbg_assert_imp(const char *filename, int line, int test, const char *msg)
 {
 	if(!test)
 	{
+		dbg_assert_failing.store(true, std::memory_order_release);
 		dbg_msg("assert", "%s(%d): %s", filename, line, msg);
-		dbg_break_imp();
+		log_global_logger_finish();
+		dbg_break();
 	}
 }
 
-void dbg_break_imp(void)
+void dbg_break()
 {
 #ifdef __GNUC__
 	__builtin_trap();
 #else
-	*((volatile unsigned *)0) = 0x0;
+	abort();
 #endif
 }
 
 void dbg_msg(const char *sys, const char *fmt, ...)
 {
 	va_list args;
-	char *msg;
-	int len;
-
-	char str[1024 * 4];
-	int i;
-
-	char timestr[80];
-	str_timestamp_format(timestr, sizeof(timestr), FORMAT_SPACE);
-
-	str_format(str, sizeof(str), "[%s][%s]: ", timestr, sys);
-
-	len = str_length(str);
-	msg = (char *)str + len;
-
 	va_start(args, fmt);
-#if defined(CONF_FAMILY_WINDOWS)
-	_vsnprintf(msg, sizeof(str) - len, fmt, args);
-#else
-	vsnprintf(msg, sizeof(str) - len, fmt, args);
-#endif
+	log_log_v(LEVEL_INFO, sys, fmt, args);
 	va_end(args);
-
-	for(i = 0; i < num_loggers; i++)
-		loggers[i].logger(str, loggers[i].user);
 }
 
-#if defined(CONF_FAMILY_WINDOWS)
-static void logger_debugger(const char *line, void *user)
-{
-	(void)user;
-	OutputDebugString(line);
-	OutputDebugString("\n");
-}
-#endif
-
-static void logger_file(const char *line, void *user)
-{
-	ASYNCIO *logfile = (ASYNCIO *)user;
-	aio_lock(logfile);
-	aio_write_unlocked(logfile, line, str_length(line));
-	aio_write_newline_unlocked(logfile);
-	aio_unlock(logfile);
-}
-
-#if defined(CONF_FAMILY_WINDOWS)
-static void logger_stdout_sync(const char *line, void *user)
-{
-	size_t length = str_length(line);
-	wchar_t *wide = (wchar_t *)malloc(length * sizeof(*wide));
-	const char *p = line;
-	int wlen = 0;
-	HANDLE console;
-
-	(void)user;
-	mem_zero(wide, length * sizeof *wide);
-
-	for(int codepoint = 0; (codepoint = str_utf8_decode(&p)); wlen++)
-	{
-		char u16[4] = {0};
-
-		if(codepoint < 0)
-		{
-			free(wide);
-			return;
-		}
-
-		if(str_utf16le_encode(u16, codepoint) != 2)
-		{
-			free(wide);
-			return;
-		}
-
-		mem_copy(&wide[wlen], u16, 2);
-	}
-
-	console = GetStdHandle(STD_OUTPUT_HANDLE);
-	WriteConsoleW(console, wide, wlen, NULL, NULL);
-	WriteConsoleA(console, "\n", 1, NULL, NULL);
-	free(wide);
-}
-#endif
-
-static void logger_stdout_finish(void *user)
-{
-	ASYNCIO *logfile = (ASYNCIO *)user;
-	aio_wait(logfile);
-	aio_free(logfile);
-}
-
-static void logger_file_finish(void *user)
-{
-	ASYNCIO *logfile = (ASYNCIO *)user;
-	aio_close(logfile);
-	logger_stdout_finish(user);
-}
-
-static void dbg_logger_finish(void)
-{
-	int i;
-	for(i = 0; i < num_loggers; i++)
-	{
-		if(loggers[i].finish)
-		{
-			loggers[i].finish(loggers[i].user);
-		}
-	}
-}
-
-void dbg_logger(DBG_LOGGER logger, DBG_LOGGER_FINISH finish, void *user)
-{
-	DBG_LOGGER_DATA data;
-	if(num_loggers == 0)
-	{
-		atexit(dbg_logger_finish);
-	}
-	data.logger = logger;
-	data.finish = finish;
-	data.user = user;
-	loggers[num_loggers] = data;
-	num_loggers++;
-}
-
-void dbg_logger_stdout(void)
-{
-#if defined(CONF_FAMILY_WINDOWS)
-	dbg_logger(logger_stdout_sync, 0, 0);
-#else
-	dbg_logger(logger_file, logger_stdout_finish, aio_new(io_stdout()));
-#endif
-}
-
-void dbg_logger_debugger(void)
-{
-#if defined(CONF_FAMILY_WINDOWS)
-	dbg_logger(logger_debugger, 0, 0);
-#endif
-}
-
-void dbg_logger_file(const char *filename)
-{
-	IOHANDLE logfile = io_open(filename, IOFLAG_WRITE);
-	if(logfile)
-		dbg_logger(logger_file, logger_file_finish, aio_new(logfile));
-	else
-		dbg_msg("dbg/logger", "failed to open '%s' for logging", filename);
-}
 /* */
 
 void mem_copy(void *dest, const void *source, unsigned size)
@@ -288,7 +158,7 @@ IOHANDLE io_open_impl(const char *filename, int flags)
 	dbg_assert(flags == (IOFLAG_READ | IOFLAG_SKIP_BOM) || flags == IOFLAG_READ || flags == IOFLAG_WRITE || flags == IOFLAG_APPEND, "flags must be read, read+skipbom, write or append");
 #if defined(CONF_FAMILY_WINDOWS)
 	WCHAR wBuffer[IO_MAX_PATH_LENGTH];
-	MultiByteToWideChar(CP_UTF8, 0, filename, -1, wBuffer, std::size(wBuffer));
+	dbg_assert(MultiByteToWideChar(CP_UTF8, 0, filename, -1, wBuffer, std::size(wBuffer)) > 0, "MultiByteToWideChar failure");
 	if((flags & IOFLAG_READ) != 0)
 		return (IOHANDLE)_wfsopen(wBuffer, L"rb", _SH_DENYNO);
 	if(flags == IOFLAG_WRITE)

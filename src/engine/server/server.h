@@ -21,11 +21,14 @@
 #include <game/voting.h>
 
 /* DDNET MODIFICATION START *******************************************/
+#include "base/logger.h"
 #include "sql_connector.h"
 #include "sql_server.h"
 /* DDNET MODIFICATION END *********************************************/
 
 #include "name_ban.h"
+
+class CLogMessage;
 
 class CSnapIDPool
 {
@@ -90,6 +93,8 @@ public:
 
 class CServer : public IServer
 {
+	friend class CServerLogger;
+
 	class IGameServer *m_pGameServer;
 	class CConfig *m_pConfig;
 	class IConsole *m_pConsole;
@@ -160,6 +165,7 @@ public:
 		int m_Authed;
 		int m_AuthTries;
 		int m_NextMapChunk;
+		bool m_ShowIps;
 
 		const IConsole::CCommandInfo *m_pRconCmdToSend;
 
@@ -218,7 +224,6 @@ public:
 	bool m_ReloadedWhenEmpty;
 	int m_RconClientID;
 	int m_RconAuthLevel;
-	int m_PrintCBIndex;
 
 	int64_t m_Lastheartbeat;
 	//static NETADDR4 master_server;
@@ -239,8 +244,6 @@ public:
 
 	CDemoRecorder m_DemoRecorder;
 	CRegister m_Register;
-
-	int m_RconRestrict;
 
 	std::vector<CNameBan> m_vNameBans;
 
@@ -266,6 +269,7 @@ public:
 
 	int Init();
 
+	void SendLogLine(const CLogMessage *pMessage);
 	void SetRconCID(int ClientID);
 	int GetAuthedState(int ClientID) const;
 	int GetClientInfo(int ClientID, CClientInfo *pInfo) const;
@@ -297,7 +301,8 @@ public:
 	
 	void SendConnectionReady(int ClientID);
 	void SendRconLine(int ClientID, const char *pLine);
-	static void SendRconLineAuthed(const char *pLine, void *pUser, ColorRGBA PrintColor);
+	// Accepts -1 as ClientID to mean "all clients with at least auth level admin"
+	void SendRconLogLine(int ClientID, const CLogMessage *pMessage);
 
 	void SendRconCmdAdd(const IConsole::CCommandInfo *pCommandInfo, int ClientID);
 	void SendRconCmdRem(const IConsole::CCommandInfo *pCommandInfo, int ClientID);
@@ -327,10 +332,11 @@ public:
 	static void ConStopRecord(IConsole::IResult *pResult, void *pUser);
 	static void ConMapReload(IConsole::IResult *pResult, void *pUser);
 	static void ConLogout(IConsole::IResult *pResult, void *pUser);
+	static void ConShowIps(IConsole::IResult *pResult, void *pUser);
+
 	static void ConchainSpecialInfoupdate(IConsole::IResult *pResult, void *pUserData, IConsole::FCommandCallback pfnCallback, void *pCallbackUserData);
 	static void ConchainMaxclientsperipUpdate(IConsole::IResult *pResult, void *pUserData, IConsole::FCommandCallback pfnCallback, void *pCallbackUserData);
 	static void ConchainModCommandUpdate(IConsole::IResult *pResult, void *pUserData, IConsole::FCommandCallback pfnCallback, void *pCallbackUserData);
-	static void ConchainConsoleOutputLevelUpdate(IConsole::IResult *pResult, void *pUserData, IConsole::FCommandCallback pfnCallback, void *pCallbackUserData);
 
 	static void ConMute(class IConsole::IResult *pResult, void *pUser);
 	static void ConUnmute(class IConsole::IResult *pResult, void *pUser);
@@ -473,7 +479,6 @@ public:
 	int m_aPrevStates[MAX_CLIENTS];
 	char *GetAnnouncementLine(char const *FileName);
 	unsigned m_AnnouncementLastLine;
-	void RestrictRconOutput(int ClientID) { m_RconRestrict = ClientID; }
 
 	virtual const char *GetPreviousMapName() const;
 	virtual int* GetIdMap(int ClientID);

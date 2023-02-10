@@ -1,5 +1,6 @@
 /* (c) Magnus Auvinen. See licence.txt in the root of the distribution for more information. */
 /* If you are missing that file, acquire a complete release at teeworlds.com.                */
+#include <base/logger.h>
 #include <base/system.h>
 
 #include <engine/console.h>
@@ -9,8 +10,8 @@
 
 int main(int argc, const char **argv)
 {
-	cmdline_fix(&argc, &argv);
-	dbg_logger_stdout();
+	CCmdlineFix CmdlineFix(&argc, &argv);
+	log_set_global_logger_default();
 
 	if(argc < 2 || argc > 3)
 	{
@@ -82,6 +83,5 @@ int main(int argc, const char **argv)
 	delete pMap;
 	delete pStorage;
 
-	cmdline_free(argc, argv);
 	return 0;
 }
