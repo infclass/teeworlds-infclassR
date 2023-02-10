@@ -299,6 +299,23 @@ void CInfClassCharacter::Snap(int SnappingClient)
 	{
 		pDDNetCharacter->m_Flags |= CHARACTERFLAG_TELEGUN_GRENADE;
 	}
+	if(GetPlayerClass() != PLAYERCLASS_BOOMER)
+	{
+		if(m_aWeapons[WEAPON_HAMMER].m_Got)
+			pDDNetCharacter->m_Flags |= CHARACTERFLAG_WEAPON_HAMMER;
+	}
+	if(m_aWeapons[WEAPON_GUN].m_Got)
+		pDDNetCharacter->m_Flags |= CHARACTERFLAG_WEAPON_GUN;
+	if(m_aWeapons[WEAPON_SHOTGUN].m_Got)
+		pDDNetCharacter->m_Flags |= CHARACTERFLAG_WEAPON_SHOTGUN;
+	if(m_aWeapons[WEAPON_GRENADE].m_Got)
+		pDDNetCharacter->m_Flags |= CHARACTERFLAG_WEAPON_GRENADE;
+	if(m_aWeapons[WEAPON_LASER].m_Got)
+		pDDNetCharacter->m_Flags |= CHARACTERFLAG_WEAPON_LASER;
+	if(m_ActiveWeapon == WEAPON_NINJA)
+		pDDNetCharacter->m_Flags |= CHARACTERFLAG_WEAPON_NINJA;
+	if(IsFrozen())
+		pDDNetCharacter->m_Flags |= CHARACTERFLAG_MOVEMENTS_DISABLED;
 
 	pDDNetCharacter->m_Jumps = m_Core.m_Jumps;
 	pDDNetCharacter->m_JumpedTotal = m_Core.m_JumpedTotal;
