@@ -10,6 +10,8 @@
 #include <windows.h>
 #endif
 
+#include <csignal>
+
 int main(int argc, const char **argv) // ignore_convention
 {
 	cmdline_fix(&argc, &argv);
@@ -30,6 +32,12 @@ int main(int argc, const char **argv) // ignore_convention
 		dbg_msg("secure", "could not initialize secure RNG");
 		return -1;
 	}
+
+#if !defined(CONF_FAMILY_WINDOWS)
+	// As a multithreaded application we have to tell curl to not install signal
+	// handlers and instead ignore SIGPIPE from OpenSSL ourselves.
+	signal(SIGPIPE, SIG_IGN);
+#endif
 
 	CServer *pServer = CreateServer();
 	IKernel *pKernel = IKernel::Create();
