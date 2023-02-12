@@ -384,6 +384,8 @@ public:
 	virtual const char *GetPreviousMapName() const = 0;
 	virtual int* GetIdMap(int ClientID) = 0;
 
+	virtual bool ClientPrevIngame(int ClientID) = 0;
+
 	virtual int GetActivePlayerCount() = 0;
 
 	virtual const char *GetMapName() const = 0;

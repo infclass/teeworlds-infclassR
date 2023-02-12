@@ -564,7 +564,9 @@ int CServer::Init()
 
 	m_CurrentGameTick = 0;
 	m_MapVotesCounter = 0;
-	
+
+	mem_zero(m_aPrevStates, sizeof(m_aPrevStates));
+
 #ifdef CONF_SQL
 	m_ChallengeType = 0;
 	m_ChallengeRefreshTick = 0;
@@ -1201,6 +1203,7 @@ int CServer::DelClientCallback(int ClientID, int Type, const char *pReason, void
 	pThis->m_aClients[ClientID].m_AuthTries = 0;
 	pThis->m_aClients[ClientID].m_pRconCmdToSend = 0;
 	pThis->m_aClients[ClientID].m_ShowIps = false;
+	pThis->m_aPrevStates[ClientID] = CClient::STATE_EMPTY;
 	pThis->m_aClients[ClientID].m_Snapshots.PurgeAll();
 	pThis->m_aClients[ClientID].m_UserID = -1;
 #ifdef CONF_SQL
@@ -2304,7 +2307,10 @@ int CServer::LoadMap(const char *pMapName)
 	ResetMapVotes();
 
 /* INFECTION MODIFICATION END *****************************************/
-	
+
+	for(int i = 0; i < MAX_CLIENTS; i++)
+		m_aPrevStates[i] = m_aClients[i].m_State;
+
 	return 1;
 }
 

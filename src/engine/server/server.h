@@ -482,7 +482,10 @@ public:
 	unsigned m_AnnouncementLastLine;
 
 	virtual const char *GetPreviousMapName() const;
-	virtual int* GetIdMap(int ClientID);
+
+	int *GetIdMap(int ClientID) override;
+
+	bool ClientPrevIngame(int ClientID) override { return m_aPrevStates[ClientID] == CClient::STATE_INGAME; }
 };
 
 extern CServer *CreateServer();
