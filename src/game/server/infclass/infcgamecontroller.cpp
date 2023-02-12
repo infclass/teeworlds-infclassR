@@ -27,6 +27,7 @@
 #include <game/generated/protocol.h>
 #include <game/server/infclass/classes/humans/human.h>
 #include <game/server/infclass/classes/infected/infected.h>
+#include <game/version.h>
 
 #include <array>
 #include <algorithm>
@@ -142,6 +143,44 @@ void CInfClassGameController::IncreaseCurrentRoundCounter()
 	MaybeSuggestMoreRounds();
 }
 
+void CInfClassGameController::OnPlayerConnect(CPlayer *pPlayer)
+{
+	IGameController::OnPlayerConnect(pPlayer);
+	int ClientID = pPlayer->GetCID();
+
+	pPlayer->SetOriginalName(Server()->ClientName(ClientID));
+
+	Server()->RoundStatistics()->ResetPlayer(ClientID);
+
+	if(!Server()->ClientPrevIngame(ClientID))
+	{
+		GameServer()->SendChatTarget_Localization(-1, CHATCATEGORY_PLAYER, _("{str:PlayerName} entered and joined the game"), "PlayerName", Server()->ClientName(ClientID), nullptr);
+
+		GameServer()->SendChatTarget(ClientID, "InfectionClass Mod. Version: " GAME_VERSION);
+		GameServer()->SendChatTarget_Localization(ClientID, CHATCATEGORY_DEFAULT,
+			_("See also: /help, /changelog, /about"), nullptr);
+
+		if(Config()->m_AboutContactsDiscord[0])
+		{
+			GameServer()->SendChatTarget_Localization(ClientID, CHATCATEGORY_DEFAULT,
+				_("Join our Discord server: {str:Url}"), "Url",
+				Config()->m_AboutContactsDiscord, nullptr);
+		}
+		if(Config()->m_AboutContactsTelegram[0])
+		{
+			GameServer()->SendChatTarget_Localization(ClientID, CHATCATEGORY_DEFAULT,
+				_("Join our Telegram: {str:Url}"), "Url",
+				Config()->m_AboutContactsTelegram, nullptr);
+		}
+		if(Config()->m_AboutContactsMatrix[0])
+		{
+			GameServer()->SendChatTarget_Localization(ClientID, CHATCATEGORY_DEFAULT,
+				_("Join our Matrix room: {str:Url}"), "Url",
+				Config()->m_AboutContactsMatrix, nullptr);
+		}
+	}
+}
+
 void CInfClassGameController::OnPlayerDisconnect(CPlayer *pBasePlayer, int Type, const char *pReason)
 {
 	Server()->RoundStatistics()->ResetPlayer(pBasePlayer->GetCID());
@@ -166,6 +205,20 @@ void CInfClassGameController::OnPlayerDisconnect(CPlayer *pBasePlayer, int Type,
 	}
 
 	IGameController::OnPlayerDisconnect(pPlayer, Type, pReason);
+}
+
+void CInfClassGameController::OnReset()
+{
+	// IGameController::OnReset();
+
+	for(auto &pPlayer : GameServer()->m_apPlayers)
+	{
+		if(pPlayer)
+		{
+			pPlayer->Respawn();
+			pPlayer->m_RespawnTick = Server()->Tick() + Server()->TickSpeed() / 2;
+		}
+	}
 }
 
 void CInfClassGameController::DoPlayerInfection(CInfClassPlayer *pPlayer, CInfClassPlayer *pInfectiousPlayer, PLAYERCLASS PreviousClass)

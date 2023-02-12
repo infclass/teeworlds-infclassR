@@ -283,6 +283,19 @@ double IGameController::GetTime()
 	return static_cast<double>(Server()->Tick() - m_RoundStartTick)/Server()->TickSpeed();
 }
 
+void IGameController::OnPlayerConnect(CPlayer *pPlayer)
+{
+	int ClientID = pPlayer->GetCID();
+	pPlayer->Respawn();
+
+	if(!Server()->ClientPrevIngame(ClientID))
+	{
+		char aBuf[128];
+		str_format(aBuf, sizeof(aBuf), "team_join player='%d:%s' team=%d", ClientID, Server()->ClientName(ClientID), pPlayer->GetTeam());
+		GameServer()->Console()->Print(IConsole::OUTPUT_LEVEL_DEBUG, "game", aBuf);
+	}
+}
+
 void IGameController::OnPlayerDisconnect(CPlayer *pPlayer, int Type, const char *pReason)
 {
 	pPlayer->OnDisconnect();
@@ -934,20 +947,11 @@ bool IGameController::CanVote()
 	return true;
 }
 
-void IGameController::PostReset()
+void IGameController::OnReset()
 {
-	for(int i = 0; i < MAX_CLIENTS; i++)
-	{
-		if(GameServer()->m_apPlayers[i])
-		{
-			GameServer()->m_apPlayers[i]->Respawn();
-/* INFECTION MODIFICATION START ***************************************/
-			//~ GameServer()->m_apPlayers[i]->m_Score = 0;
-			//~ GameServer()->m_apPlayers[i]->m_ScoreStartTick = Server()->Tick();
-/* INFECTION MODIFICATION END *****************************************/
-			GameServer()->m_apPlayers[i]->m_RespawnTick = Server()->Tick()+Server()->TickSpeed()/2;
-		}
-	}
+	for(auto &pPlayer : GameServer()->m_apPlayers)
+		if(pPlayer)
+			pPlayer->Respawn();
 }
 
 void IGameController::DoTeamBalance()

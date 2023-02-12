@@ -148,8 +148,8 @@ void CGameWorld::Snap(int SnappingClient)
 void CGameWorld::Reset()
 {
 	// reset all entities
-	for(int i = 0; i < NUM_ENTTYPES; i++)
-		for(CEntity *pEnt = m_apFirstEntityTypes[i]; pEnt; )
+	for(auto *pEnt : m_apFirstEntityTypes)
+		for(; pEnt;)
 		{
 			m_pNextTraverseEntity = pEnt->m_pNextTypeEntity;
 			pEnt->Reset();
@@ -157,7 +157,7 @@ void CGameWorld::Reset()
 		}
 	RemoveEntities();
 
-	GameServer()->m_pController->PostReset();
+	GameServer()->m_pController->OnReset();
 	RemoveEntities();
 
 	m_ResetRequested = false;

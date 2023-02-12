@@ -88,9 +88,15 @@ public:
 
 	IGameController(class CGameContext *pGameServer);
 	virtual ~IGameController();
-	
+
 	virtual void DoWincheck();
 
+	virtual void OnPlayerConnect(class CPlayer *pPlayer);
+	virtual void OnPlayerDisconnect(CPlayer *pPlayer, int Type, const char *pReason);
+
+	virtual void OnReset();
+
+	// game
 	void DoWarmup(int Seconds);
 
 	virtual void StartRound();
@@ -170,10 +176,9 @@ public:
 	//
 /* INFECTION MODIFICATION START ***************************************/
 	virtual bool IsSpawnable(vec2 Position, int TeleZoneIndex) = 0;
-	virtual void OnPlayerDisconnect(CPlayer *pPlayer, int Type, const char *pReason);
 
 	int GetRoundId() { return m_RoundId; }
-/* INFECTION MODIFICATION END *****************************************/
+	/* INFECTION MODIFICATION END *****************************************/
 
 	virtual void DoTeamChange(class CPlayer *pPlayer, int Team, bool DoChatMsg = true);
 	/*
@@ -186,7 +191,6 @@ public:
 	bool CanChangeTeam(CPlayer *pPplayer, int JoinTeam);
 	int ClampTeam(int Team);
 
-	virtual void PostReset();
 	double GetTime();
 
 	virtual void RegisterChatCommands(class IConsole *pConsole) = 0;

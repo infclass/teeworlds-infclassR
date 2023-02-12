@@ -1424,43 +1424,17 @@ void CGameContext::ProgressVoteOptions(int ClientID)
 
 void CGameContext::OnClientEnter(int ClientID)
 {
-	//world.insert_entity(&players[client_id]);
+	m_pController->OnPlayerConnect(m_apPlayers[ClientID]);
+
+	// world.insert_entity(&players[client_id]);
 	m_apPlayers[ClientID]->m_IsInGame = true;
 	m_apPlayers[ClientID]->Respawn();
 
-/* INFECTION MODIFICATION START ***************************************/
-	m_apPlayers[ClientID]->SetOriginalName(Server()->ClientName(ClientID));
-
-	SendChatTarget_Localization(-1, CHATCATEGORY_PLAYER, _("{str:PlayerName} entered and joined the game"), "PlayerName", Server()->ClientName(ClientID), NULL);
-
-	SendChatTarget(ClientID, "InfectionClass Mod. Version: " GAME_VERSION);
-	SendChatTarget_Localization(ClientID, CHATCATEGORY_DEFAULT,
-		_("See also: /help, /changelog, /about"), nullptr);
-
-	if(Config()->m_AboutContactsDiscord[0])
-	{
-		SendChatTarget_Localization(ClientID, CHATCATEGORY_DEFAULT,
-			_("Join our Discord server: {str:Url}"), "Url",
-			Config()->m_AboutContactsDiscord, nullptr);
-	}
-	if(Config()->m_AboutContactsTelegram[0])
-	{
-		SendChatTarget_Localization(ClientID, CHATCATEGORY_DEFAULT,
-			_("Join our Telegram: {str:Url}"), "Url",
-			Config()->m_AboutContactsTelegram, nullptr);
-	}
-	if(Config()->m_AboutContactsMatrix[0])
-	{
-		SendChatTarget_Localization(ClientID, CHATCATEGORY_DEFAULT,
-			_("Join our Matrix room: {str:Url}"), "Url",
-			Config()->m_AboutContactsMatrix, nullptr);
-	}
-
-	char aBuf[512];
-	str_format(aBuf, sizeof(aBuf), "team_join player='%d:%s' team=%d", ClientID, Server()->ClientName(ClientID), m_apPlayers[ClientID]->GetTeam());
-	Console()->Print(IConsole::OUTPUT_LEVEL_DEBUG, "game", aBuf);
-
 	m_VoteUpdate = true;
+
+	// send active vote
+	if(m_VoteCloseTime)
+		SendVoteSet(ClientID);
 }
 
 bool CGameContext::OnClientDataPersist(int ClientID, void *pData)
@@ -1500,14 +1474,6 @@ void CGameContext::OnClientConnected(int ClientID, void *pData)
 			return;
 	}
 #endif
-
-/* INFECTION MODIFICATION START ***************************************/	
-	Server()->RoundStatistics()->ResetPlayer(ClientID);
-/* INFECTION MODIFICATION END *****************************************/	
-
-	// send active vote
-	if(m_VoteCloseTime)
-		SendVoteSet(ClientID);
 
 	// send motd
 	if(!Server()->GetClientMemory(ClientID, CLIENTMEMORY_MOTD))
