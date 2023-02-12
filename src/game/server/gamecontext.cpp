@@ -81,13 +81,11 @@ void CGameContext::Construct(int Resetting)
 
 CGameContext::CGameContext(int Resetting)
 {
-	fout.open(g_Config.m_PlayerLogfile, std::ios_base::app);
 	Construct(Resetting);
 }
 
 CGameContext::CGameContext()
 {
-	fout.open(g_Config.m_PlayerLogfile, std::ios_base::app);
 	Construct(NO_RESET);
 }
 
@@ -1457,11 +1455,6 @@ void CGameContext::OnClientEnter(int ClientID)
 			_("Join our Matrix room: {str:Url}"), "Url",
 			Config()->m_AboutContactsMatrix, nullptr);
 	}
-
-	char output[512];
-	str_format(output, sizeof(output), "[%08x][%s][%s]", (int)time(0), Server()->GetClientIP(ClientID).c_str(), Server()->ClientName(ClientID));
-	fout << output << std::endl;
-/* INFECTION MODIFICATION END *****************************************/
 
 	char aBuf[512];
 	str_format(aBuf, sizeof(aBuf), "team_join player='%d:%s' team=%d", ClientID, Server()->ClientName(ClientID), m_apPlayers[ClientID]->GetTeam());

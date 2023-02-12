@@ -378,10 +378,6 @@ private:
 
 public:
 public:
-	/* INFECTION MODIFICATION END *****************************************/
-	// InfClassR begin
-	std::ofstream fout;
-	// InfClassR end
 	bool IsVersionBanned(int Version);
 };
 
