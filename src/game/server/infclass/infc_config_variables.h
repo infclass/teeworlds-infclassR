@@ -33,7 +33,7 @@ MACRO_CONFIG_INT(InfMinPlayerPercentForMapVote, inf_min_player_percent_map_vote,
 MACRO_CONFIG_INT(InfMinPlayerNumberForMapVote, inf_min_player_number_map_vote, 1, 1, 32, CFGFLAG_SERVER, "Minimum number of players that are needed to start a map vote")
 MACRO_CONFIG_INT(InfCaptcha, inf_captcha, 0, 0, 1, CFGFLAG_SERVER, "Enable captcha")
 MACRO_CONFIG_INT(InfShockwaveAffectHumans, inf_shock_wave_affect_humans, 0, 0, 1, CFGFLAG_SERVER, "Explosion shockwave affect humans")
-MACRO_CONFIG_INT(InfSpawnProtectionTime, inf_spawn_protection_time, 2, 0, 60, CFGFLAG_SERVER, "Time zombies stay invincible while spawning")
+MACRO_CONFIG_INT(InfSpawnProtectionTime, inf_spawn_protection_time, 2000, 0, 60000, CFGFLAG_SERVER, "Time zombies stay invincible while spawning")
 MACRO_CONFIG_INT(InfAntiFireTime, inf_anti_fire_time, 700, 0, 10000, CFGFLAG_SERVER, "Time players can't attack after spawning (in ms)")
 MACRO_CONFIG_INT(InfClassChooser, inf_class_chooser, 1, 0, 1, CFGFLAG_SERVER, "Enable the class chooser")
 MACRO_CONFIG_INT(InfTaxi, inf_taxi, 1, 0, 2, CFGFLAG_SERVER, "Toggle taxi mode (disabled, enabled (without passengers ammo regen), enabled")

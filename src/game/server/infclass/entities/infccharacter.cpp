@@ -2068,7 +2068,7 @@ void CInfClassCharacter::GrantSpawnProtection()
 	// Indicate time left being protected via eyes
 	if(m_ProtectionTick <= 0)
 	{
-		m_ProtectionTick = Server()->TickSpeed() * g_Config.m_InfSpawnProtectionTime;
+		m_ProtectionTick = Server()->TickSpeed() * g_Config.m_InfSpawnProtectionTime / 1000;
 		if(!IsFrozen() && !IsInvisible())
 		{
 			SetEmote(EMOTE_SURPRISE, Server()->Tick() + m_ProtectionTick);
