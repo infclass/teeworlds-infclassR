@@ -97,6 +97,10 @@ void CInfClassCharacter::OnCharacterInInfectionZone()
 			{
 				IncreaseHealth(1);
 			}
+			if(m_InfZoneTick < 0)
+			{
+				m_InfZoneTick = Server()->Tick(); // Save Tick when zombie enters infection zone
+			}
 		}
 	}
 	else
@@ -122,7 +126,18 @@ void CInfClassCharacter::OnCharacterInInfectionZone()
 
 void CInfClassCharacter::OnCharacterOutOfInfectionZone()
 {
-	m_InfZoneTick = -1;// Reset Tick when zombie is not in infection zone
+	if(m_InfZoneTick == -1)
+		return;
+
+	m_InfZoneTick = -1; // Reset Tick when zombie is not in infection zone
+
+	if(!m_IsInvisible)
+	{
+		SetEmote(EMOTE_NORMAL, Server()->Tick() + Server()->TickSpeed());
+	}
+
+	// Player left spawn before protection ran out
+	m_ProtectionTick = 0;
 }
 
 void CInfClassCharacter::OnCharacterInBonusZoneTick()
@@ -2122,16 +2137,6 @@ void CInfClassCharacter::PreCoreTick()
 	if(m_ProtectionTick > 0)
 	{
 		--m_ProtectionTick;
-
-		// Player left spawn before protection ran out
-		if(m_InfZoneTick == -1)
-		{
-			if(!m_IsInvisible)
-			{
-				SetEmote(EMOTE_NORMAL, Server()->Tick() + Server()->TickSpeed());
-			}
-			m_ProtectionTick = 0;
-		}
 	}
 
 	// Ghost

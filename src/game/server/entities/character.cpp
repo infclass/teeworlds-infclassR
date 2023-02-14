@@ -36,7 +36,7 @@ CCharacter::CCharacter(CGameWorld *pWorld, IConsole *pConsole) :
 	m_IsInSlowMotion = false;
 	m_FrozenTime = -1;
 	m_DartLifeSpan = -1;
-	m_InfZoneTick = -1;
+	m_InfZoneTick = 0;
 	m_InAirTick = 0;
 	m_InWater = 0;
 	m_ProtectionTick = 0;
