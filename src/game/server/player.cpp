@@ -47,6 +47,10 @@ void CPlayer::Reset()
 	m_OverrideEmote = 0;
 	m_OverrideEmoteReset = -1;
 
+	m_ShowOthers = g_Config.m_SvShowOthersDefault;
+	m_ShowAll = g_Config.m_SvShowAllDefault;
+	m_ShowDistance = vec2(1200, 800);
+
 /* INFECTION MODIFICATION START ***************************************/
 	m_Authed = IServer::AUTHED_NO;
 	m_ScoreMode = PLAYERSCOREMODE_SCORE;

@@ -2233,6 +2233,65 @@ void CGameContext::ConConverse(IConsole::IResult *pResult, void *pUserData)
 	// This will never be called
 }
 
+void CGameContext::ConShowOthers(IConsole::IResult *pResult, void *pUserData)
+{
+	CGameContext *pSelf = (CGameContext *)pUserData;
+	if(!CheckClientID(pResult->m_ClientID))
+		return;
+
+	CPlayer *pPlayer = pSelf->m_apPlayers[pResult->m_ClientID];
+	if(!pPlayer)
+		return;
+	if(pSelf->Server()->GetAuthedState(pResult->m_ClientID))
+	{
+		if(pResult->NumArguments())
+			pPlayer->m_ShowOthers = pResult->GetInteger(0);
+		else
+			pPlayer->m_ShowOthers = !pPlayer->m_ShowOthers;
+	}
+	else
+		pSelf->Console()->Print(
+			IConsole::OUTPUT_LEVEL_STANDARD,
+			"chatresp",
+			"Custom 'show others' is disabled");
+}
+
+void CGameContext::ConShowAll(IConsole::IResult *pResult, void *pUserData)
+{
+	CGameContext *pSelf = (CGameContext *)pUserData;
+	if(!CheckClientID(pResult->m_ClientID))
+		return;
+
+	CPlayer *pPlayer = pSelf->m_apPlayers[pResult->m_ClientID];
+	if(!pPlayer)
+		return;
+
+	if(pSelf->Server()->GetAuthedState(pResult->m_ClientID) == 0)
+	{
+		pSelf->Console()->Print(
+			IConsole::OUTPUT_LEVEL_STANDARD,
+			"chatresp",
+			"Custom 'show all' is disabled");
+	}
+
+	if(pResult->NumArguments())
+	{
+		if(pPlayer->m_ShowAll == (bool)pResult->GetInteger(0))
+			return;
+
+		pPlayer->m_ShowAll = pResult->GetInteger(0);
+	}
+	else
+	{
+		pPlayer->m_ShowAll = !pPlayer->m_ShowAll;
+	}
+
+	if(pPlayer->m_ShowAll)
+		pSelf->SendChatTarget(pResult->m_ClientID, "You will now see all tees on this server, no matter the distance");
+	else
+		pSelf->SendChatTarget(pResult->m_ClientID, "You will no longer see all tees on this server");
+}
+
 void CGameContext::ConMe(IConsole::IResult *pResult, void *pUserData)
 {
 	CGameContext *pSelf = (CGameContext *)pUserData;

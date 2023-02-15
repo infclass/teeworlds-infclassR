@@ -23,7 +23,8 @@ class CEntity
 	CEntity *m_pPrevTypeEntity;
 	CEntity *m_pNextTypeEntity;
 
-	class CGameWorld *m_pGameWorld;
+	/* Identity */
+	CGameWorld *m_pGameWorld;
 	CCollision *m_pCCollision;
 protected:
 	bool m_MarkedForDestroy;
@@ -61,21 +62,21 @@ public:
 
 	/*
 		Function: Destroy
-			Destorys the entity.
+			Destroys the entity.
 	*/
 	virtual void Destroy() { delete this; }
 
 	/*
 		Function: Reset
 			Called when the game resets the map. Puts the entity
-			back to it's starting state or perhaps destroys it.
+			back to its starting state or perhaps destroys it.
 	*/
 	virtual void Reset() {}
 
 	/*
 		Function: Tick
-			Called progress the entity to the next tick. Updates
-			and moves the entity to it's new state and position.
+			Called to progress the entity to the next tick. Updates
+			and moves the entity to its new state and position.
 	*/
 	virtual void Tick() {}
 
@@ -105,7 +106,7 @@ public:
 	virtual void Snap(int SnappingClient) {}
 
 	/*
-		Function: NetworkClipped(int SnappingClient)
+		Function: NetworkClipped
 			Performs a series of test to see if a client can see the
 			entity.
 
@@ -116,10 +117,11 @@ public:
 				recording.
 
 		Returns:
-			Non-zero if the entity doesn't have to be in the snapshot.
+			True if the entity doesn't have to be in the snapshot.
 	*/
-	int NetworkClipped(int SnappingClient) const;
-	int NetworkClipped(int SnappingClient, vec2 CheckPos) const;
+	bool NetworkClipped(int SnappingClient) const;
+	bool NetworkClipped(int SnappingClient, vec2 CheckPos) const;
+	bool NetworkClippedLine(int SnappingClient, vec2 StartPos, vec2 EndPos) const;
 
 	bool GameLayerClipped(vec2 CheckPos);
 
@@ -135,6 +137,9 @@ public:
 	*/
 	vec2 m_Pos;
 };
+
+bool NetworkClipped(const CGameContext *pGameServer, int SnappingClient, vec2 CheckPos);
+bool NetworkClippedLine(const CGameContext *pGameServer, int SnappingClient, vec2 StartPos, vec2 EndPos);
 
 class CAnimatedEntity : public CEntity
 {

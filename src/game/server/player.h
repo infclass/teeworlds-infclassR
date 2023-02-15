@@ -145,6 +145,10 @@ public:
 	void OverrideDefaultEmote(int Emote, int Tick);
 	bool CanOverrideDefaultEmote() const;
 
+	int m_ShowOthers;
+	bool m_ShowAll;
+	vec2 m_ShowDistance;
+
 /* INFECTION MODIFICATION START ***************************************/
 protected:
 	PLAYERCLASS m_class;
