@@ -85,8 +85,9 @@ if(USE_CONAN)
 
   conan_cmake_configure(
     REQUIRES
-      icu/71.1
-      zlib/1.2.12
+      libpng/1.6.39
+      icu/72.1
+      zlib/1.2.13
     GENERATORS cmake_find_package
   )
 
