@@ -157,7 +157,6 @@ protected:
 	char m_aLanguage[16];
 
 public:
-	int m_Authed;
 	int m_HumanTime;
 	
 	bool m_knownClass[NB_PLAYERCLASS];

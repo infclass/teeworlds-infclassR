@@ -35,12 +35,6 @@ bool CGameContext::m_ClientMuted[MAX_CLIENTS][MAX_CLIENTS];
 icArray<std::string, 256> CGameContext::m_aChangeLogEntries;
 icArray<int, 16> CGameContext::m_aChangeLogPageIndices;
 
-void CGameContext::OnSetAuthed(int ClientID, int Level)
-{
-	if(m_apPlayers[ClientID])
-		m_apPlayers[ClientID]->m_Authed = Level;
-}
-
 /* INFECTION MODIFICATION END *****************************************/
 
 bool CheckClientID(int ClientID)
@@ -1896,7 +1890,7 @@ void CGameContext::OnMessage(int MsgID, CUnpacker *pUnpacker, int ClientID)
 				}
 				else
 				{
-					switch(m_apPlayers[ClientID]->m_Authed)
+					switch(Server()->GetAuthedState(ClientID))
 					{
 						case IServer::AUTHED_ADMIN:
 							Console()->SetAccessLevel(IConsole::ACCESS_LEVEL_ADMIN);
@@ -4405,6 +4399,10 @@ const char *CGameContext::NetVersion() const { return GAME_NETVERSION; }
 
 
 IGameServer *CreateGameServer() { return new CGameContext; }
+
+void CGameContext::OnSetAuthed(int ClientID, int Level)
+{
+}
 
 bool CGameContext::IsVersionBanned(int Version)
 {

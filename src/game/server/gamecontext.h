@@ -298,8 +298,6 @@ private:
 	void GetMapNameFromCommand(char* pMapName, const char *pCommand);
 
 public:
-	virtual void OnSetAuthed(int ClientID,int Level);
-	
 	virtual void SendBroadcast(int To, const char *pText, int Priority, int LifeSpan);
 	virtual void SendBroadcast_Localization(int To, int Priority, int LifeSpan, const char* pText, ...);
 	virtual void SendBroadcast_Localization_P(int To, int Priority, int LifeSpan, int Number, const char* pText, ...);
@@ -379,6 +377,8 @@ private:
 	int m_aHitSoundState[MAX_CLIENTS]; // 1 for hit, 2 for kill (no sounds must be sent)
 
 public:
+	void OnSetAuthed(int ClientID, int Level) override;
+
 public:
 	bool IsVersionBanned(int Version);
 };

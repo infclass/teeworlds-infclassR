@@ -52,7 +52,6 @@ void CPlayer::Reset()
 	m_ShowDistance = vec2(1200, 800);
 
 /* INFECTION MODIFICATION START ***************************************/
-	m_Authed = IServer::AUTHED_NO;
 	m_ScoreMode = PLAYERSCOREMODE_SCORE;
 
 	m_ClientNameLocked = false;
