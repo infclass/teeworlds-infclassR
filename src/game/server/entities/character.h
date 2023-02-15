@@ -48,7 +48,7 @@ public:
 	virtual void Reset();
 	virtual void Destroy();
 	virtual void Tick();
-	virtual void TickDefered();
+	void TickDeferred() override;
 	virtual void TickPaused();
 	virtual void Snap(int SnappingClient);
 

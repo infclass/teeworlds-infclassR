@@ -93,7 +93,7 @@ public:
 
 	void Destroy() override;
 	void Tick() override;
-	void TickDefered() override;
+	void TickDeferred() override;
 	void TickPaused() override;
 	void Snap(int SnappingClient) override;
 	void SpecialSnapForClient(int SnappingClient, bool *pDoSnap);

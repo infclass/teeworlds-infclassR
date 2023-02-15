@@ -385,7 +385,7 @@ void CCharacter::Tick()
 	m_PrevInput = m_Input;
 }
 
-void CCharacter::TickDefered()
+void CCharacter::TickDeferred()
 {
 	// advance the dummy
 	{

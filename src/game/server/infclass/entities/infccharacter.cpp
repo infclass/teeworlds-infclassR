@@ -233,11 +233,11 @@ void CInfClassCharacter::Tick()
 	}
 }
 
-void CInfClassCharacter::TickDefered()
+void CInfClassCharacter::TickDeferred()
 {
 	int Events = m_Core.m_TriggeredEvents;
 
-	CCharacter::TickDefered();
+	CCharacter::TickDeferred();
 
 	if(Events & COREEVENT_AIR_JUMP)
 	{
