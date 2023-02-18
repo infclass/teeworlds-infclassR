@@ -3218,9 +3218,12 @@ void CInfClassGameController::RewardTheKillers(CInfClassCharacter *pVictim, cons
 		return;
 
 	CInfClassPlayer *pKiller = GetPlayer(Context.Killer);
+	if(!pKiller)
+		return;
+
 	CInfClassPlayer *pAssistant = GetPlayer(Context.Assistant);
 
-	if(pAssistant && pKiller && (pAssistant->IsHuman() == pVictim->IsHuman()))
+	if(pAssistant && (pAssistant->IsHuman() == pVictim->IsHuman()))
 	{
 		// Do not reward the victim teammates-assistants
 		pAssistant = nullptr;
