@@ -1361,6 +1361,37 @@ void CInfClassCharacter::UpdateLastEnforcer(int ClientID, float Force, DAMAGE_TY
 	m_EnforcersInfo.Add(Info);
 }
 
+void CInfClassCharacter::RemoveReferencesToCID(int ClientID)
+{
+	for(int i = 0; i < m_EnforcersInfo.Size(); ++i)
+	{
+		if(m_EnforcersInfo.At(i).m_CID == ClientID)
+		{
+			m_EnforcersInfo.RemoveAt(i);
+		}
+	}
+
+	if(m_LastFreezer == ClientID)
+	{
+		m_LastFreezer = -1;
+	}
+
+	if(m_LastHelper.m_CID == ClientID)
+	{
+		m_LastHelper.m_CID = -1;
+	}
+
+	m_LastHookers.RemoveOne(ClientID);
+
+	for(int i = m_TakenDamageDetails.Size() - 1; i >= 0; --i)
+	{
+		if(m_TakenDamageDetails.At(i).From == ClientID)
+		{
+			m_TakenDamageDetails.RemoveAt(i);
+		}
+	}
+}
+
 void CInfClassCharacter::SaturateVelocity(vec2 Force, float MaxSpeed)
 {
 	if(length(Force) < 0.00001)

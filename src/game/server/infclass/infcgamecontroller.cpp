@@ -185,6 +185,18 @@ void CInfClassGameController::OnPlayerDisconnect(CPlayer *pBasePlayer, int Type,
 {
 	Server()->RoundStatistics()->ResetPlayer(pBasePlayer->GetCID());
 
+	for(CPlayer *pPlayer : GameServer()->m_apPlayers)
+	{
+		if(pPlayer && (pPlayer != pBasePlayer))
+		{
+			CInfClassCharacter *pCharacter = CInfClassCharacter::GetInstance(pPlayer->GetCharacter());
+			if(pCharacter)
+			{
+				pCharacter->RemoveReferencesToCID(pBasePlayer->GetCID());
+			}
+		}
+	}
+
 	CInfClassPlayer *pPlayer = CInfClassPlayer::GetInstance(pBasePlayer);
 	if(Type == CLIENTDROPTYPE_BAN) return;
 	if(Type == CLIENTDROPTYPE_KICK) return;
