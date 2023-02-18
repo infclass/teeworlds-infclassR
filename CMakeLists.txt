@@ -1057,6 +1057,29 @@ if(TARGET_OS AND TARGET_OS STREQUAL "mac")
 endif()
 
 ########################################################################
+# TESTS
+########################################################################
+
+set(BUILD_TESTS ${GTEST_FOUND})
+
+if(BUILD_TESTS)
+  if(NOT GTEST_FOUND)
+    message(SEND_ERROR "GTest not found, unable to build the tests")
+  endif()
+  set(TESTS "test_icArray")
+  foreach(TEST_NAME ${TESTS})
+    add_executable(${TEST_NAME} "src/tests/${TEST_NAME}.cpp")
+    target_include_directories(${TEST_NAME} SYSTEM PRIVATE ${TOOL_INCLUDE_DIRS})
+    target_link_libraries(${TEST_NAME} ${TOOL_LIBS}
+      engine-shared
+      game-shared # engine depends on mapitems_ex.cpp
+    )
+    target_link_libraries(${TEST_NAME} ${GTEST_LIBRARIES})
+    target_include_directories(${TEST_NAME} SYSTEM PRIVATE ${GTEST_INCLUDE_DIRS})
+  endforeach()
+endif()
+
+########################################################################
 # INSTALLATION
 ########################################################################
 
