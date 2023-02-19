@@ -497,6 +497,37 @@ function(generate_source output_file script_parameter)
   )
 endfunction()
 
+function(generate_source7 output_file script_parameter)
+  add_custom_command(OUTPUT ${output_file}
+    COMMAND ${PYTHON_EXECUTABLE} -m datasrc.seven.compile ${script_parameter}
+      > "${PROJECT_BINARY_DIR}/${output_file}"
+    DEPENDS
+      datasrc/seven/compile.py
+      datasrc/seven/content.py
+      datasrc/seven/datatypes.py
+      datasrc/seven/network.py
+    WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
+  )
+endfunction()
+
+function(generate_maps output_file script_parameter)
+  add_custom_command(OUTPUT ${output_file}
+    COMMAND ${PYTHON_EXECUTABLE} datasrc/crosscompile.py ${script_parameter}
+      > "${PROJECT_BINARY_DIR}/${output_file}"
+    DEPENDS
+      datasrc/crosscompile.py
+      datasrc/compile.py
+      datasrc/content.py
+      datasrc/datatypes.py
+      datasrc/network.py
+      datasrc/seven/compile.py
+      datasrc/seven/content.py
+      datasrc/seven/datatypes.py
+      datasrc/seven/network.py
+    WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
+  )
+endfunction()
+
 file(MAKE_DIRECTORY "${PROJECT_BINARY_DIR}/src/game/generated/")
 execute_process(COMMAND git rev-parse --git-dir
   ERROR_QUIET
@@ -527,6 +558,20 @@ generate_source("src/game/generated/protocol.h" "network_header")
 generate_source("src/game/generated/server_data.cpp" "server_content_source")
 generate_source("src/game/generated/server_data.h" "server_content_header")
 
+generate_source7("src/game/generated/protocol7.cpp" "network_source")
+generate_source7("src/game/generated/protocol7.h" "network_header")
+generate_source7("src/game/generated/client_data7.cpp" "client_content_source")
+generate_source7("src/game/generated/client_data7.h" "client_content_header")
+
+generate_maps("src/game/generated/protocolglue.h" "map_header")
+generate_maps("src/game/generated/protocolglue.cpp" "map_source")
+
+add_custom_command(OUTPUT "src/game/generated/wordlist.h"
+  COMMAND ${PYTHON_EXECUTABLE} scripts/wordlist.py > ${PROJECT_BINARY_DIR}/src/game/generated/wordlist.h
+  WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
+  DEPENDS
+    scripts/wordlist.py
+)
 
 ########################################################################
 # SHARED
@@ -675,6 +720,10 @@ set_glob(GAME_SHARED GLOB src/game
 # A bit hacky, but these are needed to register all the UUIDs, even for stuff
 # that doesn't link game.
 set(ENGINE_UUID_SHARED
+  ${CMAKE_CURRENT_BINARY_DIR}/src/game/generated/protocolglue.cpp
+  ${CMAKE_CURRENT_BINARY_DIR}/src/game/generated/protocolglue.h
+  ${CMAKE_CURRENT_BINARY_DIR}/src/game/generated/protocol7.cpp
+  ${CMAKE_CURRENT_BINARY_DIR}/src/game/generated/protocol7.h
   ${CMAKE_CURRENT_BINARY_DIR}/src/game/generated/protocol.cpp
   ${CMAKE_CURRENT_BINARY_DIR}/src/game/generated/protocol.h
 )
@@ -682,6 +731,8 @@ list(REMOVE_ITEM GAME_SHARED ${ENGINE_UUID_SHARED})
 set(GAME_GENERATED_SHARED
   ${CMAKE_CURRENT_BINARY_DIR}/src/game/generated/git_revision.cpp
   ${CMAKE_CURRENT_BINARY_DIR}/src/game/generated/protocol.h
+  ${CMAKE_CURRENT_BINARY_DIR}/src/game/generated/protocol7.h
+  ${CMAKE_CURRENT_BINARY_DIR}/src/game/generated/protocolglue.h
 )
 
 set(DEPS ${DEP_JSON} ${DEP_MD5} ${ZLIB_DEP})
