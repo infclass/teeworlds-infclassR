@@ -561,6 +561,7 @@ int CServer::Init()
 		Client.m_ShowIps = false;
 		Client.m_Latency = 0;
 		Client.m_InfClassVersion = 0;
+		Client.m_Sixup = false;
 	}
 
 	m_CurrentGameTick = 0;
@@ -921,6 +922,25 @@ int CServer::SendMsg(CMsgPacker *pMsg, int Flags, int ClientID)
 	}
 
 	return 0;
+}
+
+void CServer::SendMsgRaw(int ClientID, const void *pData, int Size, int Flags)
+{
+	CNetChunk Packet;
+	mem_zero(&Packet, sizeof(CNetChunk));
+	Packet.m_ClientID = ClientID;
+	Packet.m_pData = pData;
+	Packet.m_DataSize = Size;
+	Packet.m_Flags = 0;
+	if(Flags & MSGFLAG_VITAL)
+	{
+		Packet.m_Flags |= NETSENDFLAG_VITAL;
+	}
+	if(Flags & MSGFLAG_FLUSH)
+	{
+		Packet.m_Flags |= NETSENDFLAG_FLUSH;
+	}
+	m_NetServer.Send(&Packet);
 }
 
 void CServer::DoSnapshot()

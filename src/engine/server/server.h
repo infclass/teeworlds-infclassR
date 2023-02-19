@@ -200,6 +200,8 @@ public:
 		CUuid m_ConnectionID;
 
 		int m_InfClassVersion;
+
+		bool m_Sixup;
 	};
 
 	CClient m_aClients[MAX_CLIENTS];
@@ -486,6 +488,10 @@ public:
 	int *GetIdMap(int ClientID) override;
 
 	bool ClientPrevIngame(int ClientID) override { return m_aPrevStates[ClientID] == CClient::STATE_INGAME; }
+
+	void SendMsgRaw(int ClientID, const void *pData, int Size, int Flags) override;
+
+	bool IsSixup(int ClientID) const override { return ClientID != SERVER_DEMO_CLIENT && m_aClients[ClientID].m_Sixup; }
 };
 
 extern CServer *CreateServer();
