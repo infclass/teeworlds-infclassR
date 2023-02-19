@@ -6,6 +6,8 @@
 
 #include <game/server/infclass/events-director.h>
 
+#include <game/server/entities/character.h>
+
 #include <game/collision.h>
 #include <game/infclass/classes.h>
 #include <game/layers.h>

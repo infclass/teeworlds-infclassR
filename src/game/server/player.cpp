@@ -4,6 +4,8 @@
 #include <iostream>
 #include <engine/shared/config.h>
 #include "player.h"
+#include "entities/character.h"
+
 #include <engine/server/roundstatistics.h>
 
 #include <game/server/gamecontext.h>

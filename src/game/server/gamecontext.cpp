@@ -16,8 +16,8 @@
 #include <iostream>
 #include <algorithm>
 
+#include <game/server/entities/character.h>
 #include <game/server/infclass/infcgamecontroller.h>
-
 #include <game/server/player.h>
 
 #ifdef CONF_GEOLOCATION
