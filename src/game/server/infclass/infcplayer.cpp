@@ -117,26 +117,18 @@ void CInfClassPlayer::Tick()
 			{
 				m_FollowTargetId = -1;
 			}
-
-			if(IsForcedToSpectate() && (Server()->GetClientInfclassVersion(GetCID()) >= VERSION_INFC_FORCED_SPEC))
+			else
 			{
-				const CCharacter *pFollowedCharacter = GameController()->GetCharacter(TargetToFollow());
-				if(pFollowedCharacter)
+				const CInfClassPlayer *pFollowedPlayer = GameController()->GetPlayer(TargetToFollow());
+				if(pFollowedPlayer)
 				{
-					m_ViewPos = pFollowedCharacter->GetPos();
+					m_ViewPos = pFollowedPlayer->m_ViewPos;
 				}
 				else
 				{
 					m_FollowTargetId = -1;
 				}
 			}
-		}
-	}
-	else
-	{
-		if(m_FollowTargetTicks > 0)
-		{
-			++m_FollowTargetTicks;
 		}
 	}
 }
@@ -148,8 +140,16 @@ void CInfClassPlayer::Snap(int SnappingClient)
 
 	CPlayer::Snap(SnappingClient);
 
+	CNetObj_DDNetPlayer *pDDNetPlayer = Server()->SnapNewItem<CNetObj_DDNetPlayer>(m_ClientID);
+	if(!pDDNetPlayer)
+		return;
+
+	pDDNetPlayer->m_AuthLevel = 0; // Server()->GetAuthedState(id);
+	pDDNetPlayer->m_Flags = 0;
+	if(m_FollowTargetTicks > 0)
+		pDDNetPlayer->m_Flags |= EXPLAYERFLAG_SPEC;
+
 	int InfClassVersion = Server()->GetClientInfclassVersion(SnappingClient);
-	const bool IsForcedToSpec = IsForcedToSpectate();
 
 	if(InfClassVersion)
 	{
@@ -167,10 +167,9 @@ void CInfClassPlayer::Snap(int SnappingClient)
 		{
 			pInfClassPlayer->m_Flags |= INFCLASS_PLAYER_FLAG_HOOK_PROTECTION_OFF;
 		}
-		if(IsForcedToSpec)
-		{
-			pInfClassPlayer->m_Flags |= INFCLASS_PLAYER_FLAG_FORCED_TO_SPECTATE;
-		}
+		// Note:
+		// INFCLASS_PLAYER_FLAG_FORCED_TO_SPECTATE flag is deprecated because
+		// EXPLAYERFLAG_SPEC does the same thing in a more compatible way
 
 		pInfClassPlayer->m_Kills = m_Kills;
 		pInfClassPlayer->m_Deaths = m_Deaths;
@@ -180,7 +179,7 @@ void CInfClassPlayer::Snap(int SnappingClient)
 		GetCharacterClass()->OnPlayerSnap(SnappingClient, InfClassVersion);
 	}
 
-	if(IsForcedToSpec && (SnappingClient == m_ClientID) && (InfClassVersion >= VERSION_INFC_FORCED_SPEC))
+	if(m_FollowTargetTicks > 0 && (SnappingClient == m_ClientID))
 	{
 		CNetObj_SpectatorInfo *pSpectatorInfo = Server()->SnapNewItem<CNetObj_SpectatorInfo>(m_ClientID);
 		if(!pSpectatorInfo)
@@ -587,6 +586,8 @@ void CInfClassPlayer::OnCharacterSpawned(const SpawnContext &Context)
 
 	m_pInfcPlayerClass->SetCharacter(pCharacter);
 	pCharacter->OnCharacterSpawned(Context);
+
+	ResetTheTargetToFollow();
 }
 
 const char *CInfClassPlayer::GetClan(int SnappingClient) const
