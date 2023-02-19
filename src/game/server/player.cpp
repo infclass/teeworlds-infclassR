@@ -1,11 +1,9 @@
 /* (c) Magnus Auvinen. See licence.txt in the root of the distribution for more information. */
 /* If you are missing that file, acquire a complete release at teeworlds.com.				*/
-#include <new>
-#include <iostream>
-#include <engine/shared/config.h>
 #include "player.h"
 #include "entities/character.h"
 
+#include <engine/shared/config.h>
 #include <engine/server/roundstatistics.h>
 
 #include <game/server/gamecontext.h>
@@ -39,6 +37,13 @@ void CPlayer::Reset()
 	m_LastActionMoveTick = Server()->Tick();
 	m_TeamChangeTick = Server()->Tick();
 
+	int *idMap = Server()->GetIdMap(m_ClientID);
+	for(int i = 1; i < VANILLA_MAX_CLIENTS; i++)
+	{
+		idMap[i] = -1;
+	}
+	idMap[0] = m_ClientID;
+
 	m_LastEyeEmote = 0;
 	m_DefEmote = EMOTE_NORMAL;
 	m_LastKill = 0;
@@ -68,13 +73,6 @@ void CPlayer::Reset()
 	for(int i=0; i<NB_PLAYERCLASS; i++)
 	{
 		m_knownClass[i] = false;
-
-		int* idMap = Server()->GetIdMap(m_ClientID);
-		for (int i = 1;i < VANILLA_MAX_CLIENTS;i++)
-		{
-			idMap[i] = -1;
-		}
-		idMap[0] = m_ClientID;
 	}
 
 	m_HookProtectionAutomatic = true;
@@ -162,7 +160,7 @@ void CPlayer::PostTick()
 		for(int i = 0; i < MAX_CLIENTS; ++i)
 		{
 			if(GameServer()->m_apPlayers[i] && GameServer()->m_apPlayers[i]->GetTeam() != TEAM_SPECTATORS)
-				m_aActLatency[i] = GameServer()->m_apPlayers[i]->m_Latency.m_Min;
+				m_aCurLatency[i] = GameServer()->m_apPlayers[i]->m_Latency.m_Min;
 		}
 	}
 
@@ -218,13 +216,14 @@ void CPlayer::Snap(int SnappingClient)
 
 	SnapClientInfo(SnappingClient, id);
 
+	int Latency = SnappingClient == SERVER_DEMO_CLIENT ? m_Latency.m_Min : GameServer()->m_apPlayers[SnappingClient]->m_aCurLatency[m_ClientID];
 	int PlayerInfoScore = GetScore(SnappingClient);
 
 	CNetObj_PlayerInfo *pPlayerInfo = Server()->SnapNewItem<CNetObj_PlayerInfo>(id);
 	if(!pPlayerInfo)
 		return;
 
-	pPlayerInfo->m_Latency = SnappingClient == SERVER_DEMO_CLIENT ? m_Latency.m_Min : GameServer()->m_apPlayers[SnappingClient]->m_aActLatency[m_ClientID];
+	pPlayerInfo->m_Latency = Latency;
 	pPlayerInfo->m_Local = 0;
 	pPlayerInfo->m_ClientID = id;
 /* INFECTION MODIFICATION START ***************************************/
