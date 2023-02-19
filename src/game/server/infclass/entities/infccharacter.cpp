@@ -1,4 +1,5 @@
 #include "infccharacter.h"
+#include "engine/server.h"
 #include "game/infclass/classes.h"
 
 #include <engine/server/mapconverter.h>
@@ -2348,6 +2349,101 @@ void CInfClassCharacter::PostCoreTick()
 	{
 		m_PainSoundTimer--;
 	}
+}
+
+void CInfClassCharacter::SnapCharacter(int SnappingClient, int ID)
+{
+	CCharacterCore *pCore;
+	int Tick, Weapon = m_ActiveWeapon;
+
+	// write down the m_Core
+	if(!m_ReckoningTick || GameServer()->m_World.m_Paused)
+	{
+		Tick = 0;
+		pCore = &m_Core;
+	}
+	else
+	{
+		Tick = m_ReckoningTick;
+		pCore = &m_SendCore;
+	}
+
+	int EmoteNormal = m_pPlayer->GetDefaultEmote();
+
+	CNetObj_Character *pCharacter = Server()->SnapNewItem<CNetObj_Character>(ID);
+	if(!pCharacter)
+		return;
+	pCharacter->m_Tick = Tick;
+	pCore->Write(pCharacter);
+	if(pCharacter->m_HookedPlayer != -1)
+	{
+		if(!Server()->Translate(pCharacter->m_HookedPlayer, SnappingClient))
+			pCharacter->m_HookedPlayer = -1;
+	}
+	pCharacter->m_Emote = m_EmoteType;
+
+	pCharacter->m_AmmoCount = 0;
+	pCharacter->m_Health = 0;
+	pCharacter->m_Armor = 0;
+
+	/* INFECTION MODIFICATION START ***************************************/
+	if(GetInfWeaponID(m_ActiveWeapon) == INFWEAPON::NINJA_HAMMER)
+	{
+		Weapon = WEAPON_NINJA;
+	}
+
+	if(PrivateGetPlayerClass() == PLAYERCLASS_SPIDER)
+	{
+		pCharacter->m_HookTick -= (g_Config.m_InfSpiderHookTime - 1) * SERVER_TICK_SPEED - SERVER_TICK_SPEED / 5;
+		if(pCharacter->m_HookTick < 0)
+			pCharacter->m_HookTick = 0;
+	}
+	if(PrivateGetPlayerClass() == PLAYERCLASS_BAT)
+	{
+		pCharacter->m_HookTick -= (g_Config.m_InfBatHookTime - 1) * SERVER_TICK_SPEED - SERVER_TICK_SPEED / 5;
+		if(pCharacter->m_HookTick < 0)
+			pCharacter->m_HookTick = 0;
+	}
+	/* INFECTION MODIFICATION END *****************************************/
+	pCharacter->m_AttackTick = m_AttackTick;
+	pCharacter->m_Direction = m_Input.m_Direction;
+	pCharacter->m_Weapon = Weapon;
+
+	const CInfClassPlayer *pSnappingClient = GameController()->GetPlayer(SnappingClient);
+	int SnappingSpectatorID = -1;
+	if(pSnappingClient)
+	{
+		SnappingSpectatorID = pSnappingClient->m_SpectatorID;
+		int FollowingCID = pSnappingClient->TargetToFollow();
+		if(FollowingCID >= 0)
+		{
+			SnappingSpectatorID = FollowingCID;
+		}
+	}
+
+	if(m_pPlayer->GetCID() == SnappingClient || SnappingClient == SERVER_DEMO_CLIENT ||
+		(!g_Config.m_SvStrictSpectateMode && m_pPlayer->GetCID() == SnappingSpectatorID))
+	{
+		pCharacter->m_Health = m_Health;
+		pCharacter->m_Armor = clamp<int>(m_Armor, 0, 10);
+		if(m_aWeapons[m_ActiveWeapon].m_Ammo > 0)
+			pCharacter->m_AmmoCount = m_aWeapons[m_ActiveWeapon].m_Ammo;
+	}
+
+	/* INFECTION MODIFICATION START ***************************************/
+	if(GetInfWeaponID(m_ActiveWeapon) == INFWEAPON::MERCENARY_GUN)
+	{
+		pCharacter->m_AmmoCount /= (Server()->GetMaxAmmo(INFWEAPON::MERCENARY_GUN) / 10);
+	}
+	/* INFECTION MODIFICATION END *****************************************/
+
+	if(pCharacter->m_Emote == EmoteNormal)
+	{
+		if(250 - ((Server()->Tick() - m_LastAction) % (250)) < 5)
+			pCharacter->m_Emote = EMOTE_BLINK;
+	}
+
+	pCharacter->m_PlayerFlags = GetPlayer()->m_PlayerFlags;
 }
 
 void CInfClassCharacter::ClassSpawnAttributes()

@@ -169,7 +169,7 @@ public:
 	int Team();
 	bool CanCollide(int ClientID);
 
-private:
+protected:
 	int PrivateGetPlayerClass() const;
 
 	// info for dead reckoning
@@ -179,9 +179,9 @@ private:
 
 	// DDRace
 
-	void SnapCharacter(int SnappingClient, int ID);
+	virtual void SnapCharacter(int SnappingClient, int ID);
 
-/* INFECTION MODIFICATION START ***************************************/
+	/* INFECTION MODIFICATION START ***************************************/
 protected:
 	virtual void OnTotalHealthChanged(int Difference) = 0;
 

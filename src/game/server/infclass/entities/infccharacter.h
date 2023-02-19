@@ -231,6 +231,8 @@ protected:
 	void PreCoreTick() override;
 	void PostCoreTick() override;
 
+	void SnapCharacter(int SnappingClient, int ID) override;
+
 	void ClassSpawnAttributes();
 	void DestroyChildEntities();
 	void UpdateTuningParam();
