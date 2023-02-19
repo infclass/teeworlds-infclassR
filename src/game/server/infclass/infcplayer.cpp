@@ -153,7 +153,7 @@ void CInfClassPlayer::Snap(int SnappingClient)
 
 	if(InfClassVersion)
 	{
-		CNetObj_InfClassPlayer *pInfClassPlayer = static_cast<CNetObj_InfClassPlayer *>(Server()->SnapNewItem(NETOBJTYPE_INFCLASSPLAYER, m_ClientID, sizeof(CNetObj_InfClassPlayer)));
+		CNetObj_InfClassPlayer *pInfClassPlayer = Server()->SnapNewItem<CNetObj_InfClassPlayer>(m_ClientID);
 		if(!pInfClassPlayer)
 			return;
 
@@ -182,7 +182,7 @@ void CInfClassPlayer::Snap(int SnappingClient)
 
 	if(IsForcedToSpec && (SnappingClient == m_ClientID) && (InfClassVersion >= VERSION_INFC_FORCED_SPEC))
 	{
-		CNetObj_SpectatorInfo *pSpectatorInfo = static_cast<CNetObj_SpectatorInfo *>(Server()->SnapNewItem(NETOBJTYPE_SPECTATORINFO, m_ClientID, sizeof(CNetObj_SpectatorInfo)));
+		CNetObj_SpectatorInfo *pSpectatorInfo = Server()->SnapNewItem<CNetObj_SpectatorInfo>(m_ClientID);
 		if(!pSpectatorInfo)
 			return;
 
@@ -194,8 +194,7 @@ void CInfClassPlayer::Snap(int SnappingClient)
 
 void CInfClassPlayer::SnapClientInfo(int SnappingClient, int SnappingClientMappedId)
 {
-	CNetObj_ClientInfo *pClientInfo = static_cast<CNetObj_ClientInfo *>(Server()->SnapNewItem(NETOBJTYPE_CLIENTINFO, SnappingClientMappedId, sizeof(CNetObj_ClientInfo)));
-
+	CNetObj_ClientInfo *pClientInfo = Server()->SnapNewItem<CNetObj_ClientInfo>(SnappingClientMappedId);
 	if(!pClientInfo)
 		return;
 
