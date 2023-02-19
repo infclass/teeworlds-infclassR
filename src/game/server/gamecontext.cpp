@@ -4371,11 +4371,6 @@ void CGameContext::OnPostSnap()
 	m_Events.Clear();
 }
 
-bool CGameContext::IsClientBot(int ClientID) const
-{
-	return m_apPlayers[ClientID] && m_apPlayers[ClientID]->IsBot();
-}
-
 bool CGameContext::IsClientReady(int ClientID) const
 {
 	return m_apPlayers[ClientID] && m_apPlayers[ClientID]->m_IsReady;

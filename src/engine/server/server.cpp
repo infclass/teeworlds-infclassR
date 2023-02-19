@@ -776,6 +776,11 @@ bool CServer::ClientIngame(int ClientID) const
 	return ClientID >= 0 && ClientID < MAX_CLIENTS && m_aClients[ClientID].m_State == CServer::CClient::STATE_INGAME;
 }
 
+bool CServer::ClientIsBot(int ClientID) const
+{
+	return ClientID >= 0 && ClientID < MAX_CLIENTS && m_aClients[ClientID].m_IsBot;
+}
+
 int CServer::Port() const
 {
 	return m_NetServer.Address().port;
@@ -867,7 +872,7 @@ int CServer::SendMsg(CMsgPacker *pMsg, int Flags, int ClientID)
 		return -1;
 
 	// drop packet to dummy client
-	if(ClientID >= 0 && ClientID < MAX_CLIENTS && GameServer()->IsClientBot(ClientID))
+	if(ClientIsBot(ClientID))
 		return 0;
 
 	mem_zero(&Packet, sizeof(CNetChunk));
@@ -1151,7 +1156,7 @@ int CServer::NewClientCallback(int ClientID, void *pUser, bool Sixup)
 	CServer *pThis = (CServer *)pUser;
 
 	// Remove non human player on same slot
-	if(pThis->GameServer()->IsClientBot(ClientID))
+	if(pThis->ClientIsBot(ClientID))
 	{
 		pThis->GameServer()->OnClientDrop(ClientID, CLIENTDROPTYPE_KICK, "removing dummy");
 	}
@@ -1931,7 +1936,7 @@ void CServer::SendServerInfo(const NETADDR *pAddr, int Token, int Type, bool Sen
 	{
 		if(m_aClients[i].m_State != CClient::STATE_EMPTY)
 		{
-			if(GameServer()->IsClientBot(i))
+			if(ClientIsBot(i))
 				continue;
 
 			if(GameServer()->IsClientPlayer(i))
@@ -2149,7 +2154,7 @@ void CServer::SendServerInfo(const NETADDR *pAddr, int Token, int Type, bool Sen
 	{
 		if(m_aClients[i].m_State != CClient::STATE_EMPTY)
 		{
-			if(GameServer()->IsClientBot(i))
+			if(ClientIsBot(i))
 				continue;
 
 			if(ClientCount == 0)
