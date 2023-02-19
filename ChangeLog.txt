@@ -1,3 +1,12 @@
+InfclassR v1.5.0_alpha6
+- "Forced spectator" mode reworked for compatibility
+  with DDNet client
+- Fixed spawn protection
+- Import and enable /me command
+- Scientists now get 0.5 kill progression on assisting
+- Fixed infc_half_provence borders
+- Fixed a few bugs in votes
+
 InfclassR v1.5.0_alpha5
 - Medic now gets a grenade on enemy killed
 - Dynamically toggle the turrets enablement during
