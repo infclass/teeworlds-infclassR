@@ -931,20 +931,45 @@ void CGameContext::SendTuningParams(int ClientID, const CTuningParams &params)
 
 	for(unsigned i = 0; i < sizeof(m_Tuning) / sizeof(int); i++)
 	{
-		if(i == 31) // PlayerCollision
+		if(m_apPlayers[ClientID] && m_apPlayers[ClientID]->GetCharacter())
 		{
-			// inverted to avoid client collision prediction
-			// (keep behavior introduced by commit 11c408e5dd8f3672b658ad0581f016be85a46011)
-			Msg.AddInt(0);
-		}
-		else if(i == 33) // JetpackStrength
-		{
-			Msg.AddInt(0);
+			if((i == 30) // laser_damage is removed from 0.7
+				&& (Server()->IsSixup(ClientID)))
+			{
+				continue;
+			}
+			else if((i == 31) // collision
+					&& (m_apPlayers[ClientID]->GetCharacter()->NeededFaketuning() & FAKETUNE_SOLO || m_apPlayers[ClientID]->GetCharacter()->NeededFaketuning() & FAKETUNE_NOCOLL))
+			{
+				Msg.AddInt(0);
+			}
+			else if((i == 32) // hooking
+					&& (m_apPlayers[ClientID]->GetCharacter()->NeededFaketuning() & FAKETUNE_SOLO || m_apPlayers[ClientID]->GetCharacter()->NeededFaketuning() & FAKETUNE_NOHOOK))
+			{
+				Msg.AddInt(0);
+			}
+			else if((i == 3) // ground jump impulse
+					&& m_apPlayers[ClientID]->GetCharacter()->NeededFaketuning() & FAKETUNE_NOJUMP)
+			{
+				Msg.AddInt(0);
+			}
+			else if((i == 33) // jetpack
+					&& !(m_apPlayers[ClientID]->GetCharacter()->NeededFaketuning() & FAKETUNE_JETPACK))
+			{
+				Msg.AddInt(0);
+			}
+			else if((i == 36) // hammer hit
+					&& m_apPlayers[ClientID]->GetCharacter()->NeededFaketuning() & FAKETUNE_NOHAMMER)
+			{
+				Msg.AddInt(0);
+			}
+			else
+			{
+				Msg.AddInt(pParams[i]);
+			}
 		}
 		else
-		{
-			Msg.AddInt(pParams[i]);
-		}
+			Msg.AddInt(pParams[i]); // if everything is normal just send true tunings
 	}
 	Server()->SendMsg(&Msg, MSGFLAG_VITAL, ClientID);
 }
