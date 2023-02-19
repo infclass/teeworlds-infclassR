@@ -327,7 +327,7 @@ void CCharacter::ResetInput()
 	m_LatestPrevInput = m_LatestInput = m_Input;
 }
 
-void CCharacter::Tick()
+void CCharacter::PreTick()
 {
 	// set emote
 	if(m_EmoteStop < Server()->Tick())
@@ -335,6 +335,11 @@ void CCharacter::Tick()
 		m_EmoteType = m_pPlayer->GetDefaultEmote();
 		m_EmoteStop = -1;
 	}
+}
+
+void CCharacter::Tick()
+{
+	PreTick();
 
 	m_Core.m_Id = GetPlayer()->GetCID();
 /* INFECTION MODIFICATION START ***************************************/

@@ -43,6 +43,7 @@ public:
 
 	virtual void Reset();
 	virtual void Destroy();
+	void PreTick();
 	virtual void Tick();
 	void TickDeferred() override;
 	virtual void TickPaused();
