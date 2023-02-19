@@ -2332,7 +2332,7 @@ void CInfClassGameController::SendKillMessage(int Victim, const DeathContext &Co
 	InfClassMsg.m_InfDamageType = DamageTypeInt;
 	InfClassMsg.m_Weapon = VanillaWeapon;
 
-	CMsgPacker InfCPacker(InfClassMsg.MsgID(), false);
+	CMsgPacker InfCPacker(InfClassMsg.ms_MsgID, false);
 	InfClassMsg.Pack(&InfCPacker);
 
 	CNetMsg_Sv_KillMsg VanillaMsg;
@@ -2341,7 +2341,7 @@ void CInfClassGameController::SendKillMessage(int Victim, const DeathContext &Co
 	VanillaMsg.m_Weapon = VanillaWeapon;
 	VanillaMsg.m_ModeSpecial = InfClassModeSpecialSkip;
 
-	CMsgPacker VanillaPacker(VanillaMsg.MsgID(), false);
+	CMsgPacker VanillaPacker(VanillaMsg.ms_MsgID, false);
 	VanillaMsg.Pack(&VanillaPacker);
 
 	for(int i = 0; i < MAX_CLIENTS; i++)

@@ -26,7 +26,7 @@ GameInfoFlags = [
 ]
 GameInfoFlags2 = [
 	"ALLOW_X_SKINS", "GAMETYPE_CITY", "GAMETYPE_FDDRACE", "ENTITIES_FDDRACE", "HUD_HEALTH_ARMOR", "HUD_AMMO",
-	"HUD_DDRACE", "NO_WEAK_HOOK_AND_BOUNCE"
+	"HUD_DDRACE", "NO_WEAK_HOOK"
 ]
 ExPlayerFlags = ["AFK", "PAUSED", "SPEC"]
 ProjectileFlags = [f"CLIENTID_BIT{i}" for i in range(8)] + [
@@ -47,8 +47,6 @@ Authed = ["NO", "HELPER", "MOD", "ADMIN"]
 EntityClasses = ["PROJECTILE", "DOOR", "DRAGGER_WEAK", "DRAGGER_NORMAL", "DRAGGER_STRONG", "GUN_NORMAL", "GUN_EXPLOSIVE", "GUN_FREEZE", "GUN_UNFREEZE", "LIGHT", "PICKUP"]
 
 RawHeader = '''
-
-#include <engine/message.h>
 #include <engine/shared/teehistorian_ex.h>
 
 enum
@@ -72,12 +70,11 @@ enum
 
 enum
 {
-	GAMEINFO_CURVERSION=6,
+	GAMEINFO_CURVERSION=8,
 };
 '''
 
 RawSource = '''
-#include <engine/message.h>
 #include "protocol.h"
 '''
 
@@ -326,7 +323,7 @@ Objects = [
 		NetIntAny("m_FromX"),
 		NetIntAny("m_FromY"),
 		NetTick("m_StartTick"),
-		NetIntRange("m_Owner", 0, 'MAX_CLIENTS-1'),
+		NetIntRange("m_Owner", -1, 'MAX_CLIENTS-1'),
 		NetIntAny("m_Type"),
 	]),
 
