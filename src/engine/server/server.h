@@ -275,7 +275,6 @@ public:
 	int GetClientInfo(int ClientID, CClientInfo *pInfo) const;
 	void SetClientDDNetVersion(int ClientID, int DDNetVersion);
 	void GetClientAddr(int ClientID, char *pAddrStr, int Size) const;
-	std::string GetClientIP(int ClientID) const;
 	const char *ClientName(int ClientID) const;
 	const char *ClientClan(int ClientID) const;
 	int ClientCountry(int ClientID) const;

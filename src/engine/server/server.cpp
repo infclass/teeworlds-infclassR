@@ -725,15 +725,6 @@ void CServer::GetClientAddr(int ClientID, char *pAddrStr, int Size) const
 		net_addr_str(m_NetServer.ClientAddr(ClientID), pAddrStr, Size, false);
 }
 
-std::string CServer::GetClientIP(int ClientID) const
-{
-	char aAddrStr[NETADDR_MAXSTRSIZE];
-	net_addr_str(m_NetServer.ClientAddr(ClientID), aAddrStr, sizeof(aAddrStr), false);
-	std::string ip(aAddrStr);
-	return ip;
-}
-
-
 const char *CServer::ClientName(int ClientID) const
 {
 	if(ClientID < 0 || ClientID >= MAX_CLIENTS || m_aClients[ClientID].m_State == CServer::CClient::STATE_EMPTY)

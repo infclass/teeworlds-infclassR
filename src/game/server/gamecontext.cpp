@@ -2133,7 +2133,10 @@ void CGameContext::OnMessage(int MsgID, CUnpacker *pUnpacker, int ClientID)
 		if(!Server()->GetClientMemory(ClientID, CLIENTMEMORY_LANGUAGESELECTION))
 		{
 #ifdef CONF_GEOLOCATION
-			std::string ip = Server()->GetClientIP(ClientID);
+			char aAddrStr[NETADDR_MAXSTRSIZE];
+			Server()->GetClientAddr(ClientID, aAddrStr, sizeof(aAddrStr));
+			std::string ip(aAddrStr);
+
 			int LocatedCountry = Geolocation::get_country_iso_numeric_code(ip);
 #ifdef CONF_FORCE_COUNTRY_BY_IP
 			Server()->SetClientCountry(ClientID, LocatedCountry);
