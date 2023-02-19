@@ -560,6 +560,7 @@ int CServer::Init()
 		Client.m_Accusation.m_Num = 0;
 		Client.m_ShowIps = false;
 		Client.m_Latency = 0;
+		Client.m_InfClassVersion = 0;
 	}
 
 	m_CurrentGameTick = 0;
