@@ -33,16 +33,12 @@ enum class TAKEDAMAGEMODE
 
 class CCharacter : public CEntity
 {
-	class IConsole *m_pConsole;
-
 	MACRO_ALLOC_POOL_ID()
 
 public:
 	static int EntityId;
 
-	class IConsole *Console() { return m_pConsole; }
-
-	CCharacter(CGameWorld *pWorld, IConsole *pConsole);
+	CCharacter(CGameWorld *pWorld);
 	~CCharacter() override;
 
 	virtual void Reset();

@@ -25,9 +25,8 @@
 
 MACRO_ALLOC_POOL_ID_IMPL(CInfClassCharacter, MAX_CLIENTS)
 
-CInfClassCharacter::CInfClassCharacter(CInfClassGameController *pGameController)
-	: CCharacter(pGameController->GameWorld(), pGameController->Console())
-	, m_pGameController(pGameController)
+CInfClassCharacter::CInfClassCharacter(CInfClassGameController *pGameController) :
+	CCharacter(pGameController->GameWorld()), m_pGameController(pGameController)
 {
 }
 
@@ -153,7 +152,7 @@ void CInfClassCharacter::OnCharacterInBonusZoneTick()
 		SetEmote(EMOTE_HAPPY, Server()->Tick() + Server()->TickSpeed());
 		GiveGift(GIFT_HEROFLAG);
 
-		Server()->RoundStatistics()->OnScoreEvent(GetCID(), SCOREEVENT_BONUS, GetPlayerClass(), Server()->ClientName(GetCID()), Console());
+		Server()->RoundStatistics()->OnScoreEvent(GetCID(), SCOREEVENT_BONUS, GetPlayerClass(), Server()->ClientName(GetCID()), GameServer()->Console());
 		GameServer()->SendScoreSound(GetCID());
 	}
 }
