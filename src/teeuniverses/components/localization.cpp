@@ -553,11 +553,11 @@ const char *CLocalization::LanguageCodeByCountryCode(int CountryCode)
 		/* uk - Ukrainian **********************************/
 		case 804: //Ukraine
 			return "uk";
-		/* zh-Hans - Chinese (Simplified) **********************************/
+		/* zh-CN - Chinese (Simplified) **********************************/
 		case 156: //People’s Republic of China
 		case 344: //Hong Kong
 		case 446: //Macau
-			return "zh-Hans";
+			return "zh-CN";
 		case 826: // United Kingdom of Great Britain and Northern Ireland
 		case 840: // United States of America
 			return "en";
