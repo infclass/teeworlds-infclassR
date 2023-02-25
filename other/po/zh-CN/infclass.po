@@ -1,1142 +1,1286 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: teeuniverse\n"
+"Project-Id-Version: infectiondust\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-11-13 15:31+0300\n"
-"PO-Revision-Date: 2017-07-31 15:23-0400\n"
-"Last-Translator: necropotame <necropotame@gmail.com>\n"
+"POT-Creation-Date: 2022-08-14 21:43+0300\n"
+"PO-Revision-Date: 2023-02-25 10:54\n"
+"Last-Translator: \n"
 "Language-Team: Chinese Simplified\n"
 "Language: zh_CN\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: crowdin.com\n"
-"X-Crowdin-Project: teeuniverse\n"
+"X-Crowdin-Project: infectiondust\n"
+"X-Crowdin-Project-ID: 485023\n"
 "X-Crowdin-Language: zh-CN\n"
-"X-Crowdin-File: infclasspot.po\n"
+"X-Crowdin-File: infclass.pot\n"
+"X-Crowdin-File-ID: 3\n"
 
-#: src/game/server/gamecontext.cpp:4143
+#: src/game/server/gamecontext.cpp:4169
 msgid "(page {int:PageNumber}/{int:PagesInTotal}, see /changelog {int:NextPage})"
-msgstr ""
+msgstr "（{int:PageNumber} 页（共 {int:PagesInTotal} 页）, 下一页查看 /changelog {int:NextPage}）"
 
-#: src/game/server/gamecontext.cpp:3521
-#, fuzzy
+#: src/game/server/gamecontext.cpp:3689
 msgid "10 seconds later, a few players become infected."
-msgstr "10 秒后，有两名玩家会被感染。"
+msgstr "10 秒后，有些玩家会被感染。"
 
-#: src/game/server/gamecontext.cpp:3591
-msgid "A lucky Scientist devoted to killing can get a white hole that sucks infected in which can be placed with the laser rifle."
-msgstr ""
+#: src/game/server/gamecontext.cpp:3926
+msgctxt "Scientist"
+msgid "A lucky Scientist devoted to killing can get a white hole that sucks the infected in which can be placed with the laser rifle."
+msgstr "幸运的科学家会在杀死感染者时得到白洞, 白洞可用激光枪放置"
 
-#: src/game/server/gamecontext.cpp:4003
+#: src/game/server/gamecontext.cpp:4035
 msgid "A random class will be automatically attributed to you when rounds start"
-msgstr "随机职业会在游戏开始时自动为您选择"
+msgstr "游戏开始时会自动选择随机职业"
 
-#: src/game/server/gamecontext.cpp:3878
-msgid "A witch can build a pair of portals to let other infected get from spawn right to the battle."
-msgstr ""
-
-#: src/game/server/gamecontext.cpp:3863
-msgid "Additionally a witch can place portals with the laser rifle. Further information on /help portals"
-msgstr ""
-
-#: src/game/server/gamecontext.cpp:3720
+#: src/game/server/gamecontext.cpp:3945
+msgctxt "Boomer"
 msgid "All humans affected by the explosion become infected."
-msgstr "被炸到的人都会被感染。"
+msgstr "人类会被爆炸感染"
 
-#: src/game/server/gamecontext.cpp:3519
-msgid "All players start as human."
-msgstr "所有玩家一开始都是人类。"
+#: src/game/server/gamecontext.cpp:3687
+msgid "All players start as a human."
+msgstr "所有玩家一开始都是人类"
 
-#: src/engine/server/server.cpp:3651 src/engine/server/server.cpp:3678 src/engine/server/server.cpp:3697 src/engine/server/server.cpp:3736 src/engine/server/server.cpp:3744
+#: src/game/server/infclass/infcgamecontroller.cpp:1466
+#: src/game/server/infclass/infcgamecontroller.cpp:1570
+msgid "All witches are already here"
+msgstr "所有女巫已经在这里了"
+
+#: src/engine/server/server.cpp:3744 src/engine/server/server.cpp:3771
+#: src/engine/server/server.cpp:3790 src/engine/server/server.cpp:3829
+#: src/engine/server/server.cpp:3837
 msgid "An error occured during the creation of your account."
 msgstr "创建帐户时发生错误。"
 
-#: src/engine/server/server.cpp:3574
+#: src/engine/server/server.cpp:3667
 msgid "An error occured during the operation."
 msgstr "在操作过程中发生错误。"
 
-#: src/game/server/gamecontext.cpp:3778
-msgid "Any human that touch a hook in web mode is automatically grabbed."
-msgstr "织网模式时，被勾住的人类都会被困住。"
-
-#: src/game/server/gamecontext.cpp:3944
+#: src/game/server/gamecontext.cpp:3783
 msgid "Available help pages: {str:PageList}"
 msgstr "可用的帮助页面︰{str:PageList}"
 
-#: src/game/server/gamecontext.cpp:4060
+#: src/game/server/gamecontext.cpp:4090
 msgid "Available languages: {str:ListOfLanguage}"
 msgstr "可用语言︰ {str:ListOfLanguage}"
 
-#: src/game/server/gamecontext.cpp:2876
+#: src/game/server/gamecontext.cpp:3029
 msgid "Based on the concept of Infection mod by Gravity"
-msgstr "基于 Gravity 所做的原生化危机 (Infection) mod"
+msgstr "基于 Gravity 所做的原始感染模式 (Infection) mod"
 
-#: src/game/server/infclass/infcgamecontroller.cpp:547 src/game/server/gamecontext.cpp:3742
+#: src/game/server/infclass/infcgamecontroller.cpp:801
 msgid "Bat"
-msgstr ""
+msgstr "蝙蝠"
 
-#: src/game/server/gamecontext.cpp:3748
-#, fuzzy
-msgid "Bat can jump multiple times in air."
-msgstr "他拥有额外一段跳跃。"
+#: src/game/server/gamecontext.cpp:3955
+msgctxt "Bat"
+msgid "Bat can jump endlessly in the air but it cannot infect humans."
+msgstr "蝙蝠能够在空中无限跳跃. 但是不能直接感染人类"
 
-#: src/game/server/infclass/infcgamecontroller.cpp:610
+#: src/game/server/infclass/infcgamecontroller.cpp:864
 msgid "Bats"
-msgstr ""
+msgstr "蝙蝠"
 
-#: src/game/server/infclass/infcgamecontroller.cpp:536 src/game/server/gamecontext.cpp:3599
+#: src/game/server/infclass/infcgamecontroller.cpp:790
 msgid "Biologist"
 msgstr "生物学家"
 
-#: src/game/server/infclass/infcgamecontroller.cpp:599
-#, fuzzy
+#: src/game/server/infclass/infcgamecontroller.cpp:853
 msgid "Biologists"
 msgstr "生物学家"
 
-#: src/game/server/infclass/infcgamecontroller.cpp:543 src/game/server/gamecontext.cpp:3716
+#: src/game/server/infclass/infcgamecontroller.cpp:797
 msgid "Boomer"
 msgstr "爆炸者"
 
-#: src/game/server/infclass/infcgamecontroller.cpp:606
-#, fuzzy
+#: src/game/server/infclass/infcgamecontroller.cpp:860
 msgid "Boomers"
 msgstr "爆炸者"
 
-#: src/game/server/gamecontext.cpp:4110
+#: src/game/server/gamecontext.cpp:4136
 msgid "ChangeLog is not provided"
-msgstr ""
+msgstr "无更改日志"
 
-#: src/game/server/gamecontext.cpp:4122
+#: src/game/server/gamecontext.cpp:4148
 msgid "ChangeLog page {int:PageNumber} is not available"
-msgstr ""
+msgstr "不能查看第 {int:PageNumber} 页更改日志"
 
-#: src/game/server/gamecontext.cpp:3941
+#: src/game/server/gamecontext.cpp:3781
 msgid "Choose a help page with /help <page>"
 msgstr "使用 /help <page> 查看帮助。"
 
-#: src/game/server/infclass/entities/infccharacter.cpp:1721
+#: src/game/server/infclass/entities/infccharacter.cpp:2096
 msgid "Choose your class"
-msgstr "选择您的职业"
+msgstr "选择你的职业"
 
-#: src/game/server/gamecontext.cpp:3536
-msgid "Create an account on Crowdin and join a translation team:"
-msgstr "在 Crowdin 上创建一个帐户并加入翻译团队︰"
+#: src/game/server/gamecontext.cpp:3702
+msgid "Create an account on Crowdin and join the translation team:"
+msgstr "在 Crowdin 上创建一个账户并加入翻译团队:"
 
-#: src/game/server/gamecontext.cpp:3566
+#: src/game/server/gamecontext.cpp:3077
+msgid "Discord: {str:Url}"
+msgstr "Discord: {str:Url}"
+
+#: src/game/server/gamecontext.cpp:3890
+msgctxt "Soldier"
 msgid "Each bomb can explode one time."
 msgid_plural "Each bomb can explode {int:NumBombs} times."
-msgstr[0] "每个悬浮雷可以爆炸 {int:NumBombs} 次。"
+msgstr[0] "炸弹可以爆炸 {int:NumBombs} 次。"
 
-#: src/game/server/infclass/infcgamecontroller.cpp:526 src/game/server/gamecontext.cpp:3547
+#: src/game/server/infclass/infcgamecontroller.cpp:780
 msgid "Engineer"
 msgstr "工程师"
 
-#: src/game/server/infclass/infcgamecontroller.cpp:589
-#, fuzzy
+#: src/game/server/infclass/infcgamecontroller.cpp:843
 msgid "Engineers"
 msgstr "工程师"
 
-#: src/game/server/gamecontext.cpp:3905
+#: src/game/server/gamecontext.cpp:3731
 msgid "Example: “/msg !medic I'm wounded!”"
-msgstr "例如：“/msg !medic 医疗兵！”"
+msgstr "例如：“/msg !medic 我需要治疗！”"
 
-#: src/game/server/gamecontext.cpp:3921
-#, fuzzy
+#: src/game/server/gamecontext.cpp:3745
 msgid "Example: “/mute nameless tee”"
-msgstr "例如：“/msg !medic 医疗兵！”"
+msgstr "例如: \"/mute nameless tee\""
 
-#: src/game/server/infclass/classes/humans/human.cpp:512 src/game/server/infclass/classes/humans/human.cpp:533
+#: src/game/server/infclass/classes/humans/human.cpp:968
+#: src/game/server/infclass/classes/humans/human.cpp:989
+msgctxt "Mercenary"
 msgid "Explosive yield: {percent:BombLevel}"
-msgstr "爆炸填充：{percent:BombLevel}"
+msgstr "爆炸当量： {percent:BombLevel}"
 
-#: src/game/server/gamecontext.cpp:3540
-msgid "For any question about the translation process, please contact us on IRC ({str:IRCAddress})"
-msgstr "翻译过程中如有任何疑问，请于 IRC 联系我们 ({str:IRCAddress})"
+#: src/game/server/gamecontext.cpp:3762
+msgid "Fast round"
+msgstr "极速回合"
 
-#: src/game/server/infclass/infcgamecontroller.cpp:549 src/game/server/gamecontext.cpp:3759
+#: src/game/server/infclass/infcgamecontroller.cpp:803
 msgid "Ghost"
 msgstr "幽灵"
 
-#: src/game/server/infclass/infcgamecontroller.cpp:612
-#, fuzzy
+#: src/game/server/infclass/infcgamecontroller.cpp:866
 msgid "Ghosts"
 msgstr "幽灵"
 
-#: src/game/server/infclass/infcgamecontroller.cpp:553 src/game/server/gamecontext.cpp:3787
+#: src/game/server/infclass/infcgamecontroller.cpp:807
 msgid "Ghoul"
 msgstr "食尸鬼"
 
-#: src/game/server/infclass/infcgamecontroller.cpp:616
-#, fuzzy
+#: src/game/server/gamecontext.cpp:3978
+msgctxt "Ghoul"
+msgid "Ghoul can infect humans and heal the infected with the hammer."
+msgstr "食尸鬼可以用锤子感染人类或治疗感染"
+
+#: src/game/server/infclass/infcgamecontroller.cpp:870
 msgid "Ghouls"
 msgstr "食尸鬼"
 
-#: src/game/server/infclass/entities/infccharacter.cpp:703
+#: src/game/server/infclass/entities/infccharacter.cpp:1066
 msgid "Grenade limit increased"
 msgstr "榴弹限量已增加"
 
-#: src/game/server/gamecontext.cpp:3621
-msgid "Grenades with medicine give armor to everybody in their range, including Heroes and the Medic themself"
-msgstr ""
+#: src/game/server/gamecontext.cpp:3865
+msgctxt "Medic"
+msgid "Grenades with medicine give armor to everybody in their range, including Heroes and the Medic themself."
+msgstr "医疗兵的榴弹可以给在范围里的每个人盾, 包括英雄和医疗兵自己"
 
-#: src/game/server/gamecontext.cpp:3735
-msgid "He can also inflict 1 damage point per second by hooking humans."
-msgstr "勾住正常人时能造成每秒 1 点伤害。"
-
-#: src/game/server/gamecontext.cpp:3733
-msgid "He can jump two times in air."
-msgstr "他拥有额外一段跳跃。"
-
-#: src/game/server/gamecontext.cpp:3806
-#, fuzzy
-msgid "He can make the ground and walls toxic by spreading slime with the hammer."
-msgstr "他可以用锤子向地面和墙壁投毒。"
-
-#: src/game/server/gamecontext.cpp:3819
-msgid "He does not die immediately when killed but instead enters Spirit mode and defies death for a brief span of time."
-msgstr ""
-
-#: src/game/server/infclass/infcgamecontroller.cpp:524 src/game/server/gamecontext.cpp:3632
+#: src/game/server/infclass/infcgamecontroller.cpp:778
 msgid "Hero"
 msgstr "英雄"
 
-#: src/game/server/infclass/infcgamecontroller.cpp:587
-#, fuzzy
+#: src/game/server/infclass/infcgamecontroller.cpp:841
 msgid "Heroes"
 msgstr "英雄"
 
-#: src/game/server/gamecontext.cpp:3660
-msgid "His hammer is replaced by a katana, allowing him to jump one time before touching the ground."
-msgid_plural "His hammer is replaced by a katana, allowing him to jump {int:NinjaJump} times before touching the ground."
-msgstr[0] "他的锤子被武士刀取代，允许他触地后冲刺 {int:NinjaJump} 次。"
-
-#: src/game/server/player.cpp:195
+#: src/game/server/player.cpp:200
 msgid "Hook protection disabled"
 msgstr "钩子保护关闭"
 
-#: src/game/server/player.cpp:193
+#: src/game/server/player.cpp:198
 msgid "Hook protection enabled"
 msgstr "钩子保护开启"
 
-#: src/game/server/gamecontext.cpp:3534
+#: src/game/server/gamecontext.cpp:3700
 msgid "How to translate the mod"
 msgstr "如何翻译此 mod"
 
-#: src/game/server/gamecontext.cpp:3929
-#, fuzzy
+#: src/game/server/gamecontext.cpp:3751
 msgid "How to use taxi mode"
-msgstr "如何翻译此 mod"
+msgstr "怎么开车"
 
-#: src/game/server/gamecontext.cpp:3876
-msgid "How to use witch portals"
-msgstr ""
-
-#: src/game/server/infclass/infcgamecontroller.cpp:545 src/game/server/gamecontext.cpp:3729
+#: src/game/server/infclass/infcgamecontroller.cpp:799
 msgid "Hunter"
 msgstr "猎人"
 
-#: src/game/server/infclass/infcgamecontroller.cpp:608
-#, fuzzy
+#: src/game/server/infclass/infcgamecontroller.cpp:862
 msgid "Hunters"
 msgstr "猎人"
 
-#: src/game/server/gamecontext.cpp:3848
-#, fuzzy
+#: src/game/server/gamecontext.cpp:4002
+msgctxt "Undead"
 msgid "If an infected heals it, the freeze effect disappears."
-msgstr "如果被感染者治疗他，冻结效果消失。"
+msgstr "如果一个感染击中了他, 冻结效果会消失"
 
-#: src/game/server/gamecontext.cpp:3867
-#, fuzzy
-msgid "If the Witch dies, it disappears and is replaced by another class of infected."
-msgstr "如果女巫死了，她将消失，取而代之的是另一种族类。"
+#: src/game/server/gamecontext.cpp:3996
+msgctxt "Witch"
+msgid "If the Witch dies, it disappears and is replaced by another class."
+msgstr "如果女巫死了, 她会消失并转变角色"
 
-#: src/game/server/gamecontext.cpp:2088
+#: src/game/server/gamecontext.cpp:2240
 msgid "If your language is not available, you can help with translation (/help translate)."
 msgstr "如果您的语言还不可用，您可以帮助翻译 (详见 /help translate)。"
 
-#: src/game/server/gamecontext.cpp:3933
-msgid "In order to use it, both humans have to disable hook protection (usually, with F3). The human being hooked becomes the driver."
-msgstr ""
+#: src/game/server/gamecontext.cpp:3970
+msgctxt "Spider"
+msgid "In both modes the hook inflicts 1 damage point per second and can grab a human for longer."
+msgstr "在两种模式里勾子可以给人类造成每秒1点伤害, 并且可长时间勾住人类"
 
-#: src/game/server/infclass/infcgamecontroller.cpp:1652 src/game/server/infclass/infcgamecontroller.cpp:1769
+#: src/game/server/gamecontext.cpp:3755
+msgid "In order to use it, both humans have to disable hook protection (usually, with F3). The human being hooked becomes the driver."
+msgstr "为了开车, 两个人都必须取消勾子保护(一般按F3), 然后被勾的人将成为司机"
+
+#: src/game/server/gamecontext.cpp:3765
+msgid "In the fast rounds *more* humans become infected initially, the spawning rate is increased and the round time limit is decreased. White hole is also disabled."
+msgstr "在极速回合里, 更多的人类会被感染, 重生速度会增加, 回合时间缩短, 白洞被禁用"
+
+#: src/game/server/infclass/infcgamecontroller.cpp:2460
 msgid "Infected won the round in {sec:RoundDuration}"
 msgstr "被感染者在本轮中获得胜利 {sec:RoundDuration}"
 
-#: src/game/server/gamecontext.cpp:3517
-msgid "InfectionClass is a team game between humans and infected."
-msgstr "新生化危机 InfectionClass 是一项人类与被感染者间的团队游戏。"
+#: src/game/server/infclass/infcgamecontroller.cpp:2475
+msgid "Infection is coming in {sec:RemainingTime}"
+msgstr "感染将在{sec:RemainingTime}后到来"
 
-#: src/game/server/gamecontext.cpp:2874 src/game/server/gamecontext.cpp:2895
+#: src/game/server/gamecontext.cpp:3685
+msgid "InfectionClass is a team game between humans and the infected."
+msgstr "InfectionClass(感染模式) 是一个人类与感染者间的团队游戏"
+
+#: src/game/server/gamecontext.cpp:3027 src/game/server/gamecontext.cpp:3050
 msgid "InfectionClass, by necropotame (version {str:VersionCode})"
-msgstr "新生化危机 InfectionClass，作者： necropotame (版本 {str:VersionCode})"
+msgstr "InfectionClass (感染模式)，作者： necropotame (版本 {str:VersionCode})"
 
-#: src/game/server/gamecontext.cpp:3846
-#, fuzzy
-msgid "Instead of dying, it freezes for 10 seconds."
-msgstr "他不会死亡，但当他 HP 为 0 时会被冻结 10 秒。"
+#: src/game/server/gamecontext.cpp:3956
+msgctxt "Bat"
+msgid "Instead, it can hammer humans to reduce their health or even kill them."
+msgstr "相反, 他可以锤人类使人类掉血, 或者杀死人类"
 
-#: src/game/server/gamecontext.cpp:3746
-msgid "Instead, it can hammer humans to reduce their health or even kill them"
-msgstr ""
+#: src/game/server/gamecontext.cpp:3941
+msgctxt "Smoker"
+msgid "It can also infect humans and heal the infected with the hammer."
+msgstr "他可以用锤子感染人类或治疗感染"
 
-#: src/game/server/gamecontext.cpp:3722 src/game/server/gamecontext.cpp:3750 src/game/server/gamecontext.cpp:3765 src/game/server/gamecontext.cpp:3795 src/game/server/gamecontext.cpp:3850
-#: src/game/server/gamecontext.cpp:3869
-#, fuzzy
+#: src/game/server/gamecontext.cpp:3958
+msgctxt "Bat"
+msgid "It can also inflict 1 damage point per second by hooking humans, which sucks their blood, restoring the Bat's health."
+msgstr "他可以勾住人类每秒造成1点伤害并且使自己回血"
+
+#: src/game/server/gamecontext.cpp:3946
+msgctxt "Boomer"
 msgid "It can also inflict 1 damage point per second by hooking humans."
-msgstr "勾住正常人时能造成每秒 1 点伤害。"
+msgstr "他可以勾住人类并每秒造成1点伤害"
 
-#: src/game/server/gamecontext.cpp:3791
-#, fuzzy
-msgid "It can devour anything that has died nearby, which makes it stronger, faster and more resistant."
-msgstr "他可以吞食他附近的濒死者，并会使他更快，更壮，更强！"
+#: src/game/server/gamecontext.cpp:3965
+msgctxt "Ghost"
+msgid "It can also inflict 1 damage point per second by hooking humans."
+msgstr "他可以勾住人类并每秒造成1点伤害"
 
-#: src/game/server/gamecontext.cpp:3793
+#: src/game/server/gamecontext.cpp:3979
+msgctxt "Ghoul"
+msgid "It can also inflict 1 damage point per second by hooking humans."
+msgstr "他可以勾住人类并每秒造成1点伤害"
+
+#: src/game/server/gamecontext.cpp:3952
+msgctxt "Hunter"
+msgid "It can also inflict 1 damage point per second by hooking humans."
+msgstr "他可以勾住人类并每秒造成1点伤害"
+
+#: src/game/server/gamecontext.cpp:3985
+msgctxt "Slug"
+msgid "It can also inflict 1 damage point per second by hooking humans."
+msgstr "他可以勾住人类并每秒造成1点伤害"
+
+#: src/game/server/gamecontext.cpp:4004
+msgctxt "Undead"
+msgid "It can also inflict 1 damage point per second by hooking humans."
+msgstr "他可以勾住人类并每秒造成1点伤害"
+
+#: src/game/server/gamecontext.cpp:3992
+msgctxt "Voodoo"
+msgid "It can also inflict 1 damage point per second by hooking humans."
+msgstr "他可以勾住人类并每秒造成1点伤害"
+
+#: src/game/server/gamecontext.cpp:3998
+msgctxt "Witch"
+msgid "It can also inflict 1 damage point per second by hooking humans."
+msgstr "她可以勾住人类并每秒造成1点伤害"
+
+#: src/game/server/gamecontext.cpp:3964
+msgctxt "Ghost"
+msgid "It can infect humans and heal the infected with the hammer."
+msgstr "他可以用锤子感染人类或治疗感染"
+
+#: src/game/server/gamecontext.cpp:3951
+msgctxt "Hunter"
+msgid "It can infect humans and heal the infected with the hammer."
+msgstr "他可以用锤子感染人类或治疗感染"
+
+#: src/game/server/gamecontext.cpp:3976
+msgctxt "Ghoul"
 msgid "It digests the fodder over time, going back to the normal state. Some nourishment is also lost on death."
-msgstr ""
+msgstr "他会逐渐消耗营养直到回到初始形态, 死亡会失去部分营养"
 
-#: src/game/server/gamecontext.cpp:3643
+#: src/game/server/gamecontext.cpp:3875
+msgctxt "Hero"
 msgid "It fully heals the Hero and it can grant a turret which you can place down with the hammer."
-msgstr ""
+msgstr "它可以治疗英雄, 并使英雄得到一个用锤子放置的炮塔"
 
-#: src/game/server/gamecontext.cpp:3763
-#, fuzzy
-msgid "It is invisible, unless a human is nearby, it takes damage, or it uses the hammer."
-msgstr "他是隐身的，当人类接近他、受到伤害、使用锤子时会现身。"
+#: src/game/server/gamecontext.cpp:1478
+msgid "Join our Discord server: {str:Url}"
+msgstr "加入我们的 Discord 服务器： {str:Url}"
 
-#: src/game/server/gamecontext.cpp:3623
+#: src/game/server/gamecontext.cpp:1490
+msgid "Join our Matrix room: {str:Url}"
+msgstr "加入我们的Matrix房间: {str:Url}"
+
+#: src/game/server/gamecontext.cpp:1484
+msgid "Join our Telegram: {str:Url}"
+msgstr "加入我们的 Telegram：{str:Url}"
+
+#: src/game/server/gamecontext.cpp:3867
+msgctxt "Medic"
 msgid "Laser rifle revives the infected, but at the cost of 17 hp and armor."
-msgstr ""
+msgstr "激光枪可以治疗感染者，但需要 17 生命或护甲。"
 
-#: src/game/server/infclass/classes/humans/human.cpp:292
+#: src/game/server/infclass/classes/humans/human.cpp:742
 msgid "Laser wall: {sec:RemainingTime}"
 msgstr "激光墙︰{sec:RemainingTime}"
 
-#: src/game/server/gamecontext.cpp:4077
+#: src/game/server/gamecontext.cpp:4105
 msgid "List of commands"
 msgstr "命令列表"
 
-#: src/game/server/infclass/infcgamecontroller.cpp:538 src/game/server/gamecontext.cpp:3608
+#: src/game/server/infclass/infcgamecontroller.cpp:792
 msgid "Looper"
-msgstr ""
+msgstr "循环者"
 
-#: src/game/server/infclass/classes/humans/human.cpp:345
-#, fuzzy
+#: src/game/server/infclass/classes/humans/human.cpp:795
 msgid "Looper laser wall: {sec:RemainingTime}"
-msgstr "激光墙︰{sec:RemainingTime}"
+msgstr "循环者激光墙：{sec:RemainingTime}"
 
-#: src/game/server/infclass/infcgamecontroller.cpp:601
+#: src/game/server/infclass/infcgamecontroller.cpp:855
 msgid "Loopers"
-msgstr ""
+msgstr "循环者"
 
-#: src/game/server/gamecontext.cpp:2878
+#: src/game/server/gamecontext.cpp:3031
 msgid "Main contributors: {str:ListOfContributors}"
 msgstr "主要贡献者︰{str:ListOfContributors}"
 
-#: src/game/server/infclass/infcgamecontroller.cpp:522 src/game/server/gamecontext.cpp:3617
+#: src/game/server/gamecontext.cpp:3091
+msgid "Matrix room: {str:Url}"
+msgstr "Matrix房间: {str:Url}"
+
+#: src/game/server/infclass/infcgamecontroller.cpp:776
 msgid "Medic"
 msgstr "医疗兵"
 
-#: src/game/server/gamecontext.cpp:3625
-#, fuzzy
-msgid "Medic also has a powerful shotgun that can knock back infected."
-msgstr "他有一把强力的霰弹枪来击退被感染者。"
+#: src/game/server/gamecontext.cpp:3868
+msgctxt "Medic"
+msgid "Medic also has a powerful shotgun that can knock back the infected."
+msgstr "医疗兵的霰弹枪可以击退感染者"
 
-#: src/game/server/infclass/infcgamecontroller.cpp:585
-#, fuzzy
+#: src/game/server/infclass/entities/medic-laser.cpp:64
+msgid "Medic {str:MedicName} revived {str:RevivedName}"
+msgstr "医疗兵 {str:MedicName} 治疗了 {str:RevivedName}"
+
+#: src/game/server/infclass/infcgamecontroller.cpp:839
 msgid "Medics"
 msgstr "医疗兵"
 
-#: src/game/server/infclass/infcgamecontroller.cpp:583
-#, fuzzy
+#: src/game/server/infclass/infcgamecontroller.cpp:837
 msgid "Mercenaries"
 msgstr "雇佣兵"
 
-#: src/game/server/infclass/infcgamecontroller.cpp:520 src/game/server/gamecontext.cpp:3672
+#: src/game/server/infclass/infcgamecontroller.cpp:774
 msgid "Mercenary"
 msgstr "雇佣兵"
 
-#: src/game/server/gamecontext.cpp:3680
-#, fuzzy
-msgid "Mercenary can also throw poison grenades that each deal one damage point."
-msgid_plural "Mercenary can also throw poison grenades that each deal {int:NumDamagePoints} damage points."
-msgstr[0] "他也能扔毒炸弹，每次造成 {int:NumDamagePoints} 点伤害。"
+#: src/game/server/gamecontext.cpp:3859
+msgctxt "Mercenary"
+msgid "Mercenary can also throw poison grenades that deal one damage point and prevent the infected from healing."
+msgid_plural "Mercenary can also throw poison grenades that deal {int:NumDamagePoints} damage points and prevent the infected from healing."
+msgstr[0] "雇佣兵可以发射毒气弹, 使感染者中毒, 并共造成{int:NumDamagePoints}点伤害"
 
-#: src/game/server/infclass/classes/humans/human.cpp:443
+#: src/game/server/infclass/classes/humans/human.cpp:897
+msgctxt "Biologist"
 msgid "Mine activated"
 msgstr "地雷已激活"
 
-#: src/game/server/gamecontext.cpp:3584
+#: src/game/server/gamecontext.cpp:3922
+msgctxt "Scientist"
 msgid "Mines are limited to one per player at the same time."
 msgid_plural "Mines are limited to {int:NumMines} per player at the same time."
 msgstr[0] "每个玩家同时可使用 {int:NumMines} 个地雷。"
 
-#: src/game/server/infclass/entities/infccharacter.cpp:1693
+#: src/game/server/infclass/entities/infccharacter.cpp:2068
 msgid "Need at least {int:MinPlayers} player"
 msgid_plural "Need at least {int:MinPlayers} players"
-msgstr[0] ""
+msgstr[0] "至少需要 {int:MinPlayers} 玩家"
 
-#: src/game/server/infclass/classes/humans/human.cpp:596
+#: src/game/server/infclass/classes/humans/human.cpp:1052
 msgid "Next flag in {sec:RemainingTime}"
 msgstr "下一个旗帜出现时间：{sec:RemainingTime}"
 
-#: src/game/server/infclass/classes/humans/human.cpp:458
+#: src/game/server/infclass/classes/humans/human.cpp:914
+msgctxt "Ninja"
 msgid "Next target in {sec:RemainingTime}"
 msgstr "{sec:RemainingTime} 后出现下一个目标"
 
-#: src/game/server/infclass/infcgamecontroller.cpp:530 src/game/server/gamecontext.cpp:3654
+#: src/game/server/infclass/infcgamecontroller.cpp:784
 msgid "Ninja"
 msgstr "忍者"
 
-#: src/game/server/infclass/infcgamecontroller.cpp:593
-#, fuzzy
+#: src/game/server/gamecontext.cpp:3908
+msgid "Ninja gets special targets. For killing a target, extra points and abilities are awarded."
+msgstr "忍者会得到一个目标, 当他杀死目标, 会获得升级和额外的分数"
+
+#: src/game/server/infclass/infcgamecontroller.cpp:847
 msgid "Ninjas"
 msgstr "忍者"
 
-#: src/game/server/gamecontext.cpp:3665
-msgid "Ninjas get special targets. For killing a target, extra points and abilities are awarded"
-msgstr ""
-
-#: src/game/server/gamecontext.cpp:3136
+#: src/game/server/gamecontext.cpp:3321
 msgid "No player was found with this name"
 msgstr "没有找到这个名字的玩家"
 
-#: src/game/server/gamecontext.cpp:3883
-msgid "Once both portals are in place, they need extra {sec:ConnectionTime} to become operational."
-msgstr ""
-
-#: src/game/server/infclass/classes/humans/human.cpp:365
+#: src/game/server/infclass/classes/humans/human.cpp:815
+msgctxt "Soldier"
 msgid "One bomb left"
 msgid_plural "{int:NumBombs} bombs left"
 msgstr[0] "炸弹剩余 {int:NumBombs}"
 
-#: src/game/server/infclass/infcgamecontroller.cpp:1743
+#: src/game/server/infclass/infcgamecontroller.cpp:2434
 msgid "One human won the round"
 msgid_plural "{int:NumHumans} humans won the round"
-msgstr[0] ""
-"Singular Form\n"
-"一名人类获得本轮胜利\n"
-"Plural Form\n"
-"{int:NumHumans} 名人类获得本轮胜利"
+msgstr[0] "{int:NumHumans} 名人类获得本轮胜利"
 
-#: src/game/server/infclass/classes/humans/human.cpp:402
+#: src/game/server/infclass/classes/humans/human.cpp:852
+#: src/game/server/infclass/classes/humans/human.cpp:871
 msgid "One mine is active"
 msgid_plural "{int:NumMines} mines are active"
 msgstr[0] "地雷已激活 {int:NumMines} 个"
 
-#: src/game/server/gamecontext.cpp:3886
-msgid "Only one witch on a map can open a portal."
-msgstr ""
-
-#: src/game/server/gamecontext.cpp:3914
+#: src/game/server/gamecontext.cpp:3738
 msgid "Persistent player mute"
-msgstr ""
+msgstr "永久禁言玩家"
 
-#: src/game/server/infclass/infcgamecontroller.cpp:1261
+#: src/game/server/infclass/infcgamecontroller.cpp:2181
 msgid "Play more on this map"
-msgstr ""
+msgstr "在地图上玩更多内容"
 
-#: src/engine/server/server.cpp:3643
+#: src/engine/server/server.cpp:3736
 msgid "Please wait 5 minutes before creating another account"
 msgstr "在创建另一个账号前请等待 5 分钟"
 
-#: src/game/server/gamecontext.cpp:3891
-msgid "Portals are currently DISABLED."
-msgstr ""
-
-#: src/game/server/gamecontext.cpp:3889
-msgid "Portals are currently ENABLED."
-msgstr ""
-
-#: src/game/server/infclass/classes/humans/human.cpp:480
+#: src/game/server/infclass/classes/humans/human.cpp:936
+msgctxt "Sniper"
 msgid "Position lock: {sec:RemainingTime}"
-msgstr "位置锁定︰{sec:RemainingTime}"
+msgstr "位置锁定：{sec:RemainingTime}"
 
-#: src/game/server/gamecontext.cpp:4091
+#: src/game/server/gamecontext.cpp:4119
 msgid "Press <F3> or <F4> to enable or disable hook protection"
 msgstr "按 <F3> 或 <F4> 来启用或禁用钩子保护"
 
-#: src/game/server/gamecontext.cpp:3835
-msgid "Puts humans and zombies into a vulnerable state by pulling them into its center"
-msgstr ""
-
-#: src/game/server/infclass/entities/infccharacter.cpp:1666
+#: src/game/server/infclass/entities/infccharacter.cpp:2040
 msgid "Random choice"
 msgstr "随机选择"
 
-#: src/game/server/gamecontext.cpp:3830
-msgid "Receive it by killing at least one zombie."
-msgid_plural "Receive it by killing at least {int:NumKills} zombies as scientist."
-msgstr[0] ""
+#: src/game/server/gamecontext.cpp:3715
+msgctxt "White hole"
+msgid "Receive it by killing at least one infected as a Scientist."
+msgid_plural "Receive it by killing at least {int:NumKills} of the infected as a Scientist."
+msgstr[0] "科学家通过杀死至少{int:NumKills}个感染者来获得它"
 
-#: src/game/server/gamecontext.cpp:3515
+#: src/game/server/gamecontext.cpp:3683
 msgid "Rules of the game"
 msgstr "游戏规则"
 
-#: src/game/server/infclass/infcgamecontroller.cpp:534 src/game/server/gamecontext.cpp:3578
+#: src/game/server/infclass/infcgamecontroller.cpp:1541
+msgid "Santa ({int:Callers}/{int:RequiredCallers})"
+msgstr "请求圣诞老人 ({int:Callers}/{int:RequiredCallers})"
+
+#: src/game/server/infclass/infcgamecontroller.cpp:1578
+msgid "Santa {str:PlayerName} has arrived!"
+msgstr "圣诞老人{str:PlayerName}已经到达"
+
+#: src/game/server/infclass/infcgamecontroller.cpp:788
 msgid "Scientist"
 msgstr "科学家"
 
-#: src/game/server/gamecontext.cpp:3589
-#, fuzzy
+#: src/game/server/gamecontext.cpp:3925
+msgctxt "Scientist"
 msgid "Scientist has also grenades that teleport them."
-msgstr "也可以用榴弹枪瞬移。"
+msgstr "科学家有用于瞬移的榴弹枪。"
 
-#: src/game/server/infclass/infcgamecontroller.cpp:597
-#, fuzzy
+#: src/game/server/infclass/infcgamecontroller.cpp:851
 msgid "Scientists"
 msgstr "科学家"
 
-#: src/game/server/gamecontext.cpp:3527
+#: src/game/server/gamecontext.cpp:3695
 msgid "See also `/help pages`"
-msgstr ""
+msgstr "另见：/help pages"
 
-#: src/game/server/gamecontext.cpp:2899
+#: src/game/server/gamecontext.cpp:3104
+msgid "See also: /credits"
+msgstr "另见：/credits"
+
+#: src/game/server/gamecontext.cpp:1473
+msgid "See also: /help, /changelog, /about"
+msgstr "另见：/help、/changelog、/about"
+
+#: src/game/server/infclass/infcplayer.cpp:242
+msgid "Self kill attempt prevented. Trigger self kill again to confirm."
+msgstr "自杀被阻止。再次自杀以确认。"
+
+#: src/game/server/gamecontext.cpp:3054
 msgid "Server version from {str:ServerCompileDate} "
-msgstr ""
+msgstr "服务器构建日期: {str:ServerCompileDate} "
 
-#: src/game/server/infclass/infcgamecontroller.cpp:555 src/game/server/gamecontext.cpp:3802
+#: src/game/server/infclass/infcgamecontroller.cpp:809
 msgid "Slug"
 msgstr "鼻涕虫"
 
-#: src/game/server/infclass/infcgamecontroller.cpp:618
-#, fuzzy
+#: src/game/server/gamecontext.cpp:3984
+msgctxt "Slug"
+msgid "Slug can infect humans and heal the infected with the hammer."
+msgstr "鼻涕虫可以用锤子感染人类或治疗感染。"
+
+#: src/game/server/infclass/infcgamecontroller.cpp:872
 msgid "Slugs"
 msgstr "鼻涕虫"
 
-#: src/game/server/infclass/infcgamecontroller.cpp:541 src/game/server/gamecontext.cpp:3703
+#: src/game/server/infclass/infcgamecontroller.cpp:795
 msgid "Smoker"
 msgstr "吸烟者"
 
-#: src/game/server/gamecontext.cpp:3707
-msgid "Smoker has a powerful hook that hurts human."
-msgstr ""
+#: src/game/server/gamecontext.cpp:3939
+msgctxt "Smoker"
+msgid "Smoker has a powerful hook that hurts humans and sucks their blood, restoring the Smoker's health."
+msgstr "吸烟者有一个强大的钩子，通过伤害人类，来恢复吸烟者的血量。"
 
-#: src/game/server/infclass/infcgamecontroller.cpp:604
-#, fuzzy
+#: src/game/server/infclass/infcgamecontroller.cpp:858
 msgid "Smokers"
 msgstr "吸烟者"
 
-#: src/game/server/infclass/infcgamecontroller.cpp:532 src/game/server/gamecontext.cpp:3690
+#: src/game/server/infclass/infcgamecontroller.cpp:786
 msgid "Sniper"
 msgstr "狙击手"
 
-#: src/game/server/infclass/infcgamecontroller.cpp:595
-#, fuzzy
+#: src/game/server/infclass/infcgamecontroller.cpp:849
 msgid "Snipers"
 msgstr "狙击手"
 
-#: src/game/server/gamecontext.cpp:3694
-#, fuzzy
-msgid "Snipers can jump two times in air."
-msgstr "他拥有额外一段跳跃。"
-
-#: src/game/server/infclass/infcgamecontroller.cpp:528 src/game/server/gamecontext.cpp:3560
+#: src/game/server/infclass/infcgamecontroller.cpp:782
 msgid "Soldier"
 msgstr "士兵"
 
-#: src/game/server/infclass/infcgamecontroller.cpp:591
-#, fuzzy
+#: src/game/server/infclass/infcgamecontroller.cpp:845
 msgid "Soldiers"
 msgstr "士兵"
 
-#: src/game/server/gamecontext.cpp:2910
-msgid "Sources: {str:SourceUrl} "
-msgstr ""
+#: src/game/server/infclass/infcgamecontroller.cpp:2273
+msgid "Someone was infected to balance the game."
+msgstr "为了平衡游戏有人被感染了"
 
-#: src/game/server/infclass/infcgamecontroller.cpp:551 src/game/server/gamecontext.cpp:3772
+#: src/game/server/gamecontext.cpp:3068
+msgid "Sources: {str:SourceUrl} "
+msgstr "源代码: {str:SourceUrl} "
+
+#: src/game/server/infclass/infcgamecontroller.cpp:805
 msgid "Spider"
 msgstr "蜘蛛"
 
-#: src/game/server/infclass/infcgamecontroller.cpp:614
-#, fuzzy
+#: src/game/server/infclass/infcgamecontroller.cpp:868
 msgid "Spiders"
 msgstr "蜘蛛"
 
-#: src/game/server/infclass/classes/infected/infected.cpp:102
-#, fuzzy
+#: src/game/server/infclass/classes/infected/infected.cpp:252
+msgctxt "Voodoo"
 msgid "Staying alive for: {int:RemainingTime}"
-msgstr "位置锁定︰{sec:RemainingTime}"
+msgstr "剩余存活时间: {int:RemainingTime}"
 
-#: src/game/server/infclass/classes/infected/infected.cpp:272
+#: src/game/server/infclass/classes/infected/infected.cpp:365
+msgctxt "Ghoul"
 msgid "Stomach filled by {percent:FodderInStomach}"
-msgstr "营养值填充量：{percent:FodderInStomach}"
+msgstr "营养：{percent:FodderInStomach}"
 
-#: src/game/server/gamecontext.cpp:2081
-#, fuzzy
+#: src/game/server/gamecontext.cpp:2233
 msgid "Switch language to english?"
 msgstr "切换到中文吗？"
 
-#: src/game/server/infclass/entities/infccharacter.cpp:699
+#: src/game/server/infclass/entities/infccharacter.cpp:1062
 msgid "Sword strength increased"
 msgstr "剑强度已增加"
 
-#: src/game/server/infclass/entities/infccharacter.cpp:695
+#: src/game/server/infclass/entities/infccharacter.cpp:1058
 msgid "Sword velocity increased"
 msgstr "剑速度已增加"
 
-#: src/game/server/infclass/classes/humans/human.cpp:467
+#: src/game/server/infclass/classes/humans/human.cpp:923
+msgctxt "Ninja"
 msgid "Target to eliminate: {str:PlayerName}"
 msgstr "消除目标︰{str:PlayerName}"
 
-#: src/game/server/gamecontext.cpp:3898
+#: src/game/server/gamecontext.cpp:3724
 msgid "Targeted chat messages"
 msgstr "有针对性的聊天消息"
 
-#: src/game/server/gamecontext.cpp:2880
+#: src/game/server/gamecontext.cpp:3084
+msgid "Telegram: {str:Url}"
+msgstr "Telegram：{str:Url}"
+
+#: src/game/server/gamecontext.cpp:3033
 msgid "Thanks to {str:ListOfContributors}"
 msgstr "感谢 {str:ListOfContributors}"
 
-#: src/game/server/gamecontext.cpp:3744
-#, fuzzy
-msgid "The Bat can heal infected with the hammer, but cannot infect humans"
-msgstr "被感染者目标为感染所有人类。"
-
-#: src/game/server/gamecontext.cpp:3601
-#, fuzzy
+#: src/game/server/gamecontext.cpp:3930
+msgctxt "Biologist"
 msgid "The Biologist has a shotgun with bouncing bullets and can create a spring laser trap by shooting with the laser rifle."
-msgstr "生物学家可以用霰弹枪射出跳弹，也可以用激光枪设置弹簧激光陷阱。"
+msgstr "生物学家可以用霰弹枪射出跳弹，也可以用激光枪设置激光陷阱。"
 
-#: src/game/server/gamecontext.cpp:3718
-#, fuzzy
+#: src/game/server/gamecontext.cpp:3944
+msgctxt "Boomer"
 msgid "The Boomer explodes when it attacks."
 msgstr "爆炸者在攻击的时候会自爆。"
 
-#: src/game/server/gamecontext.cpp:3549
-#, fuzzy
-msgid "The Engineer can build walls with the hammer to block infected."
+#: src/game/server/gamecontext.cpp:3880
+msgctxt "Engineer"
+msgid "The Engineer can build walls with the hammer to block the infected."
 msgstr "工程师可以用锤子创建激光墙，阻挡被感染者。"
 
-#: src/game/server/gamecontext.cpp:3761
-#, fuzzy
-msgid "The Ghost can infect humans and heal infected with the hammer."
-msgstr "幽灵可以用锤子感染人类，或治疗被感染者。"
+#: src/game/server/gamecontext.cpp:3962
+msgctxt "Ghost"
+msgid "The Ghost is invisible until a human comes nearby, it takes damage, or it uses the hammer."
+msgstr "幽灵在旁边无人类时不可见, 除非造成伤害或者使用锤子"
 
-#: src/game/server/gamecontext.cpp:3789
-#, fuzzy
-msgid "The Ghoul can infect humans and heal infected with the hammer."
-msgstr "食尸鬼可以用锤子感染人类，或治疗被感染者。"
+#: src/game/server/gamecontext.cpp:3974
+msgctxt "Ghoul"
+msgid "The Ghoul can devour anything that has died nearby, which makes it stronger, faster and more resistant."
+msgstr "食尸鬼可以吞食他附近已经死亡的感染者，并会使他更快，更壮，更强！"
 
-#: src/game/server/gamecontext.cpp:3647
-#, fuzzy
+#: src/game/server/gamecontext.cpp:3877
+msgctxt "Hero"
 msgid "The Hero cannot be healed by a Medic, but it can withstand a hit from an infected."
-msgstr "尽管英雄不能被医疗兵治愈，但是被感染者只能通过杀死他的方式来感染他，他的生命力非常顽强。"
+msgstr "英雄不能被医疗兵治疗, 但是可以承受一次感染者的攻击"
 
-#: src/game/server/infclass/entities/hero-flag.cpp:90
+#: src/game/server/infclass/infcgamecontroller.cpp:229
 msgid "The Hero found the flag!"
 msgstr "英雄找到了旗帜 ！"
 
-#: src/game/server/gamecontext.cpp:3634
-#, fuzzy
-msgid "The Hero has a shotgun, a laser rifle, and a grenade launcher."
-msgstr "英雄有霰弹枪、激光枪和榴弹枪。"
+#: src/game/server/gamecontext.cpp:3871
+msgctxt "Hero"
+msgid "The Hero has all standard weapons."
+msgstr "英雄拥有所有标准武器。"
 
-#: src/game/server/gamecontext.cpp:3636
+#: src/game/server/gamecontext.cpp:3872
+msgctxt "Hero"
 msgid "The Hero has to find a flag only visible to them. Stand still to be pointed towards it."
-msgstr ""
+msgstr "英雄只能找到属于他自己的旗帜, 静止不动一会可以产生一个指向旗子的点"
 
-#: src/game/server/gamecontext.cpp:3731
-#, fuzzy
-msgid "The Hunter can infect humans and heal infected with the hammer."
-msgstr "猎人可以用锤子感染人类，或治疗被感染者。"
+#: src/game/server/gamecontext.cpp:3949
+msgctxt "Hunter"
+msgid "The Hunter can jump two times in the air and has some resistance to knock-backs."
+msgstr "猎人可以三段跳, 并且抗击退"
 
-#: src/game/server/infclass/classes/infected/infected.cpp:292
-msgid "The IN portal is open"
-msgstr ""
+#: src/game/server/gamecontext.cpp:3934
+msgctxt "Looper"
+msgid "The Looper has a laser wall that slows down the infected and a low-range laser rifle with a high fire rate."
+msgstr "循环者有激光墙，可以减慢感染者的速度，还有一支射速高的低射程激光枪。"
 
-#: src/game/server/gamecontext.cpp:3610
-msgid "The Looper has a laser wall that slows down infected and a low-range laser rifle with a high fire rate."
-msgstr ""
-
-#: src/game/server/gamecontext.cpp:3619
-#, fuzzy
+#: src/game/server/gamecontext.cpp:3864
+msgctxt "Medic"
 msgid "The Medic can protect humans with the hammer by giving them armor."
 msgstr "医疗兵可以用他的锤子为其他人类增加护甲。"
 
-#: src/game/server/gamecontext.cpp:3656
-msgid "The Ninja can throw flash grenades that can freeze infected during three seconds."
-msgstr "忍者可以扔闪光弹，可以冻结击中的被感染者三秒。"
+#: src/game/server/gamecontext.cpp:3854
+msgctxt "Mercenary"
+msgid "The Mercenary can fly in the air using their machine gun."
+msgstr "雇佣兵可以用手枪飞行"
 
-#: src/game/server/infclass/classes/infected/infected.cpp:300
-msgid "The OUT portal is open"
-msgstr ""
+#: src/game/server/gamecontext.cpp:3897
+msgctxt "Ninja"
+msgid "The Ninja can throw flash grenades that can freeze the infected for three seconds."
+msgstr "忍者可以用闪光弹冻结感染者3秒"
 
-#: src/game/server/gamecontext.cpp:3580
-#, fuzzy
+#: src/game/server/infclass/infcgamecontroller.cpp:1462
+#: src/game/server/infclass/infcgamecontroller.cpp:1565
+msgid "The Santa is already here"
+msgstr "圣诞老人已经在这里"
+
+#: src/game/server/gamecontext.cpp:3919
+msgctxt "Scientist"
 msgid "The Scientist can pose floating mines with the hammer."
-msgstr "科学家可以用他的锤子设置陷阱浮雷。"
+msgstr "科学家可以用锤子放置地雷"
 
-#: src/game/server/gamecontext.cpp:3804
-#, fuzzy
-msgid "The Slug can infect humans and heal infected with the hammer."
-msgstr "鼻涕虫可以用锤子感染人类，或治疗被感染者。"
+#: src/game/server/gamecontext.cpp:3982
+msgctxt "Slug"
+msgid "The Slug can make the ground and walls toxic by spreading slime with the hammer."
+msgstr "鼻涕虫可以用锤子向地面和墙壁放置粘液"
 
-#: src/game/server/gamecontext.cpp:3705
-#, fuzzy
-msgid "The Smoker can infect humans and heal infected with the hammer."
-msgstr "吸烟者可以用锤子感染人类，或治疗被感染者。"
+#: src/game/server/gamecontext.cpp:3912
+msgctxt "Sniper"
+msgid "The Sniper can lock the position in mid-air for 15 seconds with the hammer."
+msgstr "狙击手可以用锤子在空中锁定自己位置15秒。"
 
-#: src/game/server/gamecontext.cpp:3692
-#, fuzzy
-msgid "The Sniper can lock the position in air for 15 seconds with the hammer."
-msgstr "狙击手可以用锤子在空中锁定自己位置 15 秒。"
-
-#: src/game/server/gamecontext.cpp:3562
-#, fuzzy
+#: src/game/server/gamecontext.cpp:3887
+msgctxt "Soldier"
 msgid "The Soldier creates floating bombs with the hammer."
-msgstr "士兵可以用锤子摆放悬浮雷。"
+msgstr "士兵可以用锤子摆放炸弹"
 
-#: src/game/server/gamecontext.cpp:3774
-#, fuzzy
-msgid "The Spider can infect humans and heal infected with the hammer."
-msgstr "蜘蛛人可以用锤子感染人类，或治疗被感染者。"
+#: src/game/server/gamecontext.cpp:3968
+msgctxt "Spider"
+msgid "The Spider has a web hook that automatically grabs any human touching it."
+msgstr "蜘蛛有网状勾子, 可以抓住碰到勾子的人类"
 
-#: src/game/server/gamecontext.cpp:3844
-#, fuzzy
-msgid "The Undead can infect humans and heal infected with the hammer."
-msgstr "不死族可以用锤子感染人类，或治疗被感染者。"
+#: src/game/server/gamecontext.cpp:4001
+msgctxt "Undead"
+msgid "The Undead cannot die. Instead of dying, it gets frozen for 10 seconds."
+msgstr "不死族不会死亡，而是被冻结 10 秒。"
 
-#: src/game/server/gamecontext.cpp:3817
-#, fuzzy
-msgid "The Voodoo can infect humans and heal infected with the hammer."
-msgstr "幽灵可以用锤子感染人类，或治疗被感染者。"
+#: src/game/server/gamecontext.cpp:3988
+msgctxt "Voodoo"
+msgid "The Voodoo does not die immediately when killed but instead enters Spirit mode for a short time."
+msgstr "巫毒者不会在被杀死时立刻死亡而是进入短暂的巫毒状态"
 
-#: src/game/server/gamecontext.cpp:3860
-#, fuzzy
-msgid "The Witch can infect humans and heal infected with the hammer."
-msgstr "女巫可以用锤子感染人类，或治疗被感染者。"
+#: src/game/server/gamecontext.cpp:3995
+msgctxt "Witch"
+msgid "The Witch can provide a spawn point for the infected."
+msgstr "女巫可以为感染者提供一个出生点。"
 
-#: src/game/server/infclass/classes/humans/human.cpp:524
-msgid ""
-"The bomb is fully upgraded.\n"
+#: src/game/server/infclass/classes/humans/human.cpp:980
+msgctxt "Mercenary"
+msgid "The bomb is fully upgraded.\n"
 "There is nothing to do with the laser."
-msgstr ""
+msgstr "炸弹当量已经满了\n"
+"激光已经无法升级"
 
-#: src/game/server/infclass/entities/infccharacter.cpp:1686
-#, fuzzy
+#: src/game/server/infclass/entities/infccharacter.cpp:2060
 msgid "The class is disabled"
-msgstr "女巫已死"
+msgstr "此职业被禁用"
 
-#: src/game/server/infclass/entities/infccharacter.cpp:1702
+#: src/game/server/infclass/entities/infccharacter.cpp:2077
 msgid "The class limit exceeded"
-msgstr ""
+msgstr "已超出职业限制"
 
-#: src/game/server/gamecontext.cpp:4009
+#: src/game/server/gamecontext.cpp:4041
 msgid "The class selector will be displayed when rounds start"
 msgstr "在回合开始时，将显示职业选择器"
 
-#: src/game/server/gamecontext.cpp:3639
+#: src/game/server/infclass/infcgamecontroller.cpp:1120
+#: src/game/server/infclass/infcgamecontroller.cpp:1293
+#: src/game/server/infclass/infcgamecontroller.cpp:1338
+msgid "The command is not available (enabled only in training mode)"
+msgstr "命令不可用(仅在练习模式中启用)"
+
+#: src/game/server/gamecontext.cpp:3873
+msgctxt "Hero"
 msgid "The flag gifts a health point, {int:NumArmorGift} armor and full ammo to all humans."
-msgstr ""
+msgstr "旗帜会给所有人类一格血量, {int:NumArmorGift}点护盾, 以及满弹药"
 
-#: src/game/server/gamecontext.cpp:3645
+#: src/game/server/infclass/infcgamecontroller.cpp:2263
+msgid "The game is not balanced. Infection is coming."
+msgstr "游戏不平衡, 正在感染"
+
+#: src/game/server/gamecontext.cpp:3876
+msgctxt "Hero"
 msgid "The gift to all humans is only applied when the flag is surrounded by hearts and armor."
-msgstr ""
+msgstr "只有被心和护盾包裹的旗帜, 才可以为所有人类加成"
 
-#: src/game/server/gamecontext.cpp:3523
-#, fuzzy
-msgid "The goal for humans is to survive until the army cleans the map."
-msgstr "人类目标是坚持到援军到来。"
+#: src/game/server/gamecontext.cpp:3691
+msgid "The goal for the humans is to survive until the army cleans the map."
+msgstr "人类的目标时生存到援军清理地图"
 
-#: src/game/server/gamecontext.cpp:3525
-msgid "The goal for infected is to infect all humans."
-msgstr "被感染者目标为感染所有人类。"
+#: src/game/server/gamecontext.cpp:3693
+msgid "The goal for the infected is to infect all humans."
+msgstr "感染者目标为感染所有人类。"
 
-#: src/game/server/gamecontext.cpp:3780
-msgid "The hook of the spider (in both mode) deal 1 damage point per second and can grab a human during 2 seconds."
-msgstr "在两种模式下，蜘蛛的钩子每秒都能造成 1 点伤害，并能困住正常人两秒。"
+#: src/game/server/gamecontext.cpp:3957
+msgctxt "Bat"
+msgid "The hammer is also useful for healing the infected."
+msgstr "锤子可以治疗感染者"
 
-#: src/game/server/infclass/infcgamecontroller.cpp:1264
+#: src/game/server/infclass/infcgamecontroller.cpp:2184
 msgid "The last round"
-msgstr ""
+msgstr "最后一轮"
 
-#: src/game/server/gamecontext.cpp:3553
+#: src/game/server/gamecontext.cpp:3882
+msgctxt "Engineer"
 msgid "The lifespan of a wall is {sec:LifeSpan}, and walls are limited to one per player at the same time."
-msgstr "一堵墙可以保留 {sec:LifeSpan}，每个玩家同时只能拥有一堵激光墙。"
+msgstr "激光墙可以存在 {sec:LifeSpan}，每个玩家同时只能拥有一个激光墙。"
 
-#: src/game/server/gamecontext.cpp:3885
-msgid "The portals destroyed when the witch die."
-msgstr ""
+#: src/game/server/gamecontext.cpp:3914
+msgctxt "Sniper"
+msgid "The locked position increases the Sniper's rifle damage from usual 10-13 to 20 damage points."
+msgstr "位置锁定将狙击手的激光枪伤害从通常的 10-13 点增加到 20 点。"
 
-#: src/game/server/infclass/classes/infected/infected.cpp:284
-msgid "The portals system is active!"
-msgstr ""
+#: src/game/server/infclass/infcgamecontroller.cpp:2422
+msgid "The round canceled: All humans have left the game"
+msgstr "回合取消, 所有人类离开了游戏"
 
-#: src/game/server/infclass/entities/infccharacter.cpp:1916
+#: src/game/server/infclass/infcgamecontroller.cpp:2419
+msgid "The round canceled: All infected have left the game"
+msgstr "回合取消, 所有感染者离开了游戏"
+
+#: src/game/server/gamecontext.cpp:3983
+msgctxt "Slug"
+msgid "The slime heals the infected and deals damage to humans."
+msgstr "粘液可以治疗感染者并对人类造成伤害"
+
+#: src/game/server/infclass/infcgamecontroller.cpp:2922
 msgid "The undead is finally dead"
-msgstr "不死族最后还是死了"
+msgstr "不死族最终还是死了"
 
-#: src/game/server/infclass/entities/infccharacter.cpp:1910
+#: src/game/server/gamecontext.cpp:3969
+msgctxt "Spider"
+msgid "The web hook mode can be toggled by switching the weapon."
+msgstr "通过切换武器可以切换钩子模式"
+
+#: src/game/server/infclass/classes/humans/human.cpp:844
+msgid "The white hole is available!"
+msgstr "白洞已就绪！"
+
+#: src/game/server/infclass/entities/superweapon-indicator.cpp:68
+msgid "The white hole is ready, use the laser rifle to disrupt space-time"
+msgstr "白洞已经就绪, 使用激光枪使空间混乱"
+
+#: src/game/server/infclass/infcgamecontroller.cpp:2917
 msgid "The witch is dead"
 msgstr "女巫已死"
 
-#: src/game/server/gamecontext.cpp:3752
-msgid "Their hook not only hurts humans, but also sucks their blood, restoring the bats health."
-msgstr ""
+#: src/game/server/gamecontext.cpp:3902
+msgctxt "Ninja"
+msgid "Their hammer is replaced with a katana, allowing them to dash {int:NinjaJump} time before touching the ground."
+msgid_plural "Their hammer is replaced with a katana, allowing them to dash {int:NinjaJump} times before touching the ground."
+msgstr[0] "他的锤子被武士刀取代，允许他触地后冲刺 {int:NinjaJump} 次。"
 
-#: src/game/server/gamecontext.cpp:3709
-msgid "Their hook not only hurts humans, but also sucks their blood, restoring the smokers health."
-msgstr ""
+#: src/game/server/gamecontext.cpp:3907
+msgid "They also have a laser rifle that blinds the target for a short period of time."
+msgstr "他们还有一把激光枪，可短时间内使目标失明。"
 
-#: src/game/server/gamecontext.cpp:3696
-#, fuzzy
-msgid "They also have a powerful rifle that deals 20 damage points in locked position, and 10–13 otherwise."
-msgstr "在位置锁定时，激光枪能造成 30 点伤害，其他时候只能造成 10 至 13 点伤害。"
+#: src/game/server/gamecontext.cpp:3855
+msgctxt "Mercenary"
+msgid "They can also create a powerful bomb with their hammer that can be charged by hitting it or with a laser rifle."
+msgstr "他可以用锤子制造炸弹, 炸弹可以通过锤子或者激光枪提升当量"
 
-#: src/game/server/gamecontext.cpp:3676
-#, fuzzy
-msgid "They can create powerful bombs with their hammer."
-msgstr "士兵可以用锤子摆放悬浮雷。"
+#: src/game/server/gamecontext.cpp:3936
+msgctxt "Looper"
+msgid "They can also jump two times in the air."
+msgstr "他可以三段跳"
 
-#: src/engine/server/server.cpp:3670
+#: src/game/server/gamecontext.cpp:3916
+msgctxt "Sniper"
+msgid "They can also jump two times in the air."
+msgstr "他可以三段跳。"
+
+#: src/engine/server/server.cpp:3763
 msgid "This username is already taken by an existing account"
 msgstr "此用户名已存在"
 
-#: src/game/server/gamecontext.cpp:3935
+#: src/game/server/gamecontext.cpp:3757
 msgid "To get off the taxi, jump. To drop off your passengers, enable hook protection (usually, with F3)."
-msgstr ""
+msgstr "若要离开车，请跳跃。要从乘客身上下车，可启用钩子保护（通常使用F3）。"
 
-#: src/game/server/infclass/classes/humans/human.cpp:320
+#: src/game/server/infclass/entities/medic-laser.cpp:42
+msgid "Too few infected (less than {int:MinimumInfected})"
+msgstr "感染者太少了（小于 {int:MinimumInfected}个）"
+
+#: src/game/server/infclass/infcgamecontroller.cpp:1493
+msgid "Too few infected to call a witch"
+msgstr "感染者太少，不能召唤女巫"
+
+#: src/game/server/infclass/infcgamecontroller.cpp:1489
+msgid "Too few infected to call the Santa"
+msgstr "感染者太少，不能召唤圣诞老人"
+
+#: src/game/server/infclass/infcgamecontroller.cpp:1482
+msgid "Too few players to call a witch"
+msgstr "玩家太少，不能召唤女巫"
+
+#: src/game/server/infclass/infcgamecontroller.cpp:1478
+msgid "Too few players to call the Santa"
+msgstr "玩家太少，不能召唤圣诞老人"
+
+#: src/game/server/infclass/classes/humans/human.cpp:770
 msgid "Too few zombies to revive anyone (less than {int:MinZombies})"
-msgstr ""
+msgstr "不能治疗感染者(感染者数量小于{int:MinZombies}个)"
 
-#: src/game/server/gamecontext.cpp:3808
-msgid "Touching the slime inflicts three damage points in three seconds on a human."
-msgstr "正常人接触毒会在 3 秒内造成 3 点伤害值。"
+#: src/game/server/gamecontext.cpp:3098
+msgid "Translation project: {str:Url}"
+msgstr "翻译项目：{str:Url}"
 
-#: src/game/server/gamecontext.cpp:3931
+#: src/game/server/gamecontext.cpp:3753
 msgid "Two or more humans can form a taxi."
-msgstr ""
+msgstr "两个或更多的人类可以组成一辆车"
 
-#: src/game/server/entities/character.cpp:1272
+#: src/game/server/infclass/entities/infccharacter.cpp:2784
 msgid "Type “/help {str:ClassName}” for more information about your class"
 msgstr "键入“/help {str:ClassName}”获取当前职业的更多信息"
 
-#: src/game/server/infclass/infcgamecontroller.cpp:561 src/game/server/gamecontext.cpp:3842
+#: src/game/server/infclass/infcgamecontroller.cpp:1351
+msgid "Unable to load the position: the character state is not valid"
+msgstr "无法加载坐标: 玩家状态无效"
+
+#: src/game/server/infclass/infcgamecontroller.cpp:1345
+msgid "Unable to load the position: you have no character to load its position"
+msgstr "无法加载坐标: 你没有角色来加载位置"
+
+#: src/game/server/infclass/infcgamecontroller.cpp:1312
+msgid "Unable to save the position: the character does not stand on the ground"
+msgstr "无法保存坐标: 角色不在地上"
+
+#: src/game/server/infclass/infcgamecontroller.cpp:1306
+msgid "Unable to save the position: the character state is not valid"
+msgstr "无法保存坐标: 玩家状态无效"
+
+#: src/game/server/infclass/infcgamecontroller.cpp:1300
+msgid "Unable to save the position: you have no character to save its position"
+msgstr "无法保存坐标: 你没有角色来保存位置"
+
+#: src/game/server/infclass/infcgamecontroller.cpp:815
 msgid "Undead"
 msgstr "不死族"
 
-#: src/game/server/infclass/infcgamecontroller.cpp:624
-#, fuzzy
+#: src/game/server/gamecontext.cpp:4003
+msgctxt "Undead"
+msgid "Undead can infect humans and heal the infected with the hammer."
+msgstr "不死族可以用锤子感染人类或治疗感染。"
+
+#: src/game/server/infclass/infcgamecontroller.cpp:878
 msgid "Undeads"
 msgstr "不死族"
 
-#: src/game/server/infclass/infcgamecontroller.cpp:565
+#: src/game/server/infclass/infcgamecontroller.cpp:819
 msgid "Unknown class"
-msgstr "未知族群"
+msgstr "未知职业"
 
-#: src/game/server/gamecontext.cpp:4047
+#: src/game/server/gamecontext.cpp:4077
 msgid "Unknown language"
 msgstr "未知语言"
 
-#: src/game/server/infclass/infcgamecontroller.cpp:627
-#, fuzzy
+#: src/game/server/infclass/infcgamecontroller.cpp:881
 msgid "Unknowns"
-msgstr "未知族群"
+msgstr "未知职业"
 
-#: src/game/server/gamecontext.cpp:3919
+#: src/game/server/gamecontext.cpp:3743
 msgid "Unlike a client mute this will persist between map changes and wears off when either you or the muted player disconnects."
-msgstr ""
+msgstr "与客户端的禁言不同的是, 如果更换地图禁言仍然生效"
 
-#: src/game/server/gamecontext.cpp:3880
-msgid "Use Rifle to place or \"take\" a portal. The first portal is always Enterance and the last one is always Exit."
-msgstr ""
-
-#: src/game/server/gamecontext.cpp:3881
-msgid "Use Rifle to replace Exit if both portals already opened."
-msgstr ""
-
-#: src/game/server/gamecontext.cpp:3833
-msgid "Use it with your laser rifle, the indicator around your Tee will show you if it is available"
-msgstr ""
-
-#: src/game/server/infclass/classes/humans/human.cpp:545
-#, fuzzy
-msgid ""
-"Use the hammer to place a bomb and\n"
+#: src/game/server/infclass/classes/humans/human.cpp:1001
+msgctxt "Mercenary"
+msgid "Use the hammer to place a bomb and\n"
 "then use the laser to upgrade it"
-msgstr "用锤子放置悬浮雷并引爆它数次。"
+msgstr "使用锤子放置炸弹, 可用激光升级它"
 
-#: src/game/server/gamecontext.cpp:3571
+#: src/game/server/gamecontext.cpp:3894
 msgid "Use the hammer to place the bomb and explode it multiple times."
-msgstr "用锤子放置悬浮雷并引爆它数次。"
+msgstr "用锤子放置炸弹并引爆它数次。"
 
-#: src/game/server/infclass/classes/humans/human.cpp:508
+#: src/game/server/gamecontext.cpp:3719
+msgctxt "White hole"
+msgid "Use the laser rifle to place it."
+msgstr "用激光放置它"
+
+#: src/game/server/infclass/classes/humans/human.cpp:964
+msgctxt "Mercenary"
 msgid "Use the laser to upgrade the bomb"
-msgstr ""
+msgstr "用激光升级炸弹"
 
-#: src/game/server/gamecontext.cpp:3903
+#: src/game/server/gamecontext.cpp:3729
 msgid "Use “/msg !<ClassName> <My Message>” to send a private message to all players with a specific class."
-msgstr "使用“/msg !<ClassName> <My Message>”给所有特定族类的玩家发送消息。"
+msgstr "使用“/msg !<ClassName> <My Message>”给所有特定职业的玩家发送消息。"
 
-#: src/game/server/gamecontext.cpp:3907
+#: src/game/server/gamecontext.cpp:3733
 msgid "Use “/msg !near” to send a private message to all players near you."
 msgstr "使用“/msg !near”给附近所有玩家发送消息。"
 
-#: src/game/server/gamecontext.cpp:3901
-msgid "Use “/msg <PlayerName> <My Message>” to send a private message to this player."
-msgstr "使用“/msg <PlayerName> <My Message>”来发送私人消息给这名玩家。"
-
-#: src/game/server/gamecontext.cpp:3917
-#, fuzzy
+#: src/game/server/gamecontext.cpp:3741
 msgid "Use “/mute <PlayerName>” to mute this player."
-msgstr "使用“/msg <PlayerName> <My Message>”来发送私人消息给这名玩家。"
+msgstr "使用 \"/mute <玩家名>\"来单方面禁言这个玩家"
 
-#: src/game/server/infclass/infcgamecontroller.cpp:557 src/game/server/gamecontext.cpp:3815
+#: src/game/server/gamecontext.cpp:3727
+msgid "Use “/w <PlayerName> <My Message>” to send a private message to this player."
+msgstr "使用 \"/w <玩家名> <消息>\" 给这个玩家发送私聊"
+
+#: src/game/server/infclass/infcgamecontroller.cpp:811
 msgid "Voodoo"
-msgstr ""
+msgstr "巫毒者"
 
-#: src/game/server/infclass/infcgamecontroller.cpp:620
+#: src/game/server/gamecontext.cpp:3991
+msgctxt "Voodoo"
+msgid "Voodoo can infect humans and heal the infected with the hammer."
+msgstr "巫毒者可以用锤子感染人类或治疗感染"
+
+#: src/game/server/infclass/infcgamecontroller.cpp:874
 msgid "Voodoos"
-msgstr ""
+msgstr "巫毒者"
 
-#: src/game/server/infclass/classes/infected/infected.cpp:262
+#: src/game/server/gamecontroller.cpp:251
+msgctxt "Inactive kick broadcast message"
+msgid "Warning: {sec:RemainingTime} until a kick for inactivity"
+msgstr "警告: 将在 {sec:RemainingTime} 后因挂机踢出"
+
+#: src/game/server/gamecontroller.cpp:250
+msgctxt "Inactive kick broadcast message"
+msgid "Warning: {sec:RemainingTime} until a move to spec for inactivity"
+msgstr "警告: 将在 {sec:RemainingTime} 后因挂机移动到旁观"
+
+#: src/game/server/infclass/classes/infected/infected.cpp:355
+msgctxt "Spider"
 msgid "Web mode enabled"
 msgstr "网状模式启用"
 
-#: src/game/server/gamecontext.cpp:3865
-#, fuzzy
-msgid "When an infected dies, it may respawn near the Witch."
-msgstr "当被感染者死亡时，可能会重生在女巫旁边。"
-
-#: src/game/server/gamecontext.cpp:3551
-#, fuzzy
+#: src/game/server/gamecontext.cpp:3881
+msgctxt "Engineer"
 msgid "When an infected touches the wall, it dies."
-msgstr "当受感染者碰到激光墙时，Boom！"
+msgstr "当感染者碰到激光墙时， 他会死亡！"
 
-#: src/game/server/gamecontext.cpp:3776
-#, fuzzy
-msgid "When selecting any gun, the hook enter in web mode."
-msgstr "切换武器时，钩爪会进入织网模式。"
-
-#: src/game/server/gamecontext.cpp:3821
+#: src/game/server/gamecontext.cpp:3990
+msgctxt "Voodoo"
 msgid "While in Spirit mode it cannot be killed. When the time is up it finally dies."
-msgstr ""
+msgstr "在巫毒状态下无法被击杀, 当时间结束才会死亡"
 
-#: src/game/server/gamecontext.cpp:3828
+#: src/game/server/gamecontext.cpp:3709
 msgid "White hole"
-msgstr ""
+msgstr "白洞"
 
-#: src/game/server/infclass/classes/humans/human.cpp:412
-#, fuzzy
+#: src/game/server/infclass/entities/infccharacter.cpp:2579
+msgid "White hole found, adjusting scientific parameters..."
+msgstr "已获得白洞，正在调整科学参数..."
+
+#: src/game/server/gamecontext.cpp:3711
+msgctxt "White hole"
+msgid "White hole pulls the infected into its center."
+msgstr "白洞把感染者拉进其中心。"
+
+#: src/game/server/infclass/classes/humans/human.cpp:862
+#: src/game/server/infclass/classes/humans/human.cpp:877
 msgid "White hole: {sec:RemainingTime}"
-msgstr "激光墙︰{sec:RemainingTime}"
+msgstr "白洞：{sec:RemainingTime}"
 
-#: src/game/server/infclass/classes/humans/human.cpp:394
-msgid "WhiteHole ready !"
-msgstr ""
-
-#: src/game/server/infclass/infcgamecontroller.cpp:559 src/game/server/gamecontext.cpp:3857
+#: src/game/server/infclass/infcgamecontroller.cpp:813
 msgid "Witch"
 msgstr "巫婆"
 
-#: src/game/server/infclass/infcgamecontroller.cpp:622
-#, fuzzy
-msgid "Witches"
-msgstr "巫婆"
+#: src/game/server/infclass/infcgamecontroller.cpp:1549
+msgid "Witch ({int:Callers}/{int:RequiredCallers})"
+msgstr "召唤女巫（{int:Callers}/{int:RequiredCallers}）"
 
-#: src/engine/server/server.cpp:3496
+#: src/game/server/gamecontext.cpp:3997
+msgctxt "Witch"
+msgid "Witch can infect humans and heal the infected with the hammer."
+msgstr "女巫可以用锤子感染人类或治疗感染"
+
+#: src/game/server/infclass/infcgamecontroller.cpp:1585
+msgid "Witch {str:PlayerName} has arrived!"
+msgstr "女巫 {str:PlayerName} 已经到达"
+
+#: src/game/server/infclass/infcgamecontroller.cpp:876
+msgid "Witches"
+msgstr "女巫"
+
+#: src/engine/server/server.cpp:3589
 msgid "Wrong username/password."
 msgstr "用户名/密码错误。"
 
-#: src/game/server/gamecontext.cpp:802
+#: src/game/server/gamecontext.cpp:725
 msgid "You are a human: {str:ClassName}"
-msgstr "您处于正常状态： {str:ClassName}"
+msgstr "你处于正常状态： {str:ClassName}"
 
-#: src/game/server/gamecontext.cpp:805
+#: src/game/server/gamecontext.cpp:728
 msgid "You are an infected: {str:ClassName}"
-msgstr "您已被感染：{str:ClassName}"
+msgstr "你被感染了：{str:ClassName}"
 
-#: src/game/server/entities/character.cpp:652
+#: src/game/server/infclass/entities/infccharacter.cpp:213
+msgid "You are blinded: {sec:EffectDuration}"
+msgstr "你失明了: {sec:EffectDuration}"
+
+#: src/game/server/entities/character.cpp:388
 msgid "You are frozen: {sec:EffectDuration}"
-msgstr "您已被冻结︰{sec:EffectDuration}"
+msgstr "你被冻结了︰{sec:EffectDuration}"
 
-#: src/game/server/gamecontext.cpp:1833 src/game/server/gamecontext.cpp:2926
+#: src/game/server/gamecontext.cpp:2000 src/game/server/gamecontext.cpp:3114
 msgid "You are muted for {sec:Duration}"
-msgstr "您已被禁言 {sec:Duration}"
+msgstr "你被禁言了{sec:Duration}"
 
-#: src/game/server/entities/character.cpp:668
-#, fuzzy
+#: src/game/server/entities/character.cpp:404
 msgid "You are slowed: {sec:EffectDuration}"
-msgstr "您已被冻结︰{sec:EffectDuration}"
+msgstr "你被减速了：{sec:EffectDuration}"
 
-#: src/game/server/gamecontext.cpp:2087
+#: src/game/server/gamecontext.cpp:2239
 msgid "You can change the language of this mod using the command /language."
-msgstr "您可以使用命令 /language 切换此 mod 的语言。"
+msgstr "你可以使用命令 /language 切换此 mod 的语言。"
 
-#: src/game/server/gamecontext.cpp:1925
+#: src/game/server/infclass/infcgamecontroller.cpp:1510
+msgid "You can't call witch twice"
+msgstr "你不能重复召唤女巫"
+
+#: src/game/server/gamecontext.cpp:2092
 msgid "You can't join the spectators right now"
-msgstr "您现在还不能进入旁观模式"
+msgstr "你现在还不能进入旁观模式"
 
-#: src/game/server/infclass/classes/humans/human.cpp:586
+#: src/game/server/infclass/entities/turret.cpp:72
+msgid "You destroyed {str:PlayerName}'s turret!"
+msgstr "你摧毁了 {str:PlayerName} 的炮塔！"
+
+#: src/game/server/infclass/classes/humans/human.cpp:1042
 msgid "You don't have a turret to place"
-msgstr ""
+msgstr "你没有炮塔可以放置"
 
-#: src/game/server/infclass/classes/humans/human.cpp:567
+#: src/game/server/infclass/classes/humans/human.cpp:1023
 msgid "You have a turret. Use the hammer to place it."
-msgstr ""
+msgstr "你有一个炮塔, 使用锤子放置它"
 
-#: src/engine/server/server.cpp:4818
+#: src/engine/server/server.cpp:4910
 msgid "You have already notified that {str:PlayerName} ought to be banned"
-msgstr "您已动议封禁 {str:PlayerName}。"
+msgstr "你已动议封禁 {str:PlayerName}。"
 
-#: src/engine/server/server.cpp:4901
+#: src/engine/server/server.cpp:4993
 msgid "You have already voted to change this map"
-msgstr ""
+msgstr "你已投票跳过此地图"
 
-#: src/game/server/infclass/infcgamecontroller.cpp:132
-#, fuzzy
+#: src/game/server/infclass/infcgamecontroller.cpp:199
 msgid "You have been infected by {str:KillerName}"
-msgstr "您已被感染：{str:ClassName}"
+msgstr "你被 {str:KillerName} 感染了"
 
-#: src/game/server/infclass/infcgamecontroller.cpp:1531 src/game/server/infclass/infcgamecontroller.cpp:1566
+#: src/game/server/infclass/infcgamecontroller.cpp:1506
+msgid "You have called the Santa once again"
+msgstr "你再次呼叫了圣诞老人"
+
+#: src/game/server/infclass/classes/humans/human.cpp:1062
 msgid "You have eliminated your target, +2 points"
-msgstr "您除掉了目标，+ 2 分"
+msgstr "你除掉了目标，+ 2 分"
 
-#: src/game/server/infclass/entities/infccharacter.cpp:152
+#: src/game/server/infclass/entities/infccharacter.cpp:141
 msgid "You have held a bonus area for one minute, +5 points"
 msgstr "在奖励地区呆一分钟就会增加 5 分。"
 
-#: src/game/server/infclass/infcgamecontroller.cpp:136
+#: src/game/server/infclass/infcgamecontroller.cpp:203
 msgid "You have infected {str:VictimName}, +3 points"
-msgstr "您感染了 {str:VictimName}，+3 分"
+msgstr "你感染了 {str:VictimName}，+3 分"
 
-#: src/game/server/infclass/infcgamecontroller.cpp:117
-#, fuzzy
+#: src/game/server/infclass/infcgamecontroller.cpp:184
 msgid "You have infected {str:VictimName}, shame on you!"
-msgstr "您感染了 {str:VictimName}，+3 分"
+msgstr "你使 {str:VictimName} 被感染了, 你感到羞愧"
 
-#: src/game/server/infclass/infcgamecontroller.cpp:1513
+#: src/game/server/infclass/infcgamecontroller.cpp:2817
 msgid "You have killed a witch, +5 points"
-msgstr "您杀了一个女巫，+5 分"
+msgstr "你杀了一个女巫，+5 分"
 
-#: src/game/server/infclass/infcgamecontroller.cpp:1519
-#, fuzzy
+#: src/game/server/infclass/infcgamecontroller.cpp:2821
 msgid "You have killed an undead! +5 points"
-msgstr "您杀了一个女巫，+5 分"
+msgstr "你杀了一个不死族，+5 分"
 
-#: src/game/server/infclass/infcgamecontroller.cpp:1760
+#: src/game/server/infclass/infcgamecontroller.cpp:2451
 msgid "You have survived, +5 points"
-msgstr "您成功存活，+5 分"
+msgstr "你成功存活，+5 分"
 
-#: src/game/server/infclass/classes/humans/human.cpp:575
+#: src/game/server/infclass/classes/humans/human.cpp:1031
 msgid "You have {int:NumTurrets} of {int:MaxTurrets} turrets. Use the hammer to place one."
-msgstr ""
+msgstr "你有 {int:NumTurrets}/{int:MaxTurrets}个炮塔, 可使用锤子放置一个"
 
-#: src/engine/server/server.cpp:3589
+#: src/game/server/infclass/entities/hero-flag.cpp:76
+msgid "You have {int:NumTurrets} turret available, use the Hammer to place it"
+msgid_plural "You have {int:NumTurrets} turrets available, use the Hammer to place it"
+msgstr[0] "你有{int:NumTurrets}个炮塔, 可用锤子放置"
+
+#: src/engine/server/server.cpp:3682
 msgid "You must be logged for this operation"
-msgstr "您必须登录才可进行此操作"
+msgstr "你必须登录才可进行此操作"
 
-#: src/engine/server/server.cpp:4474
-#, fuzzy
+#: src/engine/server/server.cpp:4567
 msgid "You must be logged to see stats"
-msgstr "您必须登录才能看到您的排名"
+msgstr "你必须登陆才能看见数据统计"
 
-#: src/engine/server/server.cpp:4390
+#: src/engine/server/server.cpp:4483
 msgid "You must be logged to see your goal"
-msgstr "您必须登录才能看到您的目标"
+msgstr "你必须登录才能看到您的目标"
 
-#: src/engine/server/server.cpp:4306
+#: src/engine/server/server.cpp:4399
 msgid "You must be logged to see your rank"
-msgstr "您必须登录才能看到您的排名"
+msgstr "你必须登录才能看到您的排名"
 
-#: src/game/server/infclass/classes/humans/human.cpp:310
+#: src/game/server/infclass/classes/humans/human.cpp:760
 msgid "You need at least {int:MinHp} HP to revive a zombie"
-msgstr ""
+msgstr "你需要至少 {int:MinHp} 点血量才能治疗一个感染者"
 
-#: src/engine/server/server.cpp:3715
+#: src/game/server/infclass/entities/medic-laser.cpp:33
+msgid "You need at least {int:MinimumHP} HP"
+msgstr "你至少需要 {int:MinimumHP}点血量"
+
+#: src/engine/server/server.cpp:3808
 msgid "Your account has been created and you are now logged."
 msgstr "已成功创建账号，并成功登录。"
 
-#: src/game/server/gamecontext.cpp:3674
-#, fuzzy
-msgid "he Mercenary can fly in the air using their machine gun."
-msgstr "雇佣兵可以用机枪飞行。"
+#: src/game/server/infclass/infcgamecontroller.cpp:1137
+msgid "{str:PlayerName} changed the class to {str:ClassName}"
+msgstr "{str:PlayerName} 修改职业为 {str:ClassName}"
 
-#: src/game/server/infclass/entities/infccharacter.cpp:2127
-msgid "white hole found, adjusting scientific parameters..."
-msgstr ""
-
-#: src/game/server/infclass/entities/superweapon-indicator.cpp:71
-msgid "white hole ready, your laser rifle now disrupts space time"
-msgstr ""
-
-#: src/game/server/infclass/classes/humans/human.cpp:422
-msgid ""
-"{int:NumMines} mines are active\n"
-"White hole: {sec:RemainingTime}"
-msgstr ""
-
-#: src/game/server/gamecontext.cpp:1985
+#: src/game/server/gamecontext.cpp:2154
 msgid "{str:PlayerName} changed their name to {str:NewName}"
 msgstr "{str:PlayerName} 已改名为 {str:NewName}"
 
-#: src/game/server/gamecontext.cpp:1394
+#: src/game/server/gamecontext.cpp:1469
 msgid "{str:PlayerName} entered and joined the game"
-msgstr "{str:PlayerName} 进入房间并加入游戏"
+msgstr "{str:PlayerName} 连接并加入游戏"
 
-#: src/game/server/player.cpp:307
+#: src/game/server/gamecontroller.cpp:295
 msgid "{str:PlayerName} has been banned ({str:Reason})"
 msgstr "{str:PlayerName} 被封禁 ({str:Reason})"
 
-#: src/game/server/player.cpp:314
+#: src/game/server/gamecontroller.cpp:302
 msgid "{str:PlayerName} has been kicked ({str:Reason})"
-msgstr "{str:PlayerName} 被踢出房间 ({str:Reason})"
+msgstr "{str:PlayerName} 被踢出服务器 ({str:Reason})"
 
-#: src/game/server/player.cpp:328
+#: src/game/server/infclass/entities/turret.cpp:76
+msgid "{str:PlayerName} has destroyed your turret!"
+msgstr "{str:PlayerName} 摧毁了你的炮塔！"
+
+#: src/game/server/gamecontroller.cpp:316
 msgid "{str:PlayerName} has left the game"
-msgstr "玩家 {str:PlayerName} 退出游戏。"
+msgstr "{str:PlayerName} 离开游戏"
 
-#: src/game/server/player.cpp:321
+#: src/game/server/gamecontroller.cpp:309
 msgid "{str:PlayerName} has left the game ({str:Reason})"
 msgstr "{str:PlayerName} 离开游戏 ({str:Reason})"
 
-#: src/game/server/gamecontroller.cpp:193
+#: src/game/server/infclass/infcgamecontroller.cpp:1523
+msgid "{str:PlayerName} is calling for Santa! (1/{int:RequiredCallers}) To call the Santa write: /santa"
+msgstr "{str:PlayerName} 正在召唤圣诞老人！（1/{int:RequiredCallers}）要召唤圣诞老人输入：/witch"
+
+#: src/game/server/infclass/infcgamecontroller.cpp:1531
+msgid "{str:PlayerName} is calling for Witch! (1/{int:RequiredCallers}) To call witch write: /witch"
+msgstr "{str:PlayerName} 正在召唤女巫！（1/{int:RequiredCallers}）要召唤女巫输入：/witch"
+
+#: src/game/server/infclass/infcgamecontroller.cpp:1863
 msgid "{str:PlayerName} joined the game"
 msgstr "{str:PlayerName} 加入游戏"
 
-#: src/game/server/gamecontroller.cpp:187
+#: src/game/server/infclass/infcgamecontroller.cpp:1858
 msgid "{str:PlayerName} joined the spectators"
-msgstr "{str:PlayerName} 加入观众"
+msgstr "{str:PlayerName} 加入旁观者"
 
-#: src/engine/server/server.cpp:4913
-#, fuzzy
+#: src/engine/server/server.cpp:5005
 msgid "{str:PlayerName} wants to start the vote '{str:VoteName}'"
-msgstr "{str:PlayerName} 已改名为 {str:NewName}"
+msgstr "{str:PlayerName} 提议开始投票 '{str:VoteName}'"
 
-#: src/engine/server/server.cpp:4833
+#: src/engine/server/server.cpp:4925
 msgid "{str:PlayerName} wants {str:VictimName} to be banned ({str:Reason})"
-msgstr "{str:PlayerName} 希望封禁 {str:VictimName} ({str:Reason})"
+msgstr "{str:PlayerName} 提议封禁 {str:VictimName} ({str:Reason})"
 
-#: src/game/server/infclass/infcgamecontroller.cpp:1174 src/game/server/infclass/infcgamecontroller.cpp:1199
+#: src/game/server/infclass/infcgamecontroller.cpp:2361
 msgid "{str:VictimName} has been infected"
 msgstr "{str:VictimName} 被感染了"
 
-#: src/engine/server/server.cpp:2470
+#: src/engine/server/server.cpp:2668
 msgid "{str:Victim} has been muted for {sec:Duration} ({str:Reason})"
 msgstr "{str:Victim} 因 {sec:Duration} ({str:Reason}) 被禁言"
 
-#~ msgid "Bombs are limited to one per player at the same time."
-#~ msgstr "每个玩家同时只能放置一个悬浮雷。"
-
-#~ msgid "He can also inflict 4 damage points per second by hooking humans."
-#~ msgstr "勾住正常人时能造成每秒 4 点伤害。"
-
-#~ msgid "He can coil explosives with his hammer that hinder infected from harming."
-#~ msgstr "他可以用锤子设置陷阱，触发时附近的被感染者无法造成伤害。"
-
-#~ msgid "Once taken, the flag gives 1 health point, 4 armor points, and full ammo to all humans, furthermore full health and armor to the hero."
-#~ msgstr "一旦拿到，旗帜会给所有人类提供 1 点生命值、4 点护甲值和足量的弹药，同时英雄生命值和护盾值也会填充满。"
-
-#~ msgid "She can also inflict 1 damage point per second by hooking humans."
-#~ msgstr "她用钩爪勾住正常人能造成每秒 1 点伤害。"
-
-#~ msgid "The Hero must find a flag hidden in the map."
-#~ msgstr "英雄需要找到地图中的旗帜。"
-
-#~ msgid "Thereupon he digests his fodder bit by bit going back to his normal state, and besides, death bereaves him of his nourishment."
-#~ msgstr "他会不断消耗营养值回到正常状态，此外，死亡会消耗所有营养值。"
-
-#~ msgid "You are now logged."
-#~ msgstr "您已登录。"
