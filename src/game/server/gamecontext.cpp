@@ -1,6 +1,8 @@
 /* (c) Magnus Auvinen. See licence.txt in the root of the distribution for more information. */
 /* If you are missing that file, acquire a complete release at teeworlds.com.				*/
 #include <new>
+
+#include <base/logger.h>
 #include <base/math.h>
 #include <engine/shared/config.h>
 #include <engine/map.h>
@@ -23,6 +25,35 @@
 #ifdef CONF_GEOLOCATION
 #include <infclassr/geolocation.h>
 #endif
+
+// Not thread-safe!
+class CClientChatLogger : public ILogger
+{
+	CGameContext *m_pGameServer;
+	int m_ClientID;
+	ILogger *m_pOuterLogger;
+
+public:
+	CClientChatLogger(CGameContext *pGameServer, int ClientID, ILogger *pOuterLogger) :
+		m_pGameServer(pGameServer),
+		m_ClientID(ClientID),
+		m_pOuterLogger(pOuterLogger)
+	{
+	}
+	void Log(const CLogMessage *pMessage) override;
+};
+
+void CClientChatLogger::Log(const CLogMessage *pMessage)
+{
+	if(str_comp(pMessage->m_aSystem, "chatresp") == 0)
+	{
+		m_pGameServer->SendChatTarget(m_ClientID, pMessage->Message());
+	}
+	else
+	{
+		m_pOuterLogger->Log(pMessage);
+	}
+}
 
 enum
 {
@@ -66,8 +97,6 @@ void CGameContext::Construct(int Resetting)
 	m_pVoteOptionFirst = 0;
 	m_pVoteOptionLast = 0;
 	m_NumVoteOptions = 0;
-	
-	m_ChatResponseTargetID = -1;
 
 	if(Resetting==NO_RESET)
 		m_pVoteOptionHeap = new CHeap();
@@ -1917,20 +1946,26 @@ void CGameContext::OnMessage(int MsgID, CUnpacker *pUnpacker, int ClientID)
 				{
 					switch(Server()->GetAuthedState(ClientID))
 					{
-						case IServer::AUTHED_ADMIN:
-							Console()->SetAccessLevel(IConsole::ACCESS_LEVEL_ADMIN);
-							break;
-						case IServer::AUTHED_MOD:
-							Console()->SetAccessLevel(IConsole::ACCESS_LEVEL_MOD);
-							break;
-						default:
-							Console()->SetAccessLevel(IConsole::ACCESS_LEVEL_USER);
+					case IServer::AUTHED_ADMIN:
+						Console()->SetAccessLevel(IConsole::ACCESS_LEVEL_ADMIN);
+						break;
+					case IServer::AUTHED_MOD:
+						Console()->SetAccessLevel(IConsole::ACCESS_LEVEL_MOD);
+						break;
+					default:
+						Console()->SetAccessLevel(IConsole::ACCESS_LEVEL_USER);
 					}
-					m_ChatResponseTargetID = ClientID;
 
-					Console()->ExecuteLineFlag(pMsg->m_pMessage + 1, CFGFLAG_CHAT, ClientID, (Team != CGameContext::CHAT_ALL));
+					{
+						CClientChatLogger Logger(this, ClientID, log_get_scope_logger());
+						CLogScope Scope(&Logger);
+						Console()->ExecuteLineFlag(pMsg->m_pMessage + 1, CFGFLAG_CHAT, ClientID, (Team != CGameContext::CHAT_ALL));
+					}
 
-					m_ChatResponseTargetID = -1;
+					char aBuf[256];
+					str_format(aBuf, sizeof(aBuf), "%d used %s", ClientID, pMsg->m_pMessage);
+					Console()->Print(IConsole::OUTPUT_LEVEL_DEBUG, "chat-command", aBuf);
+
 					Console()->SetAccessLevel(IConsole::ACCESS_LEVEL_ADMIN);
 				}
 			}
@@ -2221,34 +2256,6 @@ void CGameContext::OnMessage(int MsgID, CUnpacker *pUnpacker, int ClientID)
 		Server()->SendPackMsg(&m, MSGFLAG_VITAL | MSGFLAG_FLUSH, ClientID);
 	}
 }
-
-/* DDNET MODIFICATION START *******************************************/
-void CGameContext::ChatConsolePrintCallback(const char *pLine, void *pUser, ColorRGBA PrintColor)
-{
-	CGameContext *pSelf = (CGameContext *)pUser;
-	int ClientID = pSelf->m_ChatResponseTargetID;
-
-	if(ClientID < 0 || ClientID >= MAX_CLIENTS)
-		return;
-
-	const char *pLineOrig = pLine;
-
-	static volatile int ReentryGuard = 0;
-
-	if(ReentryGuard)
-		return;
-	ReentryGuard++;
-
-	if(*pLine == '[')
-	do
-		pLine++;
-	while((pLine - 2 < pLineOrig || *(pLine - 2) != ':') && *pLine != 0); // remove the category (e.g. [Console]: No Such Command)
-
-	pSelf->SendChatTarget(ClientID, pLine);
-
-	ReentryGuard--;
-}
-/* DDNET MODIFICATION END *********************************************/
 
 void CGameContext::ConConverse(IConsole::IResult *pResult, void *pUserData)
 {
@@ -2936,17 +2943,17 @@ void CGameContext::ConVersion(IConsole::IResult *pResult, void *pUserData)
 {
 	CGameContext *pSelf = (CGameContext *)pUserData;
 
-	pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "info",
+	pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "chatresp",
 		"InfectionClass Mod. Version: " GAME_VERSION);
 
-	pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "info",
+	pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "chatresp",
 		"Compiled: " LAST_COMPILE_DATE);
 
 	if(GIT_SHORTREV_HASH)
 	{
 		char aBuf[64];
 		str_format(aBuf, sizeof(aBuf), "Git revision hash: %s", GIT_SHORTREV_HASH);
-		pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "info", aBuf);
+		pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "chatresp", aBuf);
 	}
 }
 
@@ -2989,18 +2996,18 @@ void CGameContext::ConAbout(IConsole::IResult *pResult)
 
 	dynamic_string Buffer;
 	Server()->Localization()->Format_L(Buffer, pLanguage, _("InfectionClass, by necropotame (version {str:VersionCode})"), "VersionCode", GAME_VERSION, NULL);
-	Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "info", Buffer.buffer());
+	Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "chatresp", Buffer.buffer());
 	Buffer.clear();
 
 	Server()->Localization()->Format_L(Buffer, pLanguage, _("Server version from {str:ServerCompileDate} "), "ServerCompileDate", LAST_COMPILE_DATE, NULL);
-	Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "info", Buffer.buffer());
+	Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "chatresp", Buffer.buffer());
 	Buffer.clear();
 
 	if(GIT_SHORTREV_HASH)
 	{
 		char aBuf[64];
 		str_format(aBuf, sizeof(aBuf), "Git revision hash: %s", GIT_SHORTREV_HASH);
-		Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "info", aBuf);
+		Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "chatresp", aBuf);
 	}
 
 	const char *pSourceUrl = Config()->m_AboutSourceUrl;
@@ -3009,7 +3016,7 @@ void CGameContext::ConAbout(IConsole::IResult *pResult)
 		Server()->Localization()->Format_L(Buffer, pLanguage, _("Sources: {str:SourceUrl} "), "SourceUrl",
 			pSourceUrl, NULL
 		);
-		Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "info", Buffer.buffer());
+		Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "chatresp", Buffer.buffer());
 		Buffer.clear();
 	}
 
@@ -3017,33 +3024,33 @@ void CGameContext::ConAbout(IConsole::IResult *pResult)
 	{
 		Server()->Localization()->Format_L(Buffer, pLanguage, _("Discord: {str:Url}"), "Url",
 			Config()->m_AboutContactsDiscord, nullptr);
-		Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "info", Buffer.buffer());
+		Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "chatresp", Buffer.buffer());
 		Buffer.clear();
 	}
 	if(Config()->m_AboutContactsTelegram[0])
 	{
 		Server()->Localization()->Format_L(Buffer, pLanguage, _("Telegram: {str:Url}"), "Url",
 			Config()->m_AboutContactsTelegram, nullptr);
-		Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "info", Buffer.buffer());
+		Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "chatresp", Buffer.buffer());
 		Buffer.clear();
 	}
 	if(Config()->m_AboutContactsMatrix[0])
 	{
 		Server()->Localization()->Format_L(Buffer, pLanguage, _("Matrix room: {str:Url}"), "Url",
 			Config()->m_AboutContactsMatrix, nullptr);
-		Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "info", Buffer.buffer());
+		Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "chatresp", Buffer.buffer());
 		Buffer.clear();
 	}
 	if(Config()->m_AboutTranslationUrl[0])
 	{
 		Server()->Localization()->Format_L(Buffer, pLanguage, _("Translation project: {str:Url}"), "Url",
 			Config()->m_AboutTranslationUrl, nullptr);
-		Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "info", Buffer.buffer());
+		Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "chatresp", Buffer.buffer());
 		Buffer.clear();
 	}
 
 	Server()->Localization()->Format_L(Buffer, pLanguage, _("See also: /credits"), nullptr);
-	Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "info", Buffer.buffer());
+	Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "chatresp", Buffer.buffer());
 	Buffer.clear();
 }
 
@@ -4098,8 +4105,6 @@ void CGameContext::OnConsoleInit()
 	m_pConfig = Kernel()->RequestInterface<IConfigManager>()->Values();
 	m_pConsole = Kernel()->RequestInterface<IConsole>();
 	m_pStorage = Kernel()->RequestInterface<IStorage>();
-
-	m_ChatPrintCBIndex = Console()->RegisterPrintCallback(IConsole::OUTPUT_LEVEL_STANDARD, ChatConsolePrintCallback, this);
 
 	Console()->Register("tune", "s[tuning] i[value]", CFGFLAG_SERVER | CFGFLAG_GAME, ConTuneParam, this, "Tune variable to value");
 	Console()->Register("toggle_tune", "s[tuning] i[value 1] i[value 2]", CFGFLAG_SERVER | CFGFLAG_GAME, ConToggleTuneParam, this, "Toggle tune variable");
