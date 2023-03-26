@@ -324,6 +324,7 @@ void CServer::CClient::Reset(bool ResetScore)
 	if(ResetScore)
 	{
 		m_NbRound = 0;
+		m_WaitingTime = 0;
 
 		m_UserID = -1;
 #ifdef CONF_SQL
@@ -557,6 +558,7 @@ int CServer::Init()
 		Client.m_Country = -1;
 		Client.m_Snapshots.Init();
 		Client.m_IsBot = false;
+		Client.m_WaitingTime = 0;
 		Client.m_Accusation.m_Num = 0;
 		Client.m_ShowIps = false;
 		Client.m_Latency = 0;
@@ -1209,7 +1211,7 @@ int CServer::DelClientCallback(int ClientID, int Type, const char *pReason, void
 	pThis->Console()->Print(IConsole::OUTPUT_LEVEL_ADDINFO, "server", aBuf);
 
 	// notify the mod about the drop
-	if(pThis->m_aClients[ClientID].m_State >= CClient::STATE_READY)
+	if(pThis->m_aClients[ClientID].m_State >= CClient::STATE_READY && pThis->m_aClients[ClientID].m_WaitingTime <= 0)
 		pThis->GameServer()->OnClientDrop(ClientID, Type, pReason);
 
 	pThis->m_aClients[ClientID].m_State = CClient::STATE_EMPTY;
@@ -1222,6 +1224,7 @@ int CServer::DelClientCallback(int ClientID, int Type, const char *pReason, void
 	pThis->m_aClients[ClientID].m_ShowIps = false;
 	pThis->m_aPrevStates[ClientID] = CClient::STATE_EMPTY;
 	pThis->m_aClients[ClientID].m_Snapshots.PurgeAll();
+	pThis->m_aClients[ClientID].m_WaitingTime = 0;
 	pThis->m_aClients[ClientID].m_UserID = -1;
 #ifdef CONF_SQL
 	pThis->m_aClients[ClientID].m_UserLevel = SQL_USERLEVEL_NORMAL;
@@ -1613,18 +1616,9 @@ void CServer::ProcessClientPacket(CNetChunk *pPacket)
 				char aBuf[256];
 				str_format(aBuf, sizeof(aBuf), "player is ready. ClientID=%d addr=<{%s}> secure=%s", ClientID, aAddrStr, m_NetServer.HasSecurityToken(ClientID) ? "yes" : "no");
 				Console()->Print(IConsole::OUTPUT_LEVEL_ADDINFO, "server", aBuf);
-
-				void *pPersistentData = 0;
-				if(m_aClients[ClientID].m_HasPersistentData)
-				{
-					pPersistentData = m_aClients[ClientID].m_pPersistentData;
-					m_aClients[ClientID].m_HasPersistentData = false;
-				}
 				m_aClients[ClientID].m_State = CClient::STATE_READY;
-				GameServer()->OnClientConnected(ClientID, pPersistentData);
+				m_aClients[ClientID].m_WaitingTime = TickSpeed()*g_Config.m_InfConWaitingTime;
 			}
-
-			SendConnectionReady(ClientID);
 		}
 		else if(Msg == NETMSG_ENTERGAME)
 		{
@@ -1637,7 +1631,11 @@ void CServer::ProcessClientPacket(CNetChunk *pPacket)
 				str_format(aBuf, sizeof(aBuf), "player has entered the game. ClientID=%d addr=%s", ClientID, aAddrStr);
 				Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "server", aBuf);
 				m_aClients[ClientID].m_State = CClient::STATE_INGAME;
-				GameServer()->OnClientEnter(ClientID);
+				
+				if(m_aClients[ClientID].m_WaitingTime <= 0)
+				{
+					GameServer()->OnClientEnter(ClientID);
+				}
 			}
 		}
 		else if(Msg == NETMSG_INPUT)
@@ -2564,6 +2562,40 @@ int CServer::Run()
 				m_CurrentGameTick++;
 				NewTicks++;
 
+				//Check for name collision. We add this because the login is in a different thread and can't check it himself.
+				for(int i=MAX_CLIENTS-1; i>=0; i--)
+				{
+					if(m_aClients[i].m_State >= CClient::STATE_READY && m_aClients[i].m_Session.m_MuteTick > 0)
+						m_aClients[i].m_Session.m_MuteTick--;
+				}
+				
+				for(int ClientID=0; ClientID<MAX_CLIENTS; ClientID++)
+				{
+					if(m_aClients[ClientID].m_WaitingTime > 0)
+					{
+						m_aClients[ClientID].m_WaitingTime--;
+						if(m_aClients[ClientID].m_WaitingTime <= 0)
+						{
+							if(m_aClients[ClientID].m_State == CClient::STATE_READY)
+							{
+								void *pPersistentData = 0;
+								if(m_aClients[ClientID].m_HasPersistentData)
+								{
+									pPersistentData = m_aClients[ClientID].m_pPersistentData;
+									m_aClients[ClientID].m_HasPersistentData = false;
+								}
+
+								GameServer()->OnClientConnected(ClientID, pPersistentData);
+								SendConnectionReady(ClientID);
+							}
+							else if(m_aClients[ClientID].m_State == CClient::STATE_INGAME)
+							{
+								GameServer()->OnClientEnter(ClientID);
+							}
+						}
+					}
+				}
+				
 				// apply new input
 				for(int c = 0; c < MAX_CLIENTS; c++)
 				{

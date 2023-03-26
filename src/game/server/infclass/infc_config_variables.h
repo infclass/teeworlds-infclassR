@@ -31,6 +31,7 @@ MACRO_CONFIG_INT(InfFirstInfectedLimit, inf_first_infected_limit, 0, 0, 64, CFGF
 MACRO_CONFIG_INT(InfMinRoundsForMapVote, inf_min_rounds_map_vote, 0, 0, 100, CFGFLAG_SERVER, "Minimum number of rounds before a new map can be voted")
 MACRO_CONFIG_INT(InfMinPlayerPercentForMapVote, inf_min_player_percent_map_vote, 30, 0, 200, CFGFLAG_SERVER, "Minimum percentage of players that are needed to start a map vote")
 MACRO_CONFIG_INT(InfMinPlayerNumberForMapVote, inf_min_player_number_map_vote, 1, 1, 32, CFGFLAG_SERVER, "Minimum number of players that are needed to start a map vote")
+MACRO_CONFIG_INT(InfConWaitingTime, inf_con_waiting_time, 1, 0, 60, CFGFLAG_SERVER, "Number of seconds to wait before enter the game")
 MACRO_CONFIG_INT(InfCaptcha, inf_captcha, 0, 0, 1, CFGFLAG_SERVER, "Enable captcha")
 MACRO_CONFIG_INT(InfShockwaveAffectHumans, inf_shock_wave_affect_humans, 0, 0, 1, CFGFLAG_SERVER, "Explosion shockwave affect humans")
 MACRO_CONFIG_INT(InfSpawnProtectionTime, inf_spawn_protection_time, 2000, 0, 60000, CFGFLAG_SERVER, "Time zombies stay invincible while spawning")
@@ -162,4 +163,3 @@ MACRO_CONFIG_INT(InfSlimePoisonDuration, inf_slime_poison_duration, 5, 0, 10000,
 
 MACRO_CONFIG_INT(InfFastDownload, inf_fast_download, 1, 0, 1, CFGFLAG_SERVER, "Deprecated (use sv_fast_download instead)")
 MACRO_CONFIG_INT(InfMapWindow, inf_map_window, 15, 0, 100, CFGFLAG_SERVER, "Deprecated (use sv_map_window instead)")
-MACRO_CONFIG_INT(InfConWaitingTime, inf_con_waiting_time, 1, 0, 60, CFGFLAG_SERVER, "Removed (has no effect now)")
