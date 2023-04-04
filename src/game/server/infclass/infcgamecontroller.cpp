@@ -483,6 +483,29 @@ void CInfClassGameController::HandleLastHookers()
 	}
 }
 
+bool CInfClassGameController::CanSeeDetails(int Who, int Whom) const
+{
+	if(Who == SERVER_DEMO_CLIENT)
+		return true;
+
+	CInfClassPlayer *pWhom = GetPlayer(Whom);
+	if(!pWhom || pWhom->GetTeam() == TEAM_SPECTATORS)
+		return false;
+
+	CInfClassPlayer *pWho = GetPlayer(Who);
+	if(!pWho)
+		return false;
+
+	if(pWho->GetTeam() == TEAM_SPECTATORS)
+		return Config()->m_SvStrictSpectateMode == 0;
+
+	// Both players are in the game
+	int Team1 = GetPlayerTeam(Who);
+	int Team2 = GetPlayerTeam(Whom);
+
+	return Team1 == Team2;
+}
+
 int64_t CInfClassGameController::GetBlindCharactersMask(int ExcludeCID) const
 {
 	int64_t Mask = 0;

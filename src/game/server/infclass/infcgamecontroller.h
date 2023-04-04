@@ -83,6 +83,7 @@ public:
 	void HandleCharacterTiles(CInfClassCharacter *pCharacter);
 	void HandleLastHookers();
 
+	bool CanSeeDetails(int Who, int Whom) const;
 	int64_t GetBlindCharactersMask(int ExcludeCID) const;
 
 	bool HumanWallAllowedInPos(const vec2 &Pos) const;

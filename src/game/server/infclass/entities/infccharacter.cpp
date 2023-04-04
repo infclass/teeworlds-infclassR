@@ -367,7 +367,7 @@ void CInfClassCharacter::SpecialSnapForClient(int SnappingClient, bool *pDoSnap)
 
 	if(GetPlayerClass() == PLAYERCLASS_GHOST)
 	{
-		if(pDestClient && !pDestClient->IsZombie() && m_IsInvisible)
+		if(IsInvisible() && !GameController()->CanSeeDetails(SnappingClient, GetCID()))
 		{
 			*pDoSnap = false;
 			return;
