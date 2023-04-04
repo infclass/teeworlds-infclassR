@@ -162,8 +162,8 @@ class TEntityPtr
 public:
 	using value_type = T;
 
-	TEntityPtr(T *pData)
-		: m_pData(pData)
+	TEntityPtr(T *pData = nullptr) :
+		m_pData(pData)
 	{
 	}
 
