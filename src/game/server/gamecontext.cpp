@@ -1897,11 +1897,21 @@ void CGameContext::OnMessage(int MsgID, CUnpacker *pUnpacker, int ClientID)
 			if(Length == 0 || (g_Config.m_SvSpamprotection && pPlayer->m_LastChat && pPlayer->m_LastChat+Server()->TickSpeed() * ((31 + Length) / 32) > Server()->Tick()))
 				return;
 
-			int GameTeam = m_pController->GetPlayerTeam(pPlayer->GetCID());
 			if(Team)
-				Team = ((pPlayer->GetTeam() == TEAM_SPECTATORS) ? CHAT_SPEC : GameTeam);
+			{
+				if(pPlayer->GetTeam() == TEAM_SPECTATORS)
+				{
+					Team = CHAT_SPEC;
+				}
+				else
+				{
+					Team = m_pController->GetPlayerTeam(pPlayer->GetCID());
+				}
+			}
 			else
+			{
 				Team = CHAT_ALL;
+			}
 
 			pPlayer->m_LastChat = Server()->Tick();
 			
