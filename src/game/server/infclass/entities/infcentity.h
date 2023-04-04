@@ -9,6 +9,8 @@ class CGameContext;
 class CInfClassCharacter;
 class CInfClassGameController;
 
+using EntityFilter = bool (*)(const CEntity *);
+
 class CInfCEntity : public CEntity
 {
 public:
@@ -18,6 +20,9 @@ public:
 	CInfClassGameController *GameController();
 	int GetOwner() const { return m_Owner; }
 	CInfClassCharacter *GetOwnerCharacter();
+
+	static EntityFilter GetOwnerFilterFunction(int Owner);
+	EntityFilter GetOwnerFilterFunction();
 
 	void Reset() override;
 	void Tick() override;

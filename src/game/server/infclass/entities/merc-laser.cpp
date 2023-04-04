@@ -11,20 +11,6 @@
 
 static const int MercLaserDamage = 0;
 
-static int FilterOwnerID = -1;
-
-static bool OwnerFilter(const CEntity *pEntity)
-{
-	const CInfCEntity *pInfEntity = static_cast<const CInfCEntity *>(pEntity);
-	return pInfEntity->GetOwner() == FilterOwnerID;
-}
-
-static CGameWorld::EntityFilter GetOwnerFilter(int Owner)
-{
-	FilterOwnerID = Owner;
-	return OwnerFilter;
-}
-
 CMercenaryLaser::CMercenaryLaser(CGameContext *pGameContext, vec2 Pos, vec2 Direction, float StartEnergy, int Owner)
 	: CInfClassLaser(pGameContext, Pos, Direction, StartEnergy, Owner, MercLaserDamage, CGameWorld::ENTTYPE_LASER)
 {
@@ -35,7 +21,7 @@ CMercenaryLaser::CMercenaryLaser(CGameContext *pGameContext, vec2 Pos, vec2 Dire
 bool CMercenaryLaser::HitCharacter(vec2 From, vec2 To)
 {
 	vec2 At;
-	CEntity *pHitMercBomb = GameWorld()->IntersectEntity(m_Pos, To, 80.0f, &At, CGameWorld::ENTTYPE_MERCENARY_BOMB, GetOwnerFilter(GetOwner()));
+	CEntity *pHitMercBomb = GameWorld()->IntersectEntity(m_Pos, To, 80.0f, &At, CGameWorld::ENTTYPE_MERCENARY_BOMB, GetOwnerFilterFunction());
 	if(pHitMercBomb)
 	{
 		CMercenaryBomb *pBomb = static_cast<CMercenaryBomb*>(pHitMercBomb);

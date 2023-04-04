@@ -4,6 +4,14 @@
 #include <game/server/gamecontext.h>
 #include <game/server/infclass/infcgamecontroller.h>
 
+static int FilterOwnerID = -1;
+
+static bool OwnerFilter(const CEntity *pEntity)
+{
+	const CInfCEntity *pInfEntity = static_cast<const CInfCEntity *>(pEntity);
+	return pInfEntity->GetOwner() == FilterOwnerID;
+}
+
 CInfCEntity::CInfCEntity(CGameContext *pGameContext, int ObjectType, vec2 Pos, int Owner,
                          int ProximityRadius)
 	: CEntity(pGameContext->GameWorld(), ObjectType, Pos, ProximityRadius)
@@ -19,6 +27,17 @@ CInfClassGameController *CInfCEntity::GameController()
 CInfClassCharacter *CInfCEntity::GetOwnerCharacter()
 {
 	return GameController()->GetCharacter(GetOwner());
+}
+
+EntityFilter CInfCEntity::GetOwnerFilterFunction(int Owner)
+{
+	FilterOwnerID = Owner;
+	return OwnerFilter;
+}
+
+EntityFilter CInfCEntity::GetOwnerFilterFunction()
+{
+	return GetOwnerFilterFunction(GetOwner());
 }
 
 void CInfCEntity::Reset()
