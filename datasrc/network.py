@@ -255,7 +255,7 @@ Objects = [
 		NetIntAny("m_Y2"),
 		NetIntAny("m_Type"),
 		NetIntAny("m_StartTick"),
-		NetIntAny("m_LifeSpan"),
+		NetIntAny("m_EndTick"),
 	]),
 
 	NetObjectEx("InfClassPlayer", "player@infclass", [

@@ -30,7 +30,7 @@ CLooperWall::CLooperWall(CGameContext *pGameContext, vec2 Pos1, vec2 Pos2, int O
 		m_Pos2 = Pos2;
 	}
 
-	m_LifeSpan = Server()->TickSpeed()*Config()->m_InfLooperBarrierLifeSpan;
+	m_EndTick = Server()->Tick() + Server()->TickSpeed() * Config()->m_InfLooperBarrierLifeSpan;
 	GameWorld()->InsertEntity(this);
 
 	for(int &ID : m_IDs)
@@ -65,11 +65,10 @@ CLooperWall::~CLooperWall()
 
 void CLooperWall::Tick()
 {
-	if(m_MarkedForDestroy) return;
+	if(m_MarkedForDestroy)
+		return;
 
-	m_LifeSpan--;
-	
-	if(m_LifeSpan < 0)
+	if(Server()->Tick() >= m_EndTick)
 	{
 		GameWorld()->DestroyEntity(this);
 	}
@@ -88,27 +87,7 @@ void CLooperWall::Tick()
 			float Len = distance(p->m_Pos, IntersectPos);
 			if(Len < p->m_ProximityRadius+g_BarrierRadius)
 			{
-				if(p->GetPlayer())
-				{
-					int LifeSpanReducer = ((Server()->TickSpeed()*Config()->m_InfLooperBarrierTimeReduce)/100);
-					if(!p->IsInSlowMotion()) 
-					{
-						if(p->GetPlayerClass() == PLAYERCLASS_GHOUL)
-						{
-							float Factor = p->GetClass()->GetGhoulPercent();
-							LifeSpanReducer += Server()->TickSpeed() * 5.0f * Factor;
-						}
-							
-						m_LifeSpan -= LifeSpanReducer;
-					}
-				}
-
-				//Slow-Motion modification here
-				if (!p->IsInSlowMotion())
-				{
-					p->SlowMotionEffect(Config()->m_InfSlowMotionWallDuration, GetOwner());
-					GameServer()->SendEmoticon(p->GetCID(), EMOTICON_EXCLAMATION);
-				}
+				OnHitInfected(p);
 			}
 		}
 	}
@@ -116,7 +95,7 @@ void CLooperWall::Tick()
 
 void CLooperWall::TickPaused()
 {
-	//~ ++m_EvalTick;
+	++m_EndTick;
 }
 
 void CLooperWall::Snap(int SnappingClient)
@@ -130,7 +109,7 @@ void CLooperWall::Snap(int SnappingClient)
 		if(!pInfClassObject)
 			return;
 
-		pInfClassObject->m_LifeSpan = m_LifeSpan;
+		pInfClassObject->m_EndTick = m_EndTick;
 	}
 
 	const CInfClassPlayer *pPlayer = GameController()->GetPlayer(SnappingClient);
@@ -138,11 +117,11 @@ void CLooperWall::Snap(int SnappingClient)
 
 	// Laser dieing animation
 	int LifeDiff = 0;
-	if (m_LifeSpan < 1*Server()->TickSpeed())
+	if (m_EndTick < 1*Server()->TickSpeed())
 		LifeDiff = 6;
-	else if (m_LifeSpan < 2*Server()->TickSpeed())
+	else if (m_EndTick < 2*Server()->TickSpeed())
 		LifeDiff = random_int(4, 6);
-	else if (m_LifeSpan < 5*Server()->TickSpeed())
+	else if (m_EndTick < 5*Server()->TickSpeed())
 		LifeDiff = random_int(3, 5);
 	else 
 		LifeDiff = 3;
@@ -203,5 +182,30 @@ void CLooperWall::Snap(int SnappingClient)
 			float fRandom2 = random_float();
 			GameController()->SendHammerDot(startPos + dirVec * fRandom1 + dirVecT * fRandom2, m_ParticleIDs[i]);
 		}
+	}
+}
+
+void CLooperWall::OnHitInfected(CInfClassCharacter *pCharacter)
+{
+	if(pCharacter->GetPlayer())
+	{
+		int LifeSpanReducer = ((Server()->TickSpeed() * Config()->m_InfLooperBarrierTimeReduce) / 100);
+		if(!pCharacter->IsInSlowMotion())
+		{
+			if(pCharacter->GetPlayerClass() == PLAYERCLASS_GHOUL)
+			{
+				float Factor = pCharacter->GetClass()->GetGhoulPercent();
+				LifeSpanReducer += Server()->TickSpeed() * 5.0f * Factor;
+			}
+
+			m_EndTick -= LifeSpanReducer;
+		}
+	}
+
+	// Slow-Motion modification here
+	if(!pCharacter->IsInSlowMotion())
+	{
+		pCharacter->SlowMotionEffect(Config()->m_InfSlowMotionWallDuration, GetOwner());
+		GameServer()->SendEmoticon(pCharacter->GetCID(), EMOTICON_EXCLAMATION);
 	}
 }

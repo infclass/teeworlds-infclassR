@@ -44,7 +44,7 @@ CNetObj_InfClassObject *CPlacedObject::SnapInfClassObject()
 	pInfClassObject->m_Owner = GetOwner();
 
 	pInfClassObject->m_StartTick = 0;
-	pInfClassObject->m_LifeSpan = 0;
+	pInfClassObject->m_EndTick = 0;
 
 	if(m_InfClassObjectFlags & INFCLASS_OBJECT_FLAG_HAS_SECOND_POSITION)
 	{

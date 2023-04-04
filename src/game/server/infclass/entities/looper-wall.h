@@ -20,10 +20,12 @@ public:
 	virtual void Tick();
 	virtual void TickPaused();
 	virtual void Snap(int SnappingClient);
-	int GetTick() { return m_LifeSpan; }
+	int GetEndTick() const { return m_EndTick; }
 
 private:
-	int m_LifeSpan;
+	void OnHitInfected(CInfClassCharacter *pCharacter);
+
+	int m_EndTick;
 
 	int m_IDs[2];
 	int m_EndPointIDs[2];

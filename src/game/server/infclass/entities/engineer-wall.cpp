@@ -34,7 +34,7 @@ CEngineerWall::CEngineerWall(CGameContext *pGameContext, vec2 Pos1, vec2 Pos2, i
 	{
 		m_Pos2 = Pos2;
 	}
-	m_LifeSpan = Server()->TickSpeed()*Config()->m_InfBarrierLifeSpan;
+	m_EndTick = Server()->Tick() + Server()->TickSpeed() * Config()->m_InfBarrierLifeSpan;
 	GameWorld()->InsertEntity(this);
 	m_EndPointID = Server()->SnapNewID();
 	m_WallFlashTicks = 0;
@@ -52,9 +52,7 @@ void CEngineerWall::Tick()
 	if (m_WallFlashTicks > 0) 
 		m_WallFlashTicks--;
 
-	m_LifeSpan--;
-	
-	if(m_LifeSpan < 0)
+	if(Server()->Tick() >= m_EndTick)
 	{
 		GameWorld()->DestroyEntity(this);
 	}
@@ -73,7 +71,7 @@ void CEngineerWall::Tick()
 			float Len = distance(p->m_Pos, IntersectPos);
 			if(Len < p->m_ProximityRadius+g_BarrierRadius)
 			{
-				OnZombieHit(p);
+				OnHitInfected(p);
 			}
 		}
 	}
@@ -81,7 +79,7 @@ void CEngineerWall::Tick()
 
 void CEngineerWall::TickPaused()
 {
-	//~ ++m_EvalTick;
+	++m_EndTick;
 }
 
 void CEngineerWall::Snap(int SnappingClient)
@@ -95,7 +93,7 @@ void CEngineerWall::Snap(int SnappingClient)
 		if(!pInfClassObject)
 			return;
 
-		pInfClassObject->m_LifeSpan = m_LifeSpan;
+		pInfClassObject->m_EndTick = m_EndTick;
 	}
 
 	const CInfClassPlayer *pPlayer = GameController()->GetPlayer(SnappingClient);
@@ -105,27 +103,27 @@ void CEngineerWall::Snap(int SnappingClient)
 	int LifeDiff = 0;
 	if (m_WallFlashTicks > 0) // flash laser for a few ticks when zombie jumps
 		LifeDiff = 5;
-	else if (m_LifeSpan < 1*Server()->TickSpeed())
+	else if(m_EndTick < 1 * Server()->TickSpeed())
 		LifeDiff = random_int(4, 5);
-	else if (m_LifeSpan < 2*Server()->TickSpeed())
+	else if(m_EndTick < 2 * Server()->TickSpeed())
 		LifeDiff = random_int(3, 5);
-	else if (m_LifeSpan < 3*Server()->TickSpeed())
+	else if(m_EndTick < 3 * Server()->TickSpeed())
 		LifeDiff = random_int(2, 4);
-	else if (m_LifeSpan < 4*Server()->TickSpeed())
+	else if(m_EndTick < 4 * Server()->TickSpeed())
 		LifeDiff = random_int(1, 3);
-	else if (m_LifeSpan < 5*Server()->TickSpeed())
+	else if(m_EndTick < 5 * Server()->TickSpeed())
 		LifeDiff = random_int(0, 2);
-	else if (m_LifeSpan < 6*Server()->TickSpeed())
+	else if(m_EndTick < 6 * Server()->TickSpeed())
 		LifeDiff = random_int(0, 1);
-	else if (m_LifeSpan < 7*Server()->TickSpeed())
+	else if(m_EndTick < 7 * Server()->TickSpeed())
 		LifeDiff = (random_prob(3.0f/4.0f)) ? 1 : 0;
-	else if (m_LifeSpan < 8*Server()->TickSpeed())
+	else if(m_EndTick < 8 * Server()->TickSpeed())
 		LifeDiff = (random_prob(5.0f/6.0f)) ? 1 : 0;
-	else if (m_LifeSpan < 9*Server()->TickSpeed())
+	else if(m_EndTick < 9 * Server()->TickSpeed())
 		LifeDiff = (random_prob(5.0f/6.0f)) ? 0 : -1;
-	else if (m_LifeSpan < 10*Server()->TickSpeed())
+	else if(m_EndTick < 10 * Server()->TickSpeed())
 		LifeDiff = (random_prob(5.0f/6.0f)) ? 0 : -1;
-	else if (m_LifeSpan < 11*Server()->TickSpeed())
+	else if(m_EndTick < 11 * Server()->TickSpeed())
 		LifeDiff = (random_prob(5.0f/6.0f)) ? -1 : -Server()->TickSpeed()*2;
 	else
 		LifeDiff = -Server()->TickSpeed()*2;
@@ -142,15 +140,15 @@ void CEngineerWall::Snap(int SnappingClient)
 	}
 }
 
-void CEngineerWall::OnZombieHit(CInfClassCharacter *pZombie)
+void CEngineerWall::OnHitInfected(CInfClassCharacter *pCharacter)
 {
-	CInfClassInfected *pInfected = CInfClassInfected::GetInstance(pZombie);
+	CInfClassInfected *pInfected = CInfClassInfected::GetInstance(pCharacter);
 
-	if(pZombie->GetPlayer() && pInfected)
+	if(pCharacter->GetPlayer() && pInfected)
 	{
 		pInfected->OnLaserWall();
 
-		if(!pZombie->CanDie())
+		if(!pCharacter->CanDie())
 		{
 			return;
 		}
@@ -158,14 +156,14 @@ void CEngineerWall::OnZombieHit(CInfClassCharacter *pZombie)
 		int LifeSpanReducer = ((Server()->TickSpeed()*Config()->m_InfBarrierTimeReduce)/100);
 		m_WallFlashTicks = 10;
 
-		if(pZombie->GetPlayerClass() == PLAYERCLASS_GHOUL)
+		if(pCharacter->GetPlayerClass() == PLAYERCLASS_GHOUL)
 		{
 			float Factor = pInfected->GetGhoulPercent();
 			LifeSpanReducer += Server()->TickSpeed() * 5.0f * Factor;
 		}
 
-		m_LifeSpan -= LifeSpanReducer;
+		m_EndTick -= LifeSpanReducer;
 	}
 
-	pZombie->Die(m_Owner, DAMAGE_TYPE::LASER_WALL);
+	pCharacter->Die(m_Owner, DAMAGE_TYPE::LASER_WALL);
 }
