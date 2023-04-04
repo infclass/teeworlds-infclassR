@@ -133,6 +133,21 @@ void CInfClassPlayer::Tick()
 	}
 }
 
+void CInfClassPlayer::PostTick()
+{
+	// update latency value
+	if(m_PlayerFlags & PLAYERFLAG_SCOREBOARD)
+	{
+		for(int i = 0; i < MAX_CLIENTS; ++i)
+		{
+			if(GameServer()->m_apPlayers[i] && GameServer()->m_apPlayers[i]->GetTeam() != TEAM_SPECTATORS)
+				m_aCurLatency[i] = GameServer()->m_apPlayers[i]->m_Latency.m_Min;
+		}
+	}
+
+	UpdateSpectatorPos();
+}
+
 void CInfClassPlayer::Snap(int SnappingClient)
 {
 	if(!Server()->ClientIngame(m_ClientID))
@@ -638,6 +653,25 @@ void CInfClassPlayer::HandleAutoRespawn()
 	{
 		Respawn();
 	}
+}
+
+void CInfClassPlayer::UpdateSpectatorPos()
+{
+	if(m_Team != TEAM_SPECTATORS || m_SpectatorID == SPEC_FREEVIEW)
+		return;
+
+	const CInfClassPlayer *pTarget = GameController()->GetPlayer(m_SpectatorID);
+	if(!pTarget)
+		return;
+
+	if(g_Config.m_SvStrictSpectateMode)
+	{
+		const CInfClassCharacter *pCharacter = pTarget->GetCharacter();
+		if(pCharacter && pCharacter->IsInvisible())
+			return;
+	}
+
+	m_ViewPos = GameServer()->m_apPlayers[m_SpectatorID]->m_ViewPos;
 }
 
 bool CInfClassPlayer::IsForcedToSpectate() const

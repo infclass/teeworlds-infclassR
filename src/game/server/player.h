@@ -42,7 +42,7 @@ public:
 	virtual int GetScore(int SnappingClient) const;
 
 	virtual void Tick();
-	void PostTick();
+	virtual void PostTick();
 	virtual void Snap(int SnappingClient);
 	virtual void SnapClientInfo(int SnappingClient, int SnappingClientMappedId);
 

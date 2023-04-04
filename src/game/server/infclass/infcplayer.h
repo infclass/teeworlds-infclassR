@@ -44,6 +44,7 @@ public:
 	int GetScore(int SnappingClient) const override;
 
 	void Tick() override;
+	void PostTick() override;
 	void Snap(int SnappingClient) override;
 	void SnapClientInfo(int SnappingClient, int SnappingClientMappedId) override;
 	int GetDefaultEmote() const override;
@@ -112,6 +113,7 @@ protected:
 	virtual void OnCharacterSpawned(const SpawnContext &Context);
 	const char *GetClan(int SnappingClient = -1) const override;
 	void HandleAutoRespawn() override;
+	void UpdateSpectatorPos();
 
 	bool IsForcedToSpectate() const;
 

@@ -154,19 +154,6 @@ void CPlayer::Tick()
 
 void CPlayer::PostTick()
 {
-	// update latency value
-	if(m_PlayerFlags&PLAYERFLAG_SCOREBOARD)
-	{
-		for(int i = 0; i < MAX_CLIENTS; ++i)
-		{
-			if(GameServer()->m_apPlayers[i] && GameServer()->m_apPlayers[i]->GetTeam() != TEAM_SPECTATORS)
-				m_aCurLatency[i] = GameServer()->m_apPlayers[i]->m_Latency.m_Min;
-		}
-	}
-
-	// update view pos for spectators
-	if(m_Team == TEAM_SPECTATORS && m_SpectatorID != SPEC_FREEVIEW && GameServer()->m_apPlayers[m_SpectatorID])
-		m_ViewPos = GameServer()->m_apPlayers[m_SpectatorID]->m_ViewPos;
 }
 
 void CPlayer::HandleTuningParams()
