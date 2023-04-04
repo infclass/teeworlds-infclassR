@@ -38,6 +38,7 @@ LaserTypes = ["RIFLE", "SHOTGUN", "DOOR", "FREEZE"]
 
 InfClassPlayerFlags = ["INFECTED", "HOOK_PROTECTION_OFF", "FORCED_TO_SPECTATE"]
 InfClassObjectFlags = ["HAS_SECOND_POSITION"]
+InfClassClassInfoFlags = ["IS_INVISIBLE"]
 InfClassObjectTypes = ["CUSTOM", "LASER_WALL", "LOOPER_WALL", "SOLDIER_BOMB", "SCIENTIST_MINE", "BIOLOGIST_MINE", "MERCENARY_BOMB", "TURRET"]
 
 Emoticons = ["OOP", "EXCLAMATION", "HEARTS", "DROP", "DOTDOT", "MUSIC", "SORRY", "GHOST", "SUSHI", "SPLATTEE", "DEVILTEE", "ZOMG", "ZZZ", "WTF", "EYES", "QUESTION"]
@@ -99,6 +100,7 @@ Flags = [
 	Flags("PROJECTILEFLAG", ProjectileFlags),
 	Flags("INFCLASS_PLAYER_FLAG", InfClassPlayerFlags),
 	Flags("INFCLASS_OBJECT_FLAG", InfClassObjectFlags),
+	Flags("INFCLASS_CLASSINFO_FLAG", InfClassClassInfoFlags),
 ]
 
 Objects = [

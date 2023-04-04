@@ -24,6 +24,8 @@ public:
 	int GetDefaultEmote() const override;
 	int GetJumps() const override;
 
+	void OnPlayerSnap(int SnappingClient, int InfClassVersion) override;
+
 	bool CanDie() const override;
 	bool CanBeUnfreezed() const;
 

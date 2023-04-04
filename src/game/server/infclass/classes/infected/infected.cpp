@@ -1,4 +1,5 @@
 #include "infected.h"
+#include "game/generated/protocol.h"
 #include "game/server/entity.h"
 #include "game/server/gameworld.h"
 #include "game/server/infclass/classes/infcplayerclass.h"
@@ -193,6 +194,33 @@ int CInfClassInfected::GetJumps() const
 	default:
 		return 2;
 	}
+}
+
+void CInfClassInfected::OnPlayerSnap(int SnappingClient, int InfClassVersion)
+{
+	if(InfClassVersion < VERSION_INFC_DDNET_CHARACTER)
+	{
+		// Ghost visibility supported since v0.1.6
+		return;
+	}
+
+	if(!m_pCharacter)
+		return;
+
+	if(m_pCharacter->IsInvisible() && !GameController()->CanSeeDetails(SnappingClient, GetCID()))
+	{
+		return;
+	}
+
+	CNetObj_InfClassClassInfo *pClassInfo = static_cast<CNetObj_InfClassClassInfo *>(Server()->SnapNewItem(NETOBJTYPE_INFCLASSCLASSINFO, GetCID(), sizeof(CNetObj_InfClassClassInfo)));
+	if(!pClassInfo)
+		return;
+	pClassInfo->m_Class = GetPlayerClass();
+	pClassInfo->m_Flags = 0;
+	pClassInfo->m_Data1 = 0;
+
+	if(m_pCharacter->IsInvisible())
+		pClassInfo->m_Flags |= INFCLASS_CLASSINFO_FLAG_IS_INVISIBLE;
 }
 
 bool CInfClassInfected::CanDie() const

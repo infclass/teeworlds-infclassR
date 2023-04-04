@@ -240,15 +240,15 @@ void CInfClassHuman::OnPlayerSnap(int SnappingClient, int InfClassVersion)
 		return;
 	}
 
+	CNetObj_InfClassClassInfo *pClassInfo = static_cast<CNetObj_InfClassClassInfo *>(Server()->SnapNewItem(NETOBJTYPE_INFCLASSCLASSINFO, GetCID(), sizeof(CNetObj_InfClassClassInfo)));
+	if(!pClassInfo)
+		return;
+	pClassInfo->m_Class = GetPlayerClass();
+	pClassInfo->m_Flags = 0;
+	pClassInfo->m_Data1 = 0;
+
 	if(SnappingClient == GetCID())
 	{
-		CNetObj_InfClassClassInfo *pClassInfo = static_cast<CNetObj_InfClassClassInfo *>(Server()->SnapNewItem(NETOBJTYPE_INFCLASSCLASSINFO, GetCID(), sizeof(CNetObj_InfClassClassInfo)));
-		if(!pClassInfo)
-			return;
-		pClassInfo->m_Class = GetPlayerClass();
-		pClassInfo->m_Flags = 0;
-		pClassInfo->m_Data1 = 0;
-
 		switch(GetPlayerClass())
 		{
 		case PLAYERCLASS_HERO:

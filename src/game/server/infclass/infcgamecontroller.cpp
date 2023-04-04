@@ -3100,7 +3100,7 @@ void CInfClassGameController::Snap(int SnappingClient)
 	SnapMapMenu(SnappingClient, pGameInfoObj);
 
 	CNetObj_InfClassGameInfo *pInfclassGameInfoObj = (CNetObj_InfClassGameInfo *)Server()->SnapNewItem(NETOBJTYPE_INFCLASSGAMEINFO, 0, sizeof(CNetObj_InfClassGameInfo));
-	pInfclassGameInfoObj->m_Version = 1;
+	pInfclassGameInfoObj->m_Version = 2;
 	pInfclassGameInfoObj->m_Flags = 0;
 	pInfclassGameInfoObj->m_TimeLimitInSeconds = GetTimeLimit() * 60;
 	pInfclassGameInfoObj->m_HeroGiftTick = m_HeroGiftTick;
