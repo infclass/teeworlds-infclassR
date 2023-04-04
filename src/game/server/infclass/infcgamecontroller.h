@@ -171,6 +171,7 @@ public:
 	static int DamageTypeToWeapon(DAMAGE_TYPE DamageType, TAKEDAMAGEMODE *pMode = nullptr);
 
 	int GetPlayerTeam(int ClientID) const override;
+	void SetPlayerInfected(int ClientID, bool Infected);
 
 	void RegisterChatCommands(class IConsole *pConsole) override;
 

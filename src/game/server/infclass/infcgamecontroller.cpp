@@ -1124,6 +1124,11 @@ int CInfClassGameController::GetPlayerTeam(int ClientID) const
 	return m_Teams.m_Core.Team(ClientID);
 }
 
+void CInfClassGameController::SetPlayerInfected(int ClientID, bool Infected)
+{
+	return m_Teams.m_Core.SetInfected(ClientID, Infected);
+}
+
 void CInfClassGameController::RegisterChatCommands(IConsole *pConsole)
 {
 	pConsole->Register("restore_client_name", "i[clientid]", CFGFLAG_SERVER, ConRestoreClientName, this, "Set the name of a player");

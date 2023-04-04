@@ -1081,7 +1081,6 @@ void CGameContext::OnTick()
 			m_apPlayers[i]->GetCharacter()->m_Core.m_InLove = m_apPlayers[i]->GetCharacter()->IsInLove();
 			m_apPlayers[i]->GetCharacter()->m_Core.m_HookProtected = m_apPlayers[i]->HookProtectionEnabled();
 
-			m_apPlayers[i]->GetCharacter()->Teams()->m_Core.SetInfected(i, m_apPlayers[i]->IsZombie());
 			m_apPlayers[i]->GetCharacter()->Teams()->m_Core.SetProtected(i, m_apPlayers[i]->HookProtectionEnabled());
 		}
 	}
