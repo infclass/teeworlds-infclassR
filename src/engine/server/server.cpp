@@ -1197,7 +1197,8 @@ int CServer::DelClientCallback(int ClientID, int Type, const char *pReason, void
 	
 	if(pThis->m_aClients[ClientID].m_Quitting)
 		return 0;
-	
+
+	const bool isBot = pThis->m_aClients[ClientID].m_IsBot;
 	pThis->m_aClients[ClientID].m_Quitting = true;
 
 	char aAddrStr[NETADDR_MAXSTRSIZE];
@@ -1231,7 +1232,10 @@ int CServer::DelClientCallback(int ClientID, int Type, const char *pReason, void
 #endif
 	pThis->m_aClients[ClientID].m_LogInstance = -1;
 	pThis->m_aClients[ClientID].m_Quitting = false;
-	
+
+	if(isBot)
+		return 0;
+
 	//Keep information about client for 10 minutes
 	pThis->m_NetSession.AddSession(pThis->m_NetServer.ClientAddr(ClientID), 10*60, &pThis->m_aClients[ClientID].m_Session);
 	dbg_msg("infclass", "session created for the client %d", ClientID);
