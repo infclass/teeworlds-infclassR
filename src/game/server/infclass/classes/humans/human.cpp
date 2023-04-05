@@ -234,7 +234,7 @@ void CInfClassHuman::CheckSuperWeaponAccess()
 
 void CInfClassHuman::OnPlayerSnap(int SnappingClient, int InfClassVersion)
 {
-	if(InfClassVersion < VERSION_INFC_CLASS_INFO1)
+	if(InfClassVersion < VERSION_INFC_140)
 	{
 		// CNetObj_InfClassClassInfo introduced in v0.1.4
 		return;
@@ -1293,7 +1293,7 @@ void CInfClassHuman::BroadcastWeaponState() const
 				);
 			}
 		}
-		else if(CoolDown > 0 && (ClientVersion < 140)) // 140 introduces native timers for Hero
+		else if(CoolDown > 0 && (ClientVersion < VERSION_INFC_140)) // 140 introduces native timers for Hero
 		{
 			int Seconds = 1 + CoolDown / Server()->TickSpeed();
 			GameServer()->SendBroadcast_Localization(GetPlayer()->GetCID(),

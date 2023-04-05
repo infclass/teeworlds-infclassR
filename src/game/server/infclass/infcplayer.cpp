@@ -646,7 +646,7 @@ void CInfClassPlayer::HandleAutoRespawn()
 	int InfClassVersion = Server()->GetClientInfclassVersion(m_ClientID);
 
 	float AutoSpawnInterval = 3;
-	if((InfClassVersion >= VERSION_INFC_FORCED_SPEC) && IsForcedToSpectate())
+	if(IsForcedToSpectate())
 		AutoSpawnInterval = 5;
 
 	if(!m_pCharacter && m_DieTick+Server()->TickSpeed() * AutoSpawnInterval <= Server()->Tick())

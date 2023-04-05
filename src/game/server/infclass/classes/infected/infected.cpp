@@ -198,7 +198,7 @@ int CInfClassInfected::GetJumps() const
 
 void CInfClassInfected::OnPlayerSnap(int SnappingClient, int InfClassVersion)
 {
-	if(InfClassVersion < VERSION_INFC_DDNET_CHARACTER)
+	if(InfClassVersion < VERSION_INFC_160)
 	{
 		// Ghost visibility supported since v0.1.6
 		return;
