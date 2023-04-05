@@ -261,6 +261,30 @@ void CInfClassHuman::OnPlayerSnap(int SnappingClient, int InfClassVersion)
 				pClassInfo->m_Data1 = -1;
 			}
 			break;
+		case PLAYERCLASS_ENGINEER:
+			for(TEntityPtr<CEngineerWall> pWall = GameWorld()->FindFirst<CEngineerWall>(); pWall; ++pWall)
+			{
+				if(pWall->GetOwner() != GetCID())
+				{
+					continue;
+				}
+
+				pClassInfo->m_Data1 = pWall->GetEndTick();
+				break;
+			}
+			break;
+		case PLAYERCLASS_LOOPER:
+			for(TEntityPtr<CLooperWall> pWall = GameWorld()->FindFirst<CLooperWall>(); pWall; ++pWall)
+			{
+				if(pWall->GetOwner() != GetCID())
+				{
+					continue;
+				}
+
+				pClassInfo->m_Data1 = pWall->GetEndTick();
+				break;
+			}
+			break;
 		default:
 			break;
 		}
@@ -964,7 +988,10 @@ void CInfClassHuman::BroadcastWeaponState() const
 
 	if(GetPlayerClass() == PLAYERCLASS_ENGINEER)
 	{
-		CEngineerWall* pCurrentWall = NULL;
+		if(ClientVersion >= VERSION_INFC_160)
+			return;
+
+		CEngineerWall *pCurrentWall = NULL;
 		for(CEngineerWall *pWall = (CEngineerWall*) GameWorld()->FindFirst(CGameWorld::ENTTYPE_ENGINEER_WALL); pWall; pWall = (CEngineerWall*) pWall->TypeNext())
 		{
 			if(pWall->GetOwner() == m_pPlayer->GetCID())
@@ -1017,6 +1044,9 @@ void CInfClassHuman::BroadcastWeaponState() const
 	}
 	else if(GetPlayerClass() == PLAYERCLASS_LOOPER)
 	{
+		if(ClientVersion >= VERSION_INFC_160)
+			return;
+
 		//Potential variable name conflict with engineerwall with pCurrentWall
 		CLooperWall* pCurrentWall = NULL;
 		for(CLooperWall *pWall = (CLooperWall*) GameWorld()->FindFirst(CGameWorld::ENTTYPE_LOOPER_WALL); pWall; pWall = (CLooperWall*) pWall->TypeNext())
