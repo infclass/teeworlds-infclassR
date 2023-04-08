@@ -12,7 +12,7 @@
 		"value": "Ein Wissenschaftler, der dem T\u00f6ten gewidmet ist, kann ein wei\u00dfes Loch bekommen, welches mit dem Lasergewehr platziert werden kann und dann Erkrankte in das Loch saugt"
 	},
 	{
-		"key": "A random class will be automatically attributed to you when rounds start",
+		"key": "A random class will be automatically attributed to you when round starts",
 		"value": "Dir wird ab jetzt eine zuf\u00e4llige Klasse am Anfange jeder Runde zugewiesen"
 	},
 	{
@@ -90,6 +90,10 @@
 	{
 		"key": "Choose your class",
 		"value": "W\u00e4hle deine Klasse"
+	},
+	{
+		"key": "Class {str:ClassName} will be automatically attributed to you when round starts",
+		"value": "Dir wird ab jetzt eine zuf\u00e4llige Klasse am Anfange jeder Runde zugewiesen"
 	},
 	{
 		"key": "Create an account on Crowdin and join the translation team:",
@@ -684,7 +688,7 @@
 		"value": "Das Klassenlimit ist \u00fcberschritten"
 	},
 	{
-		"key": "The class selector will be displayed when rounds start",
+		"key": "The class selector will be displayed when round starts",
 		"value": "Du kannst wieder eine Klasse am Anfang jeder Runde w\u00e4hlen"
 	},
 	{

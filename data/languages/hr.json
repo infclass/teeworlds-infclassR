@@ -4,7 +4,7 @@
 		"value": "10 sekundi poslije, dva igra\u010da postanu zara\u017eena."
 	},
 	{
-		"key": "A random class will be automatically attributed to you when rounds start",
+		"key": "A random class will be automatically attributed to you when round starts",
 		"value": "Nasumi\u010dna klasa \u0107e ti biti dodijeljena kada zapo\u010dne runda"
 	},
 	{
@@ -12,7 +12,7 @@
 		"value": "Svi ljudi zahva\u0107eni eksplozijom postanu zara\u017eeni."
 	},
 	{
-		"key": "All players start as human.",
+		"key": "All players start as a human.",
 		"value": "Svi igra\u010di zapo\u010dinju kao ljudi."
 	},
 	{
@@ -22,10 +22,6 @@
 	{
 		"key": "An error occured during the operation.",
 		"value": "Pojavila se gre\u0161ka prilikom operacije."
-	},
-	{
-		"key": "Any human that touch a hook in web mode is automatically grabbed.",
-		"value": "Kada \u010dovjek dotakne mre\u017eu, ona ga automatski dohvati."
 	},
 	{
 		"key": "Available help pages: {str:PageList}",
@@ -40,8 +36,8 @@
 		"value": "Zasnovano na konceptu Infection mod od Gravity"
 	},
 	{
-		"key": "Bat can jump multiple times in air.",
-		"value": "Mo\u017ee sko\u010diti dva puta u zrak."
+		"key": "Bat can jump endlessly in the air but it cannot infect humans.",
+		"value": "Cilj za zara\u017eene je zaraziti sve ljude."
 	},
 	{
 		"key": "Biologist",
@@ -68,7 +64,11 @@
 		"value": "Izaberi svoju klasu"
 	},
 	{
-		"key": "Create an account on Crowdin and join a translation team:",
+		"key": "Class {str:ClassName} will be automatically attributed to you when round starts",
+		"value": "Nasumi\u010dna klasa \u0107e ti biti dodijeljena kada zapo\u010dne runda"
+	},
+	{
+		"key": "Create an account on Crowdin and join the translation team:",
 		"value": "Napravi ra\u010dun na Crowdin-u i pridru\u017ei se timu prevoditelja:"
 	},
 	{
@@ -98,10 +98,6 @@
 		"value": "Podru\u010dje eksplozije: {percent:BombLevel}"
 	},
 	{
-		"key": "For any question about the translation process, please contact us on IRC ({str:IRCAddress})",
-		"value": "Za pitanja o procesu prevo\u0111enja, molimo da nas kontaktirate na IRC ({str:IRCAddress})"
-	},
-	{
 		"key": "Ghost",
 		"value": "Duh"
 	},
@@ -114,6 +110,10 @@
 		"value": "Zloduh"
 	},
 	{
+		"key": "Ghoul can infect humans and heal the infected with the hammer.",
+		"value": "Zloduh mo\u017ee zara\u017eavati ljude i lije\u010diti zara\u017eene svojim \u010deki\u0107em."
+	},
+	{
 		"key": "Ghouls",
 		"value": "Zloduh"
 	},
@@ -122,30 +122,12 @@
 		"value": "Ograni\u010denje granate pove\u0107ano"
 	},
 	{
-		"key": "He can also inflict 1 damage point per second by hooking humans.",
-		"value": "Mo\u017ee nanijeti 1 \u0161kodan bod po sekundi kada huka ljude."
-	},
-	{
-		"key": "He can jump two times in air.",
-		"value": "Mo\u017ee sko\u010diti dva puta u zrak."
-	},
-	{
-		"key": "He can make the ground and walls toxic by spreading slime with the hammer.",
-		"value": "On mo\u017ee prekriti pod i zidove otrovnom sluzi svojim \u010deki\u0107em."
-	},
-	{
 		"key": "Hero",
 		"value": "Heroj"
 	},
 	{
 		"key": "Heroes",
 		"value": "Heroj"
-	},
-	{
-		"key": "His hammer is replaced by a katana, allowing him to jump {int:NinjaJump} times before touching the ground.",
-		"one": "Njegov \u010deki\u0107 je zamijenjen katanom, mo\u017ee sko\u010diti jedan put prije nego padne.",
-		"few": "Njegov \u010deki\u0107 je zamijenjen katanom, mo\u017ee sko\u010diti {int:NinjaJump} puta prije nego padne.",
-		"other": "Njegov \u010deki\u0107 je zamijenjen katanom, mo\u017ee sko\u010diti {int:NinjaJump} puta prije nego padne.",
 	},
 	{
 		"key": "Hook protection disabled",
@@ -176,7 +158,7 @@
 		"value": "Ako ga zara\u017eeni izlije\u010di, odledit \u0107e se."
 	},
 	{
-		"key": "If the Witch dies, it disappears and is replaced by another class of infected.",
+		"key": "If the Witch dies, it disappears and is replaced by another class.",
 		"value": "Ako Vje\u0161tica umre, ona nestaje i zamijenjena je drugom klasom zara\u017eenih."
 	},
 	{
@@ -184,11 +166,19 @@
 		"value": "Ako tvoj jezik nije dostupan, mo\u017ee\u0161 nam pomo\u0107i sa prijevodom (/help translate)."
 	},
 	{
+		"key": "In both modes the hook inflicts 1 damage point per second and can grab a human for longer.",
+		"value": "Paukov huk (u oba moda) nanosi 1 damage bod po sekundi i mo\u017ee dr\u017eati \u010dovjeka 2 sekunde."
+	},
+	{
 		"key": "Infected won the round in {sec:RoundDuration}",
 		"value": "Zara\u017eeni su pobijedili ovu rundu za {sec:RoundDuration}"
 	},
 	{
-		"key": "InfectionClass is a team game between humans and infected.",
+		"key": "Infection is coming in {sec:RemainingTime}",
+		"value": "Idu\u0107a zastava u {sec:RemainingTime}"
+	},
+	{
+		"key": "InfectionClass is a team game between humans and the infected.",
 		"value": "InfectionClass je timska igra izme\u0111u ljudi i zara\u017eenih."
 	},
 	{
@@ -196,20 +186,52 @@
 		"value": "InfectionClass, napravio necropotame (verzija {str:VersionCode})"
 	},
 	{
-		"key": "Instead of dying, it freezes for 10 seconds.",
-		"value": "Umjesto da umre, on se zaledi na 10 sekundi."
+		"key": "It can also infect humans and heal the infected with the hammer.",
+		"value": "Duh mo\u017ee zaraziti ljude i lije\u010diti zara\u017eene svojim \u010deki\u0107em."
+	},
+	{
+		"key": "It can also inflict 1 damage point per second by hooking humans, which sucks their blood, restoring the Bat's health.",
+		"value": "Mo\u017ee nanijeti 1 \u0161kodan bod po sekundi kada huka ljude."
 	},
 	{
 		"key": "It can also inflict 1 damage point per second by hooking humans.",
 		"value": "Mo\u017ee nanijeti 1 \u0161kodan bod po sekundi kada huka ljude."
 	},
 	{
-		"key": "It can devour anything that has died nearby, which makes it stronger, faster and more resistant.",
-		"value": "On mo\u017ee izjesti sve \u0161to je umrlo blizu njega, \u0161to ga \u010dini sna\u017enijim, br\u017eim i otpornijim."
+		"key": "It can also inflict 1 damage point per second by hooking humans.",
+		"value": "Mo\u017ee nanijeti 1 \u0161kodan bod po sekundi kada huka ljude."
 	},
 	{
-		"key": "It is invisible, unless a human is nearby, it takes damage, or it uses the hammer.",
-		"value": "Nevidljiv je, osim ako je \u010dovjek blizu, ako primi udarac ili ako koristi \u010deki\u0107."
+		"key": "It can also inflict 1 damage point per second by hooking humans.",
+		"value": "Mo\u017ee nanijeti 1 \u0161kodan bod po sekundi kada huka ljude."
+	},
+	{
+		"key": "It can also inflict 1 damage point per second by hooking humans.",
+		"value": "Mo\u017ee nanijeti 1 \u0161kodan bod po sekundi kada huka ljude."
+	},
+	{
+		"key": "It can also inflict 1 damage point per second by hooking humans.",
+		"value": "Mo\u017ee nanijeti 1 \u0161kodan bod po sekundi kada huka ljude."
+	},
+	{
+		"key": "It can also inflict 1 damage point per second by hooking humans.",
+		"value": "Mo\u017ee nanijeti 1 \u0161kodan bod po sekundi kada huka ljude."
+	},
+	{
+		"key": "It can also inflict 1 damage point per second by hooking humans.",
+		"value": "Mo\u017ee nanijeti 1 \u0161kodan bod po sekundi kada huka ljude."
+	},
+	{
+		"key": "It can also inflict 1 damage point per second by hooking humans.",
+		"value": "Mo\u017ee nanijeti 1 \u0161kodan bod po sekundi kada huka ljude."
+	},
+	{
+		"key": "It can infect humans and heal the infected with the hammer.",
+		"value": "Duh mo\u017ee zaraziti ljude i lije\u010diti zara\u017eene svojim \u010deki\u0107em."
+	},
+	{
+		"key": "It can infect humans and heal the infected with the hammer.",
+		"value": "Duh mo\u017ee zaraziti ljude i lije\u010diti zara\u017eene svojim \u010deki\u0107em."
 	},
 	{
 		"key": "Laser wall: {sec:RemainingTime}",
@@ -232,7 +254,7 @@
 		"value": "Lije\u010dnik"
 	},
 	{
-		"key": "Medic also has a powerful shotgun that can knock back infected.",
+		"key": "Medic also has a powerful shotgun that can knock back the infected.",
 		"value": "Ima i sna\u017enu sa\u010dmaru koja odbacuje zara\u017eene."
 	},
 	{
@@ -248,7 +270,7 @@
 		"value": "Pla\u0107enik"
 	},
 	{
-		"key": "Mercenary can also throw poison grenades that each deal {int:NumDamagePoints} damage points.",
+		"key": "Mercenary can also throw poison grenades that deal {int:NumDamagePoints} damage points and prevent the infected from healing.",
 		"one": "Mo\u017ee bacati otrovne granate od kojih svaka dijeli {int:NumDamagePoints} bod \u0161tete.",
 		"few": "Mo\u017ee bacati otrovne granate od kojih svaka dijeli {int:NumDamagePoints} boda \u0161tete.",
 		"other": "Mo\u017ee bacati otrovne granate od kojih svaka dijeli {int:NumDamagePoints} bodova \u0161tete.",
@@ -324,7 +346,7 @@
 		"value": "Nasumi\u010dan izbor"
 	},
 	{
-		"key": "Receive it by killing at least {int:NumKills} zombies as scientist.",
+		"key": "Receive it by killing at least {int:NumKills} of the infected as a Scientist.",
 		"one": "",
 		"few": "",
 		"other": "",
@@ -332,6 +354,10 @@
 	{
 		"key": "Rules of the game",
 		"value": "Pravila igre"
+	},
+	{
+		"key": "Santa {str:PlayerName} has arrived!",
+		"value": "{str:PlayerName} je iza\u0161ao iz igre"
 	},
 	{
 		"key": "Scientist",
@@ -348,6 +374,10 @@
 	{
 		"key": "Slug",
 		"value": "Pu\u017e"
+	},
+	{
+		"key": "Slug can infect humans and heal the infected with the hammer.",
+		"value": "Pu\u017e mo\u017ee zara\u017eavati ljude i lije\u010diti zara\u017eene sa svojim \u010deki\u0107em."
 	},
 	{
 		"key": "Slugs",
@@ -370,16 +400,16 @@
 		"value": "Snajper"
 	},
 	{
-		"key": "Snipers can jump two times in air.",
-		"value": "Mo\u017ee sko\u010diti dva puta u zrak."
-	},
-	{
 		"key": "Soldier",
 		"value": "Vojnik"
 	},
 	{
 		"key": "Soldiers",
 		"value": "Vojnik"
+	},
+	{
+		"key": "Someone was infected to balance the game.",
+		"value": "Kada zara\u017eeni dotakne zid, on umre."
 	},
 	{
 		"key": "Spider",
@@ -422,10 +452,6 @@
 		"value": "Zahvaljuju\u0107i {str:ListOfContributors}"
 	},
 	{
-		"key": "The Bat can heal infected with the hammer, but cannot infect humans",
-		"value": "Cilj za zara\u017eene je zaraziti sve ljude."
-	},
-	{
 		"key": "The Biologist has a shotgun with bouncing bullets and can create a spring laser trap by shooting with the laser rifle.",
 		"value": "Biolog ima sa\u010dmaru sa mecima koji odska\u010du od zidova i mo\u017ee stvoriti lasersku zamku uz pomo\u0107 svoje laserske pu\u0161ke."
 	},
@@ -434,16 +460,16 @@
 		"value": "Bumer eksplodira kada napadne."
 	},
 	{
-		"key": "The Engineer can build walls with the hammer to block infected.",
+		"key": "The Engineer can build walls with the hammer to block the infected.",
 		"value": "In\u017eenjer mo\u017ee raditi zidove sa \u010deki\u0107em."
 	},
 	{
-		"key": "The Ghost can infect humans and heal infected with the hammer.",
-		"value": "Duh mo\u017ee zaraziti ljude i lije\u010diti zara\u017eene svojim \u010deki\u0107em."
+		"key": "The Ghost is invisible until a human comes nearby, it takes damage, or it uses the hammer.",
+		"value": "Nevidljiv je, osim ako je \u010dovjek blizu, ako primi udarac ili ako koristi \u010deki\u0107."
 	},
 	{
-		"key": "The Ghoul can infect humans and heal infected with the hammer.",
-		"value": "Zloduh mo\u017ee zara\u017eavati ljude i lije\u010diti zara\u017eene svojim \u010deki\u0107em."
+		"key": "The Ghoul can devour anything that has died nearby, which makes it stronger, faster and more resistant.",
+		"value": "On mo\u017ee izjesti sve \u0161to je umrlo blizu njega, \u0161to ga \u010dini sna\u017enijim, br\u017eim i otpornijim."
 	},
 	{
 		"key": "The Hero cannot be healed by a Medic, but it can withstand a hit from an infected.",
@@ -454,19 +480,15 @@
 		"value": "Heroj je na\u0161ao zastavu!"
 	},
 	{
-		"key": "The Hero has a shotgun, a laser rifle, and a grenade launcher.",
-		"value": "Heroj ima sa\u010dmaru, lasersku pu\u0161ku i granate."
-	},
-	{
-		"key": "The Hunter can infect humans and heal infected with the hammer.",
-		"value": "Lovac mo\u017ee zaraziti ljude i lije\u010diti zara\u017eene svojim \u010deki\u0107em."
-	},
-	{
 		"key": "The Medic can protect humans with the hammer by giving them armor.",
 		"value": "Lije\u010dnik mo\u017ee dati ljudima oklop."
 	},
 	{
-		"key": "The Ninja can throw flash grenades that can freeze infected during three seconds.",
+		"key": "The Mercenary can fly in the air using their machine gun.",
+		"value": "Pla\u0107enik leti zrakom koriste\u0107i se machine gunom."
+	},
+	{
+		"key": "The Ninja can throw flash grenades that can freeze the infected for three seconds.",
 		"value": "Nind\u017ea mo\u017ee bacati flash granate koje zalede zara\u017eene na tri sekunde."
 	},
 	{
@@ -474,15 +496,11 @@
 		"value": "Znanstvenik mo\u017ee postaviti ledbe\u0107e mine sa \u010deki\u0107em."
 	},
 	{
-		"key": "The Slug can infect humans and heal infected with the hammer.",
-		"value": "Pu\u017e mo\u017ee zara\u017eavati ljude i lije\u010diti zara\u017eene sa svojim \u010deki\u0107em."
+		"key": "The Slug can make the ground and walls toxic by spreading slime with the hammer.",
+		"value": "On mo\u017ee prekriti pod i zidove otrovnom sluzi svojim \u010deki\u0107em."
 	},
 	{
-		"key": "The Smoker can infect humans and heal infected with the hammer.",
-		"value": "Pu\u0161a\u010d mo\u017ee zaraziti ljude i lije\u010diti zara\u017eene svojim \u010deki\u0107em."
-	},
-	{
-		"key": "The Sniper can lock the position in air for 15 seconds with the hammer.",
+		"key": "The Sniper can lock the position in mid-air for 15 seconds with the hammer.",
 		"value": "Snajper mo\u017ee zaklju\u010dati svoju poziciju u zraku na 15 sekundi koriste\u0107i se \u010deki\u0107em."
 	},
 	{
@@ -490,40 +508,24 @@
 		"value": "Vojnik mo\u017ee postavljati lebde\u0107e bombe sa \u010deki\u0107em."
 	},
 	{
-		"key": "The Spider can infect humans and heal infected with the hammer.",
-		"value": "Pauk mo\u017ee zaraziti ljude i lije\u010diti zara\u017eene svojim \u010deki\u0107em."
-	},
-	{
-		"key": "The Undead can infect humans and heal infected with the hammer.",
-		"value": "Undead mo\u017ee zaraziti ljude i lije\u010diti zara\u017eene svojim \u010deki\u0107em."
-	},
-	{
-		"key": "The Voodoo can infect humans and heal infected with the hammer.",
-		"value": "Duh mo\u017ee zaraziti ljude i lije\u010diti zara\u017eene svojim \u010deki\u0107em."
-	},
-	{
-		"key": "The Witch can infect humans and heal infected with the hammer.",
-		"value": "Vje\u0161tica mo\u017ee zaraziti ljude i lije\u010diti zara\u017eene svojim \u010deki\u0107em."
+		"key": "The Undead cannot die. Instead of dying, it gets frozen for 10 seconds.",
+		"value": "Umjesto da umre, on se zaledi na 10 sekundi."
 	},
 	{
 		"key": "The class is disabled",
 		"value": "Vje\u0161tica je mrtva"
 	},
 	{
-		"key": "The class selector will be displayed when rounds start",
+		"key": "The class selector will be displayed when round starts",
 		"value": "Selektor za klase \u0107e ti se prikazati kada runda zapo\u010dne"
 	},
 	{
-		"key": "The goal for humans is to survive until the army cleans the map.",
+		"key": "The goal for the humans is to survive until the army cleans the map.",
 		"value": "Cilj za ljude je pre\u017eivjeti sve dok vojska ne o\u010disti mapu."
 	},
 	{
-		"key": "The goal for infected is to infect all humans.",
+		"key": "The goal for the infected is to infect all humans.",
 		"value": "Cilj za zara\u017eene je zaraziti sve ljude."
-	},
-	{
-		"key": "The hook of the spider (in both mode) deal 1 damage point per second and can grab a human during 2 seconds.",
-		"value": "Paukov huk (u oba moda) nanosi 1 damage bod po sekundi i mo\u017ee dr\u017eati \u010dovjeka 2 sekunde."
 	},
 	{
 		"key": "The lifespan of a wall is {sec:LifeSpan}, and walls are limited to one per player at the same time.",
@@ -538,20 +540,30 @@
 		"value": "Vje\u0161tica je mrtva"
 	},
 	{
-		"key": "They also have a powerful rifle that deals 20 damage points in locked position, and 10\u201313 otherwise.",
-		"value": "Ima i sna\u017enu pu\u0161ku koja dijeli 30 \u0161kodnih bodova u zaklju\u010danoj poziciji, a 10\u201313 bodova ina\u010de."
+		"key": "Their hammer is replaced with a katana, allowing them to dash {int:NinjaJump} times before touching the ground.",
+		"one": "Njegov \u010deki\u0107 je zamijenjen katanom, mo\u017ee sko\u010diti jedan put prije nego padne.",
+		"few": "Njegov \u010deki\u0107 je zamijenjen katanom, mo\u017ee sko\u010diti {int:NinjaJump} puta prije nego padne.",
+		"other": "Njegov \u010deki\u0107 je zamijenjen katanom, mo\u017ee sko\u010diti {int:NinjaJump} puta prije nego padne.",
 	},
 	{
-		"key": "They can create powerful bombs with their hammer.",
+		"key": "They can also create a powerful bomb with their hammer that can be charged by hitting it or with a laser rifle.",
 		"value": "Vojnik mo\u017ee postavljati lebde\u0107e bombe sa \u010deki\u0107em."
+	},
+	{
+		"key": "They can also jump two times in the air.",
+		"value": "Mo\u017ee sko\u010diti dva puta u zrak."
+	},
+	{
+		"key": "They can also jump two times in the air.",
+		"value": "Mo\u017ee sko\u010diti dva puta u zrak."
 	},
 	{
 		"key": "This username is already taken by an existing account",
 		"value": "Korisni\u010dko ime je ve\u0107 zauzeto"
 	},
 	{
-		"key": "Touching the slime inflicts three damage points in three seconds on a human.",
-		"value": "Dodirivanje sluzi daje ljudima tri poena \u0161tete za tri sekunde."
+		"key": "Too few infected to call the Santa",
+		"value": "Cilj za zara\u017eene je zaraziti sve ljude."
 	},
 	{
 		"key": "Type \u201c/help {str:ClassName}\u201d for more information about your class",
@@ -560,6 +572,10 @@
 	{
 		"key": "Undead",
 		"value": "Undead"
+	},
+	{
+		"key": "Undead can infect humans and heal the infected with the hammer.",
+		"value": "Undead mo\u017ee zaraziti ljude i lije\u010diti zara\u017eene svojim \u010deki\u0107em."
 	},
 	{
 		"key": "Undeads",
@@ -594,28 +610,24 @@
 		"value": "Koristi \u00bb/msg !near\u00ab da bi poslao/poslala privatne poruke svim igra\u010dima blizu tebe."
 	},
 	{
-		"key": "Use \u201c/msg <PlayerName> <My Message>\u201d to send a private message to this player.",
+		"key": "Use \u201c/mute <PlayerName>\u201d to mute this player.",
 		"value": "Koristi \u00bb/msg <korisnik> <poruka moja>\u00ab da bi slao/slala privatne poruke."
 	},
 	{
-		"key": "Use \u201c/mute <PlayerName>\u201d to mute this player.",
+		"key": "Use \u201c/w <PlayerName> <My Message>\u201d to send a private message to this player.",
 		"value": "Koristi \u00bb/msg <korisnik> <poruka moja>\u00ab da bi slao/slala privatne poruke."
+	},
+	{
+		"key": "Voodoo can infect humans and heal the infected with the hammer.",
+		"value": "Duh mo\u017ee zaraziti ljude i lije\u010diti zara\u017eene svojim \u010deki\u0107em."
 	},
 	{
 		"key": "Web mode enabled",
 		"value": "Mre\u017ea uklju\u010dena"
 	},
 	{
-		"key": "When an infected dies, it may respawn near the Witch.",
-		"value": "Kada zara\u017eeni umre, ponovo \u0107e se stvoriti kod nje."
-	},
-	{
 		"key": "When an infected touches the wall, it dies.",
 		"value": "Kada zara\u017eeni dotakne zid, on umre."
-	},
-	{
-		"key": "When selecting any gun, the hook enter in web mode.",
-		"value": "Kada izdvaja neko oru\u017eje, njegov huk prelazi u mre\u017eu."
 	},
 	{
 		"key": "White hole: {sec:RemainingTime}",
@@ -624,6 +636,14 @@
 	{
 		"key": "Witch",
 		"value": "Vje\u0161tica"
+	},
+	{
+		"key": "Witch can infect humans and heal the infected with the hammer.",
+		"value": "Vje\u0161tica mo\u017ee zaraziti ljude i lije\u010diti zara\u017eene svojim \u010deki\u0107em."
+	},
+	{
+		"key": "Witch {str:PlayerName} has arrived!",
+		"value": "{str:PlayerName} je iza\u0161ao iz igre"
 	},
 	{
 		"key": "Witches",
@@ -640,6 +660,10 @@
 	{
 		"key": "You are an infected: {str:ClassName}",
 		"value": "Ti si zara\u017een: {str:ClassName}"
+	},
+	{
+		"key": "You are blinded: {sec:EffectDuration}",
+		"value": "Ti si zamrznut: {sec:EffectDuration}"
 	},
 	{
 		"key": "You are frozen: {sec:EffectDuration}",
@@ -670,6 +694,10 @@
 		"value": "Ti si zara\u017een: {str:ClassName}"
 	},
 	{
+		"key": "You have called the Santa once again",
+		"value": "Ubio si vje\u0161ticu, +5 bodova"
+	},
+	{
 		"key": "You have eliminated your target, +2 points",
 		"value": "Eliminisali ste metu, +2 poena"
 	},
@@ -698,6 +726,12 @@
 		"value": "Pre\u017eivio si, +5 bodova"
 	},
 	{
+		"key": "You have {int:NumTurrets} turrets available, use the Hammer to place it",
+		"one": "",
+		"few": "",
+		"other": "",
+	},
+	{
 		"key": "You must be logged for this operation",
 		"value": "Morate biti ulogovani za ovu operaciju"
 	},
@@ -718,8 +752,8 @@
 		"value": "Va\u0161 nalog je napravljen i sada ste ulogirani."
 	},
 	{
-		"key": "he Mercenary can fly in the air using their machine gun.",
-		"value": "Pla\u0107enik leti zrakom koriste\u0107i se machine gunom."
+		"key": "{str:PlayerName} changed the class to {str:ClassName}",
+		"value": "{str:PlayerName} je promijenio svoje ime u {str:NewName}"
 	},
 	{
 		"key": "{str:PlayerName} changed their name to {str:NewName}",
@@ -736,6 +770,10 @@
 	{
 		"key": "{str:PlayerName} has been kicked ({str:Reason})",
 		"value": "{str:PlayerName} je izba\u010den sa servera ({str:Reason})"
+	},
+	{
+		"key": "{str:PlayerName} has destroyed your turret!",
+		"value": "{str:PlayerName} je iza\u0161ao iz igre"
 	},
 	{
 		"key": "{str:PlayerName} has left the game",
@@ -770,8 +808,24 @@
 		"value": "{str:Victim} je mutirao za {sec:Duration} ({str:Reason})"
 	},
 	{
+		"key": "Any human that touch a hook in web mode is automatically grabbed.",
+		"value": "Kada \u010dovjek dotakne mre\u017eu, ona ga automatski dohvati."
+	},
+	{
+		"key": "Bat can jump multiple times in air.",
+		"value": "Mo\u017ee sko\u010diti dva puta u zrak."
+	},
+	{
 		"key": "Bombs are limited to one per player at the same time.",
 		"value": "Bombe su ograni\u010dene na jednog igra\u010da u isto vrijeme."
+	},
+	{
+		"key": "For any question about the translation process, please contact us on IRC ({str:IRCAddress})",
+		"value": "Za pitanja o procesu prevo\u0111enja, molimo da nas kontaktirate na IRC ({str:IRCAddress})"
+	},
+	{
+		"key": "He can also inflict 1 damage point per second by hooking humans.",
+		"value": "Mo\u017ee nanijeti 1 \u0161kodan bod po sekundi kada huka ljude."
 	},
 	{
 		"key": "He can also inflict 4 damage points per second by hooking humans.",
@@ -790,12 +844,48 @@
 		"value": "Mo\u017ee nanijeti 1 \u0161kodan bod po sekundi kada huka ljude."
 	},
 	{
+		"key": "Snipers can jump two times in air.",
+		"value": "Mo\u017ee sko\u010diti dva puta u zrak."
+	},
+	{
+		"key": "The Hero has a shotgun, a laser rifle, and a grenade launcher.",
+		"value": "Heroj ima sa\u010dmaru, lasersku pu\u0161ku i granate."
+	},
+	{
 		"key": "The Hero must find a flag hidden in the map.",
 		"value": "Heroj mora na\u0107i zastavu skrivenu u mapi."
 	},
 	{
+		"key": "The Hunter can infect humans and heal infected with the hammer.",
+		"value": "Lovac mo\u017ee zaraziti ljude i lije\u010diti zara\u017eene svojim \u010deki\u0107em."
+	},
+	{
+		"key": "The Smoker can infect humans and heal infected with the hammer.",
+		"value": "Pu\u0161a\u010d mo\u017ee zaraziti ljude i lije\u010diti zara\u017eene svojim \u010deki\u0107em."
+	},
+	{
+		"key": "The Spider can infect humans and heal infected with the hammer.",
+		"value": "Pauk mo\u017ee zaraziti ljude i lije\u010diti zara\u017eene svojim \u010deki\u0107em."
+	},
+	{
 		"key": "Thereupon he digests his fodder bit by bit going back to his normal state, and besides, death bereaves him of his nourishment.",
 		"value": "Odmah nakon \u0161to svari svoju hranu malo pomalo vra\u0107a u svoje normalno stanje, i osim toga, smrt ucvili njega od svoje hrane."
+	},
+	{
+		"key": "They also have a powerful rifle that deals 20 damage points in locked position, and 10\u201313 otherwise.",
+		"value": "Ima i sna\u017enu pu\u0161ku koja dijeli 30 \u0161kodnih bodova u zaklju\u010danoj poziciji, a 10\u201313 bodova ina\u010de."
+	},
+	{
+		"key": "Touching the slime inflicts three damage points in three seconds on a human.",
+		"value": "Dodirivanje sluzi daje ljudima tri poena \u0161tete za tri sekunde."
+	},
+	{
+		"key": "When an infected dies, it may respawn near the Witch.",
+		"value": "Kada zara\u017eeni umre, ponovo \u0107e se stvoriti kod nje."
+	},
+	{
+		"key": "When selecting any gun, the hook enter in web mode.",
+		"value": "Kada izdvaja neko oru\u017eje, njegov huk prelazi u mre\u017eu."
 	},
 	{
 		"key": "You are now logged.",

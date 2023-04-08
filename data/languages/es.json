@@ -4,7 +4,7 @@
 		"value": "10 segundos despu\u00e9s, dos jugadores son infectados."
 	},
 	{
-		"key": "A random class will be automatically attributed to you when rounds start",
+		"key": "A random class will be automatically attributed to you when round starts",
 		"value": "Una clase aleatoria te ser\u00e1 asignada autom\u00e1ticamente al comenzar la ronda"
 	},
 	{
@@ -12,7 +12,7 @@
 		"value": "Todos los humanos afectados por la explosi\u00f3n son infectados."
 	},
 	{
-		"key": "All players start as human.",
+		"key": "All players start as a human.",
 		"value": "Todos los jugadores comienzan como humanos."
 	},
 	{
@@ -22,10 +22,6 @@
 	{
 		"key": "An error occured during the operation.",
 		"value": "Se produjo un error en el curso de esa operaci\u00f3n."
-	},
-	{
-		"key": "Any human that touch a hook in web mode is automatically grabbed.",
-		"value": "Cualquier humano que toque el gancho en modo telara\u00f1a es autom\u00e1ticamente agarrado."
 	},
 	{
 		"key": "Available help pages: {str:PageList}",
@@ -40,8 +36,8 @@
 		"value": "Basado en el concepto del mod Infection por Gravity"
 	},
 	{
-		"key": "Bat can jump multiple times in air.",
-		"value": "Puede saltar dos veces en el aire."
+		"key": "Bat can jump endlessly in the air but it cannot infect humans.",
+		"value": "El objetivo de los infectados es el de infectar a todos los humanos."
 	},
 	{
 		"key": "Biologist",
@@ -68,7 +64,11 @@
 		"value": "Selecciona tu clase"
 	},
 	{
-		"key": "Create an account on Crowdin and join a translation team:",
+		"key": "Class {str:ClassName} will be automatically attributed to you when round starts",
+		"value": "Una clase aleatoria te ser\u00e1 asignada autom\u00e1ticamente al comenzar la ronda"
+	},
+	{
+		"key": "Create an account on Crowdin and join the translation team:",
 		"value": "Crea una cuenta en Crowdin y te une a un equipo de traducci\u00f3n:"
 	},
 	{
@@ -97,10 +97,6 @@
 		"value": "Potencia explosiva: {percent:BombLevel}"
 	},
 	{
-		"key": "For any question about the translation process, please contact us on IRC ({str:IRCAddress})",
-		"value": "Para cualquier pregunta sobre el procedimiento de traducci\u00f3n, nos contacta por IRC ({str:IRCAddress})"
-	},
-	{
 		"key": "Ghost",
 		"value": "Fantasma"
 	},
@@ -113,6 +109,10 @@
 		"value": "Gul"
 	},
 	{
+		"key": "Ghoul can infect humans and heal the infected with the hammer.",
+		"value": "El Gul puede infectar a humanos y curar a otros infectados con su martillo."
+	},
+	{
 		"key": "Ghouls",
 		"value": "Gul"
 	},
@@ -121,29 +121,12 @@
 		"value": "L\u00edmite de granadas acrecentado"
 	},
 	{
-		"key": "He can also inflict 1 damage point per second by hooking humans.",
-		"value": "Tambi\u00e9n puede infligir 1 punto de da\u00f1o por segundo al enganchar a humanos."
-	},
-	{
-		"key": "He can jump two times in air.",
-		"value": "Puede saltar dos veces en el aire."
-	},
-	{
-		"key": "He can make the ground and walls toxic by spreading slime with the hammer.",
-		"value": "Puede hacer da\u00f1ino el suelo y las paredes difundiendo limo con su martillo."
-	},
-	{
 		"key": "Hero",
 		"value": "H\u00e9roe"
 	},
 	{
 		"key": "Heroes",
 		"value": "H\u00e9roe"
-	},
-	{
-		"key": "His hammer is replaced by a katana, allowing him to jump {int:NinjaJump} times before touching the ground.",
-		"one": "Su martillo ha sido reemplazado por una katana, permiti\u00e9ndole saltar una vez antes de tocar el suelo.",
-		"other": "Su martillo ha sido reemplazado por una katana, permiti\u00e9ndole saltar {int:NinjaJump} veces antes de tocar el suelo.",
 	},
 	{
 		"key": "Hook protection disabled",
@@ -174,7 +157,7 @@
 		"value": "Si un infectado lo cura, el efecto de congelaci\u00f3n desaparece."
 	},
 	{
-		"key": "If the Witch dies, it disappears and is replaced by another class of infected.",
+		"key": "If the Witch dies, it disappears and is replaced by another class.",
 		"value": "Si la Bruja muere, esta desaparece y es reemplazada por otra clase de infectado."
 	},
 	{
@@ -182,11 +165,19 @@
 		"value": "Si tu idioma no es disponible, puedes ayudar traduciendo (/help translate)."
 	},
 	{
+		"key": "In both modes the hook inflicts 1 damage point per second and can grab a human for longer.",
+		"value": "El gancho de la ara\u00f1a (en ambos modos) inflinge 1 punto de da\u00f1o por segundo y puede agarrar a un humano durante 2 segundos."
+	},
+	{
 		"key": "Infected won the round in {sec:RoundDuration}",
 		"value": "Los infectados han ganado la ronda en {sec:RoundDuration}"
 	},
 	{
-		"key": "InfectionClass is a team game between humans and infected.",
+		"key": "Infection is coming in {sec:RemainingTime}",
+		"value": "Bandera siguiente en {sec:RemainingTime}"
+	},
+	{
+		"key": "InfectionClass is a team game between humans and the infected.",
 		"value": "InfectionClass es un juego de equipos entre humanos e infectados."
 	},
 	{
@@ -194,20 +185,52 @@
 		"value": "InfectionClass, por necropotame (versi\u00f3n {str:VersionCode})"
 	},
 	{
-		"key": "Instead of dying, it freezes for 10 seconds.",
-		"value": "En vez de morir, se queda congelado 10 segundos."
+		"key": "It can also infect humans and heal the infected with the hammer.",
+		"value": "El Fantasma puede infectar a humanos y curar a otros infectados con su martillo."
+	},
+	{
+		"key": "It can also inflict 1 damage point per second by hooking humans, which sucks their blood, restoring the Bat's health.",
+		"value": "Tambi\u00e9n puede infligir 1 punto de da\u00f1o por segundo al enganchar a humanos."
 	},
 	{
 		"key": "It can also inflict 1 damage point per second by hooking humans.",
 		"value": "Tambi\u00e9n puede infligir 1 punto de da\u00f1o por segundo al enganchar a humanos."
 	},
 	{
-		"key": "It can devour anything that has died nearby, which makes it stronger, faster and more resistant.",
-		"value": "Puede devorar todo que ha muerto cerca de \u00e9l, lo que lo hace m\u00e1s vigoroso, m\u00e1s r\u00e1pido y m\u00e1s resistente."
+		"key": "It can also inflict 1 damage point per second by hooking humans.",
+		"value": "Tambi\u00e9n puede infligir 1 punto de da\u00f1o por segundo al enganchar a humanos."
 	},
 	{
-		"key": "It is invisible, unless a human is nearby, it takes damage, or it uses the hammer.",
-		"value": "\u00c9l es invisible, excepto si un humano esta cerca de \u00e9l, si le infligen da\u00f1o o si usa su martillo."
+		"key": "It can also inflict 1 damage point per second by hooking humans.",
+		"value": "Tambi\u00e9n puede infligir 1 punto de da\u00f1o por segundo al enganchar a humanos."
+	},
+	{
+		"key": "It can also inflict 1 damage point per second by hooking humans.",
+		"value": "Tambi\u00e9n puede infligir 1 punto de da\u00f1o por segundo al enganchar a humanos."
+	},
+	{
+		"key": "It can also inflict 1 damage point per second by hooking humans.",
+		"value": "Tambi\u00e9n puede infligir 1 punto de da\u00f1o por segundo al enganchar a humanos."
+	},
+	{
+		"key": "It can also inflict 1 damage point per second by hooking humans.",
+		"value": "Tambi\u00e9n puede infligir 1 punto de da\u00f1o por segundo al enganchar a humanos."
+	},
+	{
+		"key": "It can also inflict 1 damage point per second by hooking humans.",
+		"value": "Tambi\u00e9n puede infligir 1 punto de da\u00f1o por segundo al enganchar a humanos."
+	},
+	{
+		"key": "It can also inflict 1 damage point per second by hooking humans.",
+		"value": "Tambi\u00e9n puede infligir 1 punto de da\u00f1o por segundo al enganchar a humanos."
+	},
+	{
+		"key": "It can infect humans and heal the infected with the hammer.",
+		"value": "El Fantasma puede infectar a humanos y curar a otros infectados con su martillo."
+	},
+	{
+		"key": "It can infect humans and heal the infected with the hammer.",
+		"value": "El Fantasma puede infectar a humanos y curar a otros infectados con su martillo."
 	},
 	{
 		"key": "Laser wall: {sec:RemainingTime}",
@@ -230,7 +253,7 @@
 		"value": "M\u00e9dico"
 	},
 	{
-		"key": "Medic also has a powerful shotgun that can knock back infected.",
+		"key": "Medic also has a powerful shotgun that can knock back the infected.",
 		"value": "Tambi\u00e9n posee una poderosa escopeta capaz de hacer retroceder a los infectados."
 	},
 	{
@@ -246,7 +269,7 @@
 		"value": "Mercenario"
 	},
 	{
-		"key": "Mercenary can also throw poison grenades that each deal {int:NumDamagePoints} damage points.",
+		"key": "Mercenary can also throw poison grenades that deal {int:NumDamagePoints} damage points and prevent the infected from healing.",
 		"one": "\u00c9l tambi\u00e9n puede lanzar granadas de ponzo\u00f1a que infligen un punto de da\u00f1o.",
 		"other": "\u00c9l tambi\u00e9n puede lanzar granadas de ponzo\u00f1a que infligen {int:NumDamagePoints} puntos de da\u00f1o.",
 	},
@@ -316,13 +339,17 @@
 		"value": "Elecci\u00f3n aleatoria"
 	},
 	{
-		"key": "Receive it by killing at least {int:NumKills} zombies as scientist.",
+		"key": "Receive it by killing at least {int:NumKills} of the infected as a Scientist.",
 		"one": "",
 		"other": "",
 	},
 	{
 		"key": "Rules of the game",
 		"value": "Reglas del juego"
+	},
+	{
+		"key": "Santa {str:PlayerName} has arrived!",
+		"value": "{str:PlayerName} ha salido del juego"
 	},
 	{
 		"key": "Scientist",
@@ -339,6 +366,10 @@
 	{
 		"key": "Slug",
 		"value": "Limaco"
+	},
+	{
+		"key": "Slug can infect humans and heal the infected with the hammer.",
+		"value": "El Limaco puede infectar a humanos y curar a otros infectados con su martillo."
 	},
 	{
 		"key": "Slugs",
@@ -361,16 +392,16 @@
 		"value": "Francotirador"
 	},
 	{
-		"key": "Snipers can jump two times in air.",
-		"value": "Puede saltar dos veces en el aire."
-	},
-	{
 		"key": "Soldier",
 		"value": "Soldado"
 	},
 	{
 		"key": "Soldiers",
 		"value": "Soldado"
+	},
+	{
+		"key": "Someone was infected to balance the game.",
+		"value": "Cuando un infectado toca la barrera, este muere."
 	},
 	{
 		"key": "Spider",
@@ -413,10 +444,6 @@
 		"value": "Agradecimientos a {str:ListOfContributors}"
 	},
 	{
-		"key": "The Bat can heal infected with the hammer, but cannot infect humans",
-		"value": "El objetivo de los infectados es el de infectar a todos los humanos."
-	},
-	{
 		"key": "The Biologist has a shotgun with bouncing bullets and can create a spring laser trap by shooting with the laser rifle.",
 		"value": "El bi\u00f3logo tiene una escopeta con bolas rebotandas y puede erigir trampas l\u00e1ser con su f\u00fasil."
 	},
@@ -425,16 +452,16 @@
 		"value": "El Boomer explota cuando ataca."
 	},
 	{
-		"key": "The Engineer can build walls with the hammer to block infected.",
+		"key": "The Engineer can build walls with the hammer to block the infected.",
 		"value": "El Ingeniero puede crear barreras con su martillo para bloquear el paso de los infectados."
 	},
 	{
-		"key": "The Ghost can infect humans and heal infected with the hammer.",
-		"value": "El Fantasma puede infectar a humanos y curar a otros infectados con su martillo."
+		"key": "The Ghost is invisible until a human comes nearby, it takes damage, or it uses the hammer.",
+		"value": "\u00c9l es invisible, excepto si un humano esta cerca de \u00e9l, si le infligen da\u00f1o o si usa su martillo."
 	},
 	{
-		"key": "The Ghoul can infect humans and heal infected with the hammer.",
-		"value": "El Gul puede infectar a humanos y curar a otros infectados con su martillo."
+		"key": "The Ghoul can devour anything that has died nearby, which makes it stronger, faster and more resistant.",
+		"value": "Puede devorar todo que ha muerto cerca de \u00e9l, lo que lo hace m\u00e1s vigoroso, m\u00e1s r\u00e1pido y m\u00e1s resistente."
 	},
 	{
 		"key": "The Hero cannot be healed by a Medic, but it can withstand a hit from an infected.",
@@ -445,19 +472,15 @@
 		"value": "\u00a1El h\u00e9roe ha encontrado la bandera!"
 	},
 	{
-		"key": "The Hero has a shotgun, a laser rifle, and a grenade launcher.",
-		"value": "El H\u00e9roe tiene una escopeta, un f\u00fasil laser y granadas."
-	},
-	{
-		"key": "The Hunter can infect humans and heal infected with the hammer.",
-		"value": "El Cazador puede infectar a humanos y curar a otros infectados con su martillo."
-	},
-	{
 		"key": "The Medic can protect humans with the hammer by giving them armor.",
 		"value": "El M\u00e9dico puede proteger a los humanos con su martillo d\u00e1ndoles armadura."
 	},
 	{
-		"key": "The Ninja can throw flash grenades that can freeze infected during three seconds.",
+		"key": "The Mercenary can fly in the air using their machine gun.",
+		"value": "El mercenario vuela usando su metralleta."
+	},
+	{
+		"key": "The Ninja can throw flash grenades that can freeze the infected for three seconds.",
 		"value": "El Ninja puede lanzar granadas destello, las cuales pueden congelar a infectados durante tres segundos."
 	},
 	{
@@ -465,15 +488,11 @@
 		"value": "El cient\u00edfico puede poner minas flotantes con su martillo."
 	},
 	{
-		"key": "The Slug can infect humans and heal infected with the hammer.",
-		"value": "El Limaco puede infectar a humanos y curar a otros infectados con su martillo."
+		"key": "The Slug can make the ground and walls toxic by spreading slime with the hammer.",
+		"value": "Puede hacer da\u00f1ino el suelo y las paredes difundiendo limo con su martillo."
 	},
 	{
-		"key": "The Smoker can infect humans and heal infected with the hammer.",
-		"value": "El Smoker puede infectar a humanos y curar a otros infectados con su martillo."
-	},
-	{
-		"key": "The Sniper can lock the position in air for 15 seconds with the hammer.",
+		"key": "The Sniper can lock the position in mid-air for 15 seconds with the hammer.",
 		"value": "El francotirador puede bloquear su posici\u00f3n en el aire por 15 segundos con su martillo."
 	},
 	{
@@ -481,40 +500,24 @@
 		"value": "El Soldado puede colocar bombas flotantes con su martillo."
 	},
 	{
-		"key": "The Spider can infect humans and heal infected with the hammer.",
-		"value": "La Ara\u00f1a puede infectar a humanos y curar a otros infectados con su martillo."
-	},
-	{
-		"key": "The Undead can infect humans and heal infected with the hammer.",
-		"value": "El Muerto viviente puede infectar a humanos y curar a otros infectados con su martillo."
-	},
-	{
-		"key": "The Voodoo can infect humans and heal infected with the hammer.",
-		"value": "El Fantasma puede infectar a humanos y curar a otros infectados con su martillo."
-	},
-	{
-		"key": "The Witch can infect humans and heal infected with the hammer.",
-		"value": "La Bruja puede infectar a humanos y curar a otros infectados con su martillo."
+		"key": "The Undead cannot die. Instead of dying, it gets frozen for 10 seconds.",
+		"value": "En vez de morir, se queda congelado 10 segundos."
 	},
 	{
 		"key": "The class is disabled",
 		"value": "La bruja ha muerto"
 	},
 	{
-		"key": "The class selector will be displayed when rounds start",
+		"key": "The class selector will be displayed when round starts",
 		"value": "El selector de clases se mostrar\u00e1 al comenzar la ronda"
 	},
 	{
-		"key": "The goal for humans is to survive until the army cleans the map.",
+		"key": "The goal for the humans is to survive until the army cleans the map.",
 		"value": "El objetivo de los humanos es sobrevivir hasta que el ej\u00e9rcito limpie el mapa."
 	},
 	{
-		"key": "The goal for infected is to infect all humans.",
+		"key": "The goal for the infected is to infect all humans.",
 		"value": "El objetivo de los infectados es el de infectar a todos los humanos."
-	},
-	{
-		"key": "The hook of the spider (in both mode) deal 1 damage point per second and can grab a human during 2 seconds.",
-		"value": "El gancho de la ara\u00f1a (en ambos modos) inflinge 1 punto de da\u00f1o por segundo y puede agarrar a un humano durante 2 segundos."
 	},
 	{
 		"key": "The lifespan of a wall is {sec:LifeSpan}, and walls are limited to one per player at the same time.",
@@ -529,20 +532,29 @@
 		"value": "La bruja ha muerto"
 	},
 	{
-		"key": "They also have a powerful rifle that deals 20 damage points in locked position, and 10\u201313 otherwise.",
-		"value": "\u00c9l tiene tambi\u00e9n un rifle potente que inflige 30 puntos de da\u00f1o cuando est\u00e1 bloqueado en una posici\u00f3n y 10\u201313 en otros casos."
+		"key": "Their hammer is replaced with a katana, allowing them to dash {int:NinjaJump} times before touching the ground.",
+		"one": "Su martillo ha sido reemplazado por una katana, permiti\u00e9ndole saltar una vez antes de tocar el suelo.",
+		"other": "Su martillo ha sido reemplazado por una katana, permiti\u00e9ndole saltar {int:NinjaJump} veces antes de tocar el suelo.",
 	},
 	{
-		"key": "They can create powerful bombs with their hammer.",
+		"key": "They can also create a powerful bomb with their hammer that can be charged by hitting it or with a laser rifle.",
 		"value": "El Soldado puede colocar bombas flotantes con su martillo."
+	},
+	{
+		"key": "They can also jump two times in the air.",
+		"value": "Puede saltar dos veces en el aire."
+	},
+	{
+		"key": "They can also jump two times in the air.",
+		"value": "Puede saltar dos veces en el aire."
 	},
 	{
 		"key": "This username is already taken by an existing account",
 		"value": "Este nombre de usuario ya est\u00e1 cogido por una cuenta existente"
 	},
 	{
-		"key": "Touching the slime inflicts three damage points in three seconds on a human.",
-		"value": "Tocar el limo inflige tres puntos de da\u00f1o en tres segundos a un humano."
+		"key": "Too few infected to call the Santa",
+		"value": "El objetivo de los infectados es el de infectar a todos los humanos."
 	},
 	{
 		"key": "Type \u201c/help {str:ClassName}\u201d for more information about your class",
@@ -551,6 +563,10 @@
 	{
 		"key": "Undead",
 		"value": "Muerto viviente"
+	},
+	{
+		"key": "Undead can infect humans and heal the infected with the hammer.",
+		"value": "El Muerto viviente puede infectar a humanos y curar a otros infectados con su martillo."
 	},
 	{
 		"key": "Undeads",
@@ -585,28 +601,24 @@
 		"value": "Usa \u00ab/msg !near\u00bb para hacer llegar un mensaje dirigido a los jugadores en tu proximidad."
 	},
 	{
-		"key": "Use \u201c/msg <PlayerName> <My Message>\u201d to send a private message to this player.",
+		"key": "Use \u201c/mute <PlayerName>\u201d to mute this player.",
 		"value": "Usa \u00ab/msg <Nombre de jugador> <Mi mensaje>\u00bb para hacer llegar un mensaje privado a un jugador espec\u00edfico."
 	},
 	{
-		"key": "Use \u201c/mute <PlayerName>\u201d to mute this player.",
+		"key": "Use \u201c/w <PlayerName> <My Message>\u201d to send a private message to this player.",
 		"value": "Usa \u00ab/msg <Nombre de jugador> <Mi mensaje>\u00bb para hacer llegar un mensaje privado a un jugador espec\u00edfico."
+	},
+	{
+		"key": "Voodoo can infect humans and heal the infected with the hammer.",
+		"value": "El Fantasma puede infectar a humanos y curar a otros infectados con su martillo."
 	},
 	{
 		"key": "Web mode enabled",
 		"value": "Modo telara\u00f1a activado"
 	},
 	{
-		"key": "When an infected dies, it may respawn near the Witch.",
-		"value": "Cuando un infectado muere, este puede renacer cerca suyo."
-	},
-	{
 		"key": "When an infected touches the wall, it dies.",
 		"value": "Cuando un infectado toca la barrera, este muere."
-	},
-	{
-		"key": "When selecting any gun, the hook enter in web mode.",
-		"value": "Con la selecci\u00f3n de cualquier arma el gancho entra en modo telara\u00f1a."
 	},
 	{
 		"key": "White hole: {sec:RemainingTime}",
@@ -615,6 +627,14 @@
 	{
 		"key": "Witch",
 		"value": "Bruja"
+	},
+	{
+		"key": "Witch can infect humans and heal the infected with the hammer.",
+		"value": "La Bruja puede infectar a humanos y curar a otros infectados con su martillo."
+	},
+	{
+		"key": "Witch {str:PlayerName} has arrived!",
+		"value": "{str:PlayerName} ha salido del juego"
 	},
 	{
 		"key": "Witches",
@@ -631,6 +651,10 @@
 	{
 		"key": "You are an infected: {str:ClassName}",
 		"value": "Eres un infectado : {str:ClassName}"
+	},
+	{
+		"key": "You are blinded: {sec:EffectDuration}",
+		"value": "Est\u00e1s congelado: {sec:EffectDuration}"
 	},
 	{
 		"key": "You are frozen: {sec:EffectDuration}",
@@ -661,6 +685,10 @@
 		"value": "Eres un infectado : {str:ClassName}"
 	},
 	{
+		"key": "You have called the Santa once again",
+		"value": "Has matado a una bruja, +5 puntos"
+	},
+	{
 		"key": "You have eliminated your target, +2 points",
 		"value": "Has eliminado a tu objetivo, +2 points"
 	},
@@ -689,6 +717,11 @@
 		"value": "Has sobrevivido, +5 puntos"
 	},
 	{
+		"key": "You have {int:NumTurrets} turrets available, use the Hammer to place it",
+		"one": "",
+		"other": "",
+	},
+	{
 		"key": "You must be logged for this operation",
 		"value": "Es menester que est\u00e9s conectado con tu cuenta para llevar a cabo esa operaci\u00f3n."
 	},
@@ -709,8 +742,8 @@
 		"value": "Tu cuenta fue creada y ya has iniciado tu sesi\u00f3n."
 	},
 	{
-		"key": "he Mercenary can fly in the air using their machine gun.",
-		"value": "El mercenario vuela usando su metralleta."
+		"key": "{str:PlayerName} changed the class to {str:ClassName}",
+		"value": "{str:PlayerName} ha cambiado su nombre por {str:NewName}"
 	},
 	{
 		"key": "{str:PlayerName} changed their name to {str:NewName}",
@@ -727,6 +760,10 @@
 	{
 		"key": "{str:PlayerName} has been kicked ({str:Reason})",
 		"value": "{str:PlayerName} ha sido expulsado ({str:Reason})"
+	},
+	{
+		"key": "{str:PlayerName} has destroyed your turret!",
+		"value": "{str:PlayerName} ha salido del juego"
 	},
 	{
 		"key": "{str:PlayerName} has left the game",
@@ -761,8 +798,24 @@
 		"value": "Los mensajes de {str:Victim} se han apagado para {sec:Duration} ({str:Reason})"
 	},
 	{
+		"key": "Any human that touch a hook in web mode is automatically grabbed.",
+		"value": "Cualquier humano que toque el gancho en modo telara\u00f1a es autom\u00e1ticamente agarrado."
+	},
+	{
+		"key": "Bat can jump multiple times in air.",
+		"value": "Puede saltar dos veces en el aire."
+	},
+	{
 		"key": "Bombs are limited to one per player at the same time.",
 		"value": "Solo puede haber una bomba por jugador al mismo tiempo."
+	},
+	{
+		"key": "For any question about the translation process, please contact us on IRC ({str:IRCAddress})",
+		"value": "Para cualquier pregunta sobre el procedimiento de traducci\u00f3n, nos contacta por IRC ({str:IRCAddress})"
+	},
+	{
+		"key": "He can also inflict 1 damage point per second by hooking humans.",
+		"value": "Tambi\u00e9n puede infligir 1 punto de da\u00f1o por segundo al enganchar a humanos."
 	},
 	{
 		"key": "He can also inflict 4 damage points per second by hooking humans.",
@@ -781,12 +834,48 @@
 		"value": "Tambi\u00e9n puede infligir 1 punto de da\u00f1o por segundo al enganchar a humanos."
 	},
 	{
+		"key": "Snipers can jump two times in air.",
+		"value": "Puede saltar dos veces en el aire."
+	},
+	{
+		"key": "The Hero has a shotgun, a laser rifle, and a grenade launcher.",
+		"value": "El H\u00e9roe tiene una escopeta, un f\u00fasil laser y granadas."
+	},
+	{
 		"key": "The Hero must find a flag hidden in the map.",
 		"value": "El H\u00e9roe tiene que invenir la bandera escondida en el mapa."
 	},
 	{
+		"key": "The Hunter can infect humans and heal infected with the hammer.",
+		"value": "El Cazador puede infectar a humanos y curar a otros infectados con su martillo."
+	},
+	{
+		"key": "The Smoker can infect humans and heal infected with the hammer.",
+		"value": "El Smoker puede infectar a humanos y curar a otros infectados con su martillo."
+	},
+	{
+		"key": "The Spider can infect humans and heal infected with the hammer.",
+		"value": "La Ara\u00f1a puede infectar a humanos y curar a otros infectados con su martillo."
+	},
+	{
 		"key": "Thereupon he digests his fodder bit by bit going back to his normal state, and besides, death bereaves him of his nourishment.",
 		"value": "Seguidamente digiere su forraje poco a poco volviendo a su estado normal, y aparte de eso le quita alimento el fallecer."
+	},
+	{
+		"key": "They also have a powerful rifle that deals 20 damage points in locked position, and 10\u201313 otherwise.",
+		"value": "\u00c9l tiene tambi\u00e9n un rifle potente que inflige 30 puntos de da\u00f1o cuando est\u00e1 bloqueado en una posici\u00f3n y 10\u201313 en otros casos."
+	},
+	{
+		"key": "Touching the slime inflicts three damage points in three seconds on a human.",
+		"value": "Tocar el limo inflige tres puntos de da\u00f1o en tres segundos a un humano."
+	},
+	{
+		"key": "When an infected dies, it may respawn near the Witch.",
+		"value": "Cuando un infectado muere, este puede renacer cerca suyo."
+	},
+	{
+		"key": "When selecting any gun, the hook enter in web mode.",
+		"value": "Con la selecci\u00f3n de cualquier arma el gancho entra en modo telara\u00f1a."
 	},
 	{
 		"key": "You are now logged.",

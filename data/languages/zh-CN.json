@@ -12,7 +12,7 @@
 		"value": "\u5e78\u8fd0\u7684\u79d1\u5b66\u5bb6\u4f1a\u5728\u6740\u6b7b\u611f\u67d3\u8005\u65f6\u5f97\u5230\u767d\u6d1e, \u767d\u6d1e\u53ef\u7528\u6fc0\u5149\u67aa\u653e\u7f6e"
 	},
 	{
-		"key": "A random class will be automatically attributed to you when rounds start",
+		"key": "A random class will be automatically attributed to you when round starts",
 		"value": "\u6e38\u620f\u5f00\u59cb\u65f6\u4f1a\u81ea\u52a8\u9009\u62e9\u968f\u673a\u804c\u4e1a"
 	},
 	{
@@ -90,6 +90,10 @@
 	{
 		"key": "Choose your class",
 		"value": "\u9009\u62e9\u4f60\u7684\u804c\u4e1a"
+	},
+	{
+		"key": "Class {str:ClassName} will be automatically attributed to you when round starts",
+		"value": "\u6e38\u620f\u5f00\u59cb\u65f6\u4f1a\u81ea\u52a8\u9009\u62e9\u968f\u673a\u804c\u4e1a"
 	},
 	{
 		"key": "Create an account on Crowdin and join the translation team:",
@@ -676,7 +680,7 @@
 		"value": "\u5df2\u8d85\u51fa\u804c\u4e1a\u9650\u5236"
 	},
 	{
-		"key": "The class selector will be displayed when rounds start",
+		"key": "The class selector will be displayed when round starts",
 		"value": "\u5728\u56de\u5408\u5f00\u59cb\u65f6\uff0c\u5c06\u663e\u793a\u804c\u4e1a\u9009\u62e9\u5668"
 	},
 	{

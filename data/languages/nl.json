@@ -4,7 +4,7 @@
 		"value": "10 seconden later worden twee spelers ge\u00efnfecteerd."
 	},
 	{
-		"key": "A random class will be automatically attributed to you when rounds start",
+		"key": "A random class will be automatically attributed to you when round starts",
 		"value": "Een willekeurige klas zal automatisch toegevoegd worden wanneer de ronde start"
 	},
 	{
@@ -12,7 +12,7 @@
 		"value": "Alle mensen rond de explosie worden ge\u00efnfecteerd."
 	},
 	{
-		"key": "All players start as human.",
+		"key": "All players start as a human.",
 		"value": "Alle spelers starten als een mens."
 	},
 	{
@@ -22,10 +22,6 @@
 	{
 		"key": "An error occured during the operation.",
 		"value": "Er is een fout is opgetreden tijdens de actie"
-	},
-	{
-		"key": "Any human that touch a hook in web mode is automatically grabbed.",
-		"value": "Ieder mens dat de haak aanraakt in web-modus is automatisch gevangen."
 	},
 	{
 		"key": "Available help pages: {str:PageList}",
@@ -40,8 +36,8 @@
 		"value": "Gebaseerd op het concept van Infection mod door Gravity"
 	},
 	{
-		"key": "Bat can jump multiple times in air.",
-		"value": "Hij kan twee keer springen in de lucht."
+		"key": "Bat can jump endlessly in the air but it cannot infect humans.",
+		"value": "Het doel voor de ge\u00efnfecteerden is voor alle mensen te infecteren."
 	},
 	{
 		"key": "Biologist",
@@ -68,7 +64,11 @@
 		"value": "Kies jouw klasse"
 	},
 	{
-		"key": "Create an account on Crowdin and join a translation team:",
+		"key": "Class {str:ClassName} will be automatically attributed to you when round starts",
+		"value": "Een willekeurige klas zal automatisch toegevoegd worden wanneer de ronde start"
+	},
+	{
+		"key": "Create an account on Crowdin and join the translation team:",
 		"value": "Maak een account aan op Crowdin en neem deel aan het vertalingsteam:"
 	},
 	{
@@ -97,10 +97,6 @@
 		"value": "Explosieve opbrengst: {percent:BombLevel}"
 	},
 	{
-		"key": "For any question about the translation process, please contact us on IRC ({str:IRCAddress})",
-		"value": "Voor vragen over het vertalingsproces, contacteer ons op IRC ({str:IRCAddress})"
-	},
-	{
 		"key": "Ghost",
 		"value": "Geest"
 	},
@@ -113,6 +109,10 @@
 		"value": "Ghoul"
 	},
 	{
+		"key": "Ghoul can infect humans and heal the infected with the hammer.",
+		"value": "De Ghoul kan mensen infecteren en ge\u00efnfecteerden genezen met zijn hamer."
+	},
+	{
 		"key": "Ghouls",
 		"value": "Ghoul"
 	},
@@ -121,29 +121,12 @@
 		"value": "Granaat limiet verhoogd"
 	},
 	{
-		"key": "He can also inflict 1 damage point per second by hooking humans.",
-		"value": "Hij kan ook 1 schade punt opleveren per seconde door mensen te haken."
-	},
-	{
-		"key": "He can jump two times in air.",
-		"value": "Hij kan twee keer springen in de lucht."
-	},
-	{
-		"key": "He can make the ground and walls toxic by spreading slime with the hammer.",
-		"value": "Hij kan de grond en de muren giftig maken door het verspreiden van slijm met zijn hamer."
-	},
-	{
 		"key": "Hero",
 		"value": "Ninja"
 	},
 	{
 		"key": "Heroes",
 		"value": "Ninja"
-	},
-	{
-		"key": "His hammer is replaced by a katana, allowing him to jump {int:NinjaJump} times before touching the ground.",
-		"one": "Zijn hamer is vervangen door een katana waardoor hij \u00e9\u00e9n keer kan springen voordat hij de grond raakt.",
-		"other": "Zijn hamer is vervangen door een katana waardoor hij {int:NinjaJump} keer kan springen voordat hij de grond raakt.",
 	},
 	{
 		"key": "Hook protection disabled",
@@ -174,7 +157,7 @@
 		"value": "Als een ge\u00efnfecteerde hem geneest, dan is hij niet meer bevroren."
 	},
 	{
-		"key": "If the Witch dies, it disappears and is replaced by another class of infected.",
+		"key": "If the Witch dies, it disappears and is replaced by another class.",
 		"value": "Als de Heks sterft, verdwijnt ze en wordt ze vervangen door een andere klas van de ge\u00efnfecteerden."
 	},
 	{
@@ -182,11 +165,19 @@
 		"value": "Als jouw taal niet beschikbaar is, kan je helpen me de vertaling (/help translate)."
 	},
 	{
+		"key": "In both modes the hook inflicts 1 damage point per second and can grab a human for longer.",
+		"value": "De haak van een spin (in beide modus) levert 1 schade punt op per seconde en kan een mens grijpen gedurende 2 seconden."
+	},
+	{
 		"key": "Infected won the round in {sec:RoundDuration}",
 		"value": "De ge\u00efnfecteerden wonnen deze ronde in {sec:RoundDuration}"
 	},
 	{
-		"key": "InfectionClass is a team game between humans and infected.",
+		"key": "Infection is coming in {sec:RemainingTime}",
+		"value": "Volgende vlag over {sec:RemainingTime}"
+	},
+	{
+		"key": "InfectionClass is a team game between humans and the infected.",
 		"value": "InfectionClass is een team spel tussen mensen en ge\u00efnfecteerden."
 	},
 	{
@@ -194,20 +185,52 @@
 		"value": "InfectionClass, door necropotame (version {str:VersionCode})"
 	},
 	{
-		"key": "Instead of dying, it freezes for 10 seconds.",
-		"value": "In plaats van te sterven, bevriest hij voor 10 seconden."
+		"key": "It can also infect humans and heal the infected with the hammer.",
+		"value": "De geest kan mensen infecteren en mensen genezen met zijn hamer."
+	},
+	{
+		"key": "It can also inflict 1 damage point per second by hooking humans, which sucks their blood, restoring the Bat's health.",
+		"value": "Hij kan ook 1 schade punt opleveren per seconde door mensen te haken."
 	},
 	{
 		"key": "It can also inflict 1 damage point per second by hooking humans.",
 		"value": "Hij kan ook 1 schade punt opleveren per seconde door mensen te haken."
 	},
 	{
-		"key": "It can devour anything that has died nearby, which makes it stronger, faster and more resistant.",
-		"value": "Hij kan al die dicht bij hem is overleden verslinden, dat maakt hem sterker, sneller en meer resistent."
+		"key": "It can also inflict 1 damage point per second by hooking humans.",
+		"value": "Hij kan ook 1 schade punt opleveren per seconde door mensen te haken."
 	},
 	{
-		"key": "It is invisible, unless a human is nearby, it takes damage, or it uses the hammer.",
-		"value": "Hij is onzichtbaar, behalve als er een mens in de buurt is, als hij schade krijgt of hij zijn hamer gebruikt."
+		"key": "It can also inflict 1 damage point per second by hooking humans.",
+		"value": "Hij kan ook 1 schade punt opleveren per seconde door mensen te haken."
+	},
+	{
+		"key": "It can also inflict 1 damage point per second by hooking humans.",
+		"value": "Hij kan ook 1 schade punt opleveren per seconde door mensen te haken."
+	},
+	{
+		"key": "It can also inflict 1 damage point per second by hooking humans.",
+		"value": "Hij kan ook 1 schade punt opleveren per seconde door mensen te haken."
+	},
+	{
+		"key": "It can also inflict 1 damage point per second by hooking humans.",
+		"value": "Hij kan ook 1 schade punt opleveren per seconde door mensen te haken."
+	},
+	{
+		"key": "It can also inflict 1 damage point per second by hooking humans.",
+		"value": "Hij kan ook 1 schade punt opleveren per seconde door mensen te haken."
+	},
+	{
+		"key": "It can also inflict 1 damage point per second by hooking humans.",
+		"value": "Hij kan ook 1 schade punt opleveren per seconde door mensen te haken."
+	},
+	{
+		"key": "It can infect humans and heal the infected with the hammer.",
+		"value": "De geest kan mensen infecteren en mensen genezen met zijn hamer."
+	},
+	{
+		"key": "It can infect humans and heal the infected with the hammer.",
+		"value": "De geest kan mensen infecteren en mensen genezen met zijn hamer."
 	},
 	{
 		"key": "Laser wall: {sec:RemainingTime}",
@@ -230,7 +253,7 @@
 		"value": "Dokter"
 	},
 	{
-		"key": "Medic also has a powerful shotgun that can knock back infected.",
+		"key": "Medic also has a powerful shotgun that can knock back the infected.",
 		"value": "Hij heeft ook een krachtig jachtgeweer dat ge\u00efnfecteerden kan terugdeinzen."
 	},
 	{
@@ -246,7 +269,7 @@
 		"value": "Huurling"
 	},
 	{
-		"key": "Mercenary can also throw poison grenades that each deal {int:NumDamagePoints} damage points.",
+		"key": "Mercenary can also throw poison grenades that deal {int:NumDamagePoints} damage points and prevent the infected from healing.",
 		"one": "Hij kan ook gif granaten gooien die een schade punt oplevert.",
 		"other": "Hij kan ook gif granaten gooien die {int:NumDamagePoints} schade punten oplevert.",
 	},
@@ -316,13 +339,17 @@
 		"value": "Willekeurige keuze"
 	},
 	{
-		"key": "Receive it by killing at least {int:NumKills} zombies as scientist.",
+		"key": "Receive it by killing at least {int:NumKills} of the infected as a Scientist.",
 		"one": "",
 		"other": "",
 	},
 	{
 		"key": "Rules of the game",
 		"value": "Regels van het spel"
+	},
+	{
+		"key": "Santa {str:PlayerName} has arrived!",
+		"value": "{str:PlayerName} heeft het spel verlaten"
 	},
 	{
 		"key": "Scientist",
@@ -339,6 +366,10 @@
 	{
 		"key": "Slug",
 		"value": "Slak"
+	},
+	{
+		"key": "Slug can infect humans and heal the infected with the hammer.",
+		"value": "De Slak kan mensen infecteren en ge\u00efnfecteerden genezen met zijn hamer."
 	},
 	{
 		"key": "Slugs",
@@ -361,16 +392,16 @@
 		"value": "Scherpschutter"
 	},
 	{
-		"key": "Snipers can jump two times in air.",
-		"value": "Hij kan twee keer springen in de lucht."
-	},
-	{
 		"key": "Soldier",
 		"value": "Soldaat"
 	},
 	{
 		"key": "Soldiers",
 		"value": "Soldaat"
+	},
+	{
+		"key": "Someone was infected to balance the game.",
+		"value": "Wanneer een ge\u00efnfecteerde de muur raakt, sterft hij."
 	},
 	{
 		"key": "Spider",
@@ -413,10 +444,6 @@
 		"value": "Dankzij {str:ListOfContributors}"
 	},
 	{
-		"key": "The Bat can heal infected with the hammer, but cannot infect humans",
-		"value": "Het doel voor de ge\u00efnfecteerden is voor alle mensen te infecteren."
-	},
-	{
 		"key": "The Biologist has a shotgun with bouncing bullets and can create a spring laser trap by shooting with the laser rifle.",
 		"value": "De bioloog heeft een shotgun met weerkaatsende kogels en kan een lente laser val maken door te schieten met zijn lasergeweer."
 	},
@@ -425,16 +452,16 @@
 		"value": "De boomer ontploft wanneer hij aanvalt."
 	},
 	{
-		"key": "The Engineer can build walls with the hammer to block infected.",
+		"key": "The Engineer can build walls with the hammer to block the infected.",
 		"value": "De ingenieur kan muren maken met zijn hamer om ge\u00efnfecteren te blokkeren."
 	},
 	{
-		"key": "The Ghost can infect humans and heal infected with the hammer.",
-		"value": "De geest kan mensen infecteren en mensen genezen met zijn hamer."
+		"key": "The Ghost is invisible until a human comes nearby, it takes damage, or it uses the hammer.",
+		"value": "Hij is onzichtbaar, behalve als er een mens in de buurt is, als hij schade krijgt of hij zijn hamer gebruikt."
 	},
 	{
-		"key": "The Ghoul can infect humans and heal infected with the hammer.",
-		"value": "De Ghoul kan mensen infecteren en ge\u00efnfecteerden genezen met zijn hamer."
+		"key": "The Ghoul can devour anything that has died nearby, which makes it stronger, faster and more resistant.",
+		"value": "Hij kan al die dicht bij hem is overleden verslinden, dat maakt hem sterker, sneller en meer resistent."
 	},
 	{
 		"key": "The Hero cannot be healed by a Medic, but it can withstand a hit from an infected.",
@@ -445,19 +472,15 @@
 		"value": "De Held heeft de vlag gevonden!"
 	},
 	{
-		"key": "The Hero has a shotgun, a laser rifle, and a grenade launcher.",
-		"value": "De Held heeft een shotgun, een lasergeweer en granaten."
-	},
-	{
-		"key": "The Hunter can infect humans and heal infected with the hammer.",
-		"value": "De jager kan mensen infecteren en mensen genezen met zijn hamer."
-	},
-	{
 		"key": "The Medic can protect humans with the hammer by giving them armor.",
 		"value": "De dokter kan alle mensen beschermen met zijn hamer door hen armor te geven."
 	},
 	{
-		"key": "The Ninja can throw flash grenades that can freeze infected during three seconds.",
+		"key": "The Mercenary can fly in the air using their machine gun.",
+		"value": "De huurling kan in de lucht vliegen met zijn machinegeweer."
+	},
+	{
+		"key": "The Ninja can throw flash grenades that can freeze the infected for three seconds.",
 		"value": "De ninja kan flits granaten gooien die ge\u00efnfecteerden bevriezen voor drie seconden."
 	},
 	{
@@ -465,15 +488,11 @@
 		"value": "De wetenschapper kan zwevende mijnen vormen met zijn hamer."
 	},
 	{
-		"key": "The Slug can infect humans and heal infected with the hammer.",
-		"value": "De Slak kan mensen infecteren en ge\u00efnfecteerden genezen met zijn hamer."
+		"key": "The Slug can make the ground and walls toxic by spreading slime with the hammer.",
+		"value": "Hij kan de grond en de muren giftig maken door het verspreiden van slijm met zijn hamer."
 	},
 	{
-		"key": "The Smoker can infect humans and heal infected with the hammer.",
-		"value": "De smoker kan mensen infecteren en mensen genezen met zijn hamer."
-	},
-	{
-		"key": "The Sniper can lock the position in air for 15 seconds with the hammer.",
+		"key": "The Sniper can lock the position in mid-air for 15 seconds with the hammer.",
 		"value": "De scherpschutter kan zijn positie vergrendelen in de lucht voor 15 seconden met zijn hamer."
 	},
 	{
@@ -481,40 +500,24 @@
 		"value": "De soldaat kan zwevende bommen vormen met zijn hamer."
 	},
 	{
-		"key": "The Spider can infect humans and heal infected with the hammer.",
-		"value": "De spin kan mensen infecteren en mensen genezen met zijn hamer."
-	},
-	{
-		"key": "The Undead can infect humans and heal infected with the hammer.",
-		"value": "De ondode kan mensen infecteren en mensen genezen met zijn hamer."
-	},
-	{
-		"key": "The Voodoo can infect humans and heal infected with the hammer.",
-		"value": "De geest kan mensen infecteren en mensen genezen met zijn hamer."
-	},
-	{
-		"key": "The Witch can infect humans and heal infected with the hammer.",
-		"value": "De Heks kan mensen infecteren en ge\u00efnfecteerden genezen met haar hamer."
+		"key": "The Undead cannot die. Instead of dying, it gets frozen for 10 seconds.",
+		"value": "In plaats van te sterven, bevriest hij voor 10 seconden."
 	},
 	{
 		"key": "The class is disabled",
 		"value": "De heks is dood"
 	},
 	{
-		"key": "The class selector will be displayed when rounds start",
+		"key": "The class selector will be displayed when round starts",
 		"value": "De klas selector zal worden weergegeven wanneer rondes starten"
 	},
 	{
-		"key": "The goal for humans is to survive until the army cleans the map.",
+		"key": "The goal for the humans is to survive until the army cleans the map.",
 		"value": "Het doel voor de mens is om te overleven tot het leger de kaart opruimt."
 	},
 	{
-		"key": "The goal for infected is to infect all humans.",
+		"key": "The goal for the infected is to infect all humans.",
 		"value": "Het doel voor de ge\u00efnfecteerden is voor alle mensen te infecteren."
-	},
-	{
-		"key": "The hook of the spider (in both mode) deal 1 damage point per second and can grab a human during 2 seconds.",
-		"value": "De haak van een spin (in beide modus) levert 1 schade punt op per seconde en kan een mens grijpen gedurende 2 seconden."
 	},
 	{
 		"key": "The lifespan of a wall is {sec:LifeSpan}, and walls are limited to one per player at the same time.",
@@ -529,20 +532,29 @@
 		"value": "De heks is dood"
 	},
 	{
-		"key": "They also have a powerful rifle that deals 20 damage points in locked position, and 10\u201313 otherwise.",
-		"value": "Hij heeft ook een krachtig lasergeweer dat 30 schade punten oplevert in de vergrendelde positie, anders 10\u201313."
+		"key": "Their hammer is replaced with a katana, allowing them to dash {int:NinjaJump} times before touching the ground.",
+		"one": "Zijn hamer is vervangen door een katana waardoor hij \u00e9\u00e9n keer kan springen voordat hij de grond raakt.",
+		"other": "Zijn hamer is vervangen door een katana waardoor hij {int:NinjaJump} keer kan springen voordat hij de grond raakt.",
 	},
 	{
-		"key": "They can create powerful bombs with their hammer.",
+		"key": "They can also create a powerful bomb with their hammer that can be charged by hitting it or with a laser rifle.",
 		"value": "De soldaat kan zwevende bommen vormen met zijn hamer."
+	},
+	{
+		"key": "They can also jump two times in the air.",
+		"value": "Hij kan twee keer springen in de lucht."
+	},
+	{
+		"key": "They can also jump two times in the air.",
+		"value": "Hij kan twee keer springen in de lucht."
 	},
 	{
 		"key": "This username is already taken by an existing account",
 		"value": "Deze gebruikersnaam is al gebruikt door een bestaand account."
 	},
 	{
-		"key": "Touching the slime inflicts three damage points in three seconds on a human.",
-		"value": "Het aanraken van slijm levert drie schade punten op in drie seconden op een mens."
+		"key": "Too few infected to call the Santa",
+		"value": "Het doel voor de ge\u00efnfecteerden is voor alle mensen te infecteren."
 	},
 	{
 		"key": "Type \u201c/help {str:ClassName}\u201d for more information about your class",
@@ -551,6 +563,10 @@
 	{
 		"key": "Undead",
 		"value": "Ondode"
+	},
+	{
+		"key": "Undead can infect humans and heal the infected with the hammer.",
+		"value": "De ondode kan mensen infecteren en mensen genezen met zijn hamer."
 	},
 	{
 		"key": "Undeads",
@@ -585,28 +601,24 @@
 		"value": "Gebruik \u201e/msg !near\u201d om een priv\u00e9 bericht te sturen naar alle spelers rondom jou."
 	},
 	{
-		"key": "Use \u201c/msg <PlayerName> <My Message>\u201d to send a private message to this player.",
+		"key": "Use \u201c/mute <PlayerName>\u201d to mute this player.",
 		"value": "Gebruik \u201e/msg <PlayerName> <My Message>\u201d om een priv\u00e9 bericht te sturen naar deze speler."
 	},
 	{
-		"key": "Use \u201c/mute <PlayerName>\u201d to mute this player.",
+		"key": "Use \u201c/w <PlayerName> <My Message>\u201d to send a private message to this player.",
 		"value": "Gebruik \u201e/msg <PlayerName> <My Message>\u201d om een priv\u00e9 bericht te sturen naar deze speler."
+	},
+	{
+		"key": "Voodoo can infect humans and heal the infected with the hammer.",
+		"value": "De geest kan mensen infecteren en mensen genezen met zijn hamer."
 	},
 	{
 		"key": "Web mode enabled",
 		"value": "Web-modus geactiveerd"
 	},
 	{
-		"key": "When an infected dies, it may respawn near the Witch.",
-		"value": "Wanneer een ge\u00efnfecteerde sterft is er een kans dat hij herleeft in de buurt van haar."
-	},
-	{
 		"key": "When an infected touches the wall, it dies.",
 		"value": "Wanneer een ge\u00efnfecteerde de muur raakt, sterft hij."
-	},
-	{
-		"key": "When selecting any gun, the hook enter in web mode.",
-		"value": "Bij het verwisselen van pistool gaat zijn haak in web-modus."
 	},
 	{
 		"key": "White hole: {sec:RemainingTime}",
@@ -615,6 +627,14 @@
 	{
 		"key": "Witch",
 		"value": "Heks"
+	},
+	{
+		"key": "Witch can infect humans and heal the infected with the hammer.",
+		"value": "De Heks kan mensen infecteren en ge\u00efnfecteerden genezen met haar hamer."
+	},
+	{
+		"key": "Witch {str:PlayerName} has arrived!",
+		"value": "{str:PlayerName} heeft het spel verlaten"
 	},
 	{
 		"key": "Witches",
@@ -631,6 +651,10 @@
 	{
 		"key": "You are an infected: {str:ClassName}",
 		"value": "Je bent ge\u00efnfecteerd: {str:ClassName}"
+	},
+	{
+		"key": "You are blinded: {sec:EffectDuration}",
+		"value": "Je bent bevroren: {sec:EffectDuration}"
 	},
 	{
 		"key": "You are frozen: {sec:EffectDuration}",
@@ -661,6 +685,10 @@
 		"value": "Je bent ge\u00efnfecteerd: {str:ClassName}"
 	},
 	{
+		"key": "You have called the Santa once again",
+		"value": "Je hebt een heks vermoord, +5 punten"
+	},
+	{
 		"key": "You have eliminated your target, +2 points",
 		"value": "Je hebt je doelwit ge\u00eblimineerd, +2 punten"
 	},
@@ -689,6 +717,11 @@
 		"value": "Je hebt het overleefd, +5 punten"
 	},
 	{
+		"key": "You have {int:NumTurrets} turrets available, use the Hammer to place it",
+		"one": "",
+		"other": "",
+	},
+	{
 		"key": "You must be logged for this operation",
 		"value": "Je moet ingelogd zijn voor deze actie"
 	},
@@ -709,8 +742,8 @@
 		"value": "Je account is aangemaakt en je bent nu ingelogd."
 	},
 	{
-		"key": "he Mercenary can fly in the air using their machine gun.",
-		"value": "De huurling kan in de lucht vliegen met zijn machinegeweer."
+		"key": "{str:PlayerName} changed the class to {str:ClassName}",
+		"value": "{str:PlayerName} veranderde zijn naam naar {str:NewName}"
 	},
 	{
 		"key": "{str:PlayerName} changed their name to {str:NewName}",
@@ -727,6 +760,10 @@
 	{
 		"key": "{str:PlayerName} has been kicked ({str:Reason})",
 		"value": "{str:PlayerName} is uit het spel geschopt ({str:Reason})"
+	},
+	{
+		"key": "{str:PlayerName} has destroyed your turret!",
+		"value": "{str:PlayerName} heeft het spel verlaten"
 	},
 	{
 		"key": "{str:PlayerName} has left the game",
@@ -761,8 +798,24 @@
 		"value": "{str:Victim} is gedempt voor {sec:Duration} ({str:Reason})"
 	},
 	{
+		"key": "Any human that touch a hook in web mode is automatically grabbed.",
+		"value": "Ieder mens dat de haak aanraakt in web-modus is automatisch gevangen."
+	},
+	{
+		"key": "Bat can jump multiple times in air.",
+		"value": "Hij kan twee keer springen in de lucht."
+	},
+	{
 		"key": "Bombs are limited to one per player at the same time.",
 		"value": "Bommen beperkt tot \u00e9\u00e9n per speler tegelijk."
+	},
+	{
+		"key": "For any question about the translation process, please contact us on IRC ({str:IRCAddress})",
+		"value": "Voor vragen over het vertalingsproces, contacteer ons op IRC ({str:IRCAddress})"
+	},
+	{
+		"key": "He can also inflict 1 damage point per second by hooking humans.",
+		"value": "Hij kan ook 1 schade punt opleveren per seconde door mensen te haken."
 	},
 	{
 		"key": "He can also inflict 4 damage points per second by hooking humans.",
@@ -781,12 +834,48 @@
 		"value": "Ze kan ook 1 schade punt aanrichten per seconde door het haken van mensen."
 	},
 	{
+		"key": "Snipers can jump two times in air.",
+		"value": "Hij kan twee keer springen in de lucht."
+	},
+	{
+		"key": "The Hero has a shotgun, a laser rifle, and a grenade launcher.",
+		"value": "De Held heeft een shotgun, een lasergeweer en granaten."
+	},
+	{
 		"key": "The Hero must find a flag hidden in the map.",
 		"value": "De Held moet een vlag verborgen vinden in de map."
 	},
 	{
+		"key": "The Hunter can infect humans and heal infected with the hammer.",
+		"value": "De jager kan mensen infecteren en mensen genezen met zijn hamer."
+	},
+	{
+		"key": "The Smoker can infect humans and heal infected with the hammer.",
+		"value": "De smoker kan mensen infecteren en mensen genezen met zijn hamer."
+	},
+	{
+		"key": "The Spider can infect humans and heal infected with the hammer.",
+		"value": "De spin kan mensen infecteren en mensen genezen met zijn hamer."
+	},
+	{
 		"key": "Thereupon he digests his fodder bit by bit going back to his normal state, and besides, death bereaves him of his nourishment.",
 		"value": "Daarop verteert hij zijn voeder beetje bij beetje en gaat hij terug naar zijn normale toestand, en bovendien, de dood berooft hem van zijn voeding."
+	},
+	{
+		"key": "They also have a powerful rifle that deals 20 damage points in locked position, and 10\u201313 otherwise.",
+		"value": "Hij heeft ook een krachtig lasergeweer dat 30 schade punten oplevert in de vergrendelde positie, anders 10\u201313."
+	},
+	{
+		"key": "Touching the slime inflicts three damage points in three seconds on a human.",
+		"value": "Het aanraken van slijm levert drie schade punten op in drie seconden op een mens."
+	},
+	{
+		"key": "When an infected dies, it may respawn near the Witch.",
+		"value": "Wanneer een ge\u00efnfecteerde sterft is er een kans dat hij herleeft in de buurt van haar."
+	},
+	{
+		"key": "When selecting any gun, the hook enter in web mode.",
+		"value": "Bij het verwisselen van pistool gaat zijn haak in web-modus."
 	},
 	{
 		"key": "You are now logged.",

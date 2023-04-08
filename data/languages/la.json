@@ -4,7 +4,7 @@
 		"value": "Post secundas 10, arenarii duo inficiuntur."
 	},
 	{
-		"key": "A random class will be automatically attributed to you when rounds start",
+		"key": "A random class will be automatically attributed to you when round starts",
 		"value": "Classis fortuita tibi assignatur, quum ludus incipit"
 	},
 	{
@@ -12,7 +12,7 @@
 		"value": "Homines toti explosione affecti inficiuntur."
 	},
 	{
-		"key": "All players start as human.",
+		"key": "All players start as a human.",
 		"value": "Omnes arenarii homines incohant."
 	},
 	{
@@ -22,10 +22,6 @@
 	{
 		"key": "An error occured during the operation.",
 		"value": "Error obvenit operatione."
-	},
-	{
-		"key": "Any human that touch a hook in web mode is automatically grabbed.",
-		"value": "Homo quicumque uncum in modo retiali tangens apprehenditur."
 	},
 	{
 		"key": "Available help pages: {str:PageList}",
@@ -40,8 +36,8 @@
 		"value": "Constat in conceptu modificationis Infection, auctoris Gravity"
 	},
 	{
-		"key": "Bat can jump multiple times in air.",
-		"value": "Bis in aere exsilere potest."
+		"key": "Bat can jump endlessly in the air but it cannot infect humans.",
+		"value": "Finis infectorum est inficere homines omnes."
 	},
 	{
 		"key": "Biologist",
@@ -68,7 +64,11 @@
 		"value": "Classem elige"
 	},
 	{
-		"key": "Create an account on Crowdin and join a translation team:",
+		"key": "Class {str:ClassName} will be automatically attributed to you when round starts",
+		"value": "Classis fortuita tibi assignatur, quum ludus incipit"
+	},
+	{
+		"key": "Create an account on Crowdin and join the translation team:",
 		"value": "Nomen tibi apud Crowdin da et gregi traductionis accede:"
 	},
 	{
@@ -97,10 +97,6 @@
 		"value": "Vis displosiva: {percent:BombLevel}"
 	},
 	{
-		"key": "For any question about the translation process, please contact us on IRC ({str:IRCAddress})",
-		"value": "Quaestione de traductionis processu exorta nos via IRC ({str:IRCAddress}) postula"
-	},
-	{
 		"key": "Ghost",
 		"value": "Larua"
 	},
@@ -113,6 +109,10 @@
 		"value": "\u0120\u016bl"
 	},
 	{
+		"key": "Ghoul can infect humans and heal the infected with the hammer.",
+		"value": "\u0120\u016bl malleo homines inficere infectosque sanare potest."
+	},
+	{
 		"key": "Ghouls",
 		"value": "\u0120\u016bl"
 	},
@@ -121,29 +121,12 @@
 		"value": "Limes granatarius auctus"
 	},
 	{
-		"key": "He can also inflict 1 damage point per second by hooking humans.",
-		"value": "Plagam 1 quoque per secundam unco infligere potest."
-	},
-	{
-		"key": "He can jump two times in air.",
-		"value": "Bis in aere exsilere potest."
-	},
-	{
-		"key": "He can make the ground and walls toxic by spreading slime with the hammer.",
-		"value": "Solum parietesque veneniferos malleo mucum reddendo potest."
-	},
-	{
 		"key": "Hero",
 		"value": "Heros"
 	},
 	{
 		"key": "Heroes",
 		"value": "Heros"
-	},
-	{
-		"key": "His hammer is replaced by a katana, allowing him to jump {int:NinjaJump} times before touching the ground.",
-		"one": "Malleus eius katana permutatus. Quo in manus pervenit, ut insultet semel, antequam solum contingit.",
-		"other": "Malleus eius katana permutatus. Quo in manus pervenit, ut insultet {int:NinjaJump} temporibus, antequam solum contingit.",
 	},
 	{
 		"key": "Hook protection disabled",
@@ -174,7 +157,7 @@
 		"value": "Quando infectus eum sanat, effectus gelationis decedit."
 	},
 	{
-		"key": "If the Witch dies, it disappears and is replaced by another class of infected.",
+		"key": "If the Witch dies, it disappears and is replaced by another class.",
 		"value": "Malefica mortua decedit commutaturque infecto classis alius."
 	},
 	{
@@ -182,11 +165,19 @@
 		"value": "Si lingua tua non in promptu est, tibi traductioni subvenire licet (/help translate)."
 	},
 	{
+		"key": "In both modes the hook inflicts 1 damage point per second and can grab a human for longer.",
+		"value": "Uncus araneus (in modos ambobus) plagam 1 infligit et hominem secundas 2 tenet."
+	},
+	{
 		"key": "Infected won the round in {sec:RoundDuration}",
 		"value": "Infecti evicere per {sec:RoundDuration}"
 	},
 	{
-		"key": "InfectionClass is a team game between humans and infected.",
+		"key": "Infection is coming in {sec:RemainingTime}",
+		"value": "Vexillum sequens post {sec:RemainingTime}"
+	},
+	{
+		"key": "InfectionClass is a team game between humans and the infected.",
 		"value": "InfectionClass ludus gregum inter homines infectosque."
 	},
 	{
@@ -194,20 +185,52 @@
 		"value": "InfectionClass, auctoris necropotame (version {str:VersionCode})"
 	},
 	{
-		"key": "Instead of dying, it freezes for 10 seconds.",
-		"value": "Pro morte secundas 10 gelatur."
+		"key": "It can also infect humans and heal the infected with the hammer.",
+		"value": "Larua malleo homines inficere infectosque sanare potest."
+	},
+	{
+		"key": "It can also inflict 1 damage point per second by hooking humans, which sucks their blood, restoring the Bat's health.",
+		"value": "Plagam 1 quoque per secundam unco infligere potest."
 	},
 	{
 		"key": "It can also inflict 1 damage point per second by hooking humans.",
 		"value": "Plagam 1 quoque per secundam unco infligere potest."
 	},
 	{
-		"key": "It can devour anything that has died nearby, which makes it stronger, faster and more resistant.",
-		"value": "Omnia circa eum mortua devorare potest, quo fortior, celerior firmiorque fiat."
+		"key": "It can also inflict 1 damage point per second by hooking humans.",
+		"value": "Plagam 1 quoque per secundam unco infligere potest."
 	},
 	{
-		"key": "It is invisible, unless a human is nearby, it takes damage, or it uses the hammer.",
-		"value": "Latens est, donec homo proxumus sit, pugnam experiatur aut malleo utatur."
+		"key": "It can also inflict 1 damage point per second by hooking humans.",
+		"value": "Plagam 1 quoque per secundam unco infligere potest."
+	},
+	{
+		"key": "It can also inflict 1 damage point per second by hooking humans.",
+		"value": "Plagam 1 quoque per secundam unco infligere potest."
+	},
+	{
+		"key": "It can also inflict 1 damage point per second by hooking humans.",
+		"value": "Plagam 1 quoque per secundam unco infligere potest."
+	},
+	{
+		"key": "It can also inflict 1 damage point per second by hooking humans.",
+		"value": "Plagam 1 quoque per secundam unco infligere potest."
+	},
+	{
+		"key": "It can also inflict 1 damage point per second by hooking humans.",
+		"value": "Plagam 1 quoque per secundam unco infligere potest."
+	},
+	{
+		"key": "It can also inflict 1 damage point per second by hooking humans.",
+		"value": "Plagam 1 quoque per secundam unco infligere potest."
+	},
+	{
+		"key": "It can infect humans and heal the infected with the hammer.",
+		"value": "Larua malleo homines inficere infectosque sanare potest."
+	},
+	{
+		"key": "It can infect humans and heal the infected with the hammer.",
+		"value": "Larua malleo homines inficere infectosque sanare potest."
 	},
 	{
 		"key": "Laser wall: {sec:RemainingTime}",
@@ -230,7 +253,7 @@
 		"value": "Medicus"
 	},
 	{
-		"key": "Medic also has a powerful shotgun that can knock back infected.",
+		"key": "Medic also has a powerful shotgun that can knock back the infected.",
 		"value": "Etiam sibi sclopetum dispergens habet potens, quod infectos deicere pollet."
 	},
 	{
@@ -246,7 +269,7 @@
 		"value": "Mercennarius"
 	},
 	{
-		"key": "Mercenary can also throw poison grenades that each deal {int:NumDamagePoints} damage points.",
+		"key": "Mercenary can also throw poison grenades that deal {int:NumDamagePoints} damage points and prevent the infected from healing.",
 		"one": "Ad hoc granatas veneficas iacere potest quae singulae plagam unam inponunt.",
 		"other": "Ad hoc granatas veneficas iacere potest quae plagas {int:NumDamagePoints} inponunt.",
 	},
@@ -316,13 +339,17 @@
 		"value": "Electio fortuita"
 	},
 	{
-		"key": "Receive it by killing at least {int:NumKills} zombies as scientist.",
+		"key": "Receive it by killing at least {int:NumKills} of the infected as a Scientist.",
 		"one": "",
 		"other": "",
 	},
 	{
 		"key": "Rules of the game",
 		"value": "Regulae ludi"
+	},
+	{
+		"key": "Santa {str:PlayerName} has arrived!",
+		"value": "{str:PlayerName} pugnam reliquit"
 	},
 	{
 		"key": "Scientist",
@@ -339,6 +366,10 @@
 	{
 		"key": "Slug",
 		"value": "Limax"
+	},
+	{
+		"key": "Slug can infect humans and heal the infected with the hammer.",
+		"value": "Limax malleo homines inficere infectosque sanare potest."
 	},
 	{
 		"key": "Slugs",
@@ -361,16 +392,16 @@
 		"value": "Sniper"
 	},
 	{
-		"key": "Snipers can jump two times in air.",
-		"value": "Bis in aere exsilere potest."
-	},
-	{
 		"key": "Soldier",
 		"value": "Miles"
 	},
 	{
 		"key": "Soldiers",
 		"value": "Miles"
+	},
+	{
+		"key": "Someone was infected to balance the game.",
+		"value": "Quum infectus vallum tangit, tum moritur."
 	},
 	{
 		"key": "Spider",
@@ -413,10 +444,6 @@
 		"value": "Grates {str:ListOfContributors}"
 	},
 	{
-		"key": "The Bat can heal infected with the hammer, but cannot infect humans",
-		"value": "Finis infectorum est inficere homines omnes."
-	},
-	{
 		"key": "The Biologist has a shotgun with bouncing bullets and can create a spring laser trap by shooting with the laser rifle.",
 		"value": "Biologus sclopetum dispergens cum missilibus reflectentibus habet laqueumque sclopeto laserico struere potest."
 	},
@@ -425,16 +452,16 @@
 		"value": "Boomer explodit, quum oppugnat."
 	},
 	{
-		"key": "The Engineer can build walls with the hammer to block infected.",
+		"key": "The Engineer can build walls with the hammer to block the infected.",
 		"value": "Clavicarius malleo valla infectos inhibendes exstruere potest."
 	},
 	{
-		"key": "The Ghost can infect humans and heal infected with the hammer.",
-		"value": "Larua malleo homines inficere infectosque sanare potest."
+		"key": "The Ghost is invisible until a human comes nearby, it takes damage, or it uses the hammer.",
+		"value": "Latens est, donec homo proxumus sit, pugnam experiatur aut malleo utatur."
 	},
 	{
-		"key": "The Ghoul can infect humans and heal infected with the hammer.",
-		"value": "\u0120\u016bl malleo homines inficere infectosque sanare potest."
+		"key": "The Ghoul can devour anything that has died nearby, which makes it stronger, faster and more resistant.",
+		"value": "Omnia circa eum mortua devorare potest, quo fortior, celerior firmiorque fiat."
 	},
 	{
 		"key": "The Hero cannot be healed by a Medic, but it can withstand a hit from an infected.",
@@ -445,19 +472,15 @@
 		"value": "Heros vexillum invenit!"
 	},
 	{
-		"key": "The Hero has a shotgun, a laser rifle, and a grenade launcher.",
-		"value": "Heros sclopetum dispergens, sclopetum lasericum granatasque habet."
-	},
-	{
-		"key": "The Hunter can infect humans and heal infected with the hammer.",
-		"value": "Venator malleo homines inficere infectosque sanare potest."
-	},
-	{
 		"key": "The Medic can protect humans with the hammer by giving them armor.",
 		"value": "Medicus malleo tegumina disponens homines tuerier potest."
 	},
 	{
-		"key": "The Ninja can throw flash grenades that can freeze infected during three seconds.",
+		"key": "The Mercenary can fly in the air using their machine gun.",
+		"value": "Mercennarius sclopeto polybolico in aere volare potest."
+	},
+	{
+		"key": "The Ninja can throw flash grenades that can freeze the infected for three seconds.",
 		"value": "Ninja granatas iacere potest quae infectos tres secundas congelare pollent."
 	},
 	{
@@ -465,15 +488,11 @@
 		"value": "Scientista malleo minas pendentes interponere potest."
 	},
 	{
-		"key": "The Slug can infect humans and heal infected with the hammer.",
-		"value": "Limax malleo homines inficere infectosque sanare potest."
+		"key": "The Slug can make the ground and walls toxic by spreading slime with the hammer.",
+		"value": "Solum parietesque veneniferos malleo mucum reddendo potest."
 	},
 	{
-		"key": "The Smoker can infect humans and heal infected with the hammer.",
-		"value": "Fumigator malleo homines inficere infectosque sanare potest."
-	},
-	{
-		"key": "The Sniper can lock the position in air for 15 seconds with the hammer.",
+		"key": "The Sniper can lock the position in mid-air for 15 seconds with the hammer.",
 		"value": "Sniper malleo positionem 15 secundas claudere in aere potest."
 	},
 	{
@@ -481,40 +500,24 @@
 		"value": "Miles malleo bombas impendentes creare potest."
 	},
 	{
-		"key": "The Spider can infect humans and heal infected with the hammer.",
-		"value": "Aranea malleo homines inficere infectosque sanare potest."
-	},
-	{
-		"key": "The Undead can infect humans and heal infected with the hammer.",
-		"value": "Immortalis malleo homines inficere infectosque sanare potest."
-	},
-	{
-		"key": "The Voodoo can infect humans and heal infected with the hammer.",
-		"value": "Larua malleo homines inficere infectosque sanare potest."
-	},
-	{
-		"key": "The Witch can infect humans and heal infected with the hammer.",
-		"value": "Malefica malleo homines inficere infectosque sanare potest."
+		"key": "The Undead cannot die. Instead of dying, it gets frozen for 10 seconds.",
+		"value": "Pro morte secundas 10 gelatur."
 	},
 	{
 		"key": "The class is disabled",
 		"value": "Malefica mortua est"
 	},
 	{
-		"key": "The class selector will be displayed when rounds start",
+		"key": "The class selector will be displayed when round starts",
 		"value": "Selector classis praebebitur, quum ludus incipit"
 	},
 	{
-		"key": "The goal for humans is to survive until the army cleans the map.",
+		"key": "The goal for the humans is to survive until the army cleans the map.",
 		"value": "Finis hominum est supervivere, donec militia arenam repurgat."
 	},
 	{
-		"key": "The goal for infected is to infect all humans.",
+		"key": "The goal for the infected is to infect all humans.",
 		"value": "Finis infectorum est inficere homines omnes."
-	},
-	{
-		"key": "The hook of the spider (in both mode) deal 1 damage point per second and can grab a human during 2 seconds.",
-		"value": "Uncus araneus (in modos ambobus) plagam 1 infligit et hominem secundas 2 tenet."
 	},
 	{
 		"key": "The lifespan of a wall is {sec:LifeSpan}, and walls are limited to one per player at the same time.",
@@ -529,20 +532,29 @@
 		"value": "Malefica mortua est"
 	},
 	{
-		"key": "They also have a powerful rifle that deals 20 damage points in locked position, and 10\u201313 otherwise.",
-		"value": "Sclopetum striatum habet quod nocet 30 in claustro, 10\u201313 alias."
+		"key": "Their hammer is replaced with a katana, allowing them to dash {int:NinjaJump} times before touching the ground.",
+		"one": "Malleus eius katana permutatus. Quo in manus pervenit, ut insultet semel, antequam solum contingit.",
+		"other": "Malleus eius katana permutatus. Quo in manus pervenit, ut insultet {int:NinjaJump} temporibus, antequam solum contingit.",
 	},
 	{
-		"key": "They can create powerful bombs with their hammer.",
+		"key": "They can also create a powerful bomb with their hammer that can be charged by hitting it or with a laser rifle.",
 		"value": "Miles malleo bombas impendentes creare potest."
+	},
+	{
+		"key": "They can also jump two times in the air.",
+		"value": "Bis in aere exsilere potest."
+	},
+	{
+		"key": "They can also jump two times in the air.",
+		"value": "Bis in aere exsilere potest."
 	},
 	{
 		"key": "This username is already taken by an existing account",
 		"value": "Hoc accomputus iam exemptus est."
 	},
 	{
-		"key": "Touching the slime inflicts three damage points in three seconds on a human.",
-		"value": "Contamen muci homini plagas tres per secunda tria infligit."
+		"key": "Too few infected to call the Santa",
+		"value": "Finis infectorum est inficere homines omnes."
 	},
 	{
 		"key": "Type \u201c/help {str:ClassName}\u201d for more information about your class",
@@ -551,6 +563,10 @@
 	{
 		"key": "Undead",
 		"value": "Immortalis"
+	},
+	{
+		"key": "Undead can infect humans and heal the infected with the hammer.",
+		"value": "Immortalis malleo homines inficere infectosque sanare potest."
 	},
 	{
 		"key": "Undeads",
@@ -585,28 +601,24 @@
 		"value": "Utere \u00bb/msg !near\u00ab, ut nuntium collineatum ad arenarios propinquos emittas."
 	},
 	{
-		"key": "Use \u201c/msg <PlayerName> <My Message>\u201d to send a private message to this player.",
+		"key": "Use \u201c/mute <PlayerName>\u201d to mute this player.",
 		"value": "Utere \u00bb/msg <Nomen arenarii> <Nuntium meum>\u00ab, ut nuntium privatum haec arenario emittas."
 	},
 	{
-		"key": "Use \u201c/mute <PlayerName>\u201d to mute this player.",
+		"key": "Use \u201c/w <PlayerName> <My Message>\u201d to send a private message to this player.",
 		"value": "Utere \u00bb/msg <Nomen arenarii> <Nuntium meum>\u00ab, ut nuntium privatum haec arenario emittas."
+	},
+	{
+		"key": "Voodoo can infect humans and heal the infected with the hammer.",
+		"value": "Larua malleo homines inficere infectosque sanare potest."
 	},
 	{
 		"key": "Web mode enabled",
 		"value": "Modus retialis instructus"
 	},
 	{
-		"key": "When an infected dies, it may respawn near the Witch.",
-		"value": "Infectus mortuus iuxta eam ab inferis exsistere potest."
-	},
-	{
 		"key": "When an infected touches the wall, it dies.",
 		"value": "Quum infectus vallum tangit, tum moritur."
-	},
-	{
-		"key": "When selecting any gun, the hook enter in web mode.",
-		"value": "Quum telum quodlubet seligis, captio eius unco in modum retialem transit."
 	},
 	{
 		"key": "White hole: {sec:RemainingTime}",
@@ -615,6 +627,14 @@
 	{
 		"key": "Witch",
 		"value": "Malefica"
+	},
+	{
+		"key": "Witch can infect humans and heal the infected with the hammer.",
+		"value": "Malefica malleo homines inficere infectosque sanare potest."
+	},
+	{
+		"key": "Witch {str:PlayerName} has arrived!",
+		"value": "{str:PlayerName} pugnam reliquit"
 	},
 	{
 		"key": "Witches",
@@ -631,6 +651,10 @@
 	{
 		"key": "You are an infected: {str:ClassName}",
 		"value": "Infectus es: {str:ClassName}"
+	},
+	{
+		"key": "You are blinded: {sec:EffectDuration}",
+		"value": "Gelatus es: {sec:EffectDuration}"
 	},
 	{
 		"key": "You are frozen: {sec:EffectDuration}",
@@ -661,6 +685,10 @@
 		"value": "Infectus es: {str:ClassName}"
 	},
 	{
+		"key": "You have called the Santa once again",
+		"value": "Maleficam necavisti, +5 copiae"
+	},
+	{
 		"key": "You have eliminated your target, +2 points",
 		"value": "Scopum sustulisti, +2 copiae"
 	},
@@ -689,6 +717,11 @@
 		"value": "Pugnae superes, +5 copiae"
 	},
 	{
+		"key": "You have {int:NumTurrets} turrets available, use the Hammer to place it",
+		"one": "",
+		"other": "",
+	},
+	{
 		"key": "You must be logged for this operation",
 		"value": "Tibi conscriptum esse opus est, ut hanc operationem conficias."
 	},
@@ -709,8 +742,8 @@
 		"value": "Accomputus tuus confectus est tuque iam conscriptus es."
 	},
 	{
-		"key": "he Mercenary can fly in the air using their machine gun.",
-		"value": "Mercennarius sclopeto polybolico in aere volare potest."
+		"key": "{str:PlayerName} changed the class to {str:ClassName}",
+		"value": "{str:PlayerName} nomen innovavit {str:NewName}"
 	},
 	{
 		"key": "{str:PlayerName} changed their name to {str:NewName}",
@@ -727,6 +760,10 @@
 	{
 		"key": "{str:PlayerName} has been kicked ({str:Reason})",
 		"value": "{str:PlayerName} eiectus est ({str:Reason}) "
+	},
+	{
+		"key": "{str:PlayerName} has destroyed your turret!",
+		"value": "{str:PlayerName} pugnam reliquit"
 	},
 	{
 		"key": "{str:PlayerName} has left the game",
@@ -761,8 +798,24 @@
 		"value": "{str:Victim} lingua praecisa est ad {sec:Duration} ({str:Reason})"
 	},
 	{
+		"key": "Any human that touch a hook in web mode is automatically grabbed.",
+		"value": "Homo quicumque uncum in modo retiali tangens apprehenditur."
+	},
+	{
+		"key": "Bat can jump multiple times in air.",
+		"value": "Bis in aere exsilere potest."
+	},
+	{
 		"key": "Bombs are limited to one per player at the same time.",
 		"value": "Bombae terminatae sunt, ut una arenario quoicumque quandocumque sola exstet."
+	},
+	{
+		"key": "For any question about the translation process, please contact us on IRC ({str:IRCAddress})",
+		"value": "Quaestione de traductionis processu exorta nos via IRC ({str:IRCAddress}) postula"
+	},
+	{
+		"key": "He can also inflict 1 damage point per second by hooking humans.",
+		"value": "Plagam 1 quoque per secundam unco infligere potest."
 	},
 	{
 		"key": "He can also inflict 4 damage points per second by hooking humans.",
@@ -781,12 +834,48 @@
 		"value": "Plagam 1 quoque per secundam unco infligere potest."
 	},
 	{
+		"key": "Snipers can jump two times in air.",
+		"value": "Bis in aere exsilere potest."
+	},
+	{
+		"key": "The Hero has a shotgun, a laser rifle, and a grenade launcher.",
+		"value": "Heros sclopetum dispergens, sclopetum lasericum granatasque habet."
+	},
+	{
 		"key": "The Hero must find a flag hidden in the map.",
 		"value": "Heroi vexillum in mappa reconditum inveniendum est. "
 	},
 	{
+		"key": "The Hunter can infect humans and heal infected with the hammer.",
+		"value": "Venator malleo homines inficere infectosque sanare potest."
+	},
+	{
+		"key": "The Smoker can infect humans and heal infected with the hammer.",
+		"value": "Fumigator malleo homines inficere infectosque sanare potest."
+	},
+	{
+		"key": "The Spider can infect humans and heal infected with the hammer.",
+		"value": "Aranea malleo homines inficere infectosque sanare potest."
+	},
+	{
 		"key": "Thereupon he digests his fodder bit by bit going back to his normal state, and besides, death bereaves him of his nourishment.",
 		"value": "Exinde pabulum digerit sensim ad statum vulgarem revolviens, ultro ei letum alimenta detrahit."
+	},
+	{
+		"key": "They also have a powerful rifle that deals 20 damage points in locked position, and 10\u201313 otherwise.",
+		"value": "Sclopetum striatum habet quod nocet 30 in claustro, 10\u201313 alias."
+	},
+	{
+		"key": "Touching the slime inflicts three damage points in three seconds on a human.",
+		"value": "Contamen muci homini plagas tres per secunda tria infligit."
+	},
+	{
+		"key": "When an infected dies, it may respawn near the Witch.",
+		"value": "Infectus mortuus iuxta eam ab inferis exsistere potest."
+	},
+	{
+		"key": "When selecting any gun, the hook enter in web mode.",
+		"value": "Quum telum quodlubet seligis, captio eius unco in modum retialem transit."
 	},
 	{
 		"key": "You are now logged.",

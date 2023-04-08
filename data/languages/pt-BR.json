@@ -12,7 +12,7 @@
 		"value": "Um cientista dedicado a matar, consegue ter um buraco branco que suga o infectado no qual pode ser colocado com o rifle laser."
 	},
 	{
-		"key": "A random class will be automatically attributed to you when rounds start",
+		"key": "A random class will be automatically attributed to you when round starts",
 		"value": "Uma classe aleat\u00f3ria ser\u00e1 automaticamente atribu\u00edda a voc\u00ea quando as rodadas come\u00e7arem"
 	},
 	{
@@ -90,6 +90,10 @@
 	{
 		"key": "Choose your class",
 		"value": "Escolha sua classe"
+	},
+	{
+		"key": "Class {str:ClassName} will be automatically attributed to you when round starts",
+		"value": "Uma classe aleat\u00f3ria ser\u00e1 automaticamente atribu\u00edda a voc\u00ea quando as rodadas come\u00e7arem"
 	},
 	{
 		"key": "Create an account on Crowdin and join the translation team:",
@@ -684,7 +688,7 @@
 		"value": "Limite de classe excedido"
 	},
 	{
-		"key": "The class selector will be displayed when rounds start",
+		"key": "The class selector will be displayed when round starts",
 		"value": "O seletor de classe ser\u00e1 exibido quando as rodadas come\u00e7arem"
 	},
 	{
