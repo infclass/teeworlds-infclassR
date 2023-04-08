@@ -1232,11 +1232,11 @@ void CInfClassHuman::BroadcastWeaponState() const
 				if(BombLevel < 1.0)
 				{
 					dynamic_string Line1;
-					Server()->Localization()->Format(Line1, GetPlayer()->GetLanguage(),
+					Server()->Localization()->Format_L(Line1, GetPlayer()->GetLanguage(),
 						_C("Mercenary", "Use the laser to upgrade the bomb"), NULL);
 
 					dynamic_string Line2;
-					Server()->Localization()->Format(Line2, GetPlayer()->GetLanguage(),
+					Server()->Localization()->Format_L(Line2, GetPlayer()->GetLanguage(),
 						_C("Mercenary", "Explosive yield: {percent:BombLevel}"), "BombLevel", &BombLevel, NULL);
 
 					Line1.append("\n");
@@ -1823,7 +1823,6 @@ void CInfClassHuman::OnMercLaserFired(WeaponFireContext *pFireContext)
 
 	if(!pCurrentBomb)
 	{
-		GameServer()->SendBroadcast_Localization(GetCID(), BROADCAST_PRIORITY_WEAPONSTATE, 60, "Bomb needed");
 		pFireContext->FireAccepted = false;
 	}
 	else
