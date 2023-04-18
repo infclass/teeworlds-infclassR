@@ -14,9 +14,9 @@
 class CMapInfo
 {
 public:
-	int MinimumPlayers = 0;
-	int MaximumPlayers = 0;
-	int RecommendedPlayers = 0;
+	uint8_t MinimumPlayers = 0;
+	uint8_t MaximumPlayers = 0;
+	uint8_t RecommendedPlayers = 0;
 };
 
 class CMapInfoEx : public CMapInfo
@@ -31,12 +31,12 @@ public:
 	void ResetData();
 
 protected:
-	char aMapName[64];
+	char aMapName[sizeof(CConfig::m_SvMap)];
 };
 
 void CMapInfoEx::SetName(const char *pMapName)
 {
-	str_copy(aMapName, pMapName, sizeof(aMapName));
+	str_copy(aMapName, pMapName);
 }
 
 void CMapInfoEx::AddTimestamp(int Timestamp)
