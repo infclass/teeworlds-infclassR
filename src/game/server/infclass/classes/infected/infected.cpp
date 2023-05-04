@@ -591,7 +591,7 @@ void CInfClassInfected::DoBoomerExplosion()
 				pTarget->TryUnfreeze(GetCID());
 				if(!pTarget->IsFrozen())
 				{
-					pTarget->Heal(8 + random_int(0, 10), GetCID());
+					pTarget->Heal(4 + DamageToDeal, GetCID());
 				}
 			}
 
