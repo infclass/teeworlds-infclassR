@@ -1100,14 +1100,6 @@ void CInfClassCharacter::GetDeathContext(const SDamageContext &DamageContext, De
 	// - Smoker hooked a med poisoned by a slug:
 	//   killer=smoker assistant=slug
 
-	if(DamageType == DAMAGE_TYPE::BOOMER_EXPLOSION)
-	{
-		if(GetPlayerClass() == PLAYERCLASS_BOOMER)
-		{
-			return;
-		}
-	}
-
 	const auto AddUnique = [](int CID, ClientsArray *pArray)
 	{
 		if(pArray->Contains(CID))
