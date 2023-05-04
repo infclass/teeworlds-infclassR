@@ -573,13 +573,10 @@ void CInfClassInfected::DoBoomerExplosion()
 				Diff.y = -0.5f;
 			vec2 ForceDir(0,1);
 			float Length = length(Diff);
-			if(pTarget->IsZombie() && (Length < DamageRadius))
+			if(Length < ClosestCharacterDistance)
 			{
-				if(Length < ClosestCharacterDistance)
-				{
-					pBestBFTarget = pTarget;
-					ClosestCharacterDistance = Length;
-				}
+				pBestBFTarget = pTarget;
+				ClosestCharacterDistance = Length;
 			}
 
 			Length = 1-clamp((Length-InnerRadius)/(DamageRadius-InnerRadius), 0.0f, 1.0f);
