@@ -585,7 +585,15 @@ void CInfClassInfected::DoBoomerExplosion()
 				ForceDir = normalize(Diff);
 
 			float DamageToDeal = 1 + ((Damage - 1) * Length);
-			pTarget->TakeDamage(ForceDir*Force*Length, DamageToDeal, GetCID(), DAMAGE_TYPE::BOOMER_EXPLOSION);
+			pTarget->TakeDamage(ForceDir * Force * Length, DamageToDeal, GetCID(), DAMAGE_TYPE::BOOMER_EXPLOSION);
+			if(pTarget->IsZombie())
+			{
+				pTarget->TryUnfreeze(GetCID());
+				if(!pTarget->IsFrozen())
+				{
+					pTarget->Heal(8 + random_int(0, 10), GetCID());
+				}
+			}
 
 			const CInfClassPlayer *pTargetPlayer = pTarget->GetPlayer();
 			if(pTarget->IsZombie() || (pTargetPlayer && pTargetPlayer->IsInfectionStarted()))

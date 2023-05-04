@@ -698,15 +698,6 @@ bool CInfClassCharacter::TakeDamage(const vec2 &Force, float FloatDmg, int From,
 		{
 			if(pKillerPlayer->IsZombie())
 			{
-				//Heal and unfreeze
-				if(DamageType == DAMAGE_TYPE::BOOMER_EXPLOSION)
-				{
-					TryUnfreeze(From);
-					if(!IsFrozen())
-					{
-						Heal(8+random_int(0, 10), From);
-					}
-				}
 				return false;
 			}
 		}
