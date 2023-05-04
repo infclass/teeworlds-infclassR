@@ -2692,7 +2692,7 @@ int CInfClassGameController::InfectHumans(int NumHumansToInfect)
 	ClientsArray FairCandidates;
 	ClientsArray UnfairCandidates;
 
-	icArray<CInfClassPlayer *, 64> Humans;
+	icArray<CInfClassPlayer *, MAX_CLIENTS> Humans;
 
 	while(Iter.Next())
 	{
