@@ -3396,7 +3396,11 @@ void CInfClassGameController::OnCharacterDeath(CInfClassCharacter *pVictim, cons
 	bool ClassSpecialProcessingEnabled = true;
 
 	PLAYERCLASS VictimClass = static_cast<PLAYERCLASS>(pVictim->GetPlayerClass());
-	if((GetRoundType() == ROUND_TYPE::FUN) && !pVictim->IsHuman() && GetPlayerClassProbability(VictimClass))
+	if(DamageType == DAMAGE_TYPE::GAME)
+	{
+		ClassSpecialProcessingEnabled = false;
+	}
+	else if((GetRoundType() == ROUND_TYPE::FUN) && !pVictim->IsHuman() && GetPlayerClassProbability(VictimClass))
 	{
 		ClassSpecialProcessingEnabled = false;
 	}
