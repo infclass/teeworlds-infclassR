@@ -1,3 +1,10 @@
+InfclassR v1.5.0_alpha7
+- Fixed 'undead is finally dead' on player left the game
+- Boomer healing effect now depends on the distance
+- Fixed translation for some Merc text strings
+- Ghost visibility for spectators now depends on
+  'sv_strict_spectate_mode' config option
+
 InfclassR v1.5.0_alpha6
 - "Forced spectator" mode reworked for compatibility
   with DDNet client
