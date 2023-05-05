@@ -1,15 +1,15 @@
 /* (c) Magnus Auvinen. See licence.txt in the root of the distribution for more information. */
 /* If you are missing that file, acquire a complete release at teeworlds.com.				*/
-
-#include <engine/shared/config.h>
-#include <game/server/gamecontext.h>
-#include <game/server/player.h>
-#include <new>
-#include <iostream>
-
 #include "character.h"
 #include "projectile.h"
 
+#include <engine/shared/config.h>
+
+#include <game/generated/protocol.h>
+#include <game/generated/server_data.h>
+
+#include <game/server/gamecontext.h>
+#include <game/server/player.h>
 #include <game/server/teams.h>
 
 int CCharacter::EntityId = CGameWorld::ENTTYPE_CHARACTER;

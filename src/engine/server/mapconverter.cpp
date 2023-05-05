@@ -3,6 +3,7 @@
 #include <base/color.h>
 
 #include <engine/gfx/image_loader.h>
+#include <engine/graphics.h>
 
 #include <game/server/infclass/events-director.h>
 

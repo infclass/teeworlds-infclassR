@@ -8,6 +8,7 @@
 
 #include <game/collision.h>
 
+#include <game/generated/server_data.h>
 #include <game/server/gamecontext.h>
 #include <game/server/infclass/classes/infcplayerclass.h>
 

@@ -3,9 +3,6 @@
 #ifndef GAME_SERVER_ENTITIES_CHARACTER_H
 #define GAME_SERVER_ENTITIES_CHARACTER_H
 
-#include <base/tl/array.h>
-#include <game/generated/protocol.h>
-#include <game/generated/server_data.h>
 #include <game/server/entity.h>
 
 #include <game/gamecore.h>

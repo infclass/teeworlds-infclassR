@@ -5,6 +5,8 @@
 #include <game/infclass/classes.h>
 #include <game/server/gamecontext.h>
 
+#include <game/generated/server_data.h>
+
 #include <game/server/entities/projectile.h>
 
 #include <game/server/infclass/damage_context.h>

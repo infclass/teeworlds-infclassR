@@ -5,6 +5,8 @@
 #include "game/server/infclass/classes/infcplayerclass.h"
 #include "game/server/infclass/entities/slug-slime.h"
 
+#include <game/generated/server_data.h>
+
 #include <engine/shared/config.h>
 #include <game/server/gamecontext.h>
 #include <game/server/infclass/damage_context.h>
