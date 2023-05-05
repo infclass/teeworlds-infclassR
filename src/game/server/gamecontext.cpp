@@ -400,7 +400,7 @@ void CGameContext::SendChatTarget_Localization(int To, int Category, const char*
 
 		char aBuf[256];
 		str_format(aBuf, sizeof(aBuf), "*** %s", Msg.m_pMessage);
-		Console()->Print(IConsole::OUTPUT_LEVEL_ADDINFO, "chat", aBuf);
+		Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "chat", aBuf);
 	}
 
 	va_end(VarArgs);
