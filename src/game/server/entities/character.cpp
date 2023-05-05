@@ -769,19 +769,30 @@ bool CCharacter::IsInSlowMotion() const
 	return m_SlowMotionTick > 0;
 }
 
-// duration in centiSec (10 == 1 second)
-void CCharacter::SlowMotionEffect(float Duration, int FromCID)
+float CCharacter::SlowMotionEffect(float Duration, int FromCID)
 {
 	if(Duration == 0)
-		return;
+		return 0.0f;
 	int NewSlowTick = Server()->TickSpeed() * Duration;
-	if(m_SlowMotionTick <= 0)
+	if(m_SlowMotionTick >= NewSlowTick)
+		return 0.0f;
+
+	float AddedDuration = 0;
+	if(m_SlowMotionTick > 0)
 	{
-		m_SlowMotionTick = NewSlowTick;
-		m_SlowEffectApplicant = FromCID;
-		m_IsInSlowMotion = true;
-		m_Core.m_Vel *= 0.4f;
+		AddedDuration = Duration - static_cast<float>(m_SlowMotionTick) / Server()->TickSpeed();
 	}
+	else
+	{
+		m_Core.m_Vel *= 0.4f;
+		AddedDuration = Duration;
+	}
+
+	m_SlowMotionTick = NewSlowTick;
+	m_SlowEffectApplicant = FromCID;
+	m_IsInSlowMotion = true;
+
+	return AddedDuration;
 }
 
 INFWEAPON CCharacter::GetInfWeaponID(int WID) const

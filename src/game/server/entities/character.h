@@ -238,7 +238,7 @@ public:
 	void Freeze(float Time, int Player, FREEZEREASON Reason);
 	bool IsFrozen() const;
 	bool IsInSlowMotion() const; //LooperClass changes here
-	void SlowMotionEffect(float Duration, int FromCID);
+	float SlowMotionEffect(float Duration, int FromCID);
 	void Unfreeze();
 	bool IsInLove() const;
 	void LoveEffect(float Time);

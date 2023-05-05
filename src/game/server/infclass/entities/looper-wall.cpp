@@ -187,26 +187,28 @@ void CLooperWall::Snap(int SnappingClient)
 
 void CLooperWall::OnHitInfected(CInfClassCharacter *pCharacter)
 {
+	float Reduction = Config()->m_InfLooperBarrierTimeReduce * 0.01f;
+
 	if(pCharacter->GetPlayer())
 	{
-		int LifeSpanReducer = ((Server()->TickSpeed() * Config()->m_InfLooperBarrierTimeReduce) / 100);
 		if(!pCharacter->IsInSlowMotion())
 		{
 			if(pCharacter->GetPlayerClass() == PLAYERCLASS_GHOUL)
 			{
 				float Factor = pCharacter->GetClass()->GetGhoulPercent();
-				LifeSpanReducer += Server()->TickSpeed() * 5.0f * Factor;
+				Reduction += 5.0f * Factor;
 			}
-
-			m_EndTick -= LifeSpanReducer;
 		}
 	}
 
 	// Slow-Motion modification here
 	const float FullEffectDuration = Config()->m_InfSlowMotionWallDuration * 0.1f;
-	if(!pCharacter->IsInSlowMotion())
+	const float AddedDuration = pCharacter->SlowMotionEffect(FullEffectDuration, GetOwner());
+	if(AddedDuration > 1.0f)
 	{
-		pCharacter->SlowMotionEffect(FullEffectDuration, GetOwner());
 		GameServer()->SendEmoticon(pCharacter->GetCID(), EMOTICON_EXCLAMATION);
 	}
+
+	int LifeSpanReducer = Server()->TickSpeed() * Reduction * AddedDuration / FullEffectDuration;
+	m_EndTick -= LifeSpanReducer;
 }
