@@ -52,7 +52,6 @@ void CInfClassCharacter::OnCharacterSpawned(const SpawnContext &Context)
 {
 	SetAntiFire();
 	m_IsFrozen = false;
-	m_IsInSlowMotion = false;
 	m_FrozenTime = -1;
 	m_LoveTick = -1;
 	m_SlowMotionTick = -1;
@@ -996,10 +995,39 @@ void CInfClassCharacter::UnlockPosition()
 	m_PositionLocked = false;
 }
 
+bool CInfClassCharacter::IsInSlowMotion() const
+{
+	return m_SlowMotionTick > 0;
+}
+
+float CInfClassCharacter::SlowMotionEffect(float Duration, int FromCID)
+{
+	if(Duration == 0)
+		return 0.0f;
+	int NewSlowTick = Server()->TickSpeed() * Duration;
+	if(m_SlowMotionTick >= NewSlowTick)
+		return 0.0f;
+
+	float AddedDuration = 0;
+	if(m_SlowMotionTick > 0)
+	{
+		AddedDuration = Duration - static_cast<float>(m_SlowMotionTick) / Server()->TickSpeed();
+	}
+	else
+	{
+		m_Core.m_Vel *= 0.4f;
+		AddedDuration = Duration;
+	}
+
+	m_SlowMotionTick = NewSlowTick;
+	m_SlowEffectApplicant = FromCID;
+
+	return AddedDuration;
+}
+
 void CInfClassCharacter::CancelSlowMotion()
 {
 	m_SlowMotionTick = -1;
-	m_IsInSlowMotion = false;
 }
 
 void CInfClassCharacter::ResetMovementsInput()
@@ -2130,11 +2158,7 @@ void CInfClassCharacter::PreCoreTick()
 	{
 		--m_SlowMotionTick;
 
-		if(m_SlowMotionTick <= 0)
-		{
-			m_IsInSlowMotion = false;
-		}
-		else
+		if(m_SlowMotionTick > 0)
 		{
 			int SloMoSec = 1 + (m_SlowMotionTick / Server()->TickSpeed());
 			GameServer()->SendBroadcast_Localization(m_pPlayer->GetCID(), BROADCAST_PRIORITY_EFFECTSTATE, BROADCAST_DURATION_REALTIME, _("You are slowed: {sec:EffectDuration}"), "EffectDuration", &SloMoSec, NULL);

@@ -207,7 +207,6 @@ protected:
 	
 	bool m_IsFrozen;
 	int m_FrozenTime;
-	bool m_IsInSlowMotion; //LooperClass changes here
 	FREEZEREASON m_FreezeReason;
 	int m_InAirTick;
 	vec2 m_SpawnPosition;
@@ -217,8 +216,6 @@ public:
 	int m_LoveTick;
 	int m_HallucinationTick;
 	int m_SlipperyTick;
-	int m_SlowMotionTick; //LooperClass changes here
-	int m_SlowEffectApplicant;
 	int m_LastFreezer;
 	int m_HookMode;
 	int m_InWater;
@@ -237,8 +234,6 @@ public:
 	void SetAntiFire();
 	void Freeze(float Time, int Player, FREEZEREASON Reason);
 	bool IsFrozen() const;
-	bool IsInSlowMotion() const; //LooperClass changes here
-	float SlowMotionEffect(float Duration, int FromCID);
 	void Unfreeze();
 	bool IsInLove() const;
 	void LoveEffect(float Time);

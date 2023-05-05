@@ -32,7 +32,6 @@ CCharacter::CCharacter(CGameWorld *pWorld) :
 	m_AntiFireTime = 0;
 	m_PainSoundTimer = 0;
 	m_IsFrozen = false;
-	m_IsInSlowMotion = false;
 	m_FrozenTime = -1;
 	m_DartLifeSpan = -1;
 	m_InfZoneTick = 0;
@@ -762,37 +761,6 @@ void CCharacter::Unfreeze()
 bool CCharacter::IsFrozen() const
 {
 	return m_IsFrozen;
-}
-
-bool CCharacter::IsInSlowMotion() const
-{
-	return m_SlowMotionTick > 0;
-}
-
-float CCharacter::SlowMotionEffect(float Duration, int FromCID)
-{
-	if(Duration == 0)
-		return 0.0f;
-	int NewSlowTick = Server()->TickSpeed() * Duration;
-	if(m_SlowMotionTick >= NewSlowTick)
-		return 0.0f;
-
-	float AddedDuration = 0;
-	if(m_SlowMotionTick > 0)
-	{
-		AddedDuration = Duration - static_cast<float>(m_SlowMotionTick) / Server()->TickSpeed();
-	}
-	else
-	{
-		m_Core.m_Vel *= 0.4f;
-		AddedDuration = Duration;
-	}
-
-	m_SlowMotionTick = NewSlowTick;
-	m_SlowEffectApplicant = FromCID;
-	m_IsInSlowMotion = true;
-
-	return AddedDuration;
 }
 
 INFWEAPON CCharacter::GetInfWeaponID(int WID) const

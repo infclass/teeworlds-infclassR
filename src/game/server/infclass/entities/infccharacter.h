@@ -191,6 +191,8 @@ public:
 	void LockPosition();
 	void UnlockPosition();
 
+	bool IsInSlowMotion() const;
+	float SlowMotionEffect(float Duration, int FromCID);
 	void CancelSlowMotion();
 
 	void ResetMovementsInput();
@@ -263,6 +265,9 @@ protected:
 	int m_DamageTaken = 0;
 	icArray<CDamagePoint, 4> m_TakenDamageDetails;
 	bool m_PositionLocked = false;
+
+	int m_SlowMotionTick;
+	int m_SlowEffectApplicant;
 
 	bool m_IsInvisible = false;
 	int m_InvisibleTick = 0;
