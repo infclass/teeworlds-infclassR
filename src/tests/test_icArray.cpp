@@ -7,12 +7,22 @@ TEST(ICArrayReverse, BaseTest)
 	icArray<int, 10> Array1;
 	EXPECT_EQ(Array1.Size(), 0);
 	Array1.Add(0);
+	EXPECT_EQ(Array1.First(), 0);
+	EXPECT_EQ(Array1.Last(), 0);
 	Array1.Add(1);
+	EXPECT_EQ(Array1.First(), 0);
+	EXPECT_EQ(Array1.Last(), 1);
 	Array1.Add(2);
+	EXPECT_EQ(Array1.First(), 0);
+	EXPECT_EQ(Array1.Last(), 2);
 	Array1.Add(3);
+	EXPECT_EQ(Array1.First(), 0);
+	EXPECT_EQ(Array1.Last(), 3);
 	EXPECT_EQ(Array1.Size(), 4);
 
 	Array1.RemoveAt(2);
+	EXPECT_EQ(Array1.First(), 0);
+	EXPECT_EQ(Array1.Last(), 3);
 	EXPECT_EQ(Array1.Size(), 3);
 
 	EXPECT_EQ(Array1.At(0), 0);
