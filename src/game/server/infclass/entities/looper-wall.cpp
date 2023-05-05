@@ -203,9 +203,10 @@ void CLooperWall::OnHitInfected(CInfClassCharacter *pCharacter)
 	}
 
 	// Slow-Motion modification here
+	const float FullEffectDuration = Config()->m_InfSlowMotionWallDuration * 0.1f;
 	if(!pCharacter->IsInSlowMotion())
 	{
-		pCharacter->SlowMotionEffect(Config()->m_InfSlowMotionWallDuration, GetOwner());
+		pCharacter->SlowMotionEffect(FullEffectDuration, GetOwner());
 		GameServer()->SendEmoticon(pCharacter->GetCID(), EMOTICON_EXCLAMATION);
 	}
 }

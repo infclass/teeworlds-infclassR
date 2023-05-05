@@ -774,8 +774,7 @@ void CCharacter::SlowMotionEffect(float Duration, int FromCID)
 {
 	if(Duration == 0)
 		return;
-	Duration *= 0.1f;
-	int NewSlowTick = Server()->TickSpeed()*Duration;
+	int NewSlowTick = Server()->TickSpeed() * Duration;
 	if(m_SlowMotionTick <= 0)
 	{
 		m_SlowMotionTick = NewSlowTick;

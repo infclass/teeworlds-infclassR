@@ -52,9 +52,9 @@ bool CInfClassLaser::OnCharacterHit(CInfClassCharacter *pHit)
 
 	if(m_DamageType == DAMAGE_TYPE::LOOPER_LASER)
 	{
-		pHit->SlowMotionEffect(g_Config.m_InfSlowMotionGunDuration, GetOwner());
-		if(Config()->m_InfSlowMotionGunDuration != 0)
-			GameServer()->SendEmoticon(pHit->GetCID(), EMOTICON_EXCLAMATION);
+		const float EffectDurationInSeconds = Config()->m_InfSlowMotionGunDuration * 0.1f;
+		pHit->SlowMotionEffect(EffectDurationInSeconds, GetOwner());
+		GameServer()->SendEmoticon(pHit->GetCID(), EMOTICON_EXCLAMATION);
 	}
 
 	return true;
