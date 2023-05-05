@@ -614,6 +614,7 @@ set(BASE
   src/base/tl/base.h
   src/base/tl/ic_array.h
   src/base/tl/ic_enum.h
+  src/base/tl/ic_fifo.h
   src/base/tl/range.h
   src/base/tl/threading.h
   src/base/unicode/confusables.cpp
@@ -1138,6 +1139,7 @@ if(BUILD_TESTS)
   enable_testing()
   set(TESTS
     "test_icArray"
+    "test_icFifoArray"
   )
   foreach(TEST_NAME ${TESTS})
     add_executable(${TEST_NAME} "src/tests/${TEST_NAME}.cpp")
