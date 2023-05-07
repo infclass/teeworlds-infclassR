@@ -116,10 +116,7 @@ void CInfClassCharacter::OnCharacterInInfectionZone()
 
 		GetDeathContext(DamageContext, &Context);
 
-		GameController()->OnCharacterDeath(this, Context);
-		GameServer()->CreateSound(GetPos(), SOUND_PLAYER_DIE);
-
-		GetPlayer()->StartInfection(Context.Killer);
+		Die(Context);
 	}
 }
 
@@ -1829,6 +1826,11 @@ void CInfClassCharacter::Die(const DeathContext &Context)
 
 	// a nice sound
 	GameServer()->CreateSound(GetPos(), SOUND_PLAYER_DIE);
+
+	if(Context.DamageType == DAMAGE_TYPE::INFECTION_TILE)
+	{
+		return;
+	}
 
 	// this is for auto respawn after 3 secs
 	m_pPlayer->m_DieTick = Server()->Tick();
