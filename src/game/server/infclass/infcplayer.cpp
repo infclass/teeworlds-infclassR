@@ -457,8 +457,6 @@ void CInfClassPlayer::StartInfection(int InfectiousPlayerCID, INFECTION_TYPE Inf
 	m_InfectionType = InfectionType;
 	m_InfectiousPlayerCID = InfectiousPlayerCID;
 	m_InfectionCause = InfectiousPlayerCID >= 0 ? INFECTION_CAUSE::PLAYER : INFECTION_CAUSE::GAME;
-
-	GameController()->SetPlayerInfected(GetCID(), true);
 }
 
 bool CInfClassPlayer::IsInfectionStarted() const
