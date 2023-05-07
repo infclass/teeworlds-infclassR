@@ -3413,13 +3413,13 @@ void CInfClassGameController::OnCharacterDeath(CInfClassCharacter *pVictim, cons
 		}
 	}
 
-	// It is important to SendKillMessage before GetClass()->OnCharacterDeath() to keep the correct kill order
 	char aBuf[256];
 	str_format(aBuf, sizeof(aBuf), "kill killer='%s' victim='%s' weapon=%d",
 		Server()->ClientName(Killer),
 		Server()->ClientName(pVictim->GetCID()), Weapon);
 	Console()->Print(IConsole::OUTPUT_LEVEL_DEBUG, "game", aBuf);
 
+	// It is important to SendKillMessage before GetClass()->OnCharacterDeath() to keep the correct kill order
 	SendKillMessage(pVictim->GetCID(), Context);
 
 	if(pVictim->GetClass())
