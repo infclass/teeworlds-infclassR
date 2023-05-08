@@ -105,6 +105,8 @@ void CSoldierBomb::Snap(int SnappingClient)
 		CNetObj_InfClassObject *pInfClassObject = SnapInfClassObject();
 		if(!pInfClassObject)
 			return;
+
+		pInfClassObject->m_StartTick = m_StartTick;
 	}
 
 	for(int i = 0; i < m_nbBomb; i++)
