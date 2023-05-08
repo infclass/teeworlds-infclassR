@@ -574,20 +574,14 @@ void CInfClassInfected::DoBoomerExplosion()
 			if (Diff.x == 0.0f && Diff.y == 0.0f)
 				Diff.y = -0.5f;
 			vec2 ForceDir(0,1);
-			float Length = length(Diff);
-			if(Length < ClosestCharacterDistance)
-			{
-				pBestBFTarget = pTarget;
-				ClosestCharacterDistance = Length;
-			}
+			const float Length = length(Diff);
+			const float NormalizedLength = 1 - clamp((Length - InnerRadius) / (DamageRadius - InnerRadius), 0.0f, 1.0f);
 
-			Length = 1-clamp((Length-InnerRadius)/(DamageRadius-InnerRadius), 0.0f, 1.0f);
-
-			if(Length)
+			if(NormalizedLength)
 				ForceDir = normalize(Diff);
 
-			float DamageToDeal = 1 + ((Damage - 1) * Length);
-			pTarget->TakeDamage(ForceDir * Force * Length, DamageToDeal, GetCID(), DAMAGE_TYPE::BOOMER_EXPLOSION);
+			float DamageToDeal = 1 + ((Damage - 1) * NormalizedLength);
+			pTarget->TakeDamage(ForceDir * Force * NormalizedLength, DamageToDeal, GetCID(), DAMAGE_TYPE::BOOMER_EXPLOSION);
 			if(pTarget->IsZombie())
 			{
 				pTarget->TryUnfreeze(GetCID());
@@ -602,6 +596,12 @@ void CInfClassInfected::DoBoomerExplosion()
 			{
 				const float BoomerHelperDuration = 30;
 				pTarget->AddHelper(GetCID(), BoomerHelperDuration);
+
+				if(Length < ClosestCharacterDistance)
+				{
+					pBestBFTarget = pTarget;
+					ClosestCharacterDistance = Length;
+				}
 			}
 		}
 	}
