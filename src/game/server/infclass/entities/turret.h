@@ -22,6 +22,7 @@ public:
 	void Tick() override;
 	void Snap(int SnappingClient) override;
 	float HitRadius() const { return 4.0f; }
+	void Die(CInfClassCharacter *pKiller);
 
 protected:
 	void AttackTargets();

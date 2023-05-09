@@ -60,33 +60,28 @@ void CTurret::Tick()
 	if(m_LifeSpan < 0)
 		Reset();
 
+	CInfClassCharacter *pKiller = nullptr;
+	float ClosestLength = CCharacterCore::PhysicalSize() + HitRadius();
+	ClosestLength *= ClosestLength;
+
 	for(TEntityPtr<CInfClassCharacter> pChr = GameWorld()->FindFirst<CInfClassCharacter>(); pChr; ++pChr)
 	{
 		if(!pChr->IsZombie() || !pChr->CanDie())
 			continue;
 
-		float Len = distance(pChr->m_Pos, m_Pos);
+		float Len2 = distance2(pChr->GetPos(), GetPos());
 
 		// selfdestruction
-		if(Len < pChr->GetProximityRadius() + 4.0f )
+		if(Len2 < ClosestLength)
 		{
-			pChr->TakeDamage(vec2(0.f, 0.f), Config()->m_InfTurretSelfDestructDmg, m_Owner, DAMAGE_TYPE::TURRET_DESTRUCTION);
-			GameServer()->CreateSound(m_Pos, SOUND_LASER_FIRE);
-			int ClientID = pChr->GetCID();
-			GameServer()->SendChatTarget_Localization(ClientID, CHATCATEGORY_SCORE, _("You destroyed {str:PlayerName}'s turret!"),
-				"PlayerName", Server()->ClientName(m_Owner),
-				nullptr
-			);
-			GameServer()->SendChatTarget_Localization(m_Owner, CHATCATEGORY_SCORE, _("{str:PlayerName} has destroyed your turret!"),
-				"PlayerName", Server()->ClientName(ClientID),
-				nullptr
-			);
-
-			//increase score
-			Server()->RoundStatistics()->OnScoreEvent(ClientID, SCOREEVENT_DESTROY_TURRET, pChr->GetPlayerClass(), Server()->ClientName(ClientID), GameServer()->Console());
-			GameServer()->SendScoreSound(pChr->GetCID());
-			Reset();
+			ClosestLength = Len2;
+			pKiller = pChr;
 		}
+	}
+
+	if(pKiller)
+	{
+		Die(pKiller);
 	}
 
 	//reduce lifespan
@@ -230,4 +225,22 @@ void CTurret::Snap(int SnappingClient)
 		vec2 Direction = vec2(cos(shiftedAngle), sin(shiftedAngle));
 		GameController()->SendHammerDot(m_Pos + Direction * m_Radius, m_IDs[i]);
 	}
+}
+
+void CTurret::Die(CInfClassCharacter *pKiller)
+{
+	pKiller->TakeDamage(vec2(0.f, 0.f), Config()->m_InfTurretSelfDestructDmg, m_Owner, DAMAGE_TYPE::TURRET_DESTRUCTION);
+	GameServer()->CreateSound(m_Pos, SOUND_LASER_FIRE);
+	int ClientID = pKiller->GetCID();
+	GameServer()->SendChatTarget_Localization(ClientID, CHATCATEGORY_SCORE, _("You destroyed {str:PlayerName}'s turret!"),
+		"PlayerName", Server()->ClientName(m_Owner),
+		nullptr);
+	GameServer()->SendChatTarget_Localization(m_Owner, CHATCATEGORY_SCORE, _("{str:PlayerName} has destroyed your turret!"),
+		"PlayerName", Server()->ClientName(ClientID),
+		nullptr);
+
+	// increase score
+	Server()->RoundStatistics()->OnScoreEvent(ClientID, SCOREEVENT_DESTROY_TURRET, pKiller->GetPlayerClass(), Server()->ClientName(ClientID), GameServer()->Console());
+	GameServer()->SendScoreSound(pKiller->GetCID());
+	Reset();
 }
