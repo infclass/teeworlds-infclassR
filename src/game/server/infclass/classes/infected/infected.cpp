@@ -4,6 +4,7 @@
 #include "game/server/gameworld.h"
 #include "game/server/infclass/classes/infcplayerclass.h"
 #include "game/server/infclass/entities/slug-slime.h"
+#include "game/server/infclass/entities/turret.h"
 
 #include <game/generated/server_data.h>
 
@@ -564,13 +565,14 @@ void CInfClassInfected::DoBoomerExplosion()
 		int Num = GameWorld()->FindEntities(GetPos(), DamageRadius, (CEntity**)apEnts, MAX_CLIENTS, CGameWorld::ENTTYPE_CHARACTER);
 		float ClosestCharacterDistance = DamageRadius * 2;
 
+		const vec2 Pos = GetPos();
 		for(int i = 0; i < Num; i++)
 		{
 			CInfClassCharacter *pTarget = apEnts[i];
 			if(pTarget == m_pCharacter)
 				continue;
 
-			vec2 Diff = pTarget->GetPos() - GetPos();
+			vec2 Diff = pTarget->GetPos() - Pos;
 			if (Diff.x == 0.0f && Diff.y == 0.0f)
 				Diff.y = -0.5f;
 			vec2 ForceDir(0,1);
@@ -602,6 +604,15 @@ void CInfClassInfected::DoBoomerExplosion()
 					pBestBFTarget = pTarget;
 					ClosestCharacterDistance = Length;
 				}
+			}
+		}
+
+		const float InnerRadius2 = InnerRadius * InnerRadius;
+		for(TEntityPtr<CTurret> pTarget = GameWorld()->FindFirst<CTurret>(); pTarget; ++pTarget)
+		{
+			if(!pTarget->IsMarkedForDestroy() && distance2(pTarget->GetPos(), Pos) <= InnerRadius2)
+			{
+				pTarget->Die(m_pCharacter);
 			}
 		}
 	}
