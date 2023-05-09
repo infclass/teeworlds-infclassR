@@ -99,6 +99,12 @@ inline T distance(const vector2_base<T> a, const vector2_base<T> &b)
 }
 
 template<typename T>
+inline T distance2(const vector2_base<T> a, const vector2_base<T> &b)
+{
+	return length2(a - b);
+}
+
+template<typename T>
 inline T dot(const vector2_base<T> a, const vector2_base<T> &b)
 {
 	return a.x * b.x + a.y * b.y;
@@ -107,6 +113,11 @@ inline T dot(const vector2_base<T> a, const vector2_base<T> &b)
 inline float length(const vector2_base<float> &a)
 {
 	return sqrtf(a.x * a.x + a.y * a.y);
+}
+
+inline float length2(const vector2_base<float> &a)
+{
+	return a.x * a.x + a.y * a.y;
 }
 
 inline float angle(const vector2_base<float> &a)
