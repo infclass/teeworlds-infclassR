@@ -120,13 +120,14 @@ void CInfClassPlayer::Tick()
 			else
 			{
 				const CInfClassPlayer *pFollowedPlayer = GameController()->GetPlayer(TargetToFollow());
-				if(pFollowedPlayer)
+				if(pFollowedPlayer && (pFollowedPlayer->IsHuman() == IsHuman()))
 				{
 					m_ViewPos = pFollowedPlayer->m_ViewPos;
 				}
 				else
 				{
 					m_FollowTargetId = -1;
+					m_FollowTargetTicks = 0;
 				}
 			}
 		}
