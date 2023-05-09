@@ -5,11 +5,11 @@
 
 #include "infc-placed-object.h"
 
-#include <base/tl/array.h>
-
 class CTurret : public CPlacedObject
 {
 public:
+	static int EntityId;
+
 	enum Type
 	{
 		LASER,
@@ -17,10 +17,11 @@ public:
 	};
 
 	CTurret(CGameContext *pGameContext, vec2 Pos, int Owner, vec2 Direction, Type Type);
-	virtual ~CTurret();
+	~CTurret() override;
 
-	virtual void Tick();
-	virtual void Snap(int SnappingClient);
+	void Tick() override;
+	void Snap(int SnappingClient) override;
+	float HitRadius() const { return 4.0f; }
 
 protected:
 	void AttackTargets();
@@ -39,8 +40,8 @@ private:
 	int m_ReloadCounter;
 	int m_ammunition;
 	bool m_foundTarget;
-	
-	array<int> m_IDs;
+
+	int m_IDs[8];
 
 	int m_LifeSpan;
 

@@ -16,8 +16,12 @@
 #include "infccharacter.h"
 #include "plasma.h"
 
-CTurret::CTurret(CGameContext *pGameContext, vec2 Pos, int Owner, vec2 Direction, CTurret::Type Type)
-	: CPlacedObject(pGameContext, CGameWorld::ENTTYPE_TURRET, Pos, Owner)
+#include <iterator> // std::size
+
+int CTurret::EntityId = CGameWorld::ENTTYPE_TURRET;
+
+CTurret::CTurret(CGameContext *pGameContext, vec2 Pos, int Owner, vec2 Direction, CTurret::Type Type) :
+	CPlacedObject(pGameContext, EntityId, Pos, Owner)
 {
 	m_InfClassObjectType = INFCLASS_OBJECT_TYPE_TURRET;
 	m_Dir = Direction;
@@ -30,10 +34,9 @@ CTurret::CTurret(CGameContext *pGameContext, vec2 Pos, int Owner, vec2 Direction
 	m_LifeSpan = Server()->TickSpeed()*Config()->m_InfTurretDuration;
 	m_WarmUpCounter = Server()->TickSpeed()*Config()->m_InfTurretWarmUpDuration;
 	m_Type = Type;
-	m_IDs.set_size(9);
-	for(int i = 0; i < m_IDs.size(); i++)
+	for(int &ID : m_IDs)
 	{
-		m_IDs[i] = Server()->SnapNewID();
+		ID = Server()->SnapNewID();
 	}
 	Reload();
 
@@ -42,22 +45,22 @@ CTurret::CTurret(CGameContext *pGameContext, vec2 Pos, int Owner, vec2 Direction
 
 CTurret::~CTurret()
 {
-	for(int i = 0; i < m_IDs.size(); i++)
+	for(int SnapId : m_IDs)
 	{
-		Server()->SnapFreeID(m_IDs[i]);
+		Server()->SnapFreeID(SnapId);
 	}
 }
 
 void CTurret::Tick()
 {
 	//marked for destroy
-	if(m_MarkedForDestroy)
+	if(IsMarkedForDestroy())
 		return;
 
 	if(m_LifeSpan < 0)
 		Reset();
 
-	for(CInfClassCharacter *pChr = (CInfClassCharacter*) GameWorld()->FindFirst(CGameWorld::ENTTYPE_CHARACTER); pChr; pChr = (CInfClassCharacter *)pChr->TypeNext())
+	for(TEntityPtr<CInfClassCharacter> pChr = GameWorld()->FindFirst<CInfClassCharacter>(); pChr; ++pChr)
 	{
 		if(!pChr->IsZombie() || !pChr->CanDie())
 			continue;
@@ -208,7 +211,7 @@ void CTurret::Snap(int SnappingClient)
 	float time = (Server()->Tick()-m_StartTick)/(float)Server()->TickSpeed();
 	float angle = fmodf(time*pi/2, 2.0f*pi);
 
-	CNetObj_Laser *pObj = static_cast<CNetObj_Laser *>(Server()->SnapNewItem(NETOBJTYPE_LASER, m_IDs[0], sizeof(CNetObj_Laser)));
+	CNetObj_Laser *pObj = static_cast<CNetObj_Laser *>(Server()->SnapNewItem(NETOBJTYPE_LASER, m_ID, sizeof(CNetObj_Laser)));
 
 	if(!pObj)
 		return;
@@ -219,12 +222,12 @@ void CTurret::Snap(int SnappingClient)
 	pObj->m_FromY = (int)m_Pos.y;
 	pObj->m_StartTick = Server()->Tick();
 
-	int Dots = AntiPing ? 2 : m_IDs.size() - 1;
+	int Dots = AntiPing ? 2 : std::size(m_IDs);
 
 	for(int i = 0; i < Dots; i++)
 	{
 		float shiftedAngle = angle + 2.0 * pi * i / static_cast<float>(Dots);
 		vec2 Direction = vec2(cos(shiftedAngle), sin(shiftedAngle));
-		GameController()->SendHammerDot(m_Pos + Direction * m_Radius, m_IDs[1 + i]);
+		GameController()->SendHammerDot(m_Pos + Direction * m_Radius, m_IDs[i]);
 	}
 }
