@@ -738,29 +738,8 @@ void CInfClassHuman::OnGrenadeFired(WeaponFireContext *pFireContext)
 	switch(GetPlayerClass())
 	{
 	case PLAYERCLASS_SCIENTIST:
-	{
-		vec2 PortalPos;
-		if(FindPortalPosition(&PortalPos))
-		{
-			vec2 OldPos = GetPos();
-			m_pCharacter->m_Core.m_Pos = PortalPos;
-			m_pCharacter->m_Core.m_HookedPlayer = -1;
-			m_pCharacter->m_Core.m_HookState = HOOK_RETRACTED;
-			m_pCharacter->m_Core.m_HookPos = PortalPos;
-			if(g_Config.m_InfScientistTpSelfharm > 0) {
-				m_pCharacter->TakeDamage(vec2(0.0f, 0.0f), g_Config.m_InfScientistTpSelfharm * 2, GetCID(), DAMAGE_TYPE::SCIENTIST_TELEPORT);
-			}
-			GameServer()->CreateDeath(OldPos, GetCID());
-			GameServer()->CreateDeath(PortalPos, GetCID());
-			GameServer()->CreateSound(PortalPos, SOUND_CTF_RETURN);
-			new CLaserTeleport(GameServer(), PortalPos, OldPos);
-		}
-		else
-		{
-			pFireContext->FireAccepted = false;
-		}
+		OnPortalGunFired(pFireContext);
 		break;
-	}
 	case PLAYERCLASS_MEDIC:
 		OnMedicGrenadeFired(pFireContext);
 		break;
@@ -1777,6 +1756,31 @@ void CInfClassHuman::OnMedicGrenadeFired(WeaponFireContext *pFireContext)
 	new CGrowingExplosion(GameServer(), GetPos(), GetDirection(), GetCID(), HealingExplosionRadius, GROWING_EXPLOSION_EFFECT::HEAL_HUMANS);
 
 	GameServer()->CreateSound(GetPos(), SOUND_GRENADE_FIRE);
+}
+
+void CInfClassHuman::OnPortalGunFired(WeaponFireContext *pFireContext)
+{
+	vec2 PortalPos;
+	if(!FindPortalPosition(&PortalPos))
+	{
+		pFireContext->FireAccepted = false;
+		return;
+	}
+
+	vec2 OldPos = GetPos();
+	m_pCharacter->m_Core.m_Pos = PortalPos;
+	m_pCharacter->m_Core.m_HookedPlayer = -1;
+	m_pCharacter->m_Core.m_HookState = HOOK_RETRACTED;
+	m_pCharacter->m_Core.m_HookPos = PortalPos;
+	float SelfDamage = Config()->m_InfScientistTpSelfharm;
+	if(SelfDamage)
+	{
+		m_pCharacter->TakeDamage(vec2(0.0f, 0.0f), SelfDamage * 2, GetCID(), DAMAGE_TYPE::SCIENTIST_TELEPORT);
+	}
+	GameServer()->CreateDeath(OldPos, GetCID());
+	GameServer()->CreateDeath(PortalPos, GetCID());
+	GameServer()->CreateSound(PortalPos, SOUND_CTF_RETURN);
+	new CLaserTeleport(GameServer(), PortalPos, OldPos);
 }
 
 void CInfClassHuman::OnBlindingLaserFired(WeaponFireContext *pFireContext)

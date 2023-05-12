@@ -80,6 +80,7 @@ protected:
 
 	void OnMercGrenadeFired(WeaponFireContext *pFireContext);
 	void OnMedicGrenadeFired(WeaponFireContext *pFireContext);
+	void OnPortalGunFired(WeaponFireContext *pFireContext);
 
 	void OnBlindingLaserFired(WeaponFireContext *pFireContext);
 	void OnBiologistLaserFired(WeaponFireContext *pFireContext);
