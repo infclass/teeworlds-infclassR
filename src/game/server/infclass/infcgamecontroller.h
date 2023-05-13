@@ -291,9 +291,6 @@ private:
 	int m_HeroGiftTick = 0;
 
 	ClientsArray m_NinjaTargets;
-	int m_TargetToKill;
-	int m_TargetToKillCoolDown;
-
 	int m_PlayerOwnCursorID = -1;
 
 	ROUND_TYPE m_RoundType = ROUND_TYPE::NORMAL;
