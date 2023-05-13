@@ -632,8 +632,14 @@ bool CInfClassCharacter::TakeDamage(const vec2 &Force, float FloatDmg, int From,
 	}
 
 	DamageContext.Weapon = CInfClassGameController::DamageTypeToWeapon(DamageType, &DamageContext.Mode);
+	return TakeDamage(DamageContext);
+}
 
+bool CInfClassCharacter::TakeDamage(SDamageContext DamageContext)
+{
+	const int From = DamageContext.Killer;
 	const int &Weapon = DamageContext.Weapon;
+	const DAMAGE_TYPE DamageType = DamageContext.DamageType;
 	TAKEDAMAGEMODE &Mode = DamageContext.Mode;
 	int &Dmg = DamageContext.Damage;
 

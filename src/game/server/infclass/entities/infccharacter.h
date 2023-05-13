@@ -105,6 +105,7 @@ public:
 	void FireWeapon() override;
 
 	bool TakeDamage(const vec2 &Force, float Dmg, int From, DAMAGE_TYPE DamageType);
+	bool TakeDamage(SDamageContext DamageContext);
 	bool TakeDamage(vec2 Force, int Dmg, int From, int Weapon, TAKEDAMAGEMODE Mode) override;
 
 	bool Heal(int HitPoints, int FromCID = -1);
