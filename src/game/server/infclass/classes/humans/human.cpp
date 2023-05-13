@@ -1232,7 +1232,7 @@ void CInfClassHuman::BroadcastWeaponState() const
 
 		if(pCurrentBomb)
 		{
-			float BombLevel = pCurrentBomb->m_Damage/static_cast<float>(Config()->m_InfMercBombs);
+			float BombLevel = pCurrentBomb->GetDamage() / static_cast<float>(Config()->m_InfMercBombs);
 
 			if(m_pCharacter->GetActiveWeapon() == WEAPON_LASER)
 			{
@@ -1623,7 +1623,7 @@ void CInfClassHuman::FireMercenaryBomb(WeaponFireContext *pFireContext)
 	{
 		float Distance = distance(pCurrentBomb->GetPos(), GetPos());
 		const float SafeDistance = 16;
-		if(pCurrentBomb->ReadyToExplode() || Distance > CMercenaryBomb::GetMaxRadius() + SafeDistance)
+		if(pCurrentBomb->IsReadyToExplode() || Distance > CMercenaryBomb::GetMaxRadius() + SafeDistance)
 		{
 			pCurrentBomb->Explode();
 		}

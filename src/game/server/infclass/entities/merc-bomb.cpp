@@ -20,10 +20,10 @@ CMercenaryBomb::CMercenaryBomb(CGameContext *pGameContext, vec2 Pos, int Owner)
 	GameWorld()->InsertEntity(this);
 	m_LoadingTick = Server()->TickSpeed();
 	m_Damage = 0;
-	
-	for(int i=0; i<NUM_IDS; i++)
+
+	for(int &ID : m_IDs)
 	{
-		m_IDs[i] = Server()->SnapNewID();
+		ID = Server()->SnapNewID();
 	}
 
 	GameServer()->CreateSound(GetPos(), SOUND_PICKUP_ARMOR);
@@ -31,9 +31,9 @@ CMercenaryBomb::CMercenaryBomb(CGameContext *pGameContext, vec2 Pos, int Owner)
 
 CMercenaryBomb::~CMercenaryBomb()
 {
-	for(int i=0; i<NUM_IDS; i++)
+	for(int SnapId : m_IDs)
 	{
-		Server()->SnapFreeID(m_IDs[i]);
+		Server()->SnapFreeID(SnapId);
 	}
 }
 
@@ -53,14 +53,15 @@ void CMercenaryBomb::Upgrade(float Points)
 
 void CMercenaryBomb::Tick()
 {
-	if(m_MarkedForDestroy) return;
-	
+	if(IsMarkedForDestroy())
+		return;
+
 	if(m_Damage >= Config()->m_InfMercBombs && m_LoadingTick > 0)
 		m_LoadingTick--;
 	
 	// Find other players
 	bool MustExplode = false;
-	for(CInfClassCharacter *p = (CInfClassCharacter*) GameWorld()->FindFirst(CGameWorld::ENTTYPE_CHARACTER); p; p = (CInfClassCharacter *)p->TypeNext())
+	for(TEntityPtr<CInfClassCharacter> p = GameWorld()->FindFirst<CInfClassCharacter>(); p; ++p)
 	{
 		if(p->IsHuman()) continue;
 		if(!p->CanDie()) continue;
@@ -90,7 +91,7 @@ void CMercenaryBomb::Explode()
 	GameWorld()->DestroyEntity(this);
 }
 
-bool CMercenaryBomb::ReadyToExplode()
+bool CMercenaryBomb::IsReadyToExplode() const
 {
 	return m_LoadingTick <= 0;
 }

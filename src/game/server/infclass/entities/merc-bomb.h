@@ -21,17 +21,18 @@ public:
 	CMercenaryBomb(CGameContext *pGameContext, vec2 Pos, int Owner);
 	~CMercenaryBomb();
 
-	virtual void Snap(int SnappingClient);
-	virtual void Tick();
-	void Explode();
+	void Snap(int SnappingClient) override;
+	void Tick() override;
+
+	void Explode(int DetonatedBy);
 	void Upgrade(float Points);
-	bool ReadyToExplode();
+	bool IsReadyToExplode() const;
 	static float GetMaxRadius();
+	float GetDamage() const { return m_Damage; }
 
 private:
 	int m_IDs[NUM_IDS];
-	
-public:
+
 	int m_LoadingTick;
 	float m_Damage;
 };
