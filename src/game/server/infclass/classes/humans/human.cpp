@@ -188,7 +188,7 @@ int CInfClassHuman::GetJumps() const
 	}
 }
 
-void CInfClassHuman::GiveGift(int GiftType)
+void CInfClassHuman::GiveGift(EGiftType GiftType)
 {
 	if(!m_pCharacter)
 		return;
@@ -417,7 +417,7 @@ void CInfClassHuman::OnCharacterTick()
 				_("You have held a bonus area for one minute, +5 points"), nullptr);
 			GameServer()->SendEmoticon(GetCID(), EMOTICON_MUSIC);
 			m_pCharacter->SetEmote(EMOTE_HAPPY, Server()->Tick() + Server()->TickSpeed());
-			GiveGift(GIFT_HEROFLAG);
+			GiveGift(EGiftType::BonusZone);
 
 			Server()->RoundStatistics()->OnScoreEvent(GetCID(), SCOREEVENT_BONUS, GetPlayerClass(),
 				Server()->ClientName(GetCID()), GameServer()->Console());
@@ -1979,7 +1979,7 @@ void CInfClassHuman::OnHeroFlagTaken(CInfClassCharacter *pHero)
 
 	if(pHero != m_pCharacter)
 	{
-		GiveGift(GIFT_HEROFLAG);
+		GiveGift(EGiftType::HeroFlag);
 		return;
 	}
 

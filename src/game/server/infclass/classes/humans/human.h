@@ -9,9 +9,10 @@
 class CHeroFlag;
 class CWhiteHole;
 
-enum
+enum class EGiftType
 {
-	GIFT_HEROFLAG = 0,
+	BonusZone,
+	HeroFlag,
 };
 
 class CInfClassHuman : public CInfClassPlayerClass
@@ -34,7 +35,7 @@ public:
 	void GetAmmoRegenParams(int Weapon, WeaponRegenParams *pParams) override;
 	int GetJumps() const override;
 
-	void GiveGift(int GiftType);
+	void GiveGift(EGiftType GiftType);
 
 	bool CanBeHit() const override;
 
