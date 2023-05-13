@@ -24,7 +24,7 @@ public:
 	void Snap(int SnappingClient) override;
 	void Tick() override;
 
-	void Explode(int DetonatedBy);
+	void Explode();
 	void Upgrade(float Points);
 	bool IsReadyToExplode() const;
 	static float GetMaxRadius();
