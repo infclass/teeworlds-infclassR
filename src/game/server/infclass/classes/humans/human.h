@@ -103,7 +103,7 @@ private:
 	int m_PositionLockTicksRemaining = 0;
 	int m_NinjaTargetTick = 0;
 	int m_NinjaTargetCID = -1;
-	bool m_HasWhiteHole;
+	bool m_HasWhiteHole = false;
 
 	CHeroFlag *m_pHeroFlag = nullptr;
 };
