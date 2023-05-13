@@ -23,7 +23,7 @@ enum class TAKEDAMAGEMODE
 {
 	NOINFECTION=0,
 	INFECTION,
-	SELFHARM, // works like NOINFECTION but also harms the owner of the damage with 50%
+	ALLOW_SELFHARM, // works like NOINFECTION but also harms the owner of the damage with 50%
 };
 
 /* INFECTION MODIFICATION END *****************************************/

@@ -722,7 +722,7 @@ bool CInfClassCharacter::TakeDamage(SDamageContext DamageContext)
 	// m_pPlayer only inflicts half damage on self
 	if(From == GetCID())
 	{
-		if(Mode == TAKEDAMAGEMODE::SELFHARM)
+		if(Mode == TAKEDAMAGEMODE::ALLOW_SELFHARM)
 			Dmg = Dmg ? maximum(1, Dmg / 2) : 0;
 		else
 			return false;
