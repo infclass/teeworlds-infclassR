@@ -60,32 +60,38 @@ void CMercenaryBomb::Tick()
 		m_LoadingTick--;
 	
 	// Find other players
-	bool MustExplode = false;
-	for(TEntityPtr<CInfClassCharacter> p = GameWorld()->FindFirst<CInfClassCharacter>(); p; ++p)
-	{
-		if(p->IsHuman()) continue;
-		if(!p->CanDie()) continue;
+	CInfClassCharacter *pTriggerCharacter = nullptr;
+	float ClosestLength = CCharacterCore::PhysicalSize() + GetMaxRadius();
 
-		float Len = distance(p->m_Pos, m_Pos);
-		if(Len < p->m_ProximityRadius + GetMaxRadius())
+	for(TEntityPtr<CInfClassCharacter> pChr = GameWorld()->FindFirst<CInfClassCharacter>(); pChr; ++pChr)
+	{
+		if(!pChr->IsZombie() || !pChr->CanDie())
+			continue;
+
+		float Len = distance(pChr->GetPos(), GetPos());
+
+		if(Len < ClosestLength)
 		{
-			MustExplode = true;
-			break;
+			ClosestLength = Len;
+			pTriggerCharacter = pChr;
 		}
 	}
-	
-	if(MustExplode)
-		Explode();
+
+	if(pTriggerCharacter)
+	{
+		Explode(pTriggerCharacter->GetCID());
+	}
 }
 
-void CMercenaryBomb::Explode()
+void CMercenaryBomb::Explode(int TriggeredBy)
 {
 	float Factor = static_cast<float>(m_Damage)/Config()->m_InfMercBombs;
 	
 	if(m_Damage > 1)
 	{
 		GameServer()->CreateSound(m_Pos, SOUND_GRENADE_EXPLODE);
-		new CGrowingExplosion(GameServer(), m_Pos, vec2(0.0, -1.0), m_Owner, 16.0f * Factor, DAMAGE_TYPE::MERCENARY_BOMB);
+		CGrowingExplosion *pExplosion = new CGrowingExplosion(GameServer(), m_Pos, vec2(0.0, -1.0), m_Owner, 16.0f * Factor, DAMAGE_TYPE::MERCENARY_BOMB);
+		pExplosion->SetTriggeredBy(TriggeredBy);
 	}
 
 	GameWorld()->DestroyEntity(this);

@@ -36,6 +36,8 @@ public:
 	void SetDamage(int Damage);
 	int GetActualDamage();
 
+	void SetTriggeredBy(int CID);
+
 private:
 	void ProcessMercenaryBombHit(CInfClassCharacter *pCharacter);
 
@@ -43,6 +45,7 @@ private:
 	int m_GrowingMap_Length;
 	int m_GrowingMap_Size;
 	DAMAGE_TYPE m_DamageType;
+	int m_TriggeredByCID;
 	TAKEDAMAGEMODE m_TakeDamageMode = TAKEDAMAGEMODE::NOINFECTION;
 	
 	vec2 m_SeedPos;

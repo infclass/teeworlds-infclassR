@@ -1604,7 +1604,7 @@ void CInfClassHuman::FireMercenaryBomb(WeaponFireContext *pFireContext)
 		const float SafeDistance = 16;
 		if(pCurrentBomb->IsReadyToExplode() || Distance > CMercenaryBomb::GetMaxRadius() + SafeDistance)
 		{
-			pCurrentBomb->Explode();
+			pCurrentBomb->Explode(GetCID());
 		}
 		else
 		{

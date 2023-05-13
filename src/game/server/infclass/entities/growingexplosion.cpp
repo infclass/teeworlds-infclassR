@@ -21,6 +21,7 @@ CGrowingExplosion::CGrowingExplosion(CGameContext *pGameContext, vec2 Pos, vec2 
 	CInfCEntity(pGameContext, CGameWorld::ENTTYPE_GROWINGEXPLOSION, Pos, Owner)
 {
 	m_DamageType = DamageType;
+	m_TriggeredByCID = Owner;
 	CInfClassGameController::DamageTypeToWeapon(DamageType, &m_TakeDamageMode);
 
 	switch(DamageType)
@@ -388,6 +389,11 @@ int CGrowingExplosion::GetActualDamage()
 	 return m_Damage;
 }
 
+void CGrowingExplosion::SetTriggeredBy(int CID)
+{
+	 m_TriggeredByCID = CID;
+}
+
 void CGrowingExplosion::ProcessMercenaryBombHit(CInfClassCharacter *pCharacter)
 {
 	float Power = m_MaxGrowing / 16.0; // 0..1
@@ -420,9 +426,18 @@ void CGrowingExplosion::ProcessMercenaryBombHit(CInfClassCharacter *pCharacter)
 
 	l = 1-clamp(Ratio, 0.0f, 1.0f);
 	float Dmg = Config()->m_InfMercBombMaxDamage * l * Power;
+	int DamageFromCID = GetOwner();
+	const vec2 Force = ForceDir * Dmg * 2;
+
+	if(pCharacter->GetCID() == GetOwner())
+	{
+		Dmg *= 0.5f;
+		DamageFromCID = m_TriggeredByCID;
+	}
+
 	if(Dmg)
 	{
-		pCharacter->TakeDamage(ForceDir * Dmg * 2, Dmg, GetOwner(), m_DamageType);
+		pCharacter->TakeDamage(Force, Dmg, DamageFromCID, m_DamageType);
 	}
 
 	m_Hit[pCharacter->GetCID()] = true;
