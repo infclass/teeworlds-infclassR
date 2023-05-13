@@ -431,12 +431,6 @@ void CInfClassGameController::HandleCharacterTiles(CInfClassCharacter *pCharacte
 			pCharacter->OnCharacterInDamageZone(Damage);
 		}
 	}
-
-	int BonusZoneIndex = GetBonusZoneValueAt(pCharacter->GetPos());
-	if(BonusZoneIndex == ZONE_BONUS_BONUS)
-	{
-		pCharacter->OnCharacterInBonusZoneTick();
-	}
 }
 
 void CInfClassGameController::HandleLastHookers()

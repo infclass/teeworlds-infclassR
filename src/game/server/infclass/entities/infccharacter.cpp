@@ -139,23 +139,6 @@ void CInfClassCharacter::OnCharacterOutOfInfectionZone()
 	m_ProtectionTick = 0;
 }
 
-void CInfClassCharacter::OnCharacterInBonusZoneTick()
-{
-	m_BonusTick++;
-	if(m_BonusTick > Server()->TickSpeed()*60)
-	{
-		m_BonusTick = 0;
-
-		GameServer()->SendChatTarget_Localization(GetCID(), CHATCATEGORY_SCORE, _("You have held a bonus area for one minute, +5 points"), NULL);
-		GameServer()->SendEmoticon(GetCID(), EMOTICON_MUSIC);
-		SetEmote(EMOTE_HAPPY, Server()->Tick() + Server()->TickSpeed());
-		GiveGift(GIFT_HEROFLAG);
-
-		Server()->RoundStatistics()->OnScoreEvent(GetCID(), SCOREEVENT_BONUS, GetPlayerClass(), Server()->ClientName(GetCID()), GameServer()->Console());
-		GameServer()->SendScoreSound(GetCID());
-	}
-}
-
 void CInfClassCharacter::OnCharacterInDamageZone(float Damage)
 {
 	constexpr DAMAGE_TYPE DamageType = DAMAGE_TYPE::DAMAGE_TILE;
@@ -191,12 +174,6 @@ void CInfClassCharacter::Destroy()
 void CInfClassCharacter::Tick()
 {
 	const vec2 PrevPos = m_Core.m_Pos;
-
-	if(IsHuman() && IsAlive() && GameController()->IsInfectionStarted())
-	{
-	}
-	else
-		m_BonusTick = 0;
 
 	if(m_pClass)
 	{

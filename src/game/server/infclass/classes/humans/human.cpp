@@ -376,6 +376,34 @@ void CInfClassHuman::OnCharacterTick()
 	}
 	}
 
+	if(m_pCharacter->IsAlive() && GameController()->IsInfectionStarted())
+	{
+		int BonusZoneIndex = GameController()->GetBonusZoneValueAt(GetPos());
+		if(BonusZoneIndex == ZONE_BONUS_BONUS)
+		{
+			m_BonusTick++;
+		}
+
+		if(m_BonusTick > Server()->TickSpeed()*60)
+		{
+			m_BonusTick = 0;
+
+			GameServer()->SendChatTarget_Localization(GetCID(), CHATCATEGORY_SCORE,
+				_("You have held a bonus area for one minute, +5 points"), nullptr);
+			GameServer()->SendEmoticon(GetCID(), EMOTICON_MUSIC);
+			m_pCharacter->SetEmote(EMOTE_HAPPY, Server()->Tick() + Server()->TickSpeed());
+			m_pCharacter->GiveGift(GIFT_HEROFLAG);
+
+			Server()->RoundStatistics()->OnScoreEvent(GetCID(), SCOREEVENT_BONUS, GetPlayerClass(),
+				Server()->ClientName(GetCID()), GameServer()->Console());
+			GameServer()->SendScoreSound(GetCID());
+		}
+	}
+	else
+	{
+		m_BonusTick = 0;
+	}
+
 	if(m_ResetKillsTime)
 	{
 		m_ResetKillsTime--;

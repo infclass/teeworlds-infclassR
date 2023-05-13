@@ -88,7 +88,6 @@ public:
 	void OnCharacterSpawned(const SpawnContext &Context);
 	void OnCharacterInInfectionZone();
 	void OnCharacterOutOfInfectionZone();
-	void OnCharacterInBonusZoneTick();
 	void OnCharacterInDamageZone(float Damage);
 
 	void Destroy() override;
@@ -277,7 +276,6 @@ protected:
 	char m_GhostSearchMap[GHOST_SEARCHMAP_SIZE * GHOST_SEARCHMAP_SIZE];
 
 	int m_HealTick = 0;
-	int m_BonusTick = 0;
 };
 
 inline const CInfClassCharacter *CInfClassCharacter::GetInstance(const CCharacter *pCharacter)

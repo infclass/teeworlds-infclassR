@@ -96,6 +96,7 @@ private:
 
 	icArray<int, 2> m_BarrierHintIDs;
 
+	int m_BonusTick = 0;
 	int m_ResetKillsTime = 0;
 	int m_KillsProgression = 0;
 	int m_TurretCount = 0;
