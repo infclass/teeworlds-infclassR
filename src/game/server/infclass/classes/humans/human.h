@@ -9,6 +9,11 @@
 class CHeroFlag;
 class CWhiteHole;
 
+enum
+{
+	GIFT_HEROFLAG = 0,
+};
+
 class CInfClassHuman : public CInfClassPlayerClass
 {
 	MACRO_ALLOC_POOL_ID()
@@ -28,6 +33,8 @@ public:
 
 	void GetAmmoRegenParams(int Weapon, WeaponRegenParams *pParams) override;
 	int GetJumps() const override;
+
+	void GiveGift(int GiftType);
 
 	bool CanBeHit() const override;
 

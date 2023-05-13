@@ -188,6 +188,31 @@ int CInfClassHuman::GetJumps() const
 	}
 }
 
+void CInfClassHuman::GiveGift(int GiftType)
+{
+	if(!m_pCharacter)
+		return;
+
+	m_pCharacter->IncreaseHealth(1);
+	m_pCharacter->GiveArmor(4);
+
+	const auto AllWeaponsWithAmmo =
+		{
+			WEAPON_GUN,
+			WEAPON_SHOTGUN,
+			WEAPON_GRENADE,
+			WEAPON_LASER,
+		};
+
+	for(int WeaponSlot : AllWeaponsWithAmmo)
+	{
+		if(m_pCharacter->HasWeapon(WeaponSlot))
+		{
+			m_pCharacter->GiveWeapon(WeaponSlot, -1);
+		}
+	}
+}
+
 bool CInfClassHuman::CanBeHit() const
 {
 	if(GetPlayerClass() == PLAYERCLASS_NINJA)
@@ -392,7 +417,7 @@ void CInfClassHuman::OnCharacterTick()
 				_("You have held a bonus area for one minute, +5 points"), nullptr);
 			GameServer()->SendEmoticon(GetCID(), EMOTICON_MUSIC);
 			m_pCharacter->SetEmote(EMOTE_HAPPY, Server()->Tick() + Server()->TickSpeed());
-			m_pCharacter->GiveGift(GIFT_HEROFLAG);
+			GiveGift(GIFT_HEROFLAG);
 
 			Server()->RoundStatistics()->OnScoreEvent(GetCID(), SCOREEVENT_BONUS, GetPlayerClass(),
 				Server()->ClientName(GetCID()), GameServer()->Console());
@@ -1954,7 +1979,7 @@ void CInfClassHuman::OnHeroFlagTaken(CInfClassCharacter *pHero)
 
 	if(pHero != m_pCharacter)
 	{
-		m_pCharacter->GiveGift(GIFT_HEROFLAG);
+		GiveGift(GIFT_HEROFLAG);
 		return;
 	}
 

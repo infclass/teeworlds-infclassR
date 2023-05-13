@@ -1852,6 +1852,11 @@ void CInfClassCharacter::SetLastWeapon(int Weapon)
 	m_LastWeapon = Weapon;
 }
 
+bool CInfClassCharacter::HasWeapon(int Weapon) const
+{
+	return m_aWeapons[Weapon].m_Got;
+}
+
 void CInfClassCharacter::TakeAllWeapons()
 {
 	for (WeaponStat &weapon : m_aWeapons)
@@ -2067,28 +2072,6 @@ float CInfClassCharacter::WebHookLength() const
 		return 0;
 
 	return distance(m_Core.m_Pos, m_Core.m_HookPos);
-}
-
-void CInfClassCharacter::GiveGift(int GiftType)
-{
-	IncreaseHealth(1);
-	GiveArmor(4);
-
-	const auto AllWeaponsWithAmmo =
-	{
-		WEAPON_GUN,
-		WEAPON_SHOTGUN,
-		WEAPON_GRENADE,
-		WEAPON_LASER,
-	};
-
-	for(int WeaponSlot : AllWeaponsWithAmmo)
-	{
-		if(m_aWeapons[WeaponSlot].m_Got)
-		{
-			GiveWeapon(WeaponSlot, -1);
-		}
-	}
 }
 
 void CInfClassCharacter::GiveRandomClassSelectionBonus()

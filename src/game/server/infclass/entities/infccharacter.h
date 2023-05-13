@@ -16,11 +16,6 @@ enum class DAMAGE_TYPE;
 struct SDamageContext;
 struct DeathContext;
 
-enum
-{
-	GIFT_HEROFLAG=0,
-};
-
 struct CHelperInfo
 {
 	int m_CID = -1;
@@ -130,6 +125,7 @@ public:
 
 	void SetActiveWeapon(int Weapon);
 	void SetLastWeapon(int Weapon);
+	bool HasWeapon(int Weapon) const;
 	void TakeAllWeapons();
 
 	void AddAmmo(int Weapon, int Ammo);
@@ -182,7 +178,6 @@ public:
 
 	float WebHookLength() const;
 
-	void GiveGift(int GiftType);
 	void GiveRandomClassSelectionBonus();
 	void MakeVisible();
 	void GrantSpawnProtection();
