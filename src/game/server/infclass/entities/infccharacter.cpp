@@ -14,7 +14,6 @@
 
 #include <game/server/entities/projectile.h>
 
-#include <game/server/infclass/classes/infected/infected.h>
 #include <game/server/infclass/damage_context.h>
 #include <game/server/infclass/damage_type.h>
 #include <game/server/infclass/death_context.h>
@@ -2055,8 +2054,7 @@ void CInfClassCharacter::TryUnfreeze(int UnfreezerCID)
 	if(!IsFrozen())
 		return;
 
-	CInfClassInfected *pInfected = CInfClassInfected::GetInstance(this);
-	if(pInfected && !pInfected->CanBeUnfreezed())
+	if(!m_pClass->CanBeUnfreezed())
 	{
 		return;
 	}

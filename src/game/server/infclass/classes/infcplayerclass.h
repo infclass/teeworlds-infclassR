@@ -42,6 +42,7 @@ public:
 
 	virtual bool CanDie() const;
 	virtual bool CanBeHit() const;
+	virtual bool CanBeUnfreezed() const;
 
 	float GetHammerProjOffset() const;
 	virtual float GetHammerRange() const;

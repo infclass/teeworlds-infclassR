@@ -172,6 +172,11 @@ bool CInfClassPlayerClass::CanBeHit() const
 	return true;
 }
 
+bool CInfClassPlayerClass::CanBeUnfreezed() const
+{
+	return true;
+}
+
 float CInfClassPlayerClass::GetHammerProjOffset() const
 {
 	return GetProximityRadius() * 0.75f;

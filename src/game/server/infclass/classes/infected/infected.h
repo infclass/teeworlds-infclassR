@@ -27,7 +27,7 @@ public:
 	void OnPlayerSnap(int SnappingClient, int InfClassVersion) override;
 
 	bool CanDie() const override;
-	bool CanBeUnfreezed() const;
+	bool CanBeUnfreezed() const override;
 
 	void OnCharacterPreCoreTick() override;
 	void OnCharacterTick() override;
