@@ -42,15 +42,16 @@ void CScientistMine::Explode(int DetonatedBy)
 	CInfClassCharacter *OwnerChar = GetOwnerCharacter();
 	if(OwnerChar)
 	{
-		float Dist = distance(m_Pos, OwnerChar->GetPos());
-		if(Dist < OwnerChar->GetProximityRadius() + GetProximityRadius())
+		constexpr int MaxSelfDamage = 4;
+		float Distance = distance(m_Pos, OwnerChar->GetPos());
+		if(Distance < OwnerChar->GetProximityRadius() + GetProximityRadius())
 		{
-			OwnerChar->TakeDamage(vec2(0.0f, 0.0f), 4, DetonatedBy, DAMAGE_TYPE::SCIENTIST_MINE);
+			OwnerChar->TakeDamage(vec2(0.0f, 0.0f), MaxSelfDamage, DetonatedBy, DAMAGE_TYPE::SCIENTIST_MINE);
 		}
-		else if(Dist < OwnerChar->GetProximityRadius() + 2 * GetProximityRadius())
+		else if(Distance < OwnerChar->GetProximityRadius() + 2 * GetProximityRadius())
 		{
-			float Alpha = (Dist - GetProximityRadius() - OwnerChar->GetProximityRadius()) / GetProximityRadius();
-			OwnerChar->TakeDamage(vec2(0.0f, 0.0f), 4*Alpha, DetonatedBy, DAMAGE_TYPE::SCIENTIST_MINE);
+			float Alpha = (Distance - GetProximityRadius() - OwnerChar->GetProximityRadius()) / GetProximityRadius();
+			OwnerChar->TakeDamage(vec2(0.0f, 0.0f), MaxSelfDamage * Alpha, DetonatedBy, DAMAGE_TYPE::SCIENTIST_MINE);
 		}
 	}
 }
