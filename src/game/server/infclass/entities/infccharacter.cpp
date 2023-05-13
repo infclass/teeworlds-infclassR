@@ -2282,14 +2282,7 @@ void CInfClassCharacter::PreCoreTick()
 
 			if(HumanFound)
 			{
-				// TODO: Move the code and use CInfClassCharacter::MakeVisible()
-				if(m_IsInvisible)
-				{
-					GameServer()->CreatePlayerSpawn(GetPos());
-					m_IsInvisible = false;
-				}
-
-				m_InvisibleTick = Server()->Tick();
+				MakeVisible();
 			}
 			else
 			{
