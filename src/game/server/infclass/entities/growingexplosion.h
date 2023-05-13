@@ -9,6 +9,8 @@
 #include <game/server/entity.h>
 #include <game/server/entities/character.h>
 
+#include <vector>
+
 enum class DAMAGE_TYPE;
 
 enum class GROWING_EXPLOSION_EFFECT
@@ -27,13 +29,11 @@ class CGrowingExplosion : public CInfCEntity
 public:
 	CGrowingExplosion(CGameContext *pGameContext, vec2 Pos, vec2 Dir, int Owner, int Radius, GROWING_EXPLOSION_EFFECT ExplosionEffect);
 	CGrowingExplosion(CGameContext *pGameContext, vec2 Pos, vec2 Dir, int Owner, int Radius, DAMAGE_TYPE DamageType);
-	virtual ~CGrowingExplosion();
 
-	virtual void Tick();
-	virtual void TickPaused();
+	void Tick() override;
+	void TickPaused() override;
 
 	void SetDamage(int Damage);
-	void SetDamageType(DAMAGE_TYPE Type);
 	int GetActualDamage();
 
 private:
@@ -49,8 +49,8 @@ private:
 	int m_SeedX;
 	int m_SeedY;
 	int m_StartTick;
-	int* m_pGrowingMap;
-	vec2* m_pGrowingMapVec;
+	std::vector<int> m_pGrowingMap;
+	std::vector<vec2> m_pGrowingMapVec;
 	GROWING_EXPLOSION_EFFECT m_ExplosionEffect = GROWING_EXPLOSION_EFFECT::INVALID;
 	bool m_Hit[MAX_CLIENTS];
 	int m_Damage = -1;

@@ -17,10 +17,8 @@ CGrowingExplosion::CGrowingExplosion(CGameContext *pGameContext, vec2 Pos, vec2 
 	m_ExplosionEffect = ExplosionEffect;
 }
 
-CGrowingExplosion::CGrowingExplosion(CGameContext *pGameContext, vec2 Pos, vec2 Dir, int Owner, int Radius, DAMAGE_TYPE DamageType)
-		: CInfCEntity(pGameContext, CGameWorld::ENTTYPE_GROWINGEXPLOSION, Pos, Owner),
-		m_pGrowingMap(NULL),
-		m_pGrowingMapVec(NULL)
+CGrowingExplosion::CGrowingExplosion(CGameContext *pGameContext, vec2 Pos, vec2 Dir, int Owner, int Radius, DAMAGE_TYPE DamageType) :
+	CInfCEntity(pGameContext, CGameWorld::ENTTYPE_GROWINGEXPLOSION, Pos, Owner)
 {
 	m_DamageType = DamageType;
 	CInfClassGameController::DamageTypeToWeapon(DamageType, &m_TakeDamageMode);
@@ -51,10 +49,10 @@ CGrowingExplosion::CGrowingExplosion(CGameContext *pGameContext, vec2 Pos, vec2 
 
 	m_MaxGrowing = Radius;
 	m_GrowingMap_Length = (2*m_MaxGrowing+1);
-	m_GrowingMap_Size = (m_GrowingMap_Length*m_GrowingMap_Length);
-	
-	m_pGrowingMap = new int[m_GrowingMap_Size];
-	m_pGrowingMapVec = new vec2[m_GrowingMap_Size];
+	m_GrowingMap_Size = (m_GrowingMap_Length * m_GrowingMap_Length);
+
+	m_pGrowingMap.resize(m_GrowingMap_Size);
+	m_pGrowingMapVec.resize(m_GrowingMap_Size);
 
 	m_StartTick = Server()->Tick();
 	
@@ -125,21 +123,6 @@ CGrowingExplosion::CGrowingExplosion(CGameContext *pGameContext, vec2 Pos, vec2 
 		break;
 	default:
 		break;
-	}
-}
-
-CGrowingExplosion::~CGrowingExplosion()
-{
-	if(m_pGrowingMap)
-	{
-		delete[] m_pGrowingMap;
-		m_pGrowingMap = NULL;
-	}
-		
-	if(m_pGrowingMapVec)
-	{
-		delete[] m_pGrowingMapVec;
-		m_pGrowingMapVec = NULL;
 	}
 }
 
@@ -272,7 +255,7 @@ void CGrowingExplosion::Tick()
 	}
 	
 	// Find other players
-	for(CInfClassCharacter *p = (CInfClassCharacter*) GameWorld()->FindFirst(CGameWorld::ENTTYPE_CHARACTER); p; p = (CInfClassCharacter *)p->TypeNext())
+	for(TEntityPtr<CInfClassCharacter> p = GameWorld()->FindFirst<CInfClassCharacter>(); p; ++p)
 	{
 		int tileX = m_MaxGrowing + static_cast<int>(round(p->m_Pos.x))/32 - m_SeedX;
 		int tileY = m_MaxGrowing + static_cast<int>(round(p->m_Pos.y))/32 - m_SeedY;
@@ -365,18 +348,18 @@ void CGrowingExplosion::Tick()
 	// clean slug slime
 	if (m_ExplosionEffect == GROWING_EXPLOSION_EFFECT::FREEZE_INFECTED)
 	{
-		for(CEntity *e = (CEntity*) GameWorld()->FindFirst(CGameWorld::ENTTYPE_SLUG_SLIME); e; e = (CEntity *)e->TypeNext())
+		for(TEntityPtr<CEntity> e = GameWorld()->FindFirst(CGameWorld::ENTTYPE_SLUG_SLIME); e; ++e)
 		{
-			int tileX = m_MaxGrowing + static_cast<int>(round(e->m_Pos.x))/32 - m_SeedX;
-			int tileY = m_MaxGrowing + static_cast<int>(round(e->m_Pos.y))/32 - m_SeedY;
-		
+			int tileX = m_MaxGrowing + static_cast<int>(round(e->m_Pos.x)) / 32 - m_SeedX;
+			int tileY = m_MaxGrowing + static_cast<int>(round(e->m_Pos.y)) / 32 - m_SeedY;
+
 			if(tileX < 0 || tileX >= m_GrowingMap_Length || tileY < 0 || tileY >= m_GrowingMap_Length)
 				continue;
-				
-			int k = tileY*m_GrowingMap_Length+tileX;
+
+			int k = tileY * m_GrowingMap_Length + tileX;
 			if(m_pGrowingMap[k] >= 0)
 			{
-				if(tick - m_pGrowingMap[k] < Server()->TickSpeed()/4)
+				if(tick - m_pGrowingMap[k] < Server()->TickSpeed() / 4)
 				{
 					e->Reset();
 				}
