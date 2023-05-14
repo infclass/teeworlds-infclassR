@@ -11,8 +11,9 @@
 
 static const int MercLaserDamage = 0;
 
-CMercenaryLaser::CMercenaryLaser(CGameContext *pGameContext, vec2 Pos, vec2 Direction, float StartEnergy, int Owner)
+CMercenaryLaser::CMercenaryLaser(CGameContext *pGameContext, vec2 Pos, vec2 Direction, float StartEnergy, int Owner, float UpgradePoints)
 	: CInfClassLaser(pGameContext, Pos, Direction, StartEnergy, Owner, MercLaserDamage, CGameWorld::ENTTYPE_LASER)
+	, m_UpgradePoints(UpgradePoints)
 {
 	GameWorld()->InsertEntity(this);
 	CInfClassLaser::DoBounce();
@@ -25,7 +26,7 @@ bool CMercenaryLaser::HitCharacter(vec2 From, vec2 To)
 	if(pHitMercBomb)
 	{
 		CMercenaryBomb *pBomb = static_cast<CMercenaryBomb*>(pHitMercBomb);
-		pBomb->Upgrade(1.5);
+		pBomb->Upgrade(m_UpgradePoints);
 
 		m_From = From;
 		m_Pos = At;

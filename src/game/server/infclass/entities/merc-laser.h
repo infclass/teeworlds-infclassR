@@ -8,10 +8,13 @@
 class CMercenaryLaser : public CInfClassLaser
 {
 public:
-	CMercenaryLaser(CGameContext *pGameContext, vec2 Pos, vec2 Direction, float StartEnergy, int Owner);
+	CMercenaryLaser(CGameContext *pGameContext, vec2 Pos, vec2 Direction, float StartEnergy, int Owner, float UpgradePoints);
 
 	bool HitCharacter(vec2 From, vec2 To) override;
 	void DoBounce() override;
+
+protected:
+	float m_UpgradePoints = 0;
 };
 
 #endif // GAME_SERVER_INFCLASS_ENTITIES_MERC_LASER_H

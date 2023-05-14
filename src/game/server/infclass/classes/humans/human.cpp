@@ -1891,7 +1891,8 @@ void CInfClassHuman::OnMercLaserFired(WeaponFireContext *pFireContext)
 	}
 	else
 	{
-		new CMercenaryLaser(GameServer(), GetPos(), GetDirection(), GameServer()->Tuning()->m_LaserReach, GetCID());
+		float UpgradePoints = 1.5f;
+		new CMercenaryLaser(GameServer(), GetPos(), GetDirection(), GameServer()->Tuning()->m_LaserReach, GetCID(), UpgradePoints);
 	}
 }
 
