@@ -105,10 +105,6 @@ protected:
 	bool m_Alive;
 	int m_NeededFaketuning;
 
-	// weapon info
-	CEntity *m_apHitObjects[10];
-	int m_NumObjectsHit;
-
 	struct WeaponStat
 	{
 		int m_AmmoRegenStart;

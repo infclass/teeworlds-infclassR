@@ -392,7 +392,7 @@ void CInfClassCharacter::SpecialSnapForClient(int SnappingClient, bool *pDoSnap)
 
 void CInfClassCharacter::ResetNinjaHits()
 {
-	m_NumObjectsHit = 0;
+	m_apHitObjects.Clear();
 }
 
 void CInfClassCharacter::HandleNinja()
@@ -427,17 +427,15 @@ void CInfClassCharacter::HandleNinja()
 			// Find other players
 			for(CInfClassCharacter *pTarget = (CInfClassCharacter*) GameWorld()->FindFirst(CGameWorld::ENTTYPE_CHARACTER); pTarget; pTarget = (CInfClassCharacter *)pTarget->TypeNext())
 			{
+				if(m_apHitObjects.Capacity() == m_apHitObjects.Size())
+				{
+					break;
+				}
+
 				if(pTarget->IsHuman())
 					continue;
 
-				// make sure we haven't Hit this object before
-				bool bAlreadyHit = false;
-				for (int j = 0; j < m_NumObjectsHit; j++)
-				{
-					if(m_apHitObjects[j] == pTarget)
-						bAlreadyHit = true;
-				}
-				if(bAlreadyHit)
+				if(m_apHitObjects.Contains(pTarget))
 					continue;
 
 				vec2 IntersectPos;
@@ -453,8 +451,7 @@ void CInfClassCharacter::HandleNinja()
 				// Hit a player, give him damage and stuffs...
 				GameServer()->CreateSound(pTarget->GetPos(), SOUND_NINJA_HIT);
 				// set his velocity to fast upward (for now)
-				if(m_NumObjectsHit < 10)
-					m_apHitObjects[m_NumObjectsHit++] = pTarget;
+				m_apHitObjects.Add(pTarget);
 
 				pTarget->TakeDamage(vec2(0, -10.0f), minimum(g_pData->m_Weapons.m_Ninja.m_pBase->m_Damage + m_NinjaStrengthBuff, 20), GetCID(), DAMAGE_TYPE::NINJA);
 			}

@@ -249,6 +249,8 @@ protected:
 	ClientsArray m_LastHookers;
 	int m_LastHookerTick = -1;
 
+	icArray<CEntity *, 24> m_apHitObjects;
+
 	int m_BlindnessTicks = 0;
 	int m_LastBlinder = -1;
 
