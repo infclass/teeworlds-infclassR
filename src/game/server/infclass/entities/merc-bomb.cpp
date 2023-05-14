@@ -19,7 +19,7 @@ CMercenaryBomb::CMercenaryBomb(CGameContext *pGameContext, vec2 Pos, int Owner)
 	m_InfClassObjectType = INFCLASS_OBJECT_TYPE_MERCENARY_BOMB;
 	GameWorld()->InsertEntity(this);
 	m_LoadingTick = Server()->TickSpeed();
-	m_Damage = 0;
+	m_Load = 0;
 
 	for(int &ID : m_IDs)
 	{
@@ -40,13 +40,13 @@ CMercenaryBomb::~CMercenaryBomb()
 void CMercenaryBomb::Upgrade(float Points)
 {
 	float MaxDamage = Config()->m_InfMercBombs;
-	float NewDamage = minimum(MaxDamage, m_Damage + Points);
-	if(NewDamage <= m_Damage)
+	float NewDamage = minimum(MaxDamage, m_Load + Points);
+	if(NewDamage <= m_Load)
 	{
 		return;
 	}
 
-	m_Damage = NewDamage;
+	m_Load = NewDamage;
 
 	GameServer()->CreateSound(GetPos(), SOUND_PICKUP_ARMOR);
 }
@@ -56,7 +56,7 @@ void CMercenaryBomb::Tick()
 	if(IsMarkedForDestroy())
 		return;
 
-	if(m_Damage >= Config()->m_InfMercBombs && m_LoadingTick > 0)
+	if(m_Load >= Config()->m_InfMercBombs && m_LoadingTick > 0)
 		m_LoadingTick--;
 	
 	// Find other players
@@ -85,9 +85,9 @@ void CMercenaryBomb::Tick()
 
 void CMercenaryBomb::Explode(int TriggeredBy)
 {
-	float Factor = static_cast<float>(m_Damage)/Config()->m_InfMercBombs;
-	
-	if(m_Damage > 1)
+	float Factor = static_cast<float>(m_Load) / Config()->m_InfMercBombs;
+
+	if(m_Load > 1)
 	{
 		GameServer()->CreateSound(m_Pos, SOUND_GRENADE_EXPLODE);
 		CGrowingExplosion *pExplosion = new CGrowingExplosion(GameServer(), m_Pos, vec2(0.0, -1.0), m_Owner, 16.0f * Factor, DAMAGE_TYPE::MERCENARY_BOMB);
@@ -125,7 +125,7 @@ void CMercenaryBomb::Snap(int SnappingClient)
 
 	float AngleStart = (2.0f * pi * Server()->Tick()/static_cast<float>(Server()->TickSpeed()))/10.0f;
 	float AngleStep = 2.0f * pi / CMercenaryBomb::NUM_SIDE;
-	float R = 50.0f*static_cast<float>(m_Damage)/Config()->m_InfMercBombs;
+	float R = 50.0f * static_cast<float>(m_Load) / Config()->m_InfMercBombs;
 	for(int i=0; i<CMercenaryBomb::NUM_SIDE; i++)
 	{
 		vec2 PosStart = m_Pos + vec2(R * cos(AngleStart + AngleStep*i), R * sin(AngleStart + AngleStep*i));

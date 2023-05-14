@@ -28,13 +28,13 @@ public:
 	void Upgrade(float Points);
 	bool IsReadyToExplode() const;
 	static float GetMaxRadius();
-	float GetDamage() const { return m_Damage; }
+	float GetLoad() const { return m_Load; }
 
 private:
 	int m_IDs[NUM_IDS];
 
 	int m_LoadingTick;
-	float m_Damage;
+	float m_Load;
 };
 
 #endif

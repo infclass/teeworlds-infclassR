@@ -1264,7 +1264,7 @@ void CInfClassHuman::BroadcastWeaponState() const
 
 		if(pCurrentBomb)
 		{
-			float BombLevel = pCurrentBomb->GetDamage() / static_cast<float>(Config()->m_InfMercBombs);
+			float BombLevel = pCurrentBomb->GetLoad() / static_cast<float>(Config()->m_InfMercBombs);
 
 			if(m_pCharacter->GetActiveWeapon() == WEAPON_LASER)
 			{
