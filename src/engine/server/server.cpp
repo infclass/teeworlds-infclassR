@@ -207,6 +207,12 @@ int CServerBan::BanExt(T *pBanPool, const typename T::CDataType *pData, int Seco
 			if(i == Server()->m_RconClientId || Server()->m_aClients[i].m_State == CServer::CClient::STATE_EMPTY)
 				continue;
 
+			if(Server()->m_aClients[i].m_IsBot)
+			{
+				Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "net_ban", "ban error (unable to ban a server-side bot)");
+				return -1;
+			}
+
 			if(Server()->m_aClients[i].m_Authed >= Server()->m_RconAuthLevel && NetMatch(pData, Server()->m_NetServer.ClientAddr(i)))
 			{
 				Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "net_ban", "ban error (command denied)");
