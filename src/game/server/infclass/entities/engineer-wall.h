@@ -22,9 +22,12 @@ public:
 	void OnHitInfected(CInfClassCharacter *pCharacter);
 
 private:
+	void PrepareSnapData();
+
 	int m_EndTick;
 	int m_EndPointID;
 	int m_WallFlashTicks;
+	int m_SnapStartTick = 0;
 };
 
 #endif

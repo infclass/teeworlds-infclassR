@@ -75,6 +75,8 @@ void CEngineerWall::Tick()
 			}
 		}
 	}
+
+	PrepareSnapData();
 }
 
 void CEngineerWall::TickPaused()
@@ -99,39 +101,10 @@ void CEngineerWall::Snap(int SnappingClient)
 	const CInfClassPlayer *pPlayer = GameController()->GetPlayer(SnappingClient);
 	const bool AntiPing = pPlayer && pPlayer->GetAntiPingEnabled();
 
-	// Laser dieing animation
-	int LifeDiff = 0;
-	if (m_WallFlashTicks > 0) // flash laser for a few ticks when zombie jumps
-		LifeDiff = 5;
-	else if(m_EndTick < 1 * Server()->TickSpeed())
-		LifeDiff = random_int(4, 5);
-	else if(m_EndTick < 2 * Server()->TickSpeed())
-		LifeDiff = random_int(3, 5);
-	else if(m_EndTick < 3 * Server()->TickSpeed())
-		LifeDiff = random_int(2, 4);
-	else if(m_EndTick < 4 * Server()->TickSpeed())
-		LifeDiff = random_int(1, 3);
-	else if(m_EndTick < 5 * Server()->TickSpeed())
-		LifeDiff = random_int(0, 2);
-	else if(m_EndTick < 6 * Server()->TickSpeed())
-		LifeDiff = random_int(0, 1);
-	else if(m_EndTick < 7 * Server()->TickSpeed())
-		LifeDiff = (random_prob(3.0f/4.0f)) ? 1 : 0;
-	else if(m_EndTick < 8 * Server()->TickSpeed())
-		LifeDiff = (random_prob(5.0f/6.0f)) ? 1 : 0;
-	else if(m_EndTick < 9 * Server()->TickSpeed())
-		LifeDiff = (random_prob(5.0f/6.0f)) ? 0 : -1;
-	else if(m_EndTick < 10 * Server()->TickSpeed())
-		LifeDiff = (random_prob(5.0f/6.0f)) ? 0 : -1;
-	else if(m_EndTick < 11 * Server()->TickSpeed())
-		LifeDiff = (random_prob(5.0f/6.0f)) ? -1 : -Server()->TickSpeed()*2;
-	else
-		LifeDiff = -Server()->TickSpeed()*2;
-
 	SSnapContext Context;
 	Context.Version = GameServer()->GetClientVersion(SnappingClient);
 
-	GameController()->SnapLaserObject(Context, GetID(), m_Pos, m_Pos2, Server()->Tick() - LifeDiff, m_Owner);
+	GameController()->SnapLaserObject(Context, GetID(), m_Pos, m_Pos2, m_SnapStartTick, m_Owner);
 
 	if(!AntiPing)
 	{
@@ -166,4 +139,40 @@ void CEngineerWall::OnHitInfected(CInfClassCharacter *pCharacter)
 	}
 
 	pCharacter->Die(m_Owner, DAMAGE_TYPE::LASER_WALL);
+}
+
+void CEngineerWall::PrepareSnapData()
+{
+	const int RemainingTicks = m_EndTick - Server()->Tick();
+
+	// Laser dieing animation
+	int LifeDiff = 0;
+	if(m_WallFlashTicks > 0) // flash laser for a few ticks when zombie jumps
+		LifeDiff = 5;
+	else if(RemainingTicks < 1 * Server()->TickSpeed())
+		LifeDiff = random_int(4, 5);
+	else if(RemainingTicks < 2 * Server()->TickSpeed())
+		LifeDiff = random_int(3, 5);
+	else if(RemainingTicks < 3 * Server()->TickSpeed())
+		LifeDiff = random_int(2, 4);
+	else if(RemainingTicks < 4 * Server()->TickSpeed())
+		LifeDiff = random_int(1, 3);
+	else if(RemainingTicks < 5 * Server()->TickSpeed())
+		LifeDiff = random_int(0, 2);
+	else if(RemainingTicks < 6 * Server()->TickSpeed())
+		LifeDiff = random_int(0, 1);
+	else if(RemainingTicks < 7 * Server()->TickSpeed())
+		LifeDiff = (random_prob(3.0f / 4.0f)) ? 1 : 0;
+	else if(RemainingTicks < 8 * Server()->TickSpeed())
+		LifeDiff = (random_prob(5.0f / 6.0f)) ? 1 : 0;
+	else if(RemainingTicks < 9 * Server()->TickSpeed())
+		LifeDiff = (random_prob(5.0f / 6.0f)) ? 0 : -1;
+	else if(RemainingTicks < 10 * Server()->TickSpeed())
+		LifeDiff = (random_prob(5.0f / 6.0f)) ? 0 : -1;
+	else if(RemainingTicks < 11 * Server()->TickSpeed())
+		LifeDiff = (random_prob(5.0f / 6.0f)) ? -1 : -Server()->TickSpeed() * 2;
+	else
+		LifeDiff = -Server()->TickSpeed() * 2;
+
+	m_SnapStartTick = Server()->Tick() - LifeDiff;
 }
