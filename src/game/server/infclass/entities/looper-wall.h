@@ -25,6 +25,8 @@ public:
 private:
 	void OnHitInfected(CInfClassCharacter *pCharacter);
 
+	void PrepareSnapData();
+
 	int m_EndTick;
 
 	int m_IDs[2];
@@ -32,6 +34,7 @@ private:
 	const float g_BarrierMaxLength = 400.0;
 	const float g_BarrierRadius = 0.0;
 	int m_ParticleIDs[NUM_PARTICLES];
+	int m_SnapStartTick = 0;
 };
 
 #endif

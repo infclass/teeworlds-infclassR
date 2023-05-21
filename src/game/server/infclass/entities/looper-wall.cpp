@@ -91,6 +91,8 @@ void CLooperWall::Tick()
 			}
 		}
 	}
+
+	PrepareSnapData();
 }
 
 void CLooperWall::TickPaused()
@@ -115,17 +117,6 @@ void CLooperWall::Snap(int SnappingClient)
 	const CInfClassPlayer *pPlayer = GameController()->GetPlayer(SnappingClient);
 	const bool AntiPing = pPlayer && pPlayer->GetAntiPingEnabled();
 
-	// Laser dieing animation
-	int LifeDiff = 0;
-	if (m_EndTick < 1*Server()->TickSpeed())
-		LifeDiff = 6;
-	else if (m_EndTick < 2*Server()->TickSpeed())
-		LifeDiff = random_int(4, 6);
-	else if (m_EndTick < 5*Server()->TickSpeed())
-		LifeDiff = random_int(3, 5);
-	else 
-		LifeDiff = 3;
-	
 	vec2 dirVec = vec2(m_Pos.x-m_Pos2.x, m_Pos.y-m_Pos2.y);
 	vec2 dirVecN = normalize(dirVec);
 	vec2 dirVecT = vec2(dirVecN.y*THICKNESS*0.5f, -dirVecN.x*THICKNESS*0.5f);
@@ -149,7 +140,7 @@ void CLooperWall::Snap(int SnappingClient)
 			pObj->m_FromX = (int)m_Pos2.x+dirVecT.x; 
 			pObj->m_FromY = (int)m_Pos2.y+dirVecT.y;
 
-			pObj->m_StartTick = Server()->Tick()-LifeDiff;
+			pObj->m_StartTick = m_SnapStartTick;
 		}
 		
 		// draws one dot at the end of each laser
@@ -211,4 +202,22 @@ void CLooperWall::OnHitInfected(CInfClassCharacter *pCharacter)
 
 	int LifeSpanReducer = Server()->TickSpeed() * Reduction * AddedDuration / FullEffectDuration;
 	m_EndTick -= LifeSpanReducer;
+}
+
+void CLooperWall::PrepareSnapData()
+{
+	const int RemainingTicks = m_EndTick - Server()->Tick();
+
+	// Laser dieing animation
+	int LifeDiff = 0;
+	if(RemainingTicks < 1 * Server()->TickSpeed())
+		LifeDiff = 6;
+	else if(RemainingTicks < 2 * Server()->TickSpeed())
+		LifeDiff = random_int(4, 6);
+	else if(RemainingTicks < 5 * Server()->TickSpeed())
+		LifeDiff = random_int(3, 5);
+	else
+		LifeDiff = 3;
+
+	m_SnapStartTick = Server()->Tick() - LifeDiff;
 }
