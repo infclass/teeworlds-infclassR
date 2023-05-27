@@ -1539,6 +1539,9 @@ void CGameContext::OnClientConnected(int ClientID, void *pData)
 void CGameContext::OnClientDrop(int ClientID, int Type, const char *pReason)
 {
 	AbortVoteKickOnDisconnect(ClientID);
+	if(!m_apPlayers[ClientID])
+		return;
+
 	m_pController->OnPlayerDisconnect(m_apPlayers[ClientID], Type, pReason);
 	delete m_apPlayers[ClientID];
 	m_apPlayers[ClientID] = 0;
