@@ -1893,7 +1893,7 @@ void CInfClassGameController::ChatWitch(IConsole::IResult *pResult)
 
 	if(m_WitchCallers.Size() >= REQUIRED_CALLERS_COUNT)
 	{
-		int WitchId = RandomZombieToWitch();
+		int WitchId = GetClientIdForNewWitch();
 		if(WitchId < 0)
 		{
 			if(Winter)
@@ -1923,6 +1923,8 @@ void CInfClassGameController::ChatWitch(IConsole::IResult *pResult)
 				"PlayerName", Server()->ClientName(WitchId),
 				nullptr);
 		}
+
+		m_WitchCallers.Clear();
 	}
 }
 
@@ -2416,16 +2418,14 @@ void CInfClassGameController::SendKillMessage(int Victim, const DeathContext &Co
 	}
 }
 
-int CInfClassGameController::RandomZombieToWitch()
+int CInfClassGameController::GetClientIdForNewWitch() const
 {
 	ClientsArray UnsafeInfected;
 	ClientsArray SafeInfected;
 
-	m_WitchCallers.Clear();
-
 	for(int i = 0; i < MAX_CLIENTS; i++)
 	{
-		CInfClassPlayer *pPlayer = GetPlayer(i);
+		CInfClassPlayer *pPlayer = GetPlayer(ClientID);
 		if(!pPlayer)
 			continue;
 		if(pPlayer->GetClass() == PLAYERCLASS_WITCH)
@@ -2433,12 +2433,12 @@ int CInfClassGameController::RandomZombieToWitch()
 		if(!pPlayer->IsActuallyZombie())
 			continue;
 
-		UnsafeInfected.Add(i);
-		
-		if(!IsSafeWitchCandidate(i))
+		UnsafeInfected.Add(ClientID);
+
+		if(!IsSafeWitchCandidate(ClientID))
 			continue;
-		
-		SafeInfected.Add(i);
+
+		SafeInfected.Add(ClientID);
 	}
 
 	if(UnsafeInfected.IsEmpty())

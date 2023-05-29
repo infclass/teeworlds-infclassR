@@ -269,7 +269,7 @@ private:
 	void SetAvailabilities(std::vector<int> value);
 	void SetProbabilities(std::vector<int> value);
 
-	int RandomZombieToWitch();
+	int GetClientIdForNewWitch() const;
 	bool IsSafeWitchCandidate(int ClientID) const;
 	ClientsArray m_WitchCallers;
 
