@@ -2423,7 +2423,7 @@ int CInfClassGameController::GetClientIdForNewWitch() const
 	ClientsArray UnsafeInfected;
 	ClientsArray SafeInfected;
 
-	for(int i = 0; i < MAX_CLIENTS; i++)
+	for(int ClientID : m_WitchCallers)
 	{
 		CInfClassPlayer *pPlayer = GetPlayer(ClientID);
 		if(!pPlayer)
@@ -2439,6 +2439,28 @@ int CInfClassGameController::GetClientIdForNewWitch() const
 			continue;
 
 		SafeInfected.Add(ClientID);
+	}
+
+	if(UnsafeInfected.IsEmpty())
+	{
+		// fallback
+		for(int ClientID = 0; ClientID < MAX_CLIENTS; ClientID++)
+		{
+			CInfClassPlayer *pPlayer = GetPlayer(ClientID);
+			if(!pPlayer)
+				continue;
+			if(pPlayer->GetClass() == PLAYERCLASS_WITCH)
+				continue;
+			if(!pPlayer->IsActuallyZombie())
+				continue;
+
+			UnsafeInfected.Add(ClientID);
+
+			if(!IsSafeWitchCandidate(ClientID))
+				continue;
+
+			SafeInfected.Add(ClientID);
+		}
 	}
 
 	if(UnsafeInfected.IsEmpty())
