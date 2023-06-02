@@ -725,39 +725,52 @@ void CInfClassInfected::DoBoomerExplosion()
 
 void CInfClassInfected::PlaceSlugSlime(WeaponFireContext *pFireContext)
 {
-	if(m_pCharacter->IsInLove())
-		return;
-
 	vec2 CheckPos = GetPos() + GetDirection() * 64.0f;
-	if(GameServer()->Collision()->IntersectLine(GetPos(), CheckPos, 0x0, &CheckPos))
-	{
-		static const float MinDistance = 84.0f;
-		float DistanceToTheNearestSlime = MinDistance * 2;
-		for(TEntityPtr<CSlugSlime> pSlime = GameWorld()->FindFirst<CSlugSlime>(); pSlime; ++pSlime)
-		{
-			const float d = distance(pSlime->GetPos(), GetPos());
-			if(d < DistanceToTheNearestSlime)
-			{
-				DistanceToTheNearestSlime = d;
-			}
-			if(d <= MinDistance / 2)
-			{
-				// Replenish the slime
-				if(pSlime->GetMaxLifeSpan() - pSlime->GetLifeSpan() > Server()->TickSpeed())
-				{
-					pSlime->Replenish(GetCID());
-					pFireContext->FireAccepted = true;
-					break;
-				}
-			}
-		}
+	bool Accepted = PlaceSlime(CheckPos);
 
-		if(DistanceToTheNearestSlime > MinDistance)
+	if(Accepted)
+	{
+		pFireContext->FireAccepted = true;
+	}
+}
+
+bool CInfClassInfected::PlaceSlime(vec2 PlaceToPos)
+{
+	if(m_pCharacter->IsInLove())
+		return false;
+
+	if(!GameServer()->Collision()->IntersectLine(GetPos(), PlaceToPos, 0x0, &PlaceToPos))
+	{
+		return false;
+	}
+
+	static const float MinDistance = 84.0f;
+	float DistanceToTheNearestSlime = MinDistance * 2;
+	for(TEntityPtr<CSlugSlime> pSlime = GameWorld()->FindFirst<CSlugSlime>(); pSlime; ++pSlime)
+	{
+		const float d = distance(pSlime->GetPos(), GetPos());
+		if(d < DistanceToTheNearestSlime)
 		{
-			new CSlugSlime(GameServer(), CheckPos, GetCID());
-			pFireContext->FireAccepted = true;
+			DistanceToTheNearestSlime = d;
+		}
+		if(d <= MinDistance / 2)
+		{
+			// Replenish the slime
+			if(pSlime->GetMaxLifeSpan() - pSlime->GetLifeSpan() > Server()->TickSpeed())
+			{
+				pSlime->Replenish(GetCID());
+				return true;
+			}
 		}
 	}
+
+	if(DistanceToTheNearestSlime < MinDistance)
+	{
+		return false;
+	}
+
+	new CSlugSlime(GameServer(), PlaceToPos, GetCID());
+	return true;
 }
 
 bool CInfClassInfected::FindWitchSpawnPosition(vec2 &Position)
