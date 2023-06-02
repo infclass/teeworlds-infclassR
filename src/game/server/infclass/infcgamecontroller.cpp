@@ -2092,6 +2092,11 @@ void CInfClassGameController::ChatWitch(IConsole::IResult *pResult)
 
 	{
 		bool CanCallWitch = true;
+		if(GetRoundType() == ERoundType::Survival)
+		{
+			CanCallWitch = false;
+		}
+
 		if(!CanCallWitch)
 		{
 			const char *pMessage =  _("The witch is not available in this round");
