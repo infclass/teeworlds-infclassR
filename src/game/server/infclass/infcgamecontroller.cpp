@@ -4923,6 +4923,14 @@ CLASS_AVAILABILITY CInfClassGameController::GetPlayerClassAvailability(PLAYERCLA
 	int ClassLimit = GetClassPlayerLimit(PlayerClass);
 	if(GetRoundType() == ERoundType::Survival)
 	{
+		static constexpr PLAYERCLASS EarlyClasses[] = {
+			PLAYERCLASS_MEDIC,
+			PLAYERCLASS_MERCENARY,
+			PLAYERCLASS_SNIPER,
+		};
+
+		icArray<PLAYERCLASS, NB_HUMANCLASS> EnabledEarlyClasses;
+
 		int EnabledHumansClasses = 0;
 		for(PLAYERCLASS HumanClass : AllHumanClasses())
 		{
@@ -4930,13 +4938,29 @@ CLASS_AVAILABILITY CInfClassGameController::GetPlayerClassAvailability(PLAYERCLA
 			{
 				EnabledHumansClasses++;
 			}
+			const auto FoundEarly = std::find(std::cbegin(EarlyClasses), std::cend(EarlyClasses), HumanClass);
+			if (FoundEarly != std::cend(EarlyClasses))
+			{
+				EnabledEarlyClasses.Add(HumanClass);
+			}
 		}
+
 		if(EnabledHumansClasses == 0)
 		{
 			dbg_msg("server/ic", "Error: No human class enabled");
 			EnabledHumansClasses = 1;
 		}
+
 		ClassLimit = std::ceil(ActivePlayerCount / static_cast<float>(EnabledHumansClasses));
+		int ExtraPlayers = ActivePlayerCount % EnabledHumansClasses;
+		if((ClassLimit > 1) && ExtraPlayers)
+		{
+			if (ExtraPlayers <= EnabledEarlyClasses.Size())
+			{
+				if(!EnabledEarlyClasses.Contains(PlayerClass))
+					ClassLimit -=1;
+			}
+		}
 	}
 
 	if(nbClass[PlayerClass] >= ClassLimit)
