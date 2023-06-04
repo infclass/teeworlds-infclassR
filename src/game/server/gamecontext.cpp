@@ -4436,53 +4436,10 @@ const char *CGameContext::GameType() const { return m_pController && m_pControll
 const char *CGameContext::Version() const { return GAME_VERSION; }
 const char *CGameContext::NetVersion() const { return GAME_NETVERSION; }
 
-
-
 IGameServer *CreateGameServer() { return new CGameContext; }
 
 void CGameContext::OnSetAuthed(int ClientID, int Level)
 {
-}
-
-bool CGameContext::IsVersionBanned(int Version)
-{
-	char aVersion[16];
-	str_format(aVersion, sizeof(aVersion), "%d", Version);
-
-	return str_in_list(g_Config.m_SvBannedVersions, ",", aVersion);
-}
-
-int CGameContext::GetClientVersion(int ClientID) const
-{
-	return Server()->GetClientVersion(ClientID);
-}
-
-bool CGameContext::RateLimitPlayerVote(int ClientID)
-{
-	int64_t Now = Server()->Tick();
-	int64_t TickSpeed = Server()->TickSpeed();
-	CPlayer *pPlayer = m_apPlayers[ClientID];
-
-	if(g_Config.m_SvSpamprotection && pPlayer->m_LastVoteTry && pPlayer->m_LastVoteTry + TickSpeed * 3 > Now)
-		return true;
-
-	pPlayer->m_LastVoteTry = Now;
-	if(m_VoteCloseTime)
-	{
-		SendChatTarget(ClientID, "Wait for current vote to end before calling a new one.");
-		return true;
-	}
-
-	int TimeLeft = pPlayer->m_LastVoteCall + TickSpeed * g_Config.m_SvVoteDelay - Now;
-	if(pPlayer->m_LastVoteCall && TimeLeft > 0)
-	{
-		char aChatmsg[64];
-		str_format(aChatmsg, sizeof(aChatmsg), "You must wait %d seconds before making another vote.", (int)(TimeLeft / TickSpeed) + 1);
-		SendChatTarget(ClientID, aChatmsg);
-		return true;
-	}
-
-	return false;
 }
 
 bool CheckClientID2(int ClientID)
@@ -4674,4 +4631,45 @@ void CGameContext::Converse(int ClientID, const char *pStr)
 	{
 		WhisperID(ClientID, pPlayer->m_LastWhisperTo, pStr);
 	}
+}
+
+bool CGameContext::IsVersionBanned(int Version)
+{
+	char aVersion[16];
+	str_format(aVersion, sizeof(aVersion), "%d", Version);
+
+	return str_in_list(g_Config.m_SvBannedVersions, ",", aVersion);
+}
+
+int CGameContext::GetClientVersion(int ClientID) const
+{
+	return Server()->GetClientVersion(ClientID);
+}
+
+bool CGameContext::RateLimitPlayerVote(int ClientID)
+{
+	int64_t Now = Server()->Tick();
+	int64_t TickSpeed = Server()->TickSpeed();
+	CPlayer *pPlayer = m_apPlayers[ClientID];
+
+	if(g_Config.m_SvSpamprotection && pPlayer->m_LastVoteTry && pPlayer->m_LastVoteTry + TickSpeed * 3 > Now)
+		return true;
+
+	pPlayer->m_LastVoteTry = Now;
+	if(m_VoteCloseTime)
+	{
+		SendChatTarget(ClientID, "Wait for current vote to end before calling a new one.");
+		return true;
+	}
+
+	int TimeLeft = pPlayer->m_LastVoteCall + TickSpeed * g_Config.m_SvVoteDelay - Now;
+	if(pPlayer->m_LastVoteCall && TimeLeft > 0)
+	{
+		char aChatmsg[64];
+		str_format(aChatmsg, sizeof(aChatmsg), "You must wait %d seconds before making another vote.", (int)(TimeLeft / TickSpeed) + 1);
+		SendChatTarget(ClientID, aChatmsg);
+		return true;
+	}
+
+	return false;
 }
