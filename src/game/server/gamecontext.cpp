@@ -4442,6 +4442,26 @@ void CGameContext::OnSetAuthed(int ClientID, int Level)
 {
 }
 
+bool CGameContext::ProcessSpamProtection(int ClientID, bool RespectChatInitialDelay)
+{
+	if(!m_apPlayers[ClientID])
+		return false;
+
+	int Muted = 0;
+	if(Server()->GetClientSession(ClientID) && Server()->GetClientSession(ClientID)->m_MuteTick > 0)
+	{
+		Muted = Server()->GetClientSession(ClientID)->m_MuteTick/Server()->TickSpeed();
+	}
+
+	if(Muted > 0)
+	{
+		SendChatTarget_Localization(ClientID, CHATCATEGORY_ACCUSATION, _("You are muted for {sec:Duration}"), "Duration", &Muted, NULL);
+		return true;
+	}
+
+	return false;
+}
+
 bool CheckClientID2(int ClientID)
 {
 	if(ClientID < 0 || ClientID >= MAX_CLIENTS)
@@ -4451,13 +4471,14 @@ bool CheckClientID2(int ClientID)
 
 void CGameContext::Whisper(int ClientID, char *pStr)
 {
-	char *pName;
-	char *pMessage;
-	int Error = 0;
+	if(ProcessSpamProtection(ClientID))
+		return;
 
 	pStr = str_skip_whitespaces(pStr);
 
+	char *pName;
 	int Victim;
+	bool Error = false;
 
 	// add token
 	if(*pStr == '"')
@@ -4481,7 +4502,7 @@ void CGameContext::Whisper(int ClientID, char *pStr)
 			}
 			else if(pStr[0] == 0)
 			{
-				Error = 1;
+				Error = true;
 				break;
 			}
 
@@ -4509,7 +4530,7 @@ void CGameContext::Whisper(int ClientID, char *pStr)
 		{
 			if(pStr[0] == 0)
 			{
-				Error = 1;
+				Error = true;
 				break;
 			}
 			if(pStr[0] == ' ')
@@ -4530,31 +4551,27 @@ void CGameContext::Whisper(int ClientID, char *pStr)
 
 	if(pStr[0] != ' ')
 	{
-		Error = 1;
+		Error = true;
 	}
 
 	*pStr = 0;
 	pStr++;
 
-	pMessage = pStr;
-
-	char aBuf[256];
-
 	if(Error)
 	{
-		str_format(aBuf, sizeof(aBuf), "Invalid whisper");
-		SendChatTarget(ClientID, aBuf);
+		SendChatTarget(ClientID, "Invalid whisper");
 		return;
 	}
 
 	if(Victim >= MAX_CLIENTS || !CheckClientID2(Victim))
 	{
+		char aBuf[256];
 		str_format(aBuf, sizeof(aBuf), "No player with name \"%s\" found", pName);
 		SendChatTarget(ClientID, aBuf);
 		return;
 	}
 
-	WhisperID(ClientID, Victim, pMessage);
+	WhisperID(ClientID, Victim, pStr);
 }
 
 void CGameContext::WhisperID(int ClientID, int VictimID, const char *pMessage)

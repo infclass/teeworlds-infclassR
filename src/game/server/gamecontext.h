@@ -227,6 +227,8 @@ public:
 	virtual const char *GameType() const;
 	virtual const char *Version() const;
 	virtual const char *NetVersion() const;
+
+	bool ProcessSpamProtection(int ClientID, bool RespectChatInitialDelay = true);
 	int GetClientVersion(int ClientID) const;
 
 	bool PlayerExists(int ClientID) const override { return m_apPlayers[ClientID]; }
