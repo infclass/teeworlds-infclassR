@@ -151,7 +151,7 @@ class CConsole : public IConsole
 		bool HasVictim();
 		void SetVictim(int Victim);
 		void SetVictim(const char *pVictim);
-		int GetVictim();
+		int GetVictim() const override;
 	};
 
 	int ParseStart(CResult *pResult, const char *pString, int Length);

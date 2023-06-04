@@ -1304,7 +1304,7 @@ void CConsole::ResetServerGameSettings()
 #undef MACRO_CONFIG_STR
 }
 
-int CConsole::CResult::GetVictim()
+int CConsole::CResult::GetVictim() const
 {
 	return m_Victim;
 }

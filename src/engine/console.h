@@ -58,8 +58,11 @@ public:
 		virtual void RemoveArgument(unsigned Index) = 0;
 
 		int NumArguments() const { return m_NumArgs; }
-
 		int m_ClientID;
+
+		// DDRace
+
+		virtual int GetVictim() const = 0;
 	};
 
 	class CCommandInfo

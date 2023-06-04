@@ -2969,6 +2969,24 @@ void CGameContext::ConVersion(IConsole::IResult *pResult, void *pUserData)
 	}
 }
 
+void CGameContext::ConKillPlayer(IConsole::IResult *pResult, void *pUserData)
+{
+	CGameContext *pSelf = (CGameContext *)pUserData;
+	if(!CheckClientID(pResult->m_ClientID))
+		return;
+	int Victim = pResult->GetVictim();
+
+	if(pSelf->m_apPlayers[Victim])
+	{
+		pSelf->m_apPlayers[Victim]->KillCharacter(WEAPON_GAME);
+		char aBuf[512];
+		str_format(aBuf, sizeof(aBuf), "%s was killed by %s",
+			pSelf->Server()->ClientName(Victim),
+			pSelf->Server()->ClientName(pResult->m_ClientID));
+		pSelf->SendChat(-1, CGameContext::CHAT_ALL, aBuf);
+	}
+}
+
 void CGameContext::ConCredits(IConsole::IResult *pResult, void *pUserData)
 {
 	CGameContext *pSelf = (CGameContext *)pUserData;
@@ -4141,7 +4159,8 @@ void CGameContext::OnConsoleInit()
 	Console()->Register("skip_map", "", CFGFLAG_SERVER, ConSkipMap, this, "Change map to the next in the rotation");
 	Console()->Register("queue_map", "?r[map]", CFGFLAG_SERVER, ConQueueMap, this, "Set the next map");
 	Console()->Register("add_map", "?r[map]", CFGFLAG_SERVER, ConAddMap, this, "Add a map to the maps rotation list");
-	
+
+	Console()->Register("kill_pl", "v[id]", CFGFLAG_SERVER, ConKillPlayer, this, "Kills player v and announces the kill");
 	//Chat Command
 	Console()->Register("version", "", CFGFLAG_SERVER, ConVersion, this, "Display information about the server version and build");
 
