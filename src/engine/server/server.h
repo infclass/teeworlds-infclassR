@@ -363,6 +363,8 @@ public:
 	static void ConSetWeaponAmmoRegen(class IConsole::IResult *pResult, void *pUserData);
 	static void ConSetWeaponMaxAmmo(class IConsole::IResult *pResult, void *pUserData);
 
+	void LogoutClient(int ClientID, const char *pReason);
+
 	void RegisterCommands();
 
 

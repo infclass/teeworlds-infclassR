@@ -3005,18 +3005,7 @@ void CServer::ConLogout(IConsole::IResult *pResult, void *pUser)
 	if(pServer->m_RconClientID >= 0 && pServer->m_RconClientID < MAX_CLIENTS &&
 		pServer->m_aClients[pServer->m_RconClientID].m_State != CServer::CClient::STATE_EMPTY)
 	{
-		CMsgPacker Msg(NETMSG_RCON_AUTH_STATUS, true);
-		Msg.AddInt(0);	//authed
-		Msg.AddInt(0);	//cmdlist
-		pServer->SendMsg(&Msg, MSGFLAG_VITAL, pServer->m_RconClientID);
-
-		pServer->m_aClients[pServer->m_RconClientID].m_Authed = AUTHED_NO;
-		pServer->m_aClients[pServer->m_RconClientID].m_AuthTries = 0;
-		pServer->m_aClients[pServer->m_RconClientID].m_pRconCmdToSend = 0;
-		pServer->SendRconLine(pServer->m_RconClientID, "Logout successful.");
-		char aBuf[32];
-		str_format(aBuf, sizeof(aBuf), "ClientID=%d logged out", pServer->m_RconClientID);
-		pServer->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "server", aBuf);
+		pServer->LogoutClient(pServer->m_RconClientID, "");
 	}
 }
 
@@ -3231,6 +3220,36 @@ void CServer::ConSetWeaponMaxAmmo(IConsole::IResult *pResult, void *pUserData)
 	}
 
 	pSelf->SetMaxAmmo(static_cast<INFWEAPON>(WeaponID), Interval);
+}
+
+void CServer::LogoutClient(int ClientID, const char *pReason)
+{
+	CMsgPacker Msg(NETMSG_RCON_AUTH_STATUS, true);
+	Msg.AddInt(0); //authed
+	Msg.AddInt(0); //cmdlist
+	SendMsg(&Msg, MSGFLAG_VITAL, ClientID);
+
+	m_aClients[ClientID].m_AuthTries = 0;
+	m_aClients[ClientID].m_pRconCmdToSend = 0;
+
+	char aBuf[64];
+	if(*pReason)
+	{
+		str_format(aBuf, sizeof(aBuf), "Logged out by %s.", pReason);
+		SendRconLine(ClientID, aBuf);
+		str_format(aBuf, sizeof(aBuf), "ClientID=%d logged out by %s", ClientID, pReason);
+	}
+	else
+	{
+		SendRconLine(ClientID, "Logout successful.");
+		str_format(aBuf, sizeof(aBuf), "ClientID=%d logged out", ClientID);
+	}
+
+	m_aClients[ClientID].m_Authed = AUTHED_NO;
+
+	GameServer()->OnSetAuthed(ClientID, AUTHED_NO);
+
+	Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "server", aBuf);
 }
 
 void CServer::RegisterCommands()
