@@ -10,7 +10,6 @@
 #include <game/server/infclass/classes/humans/human.h>
 #include <game/server/infclass/entities/infccharacter.h>
 #include <game/server/infclass/infcgamecontroller.h>
-#include <game/server/infclass/infcplayer.h>
 
 CHeroFlag::CHeroFlag(CGameContext *pGameContext, int Owner)
 	: CInfCEntity(pGameContext, CGameWorld::ENTTYPE_HERO_FLAG, vec2(), Owner, ms_PhysSize)
@@ -115,9 +114,12 @@ void CHeroFlag::Snap(int SnappingClient)
 	
 	if(SnappingClient != SERVER_DEMO_CLIENT && SnappingClient != m_Owner)
 		return;
-	
-	CInfClassPlayer* pOwnerPlayer = GameController()->GetPlayer(m_Owner);
-	if(pOwnerPlayer->GetClass() != PLAYERCLASS_HERO)
+
+	CInfClassCharacter *pOwner = GetOwnerCharacter();
+	if(!pOwner)
+		return;
+
+	if(pOwner->GetPlayerClass() != PLAYERCLASS_HERO)
 		return;
 
 	if(GameController()->HeroGiftAvailable())
