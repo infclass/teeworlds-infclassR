@@ -197,26 +197,36 @@ void CInfClassGameController::OnPlayerDisconnect(CPlayer *pBasePlayer, int Type,
 		}
 	}
 
-	CInfClassPlayer *pPlayer = CInfClassPlayer::GetInstance(pBasePlayer);
-	if(Type == CLIENTDROPTYPE_BAN) return;
-	if(Type == CLIENTDROPTYPE_KICK) return;
-	if(Type == CLIENTDROPTYPE_SHUTDOWN) return;	
-
-	if(pPlayer && pPlayer->IsActuallyZombie() && m_InfectedStarted)
+	static const auto aIgnoreReasons = []()
 	{
-		int NumHumans;
-		int NumInfected;
-		GetPlayerCounter(pPlayer->GetCID(), NumHumans, NumInfected);
-		const int NumPlayers = NumHumans + NumInfected;
-		const int NumFirstInfected = GetMinimumInfectedForPlayers(NumPlayers);
-		
-		if(NumInfected < NumFirstInfected)
+		int aIgnoreReasons[]{
+			CLIENTDROPTYPE_BAN,
+			CLIENTDROPTYPE_KICK,
+			CLIENTDROPTYPE_SHUTDOWN,
+		};
+
+		return icArray(aIgnoreReasons);
+	}();
+
+	if(!aIgnoreReasons.Contains(Type))
+	{
+		CInfClassPlayer *pPlayer = CInfClassPlayer::GetInstance(pBasePlayer);
+		if(pPlayer && pPlayer->IsActuallyZombie() && m_InfectedStarted)
 		{
-			Server()->Ban(pPlayer->GetCID(), 60 * Config()->m_InfLeaverBanTime, "Leaver");
+			int NumHumans;
+			int NumInfected;
+			GetPlayerCounter(pPlayer->GetCID(), NumHumans, NumInfected);
+			const int NumPlayers = NumHumans + NumInfected;
+			const int NumFirstInfected = GetMinimumInfectedForPlayers(NumPlayers);
+
+			if(NumInfected < NumFirstInfected)
+			{
+				Server()->Ban(pPlayer->GetCID(), 60 * Config()->m_InfLeaverBanTime, "Leaver");
+			}
 		}
 	}
 
-	IGameController::OnPlayerDisconnect(pPlayer, Type, pReason);
+	IGameController::OnPlayerDisconnect(pBasePlayer, Type, pReason);
 }
 
 void CInfClassGameController::OnReset()
