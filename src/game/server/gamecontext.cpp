@@ -2333,6 +2333,45 @@ void CGameContext::ConShowAll(IConsole::IResult *pResult, void *pUserData)
 		pSelf->SendChatTarget(pResult->m_ClientID, "You will no longer see all tees on this server");
 }
 
+void CGameContext::ConTimeout(IConsole::IResult *pResult, void *pUserData)
+{
+	CGameContext *pSelf = (CGameContext *)pUserData;
+	if(!CheckClientID(pResult->m_ClientID))
+		return;
+
+	CPlayer *pPlayer = pSelf->m_apPlayers[pResult->m_ClientID];
+	if(!pPlayer)
+		return;
+
+	const char *pTimeout = pResult->NumArguments() > 0 ? pResult->GetString(0) : pPlayer->m_aTimeoutCode;
+	dbg_msg("timeout", "Used with code %s", pTimeout);
+
+	if(!pSelf->Server()->IsSixup(pResult->m_ClientID))
+	{
+		for(int i = 0; i < pSelf->Server()->MaxClients(); i++)
+		{
+			if(i == pResult->m_ClientID)
+				continue;
+			if(!pSelf->m_apPlayers[i])
+				continue;
+			if(str_comp(pSelf->m_apPlayers[i]->m_aTimeoutCode, pTimeout))
+				continue;
+			if(pSelf->Server()->SetTimedOut(i, pResult->m_ClientID))
+			{
+				return;
+			}
+		}
+	}
+	else
+	{
+		pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "chatresp",
+			"Your timeout code has been set. 0.7 clients can not reclaim their tees on timeout; however, a 0.6 client can claim your tee ");
+	}
+
+	pSelf->Server()->SetTimeoutProtected(pResult->m_ClientID);
+	str_copy(pPlayer->m_aTimeoutCode, pResult->GetString(0), sizeof(pPlayer->m_aTimeoutCode));
+}
+
 void CGameContext::ConMe(IConsole::IResult *pResult, void *pUserData)
 {
 	CGameContext *pSelf = (CGameContext *)pUserData;
@@ -4219,6 +4258,8 @@ void CGameContext::OnConsoleInit()
 	CHAT_COMMAND("whisper", "s[player name] r[message]", CFGFLAG_CHAT | CFGFLAG_SERVER | CFGFLAG_NONTEEHISTORIC, ConWhisper, this, "Whisper something to someone (private message)")
 	CHAT_COMMAND("c", "r[message]", CFGFLAG_CHAT | CFGFLAG_SERVER | CFGFLAG_NONTEEHISTORIC, ConConverse, this, "Converse with the last person you whispered to (private message)")
 	CHAT_COMMAND("converse", "r[message]", CFGFLAG_CHAT | CFGFLAG_SERVER | CFGFLAG_NONTEEHISTORIC, ConConverse, this, "Converse with the last person you whispered to (private message)")
+	CHAT_COMMAND("timeout", "?s[code]", CFGFLAG_CHAT | CFGFLAG_SERVER, ConTimeout, this, "Set timeout protection code s")
+
 	CHAT_COMMAND("msg", "s[player or group name] r[message]", CFGFLAG_CHAT | CFGFLAG_NONTEEHISTORIC, ConConverse, this, "Check '/help msg' for details")
 #undef CHAT_COMMAND
 

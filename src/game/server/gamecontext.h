@@ -237,6 +237,7 @@ public:
 
 /* INFECTION MODIFICATION START ***************************************/
 private:
+	static void ConTimeout(IConsole::IResult *pResult, void *pUserData);
 	static void ConMe(IConsole::IResult *pResult, void *pUserData);
 	static void ConWhisper(IConsole::IResult *pResult, void *pUserData);
 	static void ConConverse(IConsole::IResult *pResult, void *pUserData);

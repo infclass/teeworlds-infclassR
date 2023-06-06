@@ -203,6 +203,7 @@ void CInfClassGameController::OnPlayerDisconnect(CPlayer *pBasePlayer, int Type,
 			CLIENTDROPTYPE_BAN,
 			CLIENTDROPTYPE_KICK,
 			CLIENTDROPTYPE_SHUTDOWN,
+			CLIENTDROPTYPE_TIMEOUT_PROTECTION_USED,
 		};
 
 		return icArray(aIgnoreReasons);

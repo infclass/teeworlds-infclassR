@@ -301,6 +301,7 @@ public:
 
 	static int ClientRejoinCallback(int ClientID, void *pUser);
 
+	void SendCapabilities(int ClientID);
 	void SendMap(int ClientID);
 	void SendMapData(int ClientID, int Chunk);
 	
@@ -492,6 +493,8 @@ public:
 	int *GetIdMap(int ClientID) override;
 
 	bool ClientPrevIngame(int ClientID) override { return m_aPrevStates[ClientID] == CClient::STATE_INGAME; }
+	bool SetTimedOut(int ClientID, int OrigID) override;
+	void SetTimeoutProtected(int ClientID) override { m_NetServer.SetTimeoutProtected(ClientID); }
 
 	void SendMsgRaw(int ClientID, const void *pData, int Size, int Flags) override;
 

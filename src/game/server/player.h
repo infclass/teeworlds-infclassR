@@ -141,6 +141,8 @@ protected:
 	int64_t m_LastEyeEmote;
 
 public:
+	char m_aTimeoutCode[64];
+
 	virtual int GetDefaultEmote() const;
 	void OverrideDefaultEmote(int Emote, int Tick);
 	bool CanOverrideDefaultEmote() const;

@@ -425,6 +425,8 @@ public:
 	virtual int* GetIdMap(int ClientID) = 0;
 
 	virtual bool ClientPrevIngame(int ClientID) = 0;
+	virtual bool SetTimedOut(int ClientID, int OrigID) = 0;
+	virtual void SetTimeoutProtected(int ClientID) = 0;
 
 	virtual int GetActivePlayerCount() = 0;
 

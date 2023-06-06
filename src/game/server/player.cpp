@@ -48,6 +48,7 @@ void CPlayer::Reset()
 	m_DefEmote = EMOTE_NORMAL;
 	m_LastKill = 0;
 	m_LastWhisperTo = -1;
+	m_aTimeoutCode[0] = '\0';
 
 	m_SendVoteIndex = -1;
 

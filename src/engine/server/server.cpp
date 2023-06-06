@@ -1146,6 +1146,7 @@ int CServer::NewClientNoAuthCallback(int ClientID, void *pUser)
 
 	NewClientCallback(ClientID, pUser, false);
 
+	pThis->SendCapabilities(ClientID);
 	pThis->SendMap(ClientID);
 	return 0;
 }
@@ -1251,6 +1252,14 @@ int CServer::DelClientCallback(int ClientID, int Type, const char *pReason, void
 	dbg_msg("infclass", "accusation created for the client %d", ClientID);
 	
 	return 0;
+}
+
+void CServer::SendCapabilities(int ClientID)
+{
+	CMsgPacker Msg(NETMSG_CAPABILITIES, true);
+	Msg.AddInt(SERVERCAP_CURVERSION); // version
+	Msg.AddInt(SERVERCAPFLAG_CHATTIMEOUTCODE); // flags
+	SendMsg(&Msg, MSGFLAG_VITAL, ClientID);
 }
 
 void CServer::SendMap(int ClientID)
@@ -1599,6 +1608,7 @@ void CServer::ProcessClientPacket(CNetChunk *pPacket)
 				}
 
 				m_aClients[ClientID].m_State = CClient::STATE_CONNECTING;
+				SendCapabilities(ClientID);
 				SendMap(ClientID);
 			}
 		}
@@ -5156,6 +5166,28 @@ int CServer::GetUserLevel(int ClientID)
 int* CServer::GetIdMap(int ClientID)
 {
 	return (int*)(IdMap + VANILLA_MAX_CLIENTS * ClientID);
+}
+
+bool CServer::SetTimedOut(int ClientID, int OrigID)
+{
+	if(!m_NetServer.SetTimedOut(ClientID, OrigID))
+	{
+		return false;
+	}
+	m_aClients[ClientID].m_Sixup = m_aClients[OrigID].m_Sixup;
+
+	if(m_aClients[OrigID].m_Authed != AUTHED_NO)
+	{
+		LogoutClient(ClientID, "Timeout Protection");
+	}
+	DelClientCallback(OrigID, CLIENTDROPTYPE_TIMEOUT_PROTECTION_USED, "Timeout Protection used", this);
+	m_aClients[ClientID].m_Authed = AUTHED_NO;
+	m_aClients[ClientID].m_Flags = m_aClients[OrigID].m_Flags;
+	m_aClients[ClientID].m_DDNetVersion = m_aClients[OrigID].m_DDNetVersion;
+	m_aClients[ClientID].m_InfClassVersion = m_aClients[OrigID].m_InfClassVersion;
+	m_aClients[ClientID].m_GotDDNetVersionPacket = m_aClients[OrigID].m_GotDDNetVersionPacket;
+	m_aClients[ClientID].m_DDNetVersionSettled = m_aClients[OrigID].m_DDNetVersionSettled;
+	return true;
 }
 
 CServer *CreateServer() { return new CServer(); }
