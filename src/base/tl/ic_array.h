@@ -10,6 +10,7 @@ class icArray
 public:
 	constexpr icArray() = default;
 	icArray(std::initializer_list<T> list);
+	icArray(T (&Array)[StackCapacity]);
 
 	icArray &operator=(const icArray &Array) = default;
 
@@ -65,6 +66,15 @@ template<class T, int StackCapacity>
 inline icArray<T, StackCapacity>::icArray(std::initializer_list<T> list)
 {
 	for(const T &Element : list)
+	{
+		Add(Element);
+	}
+}
+
+template<class T, int StackCapacity>
+inline icArray<T, StackCapacity>::icArray(T (&Array)[StackCapacity])
+{
+	for(const T &Element : Array)
 	{
 		Add(Element);
 	}
