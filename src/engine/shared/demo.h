@@ -26,6 +26,7 @@ class CDemoRecorder : public IDemoRecorder
 	void Write(int Type, const void *pData, int Size);
 public:
 	CDemoRecorder(class CSnapshotDelta *pSnapshotDelta);
+	CDemoRecorder() {}
 
 	int Start(class IStorage *pStorage, class IConsole *pConsole, const char *pFilename, const char *pNetversion, const char *pMap, SHA256_DIGEST Sha256, unsigned MapCrc, const char *pType);
 	int Stop();

@@ -243,7 +243,7 @@ public:
 	int64_t m_ServerInfoRequestLogTick;
 	int m_ServerInfoRequestLogRecords;
 
-	CDemoRecorder m_DemoRecorder;
+	CDemoRecorder m_aDemoRecorder[1];
 	CRegister m_Register;
 
 	std::vector<CNameBan> m_vNameBans;

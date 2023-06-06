@@ -346,9 +346,10 @@ void CServer::CClient::Reset(bool ResetScore)
 }
 /* INFECTION MODIFICATION END *****************************************/
 
-CServer::CServer() : m_DemoRecorder(&m_SnapshotDelta)
+CServer::CServer()
 {
 	m_pConfig = &g_Config;
+	m_aDemoRecorder[0] = CDemoRecorder(&m_SnapshotDelta);
 
 	m_TickSpeed = SERVER_TICK_SPEED;
 
@@ -879,8 +880,12 @@ int CServer::SendMsg(CMsgPacker *pMsg, int Flags, int ClientID)
 			return -1;
 
 		// write message to demo recorder
-		if(!(Flags&MSGFLAG_NORECORD))
-			m_DemoRecorder.RecordMessage(Pack6.Data(), Pack6.Size());
+		if(!(Flags & MSGFLAG_NORECORD))
+		{
+			for(auto &Recorder :  m_aDemoRecorder)
+				if(Recorder.IsRecording())
+					Recorder.RecordMessage(Pack6.Data(), Pack6.Size());
+		}
 
 		if(!(Flags & MSGFLAG_NOSEND))
 		{
@@ -909,7 +914,8 @@ int CServer::SendMsg(CMsgPacker *pMsg, int Flags, int ClientID)
 
 		if(!(Flags & MSGFLAG_NORECORD))
 		{
-			m_DemoRecorder.RecordMessage(Pack.Data(), Pack.Size());
+			if(m_aDemoRecorder[0].IsRecording())
+				m_aDemoRecorder[0].RecordMessage(Pack.Data(), Pack.Size());
 		}
 
 		if(!(Flags & MSGFLAG_NOSEND))
@@ -943,7 +949,7 @@ void CServer::DoSnapshot()
 	GameServer()->OnPreSnap();
 
 	// create snapshot for demo recording
-	if(m_DemoRecorder.IsRecording())
+	if(m_aDemoRecorder[0].IsRecording())
 	{
 		char aData[CSnapshot::MAX_SIZE];
 		int SnapshotSize;
@@ -954,7 +960,7 @@ void CServer::DoSnapshot()
 		SnapshotSize = m_SnapshotBuilder.Finish(aData);
 
 		// write snapshot
-		m_DemoRecorder.RecordSnapshot(Tick(), aData, SnapshotSize);
+		m_aDemoRecorder[0].RecordSnapshot(Tick(), aData, SnapshotSize);
 	}
 
 	// create snapshots for all clients
@@ -2312,7 +2318,7 @@ int CServer::LoadMap(const char *pMapName)
 	Console()->Print(IConsole::OUTPUT_LEVEL_ADDINFO, "server", aBuf);
 
 	// stop recording when we change map
-	m_DemoRecorder.Stop();
+	m_aDemoRecorder[0].Stop();
 	
 	// reinit snapshot ids
 	m_IDPool.TimeoutIDs();
@@ -2946,12 +2952,12 @@ void CServer::DemoRecorder_HandleAutoStart()
 {
 	if(g_Config.m_SvAutoDemoRecord)
 	{
-		m_DemoRecorder.Stop();
+		m_aDemoRecorder[0].Stop();
 		char aFilename[128];
 		char aDate[20];
 		str_timestamp(aDate, sizeof(aDate));
 		str_format(aFilename, sizeof(aFilename), "demos/%s_%s.demo", "auto/autorecord", aDate);
-		m_DemoRecorder.Start(Storage(), m_pConsole, aFilename, GameServer()->NetVersion(), m_aCurrentMap, m_CurrentMapSha256, m_CurrentMapCrc, "server");
+		m_aDemoRecorder[0].Start(Storage(), m_pConsole, aFilename, GameServer()->NetVersion(), m_aCurrentMap, m_CurrentMapSha256, m_CurrentMapCrc, "server");
 		if(g_Config.m_SvAutoDemoMax)
 		{
 			// clean up auto recorded demos
@@ -2963,7 +2969,7 @@ void CServer::DemoRecorder_HandleAutoStart()
 
 bool CServer::DemoRecorder_IsRecording()
 {
-	return m_DemoRecorder.IsRecording();
+	return m_aDemoRecorder[0].IsRecording();
 }
 
 void CServer::ConRecord(IConsole::IResult *pResult, void *pUser)
@@ -2979,12 +2985,12 @@ void CServer::ConRecord(IConsole::IResult *pResult, void *pUser)
 		str_timestamp(aDate, sizeof(aDate));
 		str_format(aFilename, sizeof(aFilename), "demos/demo_%s.demo", aDate);
 	}
-	pServer->m_DemoRecorder.Start(pServer->Storage(), pServer->Console(), aFilename, pServer->GameServer()->NetVersion(), pServer->m_aCurrentMap, pServer->m_CurrentMapSha256, pServer->m_CurrentMapCrc, "server");
+	pServer->m_aDemoRecorder[0].Start(pServer->Storage(), pServer->Console(), aFilename, pServer->GameServer()->NetVersion(), pServer->m_aCurrentMap, pServer->m_CurrentMapSha256, pServer->m_CurrentMapCrc, "server");
 }
 
 void CServer::ConStopRecord(IConsole::IResult *pResult, void *pUser)
 {
-	((CServer *)pUser)->m_DemoRecorder.Stop();
+	((CServer *)pUser)->m_aDemoRecorder[0].Stop();
 }
 
 void CServer::ConMapReload(IConsole::IResult *pResult, void *pUser)
