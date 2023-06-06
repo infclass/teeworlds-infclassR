@@ -164,6 +164,7 @@ public:
 		int m_Authed;
 		int m_AuthTries;
 		int m_NextMapChunk;
+		int m_Flags;
 		bool m_ShowIps;
 
 		const IConsole::CCommandInfo *m_pRconCmdToSend;

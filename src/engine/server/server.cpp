@@ -318,8 +318,7 @@ void CServer::CClient::Reset(bool ResetScore)
 	m_IsBot = false;
 	m_SnapRate = CClient::SNAPRATE_INIT;
 	m_NextMapChunk = 0;
-	m_DDNetVersion = VERSION_NONE;
-	m_InfClassVersion = 0;
+	m_Flags = 0;
 	
 	if(ResetScore)
 	{
@@ -861,16 +860,15 @@ static inline bool RepackMsg(const CMsgPacker *pMsg, CPacker &Packer)
 
 int CServer::SendMsg(CMsgPacker *pMsg, int Flags, int ClientID)
 {
-	CNetChunk Packet;
 	// drop packet to dummy client
 	if(ClientIsBot(ClientID))
 		return 0;
 
+	CNetChunk Packet;
 	mem_zero(&Packet, sizeof(CNetChunk));
-
-	if(Flags&MSGFLAG_VITAL)
+	if(Flags & MSGFLAG_VITAL)
 		Packet.m_Flags |= NETSENDFLAG_VITAL;
-	if(Flags&MSGFLAG_FLUSH)
+	if(Flags & MSGFLAG_FLUSH)
 		Packet.m_Flags |= NETSENDFLAG_FLUSH;
 
 	if(ClientID < 0)
@@ -1144,7 +1142,12 @@ int CServer::DelBot(int ClientID)
 
 int CServer::NewClientNoAuthCallback(int ClientID, void *pUser)
 {
-	return NewClientCallback(ClientID, pUser, false);
+	CServer *pThis = (CServer *)pUser;
+
+	NewClientCallback(ClientID, pUser, false);
+
+	pThis->SendMap(ClientID);
+	return 0;
 }
 
 int CServer::NewClientCallback(int ClientID, void *pUser, bool Sixup)
@@ -1570,7 +1573,11 @@ void CServer::ProcessClientPacket(CNetChunk *pPacket)
 			if((pPacket->m_Flags&NET_CHUNKFLAG_VITAL) != 0 && (m_aClients[ClientID].m_State == CClient::STATE_PREAUTH || m_aClients[ClientID].m_State == CClient::STATE_AUTH))
 			{
 				const char *pVersion = Unpacker.GetString(CUnpacker::SANITIZE_CC);
-				if(str_comp(pVersion, "0.6 626fce9a778df4d4") != 0 && str_comp(pVersion, GameServer()->NetVersion()) != 0)
+				if(!str_utf8_check(pVersion))
+				{
+					return;
+				}
+				if(str_comp(pVersion, GameServer()->NetVersion()) != 0 && str_comp(pVersion, "0.7 802f1be60a05665f") != 0)
 				{
 					// wrong version
 					char aReason[256];
@@ -1580,7 +1587,11 @@ void CServer::ProcessClientPacket(CNetChunk *pPacket)
 				}
 
 				const char *pPassword = Unpacker.GetString(CUnpacker::SANITIZE_CC);
-				if(!g_Config.m_InfCaptcha && g_Config.m_Password[0] != 0 && str_comp(g_Config.m_Password, pPassword) != 0)
+				if(!str_utf8_check(pPassword))
+				{
+					return;
+				}
+				if(!Config()->m_InfCaptcha && Config()->m_Password[0] != 0 && str_comp(Config()->m_Password, pPassword) != 0)
 				{
 					// wrong password
 					m_NetServer.Drop(ClientID, CLIENTDROPTYPE_WRONG_PASSWORD, "Wrong password");
@@ -2974,8 +2985,8 @@ bool CServer::DemoRecorder_IsRecording()
 
 void CServer::ConRecord(IConsole::IResult *pResult, void *pUser)
 {
-	CServer* pServer = (CServer *)pUser;
-	char aFilename[128];
+	CServer *pServer = (CServer *)pUser;
+	char aFilename[IO_MAX_PATH_LENGTH];
 
 	if(pResult->NumArguments())
 		str_format(aFilename, sizeof(aFilename), "demos/%s.demo", pResult->GetString(0));
@@ -2995,7 +3006,7 @@ void CServer::ConStopRecord(IConsole::IResult *pResult, void *pUser)
 
 void CServer::ConMapReload(IConsole::IResult *pResult, void *pUser)
 {
-	((CServer *)pUser)->m_MapReload = 1;
+	((CServer *)pUser)->m_MapReload = true;
 }
 
 void CServer::ConLogout(IConsole::IResult *pResult, void *pUser)
@@ -3320,10 +3331,6 @@ void CServer::SnapFreeID(int ID)
 
 void *CServer::SnapNewItem(int Type, int ID, int Size)
 {
-	if(!(Type >= 0 && Type <= 0xffff))
-	{
-		g_UuidManager.GetUuid(Type);
-	}
 	dbg_assert(ID >= -1 && ID <= 0xffff, "incorrect id");
 	return ID < 0 ? 0 : m_SnapshotBuilder.NewItem(Type, ID, Size);
 }
