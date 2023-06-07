@@ -272,9 +272,9 @@ void CInfClassHuman::OnPlayerSnap(int SnappingClient, int InfClassVersion)
 		return;
 	pClassInfo->m_Class = GetPlayerClass();
 	pClassInfo->m_Flags = 0;
-	pClassInfo->m_Data1 = 0;
+	pClassInfo->m_Data1 = -1;
 
-	if(SnappingClient == GetCID())
+	if(SnappingClient == GetCID() || SnappingClient == SERVER_DEMO_CLIENT)
 	{
 		switch(GetPlayerClass())
 		{

@@ -220,7 +220,7 @@ void CInfClassInfected::OnPlayerSnap(int SnappingClient, int InfClassVersion)
 		return;
 	pClassInfo->m_Class = GetPlayerClass();
 	pClassInfo->m_Flags = 0;
-	pClassInfo->m_Data1 = 0;
+	pClassInfo->m_Data1 = -1;
 
 	if(m_pCharacter->IsInvisible())
 		pClassInfo->m_Flags |= INFCLASS_CLASSINFO_FLAG_IS_INVISIBLE;
