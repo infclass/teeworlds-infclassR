@@ -2147,6 +2147,7 @@ void CInfClassGameController::StartRound()
 	}
 
 	m_HeroGiftTick = 0;
+	m_WitchCallers.Clear();
 
 	if(StartAfterGameOver)
 	{
