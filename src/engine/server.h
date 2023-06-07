@@ -158,8 +158,6 @@ public:
 		const char *m_pReason;
 	};
 	
-	virtual ~IServer() {};
-	
 	inline class CLocalization* Localization() { return m_pLocalization; }
 
 	int Tick() const { return m_CurrentGameTick; }
@@ -348,6 +346,7 @@ public:
 	virtual void SetRconCID(int ClientID) = 0;
 	virtual int GetAuthedState(int ClientID) const = 0;
 	virtual void Kick(int ClientID, const char *pReason) = 0;
+	virtual void Ban(int ClientID, int Seconds, const char *pReason) = 0;
 	virtual bool GetMapReload() const = 0;
 	virtual void ChangeMap(const char *pMap) = 0;
 
@@ -397,7 +396,6 @@ public:
 	virtual void Login(int ClientID, const char* pUsername, const char* pPassword) = 0;
 	virtual void Logout(int ClientID) = 0;
 #endif
-	virtual void Ban(int i, int Seconds, const char* pReason) = 0;
 
 public:
 	virtual class CRoundStatistics* RoundStatistics() = 0;
@@ -422,11 +420,15 @@ public:
 /* INFECTION MODIFICATION END *****************************************/
 
 	virtual const char *GetPreviousMapName() const = 0;
-	virtual int* GetIdMap(int ClientID) = 0;
+	virtual int *GetIdMap(int ClientID) = 0;
 
 	virtual bool ClientPrevIngame(int ClientID) = 0;
+	virtual const char *GetNetErrorString(int ClientID) = 0;
+	virtual void ResetNetErrorString(int ClientID) = 0;
 	virtual bool SetTimedOut(int ClientID, int OrigID) = 0;
 	virtual void SetTimeoutProtected(int ClientID) = 0;
+
+	virtual void SetErrorShutdown(const char *pReason) = 0;
 
 	virtual int GetActivePlayerCount() = 0;
 

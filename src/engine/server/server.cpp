@@ -355,7 +355,7 @@ CServer::CServer()
 	m_pGameServer = 0;
 
 	m_CurrentGameTick = 0;
-	m_RunServer = 1;
+	m_RunServer = UNINITIALIZED;
 
 	m_aShutdownReason[0] = 0;
 
@@ -375,6 +375,8 @@ CServer::CServer()
 	m_ServerInfoRequestLogTick = 0;
 	m_ServerInfoRequestLogRecords = 0;
 
+	m_aErrorShutdownReason[0] = 0;
+
 #ifdef CONF_SQL
 /* DDNET MODIFICATION START *******************************************/
 	for (int i = 0; i < MAX_SQLSERVERS; i++)
@@ -390,12 +392,20 @@ CServer::CServer()
 	m_GameServerCmdLock = lock_create();
 	m_ChallengeLock = lock_create();
 #endif
-	
+
 	Init();
 }
 
 CServer::~CServer()
 {
+	if(m_RunServer != UNINITIALIZED)
+	{
+		for(auto &Client : m_aClients)
+		{
+			free(Client.m_pPersistentData);
+		}
+	}
+
 #ifdef CONF_SQL
 	lock_destroy(m_GameServerCmdLock);
 	lock_destroy(m_ChallengeLock);
@@ -781,7 +791,7 @@ int CServer::Port() const
 
 int CServer::MaxClients() const
 {
-	return m_NetServer.MaxClients();
+	return m_RunServer == UNINITIALIZED ? 0 : m_NetServer.MaxClients();
 }
 
 int CServer::ClientCount() const
@@ -2233,6 +2243,9 @@ void CServer::SendServerInfo(const NETADDR *pAddr, int Token, int Type, bool Sen
 
 void CServer::UpdateServerInfo()
 {
+	if(m_RunServer == UNINITIALIZED)
+		return;
+
 	for(int i = 0; i < MAX_CLIENTS; ++i)
 	{
 		if(m_aClients[i].m_State != CClient::STATE_EMPTY)
@@ -2366,7 +2379,10 @@ static bool IsSeparator(char c) { return c == ';' || c == ' ' || c == ',' || c =
 
 int CServer::Run()
 {
-	if(g_Config.m_Debug)
+	if(m_RunServer == UNINITIALIZED)
+		m_RunServer = RUNNING;
+
+	if(Config()->m_Debug)
 	{
 		g_UuidManager.DebugDump();
 	}
@@ -2440,20 +2456,18 @@ int CServer::Run()
 	}
 
 	// load map
-	if(!LoadMap(g_Config.m_SvMap))
+	if(!LoadMap(Config()->m_SvMap))
 	{
-		dbg_msg("server", "failed to load map. mapname='%s'", g_Config.m_SvMap);
+		dbg_msg("server", "failed to load map. mapname='%s'", Config()->m_SvMap);
 		return -1;
 	}
 
 	// start server
 	NETADDR BindAddr;
-	int NetType = NETTYPE_ALL;
-
-	if(!g_Config.m_Bindaddr[0] || net_host_lookup(g_Config.m_Bindaddr, &BindAddr, NetType) != 0)
+	if(!g_Config.m_Bindaddr[0] || net_host_lookup(g_Config.m_Bindaddr, &BindAddr, NETTYPE_ALL) != 0)
 		mem_zero(&BindAddr, sizeof(BindAddr));
 
-	BindAddr.type = NetType;
+	BindAddr.type = NETTYPE_ALL;
 
 	int Port = Config()->m_SvPort;
 	for(BindAddr.port = Port != 0 ? Port : 8303; !m_NetServer.Open(BindAddr, &m_ServerBan, Config()->m_SvMaxClients, Config()->m_SvMaxClientsPerIP); BindAddr.port++)
@@ -2483,15 +2497,15 @@ int CServer::Run()
 	m_Econ.Init(Config(), Console(), &m_ServerBan);
 
 	char aBuf[256];
-	str_format(aBuf, sizeof(aBuf), "server name is '%s'", g_Config.m_SvName);
+	str_format(aBuf, sizeof(aBuf), "server name is '%s'", Config()->m_SvName);
 	Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "server", aBuf);
 
 	GameServer()->OnInit();
-	str_format(aBuf, sizeof(aBuf), "version %s", GameServer()->NetVersion());
-	Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "server", aBuf);
-	str_format(aBuf, sizeof(aBuf), "game version %s", GameServer()->Version());
-	Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "server", aBuf);
-
+	if(ErrorShutdown())
+	{
+		m_RunServer = STOPPING;
+	}
+	Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "server", "version " GAME_RELEASE_VERSION " on " CONF_PLATFORM_STRING " " CONF_ARCH_STRING);
 	if(GIT_SHORTREV_HASH)
 	{
 		char aBuf[64];
@@ -2510,7 +2524,7 @@ int CServer::Run()
 		m_Lastheartbeat = 0;
 		m_GameStartTime = time_get();
 
-		while(m_RunServer)
+		while(m_RunServer < STOPPING)
 		{
 			if(NonActive)
 				PumpNetwork(PacketWaiting);
@@ -2697,7 +2711,7 @@ int CServer::Run()
 				}
 
 				if(Config()->m_SvShutdownWhenEmpty)
-					m_RunServer = false;
+					m_RunServer = STOPPING;
 				else
 					PacketWaiting = net_socket_read_wait(m_NetServer.Socket(), 1000000);
 			}
@@ -2721,6 +2735,11 @@ int CServer::Run()
 	if(m_aShutdownReason[0])
 		pDisconnectReason = m_aShutdownReason;
 
+	if(ErrorShutdown())
+	{
+		dbg_msg("server", "shutdown from game server (%s)", m_aErrorShutdownReason);
+		pDisconnectReason = m_aErrorShutdownReason;
+	}
 	// disconnect all clients on shutdown
 	for(int i = 0; i < MAX_CLIENTS; ++i)
 	{
@@ -2747,11 +2766,6 @@ int CServer::Run()
 	}
 #endif
 /* DDNET MODIFICATION END *********************************************/
-
-	for(auto &Client : m_aClients)
-	{
-		free(Client.m_pPersistentData);
-	}
 
 	return 0;
 }
@@ -2834,23 +2848,14 @@ void CServer::ConWhisper(IConsole::IResult *pResult, void *pUser)
 
 void CServer::ConKick(IConsole::IResult *pResult, void *pUser)
 {
-	CServer* pThis = (CServer *)pUser;
-	
-	char aBuf[128];
-	const char *pStr = pResult->GetString(0);
-	const char *pReason = pResult->NumArguments()>1 ? pResult->GetString(1) : "No reason given";
-	str_format(aBuf, sizeof(aBuf), "Kicked (%s)", pReason);
-
-	if(str_isallnum(pStr))
+	if(pResult->NumArguments() > 1)
 	{
-		int ClientID = str_toint(pStr);
-		if(ClientID < 0 || ClientID >= MAX_CLIENTS || pThis->m_aClients[ClientID].m_State == CServer::CClient::STATE_EMPTY)
-			pThis->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "Server", "Invalid client id");
-		else
-			pThis->Kick(ClientID, aBuf);
+		char aBuf[128];
+		str_format(aBuf, sizeof(aBuf), "Kicked (%s)", pResult->GetString(1));
+		((CServer *)pUser)->Kick(pResult->GetInteger(0), aBuf);
 	}
 	else
-		pThis->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "Server", "Invalid client id");
+		((CServer *)pUser)->Kick(pResult->GetInteger(0), "Kicked by console");
 }
 
 void CServer::ConStatusExtended(IConsole::IResult *pResult, void *pUser)
@@ -2961,7 +2966,7 @@ void CServer::ConNameBans(IConsole::IResult *pResult, void *pUser)
 void CServer::ConShutdown(IConsole::IResult *pResult, void *pUser)
 {
 	CServer* pThis = static_cast<CServer *>(pUser);
-	pThis->m_RunServer = 0;
+	pThis->m_RunServer = STOPPING;
 	const char *pReason = pResult->GetString(0);
 	if(pReason[0])
 	{
@@ -3318,7 +3323,7 @@ void CServer::RegisterCommands()
 		"Set InfClass weapon ammo regen interval");
 	Console()->Register("inf_set_weapon_max_ammo", "i[weapon] i[ammo]", CFGFLAG_SERVER, ConSetWeaponMaxAmmo, this,
 		"Set InfClass weapon max ammo");
-	/* INFECTION MODIFICATION END *****************************************/
+	/* INFECTION MODIFICATION END *************CServer::~CServer()****************************/
 
 	// register console commands in sub parts
 	m_ServerBan.InitServerBan(Console(), Storage(), this);
@@ -3337,7 +3342,6 @@ void CServer::SnapFreeID(int ID)
 {
 	m_IDPool.FreeID(ID);
 }
-
 
 void *CServer::SnapNewItem(int Type, int ID, int Size)
 {
@@ -3364,6 +3368,10 @@ int CServer::GetClientInfclassVersion(int ClientID) const
 
 	return 0;
 }
+
+CServer *CreateServer() { return new CServer(); }
+
+// DDRace
 
 void CServer::GetClientAddr(int ClientID, NETADDR *pAddr) const
 {
@@ -5163,9 +5171,9 @@ int CServer::GetUserLevel(int ClientID)
 
 /* INFECTION MODIFICATION END *****************************************/
 
-int* CServer::GetIdMap(int ClientID)
+int *CServer::GetIdMap(int ClientID)
 {
-	return (int*)(IdMap + VANILLA_MAX_CLIENTS * ClientID);
+	return m_aIdMap + VANILLA_MAX_CLIENTS * ClientID;
 }
 
 bool CServer::SetTimedOut(int ClientID, int OrigID)
@@ -5190,4 +5198,7 @@ bool CServer::SetTimedOut(int ClientID, int OrigID)
 	return true;
 }
 
-CServer *CreateServer() { return new CServer(); }
+void CServer::SetErrorShutdown(const char *pReason)
+{
+	str_copy(m_aErrorShutdownReason, pReason);
+}

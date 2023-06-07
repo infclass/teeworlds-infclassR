@@ -3,6 +3,8 @@
 #ifndef ENGINE_SHARED_PROTOCOL_H
 #define ENGINE_SHARED_PROTOCOL_H
 
+#include <bitset>
+
 /*
 	Connection diagram - How the initialization works.
 
@@ -127,6 +129,9 @@ enum
 	VERSION_DDNET_WEAPON_SHIELDS = 16010,
 	VERSION_DDNET_NEW_HUD = 16020,
 	VERSION_DDNET_MULTI_LASER = 16040,
+	VERSION_DDNET_ENTITY_NETOBJS = 16200,
 };
+
+typedef std::bitset<MAX_CLIENTS> CClientMask;
 
 #endif

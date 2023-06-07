@@ -115,13 +115,12 @@ public:
 
 	enum
 	{
-		MAX_RCONCMD_SEND=16,
+		MAX_RCONCMD_SEND = 16,
 	};
 
 	class CClient
 	{
 	public:
-
 		enum
 		{
 			STATE_EMPTY = 0,
@@ -131,9 +130,14 @@ public:
 			STATE_READY,
 			STATE_INGAME,
 
-			SNAPRATE_INIT=0,
+			SNAPRATE_INIT = 0,
 			SNAPRATE_FULL,
-			SNAPRATE_RECOVER
+			SNAPRATE_RECOVER,
+
+			DNSBL_STATE_NONE = 0,
+			DNSBL_STATE_PENDING,
+			DNSBL_STATE_BLACKLISTED,
+			DNSBL_STATE_WHITELISTED,
 		};
 
 		class CInput
@@ -207,7 +211,7 @@ public:
 	};
 
 	CClient m_aClients[MAX_CLIENTS];
-	int IdMap[MAX_CLIENTS * VANILLA_MAX_CLIENTS];
+	int m_aIdMap[MAX_CLIENTS * VANILLA_MAX_CLIENTS];
 
 	CSnapshotDelta m_SnapshotDelta;
 	CSnapshotBuilder m_SnapshotBuilder;
@@ -220,6 +224,14 @@ public:
 
 	int64_t m_GameStartTime;
 	//int m_CurrentGameTick;
+
+	enum
+	{
+		UNINITIALIZED = 0,
+		RUNNING = 1,
+		STOPPING = 2
+	};
+
 	int m_RunServer;
 
 	bool m_MapReload;
@@ -247,10 +259,12 @@ public:
 	CDemoRecorder m_aDemoRecorder[1];
 	CRegister m_Register;
 
+	char m_aErrorShutdownReason[128];
+
 	std::vector<CNameBan> m_vNameBans;
 
 	CServer();
-	virtual ~CServer();
+	~CServer();
 
 	bool IsClientNameAvailable(int ClientID, const char *pNameRequest);
 	bool SetClientNameImpl(int ClientID, const char *pNameRequest, bool Set);
@@ -260,7 +274,8 @@ public:
 	virtual void SetClientClan(int ClientID, char const *pClan);
 	virtual void SetClientCountry(int ClientID, int Country);
 
-	void Kick(int ClientID, const char *pReason);
+	void Kick(int ClientID, const char *pReason) override;
+	void Ban(int ClientID, int Seconds, const char *pReason) override;
 
 	void DemoRecorder_HandleAutoStart();
 	bool DemoRecorder_IsRecording();
@@ -304,7 +319,6 @@ public:
 	void SendCapabilities(int ClientID);
 	void SendMap(int ClientID);
 	void SendMapData(int ClientID, int Chunk);
-	
 	void SendConnectionReady(int ClientID);
 	void SendRconLine(int ClientID, const char *pLine);
 	// Accepts -1 as ClientID to mean "all clients with at least auth level admin"
@@ -369,12 +383,11 @@ public:
 
 	void RegisterCommands();
 
+	int SnapNewID() override;
+	void SnapFreeID(int ID) override;
+	void *SnapNewItem(int Type, int ID, int Size) override;
+	void SnapSetStaticsize(int ItemType, int Size) override;
 
-	virtual int SnapNewID();
-	virtual void SnapFreeID(int ID);
-	virtual void *SnapNewItem(int Type, int ID, int Size);
-	void SnapSetStaticsize(int ItemType, int Size);
-	
 /* INFECTION MODIFICATION START ***************************************/
 public:
 	int GetClientInfclassVersion(int ClientID) const override;
@@ -416,7 +429,6 @@ public:
 	virtual void Login(int ClientID, const char* pUsername, const char* pPassword);
 	virtual void Logout(int ClientID);
 #endif
-	virtual void Ban(int ClientID, int Seconds, const char* pReason);
 private:
 	bool InitCaptcha();
 	bool GenerateClientMap(const char *pMapFilePath, const char *pMapName);
@@ -493,10 +505,15 @@ public:
 	int *GetIdMap(int ClientID) override;
 
 	bool ClientPrevIngame(int ClientID) override { return m_aPrevStates[ClientID] == CClient::STATE_INGAME; }
+	const char *GetNetErrorString(int ClientID) override { return m_NetServer.ErrorString(ClientID); }
+	void ResetNetErrorString(int ClientID) override { m_NetServer.ResetErrorString(ClientID); }
 	bool SetTimedOut(int ClientID, int OrigID) override;
 	void SetTimeoutProtected(int ClientID) override { m_NetServer.SetTimeoutProtected(ClientID); }
 
 	void SendMsgRaw(int ClientID, const void *pData, int Size, int Flags) override;
+
+	bool ErrorShutdown() const { return m_aErrorShutdownReason[0] != 0; }
+	void SetErrorShutdown(const char *pReason) override;
 
 	bool IsSixup(int ClientID) const override { return ClientID != SERVER_DEMO_CLIENT && m_aClients[ClientID].m_Sixup; }
 };
