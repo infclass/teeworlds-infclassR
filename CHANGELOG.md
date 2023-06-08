@@ -1,5 +1,74 @@
 # Changelog
 
+## InfclassR v1.5.0 - 2023-xx-xx
+
+General:
+- Added 'timeout code' support
+- Ghost visibility for spectators now depends on `sv_strict_spectate_mode` config option
+- "Forced spectator" mode reworked for compatibility with DDNet client
+- Added `/me` chat command
+- Dynamically toggle the turrets enablement during the round
+- Added `/prefer_class <classname>` chat command
+- Weapon change now allowed during ammo reload
+- Added broadcast message about coming infection
+- Balancing infection now delayed
+- Turret destruction score reduced from 3 to 1 sp
+- Biologist laser now does NoAmmo sound on fire failed
+- Biologist mine is now kept on a new placement failed
+- Implemented entities animation
+- Added health and armor pickups support
+- Added damage zone type (deals a certain damage)
+- Added a broadcast warning about kick for inactivity
+- Taxi passengers now collide with solid ground
+- Spider hook limit indicator now visible only for the team
+- Spider hook changed from web to pulling one after grab
+- Introduced 'smart' map rotation
+- Names are now checked for confusing with existing ones
+- "By-hammer senders" are now considered as killer helpers
+- Healers are now considered as killer helpers
+- Added training mode with `/save_position`, `/load_position`, and `/set_class` commands
+- Added `/sp`, `/lp` aliases for the save/load position commands
+- Hero flag indicator now properly animated for standing heroes
+- Merc bomb self-damage now dealt on behalf of the player who triggered the explosion
+
+Balancing:
+- Medic now gets a grenade on enemy killed
+- Scientists now get the superweapon after 15 kills
+- Scientists now get 0.5 kill progression per assisting
+- White hole is disabled for games with less than 8 players
+- Looper wall effect is now applied continuously
+- Engineer and Looper walls now can't be built on spawns
+- Ninja targets are now set individually
+- `inf_merc_bombs` reduced from 16 to 15 (restored the value used before v1.4.0_alpha6)
+- Frozen witch now can not spawn the infected
+- The game now tries to pick the witch among callers
+- Boomer healing effect now depends on the distance
+- New same-round infection now restores the previous infected class
+- `inf_shock_wave_affect_humans` now disabled by default (frustrating)
+
+Fixes:
+- Fixed Hero flag indicator on the class picked
+- Fixed 'undead is finally dead' on player left the game
+- Fixed spawn protection
+- Fixed a few bugs in votes
+- Fixed sound on Biologist laser fired with ammo < 10
+- Fixed langs list in /lang description
+- Fixed translation for some Merc text strings
+- Fixed missing help for messaging commands
+- Fixed taxi behavior on character team changes
+- Fixed spider hook for player id=0
+
+Maps:
+- Updated `infc_canyon` (tech update simplifying the quads geometry)
+- Fixed `infc_half_provence` borders
+- Added infection zones highlight to `infc_sewers`
+
+Maintenance:
+- Added 'pingex' capability support from DDNet
+- Added `kill_pl` command from DDNet
+- Added `set_hook_protection`, `set_invincible` commands
+- Added `sv_slash_me` config variable
+
 ## InfclassR v1.4.2 - 2022-04-21
 
 - Fixed network clipping for looper and engineer walls
