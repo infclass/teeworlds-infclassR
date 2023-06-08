@@ -154,6 +154,9 @@ public:
 		bool m_Quitting;
 		bool m_IsBot;
 
+		double m_Traffic;
+		int64_t m_TrafficSince;
+
 		int m_LastAckedSnapshot;
 		int m_LastInputTick;
 		CSnapshotStorage m_Snapshots;
