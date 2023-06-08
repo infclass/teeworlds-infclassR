@@ -122,6 +122,8 @@ void CHeroFlag::Snap(int SnappingClient)
 	if(pOwner->GetPlayerClass() != PLAYERCLASS_HERO)
 		return;
 
+	int SnappingClientVersion = GameServer()->GetClientVersion(SnappingClient);
+
 	if(GameController()->HeroGiftAvailable())
 	{
 		const float Speed = 0.1f;
@@ -130,27 +132,22 @@ void CHeroFlag::Snap(int SnappingClient)
 
 		const vec2 DecorationsPivot(m_Pos.x, m_Pos.y - 20);
 		const float Radius = 38;
-		
+
+		CSnapContext Context(SnappingClientVersion);
 		for(int i=0; i<CHeroFlag::SHIELD_COUNT; i++)
 		{
-			CNetObj_Pickup *pObj = static_cast<CNetObj_Pickup *>(Server()->SnapNewItem(NETOBJTYPE_PICKUP, m_IDs[i], sizeof(CNetObj_Pickup)));
-			if(!pObj)
-				return;
-
 			vec2 PosStart = DecorationsPivot + vec2(cos(AngleStart + AngleStep*i), sin(AngleStart + AngleStep*i)) * Radius;
-
-			pObj->m_X = (int)PosStart.x;
-			pObj->m_Y = (int)PosStart.y;
-			pObj->m_Type = i % 2 == 0 ? POWERUP_ARMOR : POWERUP_HEALTH;
-			pObj->m_Subtype = 0;
+			int Type = i % 2 == 0 ? POWERUP_ARMOR : POWERUP_HEALTH;
+			int Subtype = 0;
+			GameServer()->SnapPickup(Context, m_IDs[i], PosStart, Type, Subtype);
 		}
 	}
 
-	CNetObj_Flag *pFlag = (CNetObj_Flag *)Server()->SnapNewItem(NETOBJTYPE_FLAG, m_ID, sizeof(CNetObj_Flag));
+	CNetObj_Flag *pFlag = Server()->SnapNewItem<CNetObj_Flag>(m_ID);
 	if(!pFlag)
 		return;
 
-	pFlag->m_X = (int)m_Pos.x;
-	pFlag->m_Y = (int)m_Pos.y+16.0f;
+	pFlag->m_X = m_Pos.x;
+	pFlag->m_Y = m_Pos.y + TileSizeF * 0.5;
 	pFlag->m_Team = TEAM_BLUE;
 }
