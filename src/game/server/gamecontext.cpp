@@ -316,6 +316,91 @@ void CGameContext::CreateSoundGlobal(int Sound, int Target)
 	}
 }
 
+bool CGameContext::SnapLaserObject(const CSnapContext &Context, int SnapID, const vec2 &To, const vec2 &From, int StartTick, int Owner, int LaserType, int Subtype, int SwitchNumber)
+{
+	if(Context.GetClientVersion() >= VERSION_DDNET_MULTI_LASER)
+	{
+		CNetObj_DDNetLaser *pObj = Server()->SnapNewItem<CNetObj_DDNetLaser>(SnapID);
+		if(!pObj)
+			return false;
+
+		pObj->m_ToX = (int)To.x;
+		pObj->m_ToY = (int)To.y;
+		pObj->m_FromX = (int)From.x;
+		pObj->m_FromY = (int)From.y;
+		pObj->m_StartTick = StartTick;
+		pObj->m_Owner = Owner;
+		pObj->m_Type = LaserType;
+		pObj->m_Subtype = Subtype;
+		pObj->m_SwitchNumber = SwitchNumber;
+	}
+	else
+	{
+		CNetObj_Laser *pObj = Server()->SnapNewItem<CNetObj_Laser>(SnapID);
+		if(!pObj)
+			return false;
+
+		pObj->m_X = (int)To.x;
+		pObj->m_Y = (int)To.y;
+		pObj->m_FromX = (int)From.x;
+		pObj->m_FromY = (int)From.y;
+		pObj->m_StartTick = StartTick;
+	}
+
+	return true;
+}
+
+bool CGameContext::SnapPickup(const CSnapContext &Context, int SnapID, const vec2 &Pos, int Type, int SubType, int SwitchNumber)
+{
+	if(Context.IsSixup())
+	{
+		protocol7::CNetObj_Pickup *pPickup = Server()->SnapNewItem<protocol7::CNetObj_Pickup>(SnapID);
+		if(!pPickup)
+			return false;
+
+		pPickup->m_X = (int)Pos.x;
+		pPickup->m_Y = (int)Pos.y;
+
+		if(Type == POWERUP_WEAPON)
+			pPickup->m_Type = SubType == WEAPON_SHOTGUN ? protocol7::PICKUP_SHOTGUN : SubType == WEAPON_GRENADE ? protocol7::PICKUP_GRENADE : protocol7::PICKUP_LASER;
+		else if(Type == POWERUP_NINJA)
+			pPickup->m_Type = protocol7::PICKUP_NINJA;
+	}
+	else if(Context.GetClientVersion() >= VERSION_DDNET_ENTITY_NETOBJS)
+	{
+		CNetObj_DDNetPickup *pPickup = Server()->SnapNewItem<CNetObj_DDNetPickup>(SnapID);
+		if(!pPickup)
+			return false;
+
+		pPickup->m_X = (int)Pos.x;
+		pPickup->m_Y = (int)Pos.y;
+		pPickup->m_Type = Type;
+		pPickup->m_Subtype = SubType;
+		pPickup->m_SwitchNumber = SwitchNumber;
+	}
+	else
+	{
+		CNetObj_Pickup *pPickup = Server()->SnapNewItem<CNetObj_Pickup>(SnapID);
+		if(!pPickup)
+			return false;
+
+		pPickup->m_X = (int)Pos.x;
+		pPickup->m_Y = (int)Pos.y;
+
+		pPickup->m_Type = Type;
+		if(Context.GetClientVersion() < VERSION_DDNET_WEAPON_SHIELDS)
+		{
+			if(Type >= POWERUP_ARMOR_SHOTGUN && Type <= POWERUP_ARMOR_LASER)
+			{
+				pPickup->m_Type = POWERUP_ARMOR;
+			}
+		}
+		pPickup->m_Subtype = SubType;
+	}
+
+	return true;
+}
+
 void CGameContext::CallVote(int ClientID, const char *pDesc, const char *pCmd, const char *pReason, const char *pChatmsg)
 {
 	// check if a vote is already running

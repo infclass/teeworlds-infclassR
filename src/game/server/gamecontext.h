@@ -61,6 +61,21 @@ enum
 
 class CConfig;
 
+struct CSnapContext
+{
+	CSnapContext(int Version, bool Sixup = false) :
+		m_ClientVersion(Version), m_Sixup(Sixup)
+	{
+	}
+
+	int GetClientVersion() const { return m_ClientVersion; }
+	bool IsSixup() const { return m_Sixup; }
+
+private:
+	int m_ClientVersion;
+	bool m_Sixup;
+};
+
 class CGameContext : public IGameServer
 {
 	IServer *m_pServer;
@@ -170,6 +185,9 @@ public:
 	void CreateDeath(vec2 Pos, int Who, int64_t Mask = -1);
 	void CreateSound(vec2 Pos, int Sound, int64_t Mask = -1);
 	void CreateSoundGlobal(int Sound, int Target = -1);
+
+	bool SnapLaserObject(const CSnapContext &Context, int SnapID, const vec2 &To, const vec2 &From, int StartTick, int Owner = -1, int LaserType = -1, int Subtype = -1, int SwitchNumber = -1);
+	bool SnapPickup(const CSnapContext &Context, int SnapID, const vec2 &Pos, int Type, int SubType, int SwitchNumber = 0);
 
 	enum
 	{
