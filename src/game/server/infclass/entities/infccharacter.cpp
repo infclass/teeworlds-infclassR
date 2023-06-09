@@ -1841,24 +1841,10 @@ void CInfClassCharacter::Die(const DeathContext &Context)
 	GameServer()->CreateDeath(GetPos(), GetCID());
 }
 
-bool CInfClassCharacter::GiveWeapon(int Weapon, int Ammo)
+void CInfClassCharacter::GiveWeapon(int Weapon, int Ammo)
 {
-	INFWEAPON InfWID = GetInfWeaponID(Weapon);
-	int MaxAmmo = Server()->GetMaxAmmo(InfWID);
-
-	if(InfWID == INFWEAPON::NINJA_GRENADE)
-		MaxAmmo = minimum(MaxAmmo + m_NinjaAmmoBuff, 10);
-
-	if(Ammo < 0)
-		Ammo = MaxAmmo;
-
-	if(m_aWeapons[Weapon].m_Ammo < MaxAmmo || !m_aWeapons[Weapon].m_Got)
-	{
-		m_aWeapons[Weapon].m_Got = true;
-		m_aWeapons[Weapon].m_Ammo = minimum(MaxAmmo, Ammo);
-		return true;
-	}
-	return false;
+	m_aWeapons[Weapon].m_Got = true;
+	AddAmmo(Weapon, Ammo);
 }
 
 void CInfClassCharacter::SetActiveWeapon(int Weapon)
@@ -1893,8 +1879,8 @@ void CInfClassCharacter::AddAmmo(int Weapon, int Ammo)
 	if(InfWID == INFWEAPON::NINJA_GRENADE)
 		MaxAmmo = minimum(MaxAmmo + m_NinjaAmmoBuff, 10);
 
-	if(Ammo <= 0)
-		return;
+	if(Ammo < 0)
+		Ammo = MaxAmmo;
 
 	if(!m_aWeapons[Weapon].m_Got)
 		return;
