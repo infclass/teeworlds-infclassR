@@ -1873,20 +1873,20 @@ void CInfClassCharacter::TakeAllWeapons()
 
 void CInfClassCharacter::AddAmmo(int Weapon, int Ammo)
 {
-	INFWEAPON InfWID = GetInfWeaponID(Weapon);
-	int MaxAmmo = Server()->GetMaxAmmo(InfWID);
-
-	if(InfWID == INFWEAPON::NINJA_GRENADE)
-		MaxAmmo = minimum(MaxAmmo + m_NinjaAmmoBuff, 10);
-
-	if(Ammo < 0)
-		Ammo = MaxAmmo;
-
 	if(!m_aWeapons[Weapon].m_Got)
 		return;
 
+	if(!m_pClass)
+		return;
+
+	WeaponRegenParams Params;
+	m_pClass->GetAmmoRegenParams(Weapon, &Params);
+
+	if(Ammo < 0)
+		Ammo = Params.MaxAmmo;
+
 	int TargetAmmo = maximum(0, m_aWeapons[Weapon].m_Ammo) + Ammo;
-	m_aWeapons[Weapon].m_Ammo = minimum(MaxAmmo, TargetAmmo);
+	m_aWeapons[Weapon].m_Ammo = minimum(Params.MaxAmmo, TargetAmmo);
 }
 
 int CInfClassCharacter::GetAmmo(int Weapon) const
