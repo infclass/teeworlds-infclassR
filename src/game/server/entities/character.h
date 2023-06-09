@@ -88,7 +88,6 @@ public:
 
 	void SetMaxArmor(int Amount);
 
-	bool GiveWeapon(int Weapon, int Ammo);
 	void SetActiveWeapon(int Weapon);
 
 	void SetEmote(int Emote, int Tick);

@@ -123,6 +123,7 @@ public:
 	void Die(int Killer, DAMAGE_TYPE DamageType);
 	void Die(const DeathContext &Context);
 
+	bool GiveWeapon(int Weapon, int Ammo);
 	void SetActiveWeapon(int Weapon);
 	void SetLastWeapon(int Weapon);
 	bool HasWeapon(int Weapon) const;
