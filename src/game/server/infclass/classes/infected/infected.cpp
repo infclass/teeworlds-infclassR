@@ -40,22 +40,22 @@ SkinGetter CInfClassInfected::GetSkinGetter() const
 	return CInfClassInfected::SetupSkin;
 }
 
-void CInfClassInfected::SetupSkinContext(CSkinContext *output, bool ForSameTeam) const
+void CInfClassInfected::SetupSkinContext(CSkinContext *pOutput, bool ForSameTeam) const
 {
-	output->PlayerClass = GetPlayerClass();
+	pOutput->PlayerClass = GetPlayerClass();
 	switch(GetPlayerClass())
 	{
 	case PLAYERCLASS_SPIDER:
-		output->ExtraData1 = ForSameTeam ? m_HookOnTheLimit : 0;
+		pOutput->ExtraData1 = ForSameTeam ? m_HookOnTheLimit : 0;
 		break;
 	case PLAYERCLASS_GHOUL:
-		output->ExtraData1 = GetGhoulPercent() * 100;
+		pOutput->ExtraData1 = GetGhoulPercent() * 100;
 		break;
 	case PLAYERCLASS_VOODOO:
-		output->ExtraData1 = m_VoodooAboutToDie;
+		pOutput->ExtraData1 = m_VoodooAboutToDie;
 		break;
 	default:
-		output->ExtraData1 = 0;
+		pOutput->ExtraData1 = 0;
 		break;
 	}
 }
