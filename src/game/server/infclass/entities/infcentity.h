@@ -5,6 +5,9 @@
 
 #include <game/server/entity.h>
 
+inline constexpr int TileSize = 32;
+inline constexpr float TileSizeF = 32.0f;
+
 class CGameContext;
 class CInfClassCharacter;
 class CInfClassGameController;
