@@ -390,73 +390,12 @@ void CInfClassCharacter::SpecialSnapForClient(int SnappingClient, bool *pDoSnap)
 	}
 }
 
-void CInfClassCharacter::ResetNinjaHits()
-{
-	m_apHitObjects.Clear();
-}
-
 void CInfClassCharacter::HandleNinja()
 {
-/* INFECTION MODIFICATION START ***************************************/
-	if(GetInfWeaponID(m_ActiveWeapon) != INFWEAPON::NINJA_HAMMER)
+	if(!m_pClass)
 		return;
-/* INFECTION MODIFICATION END *****************************************/
 
-	m_DartLifeSpan--;
-
-	if(m_DartLifeSpan == 0)
-	{
-		// reset velocity
-		m_Core.m_Vel = m_DartDir*m_DartOldVelAmount;
-	}
-
-	if(m_DartLifeSpan > 0)
-	{
-		// Set velocity
-		float VelocityBuff = 1.0f + static_cast<float>(m_NinjaVelocityBuff)/2.0f;
-		m_Core.m_Vel = m_DartDir * g_pData->m_Weapons.m_Ninja.m_Velocity * VelocityBuff;
-		vec2 OldPos = GetPos();
-		GameServer()->Collision()->MoveBox(&m_Core.m_Pos, &m_Core.m_Vel, vec2(m_ProximityRadius, m_ProximityRadius), 0.f);
-
-		// reset velocity so the client doesn't predict stuff
-		m_Core.m_Vel = vec2(0.f, 0.f);
-
-		// check if we Hit anything along the way
-		if(m_Core.m_Pos != OldPos)
-		{
-			// Find other players
-			for(CInfClassCharacter *pTarget = (CInfClassCharacter*) GameWorld()->FindFirst(CGameWorld::ENTTYPE_CHARACTER); pTarget; pTarget = (CInfClassCharacter *)pTarget->TypeNext())
-			{
-				if(m_apHitObjects.Capacity() == m_apHitObjects.Size())
-				{
-					break;
-				}
-
-				if(pTarget->IsHuman())
-					continue;
-
-				if(m_apHitObjects.Contains(pTarget))
-					continue;
-
-				vec2 IntersectPos;
-				if(!closest_point_on_line(OldPos, m_Core.m_Pos, pTarget->GetPos(), IntersectPos))
-					continue;
-
-				float Len = distance(pTarget->GetPos(), IntersectPos);
-				if(Len >= pTarget->GetProximityRadius() / 2 + GetProximityRadius() / 2)
-				{
-					continue;
-				}
-
-				// Hit a player, give him damage and stuffs...
-				GameServer()->CreateSound(pTarget->GetPos(), SOUND_NINJA_HIT);
-				// set his velocity to fast upward (for now)
-				m_apHitObjects.Add(pTarget);
-
-				pTarget->TakeDamage(vec2(0, -10.0f), minimum(g_pData->m_Weapons.m_Ninja.m_pBase->m_Damage + m_NinjaStrengthBuff, 20), GetCID(), DAMAGE_TYPE::NINJA);
-			}
-		}
-	}
+	m_pClass->HandleNinja();
 }
 
 void CInfClassCharacter::HandleWeaponSwitch()
@@ -1019,28 +958,6 @@ void CInfClassCharacter::ResetMovementsInput()
 void CInfClassCharacter::ResetHookInput()
 {
 	m_Input.m_Hook = 0;
-}
-
-void CInfClassCharacter::GiveNinjaBuf()
-{
-	if(GetPlayerClass() != PLAYERCLASS_NINJA)
-		return;
-
-	switch(random_int(0, 2))
-	{
-		case 0: //Velocity Buff
-			m_NinjaVelocityBuff++;
-			GameServer()->SendChatTarget_Localization(GetCID(), CHATCATEGORY_SCORE, _("Sword velocity increased"), NULL);
-			break;
-		case 1: //Strength Buff
-			m_NinjaStrengthBuff++;
-			GameServer()->SendChatTarget_Localization(GetCID(), CHATCATEGORY_SCORE, _("Sword strength increased"), NULL);
-			break;
-		case 2: //Ammo Buff
-			m_NinjaAmmoBuff++;
-			GameServer()->SendChatTarget_Localization(GetCID(), CHATCATEGORY_SCORE, _("Grenade limit increased"), NULL);
-			break;
-	}
 }
 
 void CInfClassCharacter::AddHelper(int HelperCID, float Time)
@@ -2444,10 +2361,6 @@ void CInfClassCharacter::ClassSpawnAttributes()
 
 void CInfClassCharacter::DestroyChildEntities()
 {
-	m_NinjaVelocityBuff = 0;
-	m_NinjaStrengthBuff = 0;
-	m_NinjaAmmoBuff = 0;
-
 	static const auto InfCEntities = {
 		CGameWorld::ENTTYPE_PROJECTILE,
 		CGameWorld::ENTTYPE_ENGINEER_WALL,

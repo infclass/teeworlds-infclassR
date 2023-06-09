@@ -39,9 +39,6 @@ CCharacter::CCharacter(CGameWorld *pWorld) :
 	m_InWater = 0;
 	m_ProtectionTick = 0;
 	m_WaterJumpLifeSpan = 0;
-	m_NinjaVelocityBuff = 0;
-	m_NinjaStrengthBuff = 0;
-	m_NinjaAmmoBuff = 0;
 	m_HasIndicator = false;
 /* INFECTION MODIFICATION END *****************************************/
 }

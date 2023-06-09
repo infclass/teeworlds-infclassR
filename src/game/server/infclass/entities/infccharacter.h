@@ -92,7 +92,6 @@ public:
 	void Snap(int SnappingClient) override;
 	void SpecialSnapForClient(int SnappingClient, bool *pDoSnap);
 
-	void ResetNinjaHits();
 	void HandleNinja() override;
 	void HandleWeaponSwitch() override;
 
@@ -194,8 +193,6 @@ public:
 	void ResetMovementsInput();
 	void ResetHookInput();
 
-	void GiveNinjaBuf();
-
 	int GetCursorID() const { return m_CursorID; }
 
 	void AddHelper(int HelperCID, float Time);
@@ -249,8 +246,6 @@ protected:
 	CHelperInfo m_LastHelper;
 	ClientsArray m_LastHookers;
 	int m_LastHookerTick = -1;
-
-	icArray<CEntity *, 24> m_apHitObjects;
 
 	int m_BlindnessTicks = 0;
 	int m_LastBlinder = -1;

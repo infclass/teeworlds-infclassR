@@ -74,6 +74,8 @@ public:
 
 	virtual void OnHookAttachedPlayer();
 
+	virtual void HandleNinja() {};
+
 	void OnWeaponFired(WeaponFireContext *pFireContext);
 
 	virtual void OnHammerFired(WeaponFireContext *pFireContext);

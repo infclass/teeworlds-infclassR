@@ -158,7 +158,7 @@ void CInfClassHuman::GetAmmoRegenParams(int Weapon, WeaponRegenParams *pParams)
 	switch(InfWID)
 	{
 	case INFWEAPON::NINJA_GRENADE:
-		pParams->MaxAmmo = minimum(pParams->MaxAmmo + m_pCharacter->m_NinjaAmmoBuff, 10);
+		pParams->MaxAmmo = minimum(pParams->MaxAmmo + m_NinjaAmmoBuff, 10);
 		break;
 	case INFWEAPON::MERCENARY_GUN:
 		if(m_pCharacter->GetInAirTick() > Server()->TickSpeed() * 4)
@@ -571,6 +571,75 @@ void CInfClassHuman::OnHookAttachedPlayer()
 		return;
 
 	m_pCharacter->m_Core.TryBecomePassenger(&pHookedCharacter->m_Core);
+}
+
+void CInfClassHuman::HandleNinja()
+{
+	if(GetPlayerClass() != PLAYERCLASS_NINJA)
+		return;
+	if(m_pCharacter->GetInfWeaponID(m_pCharacter->GetActiveWeapon()) != INFWEAPON::NINJA_HAMMER)
+		return;
+
+	m_pCharacter->m_DartLifeSpan--;
+
+	auto &m_Core = m_pCharacter->m_Core;
+	auto &m_DartLifeSpan = m_pCharacter->m_DartLifeSpan;
+	auto &m_DartDir = m_pCharacter->m_DartDir;
+	auto &m_DartOldVelAmount = m_pCharacter->m_DartOldVelAmount;
+
+	if(m_DartLifeSpan == 0)
+	{
+		// reset velocity
+		m_Core.m_Vel = m_DartDir * m_DartOldVelAmount;
+	}
+
+	if(m_DartLifeSpan > 0)
+	{
+		// Set velocity
+		float VelocityBuff = 1.0f + static_cast<float>(m_NinjaVelocityBuff) / 2.0f;
+		m_Core.m_Vel = m_DartDir * g_pData->m_Weapons.m_Ninja.m_Velocity * VelocityBuff;
+		vec2 OldPos = GetPos();
+		GameServer()->Collision()->MoveBox(&m_Core.m_Pos, &m_Core.m_Vel, CCharacterCore::PhysicalSizeVec2(), 0.f);
+
+		// reset velocity so the client doesn't predict stuff
+		m_Core.m_Vel = vec2(0.f, 0.f);
+
+		// check if we Hit anything along the way
+		if(m_Core.m_Pos != OldPos)
+		{
+			// Find other players
+			for(CInfClassCharacter *pTarget = (CInfClassCharacter *)GameWorld()->FindFirst(CGameWorld::ENTTYPE_CHARACTER); pTarget; pTarget = (CInfClassCharacter *)pTarget->TypeNext())
+			{
+				if(m_apHitObjects.Capacity() == m_apHitObjects.Size())
+				{
+					break;
+				}
+
+				if(pTarget->IsHuman())
+					continue;
+
+				if(m_apHitObjects.Contains(pTarget))
+					continue;
+
+				vec2 IntersectPos;
+				if(!closest_point_on_line(OldPos, m_Core.m_Pos, pTarget->GetPos(), IntersectPos))
+					continue;
+
+				float Len = distance(pTarget->GetPos(), IntersectPos);
+				if(Len >= pTarget->GetProximityRadius() / 2 + GetProximityRadius() / 2)
+				{
+					continue;
+				}
+
+				// Hit a player, give him damage and stuffs...
+				GameServer()->CreateSound(pTarget->GetPos(), SOUND_NINJA_HIT);
+				// set his velocity to fast upward (for now)
+				m_apHitObjects.Add(pTarget);
+
+				pTarget->TakeDamage(vec2(0, -10.0f), minimum(g_pData->m_Weapons.m_Ninja.m_pBase->m_Damage + m_NinjaStrengthBuff, 20), GetCID(), DAMAGE_TYPE::NINJA);
+			}
+		}
+	}
 }
 
 void CInfClassHuman::OnHammerFired(WeaponFireContext *pFireContext)
@@ -1399,9 +1468,7 @@ void CInfClassHuman::OnNinjaTargetKiller(bool Assisted)
 
 	if(m_pCharacter)
 	{
-		m_pCharacter->GiveNinjaBuf();
-		m_pCharacter->SetEmote(EMOTE_HAPPY, Server()->Tick() + Server()->TickSpeed());
-		GameServer()->SendEmoticon(GetCID(), EMOTICON_MUSIC);
+		GiveNinjaBuf();
 
 		if(!Assisted)
 		{
@@ -1413,6 +1480,28 @@ void CInfClassHuman::OnNinjaTargetKiller(bool Assisted)
 	int CooldownTicks = Server()->TickSpeed()*(10 + 3 * maximum(0, 16 - PlayerCounter));
 	m_NinjaTargetCID = -1;
 	m_NinjaTargetTick = Server()->Tick() + CooldownTicks;
+}
+
+void CInfClassHuman::GiveNinjaBuf()
+{
+	switch(random_int(0, 2))
+	{
+	case 0: //Velocity Buff
+		m_NinjaVelocityBuff++;
+		GameServer()->SendChatTarget_Localization(GetCID(), CHATCATEGORY_SCORE, _("Sword velocity increased"), NULL);
+		break;
+	case 1: //Strength Buff
+		m_NinjaStrengthBuff++;
+		GameServer()->SendChatTarget_Localization(GetCID(), CHATCATEGORY_SCORE, _("Sword strength increased"), NULL);
+		break;
+	case 2: //Ammo Buff
+		m_NinjaAmmoBuff++;
+		GameServer()->SendChatTarget_Localization(GetCID(), CHATCATEGORY_SCORE, _("Grenade limit increased"), NULL);
+		break;
+	}
+
+	m_pCharacter->SetEmote(EMOTE_HAPPY, Server()->Tick() + Server()->TickSpeed());
+	GameServer()->SendEmoticon(GetCID(), EMOTICON_MUSIC);
 }
 
 void CInfClassHuman::SnapHero(int SnappingClient)
@@ -1556,7 +1645,7 @@ void CInfClassHuman::ActivateNinja(WeaponFireContext *pFireContext)
 		if(!m_pCharacter->m_InWater)
 			m_pCharacter->m_DartLeft--;
 
-		m_pCharacter->ResetNinjaHits();
+		m_apHitObjects.Clear();
 
 		m_pCharacter->m_DartDir = GetDirection();
 		m_pCharacter->m_DartLifeSpan = g_pData->m_Weapons.m_Ninja.m_Movetime * Server()->TickSpeed() / 1000;

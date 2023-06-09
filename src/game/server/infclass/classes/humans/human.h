@@ -52,6 +52,8 @@ public:
 
 	void OnHookAttachedPlayer() override;
 
+	void HandleNinja() override;
+
 	void OnHammerFired(WeaponFireContext *pFireContext) override;
 	void OnGunFired(WeaponFireContext *pFireContext) override;
 	void OnShotgunFired(WeaponFireContext *pFireContext) override;
@@ -73,6 +75,7 @@ protected:
 
 	void CheckSuperWeaponAccess();
 	void OnNinjaTargetKiller(bool Assisted);
+	void GiveNinjaBuf();
 
 	void SnapHero(int SnappingClient);
 	void SnapEngineer(int SnappingClient);
@@ -113,6 +116,10 @@ private:
 	int m_PositionLockTicksRemaining = 0;
 	int m_NinjaTargetTick = 0;
 	int m_NinjaTargetCID = -1;
+	int m_NinjaVelocityBuff = 0;
+	int m_NinjaStrengthBuff = 0;
+	int m_NinjaAmmoBuff = 0;
+	icArray<CEntity *, 24> m_apHitObjects;
 	bool m_HasWhiteHole = false;
 
 	CHeroFlag *m_pHeroFlag = nullptr;
