@@ -22,8 +22,6 @@
 
 /* DDNET MODIFICATION START *******************************************/
 #include "base/logger.h"
-#include "sql_connector.h"
-#include "sql_server.h"
 /* DDNET MODIFICATION END *********************************************/
 
 #include "name_ban.h"
@@ -100,18 +98,15 @@ class CServer : public IServer
 	class IConsole *m_pConsole;
 	class IStorage *m_pStorage;
 
-/* DDNET MODIFICATION START *******************************************/
-#ifdef CONF_SQL
-	CSqlServer* m_apSqlReadServers[MAX_SQLSERVERS];
-	CSqlServer* m_apSqlWriteServers[MAX_SQLSERVERS];
-#endif
-/* DDNET MODIFICATION END *********************************************/
+	class CDbConnectionPool *m_pConnectionPool;
+
 public:
 	class IGameServer *GameServer() { return m_pGameServer; }
 	class CConfig *Config() { return m_pConfig; }
 	const CConfig *Config() const { return m_pConfig; }
 	class IConsole *Console() { return m_pConsole; }
 	class IStorage *Storage() { return m_pStorage; }
+	class CDbConnectionPool *DbPool() { return m_pConnectionPool; }
 
 	enum
 	{
@@ -369,15 +364,10 @@ public:
 	static void ConNameUnban(IConsole::IResult *pResult, void *pUser);
 	static void ConNameBans(IConsole::IResult *pResult, void *pUser);
 
-/* DDNET MODIFICATION START *******************************************/
-#ifdef CONF_SQL
-	static bool ConAddSqlServer(IConsole::IResult *pResult, void *pUserData);
-	static bool ConDumpSqlServers(IConsole::IResult *pResult, void *pUserData);
+	// console commands for sqlmasters
+	static void ConAddSqlServer(IConsole::IResult *pResult, void *pUserData);
+	static void ConDumpSqlServers(IConsole::IResult *pResult, void *pUserData);
 
-	static void CreateTablesThread(void *pData);
-#endif
-/* DDNET MODIFICATION END *********************************************/
-	
 	static void ConSetWeaponFireDelay(class IConsole::IResult *pResult, void *pUserData);
 	static void ConSetWeaponAmmoRegen(class IConsole::IResult *pResult, void *pUserData);
 	static void ConSetWeaponMaxAmmo(class IConsole::IResult *pResult, void *pUserData);

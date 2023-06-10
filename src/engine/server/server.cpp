@@ -40,12 +40,14 @@
 #include <cstring>
 /* INFECTION MODIFICATION START ***************************************/
 #include <engine/server/mapconverter.h>
-#include <engine/server/sql_job.h>
 #include <engine/server/crypt.h>
 #include <game/server/infclass/events-director.h>
 
 #include <teeuniverses/components/localization.h>
 /* INFECTION MODIFICATION END *****************************************/
+
+#include "databases/connection.h"
+#include "databases/connection_pool.h"
 
 #include <cinttypes>
 
@@ -375,23 +377,9 @@ CServer::CServer()
 	m_ServerInfoRequestLogTick = 0;
 	m_ServerInfoRequestLogRecords = 0;
 
+	m_pConnectionPool = new CDbConnectionPool();
+
 	m_aErrorShutdownReason[0] = 0;
-
-#ifdef CONF_SQL
-/* DDNET MODIFICATION START *******************************************/
-	for (int i = 0; i < MAX_SQLSERVERS; i++)
-	{
-		m_apSqlReadServers[i] = 0;
-		m_apSqlWriteServers[i] = 0;
-	}
-
-	CSqlConnector::SetReadServers(m_apSqlReadServers);
-	CSqlConnector::SetWriteServers(m_apSqlWriteServers);
-/* DDNET MODIFICATION END *********************************************/
-	
-	m_GameServerCmdLock = lock_create();
-	m_ChallengeLock = lock_create();
-#endif
 
 	Init();
 }
@@ -406,10 +394,7 @@ CServer::~CServer()
 		}
 	}
 
-#ifdef CONF_SQL
-	lock_destroy(m_GameServerCmdLock);
-	lock_destroy(m_ChallengeLock);
-#endif
+	delete m_pConnectionPool;
 }
 
 bool CServer::IsClientNameAvailable(int ClientID, const char *pNameRequest)
@@ -2504,6 +2489,22 @@ int CServer::Run()
 		return -1;
 	}
 
+	if(Config()->m_SvSqliteFile[0] != '\0')
+	{
+		char aFullPath[IO_MAX_PATH_LENGTH];
+		Storage()->GetCompletePath(IStorage::TYPE_SAVE_OR_ABSOLUTE, Config()->m_SvSqliteFile, aFullPath, sizeof(aFullPath));
+
+		if(Config()->m_SvUseSQL)
+		{
+			DbPool()->RegisterSqliteDatabase(CDbConnectionPool::WRITE_BACKUP, aFullPath);
+		}
+		else
+		{
+			DbPool()->RegisterSqliteDatabase(CDbConnectionPool::READ, aFullPath);
+			DbPool()->RegisterSqliteDatabase(CDbConnectionPool::WRITE, aFullPath);
+		}
+	}
+
 	// start server
 	NETADDR BindAddr;
 	if(!g_Config.m_Bindaddr[0] || net_host_lookup(g_Config.m_Bindaddr, &BindAddr, NETTYPE_ALL) != 0)
@@ -3147,86 +3148,74 @@ void CServer::ConchainModCommandUpdate(IConsole::IResult *pResult, void *pUserDa
 	}
 }
 
-/* DDNET MODIFICATION START *******************************************/
-#ifdef CONF_SQL
 void CServer::ConAddSqlServer(IConsole::IResult *pResult, void *pUserData)
 {
 	CServer *pSelf = (CServer *)pUserData;
 
-	if (pResult->NumArguments() != 7 && pResult->NumArguments() != 8)
+	if(!MysqlAvailable())
+	{
+		pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "server", "can't add MySQL server: compiled without MySQL support");
+		return;
+	}
+
+	if(!pSelf->Config()->m_SvUseSQL)
 		return;
 
-	bool ReadOnly;
-	if (str_comp_nocase(pResult->GetString(0), "w") == 0)
-		ReadOnly = false;
-	else if (str_comp_nocase(pResult->GetString(0), "r") == 0)
-		ReadOnly = true;
+	if(pResult->NumArguments() != 7 && pResult->NumArguments() != 8)
+	{
+		pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "server", "7 or 8 arguments are required");
+		return;
+	}
+
+	CMysqlConfig Config;
+	bool Write;
+	if(str_comp_nocase(pResult->GetString(0), "w") == 0)
+		Write = false;
+	else if(str_comp_nocase(pResult->GetString(0), "r") == 0)
+		Write = true;
 	else
 	{
 		pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "server", "choose either 'r' for SqlReadServer or 'w' for SqlWriteServer");
 		return;
 	}
 
-	bool SetUpDb = pResult->NumArguments() == 8 ? pResult->GetInteger(7) : false;
+	str_copy(Config.m_aDatabase, pResult->GetString(1), sizeof(Config.m_aDatabase));
+	str_copy(Config.m_aPrefix, pResult->GetString(2), sizeof(Config.m_aPrefix));
+	str_copy(Config.m_aUser, pResult->GetString(3), sizeof(Config.m_aUser));
+	str_copy(Config.m_aPass, pResult->GetString(4), sizeof(Config.m_aPass));
+	str_copy(Config.m_aIp, pResult->GetString(5), sizeof(Config.m_aIp));
+	str_copy(Config.m_aBindaddr, Config.m_aBindaddr, sizeof(Config.m_aBindaddr));
+	Config.m_Port = pResult->GetInteger(6);
+	Config.m_Setup = pResult->NumArguments() == 8 ? pResult->GetInteger(7) : true;
 
-	CSqlServer** apSqlServers = ReadOnly ? pSelf->m_apSqlReadServers : pSelf->m_apSqlWriteServers;
-
-	for (int i = 0; i < MAX_SQLSERVERS; i++)
-	{
-		if (!apSqlServers[i])
-		{
-			apSqlServers[i] = new CSqlServer(pResult->GetString(1), pResult->GetString(2), pResult->GetString(3), pResult->GetString(4), pResult->GetString(5), pResult->GetInteger(6), ReadOnly, SetUpDb);
-
-			if(SetUpDb)
-			{
-				void *TablesThread = thread_init(CreateTablesThread, apSqlServers[i]);
-				thread_detach(TablesThread);
-			}
-
-			char aBuf[512];
-			str_format(aBuf, sizeof(aBuf), "Added new Sql%sServer: %d: DB: '%s' Prefix: '%s' User: '%s' IP: '%s' Port: %d", ReadOnly ? "Read" : "Write", i, apSqlServers[i]->GetDatabase(), apSqlServers[i]->GetPrefix(), apSqlServers[i]->GetUser(), apSqlServers[i]->GetIP(), apSqlServers[i]->GetPort());
-			pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "server", aBuf);
-			return true;
-		}
-	}
-	pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "server", "failed to add new sqlserver: limit of sqlservers reached");
+	char aBuf[512];
+	str_format(aBuf, sizeof(aBuf),
+		"Adding new Sql%sServer: DB: '%s' Prefix: '%s' User: '%s' IP: <{%s}> Port: %d",
+		Write ? "Write" : "Read",
+		Config.m_aDatabase, Config.m_aPrefix, Config.m_aUser, Config.m_aIp, Config.m_Port);
+	pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "server", aBuf);
+	pSelf->DbPool()->RegisterMysqlDatabase(Write ? CDbConnectionPool::WRITE : CDbConnectionPool::READ, &Config);
 }
 
 void CServer::ConDumpSqlServers(IConsole::IResult *pResult, void *pUserData)
 {
 	CServer *pSelf = (CServer *)pUserData;
 
-	bool ReadOnly;
-	if (str_comp_nocase(pResult->GetString(0), "w") == 0)
-		ReadOnly = false;
-	else if (str_comp_nocase(pResult->GetString(0), "r") == 0)
-		ReadOnly = true;
+	if(str_comp_nocase(pResult->GetString(0), "w") == 0)
+	{
+		pSelf->DbPool()->Print(pSelf->Console(), CDbConnectionPool::WRITE);
+		pSelf->DbPool()->Print(pSelf->Console(), CDbConnectionPool::WRITE_BACKUP);
+	}
+	else if(str_comp_nocase(pResult->GetString(0), "r") == 0)
+	{
+		pSelf->DbPool()->Print(pSelf->Console(), CDbConnectionPool::READ);
+	}
 	else
 	{
 		pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "server", "choose either 'r' for SqlReadServer or 'w' for SqlWriteServer");
 		return;
 	}
-
-	CSqlServer** apSqlServers = ReadOnly ? pSelf->m_apSqlReadServers : pSelf->m_apSqlWriteServers;
-
-	for (int i = 0; i < MAX_SQLSERVERS; i++)
-	{
-		if (apSqlServers[i])
-		{
-			char aBuf[512];
-			str_format(aBuf, sizeof(aBuf), "SQL-%s %d: DB: '%s' Prefix: '%s' User: '%s' Pass: '%s' IP: '%s' Port: %d", ReadOnly ? "Read" : "Write", i, apSqlServers[i]->GetDatabase(), apSqlServers[i]->GetPrefix(), apSqlServers[i]->GetUser(), apSqlServers[i]->GetPass(), apSqlServers[i]->GetIP(), apSqlServers[i]->GetPort());
-			pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "server", aBuf);
-		}
-	}
 }
-
-void CServer::CreateTablesThread(void *pData)
-{
-	((CSqlServer *)pData)->CreateTables();
-}
-#endif
-
-/* DDNET MODIFICATION END *********************************************/
 
 void CServer::ConSetWeaponFireDelay(IConsole::IResult *pResult, void *pUserData)
 {
@@ -3339,6 +3328,9 @@ void CServer::RegisterCommands()
 
 	Console()->Register("reload", "", CFGFLAG_SERVER, ConMapReload, this, "Reload the map");
 
+	Console()->Register("add_sqlserver", "s['r'|'w'] s[Database] s[Prefix] s[User] s[Password] s[IP] i[Port] ?i[SetUpDatabase ?]", CFGFLAG_SERVER | CFGFLAG_NONTEEHISTORIC, ConAddSqlServer, this, "add a sqlserver");
+	Console()->Register("dump_sqlservers", "s['r'|'w']", CFGFLAG_SERVER, ConDumpSqlServers, this, "dumps all sqlservers readservers = r, writeservers = w");
+
 	Console()->Register("name_ban", "s[name] ?i[distance] ?i[is_substring] ?r[reason]", CFGFLAG_SERVER, ConNameBan, this, "Ban a certain nickname");
 	Console()->Register("name_unban", "s[name]", CFGFLAG_SERVER, ConNameUnban, this, "Unban a certain nickname");
 	Console()->Register("name_bans", "", CFGFLAG_SERVER, ConNameBans, this, "List all name bans");
@@ -3354,11 +3346,6 @@ void CServer::RegisterCommands()
 	Console()->Register("whisper", "s[id] r[txt]", CFGFLAG_SERVER, ConWhisper, this, "Analogous to 'Say' but sent to a single client only");
 
 /* INFECTION MODIFICATION START ***************************************/
-#ifdef CONF_SQL
-	Console()->Register("inf_add_sqlserver", "ssssssi?i", CFGFLAG_SERVER, ConAddSqlServer, this, "add a sqlserver");
-	Console()->Register("inf_list_sqlservers", "s", CFGFLAG_SERVER, ConDumpSqlServers, this, "list all sqlservers readservers = r, writeservers = w");
-#endif
-
 	Console()->Register("inf_set_weapon_fire_delay", "i[weapon] i[msec]", CFGFLAG_SERVER, ConSetWeaponFireDelay, this,
 		"Set InfClass weapon fire delay");
 	Console()->Register("inf_set_weapon_ammo_regen", "i[weapon] i[msec]", CFGFLAG_SERVER, ConSetWeaponAmmoRegen, this,

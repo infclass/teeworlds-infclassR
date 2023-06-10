@@ -314,6 +314,7 @@ else()
 endif()
 find_package(PNG)
 find_package(PythonInterp 3)
+find_package(SQLite3)
 find_package(Threads)
 
 if(GEOLOCATION)
@@ -368,10 +369,14 @@ endif()
 show_dependency_status("OpenSSL Crypto" CRYPTO)
 show_dependency_status("PNG" PNG)
 show_dependency_status("PythonInterp" PYTHONINTERP)
+show_dependency_status("SQLite3" SQLite3)
 show_dependency_status("Zlib" ZLIB)
 
 if(NOT(PYTHONINTERP_FOUND))
   message(SEND_ERROR "You must install Python to compile ${CMAKE_PROJECT_NAME}")
+endif()
+if(NOT(SQLite3_FOUND))
+  message(SEND_ERROR "You must install SQLite3 to compile ${CMAKE_PROJECT_NAME}")
 endif()
 if(NOT(PNG_FOUND))
   message(SEND_ERROR "You must install libpng to compile ${CMAKE_PROJECT_NAME}")
@@ -793,9 +798,13 @@ target_link_libraries(engine-gfx PUBLIC
 ########################################################################
 
 # Sources
-set_glob(ENGINE_SERVER GLOB src/engine/server
-  crypt.cpp
-  crypt.h
+set_src(ENGINE_SERVER GLOB_RECURSE src/engine/server
+  databases/connection.cpp
+  databases/connection.h
+  databases/connection_pool.cpp
+  databases/connection_pool.h
+  databases/mysql.cpp
+  databases/sqlite.cpp
   mapconverter.cpp
   mapconverter.h
   #measure_ticks.cpp
@@ -811,12 +820,6 @@ set_glob(ENGINE_SERVER GLOB src/engine/server
   server.h
   server_logger.cpp
   server_logger.h
-  sql_connector.cpp
-  sql_connector.h
-  sql_job.cpp
-  sql_job.h
-  sql_server.cpp
-  sql_server.h
   sql_string_helpers.cpp
   sql_string_helpers.h
 )
@@ -926,6 +929,7 @@ set(SERVER_ICON)
 # Libraries
 set(LIBS_SERVER
   ${LIBS}
+  SQLite::SQLite3
   ${MYSQL_LIBRARIES}
   # Add pthreads (on non-Windows) at the end, so that other libraries can depend
   # on it.
