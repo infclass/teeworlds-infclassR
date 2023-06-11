@@ -57,13 +57,6 @@ struct FunRoundConfiguration
 	PLAYERCLASS HumanClass = PLAYERCLASS_INVALID;
 };
 
-struct SSnapContext
-{
-	int SnappingClient = 0;
-	int Version = 0;
-	int InfclassVersion = 0;
-};
-
 class CInfClassGameController : public IGameController
 {
 public:
@@ -97,8 +90,6 @@ public:
 	void CreateExplosionDiskGfx(vec2 Pos, float InnerRadius, float DamageRadius, int Owner);
 
 	void SendHammerDot(const vec2 &Pos, int SnapID);
-
-	bool SnapLaserObject(const SSnapContext &Context, int SnapID, const vec2 &To, const vec2 &From, int StartTick, int Owner, int Type = -1);
 
 	int OnCharacterDeath(class CCharacter *pVictim, class CPlayer *pKiller, int Weapon) override;
 	void OnCharacterDeath(CInfClassCharacter *pVictim, const DeathContext &Context);

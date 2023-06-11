@@ -1472,10 +1472,9 @@ void CInfClassHuman::SnapEngineer(int SnappingClient)
 
 		if(!pCurrentWall)
 		{
-			SSnapContext Context;
-			Context.Version = GameServer()->GetClientVersion(SnappingClient);
-
-			GameController()->SnapLaserObject(Context, m_BarrierHintIDs.First(), m_FirstShotCoord, m_FirstShotCoord, Server()->Tick(), GetCID());
+			int SnappingClientVersion = GameServer()->GetClientVersion(SnappingClient);
+			CSnapContext Context(SnappingClientVersion);
+			GameServer()->SnapLaserObject(Context, m_BarrierHintIDs.First(), m_FirstShotCoord, m_FirstShotCoord, Server()->Tick(), GetCID());
 		}
 	}
 }

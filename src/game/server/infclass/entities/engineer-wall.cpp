@@ -101,15 +101,15 @@ void CEngineerWall::Snap(int SnappingClient)
 	const CInfClassPlayer *pPlayer = GameController()->GetPlayer(SnappingClient);
 	const bool AntiPing = pPlayer && pPlayer->GetAntiPingEnabled();
 
-	SSnapContext Context;
-	Context.Version = GameServer()->GetClientVersion(SnappingClient);
+	int SnappingClientVersion = GameServer()->GetClientVersion(SnappingClient);
+	CSnapContext Context(SnappingClientVersion);
 
-	GameController()->SnapLaserObject(Context, GetID(), m_Pos, m_Pos2, m_SnapStartTick, m_Owner);
+	GameServer()->SnapLaserObject(Context, GetID(), m_Pos, m_Pos2, m_SnapStartTick, m_Owner);
 
 	if(!AntiPing)
 	{
 		vec2 Pos = m_Pos2;
-		GameController()->SnapLaserObject(Context, m_EndPointID, Pos, Pos, Server()->Tick(), m_Owner);
+		GameServer()->SnapLaserObject(Context, m_EndPointID, Pos, Pos, Server()->Tick(), m_Owner);
 	}
 }
 
