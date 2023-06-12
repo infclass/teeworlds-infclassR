@@ -1,4 +1,6 @@
 InfclassR v1.5.0_alpha7
+- Sniper position re-lock now enabled if 1+ seconds
+  remaining
 - Added 'timeout code' support
 - The game now tries to pick the witch among callers
 - Scientist now gets the superweapon after 15 kills

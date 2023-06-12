@@ -33,7 +33,7 @@
 #include <game/server/infclass/infcplayer.h>
 #include <game/server/teeinfo.h>
 
-static const int SniperPositionLockTimeLimit = 15;
+static const int s_SniperPositionLockTimeLimit = 15;
 
 MACRO_ALLOC_POOL_ID_IMPL(CInfClassHuman, MAX_CLIENTS)
 
@@ -339,7 +339,7 @@ void CInfClassHuman::OnCharacterPreCoreTick()
 			{
 				if(m_pCharacter->IsGrounded())
 				{
-					m_PositionLockTicksRemaining = Server()->TickSpeed() * SniperPositionLockTimeLimit;
+					m_PositionLockTicksRemaining = Server()->TickSpeed() * s_SniperPositionLockTimeLimit;
 				}
 			}
 
@@ -1064,7 +1064,7 @@ void CInfClassHuman::GiveClassAttributes()
 
 	if(GetPlayerClass() == PLAYERCLASS_SNIPER)
 	{
-		m_PositionLockTicksRemaining = Server()->TickSpeed() * SniperPositionLockTimeLimit;;
+		m_PositionLockTicksRemaining = Server()->TickSpeed() * s_SniperPositionLockTimeLimit;
 	}
 	else
 	{
@@ -2004,7 +2004,7 @@ void CInfClassHuman::OnMercLaserFired(WeaponFireContext *pFireContext)
 bool CInfClassHuman::PositionLockAvailable() const
 {
 	const int TickSpeed = GameContext()->Server()->TickSpeed();
-	if(m_PositionLockTicksRemaining < TickSpeed * (SniperPositionLockTimeLimit - 1))
+	if(m_PositionLockTicksRemaining < TickSpeed * 1.0f)
 	{
 		return false;
 	}
