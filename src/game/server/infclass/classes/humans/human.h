@@ -43,6 +43,7 @@ public:
 
 	void OnCharacterPreCoreTick() override;
 	void OnCharacterTick() override;
+	void OnCharacterTickPaused() override;
 	void OnCharacterSnap(int SnappingClient) override;
 	void OnCharacterDamage(SDamageContext *pContext) override;
 

@@ -439,6 +439,14 @@ void CInfClassHuman::OnCharacterTick()
 	}
 }
 
+void CInfClassHuman::OnCharacterTickPaused()
+{
+	if(m_ResetKillsTick >= 0)
+	{
+		++m_ResetKillsTick;
+	}
+}
+
 void CInfClassHuman::OnCharacterSnap(int SnappingClient)
 {
 	switch(GetPlayerClass())

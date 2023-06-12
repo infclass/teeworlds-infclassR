@@ -64,6 +64,7 @@ public:
 
 	virtual void OnCharacterPreCoreTick();
 	virtual void OnCharacterTick();
+	virtual void OnCharacterTickPaused();
 	virtual void OnCharacterSnap(int SnappingClient);
 	virtual void OnCharacterSpawned(const SpawnContext &Context);
 	virtual void OnCharacterDeath(DAMAGE_TYPE DamageType);

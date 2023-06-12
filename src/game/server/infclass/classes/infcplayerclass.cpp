@@ -284,6 +284,10 @@ void CInfClassPlayerClass::OnCharacterTick()
 	BroadcastWeaponState();
 }
 
+void CInfClassPlayerClass::OnCharacterTickPaused()
+{
+}
+
 void CInfClassPlayerClass::OnCharacterSnap(int SnappingClient)
 {
 }

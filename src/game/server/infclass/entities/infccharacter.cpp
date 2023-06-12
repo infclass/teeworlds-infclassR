@@ -240,6 +240,9 @@ void CInfClassCharacter::TickDeferred()
 
 void CInfClassCharacter::TickPaused()
 {
+	if(m_pClass)
+		m_pClass->OnCharacterTickPaused();
+
 	if(m_DamageZoneTick != -1)
 	{
 		m_DamageZoneTick++;
