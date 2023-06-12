@@ -20,9 +20,9 @@ public:
 	virtual void TickPaused();
 	virtual void Tick();
 
-	int LifeSpan() const { return m_LifeSpan; }
+	int GetEndTick() const { return m_EndTick; }
 	void SetLifeSpan(float Seconds);
-	
+
 private:
 	// physics
 	float m_PlayerPullStrength; // will be set with a config var
@@ -38,12 +38,11 @@ private:
 	vec2 *m_ParticlePos;
 	vec2 *m_ParticleVec;
 
-	bool isDieing;
+	bool m_IsDieing = false;
 	
 public:
-	int m_StartTick;
-	int m_LifeSpan;
-	int m_Radius; // changes overtime - grows when created - shrinks when dieing
+	int m_EndTick = 0;
+	int m_Radius = 0; // changes overtime - grows when created - shrinks when dieing
 };
 
 #endif

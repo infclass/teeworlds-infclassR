@@ -17,9 +17,6 @@ CWhiteHole::CWhiteHole(CGameContext *pGameContext, vec2 CenterPos, int Owner)
 	: CInfCEntity(pGameContext, CGameWorld::ENTTYPE_WHITE_HOLE, CenterPos, Owner)
 {
 	GameWorld()->InsertEntity(this);
-	m_StartTick = Server()->Tick();
-	m_Radius = 0.0f;
-	isDieing = false;
 	m_PlayerPullStrength = Config()->m_InfWhiteHolePullStrength/10.0f;
 
 	m_NumParticles = Config()->m_InfWhiteHoleNumParticles;
@@ -30,8 +27,6 @@ CWhiteHole::CWhiteHole(CGameContext *pGameContext, vec2 CenterPos, int Owner)
 	{
 		m_IDs[i] = Server()->SnapNewID();
 	}
-	
-	StartVisualEffect();
 
 	CInfClassCharacter *pOwner = GetOwnerCharacter();
 	if(pOwner)
@@ -39,6 +34,8 @@ CWhiteHole::CWhiteHole(CGameContext *pGameContext, vec2 CenterPos, int Owner)
 		CInfClassHuman *pHuman = CInfClassHuman::GetInstance(pOwner);
 		pHuman->OnWhiteHoleSpawned(this);
 	}
+
+	StartVisualEffect();
 }
 
 CWhiteHole::~CWhiteHole()
@@ -124,7 +121,7 @@ void CWhiteHole::Snap(int SnappingClient)
 	// Draw full particle effect - if anti ping is not set to true
 	for(int i=0; i<m_NumParticles; i++)
 	{
-		if(!isDieing && distance(m_ParticlePos[i], m_Pos) > m_Radius)
+		if(!m_IsDieing && distance(m_ParticlePos[i], m_Pos) > m_Radius)
 			continue; // start animation
 
 		GameController()->SendHammerDot(m_ParticlePos[i], m_IDs[i]);
@@ -133,6 +130,9 @@ void CWhiteHole::Snap(int SnappingClient)
 
 void CWhiteHole::MoveParticles()
 {
+	const int CurrentTick = Server()->Tick();
+	int LifeSpan = m_EndTick - CurrentTick;
+
 	float Radius = Config()->m_InfWhiteHoleRadius;
 	float RandomAngle, Speed;
 	float VecX, VecY;
@@ -144,7 +144,7 @@ void CWhiteHole::MoveParticles()
 		m_ParticlePos[i] += vec2(m_ParticleVec[i].x*Speed, m_ParticleVec[i].y*Speed); 
 		if (dot(VecMid, m_ParticleVec[i]) <= 0)
 		{
-			if (m_LifeSpan < m_ParticleStopTickTime)
+			if (LifeSpan < m_ParticleStopTickTime)
 			{
 				// make particles disappear
 				m_ParticlePos[i] = vec2(-99999.0f, -99999.0f);
@@ -186,20 +186,22 @@ void CWhiteHole::MoveCharacters()
 
 void CWhiteHole::Tick()
 {
-	if(m_MarkedForDestroy) return;
+	if(m_MarkedForDestroy)
+		return;
 
-	m_LifeSpan--;
-	if(m_LifeSpan < 0)
+	const int CurrentTick = Server()->Tick();
+	int LifeSpan = m_EndTick - CurrentTick;
+	if(Server()->Tick() >= m_EndTick)
 	{
 		new CGrowingExplosion(GameServer(), m_Pos, vec2(0.0, -1.0), m_Owner, 20, DAMAGE_TYPE::WHITE_HOLE);
 		Reset();
 	}
 	else 
 	{
-		if (m_LifeSpan < m_ParticleStopTickTime) // shrink radius
+		if (LifeSpan < m_ParticleStopTickTime) // shrink radius
 		{
-			m_Radius = m_LifeSpan/(float)m_ParticleStopTickTime * Config()->m_InfWhiteHoleRadius;
-			isDieing = true;
+			m_Radius = LifeSpan/(float)m_ParticleStopTickTime * Config()->m_InfWhiteHoleRadius;
+			m_IsDieing = true;
 		}
 		else if (m_Radius < Config()->m_InfWhiteHoleRadius) // grow radius
 		{
@@ -215,10 +217,10 @@ void CWhiteHole::Tick()
 
 void CWhiteHole::SetLifeSpan(float Seconds)
 {
-	m_LifeSpan = Server()->TickSpeed() * Seconds;
+	m_EndTick = Server()->Tick() + Server()->TickSpeed() * Seconds;
 }
 
 void CWhiteHole::TickPaused()
 {
-	++m_StartTick;
+	++m_EndTick;
 }

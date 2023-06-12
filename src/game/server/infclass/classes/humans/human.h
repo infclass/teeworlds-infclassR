@@ -105,7 +105,7 @@ private:
 	icArray<int, 2> m_BarrierHintIDs;
 
 	int m_BonusTick = 0;
-	int m_ResetKillsTime = 0;
+	int m_ResetKillsTick = 0;
 	int m_KillsProgression = 0;
 	int m_TurretCount = 0;
 	int m_BroadcastWhiteHoleReady; // used to broadcast "WhiteHole ready" for a short period of time

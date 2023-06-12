@@ -229,7 +229,7 @@ bool CInfClassHuman::CanBeHit() const
 
 void CInfClassHuman::CheckSuperWeaponAccess()
 {
-	if(m_ResetKillsTime)
+	if(m_KillsProgression < 0)
 		return;
 
 	// check kills of player
@@ -429,12 +429,12 @@ void CInfClassHuman::OnCharacterTick()
 		m_BonusTick = 0;
 	}
 
-	if(m_ResetKillsTime)
+	if(m_ResetKillsTick >= 0)
 	{
-		m_ResetKillsTime--;
-		if(!m_ResetKillsTime)
+		if(Server()->Tick() >= m_ResetKillsTick)
 		{
 			m_KillsProgression = 0;
+			m_ResetKillsTick = -1;
 		}
 	}
 }
@@ -487,7 +487,14 @@ void CInfClassHuman::OnKilledCharacter(int Victim, bool Assisted)
 	if(!m_pCharacter)
 		return;
 
-	m_KillsProgression += Assisted ? 0.5f : 1.0f;
+	if(m_KillsProgression >= 0)
+	{
+		m_KillsProgression += Assisted ? 0.5f : 1.0f;
+	}
+	else
+	{
+		// Progression is disabled
+	}
 
 	switch(GetPlayerClass())
 	{
@@ -886,7 +893,7 @@ void CInfClassHuman::GiveClassAttributes()
 {
 	m_FirstShot = true;
 
-	m_ResetKillsTime = 0;
+	m_ResetKillsTick = -1;
 	m_TurretCount = 0;
 	m_NinjaTargetTick = 0;
 	m_NinjaTargetCID = -1;
@@ -1167,7 +1174,8 @@ void CInfClassHuman::BroadcastWeaponState() const
 		}
 		else if(NumMines <= 0 && pCurrentWhiteHole)
 		{
-			int Seconds = 1+pCurrentWhiteHole->LifeSpan()/Server()->TickSpeed();
+			int RemainingTicks = pCurrentWhiteHole->GetEndTick() - CurrentTick;
+			int Seconds = 1 + RemainingTicks / Server()->TickSpeed();
 			GameServer()->SendBroadcast_Localization(GetPlayer()->GetCID(),
 				BROADCAST_PRIORITY_WEAPONSTATE, BROADCAST_DURATION_REALTIME,
 				_("White hole: {sec:RemainingTime}"),
@@ -1177,13 +1185,14 @@ void CInfClassHuman::BroadcastWeaponState() const
 		}
 		else if(NumMines > 0 && pCurrentWhiteHole)
 		{
+			int RemainingTicks = pCurrentWhiteHole->GetEndTick() - CurrentTick;
+			int Seconds = 1 + RemainingTicks / Server()->TickSpeed();
 			dynamic_string Buffer;
 			Server()->Localization()->Format_LP(Buffer, GetPlayer()->GetLanguage(), NumMines,
 				_P("One mine is active", "{int:NumMines} mines are active"),
 				"NumMines", &NumMines,
 				nullptr);
 			Buffer.append("\n");
-			int Seconds = 1+pCurrentWhiteHole->LifeSpan()/Server()->TickSpeed();
 			Server()->Localization()->Format_L(Buffer, GetPlayer()->GetLanguage(),
 				_("White hole: {sec:RemainingTime}"),
 				"RemainingTime", &Seconds,
@@ -2031,6 +2040,6 @@ void CInfClassHuman::OnWhiteHoleSpawned(CWhiteHole *pWhiteHole)
 {
 	pWhiteHole->SetLifeSpan(Config()->m_InfWhiteHoleLifeSpan);
 
-	m_KillsProgression = 0;
-	m_ResetKillsTime = pWhiteHole->LifeSpan() + Server()->TickSpeed() * 3;
+	m_KillsProgression = -1;
+	m_ResetKillsTick = pWhiteHole->GetEndTick() + Server()->TickSpeed() * 3;
 }
