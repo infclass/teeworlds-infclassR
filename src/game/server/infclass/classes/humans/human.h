@@ -63,7 +63,7 @@ public:
 	void RemoveWhiteHole();
 
 	void OnHeroFlagTaken(CInfClassCharacter *pHero);
-	void OnWhiteHoleSpawned(const CWhiteHole *pWhiteHole);
+	void OnWhiteHoleSpawned(CWhiteHole *pWhiteHole);
 
 protected:
 	void GiveClassAttributes() override;

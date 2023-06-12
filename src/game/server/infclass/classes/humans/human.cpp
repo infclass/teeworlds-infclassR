@@ -2027,8 +2027,10 @@ void CInfClassHuman::OnHeroFlagTaken(CInfClassCharacter *pHero)
 	}
 }
 
-void CInfClassHuman::OnWhiteHoleSpawned(const CWhiteHole *pWhiteHole)
+void CInfClassHuman::OnWhiteHoleSpawned(CWhiteHole *pWhiteHole)
 {
+	pWhiteHole->SetLifeSpan(Config()->m_InfWhiteHoleLifeSpan);
+
 	m_KillsProgression = 0;
 	m_ResetKillsTime = pWhiteHole->LifeSpan() + Server()->TickSpeed() * 3;
 }

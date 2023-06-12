@@ -18,7 +18,6 @@ CWhiteHole::CWhiteHole(CGameContext *pGameContext, vec2 CenterPos, int Owner)
 {
 	GameWorld()->InsertEntity(this);
 	m_StartTick = Server()->Tick();
-	m_LifeSpan = Server()->TickSpeed()*Config()->m_InfWhiteHoleLifeSpan;
 	m_Radius = 0.0f;
 	isDieing = false;
 	m_PlayerPullStrength = Config()->m_InfWhiteHolePullStrength/10.0f;
@@ -214,7 +213,10 @@ void CWhiteHole::Tick()
 	}
 }
 
-
+void CWhiteHole::SetLifeSpan(float Seconds)
+{
+	m_LifeSpan = Server()->TickSpeed() * Seconds;
+}
 
 void CWhiteHole::TickPaused()
 {

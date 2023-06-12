@@ -21,6 +21,7 @@ public:
 	virtual void Tick();
 
 	int LifeSpan() const { return m_LifeSpan; }
+	void SetLifeSpan(float Seconds);
 	
 private:
 	// physics
