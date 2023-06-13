@@ -27,7 +27,6 @@ public:
 	void Explode(int TriggeredBy);
 	void Upgrade(float Points);
 	bool IsReadyToExplode() const;
-	static float GetMaxRadius();
 	float GetLoad() const { return m_Load; }
 
 private:

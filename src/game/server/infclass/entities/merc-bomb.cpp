@@ -12,9 +12,10 @@
 #include "infccharacter.h"
 
 int CMercenaryBomb::EntityId = CGameWorld::ENTTYPE_MERCENARY_BOMB;
+static const float s_MercBombRadius = 80.0f;
 
 CMercenaryBomb::CMercenaryBomb(CGameContext *pGameContext, vec2 Pos, int Owner)
-	: CPlacedObject(pGameContext, EntityId, Pos, Owner)
+	: CPlacedObject(pGameContext, EntityId, Pos, Owner, s_MercBombRadius)
 {
 	m_InfClassObjectType = INFCLASS_OBJECT_TYPE_MERCENARY_BOMB;
 	GameWorld()->InsertEntity(this);
@@ -61,7 +62,7 @@ void CMercenaryBomb::Tick()
 	
 	// Find other players
 	CInfClassCharacter *pTriggerCharacter = nullptr;
-	float ClosestLength = CCharacterCore::PhysicalSize() + GetMaxRadius();
+	float ClosestLength = CCharacterCore::PhysicalSize() + GetProximityRadius();
 
 	for(TEntityPtr<CInfClassCharacter> pChr = GameWorld()->FindFirst<CInfClassCharacter>(); pChr; ++pChr)
 	{
@@ -102,19 +103,10 @@ bool CMercenaryBomb::IsReadyToExplode() const
 	return m_LoadingTick <= 0;
 }
 
-float CMercenaryBomb::GetMaxRadius()
-{
-	return 80;
-}
-
 void CMercenaryBomb::Snap(int SnappingClient)
 {
 	if(!DoSnapForClient(SnappingClient))
 		return;
-
-	//CPlayer* pClient = GameServer()->m_apPlayers[SnappingClient];
-	//if(pClient->IsZombie()) // invisible for zombies
-	//	return;
 
 	if(Server()->GetClientInfclassVersion(SnappingClient))
 	{
@@ -126,7 +118,7 @@ void CMercenaryBomb::Snap(int SnappingClient)
 	float AngleStart = (2.0f * pi * Server()->Tick()/static_cast<float>(Server()->TickSpeed()))/10.0f;
 	float AngleStep = 2.0f * pi / CMercenaryBomb::NUM_SIDE;
 	float R = 50.0f * static_cast<float>(m_Load) / Config()->m_InfMercBombs;
-	for(int i=0; i<CMercenaryBomb::NUM_SIDE; i++)
+	for(int i = 0; i < CMercenaryBomb::NUM_SIDE; i++)
 	{
 		vec2 PosStart = m_Pos + vec2(R * cos(AngleStart + AngleStep*i), R * sin(AngleStart + AngleStep*i));
 
@@ -142,11 +134,11 @@ void CMercenaryBomb::Snap(int SnappingClient)
 
 	if(SnappingClient == m_Owner && m_LoadingTick > 0)
 	{
-		R = GetMaxRadius();
-		AngleStart = AngleStart*2.0f;
-		for(int i=0; i<CMercenaryBomb::NUM_SIDE; i++)
+		R = GetProximityRadius();
+		AngleStart = AngleStart * 2.0f;
+		for(int i = 0; i < CMercenaryBomb::NUM_SIDE; i++)
 		{
-			vec2 PosStart = m_Pos + vec2(R * cos(AngleStart + AngleStep*i), R * sin(AngleStart + AngleStep*i));
+			vec2 PosStart = m_Pos + vec2(R * cos(AngleStart + AngleStep * i), R * sin(AngleStart + AngleStep * i));
 			GameController()->SendHammerDot(PosStart, m_IDs[CMercenaryBomb::NUM_SIDE+i]);
 		}
 	}

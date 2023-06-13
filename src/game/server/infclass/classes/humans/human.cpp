@@ -1763,13 +1763,13 @@ void CInfClassHuman::FireMercenaryBomb(WeaponFireContext *pFireContext)
 	{
 		float Distance = distance(pCurrentBomb->GetPos(), GetPos());
 		const float SafeDistance = 16;
-		if(pCurrentBomb->IsReadyToExplode() || Distance > CMercenaryBomb::GetMaxRadius() + SafeDistance)
+		if(pCurrentBomb->IsReadyToExplode() || Distance > pCurrentBomb->GetProximityRadius() + SafeDistance)
 		{
 			pCurrentBomb->Explode(GetCID());
 		}
 		else
 		{
-			const float UpgradePoints = Distance <= CMercenaryBomb::GetMaxRadius() ? 2 : 0.5;
+			const float UpgradePoints = Distance <= pCurrentBomb->GetProximityRadius() ? 2 : 0.5;
 			pCurrentBomb->Upgrade(UpgradePoints);
 		}
 	}
