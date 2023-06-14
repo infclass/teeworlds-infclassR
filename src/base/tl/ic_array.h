@@ -18,8 +18,8 @@ public:
 	T operator[](std::size_t Index) const { return m_Data[Index]; }
 	T &operator[](std::size_t Index) { return m_Data[Index]; }
 
-	T *Data() { return &m_Data; }
-	const T *Data() const { return &m_Data; }
+	T *Data() { return &m_Data[0]; }
+	const T *Data() const { return &m_Data[0]; }
 
 	T &First() { return m_Data[0]; }
 	T &Last() { return m_Data[m_Size - 1]; }
