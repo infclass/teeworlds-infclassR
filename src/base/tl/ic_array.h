@@ -9,7 +9,7 @@ class icArray
 {
 public:
 	constexpr icArray() = default;
-	icArray(std::initializer_list<T> list);
+	constexpr icArray(std::initializer_list<T> list);
 	icArray(T (&Array)[StackCapacity]);
 
 	icArray &operator=(const icArray &Array) = default;
@@ -39,9 +39,9 @@ public:
 
 	int IndexOf(const T &Item) const;
 
-	bool Contains(const T &Item) const;
+	constexpr bool Contains(const T &Item) const;
 
-	void Add(const T &Value);
+	constexpr void Add(const T &Value);
 
 	void RemoveLast();
 
@@ -58,12 +58,12 @@ public:
 	const T *end() const { return &m_Data[m_Size]; }
 
 protected:
-	T m_Data[StackCapacity];
+	T m_Data[StackCapacity] = {};
 	int m_Size = 0;
 };
 
 template<class T, int StackCapacity>
-inline icArray<T, StackCapacity>::icArray(std::initializer_list<T> list)
+inline constexpr icArray<T, StackCapacity>::icArray(std::initializer_list<T> list)
 {
 	for(const T &Element : list)
 	{
@@ -123,13 +123,13 @@ int icArray<T, StackCapacity>::IndexOf(const T &Item) const
 }
 
 template<class T, int StackCapacity>
-inline bool icArray<T, StackCapacity>::Contains(const T &Item) const
+inline constexpr bool icArray<T, StackCapacity>::Contains(const T &Item) const
 {
 	return IndexOf(Item) >= 0;
 }
 
 template<class T, int StackCapacity>
-inline void icArray<T, StackCapacity>::Add(const T &Value)
+inline constexpr void icArray<T, StackCapacity>::Add(const T &Value)
 {
 	m_Data[m_Size] = Value;
 	++m_Size;
