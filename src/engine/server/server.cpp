@@ -1525,14 +1525,13 @@ bool CServer::GenerateClientMap(const char *pMapFilePath, const char *pMapName)
 	str_format(aBufMsg, sizeof(aBufMsg), "map crc is %08x, generated map crc is %08x", ServerMapCrc, m_CurrentMapCrc);
 	Console()->Print(IConsole::OUTPUT_LEVEL_ADDINFO, "server", aBufMsg);
 
-	//Download the generated map in memory to send it to clients
-	IOHANDLE File = Storage()->OpenFile(aClientMapName, IOFLAG_READ, IStorage::TYPE_ALL);
-	m_CurrentMapSize = (int)io_length(File);
-	free(m_pCurrentMapData);
-	m_pCurrentMapData = (unsigned char *)malloc(m_CurrentMapSize);
-	io_read(File, m_pCurrentMapData, m_CurrentMapSize);
-	io_close(File);
-	Console()->Print(IConsole::OUTPUT_LEVEL_ADDINFO, "server", "maps/infc_x_current.map loaded in memory");
+	// load complete map into memory for download
+	{
+		free(m_pCurrentMapData);
+		void *pData;
+		Storage()->ReadFile(aClientMapName, IStorage::TYPE_ALL, &pData, &m_CurrentMapSize);
+		m_pCurrentMapData = (unsigned char *)pData;
+	}
 
 	return true;
 }
@@ -2364,10 +2363,12 @@ void CServer::ChangeMap(const char *pMap)
 
 int CServer::LoadMap(const char *pMapName)
 {
+	m_MapReload = false;
+
+	char aBuf[IO_MAX_PATH_LENGTH];
 /* INFECTION MODIFICATION START ***************************************/
 	const char *pMapFileName = EventsDirector::GetEventMapName(pMapName);
 
-	char aBuf[512];
 	str_format(aBuf, sizeof(aBuf), "maps/%s.map", pMapFileName);
 
 	if(!GenerateClientMap(aBuf, pMapFileName))
@@ -2381,20 +2382,26 @@ int CServer::LoadMap(const char *pMapName)
 		if(!GenerateClientMap(aBuf, pMapFileName))
 			return 0;
 	}
-/* INFECTION MODIFICATION END *****************************************/
 
 	str_format(aBuf, sizeof(aBuf), "map_loaded name='%s' file='maps/%s.map'", pMapName, pMapFileName);
-	Console()->Print(IConsole::OUTPUT_LEVEL_ADDINFO, "server", aBuf);
+	Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "server", aBuf);
+/* INFECTION MODIFICATION END *****************************************/
 
 	// stop recording when we change map
-	m_aDemoRecorder[0].Stop();
+	for(int i = 0; i < 1; i++)
+	{
+		if(!m_aDemoRecorder[i].IsRecording())
+			continue;
+
+		m_aDemoRecorder[i].Stop();
+	}
 	
 	// reinit snapshot ids
 	m_IDPool.TimeoutIDs();
 
 /* INFECTION MODIFICATION START ***************************************/
-	str_copy(m_aPreviousMap, m_aCurrentMap, sizeof(m_aPreviousMap));
-	str_copy(m_aCurrentMap, pMapName, sizeof(m_aCurrentMap));
+	str_copy(m_aPreviousMap, m_aCurrentMap);
+	str_copy(m_aCurrentMap, pMapName);
 	ResetMapVotes();
 
 /* INFECTION MODIFICATION END *****************************************/
