@@ -3,6 +3,7 @@
 #ifndef ENGINE_SERVER_H
 #define ENGINE_SERVER_H
 
+#include <optional>
 #include <type_traits>
 
 #include <base/hash.h>
@@ -132,8 +133,11 @@ public:
 	{
 		const char *m_pName;
 		int m_Latency;
+		bool m_GotDDNetVersion;
 		int m_DDNetVersion;
 		int m_InfClassVersion;
+		const char *m_pDDNetVersionStr;
+		const CUuid *m_pConnectionID;
 	};
 	
 	struct CClientSession
@@ -172,7 +176,7 @@ public:
 	virtual int ClientCountry(int ClientID) const = 0;
 	virtual bool ClientIngame(int ClientID) const = 0;
 	virtual bool ClientIsBot(int ClientID) const = 0;
-	virtual int GetClientInfo(int ClientID, CClientInfo *pInfo) const = 0;
+	virtual bool GetClientInfo(int ClientID, CClientInfo *pInfo) const = 0;
 	virtual void SetClientDDNetVersion(int ClientID, int DDNetVersion) = 0;
 	virtual void GetClientAddr(int ClientID, char *pAddrStr, int Size) const = 0;
 
@@ -320,10 +324,14 @@ public:
 	virtual int NewBot(int ClientID) = 0;
 	virtual int DelBot(int ClientID) = 0;
 
+	virtual void GetMapInfo(char *pMapName, int MapNameSize, int *pMapSize, SHA256_DIGEST *pSha256, int *pMapCrc) = 0;
+
 	virtual bool WouldClientNameChange(int ClientID, const char *pNameRequest) = 0;
 	virtual void SetClientName(int ClientID, char const *pName) = 0;
 	virtual void SetClientClan(int ClientID, char const *pClan) = 0;
 	virtual void SetClientCountry(int ClientID, int Country) = 0;
+	virtual void SetClientScore(int ClientID, std::optional<int> Score) = 0;
+	virtual void SetClientFlags(int ClientID, int Flags) = 0;
 
 	virtual int SnapNewID() = 0;
 	virtual void SnapFreeID(int ID) = 0;
@@ -429,6 +437,7 @@ public:
 	virtual void SetTimeoutProtected(int ClientID) = 0;
 
 	virtual void SetErrorShutdown(const char *pReason) = 0;
+	virtual void ExpireServerInfo() = 0;
 
 	virtual int GetActivePlayerCount() = 0;
 
@@ -446,6 +455,7 @@ protected:
 public:
 	virtual void OnInit() = 0;
 	virtual void OnConsoleInit() = 0;
+	virtual void OnMapChange(char *pNewMapName, int MapNameSize) = 0;
 	virtual void OnShutdown() = 0;
 
 	virtual void OnTick() = 0;

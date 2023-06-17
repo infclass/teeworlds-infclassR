@@ -448,7 +448,7 @@ bool CServer::SetClientNameImpl(int ClientID, const char *pNameRequest, bool Set
 			}
 			else
 			{
-				str_copy(aBuf, "Kicked (your name is banned)", sizeof(aBuf));
+				str_copy(aBuf, "Kicked (your name is banned)");
 			}
 			Kick(ClientID, aBuf);
 		}
@@ -457,11 +457,11 @@ bool CServer::SetClientNameImpl(int ClientID, const char *pNameRequest, bool Set
 
 	// trim the name
 	char aTrimmedName[MAX_NAME_LENGTH];
-	str_copy(aTrimmedName, str_utf8_skip_whitespaces(pNameRequest), sizeof(aTrimmedName));
+	str_copy(aTrimmedName, str_utf8_skip_whitespaces(pNameRequest));
 	str_utf8_trim_right(aTrimmedName);
 
 	char aNameTry[MAX_NAME_LENGTH];
-	str_copy(aNameTry, aTrimmedName, sizeof(aNameTry));
+	str_copy(aNameTry, aTrimmedName);
 
 	if(!IsClientNameAvailable(ClientID, aNameTry))
 	{
@@ -479,7 +479,7 @@ bool CServer::SetClientNameImpl(int ClientID, const char *pNameRequest, bool Set
 	if(Set)
 	{
 		// set the client name
-		str_copy(m_aClients[ClientID].m_aName, aNameTry, MAX_NAME_LENGTH);
+		str_copy(m_aClients[ClientID].m_aName, aNameTry);
 	}
 
 	return Changed;
@@ -500,7 +500,7 @@ void CServer::SetClientClan(int ClientID, const char *pClan)
 	if(ClientID < 0 || ClientID >= MAX_CLIENTS || m_aClients[ClientID].m_State < CClient::STATE_READY || !pClan)
 		return;
 
-	str_copy(m_aClients[ClientID].m_aClan, pClan, MAX_CLAN_LENGTH);
+	str_copy(m_aClients[ClientID].m_aClan, pClan);
 }
 
 void CServer::SetClientCountry(int ClientID, int Country)
@@ -521,7 +521,7 @@ void CServer::Kick(int ClientID, const char *pReason)
 	else if(m_RconClientID == ClientID)
 	{
 		Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "server", "you can't kick yourself");
- 		return;
+		return;
 	}
 	else if(m_aClients[ClientID].m_Authed > m_RconAuthLevel)
 	{
@@ -544,13 +544,8 @@ void CServer::Kick(int ClientID, const char *pReason)
 
 int64_t CServer::TickStartTime(int Tick)
 {
-	return m_GameStartTime + (time_freq()*Tick)/SERVER_TICK_SPEED;
+	return m_GameStartTime + (time_freq() * Tick) / SERVER_TICK_SPEED;
 }
-
-/*int CServer::TickSpeed()
-{
-	return SERVER_TICK_SPEED;
-}*/
 
 int CServer::Init()
 {
@@ -572,7 +567,7 @@ int CServer::Init()
 		Client.m_Sixup = false;
 	}
 
-	m_CurrentGameTick = 0;
+	m_CurrentGameTick = MIN_TICK;
 	m_MapVotesCounter = 0;
 
 	mem_zero(m_aPrevStates, sizeof(m_aPrevStates));
@@ -701,29 +696,41 @@ int CServer::GetAuthedState(int ClientID) const
 	return m_aClients[ClientID].m_Authed;
 }
 
-int CServer::GetClientInfo(int ClientID, CClientInfo *pInfo) const
+bool CServer::GetClientInfo(int ClientID, CClientInfo *pInfo) const
 {
-	dbg_assert(ClientID >= 0 && ClientID < MAX_CLIENTS, "client_id is not valid");
-	dbg_assert(pInfo != 0, "info can not be null");
+	dbg_assert(ClientID >= 0 && ClientID < MAX_CLIENTS, "ClientID is not valid");
+	dbg_assert(pInfo != nullptr, "pInfo cannot be null");
 
 	if(m_aClients[ClientID].m_State == CClient::STATE_INGAME)
 	{
 		pInfo->m_pName = ClientName(ClientID);
 		pInfo->m_Latency = m_aClients[ClientID].m_Latency;
+		pInfo->m_GotDDNetVersion = m_aClients[ClientID].m_DDNetVersionSettled;
 		pInfo->m_DDNetVersion = m_aClients[ClientID].m_DDNetVersion >= 0 ? m_aClients[ClientID].m_DDNetVersion : VERSION_VANILLA;
 		pInfo->m_InfClassVersion = m_aClients[ClientID].m_InfClassVersion;
-		return 1;
+		if(m_aClients[ClientID].m_GotDDNetVersionPacket)
+		{
+			pInfo->m_pConnectionID = &m_aClients[ClientID].m_ConnectionID;
+			pInfo->m_pDDNetVersionStr = m_aClients[ClientID].m_aDDNetVersionStr;
+		}
+		else
+		{
+			pInfo->m_pConnectionID = nullptr;
+			pInfo->m_pDDNetVersionStr = nullptr;
+		}
+		return true;
 	}
-	return 0;
+	return false;
 }
 
 void CServer::SetClientDDNetVersion(int ClientID, int DDNetVersion)
 {
-	dbg_assert(ClientID >= 0 && ClientID < MAX_CLIENTS, "client_id is not valid");
+	dbg_assert(ClientID >= 0 && ClientID < MAX_CLIENTS, "ClientID is not valid");
 
 	if(m_aClients[ClientID].m_State == CClient::STATE_INGAME)
 	{
 		m_aClients[ClientID].m_DDNetVersion = DDNetVersion;
+		m_aClients[ClientID].m_DDNetVersionSettled = true;
 	}
 }
 
@@ -818,7 +825,8 @@ int CServer::DistinctClientCount() const
 	int ClientCount = 0;
 	for(int i = 0; i < MAX_CLIENTS; i++)
 	{
-		if(m_aClients[i].m_State != CClient::STATE_EMPTY)
+		// connecting clients with spoofed ips can clog slots without being ingame
+		if(ClientIngame(i))
 		{
 			ClientCount++;
 			for(int j = 0; j < i; j++)
@@ -847,17 +855,53 @@ int CServer::GetClientVersion(int ClientID) const
 	return VERSION_NONE;
 }
 
-static inline bool RepackMsg(const CMsgPacker *pMsg, CPacker &Packer)
+static inline bool RepackMsg(const CMsgPacker *pMsg, CPacker &Packer, bool Sixup)
 {
+	int MsgId = pMsg->m_MsgID;
 	Packer.Reset();
-	if(pMsg->m_MsgID < OFFSET_UUID)
+
+	if(Sixup && !pMsg->m_NoTranslate)
 	{
-		Packer.AddInt((pMsg->m_MsgID << 1) | (pMsg->m_System ? 1 : 0));
+		if(pMsg->m_System)
+		{
+			if(MsgId >= OFFSET_UUID)
+				;
+			else if(MsgId >= NETMSG_MAP_CHANGE && MsgId <= NETMSG_MAP_DATA)
+				;
+			else if(MsgId >= NETMSG_CON_READY && MsgId <= NETMSG_INPUTTIMING)
+				MsgId += 1;
+			else if(MsgId == NETMSG_RCON_LINE)
+				MsgId = protocol7::NETMSG_RCON_LINE;
+			else if(MsgId >= NETMSG_AUTH_CHALLENGE && MsgId <= NETMSG_AUTH_RESULT)
+				MsgId += 4;
+			else if(MsgId >= NETMSG_PING && MsgId <= NETMSG_ERROR)
+				MsgId += 4;
+			else if(MsgId >= NETMSG_RCON_CMD_ADD && MsgId <= NETMSG_RCON_CMD_REM)
+				MsgId -= 11;
+			else
+			{
+				dbg_msg("net", "DROP send sys %d", MsgId);
+				return true;
+			}
+		}
+		else
+		{
+			if(MsgId >= 0 && MsgId < OFFSET_UUID)
+				MsgId = Msg_SixToSeven(MsgId);
+
+			if(MsgId < 0)
+				return true;
+		}
+	}
+
+	if(MsgId < OFFSET_UUID)
+	{
+		Packer.AddInt((MsgId << 1) | (pMsg->m_System ? 1 : 0));
 	}
 	else
 	{
-		Packer.AddInt((0 << 1) | (pMsg->m_System ? 1 : 0)); // NETMSG_EX, NETMSGTYPE_EX
-		g_UuidManager.PackUuid(pMsg->m_MsgID, &Packer);
+		Packer.AddInt(pMsg->m_System ? 1 : 0); // NETMSG_EX, NETMSGTYPE_EX
+		g_UuidManager.PackUuid(MsgId, &Packer);
 	}
 	Packer.AddRaw(pMsg->Data(), pMsg->Size());
 
@@ -879,14 +923,16 @@ int CServer::SendMsg(CMsgPacker *pMsg, int Flags, int ClientID)
 
 	if(ClientID < 0)
 	{
-		CPacker Pack6;
-		if(RepackMsg(pMsg, Pack6))
+		CPacker Pack6, Pack7;
+		if(RepackMsg(pMsg, Pack6, false))
+			return -1;
+		if(RepackMsg(pMsg, Pack7, true))
 			return -1;
 
-		// write message to demo recorder
+		// write message to demo recorders
 		if(!(Flags & MSGFLAG_NORECORD))
 		{
-			for(auto &Recorder :  m_aDemoRecorder)
+			for(auto &Recorder : m_aDemoRecorder)
 				if(Recorder.IsRecording())
 					Recorder.RecordMessage(Pack6.Data(), Pack6.Size());
 		}
@@ -897,7 +943,7 @@ int CServer::SendMsg(CMsgPacker *pMsg, int Flags, int ClientID)
 			{
 				if((m_aClients[i].m_State == CClient::STATE_INGAME) && !m_aClients[i].m_IsBot)
 				{
-					CPacker *pPack = &Pack6;
+					CPacker *pPack = m_aClients[i].m_Sixup ? &Pack7 : &Pack6;
 					Packet.m_pData = pPack->Data();
 					Packet.m_DataSize = pPack->Size();
 					Packet.m_ClientID = i;
@@ -909,7 +955,7 @@ int CServer::SendMsg(CMsgPacker *pMsg, int Flags, int ClientID)
 	else
 	{
 		CPacker Pack;
-		if(RepackMsg(pMsg, Pack))
+		if(RepackMsg(pMsg, Pack, m_aClients[ClientID].m_Sixup))
 			return -1;
 
 		Packet.m_ClientID = ClientID;
@@ -956,21 +1002,20 @@ void CServer::DoSnapshot()
 	if(m_aDemoRecorder[0].IsRecording())
 	{
 		char aData[CSnapshot::MAX_SIZE];
-		int SnapshotSize;
 
 		// build snap and possibly add some messages
 		m_SnapshotBuilder.Init();
 		GameServer()->OnSnap(-1);
-		SnapshotSize = m_SnapshotBuilder.Finish(aData);
+		int SnapshotSize = m_SnapshotBuilder.Finish(aData);
 
 		// write snapshot
 		m_aDemoRecorder[0].RecordSnapshot(Tick(), aData, SnapshotSize);
 	}
 
 	// create snapshots for all clients
-	for(int i = 0; i < MAX_CLIENTS; i++)
+	for(int i = 0; i < MaxClients(); i++)
 	{
-		// client must be ingame to recive snapshots
+		// client must be ingame to receive snapshots
 		if(m_aClients[i].m_State != CClient::STATE_INGAME)
 			continue;
 
@@ -979,11 +1024,11 @@ void CServer::DoSnapshot()
 			continue;
 
 		// this client is trying to recover, don't spam snapshots
-		if(m_aClients[i].m_SnapRate == CClient::SNAPRATE_RECOVER && (Tick()%50) != 0)
+		if(m_aClients[i].m_SnapRate == CClient::SNAPRATE_RECOVER && (Tick() % 50) != 0)
 			continue;
 
 		// this client is trying to recover, don't spam snapshots
-		if(m_aClients[i].m_SnapRate == CClient::SNAPRATE_INIT && (Tick()%10) != 0)
+		if(m_aClients[i].m_SnapRate == CClient::SNAPRATE_INIT && (Tick() % 10) != 0)
 			continue;
 
 		{

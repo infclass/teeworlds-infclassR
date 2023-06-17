@@ -295,7 +295,7 @@ public:
 	void SendLogLine(const CLogMessage *pMessage);
 	void SetRconCID(int ClientID);
 	int GetAuthedState(int ClientID) const;
-	int GetClientInfo(int ClientID, CClientInfo *pInfo) const;
+	bool GetClientInfo(int ClientID, CClientInfo *pInfo) const;
 	void SetClientDDNetVersion(int ClientID, int DDNetVersion);
 	void GetClientAddr(int ClientID, char *pAddrStr, int Size) const;
 	const char *ClientName(int ClientID) const;
