@@ -7,13 +7,17 @@
 
 #include <engine/demo.h>
 #include <engine/shared/protocol.h>
+#include <functional>
 
 #include "snapshot.h"
+
+typedef std::function<void()> TUpdateIntraTimesFunc;
 
 class CDemoRecorder : public IDemoRecorder
 {
 	class IConsole *m_pConsole;
 	IOHANDLE m_File;
+	char m_aCurrentFilename[256];
 	int m_LastTickMarker;
 	int m_LastKeyFrame;
 	int m_FirstTick;
@@ -21,32 +25,42 @@ class CDemoRecorder : public IDemoRecorder
 	class CSnapshotDelta *m_pSnapshotDelta;
 	int m_NumTimelineMarkers;
 	int m_aTimelineMarkers[MAX_TIMELINE_MARKERS];
+	bool m_NoMapData;
+	unsigned char *m_pMapData;
+
+	DEMOFUNC_FILTER m_pfnFilter;
+	void *m_pUser;
 
 	void WriteTickMarker(int Tick, int Keyframe);
 	void Write(int Type, const void *pData, int Size);
+
 public:
-	CDemoRecorder(class CSnapshotDelta *pSnapshotDelta);
+	CDemoRecorder(class CSnapshotDelta *pSnapshotDelta, bool NoMapData = false);
 	CDemoRecorder() {}
 
-	int Start(class IStorage *pStorage, class IConsole *pConsole, const char *pFilename, const char *pNetversion, const char *pMap, SHA256_DIGEST Sha256, unsigned MapCrc, const char *pType);
-	int Stop();
+	int Start(class IStorage *pStorage, class IConsole *pConsole, const char *pFilename, const char *pNetversion, const char *pMap, SHA256_DIGEST *pSha256, unsigned MapCrc, const char *pType, unsigned MapSize, unsigned char *pMapData, IOHANDLE MapFile = nullptr, DEMOFUNC_FILTER pfnFilter = nullptr, void *pUser = nullptr);
+	int Stop() override;
+
 	void AddDemoMarker();
+	void AddDemoMarker(int Tick);
 
 	void RecordSnapshot(int Tick, const void *pData, int Size);
 	void RecordMessage(const void *pData, int Size);
 
-	bool IsRecording() const { return m_File != 0; }
+	bool IsRecording() const override { return m_File != nullptr; }
+	char *GetCurrentFilename() override { return m_aCurrentFilename; }
+	void ClearCurrentFilename() { m_aCurrentFilename[0] = '\0'; }
 
-	int Length() const { return (m_LastTickMarker - m_FirstTick)/SERVER_TICK_SPEED; }
+	int Length() const override { return (m_LastTickMarker - m_FirstTick) / SERVER_TICK_SPEED; }
 };
 
 class CDemoPlayer : public IDemoPlayer
 {
 public:
-	class IListner
+	class IListener
 	{
 	public:
-		virtual ~IListner() {}
+		virtual ~IListener() {}
 		virtual void OnDemoPlayerSnapshot(void *pData, int Size) = 0;
 		virtual void OnDemoPlayerMessage(void *pData, int Size) = 0;
 	};
@@ -67,12 +81,14 @@ public:
 		int m_PreviousTick;
 
 		float m_IntraTick;
+		float m_IntraTickSincePrev;
 		float m_TickTime;
 	};
 
 private:
-	IListner *m_pListner;
+	IListener *m_pListener;
 
+	TUpdateIntraTimesFunc m_UpdateIntraTimesFunc;
 
 	// Playback
 	struct CKeyFrame
@@ -89,8 +105,11 @@ private:
 
 	class IConsole *m_pConsole;
 	IOHANDLE m_File;
-	char m_aFilename[256];
+	long m_MapOffset;
+	char m_aFilename[IO_MAX_PATH_LENGTH];
 	CKeyFrame *m_pKeyFrames;
+	CMapInfo m_MapInfo;
+	int m_SpeedIndex;
 
 	CPlaybackInfo m_Info;
 	int m_DemoType;
@@ -101,30 +120,62 @@ private:
 	int ReadChunkHeader(int *pType, int *pSize, int *pTick);
 	void DoTick();
 	void ScanFile();
-	int NextFrame();
+
+	int64_t Time();
 
 public:
+	CDemoPlayer(class CSnapshotDelta *pSnapshotDelta);
+	CDemoPlayer(class CSnapshotDelta *pSnapshotDelta, TUpdateIntraTimesFunc &&UpdateIntraTimesFunc);
 
-	CDemoPlayer(class CSnapshotDelta *m_pSnapshotDelta);
+	void Construct(class CSnapshotDelta *pSnapshotDelta);
 
-	void SetListner(IListner *pListner);
+	void SetListener(IListener *pListener);
 
 	int Load(class IStorage *pStorage, class IConsole *pConsole, const char *pFilename, int StorageType);
+	unsigned char *GetMapData(class IStorage *pStorage);
+	bool ExtractMap(class IStorage *pStorage);
 	int Play();
-	void Pause();
-	void Unpause();
+	void Pause() override;
+	void Unpause() override;
 	int Stop();
-	void SetSpeed(float Speed);
-	int SetPos(float Percent);
-	const CInfo *BaseInfo() const { return &m_Info.m_Info; }
-	void GetDemoName(char *pBuffer, int BufferSize) const;
-	bool GetDemoInfo(class IStorage *pStorage, const char *pFilename, int StorageType, CDemoHeader *pDemoHeader) const;
-	int GetDemoType() const;
+	void SetSpeed(float Speed) override;
+	void SetSpeedIndex(int Offset) override;
+	int SeekPercent(float Percent) override;
+	int SeekTime(float Seconds) override;
+	int SeekTick(ETickOffset TickOffset) override;
+	int SetPos(int WantedTick) override;
+	const CInfo *BaseInfo() const override { return &m_Info.m_Info; }
+	void GetDemoName(char *pBuffer, int BufferSize) const override;
+	bool GetDemoInfo(class IStorage *pStorage, const char *pFilename, int StorageType, CDemoHeader *pDemoHeader, CTimelineMarkers *pTimelineMarkers, CMapInfo *pMapInfo) const override;
+	const char *GetDemoFileName() { return m_aFilename; }
+	int GetDemoType() const override;
 
-	int Update();
+	int Update(bool RealTime = true);
 
 	const CPlaybackInfo *Info() const { return &m_Info; }
-	int IsPlaying() const { return m_File != 0; }
+	bool IsPlaying() const override { return m_File != nullptr; }
+	const CMapInfo *GetMapInfo() const { return &m_MapInfo; }
+};
+
+class CDemoEditor : public IDemoEditor, public CDemoPlayer::IListener
+{
+	CDemoPlayer *m_pDemoPlayer;
+	CDemoRecorder *m_pDemoRecorder;
+	IConsole *m_pConsole;
+	IStorage *m_pStorage;
+	class CSnapshotDelta *m_pSnapshotDelta;
+	const char *m_pNetVersion;
+
+	bool m_Stop;
+	int m_SliceFrom;
+	int m_SliceTo;
+
+public:
+	virtual void Init(const char *pNetVersion, class CSnapshotDelta *pSnapshotDelta, class IConsole *pConsole, class IStorage *pStorage);
+	void Slice(const char *pDemo, const char *pDst, int StartTick, int EndTick, DEMOFUNC_FILTER pfnFilter, void *pUser) override;
+
+	void OnDemoPlayerSnapshot(void *pData, int Size) override;
+	void OnDemoPlayerMessage(void *pData, int Size) override;
 };
 
 #endif
