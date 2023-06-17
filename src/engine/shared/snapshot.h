@@ -3,16 +3,21 @@
 #ifndef ENGINE_SHARED_SNAPSHOT_H
 #define ENGINE_SHARED_SNAPSHOT_H
 
-#include <base/system.h>
+#include <cstddef>
+#include <cstdint>
 
 // CSnapshot
 
 class CSnapshotItem
 {
+	friend class CSnapshotBuilder;
+
+	int *Data() { return (int *)(this + 1); }
+
 public:
 	int m_TypeAndID;
 
-	int *Data() { return (int *)(this + 1); }
+	const int *Data() const { return (int *)(this + 1); }
 	int Type() const { return m_TypeAndID >> 16; }
 	int ID() const { return m_TypeAndID & 0xffff; }
 	int Key() const { return m_TypeAndID; }
@@ -26,6 +31,9 @@ class CSnapshot
 
 	int *Offsets() const { return (int *)(this + 1); }
 	char *DataStart() const { return (char *)(Offsets() + m_NumItems); }
+
+	size_t OffsetSize() const { return sizeof(int) * m_NumItems; }
+	size_t TotalSize() const { return sizeof(CSnapshot) + OffsetSize() + m_DataSize; }
 
 public:
 	enum
@@ -44,14 +52,16 @@ public:
 		m_NumItems = 0;
 	}
 	int NumItems() const { return m_NumItems; }
-	CSnapshotItem *GetItem(int Index) const;
+	const CSnapshotItem *GetItem(int Index) const;
 	int GetItemSize(int Index) const;
 	int GetItemIndex(int Key) const;
 	int GetItemType(int Index) const;
-	void *FindItem(int Type, int ID) const;
+	int GetExternalItemType(int InternalType) const;
+	const void *FindItem(int Type, int ID) const;
 
 	unsigned Crc();
 	void DebugDump();
+	bool IsValid(size_t ActualSize) const;
 };
 
 // CSnapshotDelta
@@ -78,10 +88,10 @@ private:
 	int m_aSnapshotDataUpdates[CSnapshot::MAX_TYPE + 1];
 	CData m_Empty;
 
-	static void UndiffItem(int *pPast, int *pDiff, int *pOut, int Size, int *pDataRate);
+	static void UndiffItem(const int *pPast, int *pDiff, int *pOut, int Size, int *pDataRate);
 
 public:
-	static int DiffItem(int *pPast, int *pCurrent, int *pOut, int Size);
+	static int DiffItem(const int *pPast, const int *pCurrent, int *pOut, int Size);
 	CSnapshotDelta();
 	CSnapshotDelta(const CSnapshotDelta &Old);
 	int GetDataRate(int Index) const { return m_aSnapshotDataRate[Index]; }
@@ -143,6 +153,7 @@ class CSnapshotBuilder
 
 	void AddExtendedItemType(int Index);
 	int GetExtendedItemTypeIndex(int TypeID);
+	int GetTypeFromIndex(int Index);
 
 	bool m_Sixup;
 
