@@ -372,6 +372,10 @@ void CInfClassPlayer::SetClass(PLAYERCLASS NewClass)
 
 	if(m_class != PLAYERCLASS_INVALID)
 	{
+		if(IsHumanClass(NewClass))
+		{
+			m_HumanClass = NewClass;
+		}
 		if(m_PreviousClasses.Size() == m_PreviousClasses.Capacity())
 		{
 			m_PreviousClasses.RemoveAt(0);
@@ -542,16 +546,7 @@ PLAYERCLASS CInfClassPlayer::GetPreviousInfectedClass() const
 
 PLAYERCLASS CInfClassPlayer::GetPreviousHumanClass() const
 {
-	for (int i = m_PreviousClasses.Size() - 1; i > 0; --i)
-	{
-		PLAYERCLASS Class = m_PreviousClasses.At(i);
-		if(IsHumanClass(Class))
-		{
-			return Class;
-		}
-	}
-
-	return PLAYERCLASS_INVALID;
+	return m_HumanClass;
 }
 
 void CInfClassPlayer::AddSavedPosition(const vec2 Position)
