@@ -356,16 +356,20 @@ CServer::CServer()
 
 	m_pGameServer = 0;
 
-	m_CurrentGameTick = 0;
+	m_CurrentGameTick = MIN_TICK;
 	m_RunServer = UNINITIALIZED;
 
 	m_aShutdownReason[0] = 0;
 
-	m_pCurrentMapData = 0;
-	m_CurrentMapSize = 0;
+	for(int i = 0; i < NUM_MAP_TYPES; i++)
+	{
+		m_apCurrentMapData[i] = 0;
+		m_aCurrentMapSize[i] = 0;
+	}
 
 	m_MapReload = false;
 	m_ReloadedWhenEmpty = false;
+	m_aCurrentMap[0] = '\0';
 
 	m_RconClientID = IServer::RCON_CID_SERV;
 	m_RconAuthLevel = AUTHED_ADMIN;
@@ -386,6 +390,11 @@ CServer::CServer()
 
 CServer::~CServer()
 {
+	for(auto &pCurrentMapData : m_apCurrentMapData)
+	{
+		free(pCurrentMapData);
+	}
+
 	if(m_RunServer != UNINITIALIZED)
 	{
 		for(auto &Client : m_aClients)
@@ -1266,20 +1275,28 @@ void CServer::SendCapabilities(int ClientID)
 
 void CServer::SendMap(int ClientID)
 {
+	int MapType = IsSixup(ClientID) ? MAP_TYPE_SIXUP : MAP_TYPE_SIX;
 	{
 		CMsgPacker Msg(NETMSG_MAP_DETAILS, true);
 		Msg.AddString(GetMapName(), 0);
-		Msg.AddRaw(&m_CurrentMapSha256.data, sizeof(m_CurrentMapSha256.data));
-		Msg.AddInt(m_CurrentMapCrc);
-		Msg.AddInt(m_CurrentMapSize);
+		Msg.AddRaw(&m_aCurrentMapSha256[MapType].data, sizeof(m_aCurrentMapSha256[MapType].data));
+		Msg.AddInt(m_aCurrentMapCrc[MapType]);
+		Msg.AddInt(m_aCurrentMapSize[MapType]);
+		Msg.AddString("", 0); // HTTPS map download URL
 		SendMsg(&Msg, MSGFLAG_VITAL, ClientID);
 	}
 	{
 		CMsgPacker Msg(NETMSG_MAP_CHANGE, true);
 		Msg.AddString(GetMapName(), 0);
-		Msg.AddInt(m_CurrentMapCrc);
-		Msg.AddInt(m_CurrentMapSize);
-		SendMsg(&Msg, MSGFLAG_VITAL|MSGFLAG_FLUSH, ClientID);
+		Msg.AddInt(m_aCurrentMapCrc[MapType]);
+		Msg.AddInt(m_aCurrentMapSize[MapType]);
+		if(MapType == MAP_TYPE_SIXUP)
+		{
+			Msg.AddInt(Config()->m_SvMapWindow);
+			Msg.AddInt(1024 - 128);
+			Msg.AddRaw(m_aCurrentMapSha256[MapType].data, sizeof(m_aCurrentMapSha256[MapType].data));
+		}
+		SendMsg(&Msg, MSGFLAG_VITAL | MSGFLAG_FLUSH, ClientID);
 	}
 
 	m_aClients[ClientID].m_NextMapChunk = 0;
@@ -1287,29 +1304,33 @@ void CServer::SendMap(int ClientID)
 
 void CServer::SendMapData(int ClientID, int Chunk)
 {
-	unsigned int ChunkSize = 1024-128;
+	int MapType = IsSixup(ClientID) ? MAP_TYPE_SIXUP : MAP_TYPE_SIX;
+	unsigned int ChunkSize = 1024 - 128;
 	unsigned int Offset = Chunk * ChunkSize;
 	int Last = 0;
 
 	// drop faulty map data requests
-	if(Chunk < 0 || Offset > m_CurrentMapSize)
+	if(Chunk < 0 || Offset > m_aCurrentMapSize[MapType])
 		return;
 
-	if(Offset+ChunkSize >= m_CurrentMapSize)
+	if(Offset + ChunkSize >= m_aCurrentMapSize[MapType])
 	{
-		ChunkSize = m_CurrentMapSize-Offset;
+		ChunkSize = m_aCurrentMapSize[MapType] - Offset;
 		Last = 1;
 	}
 
 	CMsgPacker Msg(NETMSG_MAP_DATA, true);
-	Msg.AddInt(Last);
-	Msg.AddInt(m_CurrentMapCrc);
-	Msg.AddInt(Chunk);
-	Msg.AddInt(ChunkSize);
-	Msg.AddRaw(&m_pCurrentMapData[Offset], ChunkSize);
-	SendMsg(&Msg, MSGFLAG_VITAL|MSGFLAG_FLUSH, ClientID);
+	if(MapType == MAP_TYPE_SIX)
+	{
+		Msg.AddInt(Last);
+		Msg.AddInt(m_aCurrentMapCrc[MAP_TYPE_SIX]);
+		Msg.AddInt(Chunk);
+		Msg.AddInt(ChunkSize);
+	}
+	Msg.AddRaw(&m_apCurrentMapData[MapType][Offset], ChunkSize);
+	SendMsg(&Msg, MSGFLAG_VITAL | MSGFLAG_FLUSH, ClientID);
 
-	if(g_Config.m_Debug)
+	if(Config()->m_Debug)
 	{
 		char aBuf[256];
 		str_format(aBuf, sizeof(aBuf), "sending chunk %d with size %d", Chunk, ChunkSize);
@@ -1320,7 +1341,7 @@ void CServer::SendMapData(int ClientID, int Chunk)
 void CServer::SendConnectionReady(int ClientID)
 {
 	CMsgPacker Msg(NETMSG_CON_READY, true);
-	SendMsg(&Msg, MSGFLAG_VITAL|MSGFLAG_FLUSH, ClientID);
+	SendMsg(&Msg, MSGFLAG_VITAL | MSGFLAG_FLUSH, ClientID);
 }
 
 void CServer::SendRconLine(int ClientID, const char *pLine)
@@ -1405,6 +1426,23 @@ void CServer::UpdateClientRconCommands()
 	}
 }
 
+static inline int MsgFromSixup(int Msg, bool System)
+{
+	if(System)
+	{
+		if(Msg == NETMSG_INFO)
+			;
+		else if(Msg >= 14 && Msg <= 15)
+			Msg += 11;
+		else if(Msg >= 18 && Msg <= 28)
+			Msg = NETMSG_READY + Msg - 18;
+		else if(Msg < OFFSET_UUID)
+			return -1;
+	}
+
+	return Msg;
+}
+
 bool CServer::InitCaptcha()
 {
 	IOHANDLE File = Storage()->OpenFile("security/captcha.txt", IOFLAG_READ, IStorage::TYPE_ALL);
@@ -1463,7 +1501,7 @@ bool CServer::GenerateClientMap(const char *pMapFilePath, const char *pMapName)
 
 	char aClientMapDir[256];
 	char aClientMapName[256];
-	const char *pConverterId = g_Config.m_InfConverterId;
+	const char *pConverterId = Config()->m_InfConverterId;
 	pConverterId = EventsDirector::GetMapConverterId(pConverterId);
 	str_format(aClientMapDir, sizeof(aClientMapDir), "clientmaps/%s", pConverterId);
 	str_format(aClientMapName, sizeof(aClientMapName), "%s/%s_%08x.map", aClientMapDir, pMapName, ServerMapCrc);
@@ -1476,10 +1514,10 @@ bool CServer::GenerateClientMap(const char *pMapFilePath, const char *pMapName)
 
 	CDataFileReader dfClientMap;
 	//The map is already converted
-	if(!g_Config.m_InfConverterForceRegeneration && dfClientMap.Open(Storage(), aClientMapName, IStorage::TYPE_ALL))
+	if(!Config()->m_InfConverterForceRegeneration && dfClientMap.Open(Storage(), aClientMapName, IStorage::TYPE_ALL))
 	{
-		m_CurrentMapCrc = dfClientMap.Crc();
-		m_CurrentMapSha256 = dfClientMap.Sha256();
+		m_aCurrentMapCrc[MAP_TYPE_SIX] = dfClientMap.Crc();
+		m_aCurrentMapSha256[MAP_TYPE_SIX] = dfClientMap.Sha256();
 		dfClientMap.Close();
 	}
 	//The map must be converted
@@ -1497,25 +1535,25 @@ bool CServer::GenerateClientMap(const char *pMapFilePath, const char *pMapName)
 
 		CDataFileReader dfGeneratedMap;
 		dfGeneratedMap.Open(Storage(), aClientMapName, IStorage::TYPE_ALL);
-		m_CurrentMapCrc = dfGeneratedMap.Crc();
-		m_CurrentMapSha256 = dfGeneratedMap.Sha256();
+		m_aCurrentMapCrc[MAP_TYPE_SIX] = dfGeneratedMap.Crc();
+		m_aCurrentMapSha256[MAP_TYPE_SIX] = dfGeneratedMap.Sha256();
 		dfGeneratedMap.Close();
 	}
 
 	char aBufMsg[128];
 	char aSha256[SHA256_MAXSTRSIZE];
-	sha256_str(m_CurrentMapSha256, aSha256, sizeof(aSha256));
+	sha256_str(m_aCurrentMapSha256[MAP_TYPE_SIX], aSha256, sizeof(aSha256));
 	str_format(aBufMsg, sizeof(aBufMsg), "%s sha256 is %s", pMapName, aSha256);
 	Console()->Print(IConsole::OUTPUT_LEVEL_ADDINFO, "server", aBufMsg);
-	str_format(aBufMsg, sizeof(aBufMsg), "map crc is %08x, generated map crc is %08x", ServerMapCrc, m_CurrentMapCrc);
+	str_format(aBufMsg, sizeof(aBufMsg), "map crc is %08x, generated map crc is %08x", ServerMapCrc, m_aCurrentMapCrc[MAP_TYPE_SIX]);
 	Console()->Print(IConsole::OUTPUT_LEVEL_ADDINFO, "server", aBufMsg);
 
 	// load complete map into memory for download
 	{
-		free(m_pCurrentMapData);
+		free(m_apCurrentMapData[MAP_TYPE_SIX]);
 		void *pData;
-		Storage()->ReadFile(aClientMapName, IStorage::TYPE_ALL, &pData, &m_CurrentMapSize);
-		m_pCurrentMapData = (unsigned char *)pData;
+		Storage()->ReadFile(aClientMapName, IStorage::TYPE_ALL, &pData, &m_aCurrentMapSize[MAP_TYPE_SIX]);
+		m_apCurrentMapData[MAP_TYPE_SIX] = (unsigned char *)pData;
 	}
 
 	return true;
@@ -1535,6 +1573,11 @@ void CServer::ProcessClientPacket(CNetChunk *pPacket)
 
 	int Result = UnpackMessageID(&Msg, &Sys, &Uuid, &Unpacker, &Packer);
 	if(Result == UNPACKMESSAGE_ERROR)
+	{
+		return;
+	}
+
+	if(m_aClients[ClientID].m_Sixup && (Msg = MsgFromSixup(Msg, Sys)) < 0)
 	{
 		return;
 	}
@@ -2103,8 +2146,8 @@ void CServer::SendServerInfo(const NETADDR *pAddr, int Token, int Type, bool Sen
 
 	if(Type == SERVERINFO_EXTENDED)
 	{
-		ADD_INT(p, m_CurrentMapCrc);
-		ADD_INT(p, m_CurrentMapSize);
+		ADD_INT(p, m_aCurrentMapCrc[MAP_TYPE_SIX]);
+		ADD_INT(p, m_aCurrentMapSize[MAP_TYPE_SIX]);
 	}
 
 	// gametype
@@ -2587,12 +2630,10 @@ int CServer::Run()
 #endif
 
 			// load new map TODO: don't poll this
-			if(str_comp(g_Config.m_SvMap, m_aCurrentMap) != 0 || m_MapReload)
+			if(str_comp(g_Config.m_SvMap, m_aCurrentMap) != 0 || m_MapReload || m_CurrentGameTick >= MAX_TICK) // force reload to make sure the ticks stay within a valid range
 			{
-				m_MapReload = 0;
-
 				// load map
-				if(LoadMap(g_Config.m_SvMap))
+				if(LoadMap(Config()->m_SvMap))
 				{
 					// new map loaded
 
@@ -2795,8 +2836,6 @@ int CServer::Run()
 	GameServer()->OnShutdown();
 	m_pMap->Unload();
 
-	free(m_pCurrentMapData);
-		
 /* DDNET MODIFICATION START *******************************************/
 #ifdef CONF_SQL
 	for (int i = 0; i < MAX_SQLSERVERS; i++)
@@ -2810,7 +2849,9 @@ int CServer::Run()
 #endif
 /* DDNET MODIFICATION END *********************************************/
 
-	return 0;
+	m_NetServer.Close();
+
+	return ErrorShutdown();
 }
 
 void CServer::ConUnmute(IConsole::IResult *pResult, void *pUser)
@@ -3019,19 +3060,19 @@ void CServer::ConShutdown(IConsole::IResult *pResult, void *pUser)
 
 void CServer::DemoRecorder_HandleAutoStart()
 {
-	if(g_Config.m_SvAutoDemoRecord)
+	if(Config()->m_SvAutoDemoRecord)
 	{
 		m_aDemoRecorder[0].Stop();
-		char aFilename[128];
+		char aFilename[IO_MAX_PATH_LENGTH];
 		char aDate[20];
 		str_timestamp(aDate, sizeof(aDate));
 		str_format(aFilename, sizeof(aFilename), "demos/%s_%s.demo", "auto/autorecord", aDate);
-		m_aDemoRecorder[0].Start(Storage(), m_pConsole, aFilename, GameServer()->NetVersion(), m_aCurrentMap, &m_CurrentMapSha256, m_CurrentMapCrc, "server", m_CurrentMapSize, m_pCurrentMapData);
-		if(g_Config.m_SvAutoDemoMax)
+		m_aDemoRecorder[0].Start(Storage(), m_pConsole, aFilename, GameServer()->NetVersion(), m_aCurrentMap, &m_aCurrentMapSha256[MAP_TYPE_SIX], m_aCurrentMapCrc[MAP_TYPE_SIX], "server", m_aCurrentMapSize[MAP_TYPE_SIX], m_apCurrentMapData[MAP_TYPE_SIX]);
+		if(Config()->m_SvAutoDemoMax)
 		{
 			// clean up auto recorded demos
 			CFileCollection AutoDemos;
-			AutoDemos.Init(Storage(), "demos/server", "autorecord", ".demo", g_Config.m_SvAutoDemoMax);
+			AutoDemos.Init(Storage(), "demos/server", "autorecord", ".demo", Config()->m_SvAutoDemoMax);
 		}
 	}
 }
@@ -3054,7 +3095,7 @@ void CServer::ConRecord(IConsole::IResult *pResult, void *pUser)
 		str_timestamp(aDate, sizeof(aDate));
 		str_format(aFilename, sizeof(aFilename), "demos/demo_%s.demo", aDate);
 	}
-	pServer->m_aDemoRecorder[0].Start(pServer->Storage(), pServer->Console(), aFilename, pServer->GameServer()->NetVersion(), pServer->m_aCurrentMap, &pServer->m_CurrentMapSha256, pServer->m_CurrentMapCrc, "server", pServer->m_CurrentMapSize, pServer->m_pCurrentMapData);
+	pServer->m_aDemoRecorder[0].Start(pServer->Storage(), pServer->Console(), aFilename, pServer->GameServer()->NetVersion(), pServer->m_aCurrentMap, &pServer->m_aCurrentMapSha256[MAP_TYPE_SIX], pServer->m_aCurrentMapCrc[MAP_TYPE_SIX], "server", pServer->m_aCurrentMapSize[MAP_TYPE_SIX], pServer->m_apCurrentMapData[MAP_TYPE_SIX]);
 }
 
 void CServer::ConStopRecord(IConsole::IResult *pResult, void *pUser)

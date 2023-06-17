@@ -236,17 +236,26 @@ public:
 	bool m_ReloadedWhenEmpty;
 	int m_RconClientID;
 	int m_RconAuthLevel;
+	char m_aShutdownReason[128];
 
 	int64_t m_Lastheartbeat;
 	//static NETADDR4 master_server;
-	
-	char m_aPreviousMap[64];
-	char m_aCurrentMap[64];
-	char m_aShutdownReason[128];
-	SHA256_DIGEST m_CurrentMapSha256;
-	unsigned m_CurrentMapCrc;
-	unsigned char *m_pCurrentMapData;
-	unsigned int m_CurrentMapSize;
+
+	enum
+	{
+		MAP_TYPE_SIX = 0,
+		MAP_TYPE_SIXUP,
+		NUM_MAP_TYPES
+	};
+
+	char m_aPreviousMap[IO_MAX_PATH_LENGTH];
+	char m_aCurrentMap[IO_MAX_PATH_LENGTH];
+	SHA256_DIGEST m_aCurrentMapSha256[NUM_MAP_TYPES];
+	unsigned m_aCurrentMapCrc[NUM_MAP_TYPES];
+	unsigned char *m_apCurrentMapData[NUM_MAP_TYPES];
+	unsigned int m_aCurrentMapSize[NUM_MAP_TYPES];
+
+	CDemoRecorder m_aDemoRecorder[1];
 
 	bool m_ServerInfoHighLoad;
 	int64_t m_ServerInfoFirstRequest;
@@ -254,7 +263,6 @@ public:
 	int64_t m_ServerInfoRequestLogTick;
 	int m_ServerInfoRequestLogRecords;
 
-	CDemoRecorder m_aDemoRecorder[1];
 	CRegister m_Register;
 
 	char m_aErrorShutdownReason[128];
