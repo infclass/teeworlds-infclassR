@@ -262,7 +262,7 @@ void CPlayer::SnapClientInfo(int SnappingClient, int SnappingClientMappedId)
 	StrToInts(&pClientInfo->m_Name0, 4, GetName(SnappingClient));
 	StrToInts(&pClientInfo->m_Clan0, 3, GetClan(SnappingClient));
 	pClientInfo->m_Country = Server()->ClientCountry(m_ClientID);
-	StrToInts(&pClientInfo->m_Skin0, 6, m_TeeInfos.m_SkinName);
+	StrToInts(&pClientInfo->m_Skin0, 6, m_TeeInfos.m_aSkinName);
 	pClientInfo->m_UseCustomColor = m_TeeInfos.m_UseCustomColor;
 	pClientInfo->m_ColorBody = m_TeeInfos.m_ColorBody;
 	pClientInfo->m_ColorFeet = m_TeeInfos.m_ColorFeet;

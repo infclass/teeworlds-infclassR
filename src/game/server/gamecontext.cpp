@@ -4997,7 +4997,7 @@ void CGameContext::OnUpdatePlayerServerInfo(char *aBuf, int BufSize, int ID)
 				"\"name\":\"%s\","
 				"\"color_body\":%d,"
 				"\"color_feet\":%d",
-				EscapeJson(aCSkinName, sizeof(aCSkinName), TeeInfo.m_SkinName),
+				EscapeJson(aCSkinName, sizeof(aCSkinName), TeeInfo.m_aSkinName),
 				TeeInfo.m_ColorBody,
 				TeeInfo.m_ColorFeet);
 		}
@@ -5005,12 +5005,11 @@ void CGameContext::OnUpdatePlayerServerInfo(char *aBuf, int BufSize, int ID)
 		{
 			str_format(aJsonSkin, sizeof(aJsonSkin),
 				"\"name\":\"%s\"",
-				EscapeJson(aCSkinName, sizeof(aCSkinName), TeeInfo.m_SkinName));
+				EscapeJson(aCSkinName, sizeof(aCSkinName), TeeInfo.m_aSkinName));
 		}
 	}
 	else
 	{
-/*
 		const char *apPartNames[protocol7::NUM_SKINPARTS] = {"body", "marking", "decoration", "hands", "feet", "eyes"};
 		char aPartBuf[64];
 
@@ -5034,7 +5033,6 @@ void CGameContext::OnUpdatePlayerServerInfo(char *aBuf, int BufSize, int ID)
 			}
 			str_append(aJsonSkin, "}", sizeof(aJsonSkin));
 		}
-*/
 	}
 
 	str_format(aBuf, BufSize,
