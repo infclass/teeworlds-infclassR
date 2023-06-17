@@ -60,6 +60,7 @@ enum
 };
 
 class CConfig;
+class IEngine;
 
 struct CSnapContext
 {
@@ -80,12 +81,17 @@ class CGameContext : public IGameServer
 {
 	IServer *m_pServer;
 	CConfig *m_pConfig;
+	IConsole *m_pConsole;
+	IEngine *m_pEngine;
 	IStorage *m_pStorage;
-	class IConsole *m_pConsole;
 	CLayers m_Layers;
 	CCollision m_Collision;
 	CNetObjHandler m_NetObjHandler;
 	CTuningParams m_Tuning;
+
+	CUuid m_GameUuid;
+
+	bool m_Resetting;
 
 	static void ConTuneParam(IConsole::IResult *pResult, void *pUserData);
 	static void ConToggleTuneParam(IConsole::IResult *pResult, void *pUserData);
@@ -115,8 +121,6 @@ class CGameContext : public IGameServer
 	void AddVote(const char *pDescription, const char *pCommand);
 	static int MapScan(const char *pName, int IsDir, int DirType, void *pUserData);
 
-	bool m_Resetting;
-
 public:
 	struct CPersistentClientData
 	{
@@ -141,6 +145,13 @@ public:
 
 	CEventHandler m_Events;
 	CPlayer *m_apPlayers[MAX_CLIENTS];
+	// keep last input to always apply when none is sent
+	CNetObj_PlayerInput m_aLastPlayerInput[MAX_CLIENTS];
+	bool m_aPlayerHasInput[MAX_CLIENTS];
+
+	// returns last input if available otherwise nulled PlayerInput object
+	// ClientID has to be valid
+	CNetObj_PlayerInput GetLastPlayerInput(int ClientID) const;
 
 	IGameController *m_pController;
 	CGameWorld m_World;
@@ -167,6 +178,9 @@ public:
 	char m_aVoteReason[VOTE_REASON_LENGTH];
 	int m_NumVoteOptions;
 	int m_VoteEnforce;
+
+	void CreateAllEntities(bool Initial);
+
 	enum
 	{
 		VOTE_ENFORCE_UNKNOWN=0,
@@ -217,41 +231,60 @@ public:
 	void ProgressVoteOptions(int ClientID);
 
 	// engine events
-	virtual void OnInit();
-	virtual void OnConsoleInit();
-	virtual void OnShutdown();
+	void OnInit() override;
+	void OnConsoleInit() override;
+	void OnMapChange(char *pNewMapName, int MapNameSize) override;
+	void OnShutdown() override;
 
-	virtual void OnTick();
-	virtual void OnPreSnap();
-	virtual void OnSnap(int ClientID);
-	virtual void OnPostSnap();
+	void OnTick() override;
+	void OnPreSnap() override;
+	void OnSnap(int ClientID) override;
+	void OnPostSnap() override;
 
 	void *PreProcessMsg(int *pMsgID, CUnpacker *pUnpacker, int ClientID);
 	void CensorMessage(char *pCensoredMessage, const char *pMessage, int Size);
-	virtual void OnMessage(int MsgID, CUnpacker *pUnpacker, int ClientID);
+	void OnMessage(int MsgID, CUnpacker *pUnpacker, int ClientID) override;
 
-	virtual bool OnClientDataPersist(int ClientID, void *pData);
-	virtual void OnClientConnected(int ClientID, void *pData);
-	virtual void OnClientEnter(int ClientID);
-	virtual void OnClientDrop(int ClientID, int Type, const char *pReason);
-	virtual void OnClientDirectInput(int ClientID, void *pInput);
-	virtual void OnClientPredictedInput(int ClientID, void *pInput);
+	bool OnClientDataPersist(int ClientID, void *pData) override;
+	void OnClientConnected(int ClientID, void *pData) override;
+	void OnClientEnter(int ClientID) override;
+	void OnClientDrop(int ClientID, int Type, const char *pReason) override;
+	void OnClientPrepareInput(int ClientID, void *pInput) override;
+	void OnClientDirectInput(int ClientID, void *pInput) override;
+	void OnClientPredictedInput(int ClientID, void *pInput) override;
+	void OnClientPredictedEarlyInput(int ClientID, void *pInput) override;
 
-	virtual bool IsClientReady(int ClientID) const;
-	virtual bool IsClientPlayer(int ClientID) const;
+	void OnClientEngineJoin(int ClientID, bool Sixup) override;
+	void OnClientEngineDrop(int ClientID, const char *pReason) override;
 
-	virtual int PersistentClientDataSize() const;
+	bool IsClientReady(int ClientID) const override;
+	bool IsClientPlayer(int ClientID) const override;
+	int PersistentClientDataSize() const override;
 
-	virtual const char *GameType() const;
-	virtual const char *Version() const;
-	virtual const char *NetVersion() const;
+	CUuid GameUuid() const override;
+	const char *GameType() const override;
+	const char *Version() const override;
+	const char *NetVersion() const override;
 
+	// DDRace
+	void OnPreTickTeehistorian() override;
+	void FillAntibot(CAntibotRoundData *pData) override;
 	bool ProcessSpamProtection(int ClientID, bool RespectChatInitialDelay = true);
+	// Describes the time when the first player joined the server.
+	int64_t m_NonEmptySince;
+	int64_t m_LastMapVote;
 	int GetClientVersion(int ClientID) const;
-
+	CClientMask ClientsMaskExcludeClientVersionAndHigher(int Version);
 	bool PlayerExists(int ClientID) const override { return m_apPlayers[ClientID]; }
+	// Returns true if someone is actively moderating.
+	bool PlayerModerating() const;
+	void ForceVote(int EnforcerID, bool Success);
 
+	// Checks if player can vote and notify them about the reason
 	bool RateLimitPlayerVote(int ClientID);
+	bool RateLimitPlayerMapVote(int ClientID);
+
+	void OnUpdatePlayerServerInfo(char *aBuf, int BufSize, int ID) override;
 
 /* INFECTION MODIFICATION START ***************************************/
 private:

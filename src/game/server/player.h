@@ -48,6 +48,7 @@ public:
 
 	void OnDirectInput(CNetObj_PlayerInput *NewInput);
 	void OnPredictedInput(CNetObj_PlayerInput *NewInput);
+	void OnPredictedEarlyInput(CNetObj_PlayerInput *pNewInput);
 	void OnDisconnect();
 
 	virtual void KillCharacter(int Weapon = WEAPON_GAME);
@@ -132,8 +133,11 @@ protected:
 	int m_ClientID;
 	int m_Team;
 
-/* IMPORT FROM DDNET */
-protected:
+	int m_Paused;
+	int64_t m_ForcePauseTime;
+	int64_t m_LastPause;
+	bool m_Afk;
+
 	int m_DefEmote;
 	int m_OverrideEmote;
 	int m_OverrideEmoteReset;
@@ -141,6 +145,15 @@ protected:
 	int64_t m_LastEyeEmote;
 
 public:
+	enum
+	{
+		PAUSE_NONE = 0,
+		PAUSE_PAUSED,
+		PAUSE_SPEC
+	};
+
+	bool m_DND;
+	int64_t m_FirstVoteTick;
 	char m_aTimeoutCode[64];
 
 	virtual int GetDefaultEmote() const;
@@ -150,6 +163,8 @@ public:
 	int m_ShowOthers;
 	bool m_ShowAll;
 	vec2 m_ShowDistance;
+
+	bool IsAfk() const { return m_Afk; }
 
 /* INFECTION MODIFICATION START ***************************************/
 protected:

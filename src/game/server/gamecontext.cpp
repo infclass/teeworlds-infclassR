@@ -10,6 +10,7 @@
 #include <engine/storage.h>
 #include <engine/server/roundstatistics.h>
 #include <engine/server/sql_server.h>
+#include <engine/shared/json.h>
 #include <engine/shared/linereader.h>
 #include "gamecontext.h"
 #include <game/version.h>
@@ -85,6 +86,9 @@ void CGameContext::Construct(int Resetting)
 		m_aHitSoundState[i] = 0;
 	}
 
+	mem_zero(&m_aLastPlayerInput, sizeof(m_aLastPlayerInput));
+	mem_zero(&m_aPlayerHasInput, sizeof(m_aPlayerHasInput));
+
 	if(Resetting==NO_RESET) // first init
 	{
 		for(int i = 0; i < MAX_CLIENTS; i++)
@@ -93,13 +97,18 @@ void CGameContext::Construct(int Resetting)
 	}
 
 	m_pController = 0;
+	m_aVoteCommand[0] = 0;
 	m_VoteCloseTime = 0;
 	m_pVoteOptionFirst = 0;
 	m_pVoteOptionLast = 0;
 	m_NumVoteOptions = 0;
+	m_LastMapVote = 0;
 
-	if(Resetting==NO_RESET)
+	if(Resetting == NO_RESET)
+	{
+		m_NonEmptySince = 0;
 		m_pVoteOptionHeap = new CHeap();
+	}
 }
 
 CGameContext::CGameContext(int Resetting)
@@ -161,6 +170,12 @@ void CGameContext::Clear()
 	}
 }
 
+CNetObj_PlayerInput CGameContext::GetLastPlayerInput(int ClientID) const
+{
+	dbg_assert(0 <= ClientID && ClientID < MAX_CLIENTS, "invalid ClientID");
+	return m_aLastPlayerInput[ClientID];
+}
+
 CPlayer *CGameContext::GetPlayer(int ClientID) const
 {
 	if(ClientID < 0 || ClientID >= MAX_CLIENTS)
@@ -174,6 +189,10 @@ class CCharacter *CGameContext::GetPlayerChar(int ClientID)
 	if(ClientID < 0 || ClientID >= MAX_CLIENTS || !m_apPlayers[ClientID])
 		return 0;
 	return m_apPlayers[ClientID]->GetCharacter();
+}
+
+void CGameContext::FillAntibot(CAntibotRoundData *pData)
+{
 }
 
 void CGameContext::CreateDamageInd(vec2 Pos, float Angle, int Amount, int64_t Mask)
@@ -1101,6 +1120,10 @@ void CGameContext::SendScoreSound(int ClientID)
 	m_aHitSoundState[ClientID] = 2;
 }
 
+void CGameContext::OnPreTickTeehistorian()
+{
+}
+
 void CGameContext::OnTick()
 {
 	for(int i=0; i<MAX_CLIENTS; i++)
@@ -1454,17 +1477,79 @@ void CGameContext::OnTick()
 #endif
 }
 
+static int PlayerFlags_SevenToSix(int Flags)
+{
+	int Six = 0;
+	if(Flags & protocol7::PLAYERFLAG_CHATTING)
+		Six |= PLAYERFLAG_CHATTING;
+	if(Flags & protocol7::PLAYERFLAG_SCOREBOARD)
+		Six |= PLAYERFLAG_SCOREBOARD;
+	if(Flags & protocol7::PLAYERFLAG_AIM)
+		Six |= PLAYERFLAG_AIM;
+	return Six;
+}
+
 // Server hooks
+void CGameContext::OnClientPrepareInput(int ClientID, void *pInput)
+{
+	auto *pPlayerInput = (CNetObj_PlayerInput *)pInput;
+	if(Server()->IsSixup(ClientID))
+		pPlayerInput->m_PlayerFlags = PlayerFlags_SevenToSix(pPlayerInput->m_PlayerFlags);
+}
+
 void CGameContext::OnClientDirectInput(int ClientID, void *pInput)
 {
 	if(!m_World.m_Paused)
 		m_apPlayers[ClientID]->OnDirectInput((CNetObj_PlayerInput *)pInput);
+
+	int Flags = ((CNetObj_PlayerInput *)pInput)->m_PlayerFlags;
+	if((Flags & 256) || (Flags & 512))
+	{
+		Server()->Kick(ClientID, "please update your client or use DDNet client");
+	}
 }
 
 void CGameContext::OnClientPredictedInput(int ClientID, void *pInput)
 {
+	// early return if no input at all has been sent by a player
+	if(pInput == nullptr && !m_aPlayerHasInput[ClientID])
+		return;
+
+		   // set to last sent input when no new input has been sent
+	CNetObj_PlayerInput *pApplyInput = (CNetObj_PlayerInput *)pInput;
+	if(pApplyInput == nullptr)
+	{
+		pApplyInput = &m_aLastPlayerInput[ClientID];
+	}
+
 	if(!m_World.m_Paused)
-		m_apPlayers[ClientID]->OnPredictedInput((CNetObj_PlayerInput *)pInput);
+		m_apPlayers[ClientID]->OnPredictedInput(pApplyInput);
+}
+
+void CGameContext::OnClientPredictedEarlyInput(int ClientID, void *pInput)
+{
+	// early return if no input at all has been sent by a player
+	if(pInput == nullptr && !m_aPlayerHasInput[ClientID])
+		return;
+
+	// set to last sent input when no new input has been sent
+	CNetObj_PlayerInput *pApplyInput = (CNetObj_PlayerInput *)pInput;
+	if(pApplyInput == nullptr)
+	{
+		pApplyInput = &m_aLastPlayerInput[ClientID];
+	}
+	else
+	{
+		// Store input in this function and not in `OnClientPredictedInput`,
+		// because this function is called on all inputs, while
+		// `OnClientPredictedInput` is only called on the first input of each
+		// tick.
+		mem_copy(&m_aLastPlayerInput[ClientID], pApplyInput, sizeof(m_aLastPlayerInput[ClientID]));
+		m_aPlayerHasInput[ClientID] = true;
+	}
+
+	if(!m_World.m_Paused)
+		m_apPlayers[ClientID]->OnPredictedEarlyInput(pApplyInput);
 }
 
 struct CVoteOptionServer *CGameContext::GetVoteOption(int Index)
@@ -1567,6 +1652,12 @@ void CGameContext::OnClientEnter(int ClientID)
 	// send active vote
 	if(m_VoteCloseTime)
 		SendVoteSet(ClientID);
+
+	Server()->ExpireServerInfo();
+
+	CPlayer *pNewPlayer = m_apPlayers[ClientID];
+	mem_zero(&m_aLastPlayerInput[ClientID], sizeof(m_aLastPlayerInput[ClientID]));
+	m_aPlayerHasInput[ClientID] = false;
 }
 
 bool CGameContext::OnClientDataPersist(int ClientID, void *pData)
@@ -1593,6 +1684,23 @@ void CGameContext::OnClientConnected(int ClientID, void *pData)
 	{
 		Spec = pPersistentData->m_IsSpectator;
 		NameLocked = pPersistentData->m_ClientNameLocked;
+	}
+
+	{
+		bool Empty = true;
+		for(auto &pPlayer : m_apPlayers)
+		{
+			// connecting clients with spoofed ips can clog slots without being ingame
+			if(pPlayer && Server()->ClientIngame(pPlayer->GetCID()))
+			{
+				Empty = false;
+				break;
+			}
+		}
+		if(Empty)
+		{
+			m_NonEmptySince = Server()->Tick();
+		}
 	}
 
 	dbg_assert(!m_apPlayers[ClientID], "non-free player slot");
@@ -1655,6 +1763,14 @@ void CGameContext::OnClientDrop(int ClientID, int Type, const char *pReason)
 		// reset mutes for everyone that muted this player
 		CGameContext::m_ClientMuted[i][ClientID] = false;
 	}
+}
+
+void CGameContext::OnClientEngineJoin(int ClientID, bool Sixup)
+{
+}
+
+void CGameContext::OnClientEngineDrop(int ClientID, const char *pReason)
+{
 }
 
 CGameContext::OPTION_VOTE_TYPE CGameContext::GetOptionVoteType(const char *pVoteCommand)
@@ -4353,22 +4469,22 @@ void CGameContext::OnConsoleInit()
 	InitGeolocation();
 }
 
-void CGameContext::OnInit(/*class IKernel *pKernel*/)
+void CGameContext::OnInit()
 {
 	m_pServer = Kernel()->RequestInterface<IServer>();
-	m_pConfig = &g_Config;
+	m_pConfig = Kernel()->RequestInterface<IConfigManager>()->Values();
 	m_pConsole = Kernel()->RequestInterface<IConsole>();
+	m_pEngine = nullptr;
 	m_pStorage = Kernel()->RequestInterface<IStorage>();
 	m_World.SetGameServer(this);
 	m_Events.SetGameServer(this);
-	
+
+	m_GameUuid = RandomUuid();
+
 	for(int i=0; i<MAX_CLIENTS; i++)
 	{
 		Server()->ResetClientMemoryAboutGame(i);
 	}
-
-	//if(!data) // only load once
-		//data = load_data_from_memory(internal_data);
 
 	for(int i = 0; i < NUM_NETOBJTYPES; i++)
 		Server()->SnapSetStaticsize(i, m_NetObjHandler.GetObjSize(i));
@@ -4382,47 +4498,9 @@ void CGameContext::OnInit(/*class IKernel *pKernel*/)
 	m_Layers.Init(Kernel());
 	m_Collision.Init(&m_Layers);
 
-	// reset everything here
-	//world = new GAMEWORLD;
-	//players = new CPlayer[MAX_CLIENTS];
-
 	// select gametype
 	m_pController = new CInfClassGameController(this);
 	m_pController->RegisterChatCommands(Console());
-
-	// setup core world
-	//for(int i = 0; i < MAX_CLIENTS; i++)
-	//	game.players[i].core.world = &game.world.core;
-
-	// create all entities from entity layers
-	if(m_Layers.EntityGroup())
-	{
-		char aLayerName[12];
-		
-		const CMapItemGroup* pGroup = m_Layers.EntityGroup();
-		for(int l = 0; l < pGroup->m_NumLayers; l++)
-		{
-			CMapItemLayer *pLayer = m_Layers.GetLayer(pGroup->m_StartLayer+l);
-			if(pLayer->m_Type == LAYERTYPE_QUADS)
-			{
-				CMapItemLayerQuads *pQLayer = (CMapItemLayerQuads *)pLayer;
-			
-				IntsToStr(pQLayer->m_aName, sizeof(aLayerName)/sizeof(int), aLayerName);
-				
-				const CQuad *pQuads = (const CQuad *) Kernel()->RequestInterface<IMap>()->GetDataSwapped(pQLayer->m_Data);
-
-				for(int q = 0; q < pQLayer->m_NumQuads; q++)
-				{
-					vec2 P0(fx2f(pQuads[q].m_aPoints[0].x), fx2f(pQuads[q].m_aPoints[0].y));
-					vec2 P1(fx2f(pQuads[q].m_aPoints[1].x), fx2f(pQuads[q].m_aPoints[1].y));
-					vec2 P2(fx2f(pQuads[q].m_aPoints[2].x), fx2f(pQuads[q].m_aPoints[2].y));
-					vec2 P3(fx2f(pQuads[q].m_aPoints[3].x), fx2f(pQuads[q].m_aPoints[3].y));
-					vec2 Pivot(fx2f(pQuads[q].m_aPoints[4].x), fx2f(pQuads[q].m_aPoints[4].y));
-					m_pController->OnEntity(aLayerName, Pivot, P0, P1, P2, P3, pQuads[q].m_PosEnv);
-				}
-			}
-		}
-	}
 
 	Console()->ExecuteFile(g_Config.m_SvResetFile);
 
@@ -4437,6 +4515,9 @@ void CGameContext::OnInit(/*class IKernel *pKernel*/)
 		Console()->ExecuteFile(MapCfgFilename);
 	}
 
+	// create all entities from the game layer
+	CreateAllEntities(true);
+
 	if(GIT_SHORTREV_HASH)
 		Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "git-revision", GIT_SHORTREV_HASH);
 
@@ -4449,6 +4530,43 @@ void CGameContext::OnInit(/*class IKernel *pKernel*/)
 		}
 	}
 #endif
+}
+
+void CGameContext::CreateAllEntities(bool Initial)
+{
+	// create all entities from entity layers
+	if(m_Layers.EntityGroup())
+	{
+		char aLayerName[12];
+
+		const CMapItemGroup* pGroup = m_Layers.EntityGroup();
+		for(int l = 0; l < pGroup->m_NumLayers; l++)
+		{
+			CMapItemLayer *pLayer = m_Layers.GetLayer(pGroup->m_StartLayer+l);
+			if(pLayer->m_Type == LAYERTYPE_QUADS)
+			{
+				CMapItemLayerQuads *pQLayer = (CMapItemLayerQuads *)pLayer;
+
+				IntsToStr(pQLayer->m_aName, sizeof(aLayerName)/sizeof(int), aLayerName);
+
+				const CQuad *pQuads = (const CQuad *) Kernel()->RequestInterface<IMap>()->GetDataSwapped(pQLayer->m_Data);
+
+				for(int q = 0; q < pQLayer->m_NumQuads; q++)
+				{
+					vec2 P0(fx2f(pQuads[q].m_aPoints[0].x), fx2f(pQuads[q].m_aPoints[0].y));
+					vec2 P1(fx2f(pQuads[q].m_aPoints[1].x), fx2f(pQuads[q].m_aPoints[1].y));
+					vec2 P2(fx2f(pQuads[q].m_aPoints[2].x), fx2f(pQuads[q].m_aPoints[2].y));
+					vec2 P3(fx2f(pQuads[q].m_aPoints[3].x), fx2f(pQuads[q].m_aPoints[3].y));
+					vec2 Pivot(fx2f(pQuads[q].m_aPoints[4].x), fx2f(pQuads[q].m_aPoints[4].y));
+					m_pController->OnEntity(aLayerName, Pivot, P0, P1, P2, P3, pQuads[q].m_PosEnv);
+				}
+			}
+		}
+	}
+}
+
+void CGameContext::OnMapChange(char *pNewMapName, int MapNameSize)
+{
 }
 
 void CGameContext::OnShutdown()
@@ -4465,7 +4583,7 @@ void CGameContext::OnSnap(int ClientID)
 {
 	// add tuning to demo
 	CTuningParams StandardTuning;
-	if(ClientID == -1 && Server()->DemoRecorder_IsRecording() && mem_comp(&StandardTuning, &m_Tuning, sizeof(CTuningParams)) != 0)
+	if(Server()->IsRecording(ClientID > -1 ? ClientID : MAX_CLIENTS) && mem_comp(&StandardTuning, &m_Tuning, sizeof(CTuningParams)) != 0)
 	{
 		CMsgPacker Msg(NETMSGTYPE_SV_TUNEPARAMS);
 		int *pParams = (int *)&m_Tuning;
@@ -4580,6 +4698,7 @@ int CGameContext::PersistentClientDataSize() const
 	return m_pController ? m_pController->PersistentClientDataSize() : 0;
 }
 
+CUuid CGameContext::GameUuid() const { return m_GameUuid; }
 const char *CGameContext::GameType() const { return m_pController && m_pController->m_pGameType ? m_pController->m_pGameType : ""; }
 const char *CGameContext::Version() const { return GAME_VERSION; }
 const char *CGameContext::NetVersion() const { return GAME_NETVERSION; }
@@ -4837,4 +4956,94 @@ bool CGameContext::RateLimitPlayerVote(int ClientID)
 	}
 
 	return false;
+}
+
+bool CGameContext::RateLimitPlayerMapVote(int ClientID)
+{
+	if(!Server()->GetAuthedState(ClientID) && time_get() < m_LastMapVote + (time_freq() * g_Config.m_SvVoteMapTimeDelay))
+	{
+		char aChatmsg[512] = {0};
+		str_format(aChatmsg, sizeof(aChatmsg), "There's a %d second delay between map-votes, please wait %d seconds.",
+			g_Config.m_SvVoteMapTimeDelay, (int)((m_LastMapVote + g_Config.m_SvVoteMapTimeDelay * time_freq() - time_get()) / time_freq()));
+		SendChatTarget(ClientID, aChatmsg);
+		return true;
+	}
+	return false;
+}
+
+void CGameContext::OnUpdatePlayerServerInfo(char *aBuf, int BufSize, int ID)
+{
+	if(BufSize <= 0)
+		return;
+
+	aBuf[0] = '\0';
+
+	if(!m_apPlayers[ID])
+		return;
+
+	char aCSkinName[64];
+
+	CTeeInfo &TeeInfo = m_apPlayers[ID]->m_TeeInfos;
+
+	char aJsonSkin[400];
+	aJsonSkin[0] = '\0';
+
+	if(!Server()->IsSixup(ID))
+	{
+		// 0.6
+		if(TeeInfo.m_UseCustomColor)
+		{
+			str_format(aJsonSkin, sizeof(aJsonSkin),
+				"\"name\":\"%s\","
+				"\"color_body\":%d,"
+				"\"color_feet\":%d",
+				EscapeJson(aCSkinName, sizeof(aCSkinName), TeeInfo.m_SkinName),
+				TeeInfo.m_ColorBody,
+				TeeInfo.m_ColorFeet);
+		}
+		else
+		{
+			str_format(aJsonSkin, sizeof(aJsonSkin),
+				"\"name\":\"%s\"",
+				EscapeJson(aCSkinName, sizeof(aCSkinName), TeeInfo.m_SkinName));
+		}
+	}
+	else
+	{
+/*
+		const char *apPartNames[protocol7::NUM_SKINPARTS] = {"body", "marking", "decoration", "hands", "feet", "eyes"};
+		char aPartBuf[64];
+
+		for(int i = 0; i < protocol7::NUM_SKINPARTS; ++i)
+		{
+			str_format(aPartBuf, sizeof(aPartBuf),
+				"%s\"%s\":{"
+				"\"name\":\"%s\"",
+				i == 0 ? "" : ",",
+				apPartNames[i],
+				EscapeJson(aCSkinName, sizeof(aCSkinName), TeeInfo.m_apSkinPartNames[i]));
+
+			str_append(aJsonSkin, aPartBuf, sizeof(aJsonSkin));
+
+			if(TeeInfo.m_aUseCustomColors[i])
+			{
+				str_format(aPartBuf, sizeof(aPartBuf),
+					",\"color\":%d",
+					TeeInfo.m_aSkinPartColors[i]);
+				str_append(aJsonSkin, aPartBuf, sizeof(aJsonSkin));
+			}
+			str_append(aJsonSkin, "}", sizeof(aJsonSkin));
+		}
+*/
+	}
+
+	str_format(aBuf, BufSize,
+		",\"skin\":{"
+		"%s"
+		"},"
+		"\"afk\":%s,"
+		"\"team\":%d",
+		aJsonSkin,
+		JsonBool(m_apPlayers[ID]->IsAfk()),
+		m_apPlayers[ID]->GetTeam());
 }

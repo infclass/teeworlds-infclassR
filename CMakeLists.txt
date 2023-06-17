@@ -660,6 +660,8 @@ set_glob(ENGINE_SHARED GLOB src/engine/shared
   huffman.h
   jobs.cpp
   jobs.h
+  json.cpp
+  json.h
   kernel.cpp
   linereader.cpp
   linereader.h

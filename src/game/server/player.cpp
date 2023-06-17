@@ -46,6 +46,7 @@ void CPlayer::Reset()
 
 	m_LastEyeEmote = 0;
 	m_DefEmote = EMOTE_NORMAL;
+	m_Afk = true;
 	m_LastKill = 0;
 	m_LastWhisperTo = -1;
 	m_aTimeoutCode[0] = '\0';
@@ -59,7 +60,25 @@ void CPlayer::Reset()
 	m_ShowAll = g_Config.m_SvShowAllDefault;
 	m_ShowDistance = vec2(1200, 800);
 
+	m_Paused = PAUSE_NONE;
+	m_DND = false;
+
+	m_LastPause = 0;
+
+	int64_t Now = Server()->Tick();
+	int64_t TickSpeed = Server()->TickSpeed();
+	// If the player joins within ten seconds of the server becoming
+	// non-empty, allow them to vote immediately. This allows players to
+	// vote after map changes or when they join an empty server.
+	//
+	// Otherwise, block voting in the beginning after joining.
+	if(Now > GameServer()->m_NonEmptySince + 10 * TickSpeed)
+		m_FirstVoteTick = Now + g_Config.m_SvJoinVoteDelay * TickSpeed;
+	else
+		m_FirstVoteTick = Now;
+
 /* INFECTION MODIFICATION START ***************************************/
+	m_Afk = false;
 	m_ScoreMode = PLAYERSCOREMODE_SCORE;
 
 	m_ClientNameLocked = false;
@@ -300,6 +319,21 @@ void CPlayer::OnDirectInput(CNetObj_PlayerInput *NewInput)
 		if (NewInput->m_Direction || NewInput->m_Jump || NewInput->m_Hook)
 			m_LastActionMoveTick = Server()->Tick();
 	}
+}
+
+void CPlayer::OnPredictedEarlyInput(CNetObj_PlayerInput *pNewInput)
+{
+	m_PlayerFlags = pNewInput->m_PlayerFlags;
+
+	if(!m_pCharacter && m_Team != TEAM_SPECTATORS && (pNewInput->m_Fire & 1))
+		m_Spawning = true;
+
+	// skip the input if chat is active
+	if(m_PlayerFlags & PLAYERFLAG_CHATTING)
+		return;
+
+	if(m_pCharacter)
+		m_pCharacter->OnDirectInput(pNewInput);
 }
 
 int CPlayer::GetClientVersion() const

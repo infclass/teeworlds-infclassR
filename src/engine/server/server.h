@@ -20,6 +20,8 @@
 #include <engine/shared/snapshot.h>
 #include <game/voting.h>
 
+#include <list>
+
 /* DDNET MODIFICATION START *******************************************/
 #include "base/logger.h"
 /* DDNET MODIFICATION END *********************************************/
@@ -255,7 +257,7 @@ public:
 	unsigned char *m_apCurrentMapData[NUM_MAP_TYPES];
 	unsigned int m_aCurrentMapSize[NUM_MAP_TYPES];
 
-	CDemoRecorder m_aDemoRecorder[1];
+	CDemoRecorder m_aDemoRecorder[MAX_CLIENTS + 1];
 
 	bool m_ServerInfoHighLoad;
 	int64_t m_ServerInfoFirstRequest;
@@ -269,22 +271,27 @@ public:
 
 	std::vector<CNameBan> m_vNameBans;
 
+	size_t m_AnnouncementLastLine;
+	std::vector<std::string> m_vAnnouncements;
+	char m_aAnnouncementFile[IO_MAX_PATH_LENGTH];
+
 	CServer();
 	~CServer();
 
 	bool IsClientNameAvailable(int ClientID, const char *pNameRequest);
 	bool SetClientNameImpl(int ClientID, const char *pNameRequest, bool Set);
 
-	virtual bool WouldClientNameChange(int ClientID, const char *pNameRequest);
-	virtual void SetClientName(int ClientID, const char *pName);
-	virtual void SetClientClan(int ClientID, char const *pClan);
-	virtual void SetClientCountry(int ClientID, int Country);
+	bool WouldClientNameChange(int ClientID, const char *pNameRequest) override;
+	void SetClientName(int ClientID, const char *pName) override;
+	void SetClientClan(int ClientID, char const *pClan) override;
+	void SetClientCountry(int ClientID, int Country) override;
+	void SetClientScore(int ClientID, std::optional<int> Score) override;
+	void SetClientFlags(int ClientID, int Flags) override;
 
 	void Kick(int ClientID, const char *pReason) override;
 	void Ban(int ClientID, int Seconds, const char *pReason) override;
 
-	void DemoRecorder_HandleAutoStart();
-	bool DemoRecorder_IsRecording();
+	void DemoRecorder_HandleAutoStart() override;
 
 	//int Tick()
 	int64_t TickStartTime(int Tick);
@@ -293,28 +300,29 @@ public:
 	int Init();
 
 	void SendLogLine(const CLogMessage *pMessage);
-	void SetRconCID(int ClientID);
-	int GetAuthedState(int ClientID) const;
-	bool GetClientInfo(int ClientID, CClientInfo *pInfo) const;
-	void SetClientDDNetVersion(int ClientID, int DDNetVersion);
-	void GetClientAddr(int ClientID, char *pAddrStr, int Size) const;
-	const char *ClientName(int ClientID) const;
-	const char *ClientClan(int ClientID) const;
-	int ClientCountry(int ClientID) const;
-	bool ClientIngame(int ClientID) const;
+	void SetRconCID(int ClientID) override;
+	int GetAuthedState(int ClientID) const override;
+	void GetMapInfo(char *pMapName, int MapNameSize, int *pMapSize, SHA256_DIGEST *pMapSha256, int *pMapCrc) override;
+	bool GetClientInfo(int ClientID, CClientInfo *pInfo) const override;
+	void SetClientDDNetVersion(int ClientID, int DDNetVersion) override;
+	void GetClientAddr(int ClientID, char *pAddrStr, int Size) const override;
+	const char *ClientName(int ClientID) const override;
+	const char *ClientClan(int ClientID) const override;
+	int ClientCountry(int ClientID) const override;
+	bool ClientIngame(int ClientID) const override;
 	bool ClientIsBot(int ClientID) const override;
-	int Port() const;
-	int MaxClients() const;
-	int ClientCount() const;
-	int DistinctClientCount() const;
+	int Port() const override;
+	int MaxClients() const override;
+	int ClientCount() const override;
+	int DistinctClientCount() const override;
 
 	int GetClientVersion(int ClientID) const override;
 	int SendMsg(CMsgPacker *pMsg, int Flags, int ClientID) override;
 
 	void DoSnapshot();
 
-	int NewBot(int ClientID);
-	int DelBot(int ClientID);
+	int NewBot(int ClientID) override;
+	int DelBot(int ClientID) override;
 
 	static int NewClientCallback(int ClientID, void *pUser, bool Sixup);
 	static int NewClientNoAuthCallback(int ClientID, void *pUser);
@@ -336,6 +344,33 @@ public:
 
 	void ProcessClientPacket(CNetChunk *pPacket);
 
+	class CCache
+	{
+	public:
+		class CCacheChunk
+		{
+		public:
+			CCacheChunk(const void *pData, int Size);
+			CCacheChunk(const CCacheChunk &) = delete;
+
+			std::vector<uint8_t> m_vData;
+		};
+
+		std::list<CCacheChunk> m_Cache;
+
+		CCache();
+		~CCache();
+
+		void AddChunk(const void *pData, int Size);
+		void Clear();
+	};
+	CCache m_aServerInfoCache[3 * 2];
+	CCache m_aSixupServerInfoCache[2];
+	bool m_ServerInfoNeedsUpdate;
+
+	void FillAntibot(CAntibotRoundData *pData) override;
+
+	void ExpireServerInfo() override;
 	void SendServerInfo(const NETADDR *pAddr, int Token, int Type, bool SendClients);
 	void SendServerInfoConnless(const NETADDR *pAddr, int Token, int Type);
 	void UpdateServerInfo();
@@ -346,6 +381,11 @@ public:
 	void ChangeMap(const char *pMap) override;
 	const char *GetMapName() const override;
 	int LoadMap(const char *pMapName);
+
+	void SaveDemo(int ClientID, float Time) override;
+	void StartRecord(int ClientID) override;
+	void StopRecord(int ClientID) override;
+	bool IsRecording(int ClientID) override;
 
 	void InitRegister(CNetServer *pNetServer, IEngineMasterServer *pMasterServer, IConsole *pConsole);
 	int Run();
@@ -389,15 +429,36 @@ public:
 	void *SnapNewItem(int Type, int ID, int Size) override;
 	void SnapSetStaticsize(int ItemType, int Size) override;
 
+	// DDRace
+
+	void GetClientAddr(int ClientID, NETADDR *pAddr) const override;
+	int m_aPrevStates[MAX_CLIENTS];
+	const char *GetAnnouncementLine(char const *pFileName) override;
+
+	int *GetIdMap(int ClientID) override;
+
+	bool ClientPrevIngame(int ClientID) override { return m_aPrevStates[ClientID] == CClient::STATE_INGAME; }
+	const char *GetNetErrorString(int ClientID) override { return m_NetServer.ErrorString(ClientID); }
+	void ResetNetErrorString(int ClientID) override { m_NetServer.ResetErrorString(ClientID); }
+	bool SetTimedOut(int ClientID, int OrigID) override;
+	void SetTimeoutProtected(int ClientID) override { m_NetServer.SetTimeoutProtected(ClientID); }
+
+	void SendMsgRaw(int ClientID, const void *pData, int Size, int Flags) override;
+
+	bool ErrorShutdown() const { return m_aErrorShutdownReason[0] != 0; }
+	void SetErrorShutdown(const char *pReason) override;
+
+	bool IsSixup(int ClientID) const override { return ClientID != SERVER_DEMO_CLIENT && m_aClients[ClientID].m_Sixup; }
+
 /* INFECTION MODIFICATION START ***************************************/
 public:
 	int GetClientInfclassVersion(int ClientID) const override;
 
-	virtual int GetClientDefaultScoreMode(int ClientID);
-	virtual void SetClientDefaultScoreMode(int ClientID, int Value);
+	int GetClientDefaultScoreMode(int ClientID) override;
+	void SetClientDefaultScoreMode(int ClientID, int Value) override;
 
-	virtual const char *GetClientLanguage(int ClientID);
-	virtual void SetClientLanguage(int ClientID, const char *pLanguage);
+	const char *GetClientLanguage(int ClientID) override;
+	void SetClientLanguage(int ClientID, const char *pLanguage) override;
 
 	int GetFireDelay(INFWEAPON WID) override;
 	void SetFireDelay(INFWEAPON WID, int Time) override;
@@ -408,27 +469,27 @@ public:
 	int GetMaxAmmo(INFWEAPON WID) override;
 	void SetMaxAmmo(INFWEAPON WID, int n) override;
 
-	virtual int GetClientNbRound(int ClientID);
+	int GetClientNbRound(int ClientID) override;
 	
 	void SetPlayerClassEnabled(int PlayerClass, bool Enabled) override;
 	void SetPlayerClassProbability(int PlayerClass, int Probability) override;
-	virtual bool IsClientLogged(int ClientID);
+	bool IsClientLogged(int ClientID) override;
 #ifdef CONF_SQL
-	virtual void Login(int ClientID, const char* pUsername, const char* pPassword);
-	virtual void Logout(int ClientID);
-	virtual void SetEmail(int ClientID, const char* pEmail);
-	virtual void Register(int ClientID, const char* pUsername, const char* pPassword, const char* pEmail);
-	virtual void ShowChallenge(int ClientID);
-	virtual void ShowTop10(int ClientID, int ScoreType);
-	virtual void ShowRank(int ClientID, int ScoreType);
-	virtual void ShowGoal(int ClientID, int ScoreType);
-	virtual void ShowStats(int ClientID, int UserId);
-	virtual void RefreshChallenge();
-	virtual int GetUserLevel(int ClientID);
+	void Login(int ClientID, const char* pUsername, const char* pPassword) override;
+	void Logout(int ClientID) override;
+	void SetEmail(int ClientID, const char* pEmail) override;
+	void Register(int ClientID, const char* pUsername, const char* pPassword, const char* pEmail) override;
+	void ShowChallenge(int ClientID) override;
+	void ShowTop10(int ClientID, int ScoreType) override;
+	void ShowRank(int ClientID, int ScoreType) override;
+	void ShowGoal(int ClientID, int ScoreType) override;
+	void ShowStats(int ClientID, int UserId) override;
+	void RefreshChallenge() override;
+	int GetUserLevel(int ClientID) override;
 #else
-	virtual void Register(int ClientID, const char* pUsername, const char* pPassword, const char* pEmail);
-	virtual void Login(int ClientID, const char* pUsername, const char* pPassword);
-	virtual void Logout(int ClientID);
+	void Register(int ClientID, const char* pUsername, const char* pPassword, const char* pEmail) override;
+	void Login(int ClientID, const char* pUsername, const char* pPassword) override;
+	void Logout(int ClientID) override;
 #endif
 private:
 	bool InitCaptcha();
@@ -470,53 +531,34 @@ public:
 public:
 	void AddGameServerCmd(CGameServerCmd* pCmd);
 	
-	virtual CRoundStatistics* RoundStatistics() { return &m_RoundStatistics; }
-	virtual void ResetStatistics();
-	virtual void SendStatistics();
+	virtual CRoundStatistics* RoundStatistics() override { return &m_RoundStatistics; }
+	void ResetStatistics() override;
+	void SendStatistics() override;
 
-	void OnRoundIsOver();
+	void OnRoundIsOver() override;
 	
-	virtual void SetClientMemory(int ClientID, int Memory, bool Value = true);
-	virtual void ResetClientMemoryAboutGame(int ClientID);
-	virtual bool GetClientMemory(int ClientID, int Memory);
+	void SetClientMemory(int ClientID, int Memory, bool Value = true) override;
+	void ResetClientMemoryAboutGame(int ClientID) override;
+	bool GetClientMemory(int ClientID, int Memory) override;
 	
-	virtual IServer::CClientSession* GetClientSession(int ClientID);
+	IServer::CClientSession* GetClientSession(int ClientID) override;
 	
-	virtual void AddAccusation(int From, int To, const char* pReason);
-	virtual bool ClientShouldBeBanned(int ClientID);
-	virtual void RemoveAccusations(int ClientID);
+	void AddAccusation(int From, int To, const char* pReason) override;
+	bool ClientShouldBeBanned(int ClientID) override;
+	void RemoveAccusations(int ClientID) override;
 
-	virtual void AddMapVote(int From, const char* pCommand, const char* pReason, const char* pDesc);
-	virtual void RemoveMapVotesForID(int ClientID);
-	virtual void ResetMapVotes();
-	virtual IServer::CMapVote* GetMapVote();
+	void AddMapVote(int From, const char* pCommand, const char* pReason, const char* pDesc) override;
+	void RemoveMapVotesForID(int ClientID) override;
+	void ResetMapVotes() override;
+	IServer::CMapVote* GetMapVote() override;
 
-	virtual int GetActivePlayerCount();
+	int GetActivePlayerCount() override;
 	
-	virtual int GetTimeShiftUnit() const { return m_TimeShiftUnit; } //In ms
+	int GetTimeShiftUnit() const override { return m_TimeShiftUnit; } //In ms
+
+	const char *GetPreviousMapName() const override;
 /* INFECTION MODIFICATION END *****************************************/
 
-	void GetClientAddr(int ClientID, NETADDR *pAddr) const;
-	int m_aPrevStates[MAX_CLIENTS];
-	char *GetAnnouncementLine(char const *FileName);
-	unsigned m_AnnouncementLastLine;
-
-	virtual const char *GetPreviousMapName() const;
-
-	int *GetIdMap(int ClientID) override;
-
-	bool ClientPrevIngame(int ClientID) override { return m_aPrevStates[ClientID] == CClient::STATE_INGAME; }
-	const char *GetNetErrorString(int ClientID) override { return m_NetServer.ErrorString(ClientID); }
-	void ResetNetErrorString(int ClientID) override { m_NetServer.ResetErrorString(ClientID); }
-	bool SetTimedOut(int ClientID, int OrigID) override;
-	void SetTimeoutProtected(int ClientID) override { m_NetServer.SetTimeoutProtected(ClientID); }
-
-	void SendMsgRaw(int ClientID, const void *pData, int Size, int Flags) override;
-
-	bool ErrorShutdown() const { return m_aErrorShutdownReason[0] != 0; }
-	void SetErrorShutdown(const char *pReason) override;
-
-	bool IsSixup(int ClientID) const override { return ClientID != SERVER_DEMO_CLIENT && m_aClients[ClientID].m_Sixup; }
 };
 
 extern CServer *CreateServer();

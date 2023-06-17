@@ -359,9 +359,35 @@ public:
 	virtual void ChangeMap(const char *pMap) = 0;
 
 	virtual void DemoRecorder_HandleAutoStart() = 0;
-	virtual bool DemoRecorder_IsRecording() = 0;
+
+	// DDRace
+
+	virtual void SaveDemo(int ClientID, float Time) = 0;
+	virtual void StartRecord(int ClientID) = 0;
+	virtual void StopRecord(int ClientID) = 0;
+	virtual bool IsRecording(int ClientID) = 0;
 
 	virtual void GetClientAddr(int ClientID, NETADDR *pAddr) const = 0;
+
+	virtual int *GetIdMap(int ClientID) = 0;
+
+	virtual const char *GetAnnouncementLine(char const *pFileName) = 0;
+	virtual bool ClientPrevIngame(int ClientID) = 0;
+	virtual const char *GetNetErrorString(int ClientID) = 0;
+	virtual void ResetNetErrorString(int ClientID) = 0;
+	virtual bool SetTimedOut(int ClientID, int OrigID) = 0;
+	virtual void SetTimeoutProtected(int ClientID) = 0;
+
+	virtual void SetErrorShutdown(const char *pReason) = 0;
+	virtual void ExpireServerInfo() = 0;
+
+	virtual void FillAntibot(CAntibotRoundData *pData) = 0;
+
+	virtual void SendMsgRaw(int ClientID, const void *pData, int Size, int Flags) = 0;
+
+	virtual const char *GetMapName() const = 0;
+
+	virtual bool IsSixup(int ClientID) const = 0;
 
 /* INFECTION MODIFICATION START ***************************************/
 	virtual int GetClientInfclassVersion(int ClientID) const = 0;
@@ -425,27 +451,11 @@ public:
 	virtual CMapVote* GetMapVote() = 0;
 	
 	virtual int GetTimeShiftUnit() const = 0; //In ms
-/* INFECTION MODIFICATION END *****************************************/
 
 	virtual const char *GetPreviousMapName() const = 0;
-	virtual int *GetIdMap(int ClientID) = 0;
-
-	virtual bool ClientPrevIngame(int ClientID) = 0;
-	virtual const char *GetNetErrorString(int ClientID) = 0;
-	virtual void ResetNetErrorString(int ClientID) = 0;
-	virtual bool SetTimedOut(int ClientID, int OrigID) = 0;
-	virtual void SetTimeoutProtected(int ClientID) = 0;
-
-	virtual void SetErrorShutdown(const char *pReason) = 0;
-	virtual void ExpireServerInfo() = 0;
-
 	virtual int GetActivePlayerCount() = 0;
+/* INFECTION MODIFICATION END *****************************************/
 
-	virtual void SendMsgRaw(int ClientID, const void *pData, int Size, int Flags) = 0;
-
-	virtual const char *GetMapName() const = 0;
-
-	virtual bool IsSixup(int ClientID) const = 0;
 };
 
 class IGameServer : public IInterface
@@ -483,14 +493,17 @@ public:
 
 	virtual void OnClientEnter(int ClientID) = 0;
 	virtual void OnClientDrop(int ClientID, int Type, const char *pReason) = 0;
+	virtual void OnClientPrepareInput(int ClientID, void *pInput) = 0;
 	virtual void OnClientDirectInput(int ClientID, void *pInput) = 0;
 	virtual void OnClientPredictedInput(int ClientID, void *pInput) = 0;
+	virtual void OnClientPredictedEarlyInput(int ClientID, void *pInput) = 0;
 
 	virtual bool IsClientReady(int ClientID) const = 0;
 	virtual bool IsClientPlayer(int ClientID) const = 0;
 
 	virtual int PersistentClientDataSize() const = 0;
 
+	virtual CUuid GameUuid() const = 0;
 	virtual const char *GameType() const = 0;
 	virtual const char *Version() const = 0;
 	virtual const char *NetVersion() const = 0;
@@ -504,11 +517,27 @@ public:
 	virtual void SendChatTarget_Localization_P(int To, int Category, int Number, const char* pText, ...) = 0;
 	virtual void SendMOTD(int To, const char* pText) = 0;
 	virtual void SendMOTD_Localization(int To, const char* pText, ...) = 0;
-	
+/* INFECTION MODIFICATION END *****************************************/
+
+	// DDRace
+
+	virtual void OnPreTickTeehistorian() = 0;
+
 	virtual void OnSetAuthed(int ClientID, int Level) = 0;
 	virtual bool PlayerExists(int ClientID) const = 0;
 
-	/* INFECTION MODIFICATION END *****************************************/
+	virtual void OnClientEngineJoin(int ClientID, bool Sixup) = 0;
+	virtual void OnClientEngineDrop(int ClientID, const char *pReason) = 0;
+
+	virtual void FillAntibot(CAntibotRoundData *pData) = 0;
+
+	/**
+	 * Used to report custom player info to master servers.
+	 *
+	 * @param aBuf Should be the json key values to add, starting with a ',' beforehand, like: ',"skin": "default", "team": 1'
+	 * @param i The client id.
+	 */
+	virtual void OnUpdatePlayerServerInfo(char *aBuf, int BufSize, int ID) = 0;
 };
 
 extern IGameServer *CreateGameServer();

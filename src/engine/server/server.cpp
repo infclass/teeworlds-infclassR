@@ -26,6 +26,7 @@
 #include <engine/shared/network.h>
 #include <engine/shared/packer.h>
 #include <engine/shared/protocol.h>
+#include <engine/shared/protocol7.h>
 #include <engine/shared/protocol_ex.h>
 #include <engine/shared/snapshot.h>
 
@@ -34,6 +35,8 @@
 #include <game/version.h>
 
 #include <mastersrv/mastersrv.h>
+
+#include <engine/shared/linereader.h>
 
 #include "server.h"
 
@@ -350,7 +353,9 @@ void CServer::CClient::Reset(bool ResetScore)
 CServer::CServer()
 {
 	m_pConfig = &g_Config;
-	m_aDemoRecorder[0] = CDemoRecorder(&m_SnapshotDelta);
+	for(int i = 0; i < MAX_CLIENTS; i++)
+		m_aDemoRecorder[i] = CDemoRecorder(&m_SnapshotDelta, true);
+	m_aDemoRecorder[MAX_CLIENTS] = CDemoRecorder(&m_SnapshotDelta, false);
 
 	m_TickSpeed = SERVER_TICK_SPEED;
 
@@ -509,6 +514,25 @@ void CServer::SetClientCountry(int ClientID, int Country)
 		return;
 
 	m_aClients[ClientID].m_Country = Country;
+}
+
+void CServer::SetClientScore(int ClientID, std::optional<int> Score)
+{
+	if(ClientID < 0 || ClientID >= MAX_CLIENTS || m_aClients[ClientID].m_State < CClient::STATE_READY)
+		return;
+
+	// if(m_aClients[ClientID].m_Score != Score)
+	// 	ExpireServerInfo();
+	//
+	// m_aClients[ClientID].m_Score = Score;
+}
+
+void CServer::SetClientFlags(int ClientID, int Flags)
+{
+	if(ClientID < 0 || ClientID >= MAX_CLIENTS || m_aClients[ClientID].m_State < CClient::STATE_READY)
+		return;
+
+	m_aClients[ClientID].m_Flags = Flags;
 }
 
 void CServer::Kick(int ClientID, const char *pReason)
@@ -962,10 +986,13 @@ int CServer::SendMsg(CMsgPacker *pMsg, int Flags, int ClientID)
 		Packet.m_pData = Pack.Data();
 		Packet.m_DataSize = Pack.Size();
 
+		// write message to demo recorders
 		if(!(Flags & MSGFLAG_NORECORD))
 		{
-			if(m_aDemoRecorder[0].IsRecording())
-				m_aDemoRecorder[0].RecordMessage(Pack.Data(), Pack.Size());
+			if(m_aDemoRecorder[ClientID].IsRecording())
+				m_aDemoRecorder[ClientID].RecordMessage(Pack.Data(), Pack.Size());
+			if(m_aDemoRecorder[MAX_CLIENTS].IsRecording())
+				m_aDemoRecorder[MAX_CLIENTS].RecordMessage(Pack.Data(), Pack.Size());
 		}
 
 		if(!(Flags & MSGFLAG_NOSEND))
@@ -999,7 +1026,7 @@ void CServer::DoSnapshot()
 	GameServer()->OnPreSnap();
 
 	// create snapshot for demo recording
-	if(m_aDemoRecorder[0].IsRecording())
+	if(m_aDemoRecorder[MAX_CLIENTS].IsRecording())
 	{
 		char aData[CSnapshot::MAX_SIZE];
 
@@ -1009,7 +1036,7 @@ void CServer::DoSnapshot()
 		int SnapshotSize = m_SnapshotBuilder.Finish(aData);
 
 		// write snapshot
-		m_aDemoRecorder[0].RecordSnapshot(Tick(), aData, SnapshotSize);
+		m_aDemoRecorder[MAX_CLIENTS].RecordSnapshot(Tick(), aData, SnapshotSize);
 	}
 
 	// create snapshots for all clients
@@ -1032,38 +1059,38 @@ void CServer::DoSnapshot()
 			continue;
 
 		{
-			char aData[CSnapshot::MAX_SIZE];
-			CSnapshot *pData = (CSnapshot*)aData;	// Fix compiler warning for strict-aliasing
-			char aDeltaData[CSnapshot::MAX_SIZE];
-			char aCompData[CSnapshot::MAX_SIZE];
-			int SnapshotSize;
-			int Crc;
-			static CSnapshot EmptySnap;
-			CSnapshot *pDeltashot = &EmptySnap;
-			int DeltashotSize;
-			int DeltaTick = -1;
-			int DeltaSize;
-
-			m_SnapshotBuilder.Init();
+			m_SnapshotBuilder.Init(m_aClients[i].m_Sixup);
 
 			GameServer()->OnSnap(i);
 
 			// finish snapshot
-			SnapshotSize = m_SnapshotBuilder.Finish(pData);
-			Crc = pData->Crc();
+			char aData[CSnapshot::MAX_SIZE];
+			CSnapshot *pData = (CSnapshot *)aData; // Fix compiler warning for strict-aliasing
+			int SnapshotSize = m_SnapshotBuilder.Finish(pData);
 
-			// remove old snapshos
+			if(m_aDemoRecorder[i].IsRecording())
+			{
+				// write snapshot
+				m_aDemoRecorder[i].RecordSnapshot(Tick(), aData, SnapshotSize);
+			}
+
+			int Crc = pData->Crc();
+
+			// remove old snapshots
 			// keep 3 seconds worth of snapshots
-			m_aClients[i].m_Snapshots.PurgeUntil(m_CurrentGameTick-SERVER_TICK_SPEED*3);
+			m_aClients[i].m_Snapshots.PurgeUntil(m_CurrentGameTick - SERVER_TICK_SPEED * 3);
 
 			// save the snapshot
 			m_aClients[i].m_Snapshots.Add(m_CurrentGameTick, time_get(), SnapshotSize, pData, 0, nullptr);
 
-			// find snapshot that we can preform delta against
-			EmptySnap.Clear();
+			// find snapshot that we can perform delta against
+			static CSnapshot s_EmptySnap;
+			s_EmptySnap.Clear();
 
+			int DeltaTick = -1;
+			CSnapshot *pDeltashot = &s_EmptySnap;
 			{
-				DeltashotSize = m_aClients[i].m_Snapshots.Get(m_aClients[i].m_LastAckedSnapshot, 0, &pDeltashot, 0);
+				int DeltashotSize = m_aClients[i].m_Snapshots.Get(m_aClients[i].m_LastAckedSnapshot, 0, &pDeltashot, 0);
 				if(DeltashotSize >= 0)
 					DeltaTick = m_aClients[i].m_LastAckedSnapshot;
 				else
@@ -1075,17 +1102,19 @@ void CServer::DoSnapshot()
 			}
 
 			// create delta
-			DeltaSize = m_SnapshotDelta.CreateDelta(pDeltashot, pData, aDeltaData);
+			m_SnapshotDelta.SetStaticsize(protocol7::NETEVENTTYPE_SOUNDWORLD, m_aClients[i].m_Sixup);
+			m_SnapshotDelta.SetStaticsize(protocol7::NETEVENTTYPE_DAMAGE, m_aClients[i].m_Sixup);
+			char aDeltaData[CSnapshot::MAX_SIZE];
+			int DeltaSize = m_SnapshotDelta.CreateDelta(pDeltashot, pData, aDeltaData);
 
 			if(DeltaSize)
 			{
 				// compress it
-				int SnapshotSize;
 				const int MaxSize = MAX_SNAPSHOT_PACKSIZE;
-				int NumPackets;
 
+				char aCompData[CSnapshot::MAX_SIZE];
 				SnapshotSize = CVariableInt::Compress(aDeltaData, DeltaSize, aCompData, sizeof(aCompData));
-				NumPackets = (SnapshotSize+MaxSize-1)/MaxSize;
+				int NumPackets = (SnapshotSize + MaxSize - 1) / MaxSize;
 
 				for(int n = 0, Left = SnapshotSize; Left > 0; n++)
 				{
@@ -1096,22 +1125,22 @@ void CServer::DoSnapshot()
 					{
 						CMsgPacker Msg(NETMSG_SNAPSINGLE, true);
 						Msg.AddInt(m_CurrentGameTick);
-						Msg.AddInt(m_CurrentGameTick-DeltaTick);
+						Msg.AddInt(m_CurrentGameTick - DeltaTick);
 						Msg.AddInt(Crc);
 						Msg.AddInt(Chunk);
-						Msg.AddRaw(&aCompData[n*MaxSize], Chunk);
+						Msg.AddRaw(&aCompData[n * MaxSize], Chunk);
 						SendMsg(&Msg, MSGFLAG_FLUSH, i);
 					}
 					else
 					{
 						CMsgPacker Msg(NETMSG_SNAP, true);
 						Msg.AddInt(m_CurrentGameTick);
-						Msg.AddInt(m_CurrentGameTick-DeltaTick);
+						Msg.AddInt(m_CurrentGameTick - DeltaTick);
 						Msg.AddInt(NumPackets);
 						Msg.AddInt(n);
 						Msg.AddInt(Crc);
 						Msg.AddInt(Chunk);
-						Msg.AddRaw(&aCompData[n*MaxSize], Chunk);
+						Msg.AddRaw(&aCompData[n * MaxSize], Chunk);
 						SendMsg(&Msg, MSGFLAG_FLUSH, i);
 					}
 				}
@@ -1120,7 +1149,7 @@ void CServer::DoSnapshot()
 			{
 				CMsgPacker Msg(NETMSG_SNAPEMPTY, true);
 				Msg.AddInt(m_CurrentGameTick);
-				Msg.AddInt(m_CurrentGameTick-DeltaTick);
+				Msg.AddInt(m_CurrentGameTick - DeltaTick);
 				SendMsg(&Msg, MSGFLAG_FLUSH, i);
 			}
 		}
@@ -1308,6 +1337,14 @@ int CServer::DelClientCallback(int ClientID, int Type, const char *pReason, void
 	dbg_msg("infclass", "accusation created for the client %d", ClientID);
 	
 	return 0;
+}
+
+void CServer::GetMapInfo(char *pMapName, int MapNameSize, int *pMapSize, SHA256_DIGEST *pMapSha256, int *pMapCrc)
+{
+	str_copy(pMapName, GetMapName(), MapNameSize);
+	*pMapSize = m_aCurrentMapSize[MAP_TYPE_SIX];
+	*pMapSha256 = m_aCurrentMapSha256[MAP_TYPE_SIX];
+	*pMapCrc = m_aCurrentMapCrc[MAP_TYPE_SIX];
 }
 
 void CServer::SendCapabilities(int ClientID)
@@ -2058,6 +2095,41 @@ void CServer::SendServerInfoConnless(const NETADDR *pAddr, int Token, int Type)
 	SendServerInfo(pAddr, Token, Type, SendClients);
 }
 
+static inline int GetCacheIndex(int Type, bool SendClient)
+{
+	if(Type == SERVERINFO_INGAME)
+		Type = SERVERINFO_VANILLA;
+	else if(Type == SERVERINFO_EXTENDED_MORE)
+		Type = SERVERINFO_EXTENDED;
+
+	return Type * 2 + SendClient;
+}
+
+CServer::CCache::CCache()
+{
+	m_Cache.clear();
+}
+
+CServer::CCache::~CCache()
+{
+	Clear();
+}
+
+CServer::CCache::CCacheChunk::CCacheChunk(const void *pData, int Size)
+{
+	m_vData.assign((const uint8_t *)pData, (const uint8_t *)pData + Size);
+}
+
+void CServer::CCache::AddChunk(const void *pData, int Size)
+{
+	m_Cache.emplace_back(pData, Size);
+}
+
+void CServer::CCache::Clear()
+{
+	m_Cache.clear();
+}
+
 void CServer::SendServerInfo(const NETADDR *pAddr, int Token, int Type, bool SendClients)
 {
 	// One chance to improve the protocol!
@@ -2348,6 +2420,15 @@ void CServer::SendServerInfo(const NETADDR *pAddr, int Token, int Type, bool Sen
 	#undef ADD_INT
 }
 
+void CServer::FillAntibot(CAntibotRoundData *pData)
+{
+}
+
+void CServer::ExpireServerInfo()
+{
+	m_ServerInfoNeedsUpdate = true;
+}
+
 void CServer::UpdateServerInfo()
 {
 	if(m_RunServer == UNINITIALIZED)
@@ -2461,14 +2542,22 @@ int CServer::LoadMap(const char *pMapName)
 /* INFECTION MODIFICATION END *****************************************/
 
 	// stop recording when we change map
-	for(int i = 0; i < 1; i++)
+	for(int i = 0; i < MAX_CLIENTS + 1; i++)
 	{
 		if(!m_aDemoRecorder[i].IsRecording())
 			continue;
 
 		m_aDemoRecorder[i].Stop();
+
+		// remove tmp demos
+		if(i < MAX_CLIENTS)
+		{
+			char aPath[256];
+			str_format(aPath, sizeof(aPath), "demos/%s_%d_%d_tmp.demo", m_aCurrentMap, m_NetServer.Address().port, i);
+			Storage()->RemoveFile(aPath, IStorage::TYPE_SAVE);
+		}
 	}
-	
+
 	// reinit snapshot ids
 	m_IDPool.TimeoutIDs();
 
@@ -3122,9 +3211,46 @@ void CServer::DemoRecorder_HandleAutoStart()
 	}
 }
 
-bool CServer::DemoRecorder_IsRecording()
+void CServer::SaveDemo(int ClientID, float Time)
 {
-	return m_aDemoRecorder[0].IsRecording();
+	if(IsRecording(ClientID))
+	{
+		m_aDemoRecorder[ClientID].Stop();
+
+		// rename the demo
+		char aOldFilename[IO_MAX_PATH_LENGTH];
+		char aNewFilename[IO_MAX_PATH_LENGTH];
+		str_format(aOldFilename, sizeof(aOldFilename), "demos/%s_%d_%d_tmp.demo", m_aCurrentMap, m_NetServer.Address().port, ClientID);
+		str_format(aNewFilename, sizeof(aNewFilename), "demos/%s_%s_%05.2f.demo", m_aCurrentMap, m_aClients[ClientID].m_aName, Time);
+		Storage()->RenameFile(aOldFilename, aNewFilename, IStorage::TYPE_SAVE);
+	}
+}
+
+void CServer::StartRecord(int ClientID)
+{
+	if(Config()->m_SvPlayerDemoRecord)
+	{
+		char aFilename[IO_MAX_PATH_LENGTH];
+		str_format(aFilename, sizeof(aFilename), "demos/%s_%d_%d_tmp.demo", m_aCurrentMap, m_NetServer.Address().port, ClientID);
+		m_aDemoRecorder[ClientID].Start(Storage(), Console(), aFilename, GameServer()->NetVersion(), m_aCurrentMap, &m_aCurrentMapSha256[MAP_TYPE_SIX], m_aCurrentMapCrc[MAP_TYPE_SIX], "server", m_aCurrentMapSize[MAP_TYPE_SIX], m_apCurrentMapData[MAP_TYPE_SIX]);
+	}
+}
+
+void CServer::StopRecord(int ClientID)
+{
+	if(IsRecording(ClientID))
+	{
+		m_aDemoRecorder[ClientID].Stop();
+
+		char aFilename[IO_MAX_PATH_LENGTH];
+		str_format(aFilename, sizeof(aFilename), "demos/%s_%d_%d_tmp.demo", m_aCurrentMap, m_NetServer.Address().port, ClientID);
+		Storage()->RemoveFile(aFilename, IStorage::TYPE_SAVE);
+	}
+}
+
+bool CServer::IsRecording(int ClientID)
+{
+	return m_aDemoRecorder[ClientID].IsRecording();
 }
 
 void CServer::ConRecord(IConsole::IResult *pResult, void *pUser)
@@ -3494,6 +3620,54 @@ void CServer::GetClientAddr(int ClientID, NETADDR *pAddr) const
 	{
 		*pAddr = *m_NetServer.ClientAddr(ClientID);
 	}
+}
+
+const char *CServer::GetAnnouncementLine(char const *pFileName)
+{
+	if(str_comp(pFileName, m_aAnnouncementFile) != 0)
+	{
+		str_copy(m_aAnnouncementFile, pFileName);
+		m_vAnnouncements.clear();
+
+		IOHANDLE File = m_pStorage->OpenFile(pFileName, IOFLAG_READ | IOFLAG_SKIP_BOM, IStorage::TYPE_ALL);
+		if(!File)
+			return 0;
+
+		char *pLine;
+		CLineReader Reader;
+		Reader.Init(File);
+		while((pLine = Reader.Get()))
+			if(str_length(pLine) && pLine[0] != '#')
+				m_vAnnouncements.emplace_back(pLine);
+
+		io_close(File);
+	}
+
+	if(m_vAnnouncements.empty())
+	{
+		return 0;
+	}
+	else if(m_vAnnouncements.size() == 1)
+	{
+		m_AnnouncementLastLine = 0;
+	}
+	else if(!Config()->m_SvAnnouncementRandom)
+	{
+		if(++m_AnnouncementLastLine >= m_vAnnouncements.size())
+			m_AnnouncementLastLine %= m_vAnnouncements.size();
+	}
+	else
+	{
+		unsigned Rand;
+		do
+		{
+			Rand = rand() % m_vAnnouncements.size();
+		} while(Rand == m_AnnouncementLastLine);
+
+		m_AnnouncementLastLine = Rand;
+	}
+
+	return m_vAnnouncements[m_AnnouncementLastLine].c_str();
 }
 
 /* INFECTION MODIFICATION START ***************************************/
