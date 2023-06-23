@@ -324,6 +324,7 @@ void CServer::CClient::Reset(bool ResetScore)
 	m_SnapRate = CClient::SNAPRATE_INIT;
 	m_NextMapChunk = 0;
 	m_Flags = 0;
+	m_RedirectDropTime = 0;
 	
 	if(ResetScore)
 	{
@@ -566,6 +567,35 @@ void CServer::Kick(int ClientID, const char *pReason)
 	return m_CurrentGameTick;
 }*/
 
+void CServer::RedirectClient(int ClientID, int Port, bool Verbose)
+{
+	if(ClientID < 0 || ClientID >= MAX_CLIENTS)
+		return;
+
+	char aBuf[512];
+	bool SupportsRedirect = GetClientVersion(ClientID) >= VERSION_DDNET_REDIRECT;
+	if(Verbose)
+	{
+		str_format(aBuf, sizeof(aBuf), "redirecting '%s' to port %d supported=%d", ClientName(ClientID), Port, SupportsRedirect);
+		Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "redirect", aBuf);
+	}
+
+	if(!SupportsRedirect)
+	{
+		bool SamePort = Port == m_NetServer.Address().port;
+		str_format(aBuf, sizeof(aBuf), "Redirect unsupported: please connect to port %d", Port);
+		Kick(ClientID, SamePort ? "Redirect unsupported: please reconnect" : aBuf);
+		return;
+	}
+
+	CMsgPacker Msg(NETMSG_REDIRECT, true);
+	Msg.AddInt(Port);
+	SendMsg(&Msg, MSGFLAG_VITAL | MSGFLAG_FLUSH, ClientID);
+
+	m_aClients[ClientID].m_RedirectDropTime = time_get() + time_freq() * 10;
+	m_aClients[ClientID].m_State = CClient::STATE_REDIRECTED;
+}
+
 int64_t CServer::TickStartTime(int Tick)
 {
 	return m_GameStartTime + (time_freq() * Tick) / SERVER_TICK_SPEED;
@@ -589,6 +619,7 @@ int CServer::Init()
 		Client.m_Latency = 0;
 		Client.m_InfClassVersion = 0;
 		Client.m_Sixup = false;
+		Client.m_RedirectDropTime = 0;
 	}
 
 	m_CurrentGameTick = MIN_TICK;
@@ -1317,6 +1348,8 @@ int CServer::DelClientCallback(int ClientID, int Type, const char *pReason, void
 	pThis->m_aClients[ClientID].m_ShowIps = false;
 	pThis->m_aPrevStates[ClientID] = CClient::STATE_EMPTY;
 	pThis->m_aClients[ClientID].m_Snapshots.PurgeAll();
+	pThis->m_aClients[ClientID].m_Sixup = false;
+	pThis->m_aClients[ClientID].m_RedirectDropTime = 0;
 	pThis->m_aClients[ClientID].m_WaitingTime = 0;
 	pThis->m_aClients[ClientID].m_UserID = -1;
 #ifdef CONF_SQL
@@ -2487,7 +2520,12 @@ void CServer::PumpNetwork(bool PacketWaiting)
 				}
 			}
 			else
+			{
+				if(m_aClients[Packet.m_ClientID].m_State == CClient::STATE_REDIRECTED)
+					continue;
+
 				ProcessClientPacket(&Packet);
+			}
 		}
 	}
 
@@ -2905,9 +2943,12 @@ int CServer::Run()
 
 			NonActive = true;
 
-			for(const auto &Client : m_aClients)
+			for(int i = 0; i < MAX_CLIENTS; ++i)
 			{
-				if(Client.m_State != CClient::STATE_EMPTY)
+				if(m_aClients[i].m_State == CClient::STATE_REDIRECTED)
+					if(time_get() > m_aClients[i].m_RedirectDropTime)
+						m_NetServer.Drop(i, CLIENTDROPTYPE_REDIRECTED, "redirected");
+				if(m_aClients[i].m_State != CClient::STATE_EMPTY)
 				{
 					NonActive = false;
 					break;

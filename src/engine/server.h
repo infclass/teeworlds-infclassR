@@ -348,6 +348,7 @@ public:
 	virtual int GetAuthedState(int ClientID) const = 0;
 	virtual void Kick(int ClientID, const char *pReason) = 0;
 	virtual void Ban(int ClientID, int Seconds, const char *pReason) = 0;
+	virtual void RedirectClient(int ClientID, int Port, bool Verbose = false) = 0;
 	virtual bool GetMapReload() const = 0;
 	virtual void ChangeMap(const char *pMap) = 0;
 
