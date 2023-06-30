@@ -364,14 +364,14 @@ bool CInfClassGameController::OnEntity(const char* pName, vec2 Pivot, vec2 P0, v
 	}
 	else if(str_comp(pName, "health") == 0)
 	{
-		CIcPickup *p = new CIcPickup(GameServer(), IC_PICKUP_TYPE::HEALTH, Pos);
+		CIcPickup *p = new CIcPickup(GameServer(), EICPickupType::Health, Pos);
 		p->SetRespawnInterval(15);
 		p->Spawn();
 		pNewEntity = p;
 	}
 	else if(str_comp(pName, "armor") == 0)
 	{
-		CIcPickup *p = new CIcPickup(GameServer(), IC_PICKUP_TYPE::ARMOR, Pos);
+		CIcPickup *p = new CIcPickup(GameServer(), EICPickupType::Armor, Pos);
 		p->SetRespawnInterval(15);
 		p->Spawn();
 		pNewEntity = p;

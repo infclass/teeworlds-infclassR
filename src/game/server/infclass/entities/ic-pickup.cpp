@@ -12,7 +12,7 @@
 
 int CIcPickup::EntityId = CGameWorld::ENTTYPE_PICKUP;
 
-CIcPickup::CIcPickup(CGameContext *pGameContext, IC_PICKUP_TYPE Type, vec2 Pos, int Owner) :
+CIcPickup::CIcPickup(CGameContext *pGameContext, EICPickupType Type, vec2 Pos, int Owner) :
 	CInfCEntity(pGameContext, EntityId, Pos, Owner, PickupPhysSize)
 {
 	m_Type = Type;
@@ -50,26 +50,26 @@ void CIcPickup::Tick()
 	{
 		// player picked us up, is someone was hooking us, let them go
 		bool Picked = false;
-		switch (m_Type)
+		switch(m_Type)
 		{
-			case IC_PICKUP_TYPE::HEALTH:
-				if(pChr->GiveHealth(1))
-				{
-					Picked = true;
-					GameServer()->CreateSound(m_Pos, SOUND_PICKUP_HEALTH);
-				}
-				break;
+		case EICPickupType::Health:
+			if(pChr->GiveHealth(1))
+			{
+				Picked = true;
+				GameServer()->CreateSound(m_Pos, SOUND_PICKUP_HEALTH);
+			}
+			break;
 
-			case IC_PICKUP_TYPE::ARMOR:
-				if(pChr->GiveArmor(1))
-				{
-					Picked = true;
-					GameServer()->CreateSound(m_Pos, SOUND_PICKUP_ARMOR);
-				}
-				break;
+		case EICPickupType::Armor:
+			if(pChr->GiveArmor(1))
+			{
+				Picked = true;
+				GameServer()->CreateSound(m_Pos, SOUND_PICKUP_ARMOR);
+			}
+			break;
 
-			default:
-				break;
+		default:
+			break;
 		};
 
 		if(Picked)
@@ -101,7 +101,7 @@ void CIcPickup::Snap(int SnappingClient)
 	if(m_SpawnTick != -1 || NetworkClipped(SnappingClient))
 		return;
 	
-	if(m_Type == IC_PICKUP_TYPE::INVALID)
+	if(m_Type == EICPickupType::Invalid)
 		return;
 
 	if(m_Owner >= 0)
@@ -114,13 +114,13 @@ void CIcPickup::Snap(int SnappingClient)
 	int Subtype = 0;
 	switch(m_Type)
 	{
-	case IC_PICKUP_TYPE::HEALTH:
+	case EICPickupType::Health:
 		NetworkType = POWERUP_HEALTH;
 		break;
-	case IC_PICKUP_TYPE::ARMOR:
+	case EICPickupType::Armor:
 		NetworkType = POWERUP_ARMOR;
 		break;
-	case IC_PICKUP_TYPE::INVALID:
+	case EICPickupType::Invalid:
 		break;
 	}
 
