@@ -3011,6 +3011,8 @@ bool CInfClassGameController::HeroGiftAvailable() const
 bool CInfClassGameController::GetHeroFlagPosition(vec2 *pFlagPosition) const
 {
 	int NbPos = m_HeroFlagPositions.size();
+	if (NbPos == 0)
+		return false;
 
 	for(int Attempts = 3; Attempts > 0; Attempts--)
 	{
@@ -4186,6 +4188,14 @@ CLASS_AVAILABILITY CInfClassGameController::GetPlayerClassAvailability(PLAYERCLA
 
 	if(nbClass[PlayerClass] >= ClassLimit)
 		return CLASS_AVAILABILITY::LIMIT_EXCEEDED;
+
+	if(PlayerClass == PLAYERCLASS_HERO)
+	{
+		if (m_HeroFlagPositions.size() == 0)
+		{
+			return CLASS_AVAILABILITY::DISABLED;
+		}
+	}
 	
 	return CLASS_AVAILABILITY::AVAILABLE;
 }
