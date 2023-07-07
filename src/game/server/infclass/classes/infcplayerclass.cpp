@@ -308,11 +308,6 @@ void CInfClassPlayerClass::OnCharacterDeath(DAMAGE_TYPE DamageType)
 		m_pCharacter->SetPassenger(nullptr);
 	}
 
-	if(m_pPlayer)
-	{
-		m_pPlayer->ResetTheTargetToFollow();
-	}
-
 	DestroyChildEntities();
 }
 

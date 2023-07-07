@@ -3426,6 +3426,15 @@ void CInfClassGameController::OnCharacterDeath(CInfClassCharacter *pVictim, cons
 	};
 	if(!BadReasonsToDie.Contains(DamageType) && (Killer != pVictim->GetCID()))
 	{
+		if(pVictim->IsHuman())
+		{
+			const CInfClassPlayer *pKiller = GetPlayer(Context.Killer);
+			if(pKiller && pKiller->IsZombie() && pKiller->GetCharacter())
+			{
+				pVictim->GetPlayer()->SetFollowTarget(pKiller->GetCID(), 5.0);
+			}
+		}
+
 		//Find the nearest ghoul
 		for(TEntityPtr<CInfClassCharacter> p = GameWorld()->FindFirst<CInfClassCharacter>(); p; ++p)
 		{
