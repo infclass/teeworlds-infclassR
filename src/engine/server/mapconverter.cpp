@@ -817,13 +817,13 @@ void CMapConverter::CopyLayers()
 		//Layers
 		for(int l = 0; l < pGItem->m_NumLayers; l++)
 		{
-			CMapItemLayer *pLayerItem = (CMapItemLayer *)Map()->GetItem(LayersStart+pGItem->m_StartLayer+l, 0, 0);
+			const CMapItemLayer *pLayerItem = (const CMapItemLayer *)Map()->GetItem(LayersStart+pGItem->m_StartLayer+l, 0, 0);
 			if(!pLayerItem)
 				continue;
 
 			if(pLayerItem->m_Type == LAYERTYPE_TILES)
 			{
-				CMapItemLayerTilemap *pTilemapItem = (CMapItemLayerTilemap *)pLayerItem;
+				const CMapItemLayerTilemap *pTilemapItem = (const CMapItemLayerTilemap *)pLayerItem;
 
 				if(pTilemapItem->m_Flags & TILESLAYERFLAG_GAME)
 				{
@@ -847,8 +847,8 @@ void CMapConverter::CopyLayers()
 			}
 			else if(pLayerItem->m_Type == LAYERTYPE_QUADS)
 			{
-				CMapItemLayerQuads *pQuadsItem = (CMapItemLayerQuads *)pLayerItem;
-				
+				const CMapItemLayerQuads *pQuadsItem = (const CMapItemLayerQuads *)pLayerItem;
+
 				void *pData = Map()->GetData(pQuadsItem->m_Data);
 				
 				CMapItemLayerQuads LayerItem;
@@ -863,7 +863,7 @@ void CMapConverter::CopyLayers()
 			}
 			else if(pLayerItem->m_Type == LAYERTYPE_SOUNDS)
 			{
-				CMapItemLayerSounds *pSoundsItem = (CMapItemLayerSounds *)pLayerItem;
+				const CMapItemLayerSounds *pSoundsItem = (const CMapItemLayerSounds *)pLayerItem;
 
 				void *pData = Map()->GetData(pSoundsItem->m_Data);
 
