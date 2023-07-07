@@ -57,6 +57,7 @@ public:
 
 	PLAYERCLASS GetPreferredClass() const { return m_PreferredClass; }
 	void SetPreferredClass(PLAYERCLASS Class);
+	void SetPreviouslyPickedClass(PLAYERCLASS Class);
 
 	void HandleInfection();
 	void KillCharacter(int Weapon = WEAPON_GAME) override;

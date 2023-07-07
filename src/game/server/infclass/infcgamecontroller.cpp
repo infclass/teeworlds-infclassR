@@ -84,6 +84,7 @@ struct InfclassPlayerPersistantData : public CGameContext::CPersistentClientData
 {
 	bool m_AntiPing = false;
 	PLAYERCLASS m_PreferredClass = PLAYERCLASS_INVALID;
+	PLAYERCLASS m_PreviouslyPickedClass = PLAYERCLASS_INVALID;
 	int m_LastInfectionTime = 0;
 };
 
@@ -3191,6 +3192,7 @@ CPlayer *CInfClassGameController::CreatePlayer(int ClientID, bool IsSpectator, v
 	{
 		InfclassPlayerPersistantData *pPersistent = static_cast<InfclassPlayerPersistantData *>(pData);
 		pPlayer->SetPreferredClass(pPersistent->m_PreferredClass);
+		pPlayer->SetPreviouslyPickedClass(pPersistent->m_PreviouslyPickedClass);
 		pPlayer->SetAntiPingEnabled(pPersistent->m_AntiPing);
 		pPlayer->SetInfectionTimestamp(pPersistent->m_LastInfectionTime);
 	}
@@ -3217,6 +3219,7 @@ bool CInfClassGameController::GetClientPersistentData(int ClientID, void *pData)
 
 	InfclassPlayerPersistantData *pPersistent = static_cast<InfclassPlayerPersistantData *>(pData);
 	pPersistent->m_PreferredClass = pPlayer->GetPreferredClass();
+	pPersistent->m_PreviouslyPickedClass = pPlayer->GetPreviouslyPickedClass();
 	pPersistent->m_AntiPing = pPlayer->GetAntiPingEnabled();
 	pPersistent->m_LastInfectionTime = pPlayer->GetInfectionTimestamp();
 	return true;

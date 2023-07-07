@@ -344,6 +344,11 @@ void CInfClassPlayer::SetPreferredClass(PLAYERCLASS Class)
 	m_PreferredClass = Class;
 }
 
+void CInfClassPlayer::SetPreviouslyPickedClass(PLAYERCLASS Class)
+{
+	m_PickedClass = Class;
+}
+
 CInfClassCharacter *CInfClassPlayer::GetCharacter()
 {
 	return CInfClassCharacter::GetInstance(m_pCharacter);
@@ -374,7 +379,7 @@ void CInfClassPlayer::SetClass(PLAYERCLASS NewClass)
 	{
 		if(IsHumanClass(NewClass) && (NewClass != PLAYERCLASS_NONE))
 		{
-			m_PickedClass = NewClass;
+			SetPreviouslyPickedClass(NewClass);
 		}
 		if(m_PreviousClasses.Size() == m_PreviousClasses.Capacity())
 		{
