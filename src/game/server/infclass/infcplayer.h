@@ -93,6 +93,7 @@ public:
 
 	PLAYERCLASS GetPreviousInfectedClass() const;
 	PLAYERCLASS GetPreviousHumanClass() const;
+	PLAYERCLASS GetPreviouslyPickedClass() const;
 
 	void AddSavedPosition(const vec2 Position);
 	bool LoadSavedPosition(vec2 *pOutput) const;
@@ -161,7 +162,7 @@ protected:
 	int m_GhoulLevel = 0;
 	int m_GhoulLevelTick = 0;
 
-	PLAYERCLASS m_HumanClass = PLAYERCLASS_INVALID;
+	PLAYERCLASS m_PickedClass = PLAYERCLASS_INVALID;
 	icArray<PLAYERCLASS, 5> m_PreviousClasses;
 	icArray<vec2, 1> m_SavedPositions;
 };

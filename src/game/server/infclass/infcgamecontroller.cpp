@@ -3927,20 +3927,6 @@ PLAYERCLASS CInfClassGameController::ChooseHumanClass(const CInfClassPlayer *pPl
 		}
 	}
 
-	// Random is not fair enough. We keep the last classes took by the player, and avoid to give those again
-	if(GetRoundType() != ROUND_TYPE::FUN)
-	{
-		if(AvailableClasses > 1)
-		{
-			// if normal round is being played
-			int PrevClass = pPlayer->GetPreviousHumanClass();
-			if(PrevClass != PLAYERCLASS_INVALID)
-			{
-				GetClassProbabilityRef(PrevClass) = 0.0f;
-			}
-		}
-	}
-
 	PLAYERCLASS PreferredClass = pPlayer->GetPreferredClass();
 	if(PreferredClass != PLAYERCLASS_INVALID)
 	{
@@ -3949,6 +3935,20 @@ PLAYERCLASS CInfClassGameController::ChooseHumanClass(const CInfClassPlayer *pPl
 			if(GetClassProbabilityRef(PreferredClass) > 0)
 			{
 				return PreferredClass;
+			}
+		}
+	}
+
+	// Random is not fair enough. We keep the last classes took by the player, and avoid to give those again
+	if(GetRoundType() != ROUND_TYPE::FUN)
+	{
+		if(AvailableClasses > 1)
+		{
+			// if normal round is being played
+			PLAYERCLASS PrevClass = pPlayer->GetPreviouslyPickedClass();
+			if(PrevClass != PLAYERCLASS_INVALID)
+			{
+				GetClassProbabilityRef(PrevClass) = 0.0f;
 			}
 		}
 	}
