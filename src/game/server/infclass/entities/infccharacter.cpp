@@ -311,6 +311,11 @@ void CInfClassCharacter::Snap(int SnappingClient)
 	pDDNetCharacter->m_Jumps = m_Core.m_Jumps;
 	pDDNetCharacter->m_JumpedTotal = m_Core.m_JumpedTotal;
 
+	if(m_Core.m_Jumps > 100)
+	{
+		pDDNetCharacter->m_Flags |= CHARACTERFLAG_ENDLESS_JUMP;
+	}
+
 	// Send freeze info only to the version that can handle it correctly
 	if(IsZombie() && IsFrozen())
 	{
