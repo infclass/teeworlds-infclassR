@@ -44,6 +44,10 @@ void CPlayer::Reset()
 	}
 	idMap[0] = m_ClientID;
 
+	m_LastVoteCall = 0;
+	m_LastVoteTry = 0;
+	m_LastChat = 0;
+
 	m_LastEyeEmote = 0;
 	m_DefEmote = EMOTE_NORMAL;
 	m_Afk = true;
