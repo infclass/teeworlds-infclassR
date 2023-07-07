@@ -2538,6 +2538,7 @@ void CInfClassGameController::Tick()
 						if(IsInfectedClass(ClassFromSession) == IsInfectionStarted())
 						{
 							Iter.Player()->SetClass(ClassFromSession);
+							Iter.Player()->SetInfectionTimestamp(pSession->m_LastInfectionTime);
 						}
 					}
 
@@ -2546,6 +2547,7 @@ void CInfClassGameController::Tick()
 				
 				pSession->m_Class = Iter.Player()->GetClass();
 				pSession->m_RoundId = GameServer()->m_pController->GetRoundId();
+				pSession->m_LastInfectionTime = Iter.Player()->GetInfectionTimestamp();
 			}
 		}
 	}

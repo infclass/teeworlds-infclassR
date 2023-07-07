@@ -145,6 +145,7 @@ public:
 		int m_RoundId;
 		int m_Class;
 		int m_MuteTick;
+		int m_LastInfectionTime;
 	};
 	
 	struct CClientAccusation
