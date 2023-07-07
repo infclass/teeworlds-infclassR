@@ -85,6 +85,8 @@ public:
 	void SetFollowTarget(int ClientID, float Duration);
 	int TargetToFollow() const;
 
+	int GetSpectatingCID() const;
+
 	float GetGhoulPercent() const;
 	void IncreaseGhoulLevel(int Diff);
 	int GetGhoulLevel() const { return m_GhoulLevel; }

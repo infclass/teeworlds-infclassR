@@ -514,6 +514,17 @@ int CInfClassPlayer::TargetToFollow() const
 	return m_FollowTargetTicks > 0 ? m_FollowTargetId : -1;
 }
 
+int CInfClassPlayer::GetSpectatingCID() const
+{
+	int TargetCID = TargetToFollow();
+	if (TargetCID < 0)
+	{
+		TargetCID = m_SpectatorID;
+	}
+
+	return TargetCID;
+}
+
 float CInfClassPlayer::GetGhoulPercent() const
 {
 	return clamp(m_GhoulLevel/static_cast<float>(g_Config.m_InfGhoulStomachSize), 0.0f, 1.0f);
