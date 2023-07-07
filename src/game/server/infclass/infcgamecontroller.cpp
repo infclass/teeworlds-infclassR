@@ -3153,6 +3153,19 @@ void CInfClassGameController::Snap(int SnappingClient)
 	pInfclassGameInfoObj->m_TimeLimitInSeconds = GetTimeLimit() * 60;
 	pInfclassGameInfoObj->m_HeroGiftTick = m_HeroGiftTick;
 
+	int InfClassVersion = Server()->GetClientInfclassVersion(SnappingClient);
+	if((InfClassVersion == 0) || (InfClassVersion > VERSION_INFC_160))
+	{
+		CNetObj_GameInfoEx *pGameInfoEx = Server()->SnapNewItem<CNetObj_GameInfoEx>(0);
+		if(!pGameInfoEx)
+			return;
+
+		pGameInfoEx->m_Flags = GAMEINFOFLAG_PREDICT_VANILLA | GAMEINFOFLAG_DONT_MASK_ENTITIES;
+		pGameInfoEx->m_Flags2 = GAMEINFOFLAG2_HUD_HEALTH_ARMOR | GAMEINFOFLAG2_HUD_AMMO | GAMEINFOFLAG2_HUD_DDRACE;
+		pGameInfoEx->m_Flags2 |= GAMEINFOFLAG2_NO_WEAK_HOOK;
+		pGameInfoEx->m_Version = GAMEINFO_CURVERSION;
+	}
+
 	CNetObj_GameData *pGameDataObj = (CNetObj_GameData *)Server()->SnapNewItem(NETOBJTYPE_GAMEDATA, 0, sizeof(CNetObj_GameData));
 	if(!pGameDataObj)
 		return;
