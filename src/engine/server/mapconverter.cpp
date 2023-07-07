@@ -836,8 +836,14 @@ void CMapConverter::CopyLayers()
 
 					CMapItemLayerTilemap LayerItem;
 					LayerItem = *pTilemapItem;
-					LayerItem.m_Data = m_DataFile.AddData(LayerItem.m_Width*LayerItem.m_Height*sizeof(CTile), pData);
-					
+
+					LayerItem.m_Data = m_DataFile.AddData(LayerItem.m_Width * LayerItem.m_Height * sizeof(CTile), pData);
+					if(pTilemapItem->m_Flags & TILESLAYERFLAG_TELE)
+					{
+						pData = Map()->GetData(pTilemapItem->m_Tele);
+						LayerItem.m_Tele = m_DataFile.AddData(LayerItem.m_Width * LayerItem.m_Height * sizeof(CTeleTile), pData);
+					}
+
 					m_DataFile.AddItem(MAPITEMTYPE_LAYER, m_NumLayers++, sizeof(LayerItem), &LayerItem);
 
 					Map()->UnloadData(pTilemapItem->m_Data);
