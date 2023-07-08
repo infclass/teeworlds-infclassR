@@ -974,6 +974,9 @@ void CInfClassHuman::GiveClassAttributes()
 	m_TurretCount = 0;
 	m_NinjaTargetTick = 0;
 	m_NinjaTargetCID = -1;
+	m_NinjaVelocityBuff = 0;
+	m_NinjaStrengthBuff = 0;
+	m_NinjaAmmoBuff = 0;
 
 	RemoveWhiteHole();
 
