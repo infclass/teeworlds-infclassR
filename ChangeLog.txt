@@ -1,3 +1,15 @@
+InfclassR v1.5.0_alpha8
+- Fixed Tele layer processing (for maps with teleports)
+- Just-killed human's camera now follows the killer
+- Player last infection time now saved in session
+  (now it is expected that if you reconnect you won't
+  be 'first infected' if it is not your turn yet)
+- 'Last picked class' now also remembered across maps
+- Previously picked/given human class won't be ever
+  given randomly again
+- EndlessJump character flag now wired correctly (for bats)
+- Enabled DDRace HUD
+
 InfclassR v1.5.0_alpha7
 - Sniper position re-lock now enabled if 1+ seconds
   remaining
