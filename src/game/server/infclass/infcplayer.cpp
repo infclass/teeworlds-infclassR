@@ -60,6 +60,11 @@ int CInfClassPlayer::GetScore(int SnappingClient) const
 	}
 	else
 	{
+		if(GameController()->GetRoundType() == ERoundType::Survival)
+		{
+			return m_Kills;
+		}
+
 		return Server()->RoundStatistics()->PlayerScore(m_ClientID);
 	}
 
@@ -699,6 +704,12 @@ const char *CInfClassPlayer::GetClan(int SnappingClient) const
 void CInfClassPlayer::HandleAutoRespawn()
 {
 	float AutoSpawnInterval = 3;
+
+	if(GameController()->GetRoundType() == ERoundType::Survival && IsInfected())
+	{
+		AutoSpawnInterval = 0;
+	}
+
 	if(!m_pCharacter && m_DieTick+Server()->TickSpeed() * AutoSpawnInterval <= Server()->Tick())
 	{
 		Respawn();

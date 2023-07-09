@@ -176,6 +176,8 @@ MACRO_CONFIG_INT(InfWhiteHoleAffectsHumans, inf_white_hole_affects_humans, 1, 0,
 MACRO_CONFIG_INT(InfWhiteHoleNumParticles, inf_white_hole_num_particles, 100, 20, 500, CFGFLAG_SERVER, "Number of particles that will be used for a white hole animation")
 MACRO_CONFIG_INT(InfWhiteHolePullStrength, inf_white_hole_pull_strength, 40, 0, 1000, CFGFLAG_SERVER, "How strong a white hole sucks players in")
 
+MACRO_CONFIG_INT(InfSurvivalInfectedSpawningDelay, inf_survival_infected_spawning_delay, 7, 0, 30, CFGFLAG_SERVER, "The number of seconds for humans to pull themselves together")
+
 // Deprecated variables
 MACRO_CONFIG_INT(InfStunGrenadeMinimalKills, inf_stun_grenade_minimal_kills, 2, 0, 30, CFGFLAG_SERVER, "Deprecated (has no effect now)")
 MACRO_CONFIG_INT(InfStunGrenadeProbability, inf_stun_grenade_probability, 30, 0, 100, CFGFLAG_SERVER, "Deprecated (has no effect now)")

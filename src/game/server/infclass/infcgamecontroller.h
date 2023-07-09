@@ -25,6 +25,8 @@ enum class ROUND_CANCELATION_REASON;
 enum class ROUND_END_REASON;
 enum class EPlayerScoreMode;
 
+static const int MaxWaves = 20;
+
 using ClientsArray = icArray<int, MAX_CLIENTS>;
 
 enum class ERoundType
@@ -32,6 +34,7 @@ enum class ERoundType
 	Normal,
 	Fun,
 	Fast,
+	Survival,
 	Count,
 	Invalid = Count,
 };
@@ -171,8 +174,14 @@ public:
 
 	void StartFunRound();
 	void EndFunRound();
+
+	void StartSurvivalRound();
+	void EndSurvivalRound();
+
 	void ResetFinalExplosion();
 	void SaveRoundRules();
+	void StartSurvivalGame();
+	void EndSurvivalGame();
 
 	int GetRoundTick() const;
 	int GetInfectionTick() const;
@@ -298,6 +307,28 @@ private:
 	int GetClientIdForNewWitch() const;
 	bool IsSafeWitchCandidate(int ClientID) const;
 	ClientsArray m_WitchCallers;
+
+	struct PlayerScore
+	{
+		char aPlayerName[MAX_NAME_LENGTH];
+		int Kills;
+		int ClientID;
+	};
+
+	struct
+	{
+		int Wave = 0;
+		int Kills = 0;
+		icArray<PlayerScore, MAX_CLIENTS> Scores;
+		icArray<int, MAX_CLIENTS> SurvivedPlayers;
+		icArray<int, MAX_CLIENTS> KilledPlayers;
+	} m_SurvivalState;
+	int m_BestSurvivalScore = 0;
+
+	bool m_AllowSurvivalAutostart = false;
+
+	PlayerScore *GetSurvivalPlayerScore(int ClientID);
+	PlayerScore *EnsureSurvivalPlayerScore(int ClientID);
 
 private:
 	int m_ZoneHandle_icDamage;

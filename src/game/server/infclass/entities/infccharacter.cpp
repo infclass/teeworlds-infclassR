@@ -580,6 +580,14 @@ bool CInfClassCharacter::TakeDamage(const vec2 &Force, float FloatDmg, int From,
 		DamageContext.Force *= 0.1f;
 	}
 
+	if(Mode == TAKEDAMAGEMODE::INFECTION)
+	{
+		if(GameController()->GetRoundType() == ERoundType::Survival)
+		{
+			Mode = TAKEDAMAGEMODE::NOINFECTION;
+		}
+	}
+
 	if(m_Invincible >= 2)
 	{
 		Mode = TAKEDAMAGEMODE::NOINFECTION;

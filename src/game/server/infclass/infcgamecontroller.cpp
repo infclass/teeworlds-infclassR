@@ -41,6 +41,7 @@ static const char *gs_aRoundNames[] = {
 	"classic",
 	"fun",
 	"fast",
+	"survival",
 	"invalid",
 };
 
@@ -133,6 +134,15 @@ struct InfclassPlayerPersistantData : public CGameContext::CPersistentClientData
 	PLAYERCLASS m_PreviouslyPickedClass = PLAYERCLASS_INVALID;
 	int m_LastInfectionTime = 0;
 };
+
+struct SurvivalWaveConfiguration
+{
+	SurvivalWaveConfiguration() = default;
+
+	char aName[64] = {0};
+};
+
+icArray<SurvivalWaveConfiguration, MaxWaves> m_SurvivalWaves;
 
 int64_t CInfClassGameController::m_LastTipTime = 0;
 
@@ -284,6 +294,17 @@ void CInfClassGameController::OnPlayerDisconnect(CPlayer *pBasePlayer, EClientDr
 		}
 	}
 
+	CInfClassPlayer *pPlayer = CInfClassPlayer::GetInstance(pBasePlayer);
+	PlayerScore *pScore = GetSurvivalPlayerScore(pPlayer->GetCID());
+	if(pScore)
+	{
+		str_copy(pScore->aPlayerName, Server()->ClientName(pPlayer->GetCID()));
+		pScore->ClientID = -1;
+		pScore->Kills = pPlayer->GetKills();
+	}
+	m_SurvivalState.SurvivedPlayers.RemoveOne(pPlayer->GetCID());
+	m_SurvivalState.KilledPlayers.RemoveOne(pPlayer->GetCID());
+
 	static const auto aIgnoreReasons = []()
 	{
 		EClientDropType aIgnoreReasons[]{
@@ -299,7 +320,6 @@ void CInfClassGameController::OnPlayerDisconnect(CPlayer *pBasePlayer, EClientDr
 
 	if(!aIgnoreReasons.Contains(Type))
 	{
-		CInfClassPlayer *pPlayer = CInfClassPlayer::GetInstance(pBasePlayer);
 		if(pPlayer && pPlayer->IsInGame() && pPlayer->IsInfected() && m_InfectedStarted)
 		{
 			int NumHumans;
@@ -334,6 +354,12 @@ void CInfClassGameController::OnReset()
 
 void CInfClassGameController::DoPlayerInfection(CInfClassPlayer *pPlayer, CInfClassPlayer *pInfectiousPlayer, PLAYERCLASS PreviousClass)
 {
+	if(GetRoundType() == ERoundType::Survival)
+	{
+		DoTeamChange(pPlayer, TEAM_SPECTATORS, false);
+		return;
+	}
+
 	PLAYERCLASS c = ChooseInfectedClass(pPlayer);
 	pPlayer->SetClass(c);
 
@@ -414,6 +440,11 @@ void CInfClassGameController::OnHeroFlagCollected(int ClientID)
 
 float CInfClassGameController::GetHeroFlagCooldown() const
 {
+	if(GetRoundType() == ERoundType::Survival)
+	{
+		return 30;
+	}
+
 	// Set cooldown for next flag depending on how many players are online
 	int PlayerCount = Server()->GetActivePlayerCount();
 	if(PlayerCount <= 1)
@@ -826,6 +857,97 @@ void CInfClassGameController::ResetFinalExplosion()
 void CInfClassGameController::SaveRoundRules()
 {
 	SendServerParams(-1);
+}
+
+void CInfClassGameController::StartSurvivalGame()
+{
+	m_SurvivalState.Scores.Clear();
+	m_SurvivalState.Kills = 0;
+	m_SurvivalState.KilledPlayers.Clear();
+	m_SurvivalState.SurvivedPlayers.Clear();
+
+	for(int i = 0; i < MAX_CLIENTS; i++)
+	{
+		CInfClassPlayer *pPlayer = GetPlayer(i);
+		if(pPlayer)
+		{
+			pPlayer->ResetRoundData();
+			CInfClassCharacter *pCharacter = pPlayer->GetCharacter();
+			if(pCharacter)
+			{
+				pPlayer->KillCharacter();
+				pPlayer->SetClass(PLAYERCLASS_NONE);
+			}
+		}
+	}
+}
+
+void CInfClassGameController::EndSurvivalGame()
+{
+	// Sync the scores
+	for(PlayerScore &Score : m_SurvivalState.Scores)
+	{
+		if(Score.ClientID < 0)
+			continue;
+
+		CInfClassPlayer *pPlayer = GetPlayer(Score.ClientID);
+		Score.Kills = pPlayer->GetKills();
+		str_copy(Score.aPlayerName, Server()->ClientName(pPlayer->GetCID()));
+	}
+
+	const auto Sorter = [](const PlayerScore &s1, const PlayerScore &s2) -> bool {
+		return s1.Kills > s2.Kills;
+	};
+
+	std::stable_sort(m_SurvivalState.Scores.begin(), m_SurvivalState.Scores.end(), Sorter);
+
+	GameServer()->SendChatTarget_Localization(-1, CHATCATEGORY_SCORE, "Score", nullptr);
+	for(const PlayerScore &Score : m_SurvivalState.Scores)
+	{
+		GameServer()->SendChatTarget_Localization(-1, CHATCATEGORY_SCORE, "- {str:PlayerName}: {int:Score}",
+			"PlayerName", Score.aPlayerName,
+			"Score", &Score.Kills,
+			nullptr);
+	}
+	int Score = m_SurvivalState.Kills;
+	GameServer()->SendChatTarget_Localization(-1, CHATCATEGORY_SCORE, "Total team score: {int:Score}",
+		"Score", &Score,
+		nullptr);
+
+	if(m_BestSurvivalScore)
+	{
+		if(Score > m_BestSurvivalScore)
+		{
+			GameServer()->SendChatTarget_Localization(-1, CHATCATEGORY_SCORE, "This is the new best score on the server!",
+				nullptr);
+			GameServer()->SendChatTarget_Localization(-1, CHATCATEGORY_SCORE, "The previous best score is {int:Score}",
+				"Score", &m_BestSurvivalScore,
+				nullptr);
+		}
+		else if(Score == m_BestSurvivalScore)
+		{
+			GameServer()->SendChatTarget_Localization(-1, CHATCATEGORY_SCORE, "This is the same score as the best one!",
+				nullptr);
+		}
+		else
+		{
+			GameServer()->SendChatTarget_Localization(-1, CHATCATEGORY_SCORE, "The best score is: {int:Score}",
+				"Score", &m_BestSurvivalScore,
+				nullptr);
+		}
+	}
+
+	if(Score > m_BestSurvivalScore)
+	{
+		m_BestSurvivalScore = Score;
+	}
+
+	m_SurvivalState.Wave = 0;
+
+	m_SurvivalState.Kills = 0;
+	m_SurvivalState.Scores.Clear();
+	m_SurvivalState.SurvivedPlayers.Clear();
+	m_SurvivalState.KilledPlayers.Clear();
 }
 
 int CInfClassGameController::GetRoundTick() const
@@ -2414,6 +2536,7 @@ void CInfClassGameController::StartRound()
 		GameServer()->CreateSoundGlobal(SOUND_CTF_CAPTURE);
 		GameServer()->SendChatTarget(-1, "Starting the 'fast' round. Good luck everyone!");
 		break;
+	case ERoundType::Survival:
 	case ERoundType::Invalid:
 		break;
 	}
@@ -2500,6 +2623,9 @@ void CInfClassGameController::EndRound(ROUND_END_REASON Reason)
 	case ERoundType::Fun:
 		EndFunRound();
 		break;
+	case ERoundType::Survival:
+		EndSurvivalRound();
+		break;
 	case ERoundType::Invalid:
 		break;
 	}
@@ -2583,6 +2709,11 @@ int CInfClassGameController::GetMinimumInfectedForPlayers(int PlayersNumber) con
 	if(FirstInfectedLimit && NumFirstInfected > FirstInfectedLimit)
 	{
 		NumFirstInfected = FirstInfectedLimit;
+	}
+
+	if(GetRoundType() == ERoundType::Survival)
+	{
+		NumFirstInfected = 0;
 	}
 
 	return NumFirstInfected;
@@ -2791,6 +2922,32 @@ bool CInfClassGameController::IsSafeWitchCandidate(int ClientID) const
 	return true;
 }
 
+CInfClassGameController::PlayerScore *CInfClassGameController::GetSurvivalPlayerScore(int ClientID)
+{
+	for(PlayerScore &Score : m_SurvivalState.Scores)
+	{
+		if(Score.ClientID == ClientID)
+			return &Score;
+	}
+
+	return nullptr;
+}
+
+CInfClassGameController::PlayerScore *CInfClassGameController::EnsureSurvivalPlayerScore(int ClientID)
+{
+	PlayerScore *pScore = GetSurvivalPlayerScore(ClientID);
+	if(pScore)
+		return pScore;
+
+	m_SurvivalState.Scores.Add({});
+	PlayerScore &Score = m_SurvivalState.Scores.Last();
+	Score.ClientID = ClientID;
+	Score.aPlayerName[0] = '\0';
+	Score.Kills = 0;
+
+	return &Score;
+}
+
 void CInfClassGameController::TickBeforeWorld()
 {
 	// update core properties important for hook
@@ -2807,7 +2964,6 @@ void CInfClassGameController::TickBeforeWorld()
 		}
 	}
 }
-
 void CInfClassGameController::Tick()
 {
 	IGameController::Tick();
@@ -3164,6 +3320,14 @@ bool CInfClassGameController::CanJoinTeam(int Team, int ClientID)
 {
 	if(Team != TEAM_SPECTATORS)
 	{
+		if(GetRoundType() == ERoundType::Survival && IsInfectionStarted())
+		{
+			GameServer()->SendBroadcast_Localization(ClientID,
+				BROADCAST_PRIORITY_GAMEANNOUNCE, BROADCAST_DURATION_GAMEANNOUNCE,
+				_("You have to wait until the survival is over"));
+			return false;
+		}
+
 		return IGameController::CanJoinTeam(Team, ClientID);
 	}
 
@@ -3197,6 +3361,9 @@ bool CInfClassGameController::AreTurretsEnabled() const
 {
 	if(!Config()->m_InfTurretEnable)
 		return false;
+
+	if(GetRoundType() == ERoundType::Survival)
+		return true;
 
 	return Server()->GetActivePlayerCount() >= Config()->m_InfMinPlayersForTurrets;
 }
@@ -3377,6 +3544,127 @@ void CInfClassGameController::StartFunRound()
 void CInfClassGameController::EndFunRound()
 {
 	m_FunRoundsPassed++;
+}
+
+void CInfClassGameController::StartSurvivalRound()
+{
+	GameServer()->m_World.m_ResetRequested = false;
+
+	char aBuf[256];
+
+	int WaveDisplayNumber = m_SurvivalState.Wave + 1;
+	if(m_SurvivalWaves.Size() <= m_SurvivalState.Wave)
+	{
+		str_format(aBuf, sizeof(aBuf), "Unable to start a survival round: wave %d is not configured", WaveDisplayNumber);
+		GameServer()->SendChatTarget(-1, aBuf);
+		return;
+	}
+
+	// TODO: Check this (not) incremented
+	if(m_SurvivalState.Wave == 0)
+	{
+		StartSurvivalGame();
+	}
+
+	for(int CID : m_SurvivalState.KilledPlayers)
+	{
+		CInfClassPlayer *pPlayer = GetPlayer(CID);
+		if(pPlayer->IsSpectator())
+		{
+			DoTeamChange(pPlayer, TEAM_RED, false);
+		}
+	}
+
+	m_SurvivalState.KilledPlayers.Clear();
+
+	if(m_SurvivalWaves.Size() == 1)
+	{
+		str_format(aBuf, sizeof(aBuf), "The survival begins. Enjoy!");
+	}
+	else
+	{
+		const SurvivalWaveConfiguration &WaveConf = m_SurvivalWaves.At(m_SurvivalState.Wave);
+
+		if(WaveConf.aName[0])
+		{
+			str_format(aBuf, sizeof(aBuf), "Wave %d: %s", WaveDisplayNumber, WaveConf.aName);
+		}
+		else
+		{
+			str_format(aBuf, sizeof(aBuf), "Wave %d. Enjoy!", WaveDisplayNumber);
+		}
+	}
+	GameServer()->SendChat(-1, CGameContext::CHAT_ALL, aBuf);
+}
+
+void CInfClassGameController::EndSurvivalRound()
+{
+	int NumHumans = 0;
+	int NumInfected = 0;
+	GetPlayerCounter(-1, NumHumans, NumInfected);
+
+	bool IsOver = false;
+
+	if((NumHumans == 0) && (NumInfected > 0))
+	{
+		if(m_SurvivalState.Wave == 0)
+		{
+			GameServer()->SendChatTarget_Localization(-1, CHATCATEGORY_SCORE,
+				_("The survival is over. You have failed to survive a single wave."));
+		}
+		else
+		{
+			int NumWaves = m_SurvivalState.Wave + 1;
+			GameServer()->SendChatTarget_Localization_P(-1, CHATCATEGORY_SCORE, NumWaves,
+				_P(
+					"The survival is over after {int:NumWaves} wave.",
+					"The survival is over after {int:NumWaves} waves."),
+					"NumWaves", &NumWaves,
+					nullptr
+					);
+		}
+
+		IsOver = true;
+	}
+
+	if(m_SurvivalWaves.Size() == m_SurvivalState.Wave + 1)
+	{
+		if(NumHumans)
+		{
+			if(m_SurvivalWaves.Size() > 2)
+			{
+				GameServer()->SendChatTarget_Localization(-1, CHATCATEGORY_SCORE,
+					_("The survival is over. You have survived!"));
+			}
+			else
+			{
+				GameServer()->SendChatTarget_Localization(-1, CHATCATEGORY_SCORE,
+					_("The survival is over. You have survived the final wave!"));
+			}
+		}
+
+		IsOver = true;
+	}
+
+	if(IsOver)
+	{
+		EndSurvivalGame();
+		return;
+	}
+
+	m_SurvivalState.SurvivedPlayers.Clear();
+
+	for(int i = 0; i < MAX_CLIENTS; ++i)
+	{
+		CInfClassCharacter *pCharacter = GetCharacter(i);
+		if(pCharacter && pCharacter->IsHuman())
+		{
+			m_SurvivalState.SurvivedPlayers.Add(i);
+			pCharacter->IncreaseOverallHp(10);
+		}
+	}
+
+	QueueRoundType(ERoundType::Survival);
 }
 
 void CInfClassGameController::Snap(int SnappingClient)
@@ -3899,6 +4187,9 @@ void CInfClassGameController::CheckRoundFailed()
 	if(Config()->m_InfTrainingMode)
 		return;
 
+	if(GetRoundType() == ERoundType::Survival)
+		return;
+
 	int NumHumans = 0;
 	int NumInfected = 0;
 	GetPlayerCounter(-1, NumHumans, NumInfected);
@@ -4133,6 +4424,21 @@ bool CInfClassGameController::TryRespawn(CInfClassPlayer *pPlayer, SpawnContext 
 
 	if(pPlayer->IsInfected() && m_ExplosionStarted)
 		return false;
+
+	if(GetRoundType() == ERoundType::Survival && pPlayer->IsInfected())
+	{
+		if(!IsInfectionStarted())
+		{
+			return false;
+		}
+
+		if(!pPlayer->IsBot())
+		{
+			GameServer()->SendBroadcast(pPlayer->GetCID(), "You are dead and have to wait for others",
+				BROADCAST_PRIORITY_GAMEANNOUNCE, BROADCAST_DURATION_REALTIME);
+			return false;
+		}
+	}
 
 	if(m_InfectedStarted && pPlayer->IsInfected() && random_prob(Config()->m_InfProbaSpawnNearWitch / 100.0f))
 	{
@@ -4552,6 +4858,9 @@ int CInfClassGameController::GetInfectedCount(PLAYERCLASS InfectedPlayerClass) c
 
 int CInfClassGameController::GetMinPlayers() const
 {
+	if(GetRoundType() == ERoundType::Survival)
+		return 1;
+
 	return Config()->m_InfMinPlayers;
 }
 
@@ -4612,6 +4921,23 @@ CLASS_AVAILABILITY CInfClassGameController::GetPlayerClassAvailability(PLAYERCLA
 		return CLASS_AVAILABILITY::LIMIT_EXCEEDED;
 
 	int ClassLimit = GetClassPlayerLimit(PlayerClass);
+	if(GetRoundType() == ERoundType::Survival)
+	{
+		int EnabledHumansClasses = 0;
+		for(PLAYERCLASS HumanClass : AllHumanClasses())
+		{
+			if(GetPlayerClassEnabled(HumanClass))
+			{
+				EnabledHumansClasses++;
+			}
+		}
+		if(EnabledHumansClasses == 0)
+		{
+			dbg_msg("server/ic", "Error: No human class enabled");
+			EnabledHumansClasses = 1;
+		}
+		ClassLimit = std::ceil(ActivePlayerCount / static_cast<float>(EnabledHumansClasses));
+	}
 
 	if(nbClass[PlayerClass] >= ClassLimit)
 		return CLASS_AVAILABILITY::LIMIT_EXCEEDED;
