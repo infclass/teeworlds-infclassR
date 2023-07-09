@@ -22,6 +22,7 @@ enum class TAKEDAMAGEMODE;
 enum class DAMAGE_TYPE;
 enum class ROUND_CANCELATION_REASON;
 enum class ROUND_END_REASON;
+enum class EPlayerScoreMode;
 
 using ClientsArray = icArray<int, MAX_CLIENTS>;
 
@@ -118,6 +119,8 @@ public:
 	CLASS_AVAILABILITY GetPlayerClassAvailability(PLAYERCLASS PlayerClass, const CInfClassPlayer *pForPlayer = nullptr) const;
 	bool CanVote() override;
 
+	void OnPlayerVoteCommand(int ClientID, int Vote) override;
+
 	void OnPlayerConnect(CPlayer *pPlayer) override;
 	void OnPlayerDisconnect(CPlayer *pBasePlayer, int Type, const char *pReason) override;
 
@@ -135,6 +138,7 @@ public:
 	bool WhiteHoleEnabled() const;
 	bool IsClassChooserEnabled() const;
 	int GetTaxiMode() const;
+	EPlayerScoreMode GetPlayerScoreMode(int SnappingClient) const;
 
 	float GetTimeLimit() const;
 	float GetInfectionDelay() const;

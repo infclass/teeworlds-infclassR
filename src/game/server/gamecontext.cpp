@@ -2238,25 +2238,13 @@ void CGameContext::OnMessage(int MsgID, CUnpacker *pUnpacker, int ClientID)
 				pPlayer->m_VotePos = ++m_VotePos;
 				m_VoteUpdate = true;
 			}
-			else if(m_apPlayers[ClientID] && m_apPlayers[ClientID]->m_PlayerFlags&PLAYERFLAG_SCOREBOARD)
+			else
 			{
 				CNetMsg_Cl_Vote *pMsg = (CNetMsg_Cl_Vote *)pRawMsg;
 				if(!pMsg->m_Vote)
 					return;
-				
-				int ScoreMode = pPlayer->GetScoreMode();
-				if(pMsg->m_Vote < 0) ScoreMode++;
-				else ScoreMode--;
-				
-				if(ScoreMode < 0) ScoreMode = NB_PLAYERSCOREMODE-1;
-				if(ScoreMode >= NB_PLAYERSCOREMODE) ScoreMode = 0;
-				
-				Server()->SetClientDefaultScoreMode(ClientID, ScoreMode);
-				m_apPlayers[ClientID]->SetScoreMode(ScoreMode);
-			}
-			else
-			{
-				m_apPlayers[ClientID]->HookProtection(!m_apPlayers[ClientID]->HookProtectionEnabled(), false);
+
+				m_pController->OnPlayerVoteCommand(ClientID, pMsg->m_Vote);
 			}
 		}
 		else if (MsgID == NETMSGTYPE_CL_SETTEAM && !m_World.m_Paused)

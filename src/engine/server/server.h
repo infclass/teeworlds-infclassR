@@ -180,7 +180,6 @@ public:
 		
 		int m_NbRound;
 		
-		int m_DefaultScoreMode;
 		char m_aLanguage[16];
 		int m_WaitingTime;
 
@@ -453,9 +452,6 @@ public:
 /* INFECTION MODIFICATION START ***************************************/
 public:
 	int GetClientInfclassVersion(int ClientID) const override;
-
-	int GetClientDefaultScoreMode(int ClientID) override;
-	void SetClientDefaultScoreMode(int ClientID, int Value) override;
 
 	const char *GetClientLanguage(int ClientID) override;
 	void SetClientLanguage(int ClientID, const char *pLanguage) override;

@@ -169,7 +169,6 @@ public:
 /* INFECTION MODIFICATION START ***************************************/
 protected:
 	PLAYERCLASS m_class;
-	int m_ScoreMode;
 	int m_DefaultScoreMode;
 	char m_aLanguage[16];
 
@@ -179,9 +178,6 @@ public:
 	bool m_knownClass[NB_PLAYERCLASS];
 
 	int m_InfectionTick;
-	
-	int GetScoreMode();
-	void SetScoreMode(int Mode);
 	
 	PLAYERCLASS GetClass() const;
 	bool IsZombie() const;

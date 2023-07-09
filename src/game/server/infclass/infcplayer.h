@@ -27,6 +27,14 @@ enum class INFECTION_CAUSE
 	PLAYER,
 };
 
+enum class EPlayerScoreMode
+{
+	Class,
+	Time,
+
+	Count,
+};
+
 class CInfClassPlayer : public CPlayer
 {
 	MACRO_ALLOC_POOL_ID()
@@ -80,6 +88,9 @@ public:
 	void OpenMapMenu(int Menu);
 	void CloseMapMenu();
 	bool MapMenuClickable();
+
+	EPlayerScoreMode GetScoreMode() const;
+	void SetScoreMode(EPlayerScoreMode Mode);
 
 	void ResetTheTargetToFollow();
 	void SetFollowTarget(int ClientID, float Duration);
@@ -161,6 +172,8 @@ protected:
 
 	int m_MapMenu = 0;
 	int m_MapMenuTick = -1;
+
+	EPlayerScoreMode m_ScoreMode = EPlayerScoreMode::Class;
 
 	int m_GhoulLevel = 0;
 	int m_GhoulLevelTick = 0;

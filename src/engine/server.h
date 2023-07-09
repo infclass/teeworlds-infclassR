@@ -72,14 +72,6 @@ constexpr int NB_INFWEAPON = static_cast<int>(INFWEAPON::BLINDING_LASER) + 1;
 
 enum
 {
-	PLAYERSCOREMODE_CLASS = 0,
-	PLAYERSCOREMODE_SCORE,
-	PLAYERSCOREMODE_TIME,
-	NB_PLAYERSCOREMODE,
-};
-
-enum
-{
 	CLIENTMEMORY_LANGUAGESELECTION=0,
 	CLIENTMEMORY_TOP10,
 	CLIENTMEMORY_MOTD,
@@ -394,9 +386,6 @@ public:
 	virtual int GetClientInfclassVersion(int ClientID) const = 0;
 
 	virtual int GetClientNbRound(int ClientID) = 0;
-	
-	virtual int GetClientDefaultScoreMode(int ClientID) = 0;
-	virtual void SetClientDefaultScoreMode(int ClientID, int Value) = 0;
 	
 	virtual const char* GetClientLanguage(int ClientID) = 0;
 	virtual void SetClientLanguage(int ClientID, const char* pLanguage) = 0;

@@ -82,6 +82,7 @@ enum class ROUND_END_REASON
 
 struct InfclassPlayerPersistantData : public CGameContext::CPersistentClientData
 {
+	EPlayerScoreMode m_ScoreMode = EPlayerScoreMode::Class;
 	bool m_AntiPing = false;
 	PLAYERCLASS m_PreferredClass = PLAYERCLASS_INVALID;
 	PLAYERCLASS m_PreviouslyPickedClass = PLAYERCLASS_INVALID;
@@ -2518,27 +2519,6 @@ void CInfClassGameController::Tick()
 {
 	IGameController::Tick();
 
-	if(IsGameOver())
-	{
-		// game over.. wait for restart
-		if(Server()->Tick() <= m_GameOverTick + Server()->TickSpeed() * Config()->m_InfShowScoreTime)
-		{
-			int ScoreMode = PLAYERSCOREMODE_SCORE;
-			if((Server()->Tick() - m_GameOverTick) > Server()->TickSpeed() * (Config()->m_InfShowScoreTime / 2.0f))
-			{
-				ScoreMode = PLAYERSCOREMODE_TIME;
-			}
-
-			for(int i = 0; i < MAX_CLIENTS; i++)
-			{
-				if(GameServer()->m_apPlayers[i])
-				{
-					GameServer()->m_apPlayers[i]->SetScoreMode(ScoreMode);
-				}
-			}
-		}
-	}
-	
 	//Check session
 	{
 		CInfClassPlayerIterator<PLAYERITER_ALL> Iter(GameServer()->m_apPlayers);
@@ -2629,14 +2609,6 @@ void CInfClassGameController::Tick()
 
 void CInfClassGameController::OnGameRestart()
 {
-	for(int i = 0; i < MAX_CLIENTS; i++)
-	{
-		if(GameServer()->m_apPlayers[i])
-		{
-			GameServer()->m_apPlayers[i]->SetScoreMode(Server()->GetClientDefaultScoreMode(i));
-		}
-	}
-
 	IGameController::OnGameRestart();
 }
 
@@ -3015,6 +2987,32 @@ int CInfClassGameController::GetTaxiMode() const
 	return Config()->m_InfTaxi;
 }
 
+EPlayerScoreMode CInfClassGameController::GetPlayerScoreMode(int SnappingClient) const
+{
+	if(IsGameOver())
+	{
+		// game over.. wait for restart
+		if(Server()->Tick() <= m_GameOverTick + Server()->TickSpeed() * Config()->m_InfShowScoreTime)
+		{
+			EPlayerScoreMode ScoreMode = EPlayerScoreMode::Class;
+			if((Server()->Tick() - m_GameOverTick) > Server()->TickSpeed() * (Config()->m_InfShowScoreTime / 2.0f))
+			{
+				return EPlayerScoreMode::Time;
+			}
+
+			return EPlayerScoreMode::Class;
+		}
+	}
+
+	const CInfClassPlayer *pSnapPlayer = GetPlayer(SnappingClient);
+	if(pSnapPlayer)
+	{
+		return pSnapPlayer->GetScoreMode();
+	}
+
+	return EPlayerScoreMode::Class;
+}
+
 float CInfClassGameController::GetTimeLimit() const
 {
 	if(Config()->m_InfTrainingMode)
@@ -3227,6 +3225,7 @@ CPlayer *CInfClassGameController::CreatePlayer(int ClientID, bool IsSpectator, v
 		InfclassPlayerPersistantData *pPersistent = static_cast<InfclassPlayerPersistantData *>(pData);
 		pPlayer->SetPreferredClass(pPersistent->m_PreferredClass);
 		pPlayer->SetPreviouslyPickedClass(pPersistent->m_PreviouslyPickedClass);
+		pPlayer->SetScoreMode(pPersistent->m_ScoreMode);
 		pPlayer->SetAntiPingEnabled(pPersistent->m_AntiPing);
 		pPlayer->SetInfectionTimestamp(pPersistent->m_LastInfectionTime);
 	}
@@ -3252,6 +3251,7 @@ bool CInfClassGameController::GetClientPersistentData(int ClientID, void *pData)
 		return false;
 
 	InfclassPlayerPersistantData *pPersistent = static_cast<InfclassPlayerPersistantData *>(pData);
+	pPersistent->m_ScoreMode = pPlayer->GetScoreMode();
 	pPersistent->m_PreferredClass = pPlayer->GetPreferredClass();
 	pPersistent->m_PreviouslyPickedClass = pPlayer->GetPreviouslyPickedClass();
 	pPersistent->m_AntiPing = pPlayer->GetAntiPingEnabled();
@@ -4262,4 +4262,49 @@ CLASS_AVAILABILITY CInfClassGameController::GetPlayerClassAvailability(PLAYERCLA
 bool CInfClassGameController::CanVote()
 {
 	return !m_InfectedStarted;
+}
+
+void CInfClassGameController::OnPlayerVoteCommand(int ClientID, int Vote)
+{
+	CInfClassPlayer *pPlayer = GetPlayer(ClientID);
+	if(!pPlayer)
+	{
+		return;
+	}
+
+	if(pPlayer->m_PlayerFlags & PLAYERFLAG_SCOREBOARD)
+	{
+		EPlayerScoreMode ScoreMode = pPlayer->GetScoreMode();
+		if(Vote < 0)
+		{
+			// F3, next mode
+			int ScoreModeValue = static_cast<int>(ScoreMode);
+			ScoreModeValue++;
+			ScoreMode = static_cast<EPlayerScoreMode>(ScoreModeValue);
+			if(ScoreMode == EPlayerScoreMode::Count)
+			{
+				ScoreMode = static_cast<EPlayerScoreMode>(0);
+			}
+		}
+		else
+		{
+			// F4, prev mode
+			int ScoreModeValue = static_cast<int>(ScoreMode);
+			if(ScoreModeValue == 0)
+			{
+				ScoreMode = static_cast<EPlayerScoreMode>(static_cast<int>(EPlayerScoreMode::Count) - 1);
+			}
+			else
+			{
+				ScoreModeValue--;
+				ScoreMode = static_cast<EPlayerScoreMode>(ScoreModeValue);
+			}
+		}
+
+		pPlayer->SetScoreMode(ScoreMode);
+	}
+	else
+	{
+		pPlayer->HookProtection(!pPlayer->HookProtectionEnabled(), false);
+	}
 }

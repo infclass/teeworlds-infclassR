@@ -1,6 +1,7 @@
 /* (c) Magnus Auvinen. See licence.txt in the root of the distribution for more information. */
 /* If you are missing that file, acquire a complete release at teeworlds.com.				*/
 #include "player.h"
+#include "engine/server.h"
 #include "entities/character.h"
 
 #include <engine/shared/config.h>
@@ -83,7 +84,6 @@ void CPlayer::Reset()
 
 /* INFECTION MODIFICATION START ***************************************/
 	m_Afk = false;
-	m_ScoreMode = PLAYERSCOREMODE_SCORE;
 
 	m_ClientNameLocked = false;
 	m_aOriginalName[0] = 0;
@@ -453,16 +453,6 @@ bool CPlayer::IsSpectator() const
 bool CPlayer::IsKnownClass(int c)
 {
 	return m_knownClass[c];
-}
-
-int CPlayer::GetScoreMode()
-{
-	return m_ScoreMode;
-}
-
-void CPlayer::SetScoreMode(int Mode)
-{
-	m_ScoreMode = Mode;
 }
 
 const char *CPlayer::GetName(int SnappingClient) const

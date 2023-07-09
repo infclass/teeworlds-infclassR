@@ -336,7 +336,6 @@ void CServer::CClient::Reset(bool ResetScore)
 #endif
 		m_LogInstance = -1;
 
-		m_DefaultScoreMode = PLAYERSCOREMODE_SCORE;
 		str_copy(m_aLanguage, "en", sizeof(m_aLanguage));
 
 		mem_zero(m_Memory, sizeof(m_Memory));
@@ -3672,16 +3671,6 @@ const char *CServer::GetAnnouncementLine(char const *pFileName)
 }
 
 /* INFECTION MODIFICATION START ***************************************/
-int CServer::GetClientDefaultScoreMode(int ClientID)
-{
-	return m_aClients[ClientID].m_DefaultScoreMode;
-}
-
-void CServer::SetClientDefaultScoreMode(int ClientID, int Value)
-{
-	m_aClients[ClientID].m_DefaultScoreMode = Value;
-}
-
 const char* CServer::GetClientLanguage(int ClientID)
 {
 	return m_aClients[ClientID].m_aLanguage;

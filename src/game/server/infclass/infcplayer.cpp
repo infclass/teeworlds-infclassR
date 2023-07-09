@@ -9,6 +9,7 @@
 #include "classes/humans/human.h"
 #include "classes/infcplayerclass.h"
 #include "classes/infected/infected.h"
+#include "engine/server.h"
 #include "entities/infccharacter.h"
 
 MACRO_ALLOC_POOL_ID_IMPL(CInfClassPlayer, MAX_CLIENTS)
@@ -49,25 +50,12 @@ void CInfClassPlayer::TryRespawn()
 
 int CInfClassPlayer::GetScore(int SnappingClient) const
 {
-	int SnapScoreMode = PLAYERSCOREMODE_SCORE;
-	if(GameServer()->GetPlayer(SnappingClient))
-	{
-		SnapScoreMode = GameServer()->m_apPlayers[SnappingClient]->GetScoreMode();
-	}
-
 	if(GetTeam() == TEAM_SPECTATORS)
 	{
 	}
 	else
 	{
-		if(SnapScoreMode == PLAYERSCOREMODE_TIME)
-		{
-			return m_HumanTime / Server()->TickSpeed();
-		}
-		else
-		{
-			return Server()->RoundStatistics()->PlayerScore(m_ClientID);
-		}
+		return Server()->RoundStatistics()->PlayerScore(m_ClientID);
 	}
 
 	return CPlayer::GetScore(SnappingClient);
@@ -491,6 +479,16 @@ bool CInfClassPlayer::MapMenuClickable()
 	return (m_MapMenu > 0 && (m_MapMenuTick > Server()->TickSpeed()/2));
 }
 
+EPlayerScoreMode CInfClassPlayer::GetScoreMode() const
+{
+	return m_ScoreMode;
+}
+
+void CInfClassPlayer::SetScoreMode(EPlayerScoreMode Mode)
+{
+	m_ScoreMode = Mode;
+}
+
 void CInfClassPlayer::ResetTheTargetToFollow()
 {
 	SetFollowTarget(-1, 0);
@@ -644,26 +642,21 @@ const char *CInfClassPlayer::GetClan(int SnappingClient) const
 		return Server()->ClientClan(m_ClientID);
 	}
 
-	int SnapScoreMode = PLAYERSCOREMODE_SCORE;
-	if(GameServer()->GetPlayer(SnappingClient))
-	{
-		SnapScoreMode = GameServer()->m_apPlayers[SnappingClient]->GetScoreMode();
-	}
-	
+	EPlayerScoreMode SnapScoreMode = GameController()->GetPlayerScoreMode(SnappingClient);
 	static char aBuf[32];
 
-	if(SnapScoreMode == PLAYERSCOREMODE_TIME)
-	{
-		float RoundDuration = static_cast<float>(m_HumanTime/((float)Server()->TickSpeed()))/60.0f;
-		int Minutes = static_cast<int>(RoundDuration);
-		int Seconds = static_cast<int>((RoundDuration - Minutes)*60.0f);
-		
-		str_format(aBuf, sizeof(aBuf), "%i:%s%i min", Minutes,((Seconds < 10) ? "0" : ""), Seconds);
-	}
-	else
+	if(SnapScoreMode == EPlayerScoreMode::Class)
 	{
 		const char *ClassName = CInfClassGameController::GetClanForClass(GetClass(), "?????");
 		str_format(aBuf, sizeof(aBuf), "%s%s", Server()->IsClientLogged(GetCID()) ? "@" : " ", ClassName);
+	}
+	else if(SnapScoreMode == EPlayerScoreMode::Time)
+	{
+		float RoundDuration = static_cast<float>(m_HumanTime / ((float)Server()->TickSpeed())) / 60.0f;
+		int Minutes = static_cast<int>(RoundDuration);
+		int Seconds = static_cast<int>((RoundDuration - Minutes) * 60.0f);
+
+		str_format(aBuf, sizeof(aBuf), "%i:%s%i min", Minutes, ((Seconds < 10) ? "0" : ""), Seconds);
 	}
 
 	// This is not thread-safe but we don't have threads.

@@ -169,6 +169,7 @@ public:
 	virtual void Snap(int SnappingClient);
 	
 	virtual bool CanVote();
+	virtual void OnPlayerVoteCommand(int ClientID, int Vote) = 0;
 
 	void OnStartRound();
 
