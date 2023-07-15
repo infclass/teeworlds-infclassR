@@ -22,12 +22,13 @@ public:
 class CMapInfoEx : public CMapInfo
 {
 public:
-	int Timestamp = 0;
+	int mTimestamp = 0;
 
 	const char *Name() const { return aMapName; }
 	void SetName(const char *pMapName);
 
 	void AddTimestamp(int Timestamp);
+	void AddSkippedAt(int Timestamp);
 	void ResetData();
 
 protected:
@@ -41,12 +42,20 @@ void CMapInfoEx::SetName(const char *pMapName)
 
 void CMapInfoEx::AddTimestamp(int Timestamp)
 {
-	this->Timestamp = Timestamp;
+	mTimestamp = Timestamp;
+}
+
+void CMapInfoEx::AddSkippedAt(int Timestamp)
+{
+	if(Timestamp > mTimestamp)
+	{
+		mTimestamp = Timestamp;
+	}
 }
 
 void CMapInfoEx::ResetData()
 {
-	Timestamp = 0;
+	mTimestamp = 0;
 }
 
 constexpr int MaxMapsNumber = 256;
@@ -83,7 +92,7 @@ CMapInfoEx *GetMapInfo(const char *pMapName)
 
 static float GetMapTimeScore(const CMapInfoEx &Info, int CurrentTimestamp, int MinTimestamp)
 {
-	int V1 = Info.Timestamp - MinTimestamp; // Range from zero to something
+	int V1 = Info.mTimestamp - MinTimestamp; // Range from zero to something
 	float V2 = CurrentTimestamp - MinTimestamp; // Range from something to zero
 
 	float TimeScore = 0;
@@ -568,9 +577,9 @@ void IGameController::ConSmartMapRotationStatus()
 		if(Info.MaximumPlayers && (CurrentActivePlayers > Info.MaximumPlayers))
 			continue;
 
-		if(Info.Timestamp < MinTimestamp)
+		if(Info.mTimestamp < MinTimestamp)
 		{
-			MinTimestamp = Info.Timestamp;
+			MinTimestamp = Info.mTimestamp;
 		}
 	}
 
@@ -593,7 +602,7 @@ void IGameController::ConSmartMapRotationStatus()
 		int MapScore = Skipped ? 0 : EstimatedScore;
 
 		str_format(aBuf, sizeof(aBuf), "- %2d %-*s Score: %3d (time: %.2f, fit players: %.2f, estimated score: %3d) | players min: %2d / max: %2d | ts: %d", i, MaxMapNameLength, Info.Name(),
-			MapScore, TimeScore, FitPlayersScore, EstimatedScore, Info.MinimumPlayers, Info.MaximumPlayers, Info.Timestamp);
+			MapScore, TimeScore, FitPlayersScore, EstimatedScore, Info.MinimumPlayers, Info.MaximumPlayers, Info.mTimestamp);
 
 		Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "server", aBuf);
 	}
@@ -627,7 +636,7 @@ void IGameController::PrintMapRotationData(IOHANDLE Output)
 	char aBuf[256];
 	for(const CMapInfoEx &Info : s_aMapInfo)
 	{
-		str_format(aBuf, sizeof(aBuf), "add_map_data %s %d", Info.Name(), Info.Timestamp);
+		str_format(aBuf, sizeof(aBuf), "add_map_data %s %d", Info.Name(), Info.mTimestamp);
 
 		if(Output)
 		{
@@ -773,6 +782,18 @@ void IGameController::CycleMap(bool Forced)
 		return;
 	}
 
+	if(Forced)
+	{
+		CMapInfoEx *pMapInfo = GetMapInfo(Config()->m_SvMap);
+		if(pMapInfo)
+		{
+			int Timestamp = time_timestamp();
+			pMapInfo->AddSkippedAt(Timestamp);
+			dbg_msg("smart-rotation", "CycleMap: Sync timestamp of %s to %d (forced)",
+				pMapInfo->Name(), Timestamp);
+		}
+	}
+
 	bool DoCycle = Forced;
 	if(!DoCycle)
 		return;
@@ -892,9 +913,9 @@ void IGameController::SmartMapCycle()
 		if(Info.MaximumPlayers && (CurrentActivePlayers > Info.MaximumPlayers))
 			continue;
 
-		if(Info.Timestamp < MinTimestamp)
+		if(Info.mTimestamp < MinTimestamp)
 		{
-			MinTimestamp = Info.Timestamp;
+			MinTimestamp = Info.mTimestamp;
 		}
 	}
 
