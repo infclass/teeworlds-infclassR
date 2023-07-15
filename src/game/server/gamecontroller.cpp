@@ -132,11 +132,6 @@ static float GetMapFitPlayersScore(const CMapInfoEx &Info, int CurrentActivePlay
 	return FitPlayersScore;
 }
 
-CConfig *IGameController::Config() const
-{
-	return GameServer()->Config();
-}
-
 IConsole *IGameController::Console()
 {
 	return GameServer()->Console();
@@ -145,6 +140,7 @@ IConsole *IGameController::Console()
 IGameController::IGameController(class CGameContext *pGameServer)
 {
 	m_pGameServer = pGameServer;
+	m_pConfig = m_pGameServer->Config();
 	m_pServer = m_pGameServer->Server();
 	m_pGameType = "unknown";
 
@@ -155,8 +151,6 @@ IGameController::IGameController(class CGameContext *pGameServer)
 	m_RoundStartTick = Server()->Tick();
 	m_RoundCount = 0;
 	m_GameFlags = 0;
-	m_aTeamscore[TEAM_RED] = 0;
-	m_aTeamscore[TEAM_BLUE] = 0;
 	m_aMapWish[0] = 0;
 	m_aQueuedMap[0] = 0;
 	m_aPreviousMap[0] = 0;
@@ -429,8 +423,6 @@ void IGameController::StartRound()
 	m_SuddenDeath = 0;
 	m_GameOverTick = -1;
 	GameServer()->m_World.m_Paused = false;
-	m_aTeamscore[TEAM_RED] = 0;
-	m_aTeamscore[TEAM_BLUE] = 0;
 	m_ForceBalanced = false;
 	Server()->DemoRecorder_HandleAutoStart();
 	char aBuf[256];
@@ -1021,6 +1013,10 @@ int IGameController::OnCharacterDeath(class CCharacter *pVictim, class CPlayer *
 	return 0;
 }
 
+void IGameController::OnCharacterSpawn(class CCharacter *pChr)
+{
+}
+
 void IGameController::OnStartRound()
 {
 	CMapInfoEx *pMapInfo = GetMapInfo(Config()->m_SvMap);
@@ -1031,10 +1027,6 @@ void IGameController::OnStartRound()
 	pMapInfo->AddTimestamp(Timestamp);
 	dbg_msg("smart-rotation", "OnStartRound: Sync timestamp of %s to %d",
 		pMapInfo->Name(), Timestamp);
-}
-
-void IGameController::OnCharacterSpawn(class CCharacter *pChr)
-{
 }
 
 void IGameController::DoWarmup(int Seconds)

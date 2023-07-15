@@ -6,6 +6,8 @@
 #include <base/vmath.h>
 #include <base/tl/array.h>
 
+#include <engine/map.h>
+
 class CConfig;
 class CPlayer;
 class CMapInfo;
@@ -19,11 +21,12 @@ class IConsole;
 class IGameController
 {
 	class CGameContext *m_pGameServer;
+	class CConfig *m_pConfig;
 	class IServer *m_pServer;
 
 protected:
 	CGameContext *GameServer() const { return m_pGameServer; }
-	CConfig *Config() const;
+	CConfig *Config() const { return m_pConfig; }
 	IServer *Server() const { return m_pServer; }
 	IConsole *Console();
 
@@ -60,16 +63,13 @@ protected:
 	void ResetGame();
 	void RotateMapTo(const char *pMapName);
 
-	char m_aMapWish[128];
-	char m_aQueuedMap[128];
-	char m_aPreviousMap[128];
-
+	char m_aMapWish[MAX_MAP_LENGTH];
+	char m_aQueuedMap[MAX_MAP_LENGTH];
+	char m_aPreviousMap[MAX_MAP_LENGTH];
 
 	int m_RoundStartTick;
 	int m_GameOverTick;
 	int m_SuddenDeath;
-
-	int m_aTeamscore[2];
 
 	int m_Warmup;
 	int m_RoundCount;
@@ -90,6 +90,41 @@ public:
 	virtual ~IGameController();
 
 	virtual void DoWincheck();
+
+	// event
+	/*
+		Function: OnCharacterDeath
+			Called when a CCharacter in the world dies.
+
+		Arguments:
+			victim - The CCharacter that died.
+			killer - The player that killed it.
+			weapon - What weapon that killed it. Can be -1 for undefined
+				weapon when switching team or player suicides.
+	*/
+	virtual int OnCharacterDeath(class CCharacter *pVictim, class CPlayer *pKiller, int Weapon);
+	/*
+		Function: OnCharacterSpawn
+			Called when a CCharacter spawns into the game world.
+
+		Arguments:
+			chr - The CCharacter that was spawned.
+	*/
+	virtual void OnCharacterSpawn(class CCharacter *pChr);
+
+	/*
+		Function: OnEntity
+			Called when the map is loaded to process an entity
+			in the map.
+
+		Arguments:
+			index - Entity index.
+			pos - Where the entity is located in the world.
+
+		Returns:
+			bool?
+	*/
+	virtual bool OnEntity(const char* pName, vec2 Pivot, vec2 P0, vec2 P1, vec2 P2, vec2 P3, int PosEnv);
 
 	virtual void OnPlayerConnect(class CPlayer *pPlayer);
 	virtual void OnPlayerDisconnect(CPlayer *pPlayer, int Type, const char *pReason);
@@ -134,41 +169,6 @@ public:
 	virtual void Snap(int SnappingClient);
 	
 	virtual bool CanVote();
-
-	/*
-		Function: on_entity
-			Called when the map is loaded to process an entity
-			in the map.
-
-		Arguments:
-			index - Entity index.
-			pos - Where the entity is located in the world.
-
-		Returns:
-			bool?
-	*/
-	virtual bool OnEntity(const char* pName, vec2 Pivot, vec2 P0, vec2 P1, vec2 P2, vec2 P3, int PosEnv);
-
-	/*
-		Function: on_CCharacter_spawn
-			Called when a CCharacter spawns into the game world.
-
-		Arguments:
-			chr - The CCharacter that was spawned.
-	*/
-	virtual void OnCharacterSpawn(class CCharacter *pChr);
-
-	/*
-		Function: on_CCharacter_death
-			Called when a CCharacter in the world dies.
-
-		Arguments:
-			victim - The CCharacter that died.
-			killer - The player that killed it.
-			weapon - What weapon that killed it. Can be -1 for undefined
-				weapon when switching team or player suicides.
-	*/
-	virtual int OnCharacterDeath(class CCharacter *pVictim, class CPlayer *pKiller, int Weapon);
 
 	void OnStartRound();
 
