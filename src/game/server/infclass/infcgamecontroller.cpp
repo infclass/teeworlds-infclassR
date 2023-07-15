@@ -2775,6 +2775,7 @@ int CInfClassGameController::InfectHumans(int NumHumansToInfect)
 	int NewInfected = 0;
 	for(CInfClassPlayer *pPlayer : Humans)
 	{
+		const int PrevInfectionTimestamp = pPlayer->GetInfectionTimestamp();
 		pPlayer->SetInfectionTimestamp(Timestamp);
 
 		pPlayer->KillCharacter(); // Infect the player
@@ -2786,6 +2787,16 @@ int CInfClassGameController::InfectHumans(int NumHumansToInfect)
 			_("{str:VictimName} has been infected"),
 				"VictimName", Server()->ClientName(pPlayer->GetCID()),
 				nullptr);
+
+		if(PrevInfectionTimestamp && Timestamp > PrevInfectionTimestamp)
+		{
+			int PrevInfectionSeconds = Timestamp - PrevInfectionTimestamp;
+			dbg_msg("server", "InfectHumans(): Infect cid=%d (previously infected %d seconds ago)", pPlayer->GetCID(), PrevInfectionSeconds);
+		}
+		else
+		{
+			dbg_msg("server", "InfectHumans(): Infect cid=%d (was not infected before)", pPlayer->GetCID());
+		}
 
 		if(NewInfected >= NumHumansToInfect)
 		{
