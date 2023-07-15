@@ -195,7 +195,7 @@ void CInfClassPlayer::Snap(int SnappingClient)
 		GetCharacterClass()->OnPlayerSnap(SnappingClient, InfClassVersion);
 	}
 
-	if(m_FollowTargetTicks > 0 && (SnappingClient == m_ClientID))
+	if(!IsSpectator() && (m_FollowTargetTicks > 0) && (SnappingClient == m_ClientID))
 	{
 		CNetObj_SpectatorInfo *pSpectatorInfo = Server()->SnapNewItem<CNetObj_SpectatorInfo>(m_ClientID);
 		if(!pSpectatorInfo)
