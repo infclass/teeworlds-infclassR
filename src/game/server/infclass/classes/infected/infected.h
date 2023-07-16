@@ -62,6 +62,7 @@ protected:
 	void SetHookOnLimit(bool OnLimit);
 
 	void SpiderPreCoreTick();
+	bool HasDrainingHook() const;
 
 	int m_HookDmgTick = 0;
 	int m_SlimeHealTick = 0;

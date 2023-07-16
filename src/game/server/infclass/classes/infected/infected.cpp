@@ -314,7 +314,7 @@ void CInfClassInfected::OnCharacterPostCoreTick()
 			{
 				m_HookDmgTick = Server()->Tick();
 				pVictimChar->TakeDamage(vec2(0.0f, 0.0f), Damage, GetCID(), DAMAGE_TYPE::DRYING_HOOK);
-				if((GetPlayerClass() == PLAYERCLASS_SMOKER || GetPlayerClass() == PLAYERCLASS_BAT))
+				if(HasDrainingHook())
 				{
 					m_pCharacter->Heal(2);
 				}
@@ -762,6 +762,18 @@ void CInfClassInfected::SpiderPreCoreTick()
 				break;
 			}
 		}
+	}
+}
+
+bool CInfClassInfected::HasDrainingHook() const
+{
+	switch(GetPlayerClass())
+	{
+	case PLAYERCLASS_BAT:
+	case PLAYERCLASS_SMOKER:
+		return true;
+	default:
+		return false;
 	}
 }
 
