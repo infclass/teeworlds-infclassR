@@ -316,7 +316,7 @@ void CInfClassInfected::OnCharacterPostCoreTick()
 				pVictimChar->TakeDamage(vec2(0.0f, 0.0f), Damage, GetCID(), DAMAGE_TYPE::DRYING_HOOK);
 				if(HasDrainingHook())
 				{
-					m_pCharacter->Heal(2);
+					m_pCharacter->Heal(Damage);
 				}
 			}
 		}
