@@ -599,7 +599,11 @@ void CInfClassInfected::OnHammerFired(WeaponFireContext *pFireContext)
 				{
 					Damage = Config()->m_InfBatDamage;
 					DamageType = DAMAGE_TYPE::BITE;
-					m_pCharacter->Heal(Config()->m_InfBatLifeSteal);
+
+					if(GameController()->GetRoundType() != ERoundType::Survival)
+					{
+						m_pCharacter->Heal(Config()->m_InfBatLifeSteal);
+					}
 				}
 
 				pTarget->TakeDamage(Force, Damage, GetCID(), DamageType);
