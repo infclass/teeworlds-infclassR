@@ -114,7 +114,6 @@ public:
 	void HandleMapMenu();
 	void HandleMapMenuClicked();
 	void HandleWeaponsRegen();
-	void HandleHookDraining();
 	void HandleTeleports();
 	void HandleIndirectKillerCleanup();
 

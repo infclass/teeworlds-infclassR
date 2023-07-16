@@ -284,6 +284,45 @@ void CInfClassInfected::OnCharacterTick()
 	}
 }
 
+void CInfClassInfected::OnCharacterTickPaused()
+{
+	CInfClassPlayerClass::OnCharacterTickPaused();
+
+	++m_HookDmgTick;
+}
+
+void CInfClassInfected::OnCharacterPostCoreTick()
+{
+	CInfClassPlayerClass::OnCharacterPostCoreTick();
+
+	int HookerPlayer = m_pCharacter->m_Core.m_HookedPlayer;
+	if(HookerPlayer >= 0)
+	{
+		CInfClassCharacter *VictimChar = GameController()->GetCharacter(HookerPlayer);
+		if(VictimChar)
+		{
+			float Rate = 1.0f;
+			int Damage = 1;
+
+			if(GetPlayerClass() == PLAYERCLASS_SMOKER)
+			{
+				Rate = 0.5f;
+				Damage = g_Config.m_InfSmokerHookDamage;
+			}
+
+			if(m_HookDmgTick + Server()->TickSpeed() * Rate < Server()->Tick())
+			{
+				m_HookDmgTick = Server()->Tick();
+				VictimChar->TakeDamage(vec2(0.0f, 0.0f), Damage, GetCID(), DAMAGE_TYPE::DRYING_HOOK);
+				if((GetPlayerClass() == PLAYERCLASS_SMOKER || GetPlayerClass() == PLAYERCLASS_BAT) && VictimChar->IsHuman())
+				{
+					m_pCharacter->Heal(2);
+				}
+			}
+		}
+	}
+}
+
 void CInfClassInfected::OnCharacterSnap(int SnappingClient)
 {
 	if(SnappingClient == m_pPlayer->GetCID())

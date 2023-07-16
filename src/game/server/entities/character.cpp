@@ -458,10 +458,6 @@ void CCharacter::TickPaused()
 		++m_aWeapons[m_ActiveWeapon].m_AmmoRegenStart;
 	if(m_EmoteStop > -1)
 		++m_EmoteStop;
-		
-/* INFECTION MODIFICATION START ***************************************/
-	++m_HookDmgTick;
-/* INFECTION MODIFICATION END *****************************************/
 }
 
 bool CCharacter::IncreaseHealth(int Amount)

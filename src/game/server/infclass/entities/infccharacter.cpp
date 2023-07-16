@@ -1593,38 +1593,6 @@ void CInfClassCharacter::HandleWeaponsRegen()
 	}
 }
 
-void CInfClassCharacter::HandleHookDraining()
-{
-	if(IsZombie())
-	{
-		if(m_Core.m_HookedPlayer >= 0)
-		{
-			CInfClassCharacter *VictimChar = GameController()->GetCharacter(m_Core.m_HookedPlayer);
-			if(VictimChar)
-			{
-				float Rate = 1.0f;
-				int Damage = 1;
-
-				if(GetPlayerClass() == PLAYERCLASS_SMOKER)
-				{
-					Rate = 0.5f;
-					Damage = g_Config.m_InfSmokerHookDamage;
-				}
-
-				if(m_HookDmgTick + Server()->TickSpeed()*Rate < Server()->Tick())
-				{
-					m_HookDmgTick = Server()->Tick();
-					VictimChar->TakeDamage(vec2(0.0f,0.0f), Damage, GetCID(), DAMAGE_TYPE::DRYING_HOOK);
-					if((GetPlayerClass() == PLAYERCLASS_SMOKER || GetPlayerClass() == PLAYERCLASS_BAT) && VictimChar->IsHuman())
-					{
-						Heal(2);
-					}
-				}
-			}
-		}
-	}
-}
-
 void CInfClassCharacter::HandleTeleports()
 {
 	int Index = GameServer()->Collision()->GetPureMapIndex(m_Pos);
@@ -2236,7 +2204,6 @@ void CInfClassCharacter::PostCoreTick()
 	}
 
 	HandleWeaponsRegen();
-	HandleHookDraining();
 	HandleIndirectKillerCleanup();
 	HandleTeleports();
 
