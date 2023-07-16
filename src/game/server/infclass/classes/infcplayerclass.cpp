@@ -288,6 +288,14 @@ void CInfClassPlayerClass::OnCharacterTickPaused()
 {
 }
 
+void CInfClassPlayerClass::OnCharacterPostCoreTick()
+{
+	if(m_pCharacter->m_Core.m_TriggeredEvents & COREEVENT_HOOK_ATTACH_PLAYER)
+	{
+		OnHookAttachedPlayer();
+	}
+}
+
 void CInfClassPlayerClass::OnCharacterSnap(int SnappingClient)
 {
 }
