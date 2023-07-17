@@ -658,6 +658,10 @@ const char *CInfClassPlayer::GetClan(int SnappingClient) const
 
 		str_format(aBuf, sizeof(aBuf), "%i:%s%i min", Minutes, ((Seconds < 10) ? "0" : ""), Seconds);
 	}
+	else if(SnapScoreMode == EPlayerScoreMode::Clan)
+	{
+		return Server()->ClientClan(m_ClientID);
+	}
 
 	// This is not thread-safe but we don't have threads.
 	return aBuf;

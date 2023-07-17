@@ -31,6 +31,7 @@ enum class EPlayerScoreMode
 {
 	Class,
 	Time,
+	Clan,
 
 	Count,
 };
