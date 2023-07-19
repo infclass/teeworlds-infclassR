@@ -695,6 +695,11 @@ void CInfClassPlayer::UpdateSpectatorPos()
 
 bool CInfClassPlayer::IsForcedToSpectate() const
 {
+	if(!g_Config.m_InfEnableFollowingCamera)
+	{
+		return false;
+	}
+
 	if (IsSpectator() || (m_pCharacter && m_pCharacter->IsAlive()))
 		return false;
 
