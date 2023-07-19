@@ -105,18 +105,14 @@ void CInfClassPlayer::Tick()
 			{
 				m_FollowTargetId = -1;
 			}
-			else
+			else if(IsForcedToSpectate())
 			{
 				const CInfClassPlayer *pFollowedPlayer = GameController()->GetPlayer(TargetToFollow());
-				if(pFollowedPlayer && pFollowedPlayer->GetCharacter() && (!pFollowedPlayer->IsHuman() || (pFollowedPlayer->IsHuman() == IsHuman())))
-				{
-					m_ViewPos = pFollowedPlayer->m_ViewPos;
-				}
-				else
-				{
-					m_FollowTargetId = -1;
-					m_FollowTargetTicks = 0;
-				}
+				m_ViewPos = pFollowedPlayer->m_ViewPos;
+			}
+			else
+			{
+				ResetTheTargetToFollow();
 			}
 		}
 	}
@@ -699,7 +695,20 @@ void CInfClassPlayer::UpdateSpectatorPos()
 
 bool CInfClassPlayer::IsForcedToSpectate() const
 {
-	return !IsSpectator() && (!m_pCharacter || !m_pCharacter->IsAlive()) && TargetToFollow() >= 0;
+	if (IsSpectator() || (m_pCharacter && m_pCharacter->IsAlive()))
+		return false;
+
+	int Target = TargetToFollow();
+	if (Target >= 0)
+	{
+		const CInfClassPlayer *pFollowedPlayer = GameController()->GetPlayer(Target);
+		if(pFollowedPlayer && pFollowedPlayer->GetCharacter() && (!pFollowedPlayer->IsHuman() || (pFollowedPlayer->IsHuman() == IsHuman())))
+		{
+			return true;
+		}
+	}
+
+	return false;
 }
 
 void CInfClassPlayer::SendClassIntro()
