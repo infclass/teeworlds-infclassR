@@ -168,6 +168,7 @@ public:
 	bool IsInvincible() const; // Invincible here means "ignores all damage"
 	void SetInvincible(int Invincible);
 	bool HasHallucination() const;
+	void Unfreeze() override;
 	void TryUnfreeze(int UnfreezerCID = -1);
 	FREEZEREASON GetFreezeReason() const { return m_FreezeReason; }
 	int GetFreezer() const;

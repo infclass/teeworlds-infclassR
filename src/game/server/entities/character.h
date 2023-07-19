@@ -220,7 +220,7 @@ public:
 	void SetAntiFire();
 	void Freeze(float Time, int Player, FREEZEREASON Reason);
 	bool IsFrozen() const;
-	void Unfreeze();
+	virtual void Unfreeze();
 	bool IsInLove() const;
 	void LoveEffect(float Time);
 	void HallucinationEffect();

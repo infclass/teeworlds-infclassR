@@ -716,13 +716,9 @@ void CCharacter::Freeze(float Time, int Player, FREEZEREASON Reason)
 void CCharacter::Unfreeze()
 {
 	m_IsFrozen = false;
-	m_FrozenTime = -1;
-	
-	if(m_FreezeReason == FREEZEREASON_UNDEAD)
-	{
-		m_Health = 10.0;
-	}
-	
+	m_FrozenTime = 0;
+	m_Core.m_FreezeStart = 0;
+
 	if(m_pPlayer)
 	{
 		GameServer()->ClearBroadcast(m_pPlayer->GetCID(), BROADCAST_PRIORITY_EFFECTSTATE);

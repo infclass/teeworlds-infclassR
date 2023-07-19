@@ -1929,6 +1929,17 @@ bool CInfClassCharacter::HasHallucination() const
 	return m_HallucinationTick > 0;
 }
 
+void CInfClassCharacter::Unfreeze()
+{
+	CCharacter::Unfreeze();
+
+	if(m_FreezeReason == FREEZEREASON_UNDEAD)
+	{
+		m_Health = 10.0;
+		GetPlayer()->ResetTheTargetToFollow();
+	}
+}
+
 void CInfClassCharacter::TryUnfreeze(int UnfreezerCID)
 {
 	if(!IsFrozen())
