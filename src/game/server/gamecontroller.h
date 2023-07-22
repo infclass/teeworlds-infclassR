@@ -46,6 +46,7 @@ public:
 	void LoadMapRotationData();
 	void SaveMapRotationData(const char *pFileName);
 	void PrintMapRotationData(IOHANDLE Output = 0);
+	virtual bool MapRotationEnabled() const = 0;
 
 	static void ResetMapInfo(const char *pMapName);
 	static void AddMapTimestamp(const char *pMapName, int Timestamp);

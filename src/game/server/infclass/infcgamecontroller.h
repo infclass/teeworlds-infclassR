@@ -132,6 +132,7 @@ public:
 	float GetHeroFlagCooldown() const;
 
 	bool IsInfectionStarted() const;
+	bool MapRotationEnabled() const override;
 	bool CanJoinTeam(int Team, int ClientID) override;
 	bool AreTurretsEnabled() const;
 	bool MercBombsEnabled() const;

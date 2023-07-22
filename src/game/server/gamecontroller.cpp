@@ -795,6 +795,15 @@ void IGameController::CycleMap(bool Forced)
 	}
 
 	bool DoCycle = Forced;
+
+	if(m_RoundCount >= g_Config.m_SvRoundsPerMap - 1)
+	{
+		if(MapRotationEnabled())
+		{
+			DoCycle = true;
+		}
+	}
+
 	if(!DoCycle)
 		return;
 

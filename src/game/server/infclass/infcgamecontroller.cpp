@@ -2920,6 +2920,11 @@ bool CInfClassGameController::IsInfectionStarted() const
 	return (m_RoundStartTick + Server()->TickSpeed() * GetInfectionDelay() <= Server()->Tick());
 }
 
+bool CInfClassGameController::MapRotationEnabled() const
+{
+	return true;
+}
+
 bool CInfClassGameController::CanJoinTeam(int Team, int ClientID)
 {
 	if(Team != TEAM_SPECTATORS)
