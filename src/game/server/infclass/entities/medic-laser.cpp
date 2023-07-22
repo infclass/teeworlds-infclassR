@@ -22,6 +22,8 @@ bool CMedicLaser::OnCharacterHit(CInfClassCharacter *pHit)
 {
 	CInfClassCharacter *pInfected = pHit;
 	CInfClassCharacter *pMedic = GetOwnerCharacter();
+	if(!pMedic)
+		return false;
 
 	int MinimumHP = Config()->m_InfRevivalDamage + 1;
 	int MinimumInfected = 5;
