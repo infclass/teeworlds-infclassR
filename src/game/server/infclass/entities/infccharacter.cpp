@@ -2344,6 +2344,7 @@ void CInfClassCharacter::DestroyChildEntities()
 	static const auto InfCEntities = {
 		CGameWorld::ENTTYPE_PICKUP,
 		CGameWorld::ENTTYPE_PROJECTILE,
+		CGameWorld::ENTTYPE_LASER,
 		CGameWorld::ENTTYPE_ENGINEER_WALL,
 		CGameWorld::ENTTYPE_LOOPER_WALL,
 		CGameWorld::ENTTYPE_SOLDIER_BOMB,
