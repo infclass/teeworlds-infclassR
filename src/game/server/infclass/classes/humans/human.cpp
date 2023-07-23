@@ -989,80 +989,80 @@ void CInfClassHuman::GiveClassAttributes()
 
 	switch(GetPlayerClass())
 	{
-		case PLAYERCLASS_ENGINEER:
-			m_pCharacter->GiveWeapon(WEAPON_HAMMER, -1);
-			m_pCharacter->GiveWeapon(WEAPON_GUN, -1);
+	case PLAYERCLASS_ENGINEER:
+		m_pCharacter->GiveWeapon(WEAPON_HAMMER, -1);
+		m_pCharacter->GiveWeapon(WEAPON_GUN, -1);
+		m_pCharacter->GiveWeapon(WEAPON_LASER, -1);
+		m_pCharacter->SetActiveWeapon(WEAPON_LASER);
+		break;
+	case PLAYERCLASS_SOLDIER:
+		m_pCharacter->GiveWeapon(WEAPON_HAMMER, -1);
+		m_pCharacter->GiveWeapon(WEAPON_GUN, -1);
+		m_pCharacter->GiveWeapon(WEAPON_GRENADE, -1);
+		m_pCharacter->SetActiveWeapon(WEAPON_GRENADE);
+		break;
+	case PLAYERCLASS_MERCENARY:
+		m_pCharacter->GiveWeapon(WEAPON_HAMMER, -1);
+		m_pCharacter->GiveWeapon(WEAPON_GRENADE, -1);
+		m_pCharacter->GiveWeapon(WEAPON_GUN, -1);
+		if(GameController()->MercBombsEnabled())
 			m_pCharacter->GiveWeapon(WEAPON_LASER, -1);
-			m_pCharacter->SetActiveWeapon(WEAPON_LASER);
-			break;
-		case PLAYERCLASS_SOLDIER:
+		m_pCharacter->SetActiveWeapon(WEAPON_GUN);
+		break;
+	case PLAYERCLASS_SNIPER:
+		m_pCharacter->GiveWeapon(WEAPON_HAMMER, -1);
+		m_pCharacter->GiveWeapon(WEAPON_GUN, -1);
+		m_pCharacter->GiveWeapon(WEAPON_LASER, -1);
+		m_pCharacter->SetActiveWeapon(WEAPON_LASER);
+		break;
+	case PLAYERCLASS_SCIENTIST:
+		m_pCharacter->GiveWeapon(WEAPON_HAMMER, -1);
+		m_pCharacter->GiveWeapon(WEAPON_GUN, -1);
+		m_pCharacter->GiveWeapon(WEAPON_LASER, -1);
+		m_pCharacter->GiveWeapon(WEAPON_GRENADE, -1);
+		m_pCharacter->SetActiveWeapon(WEAPON_LASER);
+		break;
+	case PLAYERCLASS_BIOLOGIST:
+		m_pCharacter->GiveWeapon(WEAPON_HAMMER, -1);
+		m_pCharacter->GiveWeapon(WEAPON_GUN, -1);
+		m_pCharacter->GiveWeapon(WEAPON_LASER, -1);
+		m_pCharacter->GiveWeapon(WEAPON_SHOTGUN, -1);
+		m_pCharacter->SetActiveWeapon(WEAPON_SHOTGUN);
+		break;
+	case PLAYERCLASS_LOOPER:
+		m_pCharacter->GiveWeapon(WEAPON_HAMMER, -1);
+		m_pCharacter->GiveWeapon(WEAPON_LASER, -1);
+		m_pCharacter->GiveWeapon(WEAPON_GRENADE, -1);
+		m_pCharacter->SetActiveWeapon(WEAPON_LASER);
+		break;
+	case PLAYERCLASS_MEDIC:
+		m_pCharacter->GiveWeapon(WEAPON_HAMMER, -1);
+		m_pCharacter->GiveWeapon(WEAPON_GUN, -1);
+		m_pCharacter->GiveWeapon(WEAPON_SHOTGUN, -1);
+		m_pCharacter->GiveWeapon(WEAPON_GRENADE, -1);
+		m_pCharacter->GiveWeapon(WEAPON_LASER, -1);
+		m_pCharacter->SetActiveWeapon(WEAPON_SHOTGUN);
+		break;
+	case PLAYERCLASS_HERO:
+		if(GameController()->AreTurretsEnabled())
 			m_pCharacter->GiveWeapon(WEAPON_HAMMER, -1);
-			m_pCharacter->GiveWeapon(WEAPON_GUN, -1);
-			m_pCharacter->GiveWeapon(WEAPON_GRENADE, -1);
-			m_pCharacter->SetActiveWeapon(WEAPON_GRENADE);
-			break;
-		case PLAYERCLASS_MERCENARY:
-			m_pCharacter->GiveWeapon(WEAPON_HAMMER, -1);
-			m_pCharacter->GiveWeapon(WEAPON_GRENADE, -1);
-			m_pCharacter->GiveWeapon(WEAPON_GUN, -1);
-			if(GameController()->MercBombsEnabled())
-				m_pCharacter->GiveWeapon(WEAPON_LASER, -1);
-			m_pCharacter->SetActiveWeapon(WEAPON_GUN);
-			break;
-		case PLAYERCLASS_SNIPER:
-			m_pCharacter->GiveWeapon(WEAPON_HAMMER, -1);
-			m_pCharacter->GiveWeapon(WEAPON_GUN, -1);
-			m_pCharacter->GiveWeapon(WEAPON_LASER, -1);
-			m_pCharacter->SetActiveWeapon(WEAPON_LASER);
-			break;
-		case PLAYERCLASS_SCIENTIST:
-			m_pCharacter->GiveWeapon(WEAPON_HAMMER, -1);
-			m_pCharacter->GiveWeapon(WEAPON_GUN, -1);
-			m_pCharacter->GiveWeapon(WEAPON_LASER, -1);
-			m_pCharacter->GiveWeapon(WEAPON_GRENADE, -1);
-			m_pCharacter->SetActiveWeapon(WEAPON_LASER);
-			break;
-		case PLAYERCLASS_BIOLOGIST:
-			m_pCharacter->GiveWeapon(WEAPON_HAMMER, -1);
-			m_pCharacter->GiveWeapon(WEAPON_GUN, -1);
-			m_pCharacter->GiveWeapon(WEAPON_LASER, -1);
-			m_pCharacter->GiveWeapon(WEAPON_SHOTGUN, -1);
-			m_pCharacter->SetActiveWeapon(WEAPON_SHOTGUN);
-			break;
-		case PLAYERCLASS_LOOPER:
-			m_pCharacter->GiveWeapon(WEAPON_HAMMER, -1);
-			m_pCharacter->GiveWeapon(WEAPON_LASER, -1);
-			m_pCharacter->GiveWeapon(WEAPON_GRENADE, -1);
-			m_pCharacter->SetActiveWeapon(WEAPON_LASER);
-			break;
-		case PLAYERCLASS_MEDIC:
-			m_pCharacter->GiveWeapon(WEAPON_HAMMER, -1);
-			m_pCharacter->GiveWeapon(WEAPON_GUN, -1);
-			m_pCharacter->GiveWeapon(WEAPON_SHOTGUN, -1);
-			m_pCharacter->GiveWeapon(WEAPON_GRENADE, -1);
-			m_pCharacter->GiveWeapon(WEAPON_LASER, -1);
-			m_pCharacter->SetActiveWeapon(WEAPON_SHOTGUN);
-			break;
-		case PLAYERCLASS_HERO:
-			if(GameController()->AreTurretsEnabled())
-				m_pCharacter->GiveWeapon(WEAPON_HAMMER, -1);
-			m_pCharacter->GiveWeapon(WEAPON_GUN, -1);
-			m_pCharacter->GiveWeapon(WEAPON_SHOTGUN, -1);
-			m_pCharacter->GiveWeapon(WEAPON_LASER, -1);
-			m_pCharacter->GiveWeapon(WEAPON_GRENADE, -1);
-			m_pCharacter->SetActiveWeapon(WEAPON_GRENADE);
-			break;
-		case PLAYERCLASS_NINJA:
-			m_pCharacter->GiveWeapon(WEAPON_HAMMER, -1);
-			m_pCharacter->GiveWeapon(WEAPON_GUN, -1);
-			m_pCharacter->GiveWeapon(WEAPON_GRENADE, -1);
-			m_pCharacter->GiveWeapon(WEAPON_LASER, -1);
-			m_pCharacter->SetActiveWeapon(WEAPON_HAMMER);
-			break;
-		case PLAYERCLASS_NONE:
-			m_pCharacter->GiveWeapon(WEAPON_HAMMER, -1);
-			m_pCharacter->SetActiveWeapon(WEAPON_HAMMER);
-			break;
+		m_pCharacter->GiveWeapon(WEAPON_GUN, -1);
+		m_pCharacter->GiveWeapon(WEAPON_SHOTGUN, -1);
+		m_pCharacter->GiveWeapon(WEAPON_LASER, -1);
+		m_pCharacter->GiveWeapon(WEAPON_GRENADE, -1);
+		m_pCharacter->SetActiveWeapon(WEAPON_GRENADE);
+		break;
+	case PLAYERCLASS_NINJA:
+		m_pCharacter->GiveWeapon(WEAPON_HAMMER, -1);
+		m_pCharacter->GiveWeapon(WEAPON_GUN, -1);
+		m_pCharacter->GiveWeapon(WEAPON_GRENADE, -1);
+		m_pCharacter->GiveWeapon(WEAPON_LASER, -1);
+		m_pCharacter->SetActiveWeapon(WEAPON_HAMMER);
+		break;
+	case PLAYERCLASS_NONE:
+		m_pCharacter->GiveWeapon(WEAPON_HAMMER, -1);
+		m_pCharacter->SetActiveWeapon(WEAPON_HAMMER);
+		break;
 	}
 
 	if(GetPlayerClass() == PLAYERCLASS_SNIPER)
