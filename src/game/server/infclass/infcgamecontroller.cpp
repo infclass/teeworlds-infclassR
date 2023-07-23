@@ -2353,6 +2353,9 @@ void CInfClassGameController::UpdateNinjaTargets()
 	if(!m_InfectedStarted && !Config()->m_InfTrainingMode)
 		return;
 
+	if(GetRoundType() == ERoundType::Survival)
+		return;
+
 	int InfectedCount = 0;
 
 	for(int i = 0; i < MAX_CLIENTS; i++)

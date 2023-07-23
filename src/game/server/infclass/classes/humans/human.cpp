@@ -1113,6 +1113,17 @@ void CInfClassHuman::GiveClassAttributes()
 		m_pCharacter->GiveWeapon(WEAPON_GRENADE, -1);
 		m_pCharacter->GiveWeapon(WEAPON_LASER, -1);
 		m_pCharacter->SetActiveWeapon(WEAPON_HAMMER);
+		if(GameController()->GetRoundType() == ERoundType::Survival)
+		{
+			// Increase the velocity
+			m_NinjaVelocityBuff = 1;
+
+			// Set the total damage to 10
+			m_NinjaExtraDamage = 1;
+
+			// Give two extra grenades
+			m_NinjaAmmoBuff = 2;
+		}
 		break;
 	case PLAYERCLASS_NONE:
 		m_pCharacter->GiveWeapon(WEAPON_HAMMER, -1);
