@@ -117,7 +117,7 @@ private:
 	int m_NinjaTargetTick = 0;
 	int m_NinjaTargetCID = -1;
 	int m_NinjaVelocityBuff = 0;
-	int m_NinjaStrengthBuff = 0;
+	int m_NinjaExtraDamage = 0;
 	int m_NinjaAmmoBuff = 0;
 	icArray<CEntity *, 24> m_apHitObjects;
 	bool m_HasWhiteHole = false;

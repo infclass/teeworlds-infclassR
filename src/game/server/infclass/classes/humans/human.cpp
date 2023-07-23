@@ -636,7 +636,7 @@ void CInfClassHuman::HandleNinja()
 				// set his velocity to fast upward (for now)
 				m_apHitObjects.Add(pTarget);
 
-				pTarget->TakeDamage(vec2(0, -10.0f), minimum(g_pData->m_Weapons.m_Ninja.m_pBase->m_Damage + m_NinjaStrengthBuff, 20), GetCID(), DAMAGE_TYPE::NINJA);
+				pTarget->TakeDamage(vec2(0, -10.0f), minimum(g_pData->m_Weapons.m_Ninja.m_pBase->m_Damage + m_NinjaExtraDamage, 20), GetCID(), DAMAGE_TYPE::NINJA);
 			}
 		}
 	}
@@ -975,7 +975,7 @@ void CInfClassHuman::GiveClassAttributes()
 	m_NinjaTargetTick = 0;
 	m_NinjaTargetCID = -1;
 	m_NinjaVelocityBuff = 0;
-	m_NinjaStrengthBuff = 0;
+	m_NinjaExtraDamage = 0;
 	m_NinjaAmmoBuff = 0;
 
 	RemoveWhiteHole();
@@ -1494,7 +1494,7 @@ void CInfClassHuman::GiveNinjaBuf()
 		GameServer()->SendChatTarget_Localization(GetCID(), CHATCATEGORY_SCORE, _("Sword velocity increased"), NULL);
 		break;
 	case 1: //Strength Buff
-		m_NinjaStrengthBuff++;
+		m_NinjaExtraDamage++;
 		GameServer()->SendChatTarget_Localization(GetCID(), CHATCATEGORY_SCORE, _("Sword strength increased"), NULL);
 		break;
 	case 2: //Ammo Buff
