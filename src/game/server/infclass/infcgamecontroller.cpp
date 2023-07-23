@@ -3391,6 +3391,9 @@ bool CInfClassGameController::WhiteHoleEnabled() const
 
 float CInfClassGameController::GetWhiteHoleLifeSpan() const
 {
+	if(GetRoundType() == ERoundType::Survival)
+		return 15;
+
 	return Config()->m_InfWhiteHoleLifeSpan;
 }
 
