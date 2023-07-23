@@ -25,8 +25,8 @@ public:
 	void Tick() override;
 
 	void Explode(int TriggeredBy);
-	void Upgrade(float Points);
 	bool IsReadyToExplode() const;
+	void SetLoad(float Load);
 	float GetLoad() const { return m_Load; }
 
 private:

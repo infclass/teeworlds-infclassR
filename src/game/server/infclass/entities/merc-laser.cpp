@@ -6,6 +6,7 @@
 
 #include <engine/shared/config.h>
 
+#include <game/server/infclass/classes/humans/human.h>
 #include <game/server/infclass/entities/merc-bomb.h>
 #include <game/server/infclass/infcgamecontroller.h>
 
@@ -26,7 +27,8 @@ bool CMercenaryLaser::HitCharacter(vec2 From, vec2 To)
 	if(pHitMercBomb)
 	{
 		CMercenaryBomb *pBomb = static_cast<CMercenaryBomb*>(pHitMercBomb);
-		pBomb->Upgrade(m_UpgradePoints);
+		CInfClassHuman *pMercClass = CInfClassHuman::GetInstance(GetOwnerClass());
+		pMercClass->UpgradeMercBomb(pBomb, m_UpgradePoints);
 
 		m_From = From;
 		m_Pos = At;

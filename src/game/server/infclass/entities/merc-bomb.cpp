@@ -38,18 +38,12 @@ CMercenaryBomb::~CMercenaryBomb()
 	}
 }
 
-void CMercenaryBomb::Upgrade(float Points)
+void CMercenaryBomb::SetLoad(float Load)
 {
-	float MaxDamage = Config()->m_InfMercBombs;
-	float NewDamage = minimum(MaxDamage, m_Load + Points);
-	if(NewDamage <= m_Load)
-	{
-		return;
-	}
+	if (Load > m_Load)
+		GameServer()->CreateSound(GetPos(), SOUND_PICKUP_ARMOR);
 
-	m_Load = NewDamage;
-
-	GameServer()->CreateSound(GetPos(), SOUND_PICKUP_ARMOR);
+	m_Load = Load;
 }
 
 void CMercenaryBomb::Tick()

@@ -7,6 +7,7 @@
 #include <game/server/alloc.h>
 
 class CHeroFlag;
+class CMercenaryBomb;
 class CWhiteHole;
 
 enum class EGiftType
@@ -66,6 +67,7 @@ public:
 	void GiveWhiteHole();
 	void RemoveWhiteHole();
 
+	void UpgradeMercBomb(CMercenaryBomb *pBomb, float UpgradePoints);
 	void OnHeroFlagTaken(CInfClassCharacter *pHero);
 	void OnWhiteHoleSpawned(CWhiteHole *pWhiteHole);
 

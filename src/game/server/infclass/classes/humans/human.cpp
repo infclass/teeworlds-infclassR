@@ -1770,7 +1770,7 @@ void CInfClassHuman::FireMercenaryBomb(WeaponFireContext *pFireContext)
 		else
 		{
 			const float UpgradePoints = Distance <= pCurrentBomb->GetProximityRadius() ? 2 : 0.5;
-			pCurrentBomb->Upgrade(UpgradePoints);
+			UpgradeMercBomb(pCurrentBomb, UpgradePoints);
 		}
 	}
 	else
@@ -2076,6 +2076,13 @@ void CInfClassHuman::RemoveWhiteHole()
 	{
 		m_pCharacter->SetSuperWeaponIndicatorEnabled(false);
 	}
+}
+
+void CInfClassHuman::UpgradeMercBomb(CMercenaryBomb *pBomb, float UpgradePoints)
+{
+	float Load = pBomb->GetLoad();
+	float NewLoad = minimum<float>(Config()->m_InfMercBombs, Load + UpgradePoints);
+	pBomb->SetLoad(NewLoad);
 }
 
 void CInfClassHuman::OnHeroFlagTaken(CInfClassCharacter *pHero)
