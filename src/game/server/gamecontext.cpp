@@ -1864,7 +1864,8 @@ void CGameContext::OnCallVote(void *pRawMsg, int ClientID)
 	}
 	else
 	{
-		if(pPlayer->GetTeam() == TEAM_SPECTATORS)
+		const int Authed = Server()->GetAuthedState(ClientID);
+		if(pPlayer->GetTeam() == TEAM_SPECTATORS && (Authed != IServer::AUTHED_ADMIN))
 		{
 			SendChatTarget(ClientID, "Spectators aren't allowed to start a vote.");
 			return;
@@ -1873,8 +1874,6 @@ void CGameContext::OnCallVote(void *pRawMsg, int ClientID)
 		if(str_comp_nocase(pMsg->m_pType, "option") == 0)
 		{
 			// this vote is not a kick/ban or spectate vote
-
-			int Authed = Server()->GetAuthedState(ClientID);
 			CVoteOptionServer *pOption = m_pVoteOptionFirst;
 			while(pOption) // loop through all option votes to find out which vote it is
 			{
