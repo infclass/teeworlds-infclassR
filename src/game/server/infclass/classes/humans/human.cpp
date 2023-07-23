@@ -59,17 +59,17 @@ CInfClassHuman::~CInfClassHuman()
 CInfClassHuman *CInfClassHuman::GetInstance(CInfClassPlayer *pPlayer)
 {
 	CInfClassPlayerClass *pClass = pPlayer ? pPlayer->GetCharacterClass() : nullptr;
-	if(pClass && pClass->IsHuman())
-	{
-		return static_cast<CInfClassHuman*>(pClass);
-	}
-
-	return nullptr;
+	return GetInstance(pClass);
 }
 
 CInfClassHuman *CInfClassHuman::GetInstance(CInfClassCharacter *pCharacter)
 {
 	CInfClassPlayerClass *pClass = pCharacter ? pCharacter->GetClass() : nullptr;
+	return GetInstance(pClass);
+}
+
+CInfClassHuman *CInfClassHuman::GetInstance(CInfClassPlayerClass *pClass)
+{
 	if(pClass && pClass->IsHuman())
 	{
 		return static_cast<CInfClassHuman *>(pClass);

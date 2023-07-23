@@ -25,6 +25,7 @@ public:
 
 	static CInfClassHuman *GetInstance(CInfClassPlayer *pPlayer);
 	static CInfClassHuman *GetInstance(CInfClassCharacter *pCharacter);
+	static CInfClassHuman *GetInstance(CInfClassPlayerClass *pClass);
 
 	bool IsHuman() const final { return true; }
 

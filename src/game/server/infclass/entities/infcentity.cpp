@@ -2,6 +2,7 @@
 
 #include <game/animation.h>
 #include <game/server/gamecontext.h>
+#include <game/server/infclass/entities/infccharacter.h>
 #include <game/server/infclass/infcgamecontroller.h>
 
 static int FilterOwnerID = -1;
@@ -27,6 +28,15 @@ CInfClassGameController *CInfCEntity::GameController()
 CInfClassCharacter *CInfCEntity::GetOwnerCharacter()
 {
 	return GameController()->GetCharacter(GetOwner());
+}
+
+CInfClassPlayerClass *CInfCEntity::GetOwnerClass()
+{
+	CInfClassCharacter *pCharacter = GetOwnerCharacter();
+	if (pCharacter)
+		return pCharacter->GetClass();
+
+	return nullptr;
 }
 
 EntityFilter CInfCEntity::GetOwnerFilterFunction(int Owner)

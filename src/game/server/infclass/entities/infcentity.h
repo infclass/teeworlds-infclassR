@@ -11,6 +11,7 @@ inline constexpr float TileSizeF = 32.0f;
 class CGameContext;
 class CInfClassCharacter;
 class CInfClassGameController;
+class CInfClassPlayerClass;
 
 using EntityFilter = bool (*)(const CEntity *);
 
@@ -23,6 +24,7 @@ public:
 	CInfClassGameController *GameController();
 	int GetOwner() const { return m_Owner; }
 	CInfClassCharacter *GetOwnerCharacter();
+	CInfClassPlayerClass *GetOwnerClass();
 
 	static EntityFilter GetOwnerFilterFunction(int Owner);
 	EntityFilter GetOwnerFilterFunction();
