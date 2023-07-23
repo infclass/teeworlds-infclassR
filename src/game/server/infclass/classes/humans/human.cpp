@@ -2138,7 +2138,7 @@ void CInfClassHuman::OnHeroFlagTaken(CInfClassCharacter *pHero)
 
 void CInfClassHuman::OnWhiteHoleSpawned(CWhiteHole *pWhiteHole)
 {
-	pWhiteHole->SetLifeSpan(Config()->m_InfWhiteHoleLifeSpan);
+	pWhiteHole->SetLifeSpan(GameController()->GetWhiteHoleLifeSpan());
 
 	m_KillsProgression = -1;
 	m_ResetKillsTick = pWhiteHole->GetEndTick() + Server()->TickSpeed() * 3;

@@ -2982,6 +2982,11 @@ bool CInfClassGameController::WhiteHoleEnabled() const
 	return Config()->m_InfWhiteHoleProbability > 0;
 }
 
+float CInfClassGameController::GetWhiteHoleLifeSpan() const
+{
+	return Config()->m_InfWhiteHoleLifeSpan;
+}
+
 bool CInfClassGameController::IsClassChooserEnabled() const
 {
 	return Config()->m_InfClassChooser;

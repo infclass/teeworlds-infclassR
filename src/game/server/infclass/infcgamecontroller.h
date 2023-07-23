@@ -137,6 +137,7 @@ public:
 	bool AreTurretsEnabled() const;
 	bool MercBombsEnabled() const;
 	bool WhiteHoleEnabled() const;
+	float GetWhiteHoleLifeSpan() const;
 	bool IsClassChooserEnabled() const;
 	int GetTaxiMode() const;
 	EPlayerScoreMode GetPlayerScoreMode(int SnappingClient) const;
