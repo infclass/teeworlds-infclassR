@@ -30,7 +30,12 @@ CLooperWall::CLooperWall(CGameContext *pGameContext, vec2 Pos1, vec2 Pos2, int O
 		m_Pos2 = Pos2;
 	}
 
-	m_EndTick = Server()->Tick() + Server()->TickSpeed() * Config()->m_InfLooperBarrierLifeSpan;
+	int LifeSpan = Server()->TickSpeed() * Config()->m_InfLooperBarrierLifeSpan;
+	if(GameController()->GetRoundType() == ERoundType::Survival)
+	{
+		LifeSpan *= 0.5f;
+	}
+	m_EndTick = Server()->Tick() + LifeSpan;
 	GameWorld()->InsertEntity(this);
 
 	for(int &ID : m_IDs)
@@ -183,6 +188,12 @@ void CLooperWall::OnHitInfected(CInfClassCharacter *pCharacter)
 	}
 
 	int LifeSpanReducer = Server()->TickSpeed() * Reduction * AddedDuration / FullEffectDuration;
+
+	if(GameController()->GetRoundType() == ERoundType::Survival)
+	{
+		LifeSpanReducer = LifeSpanReducer / 3.0f;
+	}
+
 	m_EndTick -= LifeSpanReducer;
 }
 
