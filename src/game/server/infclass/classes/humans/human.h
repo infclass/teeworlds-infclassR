@@ -49,6 +49,7 @@ public:
 	void OnCharacterTickPaused() override;
 	void OnCharacterPostCoreTick() override;
 	void OnCharacterSnap(int SnappingClient) override;
+	void OnCharacterSpawned(const SpawnContext &Context) override;
 	void OnCharacterDamage(SDamageContext *pContext) override;
 
 	void OnKilledCharacter(CInfClassCharacter *pVictim, const DeathContext &Context) override;

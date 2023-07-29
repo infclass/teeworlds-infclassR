@@ -554,6 +554,14 @@ void CInfClassHuman::OnCharacterSnap(int SnappingClient)
 	}
 }
 
+void CInfClassHuman::OnCharacterSpawned(const SpawnContext &Context)
+{
+	CInfClassPlayerClass::OnCharacterSpawned(Context);
+
+	ResetUpgrades();
+	ResetUpgradeLevel();
+}
+
 void CInfClassHuman::OnCharacterDamage(SDamageContext *pContext)
 {
 	switch(GetPlayerClass())
