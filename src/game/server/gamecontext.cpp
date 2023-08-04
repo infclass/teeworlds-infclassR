@@ -1924,7 +1924,7 @@ void CGameContext::OnCallVote(void *pRawMsg, int ClientID)
 					if (g_Config.m_InfMinPlayerNumberForMapVote <= 1 || OptionVoteType == OTHER_OPTION_VOTE_TYPE)
 					{
 						// (this is not a map vote) or ("InfMinPlayerNumberForMapVote <= 1" and we keep default behaviour)
-						if(!m_pController->CanVote())
+						if(!m_pController->CanVote() && (Authed != IServer::AUTHED_ADMIN))
 						{
 							SendChatTarget(ClientID, "Votes are only allowed when the round start.");
 							return;
