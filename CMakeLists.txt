@@ -1,7 +1,6 @@
 # DDNet-based CMakeLists for InfclassR
 
-# FindICU introduced in CMake 3.7
-cmake_minimum_required(VERSION 3.7)
+cmake_minimum_required(VERSION 3.15)
 project(InfclassR
     VERSION 1.5.0
 )
@@ -73,6 +72,7 @@ if(MSVC)
   else()
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /MT")
   endif()
+  set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
 endif()
 
 if(USE_CONAN)
