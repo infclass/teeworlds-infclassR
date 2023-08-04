@@ -88,6 +88,7 @@ if(USE_CONAN)
       libpng/1.6.39
       icu/72.1
       zlib/1.2.13
+      sqlite3/3.41.2
     GENERATORS cmake_find_package
   )
 
