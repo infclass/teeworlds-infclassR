@@ -296,6 +296,10 @@ void CInfClassPlayerClass::OnCharacterPostCoreTick()
 	}
 }
 
+void CInfClassPlayerClass::OnCharacterTickDeferred()
+{
+}
+
 void CInfClassPlayerClass::OnCharacterSnap(int SnappingClient)
 {
 }

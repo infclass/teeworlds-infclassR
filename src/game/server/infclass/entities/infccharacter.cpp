@@ -236,6 +236,11 @@ void CInfClassCharacter::TickDeferred()
 		if(Events & COREEVENT_HOOK_HIT_NOHOOK)
 			GameServer()->CreateSound(GetPos(), SOUND_HOOK_NOATTACH, MaskEsceptSelf);
 	}
+
+	if(m_pClass)
+	{
+		m_pClass->OnCharacterTickDeferred();
+	}
 }
 
 void CInfClassCharacter::TickPaused()
