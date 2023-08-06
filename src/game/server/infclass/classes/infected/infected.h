@@ -33,6 +33,7 @@ public:
 	void OnCharacterTick() override;
 	void OnCharacterTickPaused() override;
 	void OnCharacterPostCoreTick() override;
+	void OnCharacterTickDeferred() override;
 	void OnCharacterSnap(int SnappingClient) override;
 	void OnCharacterSpawned(const SpawnContext &Context) override;
 	void OnCharacterDamage(SDamageContext *pContext) override;
@@ -65,7 +66,8 @@ protected:
 	bool HasDrainingHook() const;
 
 	int m_HookDmgTick = 0;
-	int m_SlimeHealTick = 0;
+	int m_SlimeEffectTicks = 0;
+	int m_SlimeLastHealTick = 0;
 	int m_LaserWallTick = 0;
 
 	int m_VoodooTimeAlive = 0;

@@ -323,6 +323,23 @@ void CInfClassInfected::OnCharacterPostCoreTick()
 	}
 }
 
+void CInfClassInfected::OnCharacterTickDeferred()
+{
+	const int Tick = Server()->Tick();
+	if(m_SlimeEffectTicks)
+	{
+		if(Tick >= m_SlimeLastHealTick + (Server()->TickSpeed() / Config()->m_InfSlimeHealRate))
+		{
+			if(m_pCharacter->GetHealthArmorSum() < Config()->m_InfSlimeMaxHeal)
+			{
+				m_pCharacter->Heal(1, GetCID());
+			}
+			m_SlimeLastHealTick = Tick;
+		}
+		m_SlimeEffectTicks--;
+	}
+}
+
 void CInfClassInfected::OnCharacterSnap(int SnappingClient)
 {
 	if(SnappingClient == m_pPlayer->GetCID())
@@ -352,7 +369,9 @@ void CInfClassInfected::OnCharacterSpawned(const SpawnContext &Context)
 {
 	CInfClassPlayerClass::OnCharacterSpawned(Context);
 
-	m_SlimeHealTick = 0;
+	m_HookDmgTick = 0;
+	m_SlimeEffectTicks = 0;
+	m_SlimeLastHealTick = 0;
 	m_LaserWallTick = 0;
 
 	if(Context.SpawnType == SpawnContext::MapSpawn)
@@ -782,15 +801,11 @@ void CInfClassInfected::OnSlimeEffect(int Owner)
 	if(!m_pCharacter->IsAlive())
 		return;
 
-	m_pCharacter->SetEmote(EMOTE_HAPPY, Server()->Tick());
-	if(Server()->Tick() >= m_SlimeHealTick + (Server()->TickSpeed() / Config()->m_InfSlimeHealRate))
-	{
-		if(m_pCharacter->GetHealthArmorSum() < Config()->m_InfSlimeMaxHeal)
-		{
-			m_pCharacter->Heal(1, GetCID());
-		}
-		m_SlimeHealTick = Server()->Tick();
-	}
+	const int Tick = Server()->Tick();
+	m_pCharacter->SetEmote(EMOTE_HAPPY, Tick);
+
+	const float SlimeEffectDuration = 2.0f;
+	m_SlimeEffectTicks = SlimeEffectDuration * Server()->TickSpeed();
 }
 
 void CInfClassInfected::OnFloatingPointCollected(int Points)
