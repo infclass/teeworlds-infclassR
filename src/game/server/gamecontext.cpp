@@ -2697,14 +2697,19 @@ void CGameContext::ConTimeout(IConsole::IResult *pResult, void *pUserData)
 	if(!CheckClientID(pResult->m_ClientID))
 		return;
 
-	CPlayer *pPlayer = pSelf->m_apPlayers[pResult->m_ClientID];
+	int ClientID = pResult->m_ClientID;
+	CPlayer *pPlayer = pSelf->m_apPlayers[ClientID];
 	if(!pPlayer)
 		return;
 
 	const char *pTimeout = pResult->NumArguments() > 0 ? pResult->GetString(0) : pPlayer->m_aTimeoutCode;
-	dbg_msg("timeout", "Used with code %s", pTimeout);
+	const char *pClientName = pSelf->Server()->ClientName(ClientID);
+	char aAddress[NETADDR_MAXSTRSIZE];
+	pSelf->Server()->GetClientAddr(ClientID, &aAddress[0], sizeof(aAddress));
 
-	if(!pSelf->Server()->IsSixup(pResult->m_ClientID))
+	dbg_msg("timeout", "Used with code %s by (#%02i) '%s' (id=%s)", pTimeout, ClientID, pClientName, aAddress);
+
+	if(!pSelf->Server()->IsSixup(ClientID))
 	{
 		for(int i = 0; i < pSelf->Server()->MaxClients(); i++)
 		{
