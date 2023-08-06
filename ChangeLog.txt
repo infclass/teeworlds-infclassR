@@ -1,7 +1,7 @@
 InfclassR v1.5.0_alpha8
+- Bat's hook lifestealing replaced with hammer
+  lifestealing (+2 HP per hit)
 - Slime now gives the healing effect for 2 seconds
-- Bat's hook draining rate reduced to 1hp/sec
-  (previously the bat healing rate was 2hp/sec)
 - Fixed Tele layer processing (for maps with teleports)
 - Just-killed human's camera now follows the killer
 - Player last infection time now saved in session

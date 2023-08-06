@@ -535,8 +535,9 @@ void CInfClassInfected::OnHammerFired(WeaponFireContext *pFireContext)
 
 				if(GetPlayerClass() == PLAYERCLASS_BAT)
 				{
-					Damage = g_Config.m_InfBatDamage;
+					Damage = Config()->m_InfBatDamage;
 					DamageType = DAMAGE_TYPE::BITE;
+					m_pCharacter->Heal(Config()->m_InfBatLifeSteal);
 				}
 
 				pTarget->TakeDamage(Force, Damage, GetCID(), DamageType);
@@ -788,7 +789,6 @@ bool CInfClassInfected::HasDrainingHook() const
 {
 	switch(GetPlayerClass())
 	{
-	case PLAYERCLASS_BAT:
 	case PLAYERCLASS_SMOKER:
 		return true;
 	default:
