@@ -5,6 +5,7 @@
 #include <game/gamecore.h>
 #include <game/server/gamecontext.h>
 #include <game/server/infclass/entities/infccharacter.h>
+#include <game/server/infclass/infcgamecontroller.h>
 #include <game/server/infclass/infcplayer.h>
 #include <game/server/teeinfo.h>
 
@@ -268,6 +269,12 @@ void CInfClassPlayerClass::OnCharacterTick()
 				const float PoisonDurationSeconds = Config()->m_InfPoisonDuration / 1000.0;
 				const float DamageIntervalSeconds = PoisonDurationSeconds / Damage;
 				m_PoisonTick = Server()->TickSpeed() * DamageIntervalSeconds;
+			}
+
+			const CInfClassPlayer *pPoisonerPlayer = GameController()->GetPlayer(m_PoisonFrom);
+			if(pPoisonerPlayer && pPoisonerPlayer->GetClass() == PLAYERCLASS_SLUG)
+			{
+				GameServer()->CreateDeath(GetPos(), m_PoisonFrom);
 			}
 		}
 		else
