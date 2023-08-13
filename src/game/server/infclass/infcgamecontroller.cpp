@@ -3454,6 +3454,9 @@ bool CInfClassGameController::MercBombsEnabled() const
 
 bool CInfClassGameController::WhiteHoleEnabled() const
 {
+	if(GetRoundType() == ERoundType::Survival)
+		return true;
+
 	if(GetRoundType() == ERoundType::Fast)
 		return false;
 
