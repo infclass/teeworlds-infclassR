@@ -101,6 +101,7 @@ void CPlayer::Reset()
 	m_PrevTuningParams = *m_pGameServer->Tuning();
 	m_NextTuningParams = m_PrevTuningParams;
 	m_IsInGame = false;
+	m_IsReady = false;
 /* INFECTION MODIFICATION END *****************************************/
 }
 
