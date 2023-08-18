@@ -288,6 +288,13 @@ public:
 
 /* INFECTION MODIFICATION START ***************************************/
 private:
+	static void ConKillPlayer(IConsole::IResult *pResult, void *pUserData);
+
+	static void ConCredits(IConsole::IResult *pResult, void *pUserData);
+	static void ConInfo(IConsole::IResult *pResult, void *pUserData);
+	static void ConHelp(IConsole::IResult *pResult, void *pUserData);
+	static void ConRules(IConsole::IResult *pResult, void *pUserData);
+
 	static void ConTimeout(IConsole::IResult *pResult, void *pUserData);
 	static void ConMe(IConsole::IResult *pResult, void *pUserData);
 	static void ConWhisper(IConsole::IResult *pResult, void *pUserData);
@@ -295,9 +302,6 @@ private:
 	static void ConShowOthers(IConsole::IResult *pResult, void *pUserData);
 	static void ConShowAll(IConsole::IResult *pResult, void *pUserData);
 
-	static void ConKillPlayer(IConsole::IResult *pResult, void *pUserData);
-
-	static void ConCredits(IConsole::IResult *pResult, void *pUserData);
 	static void ConAbout(IConsole::IResult *pResult, void *pUserData);
 	void ConAbout(IConsole::IResult *pResult);
 	static void ConVersion(IConsole::IResult *pResult, void *pUserData);
@@ -312,7 +316,6 @@ private:
 	static void ConGoal(IConsole::IResult *pResult, void *pUserData);
 	static void ConStats(IConsole::IResult *pResult, void *pUserData);
 #endif
-	static void ChatHelp(IConsole::IResult *pResult, void *pUserData);
 	void ChatHelp(int ClientID, const char *pHelpPage);
 	bool WriteClassHelpPage(dynamic_string *pOutput, const char *pLanguage, PLAYERCLASS PlayerClass);
 	static void ConLanguage(IConsole::IResult *pResult, void *pUserData);

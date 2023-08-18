@@ -3242,6 +3242,11 @@ void CGameContext::ConCredits(IConsole::IResult *pResult, void *pUserData)
 	pSelf->SendMOTD(ClientID, Buffer.buffer());
 }
 
+void CGameContext::ConInfo(IConsole::IResult *pResult, void *pUserData)
+{
+	ConAbout(pResult, pUserData);
+}
+
 void CGameContext::ConAbout(IConsole::IResult *pResult, void *pUserData)
 {
 	CGameContext *pSelf = (CGameContext *)pUserData;
@@ -3869,7 +3874,7 @@ void CGameContext::ConStats(IConsole::IResult *pResult, void *pUserData)
 
 #endif
 
-void CGameContext::ChatHelp(IConsole::IResult *pResult, void *pUserData)
+void CGameContext::ConHelp(IConsole::IResult *pResult, void *pUserData)
 {
 	int ClientID = pResult->GetClientID();
 	const char *pHelpPage = (pResult->NumArguments()>0) ? pResult->GetString(0) : nullptr;
@@ -4219,6 +4224,44 @@ bool CGameContext::WriteClassHelpPage(dynamic_string *pOutput, const char *pLang
 	return true;
 }
 
+void CGameContext::ConRules(IConsole::IResult *pResult, void *pUserData)
+{
+	CGameContext *pSelf = (CGameContext *)pUserData;
+	bool Printed = false;
+	if(g_Config.m_SvDDRaceRules)
+	{
+		pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "chatresp",
+			"Be nice.");
+		Printed = true;
+	}
+	char *apRuleLines[] = {
+		g_Config.m_SvRulesLine1,
+		g_Config.m_SvRulesLine2,
+		g_Config.m_SvRulesLine3,
+		g_Config.m_SvRulesLine4,
+		g_Config.m_SvRulesLine5,
+		g_Config.m_SvRulesLine6,
+		g_Config.m_SvRulesLine7,
+		g_Config.m_SvRulesLine8,
+		g_Config.m_SvRulesLine9,
+		g_Config.m_SvRulesLine10,
+	};
+	for(auto &pRuleLine : apRuleLines)
+	{
+		if(pRuleLine[0])
+		{
+			pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD,
+				"chatresp", pRuleLine);
+			Printed = true;
+		}
+	}
+	if(!Printed)
+	{
+		pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "chatresp",
+			"No Rules Defined, Kill em all!!");
+	}
+}
+
 void CGameContext::ConLanguage(IConsole::IResult *pResult, void *pUserData)
 {
 	CGameContext *pSelf = (CGameContext *)pUserData;
@@ -4395,7 +4438,6 @@ void CGameContext::OnConsoleInit()
 
 	Console()->Register("credits", "", CFGFLAG_CHAT, ConCredits, this, "Shows the credits of the mod");
 	Console()->Register("about", "", CFGFLAG_CHAT, ConAbout, this, "Display information about the mod");
-	Console()->Register("info", "", CFGFLAG_CHAT, ConAbout, this, "Display information about the mod");
 	Console()->Register("register", "s[username] s[password] ?s[email]", CFGFLAG_CHAT, ConRegister, this, "Create an account");
 	Console()->Register("login", "s[username] s[password]", CFGFLAG_CHAT, ConLogin, this, "Login to an account");
 	Console()->Register("logout", "", CFGFLAG_CHAT, ConLogout, this, "Logout");
@@ -4408,7 +4450,7 @@ void CGameContext::OnConsoleInit()
 	Console()->Register("goal", "?s[classname]", CFGFLAG_CHAT, ConGoal, this, "Show your goal");
 	Console()->Register("stats", "i", CFGFLAG_CHAT, ConStats, this, "Show stats by id");
 #endif
-	Console()->Register("help", "?s[page]", CFGFLAG_CHAT, ChatHelp, this, "Display help");
+	Console()->Register("help", "?s[page]", CFGFLAG_CHAT, ConHelp, this, "Display help");
 	Console()->Register("reload_changelog", "?i[page]", CFGFLAG_SERVER, ConReloadChangeLog, this, "Reload the changelog file");
 	Console()->Register("changelog", "?i[page]", CFGFLAG_CHAT, ConChangeLog, this, "Display a changelog page");
 
@@ -4443,6 +4485,8 @@ void CGameContext::OnConsoleInit()
 
 #define CHAT_COMMAND(name, params, flags, callback, userdata, help) m_pConsole->Register(name, params, flags, callback, userdata, help);
 	// From ddracechat.h
+	CHAT_COMMAND("rules", "", CFGFLAG_CHAT | CFGFLAG_SERVER, ConRules, this, "Shows the server rules")
+	CHAT_COMMAND("info", "", CFGFLAG_CHAT | CFGFLAG_SERVER, ConInfo, this, "Shows info about this server")
 	CHAT_COMMAND("me", "r[message]", CFGFLAG_CHAT | CFGFLAG_SERVER | CFGFLAG_NONTEEHISTORIC, ConMe, this, "Like the famous irc command '/me says hi' will display '<yourname> says hi'")
 	CHAT_COMMAND("w", "s[player name] r[message]", CFGFLAG_CHAT | CFGFLAG_SERVER | CFGFLAG_NONTEEHISTORIC, ConWhisper, this, "Whisper something to someone (private message)")
 	CHAT_COMMAND("whisper", "s[player name] r[message]", CFGFLAG_CHAT | CFGFLAG_SERVER | CFGFLAG_NONTEEHISTORIC, ConWhisper, this, "Whisper something to someone (private message)")
