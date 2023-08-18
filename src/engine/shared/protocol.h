@@ -76,6 +76,7 @@ enum
 enum
 {
 	VERSION_INFC_140 = 140,
+	VERSION_INFC_150 = 150,
 	VERSION_INFC_160 = 160,
 };
 

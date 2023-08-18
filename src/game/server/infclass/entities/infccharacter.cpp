@@ -283,18 +283,12 @@ void CInfClassCharacter::Snap(int SnappingClient)
 
 	pDDNetCharacter->m_Flags = 0;
 
-	if(IsFrozen())
-		pDDNetCharacter->m_Flags |= CHARACTERFLAG_MOVEMENTS_DISABLED;
-
 	if(GetPlayerClass() == PLAYERCLASS_MERCENARY)
-	{
 		pDDNetCharacter->m_Flags |= CHARACTERFLAG_JETPACK;
-	}
 
 	if(GetPlayerClass() == PLAYERCLASS_SCIENTIST)
-	{
 		pDDNetCharacter->m_Flags |= CHARACTERFLAG_TELEGUN_GRENADE;
-	}
+
 	if(GetPlayerClass() != PLAYERCLASS_BOOMER)
 	{
 		if(m_aWeapons[WEAPON_HAMMER].m_Got)
@@ -330,7 +324,7 @@ void CInfClassCharacter::Snap(int SnappingClient)
 			Server()->GetClientInfo(SnappingClient, &ClientInfo);
 		}
 
-		if(ClientInfo.m_InfClassVersion > 150) // Later on: VERSION_INFC_DDNET_CHARACTER
+		if(ClientInfo.m_InfClassVersion > VERSION_INFC_150)
 		{
 			pDDNetCharacter->m_FreezeStart = m_Core.m_FreezeStart;
 			pDDNetCharacter->m_FreezeEnd = Server()->Tick() + m_FrozenTime;
