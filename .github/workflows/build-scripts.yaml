@@ -14,8 +14,8 @@ jobs:
       matrix:
         config:
         - {
-            name: "Ubuntu 18.04 GCC",
-            os: ubuntu-18.04,
+            name: "Ubuntu 22.04 GCC",
+            os: ubuntu-22.04,
             cc: "gcc", cxx: "g++"
           }
     steps:
@@ -23,12 +23,12 @@ jobs:
       run: |
         sudo apt-get install libmaxminddb-dev
 
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
       with:
         path: "scripts"
         repository: "InfectionDust/infclass-scripts"
 
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
       with:
         path: "scripts/ci/sources"
 
