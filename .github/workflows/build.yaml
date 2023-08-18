@@ -1,7 +1,7 @@
 name: Build with conan
 
 on:
-  push:
+  # push:
   pull_request:
 
 jobs:
