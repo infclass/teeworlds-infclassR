@@ -219,7 +219,7 @@ public:
 
 			if(!pPlayer)
 				continue;
-			if((FLAGS & PLAYERITER_COND_READY) && (!pPlayer->m_IsInGame))
+			if((FLAGS & PLAYERITER_COND_READY) && (!pPlayer->m_IsInGame || !pPlayer->m_IsReady))
 				continue;
 			if((FLAGS & PLAYERITER_COND_NOSPEC) && (pPlayer->GetTeam() == TEAM_SPECTATORS))
 				continue;
