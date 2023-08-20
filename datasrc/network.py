@@ -29,12 +29,17 @@ GameInfoFlags2 = [
 	"HUD_DDRACE", "NO_WEAK_HOOK"
 ]
 ExPlayerFlags = ["AFK", "PAUSED", "SPEC"]
-ProjectileFlags = [f"CLIENTID_BIT{i}" for i in range(8)] + [
+LegacyProjectileFlags = [f"CLIENTID_BIT{i}" for i in range(8)] + [
 	"NO_OWNER", "IS_DDNET", "BOUNCE_HORIZONTAL", "BOUNCE_VERTICAL",
 	"EXPLOSIVE", "FREEZE",
 ]
+ProjectileFlags = [
+	"BOUNCE_HORIZONTAL", "BOUNCE_VERTICAL", "EXPLOSIVE", "FREEZE", "NORMALIZE_VEL",
+]
 
-LaserTypes = ["RIFLE", "SHOTGUN", "DOOR", "FREEZE"]
+LaserTypes = ["RIFLE", "SHOTGUN", "DOOR", "FREEZE", "DRAGGER", "GUN", "PLASMA"]
+DraggerTypes = ["WEAK", "WEAK_NW", "NORMAL", "NORMAL_NW", "STRONG", "STRONG_NW"]
+GunTypes = ["UNFREEZE", "EXPLOSIVE", "FREEZE", "EXPFREEZE"]
 
 InfClassPlayerFlags = ["INFECTED", "HOOK_PROTECTION_OFF", "FORCED_TO_SPECTATE"]
 InfClassObjectFlags = ["HAS_SECOND_POSITION"]
@@ -86,6 +91,8 @@ Enums = [
 	Enum("AUTHED", Authed),
 	Enum("ENTITYCLASS", EntityClasses),
 	Enum("LASERTYPE", LaserTypes),
+	Enum("LASERDRAGGERTYPE", DraggerTypes),
+	Enum("LASERGUNTYPE", GunTypes),
 	Enum("INFCLASS_OBJECT_TYPE", InfClassObjectTypes),
 ]
 
@@ -97,6 +104,7 @@ Flags = [
 	Flags("GAMEINFOFLAG", GameInfoFlags),
 	Flags("GAMEINFOFLAG2", GameInfoFlags2),
 	Flags("EXPLAYERFLAG", ExPlayerFlags),
+	Flags("LEGACYPROJECTILEFLAG", LegacyProjectileFlags),
 	Flags("PROJECTILEFLAG", ProjectileFlags),
 	Flags("INFCLASS_PLAYER_FLAG", InfClassPlayerFlags),
 	Flags("INFCLASS_OBJECT_FLAG", InfClassObjectFlags),
@@ -558,7 +566,7 @@ Messages = [
 		NetIntAny("m_Test"),
 	]),
 
-    NetMessageEx("Inf_KillMsg", "kill-ex1@infclass", [
+	NetMessageEx("Inf_KillMsg", "kill-ex1@infclass", [
 		NetIntRange("m_Victim", 0, 'MAX_CLIENTS-1'),
 		NetIntRange("m_Killer", -1, 'MAX_CLIENTS-1'),
 		NetIntRange("m_Assistant", -1, 'MAX_CLIENTS-1'),
