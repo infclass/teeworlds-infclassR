@@ -1729,7 +1729,7 @@ void CGameContext::OnClientConnected(int ClientID, void *pData)
 	m_BroadcastStates[ClientID].m_NextMessage[0] = 0;
 }
 
-void CGameContext::OnClientDrop(int ClientID, int Type, const char *pReason)
+void CGameContext::OnClientDrop(int ClientID, EClientDropType Type, const char *pReason)
 {
 	AbortVoteKickOnDisconnect(ClientID);
 	if(!m_apPlayers[ClientID])

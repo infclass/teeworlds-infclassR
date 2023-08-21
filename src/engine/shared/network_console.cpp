@@ -42,7 +42,7 @@ int CNetConsole::Close()
 	return 0;
 }
 
-int CNetConsole::Drop(int ClientID, int Type, const char *pReason)
+int CNetConsole::Drop(int ClientID, EClientDropType Type, const char *pReason)
 {
 	if(m_pfnDelClient)
 		m_pfnDelClient(ClientID, Type, pReason, m_pUser);
@@ -115,7 +115,7 @@ int CNetConsole::Update()
 		if(m_aSlots[i].m_Connection.State() == NET_CONNSTATE_ONLINE)
 			m_aSlots[i].m_Connection.Update();
 		if(m_aSlots[i].m_Connection.State() == NET_CONNSTATE_ERROR)
-			Drop(i, CLIENTDROPTYPE_ERROR, m_aSlots[i].m_Connection.ErrorString());
+			Drop(i, EClientDropType::Error, m_aSlots[i].m_Connection.ErrorString());
 	}
 
 	return 0;

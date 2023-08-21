@@ -98,7 +98,7 @@ int CNetServer::Close()
 	return net_udp_close(m_Socket);
 }
 
-int CNetServer::Drop(int ClientID, int Type, const char *pReason)
+int CNetServer::Drop(int ClientID, EClientDropType Type, const char *pReason)
 {
 	// TODO: insert lots of checks here
 
@@ -119,7 +119,7 @@ int CNetServer::Update()
 			(!m_aSlots[i].m_Connection.m_TimeoutProtected ||
 				!m_aSlots[i].m_Connection.m_TimeoutSituation))
 		{
-			Drop(i, CLIENTDROPTYPE_STRESSING, m_aSlots[i].m_Connection.ErrorString());
+			Drop(i, EClientDropType::Stressing, m_aSlots[i].m_Connection.ErrorString());
 		}
 	}
 

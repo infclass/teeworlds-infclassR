@@ -122,7 +122,7 @@ public:
 	void OnPlayerVoteCommand(int ClientID, int Vote) override;
 
 	void OnPlayerConnect(CPlayer *pPlayer) override;
-	void OnPlayerDisconnect(CPlayer *pBasePlayer, int Type, const char *pReason) override;
+	void OnPlayerDisconnect(CPlayer *pBasePlayer, EClientDropType Type, const char *pReason) override;
 
 	void OnReset() override;
 

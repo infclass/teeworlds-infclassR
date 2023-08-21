@@ -183,7 +183,7 @@ void CInfClassGameController::OnPlayerConnect(CPlayer *pPlayer)
 	}
 }
 
-void CInfClassGameController::OnPlayerDisconnect(CPlayer *pBasePlayer, int Type, const char *pReason)
+void CInfClassGameController::OnPlayerDisconnect(CPlayer *pBasePlayer, EClientDropType Type, const char *pReason)
 {
 	Server()->RoundStatistics()->ResetPlayer(pBasePlayer->GetCID());
 
@@ -201,11 +201,11 @@ void CInfClassGameController::OnPlayerDisconnect(CPlayer *pBasePlayer, int Type,
 
 	static const auto aIgnoreReasons = []()
 	{
-		int aIgnoreReasons[]{
-			CLIENTDROPTYPE_BAN,
-			CLIENTDROPTYPE_KICK,
-			CLIENTDROPTYPE_SHUTDOWN,
-			CLIENTDROPTYPE_TIMEOUT_PROTECTION_USED,
+		EClientDropType aIgnoreReasons[]{
+			EClientDropType::Ban,
+			EClientDropType::Kick,
+			EClientDropType::Shutdown,
+			EClientDropType::TimeoutProtectionUsed,
 		};
 
 		return icArray(aIgnoreReasons);

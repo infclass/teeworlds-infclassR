@@ -299,7 +299,7 @@ void IGameController::OnPlayerConnect(CPlayer *pPlayer)
 	}
 }
 
-void IGameController::OnPlayerDisconnect(CPlayer *pPlayer, int Type, const char *pReason)
+void IGameController::OnPlayerDisconnect(CPlayer *pPlayer, EClientDropType Type, const char *pReason)
 {
 	pPlayer->OnDisconnect();
 
@@ -310,14 +310,14 @@ void IGameController::OnPlayerDisconnect(CPlayer *pPlayer, int Type, const char 
 		str_format(aBuf, sizeof(aBuf), "leave player='%d:%s'", ClientID, Server()->ClientName(ClientID));
 		GameServer()->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "server", aBuf);
 
-		if(Type == CLIENTDROPTYPE_BAN)
+		if(Type == EClientDropType::Ban)
 		{
 			GameServer()->SendChatTarget_Localization(-1, CHATCATEGORY_PLAYER, _("{str:PlayerName} has been banned ({str:Reason})"),
 				"PlayerName", Server()->ClientName(ClientID),
 				"Reason", pReason,
 				NULL);
 		}
-		else if(Type == CLIENTDROPTYPE_KICK)
+		else if(Type == EClientDropType::Kick)
 		{
 			GameServer()->SendChatTarget_Localization(-1, CHATCATEGORY_PLAYER, _("{str:PlayerName} has been kicked ({str:Reason})"),
 				"PlayerName", Server()->ClientName(ClientID),

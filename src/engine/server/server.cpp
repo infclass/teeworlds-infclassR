@@ -245,7 +245,7 @@ int CServerBan::BanExt(T *pBanPool, const typename T::CDataType *pData, int Seco
 			CNetHash NetHash(&Data);
 			char aBuf[256];
 			MakeBanInfo(pBanPool->Find(&Data, &NetHash), aBuf, sizeof(aBuf), MSGTYPE_PLAYER);
-			Server()->m_NetServer.Drop(i, CLIENTDROPTYPE_BAN, aBuf);
+			Server()->m_NetServer.Drop(i, EClientDropType::Ban, aBuf);
 		}
 	}
 
@@ -559,7 +559,7 @@ void CServer::Kick(int ClientID, const char *pReason)
 		return;
 	}
 
-	m_NetServer.Drop(ClientID, CLIENTDROPTYPE_KICK, pReason);
+	m_NetServer.Drop(ClientID, EClientDropType::Kick, pReason);
 }
 
 /*int CServer::Tick()
@@ -1269,7 +1269,7 @@ int CServer::NewClientCallback(int ClientID, void *pUser, bool Sixup)
 	// Remove non human player on same slot
 	if(pThis->ClientIsBot(ClientID))
 	{
-		pThis->GameServer()->OnClientDrop(ClientID, CLIENTDROPTYPE_KICK, "removing dummy");
+		pThis->GameServer()->OnClientDrop(ClientID, EClientDropType::Kick, "removing dummy");
 	}
 
 	pThis->m_aClients[ClientID].m_State = CClient::STATE_PREAUTH;
@@ -1312,7 +1312,7 @@ int CServer::NewClientCallback(int ClientID, void *pUser, bool Sixup)
 	return 0;
 }
 
-int CServer::DelClientCallback(int ClientID, int Type, const char *pReason, void *pUser)
+int CServer::DelClientCallback(int ClientID, EClientDropType Type, const char *pReason, void *pUser)
 {
 	CServer *pThis = (CServer *)pUser;
 	
@@ -1769,7 +1769,7 @@ void CServer::ProcessClientPacket(CNetChunk *pPacket)
 					// wrong version
 					char aReason[256];
 					str_format(aReason, sizeof(aReason), "Wrong version. Server is running '%s' and client '%s'", GameServer()->NetVersion(), pVersion);
-					m_NetServer.Drop(ClientID, CLIENTDROPTYPE_WRONG_VERSION, aReason);
+					m_NetServer.Drop(ClientID, EClientDropType::WrongVersion, aReason);
 					return;
 				}
 
@@ -1781,7 +1781,7 @@ void CServer::ProcessClientPacket(CNetChunk *pPacket)
 				if(!Config()->m_InfCaptcha && Config()->m_Password[0] != 0 && str_comp(Config()->m_Password, pPassword) != 0)
 				{
 					// wrong password
-					m_NetServer.Drop(ClientID, CLIENTDROPTYPE_WRONG_PASSWORD, "Wrong password");
+					m_NetServer.Drop(ClientID, EClientDropType::WrongPassword, "Wrong password");
 					return;
 				}
 
@@ -2019,7 +2019,7 @@ void CServer::ProcessClientPacket(CNetChunk *pPacket)
 					if(m_aClients[ClientID].m_AuthTries >= g_Config.m_SvRconMaxTries)
 					{
 						if(!g_Config.m_SvRconBantime)
-							m_NetServer.Drop(ClientID, CLIENTDROPTYPE_KICK, "Too many remote console authentication tries");
+							m_NetServer.Drop(ClientID, EClientDropType::Kick, "Too many remote console authentication tries");
 						else
 							m_ServerBan.BanAddr(m_NetServer.ClientAddr(ClientID), g_Config.m_SvRconBantime*60, "Too many remote console authentication tries");
 					}
@@ -2947,7 +2947,7 @@ int CServer::Run()
 			{
 				if(m_aClients[i].m_State == CClient::STATE_REDIRECTED)
 					if(time_get() > m_aClients[i].m_RedirectDropTime)
-						m_NetServer.Drop(i, CLIENTDROPTYPE_REDIRECTED, "redirected");
+						m_NetServer.Drop(i, EClientDropType::Redirected, "redirected");
 				if(m_aClients[i].m_State != CClient::STATE_EMPTY)
 				{
 					NonActive = false;
@@ -3003,7 +3003,7 @@ int CServer::Run()
 	for(int i = 0; i < MAX_CLIENTS; ++i)
 	{
 		if((m_aClients[i].m_State != CClient::STATE_EMPTY) && !m_aClients[i].m_IsBot)
-			m_NetServer.Drop(i, CLIENTDROPTYPE_SHUTDOWN, pDisconnectReason);
+			m_NetServer.Drop(i, EClientDropType::Shutdown, pDisconnectReason);
 	}
 
 	m_Econ.Shutdown();
@@ -5508,7 +5508,7 @@ bool CServer::SetTimedOut(int ClientID, int OrigID)
 	{
 		LogoutClient(ClientID, "Timeout Protection");
 	}
-	DelClientCallback(OrigID, CLIENTDROPTYPE_TIMEOUT_PROTECTION_USED, "Timeout Protection used", this);
+	DelClientCallback(OrigID, EClientDropType::TimeoutProtectionUsed, "Timeout Protection used", this);
 	m_aClients[ClientID].m_Authed = AUTHED_NO;
 	m_aClients[ClientID].m_Flags = m_aClients[OrigID].m_Flags;
 	m_aClients[ClientID].m_DDNetVersion = m_aClients[OrigID].m_DDNetVersion;

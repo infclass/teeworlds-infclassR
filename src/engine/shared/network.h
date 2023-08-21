@@ -95,18 +95,18 @@ enum
 	NET_ENUM_TERMINATOR
 };
 
-enum
+enum class EClientDropType
 {
-	CLIENTDROPTYPE_ERROR = 0,
-	CLIENTDROPTYPE_LOGOUT,
-	CLIENTDROPTYPE_BAN,
-	CLIENTDROPTYPE_KICK,
-	CLIENTDROPTYPE_REDIRECTED,
-	CLIENTDROPTYPE_WRONG_VERSION,
-	CLIENTDROPTYPE_WRONG_PASSWORD,
-	CLIENTDROPTYPE_SHUTDOWN,
-	CLIENTDROPTYPE_STRESSING,
-	CLIENTDROPTYPE_TIMEOUT_PROTECTION_USED,
+	Error = 0,
+	Logout,
+	Ban,
+	Kick,
+	Redirected,
+	WrongVersion,
+	WrongPassword,
+	Shutdown,
+	Stressing,
+	TimeoutProtectionUsed,
 };
 
 typedef int SECURITY_TOKEN;
@@ -121,7 +121,7 @@ enum
 	NET_SECURITY_TOKEN_UNSUPPORTED = 0,
 };
 
-typedef int (*NETFUNC_DELCLIENT)(int ClientID, int Type, const char *pReason, void *pUser);
+typedef int (*NETFUNC_DELCLIENT)(int ClientID, EClientDropType Type, const char *pReason, void *pUser);
 typedef int (*NETFUNC_NEWCLIENT_CON)(int ClientID, void *pUser);
 typedef int (*NETFUNC_NEWCLIENT)(int ClientID, void *pUser, bool Sixup);
 typedef int (*NETFUNC_NEWCLIENT_NOAUTH)(int ClientID, void *pUser);
@@ -432,7 +432,7 @@ public:
 	int Update();
 
 	//
-	int Drop(int ClientID, int Type, const char *pReason);
+	int Drop(int ClientID, EClientDropType Type, const char *pReason);
 
 	// status requests
 	const NETADDR *ClientAddr(int ClientID) const { return m_aSlots[ClientID].m_Connection.PeerAddress(); }
@@ -496,7 +496,7 @@ public:
 
 	//
 	int AcceptClient(NETSOCKET Socket, const NETADDR *pAddr);
-	int Drop(int ClientID, int Type, const char *pReason);
+	int Drop(int ClientID, EClientDropType Type, const char *pReason);
 
 	// status requests
 	const NETADDR *ClientAddr(int ClientID) const { return m_aSlots[ClientID].m_Connection.PeerAddress(); }

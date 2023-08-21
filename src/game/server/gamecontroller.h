@@ -13,6 +13,8 @@ class CPlayer;
 class CMapInfo;
 class IConsole;
 
+enum class EClientDropType;
+
 /*
 	Class: Game Controller
 		Controls the main game logic. Keeping track of team and player score,
@@ -128,7 +130,7 @@ public:
 	virtual bool OnEntity(const char* pName, vec2 Pivot, vec2 P0, vec2 P1, vec2 P2, vec2 P3, int PosEnv);
 
 	virtual void OnPlayerConnect(class CPlayer *pPlayer);
-	virtual void OnPlayerDisconnect(CPlayer *pPlayer, int Type, const char *pReason);
+	virtual void OnPlayerDisconnect(CPlayer *pPlayer, EClientDropType Type, const char *pReason);
 
 	virtual void OnReset();
 
