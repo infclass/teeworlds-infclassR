@@ -3003,7 +3003,14 @@ int CServer::Run()
 	for(int i = 0; i < MAX_CLIENTS; ++i)
 	{
 		if((m_aClients[i].m_State != CClient::STATE_EMPTY) && !m_aClients[i].m_IsBot)
+		{
+			if(m_ReconnectClients && Port && (GetClientVersion(i) >= VERSION_DDNET_REDIRECT))
+			{
+				RedirectClient(i, Port);
+				continue;
+			}
 			m_NetServer.Drop(i, EClientDropType::Shutdown, pDisconnectReason);
+		}
 	}
 
 	m_Econ.Shutdown();
@@ -3231,6 +3238,14 @@ void CServer::ConShutdown(IConsole::IResult *pResult, void *pUser)
 	{
 		str_copy(pThis->m_aShutdownReason, pReason);
 	}
+}
+
+void CServer::ConShutdown2(IConsole::IResult *pResult, void *pUser)
+{
+	CServer *pThis = static_cast<CServer *>(pUser);
+	pThis->m_ReconnectClients = true;
+
+	ConShutdown(pResult, pUser);
 }
 
 void CServer::DemoRecorder_HandleAutoStart()
@@ -3573,6 +3588,7 @@ void CServer::RegisterCommands()
 	Console()->Register("kick", "i[id] ?r[reason]", CFGFLAG_SERVER, ConKick, this, "Kick player with specified id for any reason");
 	Console()->Register("status", "?r[name]", CFGFLAG_SERVER, ConStatus, this, "List players containing name or all players");
 	Console()->Register("shutdown", "?r[reason]", CFGFLAG_SERVER, ConShutdown, this, "Shut down");
+	Console()->Register("shutdown2", "?r[reason]", CFGFLAG_SERVER, ConShutdown2, this, "Shut down and reconnect clients");
 	Console()->Register("logout", "", CFGFLAG_SERVER, ConLogout, this, "Logout of rcon");
 	Console()->Register("show_ips", "?i[show]", CFGFLAG_SERVER, ConShowIps, this, "Show IP addresses in rcon commands (1 = on, 0 = off)");
 

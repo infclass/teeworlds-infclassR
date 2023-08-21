@@ -234,6 +234,7 @@ public:
 	};
 
 	int m_RunServer;
+	bool m_ReconnectClients = false;
 
 	bool m_MapReload;
 	bool m_ReloadedWhenEmpty;
@@ -396,6 +397,7 @@ public:
 	static void ConStatus(IConsole::IResult *pResult, void *pUser);
 	static void ConStatusExtended(IConsole::IResult *pResult, void *pUser);
 	static void ConShutdown(IConsole::IResult *pResult, void *pUser);
+	static void ConShutdown2(IConsole::IResult *pResult, void *pUser);
 	static void ConRecord(IConsole::IResult *pResult, void *pUser);
 	static void ConStopRecord(IConsole::IResult *pResult, void *pUser);
 	static void ConMapReload(IConsole::IResult *pResult, void *pUser);
