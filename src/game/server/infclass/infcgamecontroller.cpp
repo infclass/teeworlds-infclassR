@@ -204,6 +204,7 @@ void CInfClassGameController::OnPlayerDisconnect(CPlayer *pBasePlayer, EClientDr
 		EClientDropType aIgnoreReasons[]{
 			EClientDropType::Ban,
 			EClientDropType::Kick,
+			EClientDropType::Redirected,
 			EClientDropType::Shutdown,
 			EClientDropType::TimeoutProtectionUsed,
 		};
