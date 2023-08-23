@@ -7,6 +7,8 @@
 #include <base/math.h>
 #include <base/vmath.h>
 
+#include <set>
+
 #include <math.h>
 #include <engine/shared/protocol.h>
 #include <game/generated/protocol.h>
@@ -156,20 +158,39 @@ float VelocityRamp(float Value, float Start, float Range, float Curvature);
 // hooking stuff
 enum
 {
-	HOOK_RETRACTED=-1,
-	HOOK_IDLE=0,
-	HOOK_RETRACT_START=1,
-	HOOK_RETRACT_END=3,
+	HOOK_RETRACTED = -1,
+	HOOK_IDLE = 0,
+	HOOK_RETRACT_START = 1,
+	HOOK_RETRACT_END = 3,
 	HOOK_FLYING,
 	HOOK_GRABBED,
 
-	COREEVENT_GROUND_JUMP=0x01,
-	COREEVENT_AIR_JUMP=0x02,
-	COREEVENT_HOOK_LAUNCH=0x04,
-	COREEVENT_HOOK_ATTACH_PLAYER=0x08,
-	COREEVENT_HOOK_ATTACH_GROUND=0x10,
-	COREEVENT_HOOK_HIT_NOHOOK=0x20,
-	COREEVENT_HOOK_RETRACT=0x40,
+	COREEVENT_GROUND_JUMP = 0x01,
+	COREEVENT_AIR_JUMP = 0x02,
+	COREEVENT_HOOK_LAUNCH = 0x04,
+	COREEVENT_HOOK_ATTACH_PLAYER = 0x08,
+	COREEVENT_HOOK_ATTACH_GROUND = 0x10,
+	COREEVENT_HOOK_HIT_NOHOOK = 0x20,
+	COREEVENT_HOOK_RETRACT = 0x40,
+	// COREEVENT_HOOK_TELE=0x80,
+};
+
+// show others values - do not change them
+enum
+{
+	SHOW_OTHERS_NOT_SET = -1, // show others value before it is set
+	SHOW_OTHERS_OFF = 0, // show no other players in solo or other teams
+	SHOW_OTHERS_ON = 1, // show all other players in solo and other teams
+	SHOW_OTHERS_ONLY_TEAM = 2 // show players that are in solo and are in the same team
+};
+
+struct SSwitchers
+{
+	bool m_aStatus[MAX_CLIENTS];
+	bool m_Initial;
+	int m_aEndTick[MAX_CLIENTS];
+	int m_aType[MAX_CLIENTS];
+	int m_aLastUpdateTick[MAX_CLIENTS];
 };
 
 class CWorldCore
@@ -210,13 +231,15 @@ public:
 	static constexpr vec2 PhysicalSizeVec2() { return vec2(28.0f, 28.0f); };
 	vec2 m_Pos;
 	vec2 m_Vel;
-	bool m_Collision;
 
 	vec2 m_HookPos;
 	vec2 m_HookDir;
 	int m_HookTick;
 	int m_HookState;
 	int m_HookedPlayer;
+	std::set<int> m_AttachedPlayers;
+	void SetHookedPlayer(int HookedPlayer);
+
 	bool m_HookProtected;
 	bool m_Infected;
 	bool m_InLove;
@@ -256,7 +279,7 @@ public:
 	// DDNet Character
 	void SetTeamsCore(CTeamsCore *pTeams);
 	bool m_Solo;
-	bool m_NoCollision;
+	bool m_CollisionDisabled;
 	bool m_Super;
 	bool m_EndlessJump;
 	int m_FreezeStart;

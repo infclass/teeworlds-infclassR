@@ -64,6 +64,7 @@ void CPlayer::Reset()
 	m_ShowOthers = g_Config.m_SvShowOthersDefault;
 	m_ShowAll = g_Config.m_SvShowAllDefault;
 	m_ShowDistance = vec2(1200, 800);
+	m_SpecTeam = false;
 
 	m_Paused = PAUSE_NONE;
 	m_DND = false;
@@ -422,6 +423,45 @@ void CPlayer::OverrideDefaultEmote(int Emote, int Tick)
 bool CPlayer::CanOverrideDefaultEmote() const
 {
 	return true;
+}
+
+void CPlayer::ProcessPause()
+{
+}
+
+int CPlayer::Pause(int State, bool Force)
+{
+	if(State < PAUSE_NONE || State > PAUSE_SPEC) // Invalid pause state passed
+		return 0;
+
+	if(!m_pCharacter)
+		return 0;
+
+	return m_Paused;
+}
+
+int CPlayer::ForcePause(int Time)
+{
+	m_ForcePauseTime = Server()->Tick() + Server()->TickSpeed() * Time;
+
+	if(g_Config.m_SvPauseMessages)
+	{
+		char aBuf[128];
+		str_format(aBuf, sizeof(aBuf), "'%s' was force-paused for %ds", Server()->ClientName(m_ClientID), Time);
+		GameServer()->SendChat(-1, CGameContext::CHAT_ALL, aBuf);
+	}
+
+	return Pause(PAUSE_SPEC, true);
+}
+
+int CPlayer::IsPaused()
+{
+	return m_ForcePauseTime ? m_ForcePauseTime : -1 * m_Paused;
+}
+
+bool CPlayer::IsPlaying()
+{
+	return m_pCharacter && m_pCharacter->IsAlive();
 }
 
 /* INFECTION MODIFICATION START ***************************************/

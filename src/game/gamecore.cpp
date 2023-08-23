@@ -75,16 +75,16 @@ void CCharacterCore::Reset()
 	m_HookDir = vec2(0, 0);
 	m_HookTick = 0;
 	m_HookState = HOOK_IDLE;
-	m_HookedPlayer = -1;
+	SetHookedPlayer(-1);
+	m_AttachedPlayers.clear();
 	m_Jumped = 0;
 	m_JumpedTotal = 0;
 	m_Jumps = 2;
 	m_TriggeredEvents = 0;
-	m_Collision = true;
 
 	// DDNet Character
 	m_Solo = false;
-	m_NoCollision = false;
+	m_CollisionDisabled = false;
 	m_EndlessJump = false;
 	m_Super = false;
 	m_FreezeStart = 0;
@@ -395,7 +395,7 @@ void CCharacterCore::Tick(bool UseInput, CParams* pParams)
 			{
 				vec2 Dir = normalize(m_Pos - pCharCore->m_Pos);
 
-				bool CanCollide = (m_Super || pCharCore->m_Super) || (pCharCore->m_Collision && m_Collision && !m_NoCollision && !pCharCore->m_NoCollision && 1); // m_Tuning.m_PlayerCollision);
+				bool CanCollide = (m_Super || pCharCore->m_Super) || (!m_CollisionDisabled && !pCharCore->m_CollisionDisabled && 1); // m_Tuning.m_PlayerCollision);
 
 				if(CanCollide && (m_Id == -1 || m_pTeams->CanCollide(m_Id, i)) && Distance < PhysicalSize() * 1.25f && Distance > 0.0f)
 				{
@@ -544,6 +544,30 @@ void CCharacterCore::Quantize()
 	CNetObj_CharacterCore Core;
 	Write(&Core);
 	Read(&Core);
+}
+
+void CCharacterCore::SetHookedPlayer(int HookedPlayer)
+{
+	if(HookedPlayer != m_HookedPlayer)
+	{
+		if(m_HookedPlayer != -1 && m_Id != -1 && m_pWorld)
+		{
+			CCharacterCore *pCharCore = m_pWorld->m_apCharacters[m_HookedPlayer];
+			if(pCharCore)
+			{
+				pCharCore->m_AttachedPlayers.erase(m_Id);
+			}
+		}
+		if(HookedPlayer != -1 && m_Id != -1 && m_pWorld)
+		{
+			CCharacterCore *pCharCore = m_pWorld->m_apCharacters[HookedPlayer];
+			if(pCharCore)
+			{
+				pCharCore->m_AttachedPlayers.insert(m_Id);
+			}
+		}
+		m_HookedPlayer = HookedPlayer;
+	}
 }
 
 void CCharacterCore::SetTeamsCore(CTeamsCore *pTeams)

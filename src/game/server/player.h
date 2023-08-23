@@ -156,15 +156,23 @@ public:
 	int64_t m_FirstVoteTick;
 	char m_aTimeoutCode[64];
 
-	virtual int GetDefaultEmote() const;
-	void OverrideDefaultEmote(int Emote, int Tick);
-	bool CanOverrideDefaultEmote() const;
+	void ProcessPause();
+	int Pause(int State, bool Force);
+	int ForcePause(int Time);
+	int IsPaused();
+
+	bool IsPlaying();
 
 	int m_ShowOthers;
 	bool m_ShowAll;
 	vec2 m_ShowDistance;
+	bool m_SpecTeam;
 
 	bool IsAfk() const { return m_Afk; }
+
+	virtual int GetDefaultEmote() const;
+	void OverrideDefaultEmote(int Emote, int Tick);
+	bool CanOverrideDefaultEmote() const;
 
 /* INFECTION MODIFICATION START ***************************************/
 protected:

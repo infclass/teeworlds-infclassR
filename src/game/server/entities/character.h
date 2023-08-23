@@ -49,13 +49,13 @@ public:
 	CCharacter(CGameWorld *pWorld);
 	~CCharacter() override;
 
-	virtual void Reset();
-	virtual void Destroy();
+	void Reset() override;
+	void Destroy() override;
 	void PreTick();
-	virtual void Tick();
+	void Tick() override;
 	void TickDeferred() override;
-	virtual void TickPaused();
-	virtual void Snap(int SnappingClient);
+	void TickPaused() override;
+	void Snap(int SnappingClient) override;
 
 	int NetworkClipped(int SnappingClient) const;
 
@@ -170,6 +170,7 @@ public:
 
 	int Team();
 	bool CanCollide(int ClientID);
+	bool SameTeam(int ClientID);
 
 protected:
 	int PrivateGetPlayerClass() const;
