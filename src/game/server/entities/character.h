@@ -9,8 +9,6 @@
 
 class CGameTeams;
 
-enum class INFWEAPON;
-
 /* INFECTION MODIFICATION START ***************************************/
 enum FREEZEREASON
 {
@@ -223,7 +221,6 @@ public:
 	void LoveEffect(float Time);
 	void HallucinationEffect();
 	void SlipperyEffect();
-	INFWEAPON GetInfWeaponID(int WID) const;
 	/* INFECTION MODIFICATION END *****************************************/
 
 	int GetEffectiveHookMode() const;

@@ -1399,6 +1399,101 @@ void CInfClassCharacter::SetSuperWeaponIndicatorEnabled(bool Enabled)
 	m_HasIndicator = Enabled;
 }
 
+INFWEAPON CInfClassCharacter::GetInfWeaponID(int WID) const
+{
+	if(WID == WEAPON_HAMMER)
+	{
+		switch(PrivateGetPlayerClass())
+		{
+		case PLAYERCLASS_NINJA:
+			return INFWEAPON::NINJA_HAMMER;
+		default:
+			return INFWEAPON::HAMMER;
+		}
+	}
+	else if(WID == WEAPON_GUN)
+	{
+		switch(PrivateGetPlayerClass())
+		{
+		case PLAYERCLASS_MERCENARY:
+			return INFWEAPON::MERCENARY_GUN;
+		default:
+			return INFWEAPON::GUN;
+		}
+		return INFWEAPON::GUN;
+	}
+	else if(WID == WEAPON_SHOTGUN)
+	{
+		switch(PrivateGetPlayerClass())
+		{
+		case PLAYERCLASS_MEDIC:
+			return INFWEAPON::MEDIC_SHOTGUN;
+		case PLAYERCLASS_HERO:
+			return INFWEAPON::HERO_SHOTGUN;
+		case PLAYERCLASS_BIOLOGIST:
+			return INFWEAPON::BIOLOGIST_SHOTGUN;
+		default:
+			return INFWEAPON::SHOTGUN;
+		}
+	}
+	else if(WID == WEAPON_GRENADE)
+	{
+		switch(PrivateGetPlayerClass())
+		{
+		case PLAYERCLASS_MERCENARY:
+			return INFWEAPON::MERCENARY_GRENADE;
+		case PLAYERCLASS_MEDIC:
+			return INFWEAPON::MEDIC_GRENADE;
+		case PLAYERCLASS_SOLDIER:
+			return INFWEAPON::SOLDIER_GRENADE;
+		case PLAYERCLASS_NINJA:
+			return INFWEAPON::NINJA_GRENADE;
+		case PLAYERCLASS_SCIENTIST:
+			return INFWEAPON::SCIENTIST_GRENADE;
+		case PLAYERCLASS_HERO:
+			return INFWEAPON::HERO_GRENADE;
+		case PLAYERCLASS_LOOPER:
+			return INFWEAPON::LOOPER_GRENADE;
+		default:
+			return INFWEAPON::GRENADE;
+		}
+	}
+	else if(WID == WEAPON_LASER)
+	{
+		switch(PrivateGetPlayerClass())
+		{
+		case PLAYERCLASS_ENGINEER:
+			return INFWEAPON::ENGINEER_LASER;
+		case PLAYERCLASS_NINJA:
+			return INFWEAPON::BLINDING_LASER;
+		case PLAYERCLASS_LOOPER:
+			return INFWEAPON::LOOPER_LASER;
+		case PLAYERCLASS_SCIENTIST:
+			return INFWEAPON::SCIENTIST_LASER;
+		case PLAYERCLASS_SNIPER:
+			return INFWEAPON::SNIPER_LASER;
+		case PLAYERCLASS_HERO:
+			return INFWEAPON::HERO_LASER;
+		case PLAYERCLASS_BIOLOGIST:
+			return INFWEAPON::BIOLOGIST_LASER;
+		case PLAYERCLASS_MEDIC:
+			return INFWEAPON::MEDIC_LASER;
+		case PLAYERCLASS_MERCENARY:
+			return INFWEAPON::MERCENARY_LASER;
+		default:
+			return INFWEAPON::LASER;
+		}
+	}
+	else if(WID == WEAPON_NINJA)
+	{
+		return INFWEAPON::NINJA;
+	}
+	else
+	{
+		return INFWEAPON::NONE;
+	}
+}
+
 CGameWorld *CInfClassCharacter::GameWorld() const
 {
 	return m_pGameController->GameWorld();

@@ -12,6 +12,7 @@ class CInfClassPlayerClass;
 class CWhiteHole;
 
 enum class DAMAGE_TYPE;
+enum class INFWEAPON;
 
 struct SDamageContext;
 struct DeathContext;
@@ -217,6 +218,8 @@ public:
 
 	bool HasSuperWeaponIndicator() const;
 	void SetSuperWeaponIndicatorEnabled(bool Enabled);
+
+	INFWEAPON GetInfWeaponID(int WID) const;
 
 	using CCharacter::GameWorld;
 	using CCharacter::Server;
