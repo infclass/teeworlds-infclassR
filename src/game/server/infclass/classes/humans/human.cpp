@@ -471,12 +471,17 @@ void CInfClassHuman::OnCharacterSnap(int SnappingClient)
 	{
 		if(m_pCharacter->GetArmor() < 10)
 		{
-			if(GetPlayerClass() == PLAYERCLASS_HERO)
-				return;
-
 			const CInfClassPlayer *pDestClient = GameController()->GetPlayer(SnappingClient);
 			if(pDestClient && pDestClient->GetCharacter() && pDestClient->GetClass() == PLAYERCLASS_MEDIC)
 			{
+				if(GetPlayerClass() == PLAYERCLASS_HERO)
+				{
+					if(pDestClient->GetCharacter()->GetActiveWeapon() != WEAPON_GRENADE)
+					{
+						return;
+					}
+				}
+
 				CNetObj_Pickup *pP = Server()->SnapNewItem<CNetObj_Pickup>(m_pCharacter->GetHeartID());
 				if(!pP)
 					return;
