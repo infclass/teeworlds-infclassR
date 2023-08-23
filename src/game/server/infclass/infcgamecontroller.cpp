@@ -507,11 +507,7 @@ bool CInfClassGameController::CanSeeDetails(int Who, int Whom) const
 	if(pWho->GetTeam() == TEAM_SPECTATORS)
 		return Config()->m_SvStrictSpectateMode == 0;
 
-	// Both players are in the game
-	int Team1 = GetPlayerTeam(Who);
-	int Team2 = GetPlayerTeam(Whom);
-
-	return Team1 == Team2;
+	return pWho->IsHuman() == pWhom->IsHuman();
 }
 
 int64_t CInfClassGameController::GetBlindCharactersMask(int ExcludeCID) const
