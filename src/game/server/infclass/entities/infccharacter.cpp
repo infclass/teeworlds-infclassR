@@ -334,6 +334,10 @@ void CInfClassCharacter::Snap(int SnappingClient)
 		}
 	}
 
+	if(Config()->m_InfTrainingMode)
+	{
+		pDDNetCharacter->m_Flags |= CHARACTERFLAG_PRACTICE_MODE;
+	}
 	pDDNetCharacter->m_TargetX = m_Core.m_Input.m_TargetX;
 	pDDNetCharacter->m_TargetY = m_Core.m_Input.m_TargetY;
 }
