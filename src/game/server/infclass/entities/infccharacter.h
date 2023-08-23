@@ -194,6 +194,7 @@ public:
 	void ResetHookInput();
 
 	int GetCursorID() const { return m_CursorID; }
+	int GetHeartID() const { return m_HeartID; }
 
 	void AddHelper(int HelperCID, float Time);
 	void ResetHelpers();
@@ -230,6 +231,9 @@ protected:
 
 	void ClassSpawnAttributes();
 	void DestroyChildEntities();
+
+	void FreeChildSnapIDs();
+
 	void UpdateTuningParam();
 	void TeleToId(int TeleNumber, int TeleType);
 
@@ -242,6 +246,10 @@ protected:
 protected:
 	CInfClassGameController *m_pGameController = nullptr;
 	CInfClassPlayerClass *m_pClass = nullptr;
+
+	int m_FlagID;
+	int m_HeartID;
+	int m_CursorID;
 
 	CHelperInfo m_LastHelper;
 	ClientsArray m_LastHookers;

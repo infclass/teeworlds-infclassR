@@ -26,9 +26,6 @@ CCharacter::CCharacter(CGameWorld *pWorld) :
 /* INFECTION MODIFICATION START ***************************************/
 	m_MaxArmor = 10;
 
-	m_FlagID = Server()->SnapNewID();
-	m_HeartID = Server()->SnapNewID();
-	m_CursorID = Server()->SnapNewID();
 	m_AntiFireTime = 0;
 	m_PainSoundTimer = 0;
 	m_IsFrozen = false;
@@ -45,7 +42,6 @@ CCharacter::CCharacter(CGameWorld *pWorld) :
 
 CCharacter::~CCharacter()
 {
-	FreeChildSnapIDs();
 }
 
 void CCharacter::Reset()
@@ -645,25 +641,6 @@ int CCharacter::PrivateGetPlayerClass() const
 		return PLAYERCLASS_NONE;
 	else
 		return m_pPlayer->GetClass();
-}
-
-void CCharacter::FreeChildSnapIDs()
-{
-	if(m_FlagID >= 0)
-	{
-		Server()->SnapFreeID(m_FlagID);
-		m_FlagID = -1;
-	}
-	if(m_HeartID >= 0)
-	{
-		Server()->SnapFreeID(m_HeartID);
-		m_HeartID = -1;
-	}
-	if(m_CursorID >= 0)
-	{
-		Server()->SnapFreeID(m_CursorID);
-		m_CursorID = -1;
-	}
 }
 
 bool CCharacter::IsZombie() const

@@ -28,6 +28,9 @@ MACRO_ALLOC_POOL_ID_IMPL(CInfClassCharacter, MAX_CLIENTS)
 CInfClassCharacter::CInfClassCharacter(CInfClassGameController *pGameController) :
 	CCharacter(pGameController->GameWorld()), m_pGameController(pGameController)
 {
+	m_FlagID = Server()->SnapNewID();
+	m_HeartID = Server()->SnapNewID();
+	m_CursorID = Server()->SnapNewID();
 }
 
 CInfClassCharacter::~CInfClassCharacter()
@@ -2372,6 +2375,25 @@ void CInfClassCharacter::DestroyChildEntities()
 	}
 
 	m_HookMode = 0;
+}
+
+void CInfClassCharacter::FreeChildSnapIDs()
+{
+	if(m_FlagID >= 0)
+	{
+		Server()->SnapFreeID(m_FlagID);
+		m_FlagID = -1;
+	}
+	if(m_HeartID >= 0)
+	{
+		Server()->SnapFreeID(m_HeartID);
+		m_HeartID = -1;
+	}
+	if(m_CursorID >= 0)
+	{
+		Server()->SnapFreeID(m_CursorID);
+		m_CursorID = -1;
+	}
 }
 
 void CInfClassCharacter::UpdateTuningParam()

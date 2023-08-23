@@ -190,9 +190,6 @@ protected:
 	int m_InfZoneTick;
 	int m_ProtectionTick;
 	
-	int m_FlagID;
-	int m_HeartID;
-	int m_CursorID;
 	int m_AntiFireTime;
 	int m_PainSoundTimer;
 	
@@ -212,7 +209,6 @@ public:
 	int m_InWater;
 
 public:
-	void FreeChildSnapIDs();
 	vec2 GetDirection() const;
 
 	bool IsZombie() const;
