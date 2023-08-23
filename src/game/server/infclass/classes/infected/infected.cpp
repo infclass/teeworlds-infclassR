@@ -342,6 +342,19 @@ void CInfClassInfected::OnCharacterTickDeferred()
 
 void CInfClassInfected::OnCharacterSnap(int SnappingClient)
 {
+	const vec2 Pos = m_pCharacter->GetPos();
+
+	if(GetPlayerClass() == PLAYERCLASS_WITCH)
+	{
+		CNetObj_Flag *pFlag = Server()->SnapNewItem<CNetObj_Flag>(m_pCharacter->GetFlagID());
+		if(!pFlag)
+			return;
+
+		pFlag->m_X = Pos.x;
+		pFlag->m_Y = Pos.y;
+		pFlag->m_Team = TEAM_RED;
+	}
+
 	if(SnappingClient == m_pPlayer->GetCID())
 	{
 		switch(GetPlayerClass())
@@ -374,7 +387,6 @@ void CInfClassInfected::OnCharacterSnap(int SnappingClient)
 				if(!pP)
 					return;
 
-				const vec2 Pos = m_pCharacter->GetPos();
 				pP->m_X = Pos.x;
 				pP->m_Y = Pos.y - 60.0;
 				pP->m_Type = POWERUP_HEALTH;

@@ -195,6 +195,7 @@ public:
 	void ResetHookInput();
 
 	int GetCursorID() const { return m_CursorID; }
+	int GetFlagID() const { return m_FlagID; }
 	int GetHeartID() const { return m_HeartID; }
 
 	void AddHelper(int HelperCID, float Time);
