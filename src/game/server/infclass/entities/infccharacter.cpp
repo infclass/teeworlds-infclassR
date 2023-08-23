@@ -348,14 +348,12 @@ void CInfClassCharacter::SpecialSnapForClient(int SnappingClient, bool *pDoSnap)
 		return;
 	}
 
-	if(GetPlayerClass() == PLAYERCLASS_GHOST)
+	if(IsInvisible() && !GameController()->CanSeeDetails(SnappingClient, GetCID()))
 	{
-		if(IsInvisible() && !GameController()->CanSeeDetails(SnappingClient, GetCID()))
-		{
-			*pDoSnap = false;
-			return;
-		}
+		*pDoSnap = false;
+		return;
 	}
+
 	if(GetPlayerClass() == PLAYERCLASS_WITCH)
 	{
 		CNetObj_Flag *pFlag = (CNetObj_Flag *)Server()->SnapNewItem(NETOBJTYPE_FLAG, m_FlagID, sizeof(CNetObj_Flag));
