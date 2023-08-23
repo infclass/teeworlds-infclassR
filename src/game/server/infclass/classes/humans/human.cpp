@@ -466,6 +466,33 @@ void CInfClassHuman::OnCharacterSnap(int SnappingClient)
 	default:
 		break;
 	}
+
+	if(SnappingClient != m_pPlayer->GetCID())
+	{
+		if(m_pCharacter->GetArmor() < 10)
+		{
+			if(GetPlayerClass() == PLAYERCLASS_HERO)
+				return;
+
+			const CInfClassPlayer *pDestClient = GameController()->GetPlayer(SnappingClient);
+			if(pDestClient && pDestClient->GetCharacter() && pDestClient->GetClass() == PLAYERCLASS_MEDIC)
+			{
+				CNetObj_Pickup *pP = Server()->SnapNewItem<CNetObj_Pickup>(m_pCharacter->GetHeartID());
+				if(!pP)
+					return;
+
+				const vec2 Pos = m_pCharacter->GetPos();
+				pP->m_X = Pos.x;
+				pP->m_Y = Pos.y - 60.0;
+
+				if(m_pCharacter->GetHealth() < 10 && m_pCharacter->GetArmor() == 0)
+					pP->m_Type = POWERUP_HEALTH;
+				else
+					pP->m_Type = POWERUP_ARMOR;
+				pP->m_Subtype = 0;
+			}
+		}
+	}
 }
 
 void CInfClassHuman::OnCharacterDamage(SDamageContext *pContext)

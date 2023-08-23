@@ -363,6 +363,25 @@ void CInfClassInfected::OnCharacterSnap(int SnappingClient)
 			break;
 		}
 	}
+	else
+	{
+		const CInfClassPlayer *pDestClient = GameController()->GetPlayer(SnappingClient);
+		if(pDestClient && pDestClient->IsActuallyZombie())
+		{
+			if(m_pCharacter->GetHealthArmorSum() < 10)
+			{
+				CNetObj_Pickup *pP = Server()->SnapNewItem<CNetObj_Pickup>(m_pCharacter->GetHeartID());
+				if(!pP)
+					return;
+
+				const vec2 Pos = m_pCharacter->GetPos();
+				pP->m_X = Pos.x;
+				pP->m_Y = Pos.y - 60.0;
+				pP->m_Type = POWERUP_HEALTH;
+				pP->m_Subtype = 0;
+			}
+		}
+	}
 }
 
 void CInfClassInfected::OnCharacterSpawned(const SpawnContext &Context)

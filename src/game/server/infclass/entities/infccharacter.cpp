@@ -366,35 +366,6 @@ void CInfClassCharacter::SpecialSnapForClient(int SnappingClient, bool *pDoSnap)
 		pFlag->m_Y = (int)m_Pos.y;
 		pFlag->m_Team = TEAM_RED;
 	}
-
-	if(m_Armor < 10 && SnappingClient != GetCID() && IsHuman() && GetPlayerClass() != PLAYERCLASS_HERO)
-	{
-		if(pDestClient && pDestClient->GetClass() == PLAYERCLASS_MEDIC)
-		{
-			CNetObj_Pickup *pP = static_cast<CNetObj_Pickup *>(Server()->SnapNewItem(NETOBJTYPE_PICKUP, m_HeartID, sizeof(CNetObj_Pickup)));
-			if(!pP)
-				return;
-
-			pP->m_X = (int)m_Pos.x;
-			pP->m_Y = (int)m_Pos.y - 60.0;
-			if(m_Health < 10 && m_Armor == 0)
-				pP->m_Type = POWERUP_HEALTH;
-			else
-				pP->m_Type = POWERUP_ARMOR;
-			pP->m_Subtype = 0;
-		}
-	}
-	else if((m_Armor + m_Health) < 10 && SnappingClient != GetCID() && IsZombie() && pDestClient && pDestClient->IsZombie())
-	{
-		CNetObj_Pickup *pP = static_cast<CNetObj_Pickup *>(Server()->SnapNewItem(NETOBJTYPE_PICKUP, m_HeartID, sizeof(CNetObj_Pickup)));
-		if(!pP)
-			return;
-
-		pP->m_X = (int)m_Pos.x;
-		pP->m_Y = (int)m_Pos.y - 60.0;
-		pP->m_Type = POWERUP_HEALTH;
-		pP->m_Subtype = 0;
-	}
 }
 
 void CInfClassCharacter::HandleNinja()
