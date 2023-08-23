@@ -57,7 +57,8 @@ public:
 	void TickPaused() override;
 	void Snap(int SnappingClient) override;
 
-	int NetworkClipped(int SnappingClient) const;
+	bool CanSnapCharacter(int SnappingClient);
+	bool IsSnappingCharacterInView(int SnappingClientID);
 
 	bool IsGrounded() const;
 

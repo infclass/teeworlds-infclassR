@@ -264,7 +264,12 @@ void CInfClassCharacter::Snap(int SnappingClient)
 	if(!Server()->Translate(ID, SnappingClient))
 		return;
 
-	if(NetworkClipped(SnappingClient))
+	if(!CanSnapCharacter(SnappingClient))
+	{
+		return;
+	}
+
+	if(!IsSnappingCharacterInView(SnappingClient))
 		return;
 
 	bool DoSnap = true;
@@ -278,9 +283,9 @@ void CInfClassCharacter::Snap(int SnappingClient)
 		m_pClass->OnCharacterSnap(SnappingClient);
 	}
 
-	CCharacter::Snap(SnappingClient);
+	SnapCharacter(SnappingClient, ID);
 
-	CNetObj_DDNetCharacter *pDDNetCharacter = static_cast<CNetObj_DDNetCharacter *>(Server()->SnapNewItem(NETOBJTYPE_DDNETCHARACTER, ID, sizeof(CNetObj_DDNetCharacter)));
+	CNetObj_DDNetCharacter *pDDNetCharacter = Server()->SnapNewItem<CNetObj_DDNetCharacter>(ID);
 	if(!pDDNetCharacter)
 		return;
 

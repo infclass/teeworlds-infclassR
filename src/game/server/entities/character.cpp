@@ -529,17 +529,45 @@ void CCharacter::SnapCharacter(int SnappingClient, int ID)
 {
 }
 
-void CCharacter::Snap(int SnappingClient)
+bool CCharacter::CanSnapCharacter(int SnappingClient)
+{
+	if(SnappingClient == SERVER_DEMO_CLIENT)
+		return true;
+
+	return true;
+}
+
+bool CCharacter::IsSnappingCharacterInView(int SnappingClientID)
 {
 	int ID = m_pPlayer->GetCID();
 
-	if(!Server()->Translate(ID, SnappingClient))
-		return;
+	// A player may not be clipped away if his hook or a hook attached to him is in the field of view
+	bool PlayerAndHookNotInView = NetworkClippedLine(SnappingClientID, m_Pos, m_Core.m_HookPos);
+	bool AttachedHookInView = false;
+	if(PlayerAndHookNotInView)
+	{
+		for(const auto &AttachedPlayerID : m_Core.m_AttachedPlayers)
+		{
+			CCharacter *pOtherPlayer = GameServer()->GetPlayerChar(AttachedPlayerID);
+			if(pOtherPlayer && pOtherPlayer->m_Core.m_HookedPlayer == ID)
+			{
+				if(!NetworkClippedLine(SnappingClientID, m_Pos, pOtherPlayer->m_Pos))
+				{
+					AttachedHookInView = true;
+					break;
+				}
+			}
+		}
+	}
+	if(PlayerAndHookNotInView && !AttachedHookInView)
+	{
+		return false;
+	}
+	return true;
+}
 
-	if(NetworkClipped(SnappingClient))
-		return;
-
-	SnapCharacter(SnappingClient, ID);
+void CCharacter::Snap(int SnappingClient)
+{
 }
 
 bool CCharacter::CanCollide(int ClientID)
@@ -627,11 +655,6 @@ void CCharacter::HandleSkippableTiles(int Index)
 			m_Core.m_Vel = ClampVel(m_MoveRestrictions, TempVel);
 		}
 	}
-}
-
-int CCharacter::NetworkClipped(int SnappingClient) const
-{
-	return CEntity::NetworkClipped(SnappingClient, m_Pos) && (m_Core.m_HookState == HOOK_IDLE || CEntity::NetworkClippedLine(SnappingClient, m_Pos, m_Core.m_HookPos));
 }
 
 /* INFECTION MODIFICATION START ***************************************/
