@@ -49,7 +49,7 @@ public:
 	void OnCharacterSnap(int SnappingClient) override;
 	void OnCharacterDamage(SDamageContext *pContext) override;
 
-	void OnKilledCharacter(int Victim, bool Assisted) override;
+	void OnKilledCharacter(CInfClassCharacter *pVictim, const DeathContext &Context) override;
 	void OnHumanHammerHitHuman(CInfClassCharacter *pTarget);
 
 	void OnHookAttachedPlayer() override;

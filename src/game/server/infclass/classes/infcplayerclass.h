@@ -72,7 +72,7 @@ public:
 	virtual void OnCharacterDeath(DAMAGE_TYPE DamageType);
 	virtual void OnCharacterDamage(SDamageContext *pContext);
 
-	virtual void OnKilledCharacter(int Victim, bool Assisted);
+	virtual void OnKilledCharacter(CInfClassCharacter *pVictim, const DeathContext &Context);
 
 	virtual void OnHookAttachedPlayer();
 

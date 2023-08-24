@@ -3423,10 +3423,10 @@ void CInfClassGameController::RewardTheKillers(CInfClassCharacter *pVictim, cons
 		GameServer()->SendScoreSound(pKiller->GetCID());
 	}
 
-	pKiller->GetCharacterClass()->OnKilledCharacter(pVictim->GetCID(), false);
+	pKiller->GetCharacterClass()->OnKilledCharacter(pVictim, Context);
 	if(pAssistant)
 	{
-		pAssistant->GetCharacterClass()->OnKilledCharacter(pVictim->GetCID(), false);
+		pAssistant->GetCharacterClass()->OnKilledCharacter(pVictim, Context);
 	}
 
 	// Always reward the freezer
@@ -3436,7 +3436,7 @@ void CInfClassGameController::RewardTheKillers(CInfClassCharacter *pVictim, cons
 		CInfClassPlayer *pFreezer = GetPlayer(VictimFreezer);
 		if(pFreezer)
 		{
-			pFreezer->GetCharacterClass()->OnKilledCharacter(pVictim->GetCID(), true);
+			pFreezer->GetCharacterClass()->OnKilledCharacter(pVictim, Context);
 		}
 	}
 }

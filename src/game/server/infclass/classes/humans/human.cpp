@@ -11,6 +11,7 @@
 
 #include <game/server/infclass/damage_context.h>
 #include <game/server/infclass/damage_type.h>
+#include <game/server/infclass/death_context.h>
 #include <game/server/infclass/entities/biologist-mine.h>
 #include <game/server/infclass/entities/blinding-laser.h>
 #include <game/server/infclass/entities/bouncing-bullet.h>
@@ -522,11 +523,12 @@ void CInfClassHuman::OnCharacterDamage(SDamageContext *pContext)
 	}
 }
 
-void CInfClassHuman::OnKilledCharacter(int Victim, bool Assisted)
+void CInfClassHuman::OnKilledCharacter(CInfClassCharacter *pVictim, const DeathContext &Context)
 {
 	if(!m_pCharacter)
 		return;
 
+	const bool Assisted = Context.Killer != GetCID();
 	if(m_KillsProgression >= 0)
 	{
 		m_KillsProgression += Assisted ? 0.5f : 1.0f;
@@ -545,7 +547,7 @@ void CInfClassHuman::OnKilledCharacter(int Victim, bool Assisted)
 		}
 		break;
 	case PLAYERCLASS_NINJA:
-		if(Victim == m_NinjaTargetCID)
+		if(pVictim->GetCID() == m_NinjaTargetCID)
 		{
 			OnNinjaTargetKiller(Assisted);
 		}

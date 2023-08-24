@@ -334,7 +334,7 @@ void CInfClassPlayerClass::OnCharacterDamage(SDamageContext *pContext)
 {
 }
 
-void CInfClassPlayerClass::OnKilledCharacter(int Victim, bool Assisted)
+void CInfClassPlayerClass::OnKilledCharacter(CInfClassCharacter *pVictim, const DeathContext &Context)
 {
 }
 
