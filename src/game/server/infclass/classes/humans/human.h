@@ -46,6 +46,7 @@ public:
 	void OnCharacterPreCoreTick() override;
 	void OnCharacterTick() override;
 	void OnCharacterTickPaused() override;
+	void OnCharacterPostCoreTick() override;
 	void OnCharacterSnap(int SnappingClient) override;
 	void OnCharacterDamage(SDamageContext *pContext) override;
 
@@ -117,6 +118,7 @@ private:
 	int m_TurretCount = 0;
 	int m_BroadcastWhiteHoleReady; // used to broadcast "WhiteHole ready" for a short period of time
 	int m_PositionLockTicksRemaining = 0;
+	vec2 m_PositionLockPosition{};
 	int m_NinjaTargetTick = 0;
 	int m_NinjaTargetCID = -1;
 	int m_NinjaVelocityBuff = 0;

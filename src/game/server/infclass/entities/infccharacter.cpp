@@ -200,12 +200,8 @@ void CInfClassCharacter::Tick()
 	}
 
 	if(m_pClass)
-		m_pClass->OnCharacterTick();
-
-	if(GetPlayerClass() == PLAYERCLASS_SNIPER && PositionIsLocked())
 	{
-		m_Core.m_Vel = vec2(0.0f, 0.0f);
-		m_Core.m_Pos = PrevPos;
+		m_pClass->OnCharacterTick();
 	}
 }
 

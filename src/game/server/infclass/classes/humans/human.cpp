@@ -353,6 +353,7 @@ void CInfClassHuman::OnCharacterPreCoreTick()
 				else
 				{
 					m_pCharacter->ResetMovementsInput();
+					m_PositionLockPosition = m_pCharacter->GetPos();
 				}
 			}
 		}
@@ -445,6 +446,25 @@ void CInfClassHuman::OnCharacterTickPaused()
 	if(m_ResetKillsTick >= 0)
 	{
 		++m_ResetKillsTick;
+	}
+}
+
+void CInfClassHuman::OnCharacterPostCoreTick()
+{
+	CInfClassPlayerClass::OnCharacterPostCoreTick();
+
+	switch(GetPlayerClass())
+	{
+	case PLAYERCLASS_SNIPER:
+		if(m_pCharacter->PositionIsLocked())
+		{
+			CCharacterCore *pCore = m_pCharacter->Core();
+			pCore->m_Vel = vec2(0.0f, 0.0f);
+			pCore->m_Pos = m_PositionLockPosition;
+		}
+		break;
+	default:
+		break;
 	}
 }
 
