@@ -2074,6 +2074,8 @@ void CInfClassCharacter::GrantSpawnProtection()
 
 void CInfClassCharacter::PreCoreTick()
 {
+	m_InputBackup = m_Input;
+
 	--m_FrozenTime;
 	if(m_IsFrozen)
 	{
@@ -2283,6 +2285,10 @@ void CInfClassCharacter::PostCoreTick()
 	{
 		m_PainSoundTimer--;
 	}
+
+	// Some classes (namely Sniper) resets the input to lock the position
+	// Restore the Input value after physics handling is done to fix the m_PrevInput
+	m_Input = m_InputBackup;
 }
 
 void CInfClassCharacter::SnapCharacter(int SnappingClient, int ID)

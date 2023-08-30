@@ -251,6 +251,8 @@ protected:
 	CInfClassGameController *m_pGameController = nullptr;
 	CInfClassPlayerClass *m_pClass = nullptr;
 
+	CNetObj_PlayerInput m_InputBackup;
+
 	int m_FlagID;
 	int m_HeartID;
 	int m_CursorID;
