@@ -1859,18 +1859,18 @@ void CServer::ProcessClientPacket(CNetChunk *pPacket)
 
 			int64_t TagTime;
 			if(m_aClients[ClientID].m_Snapshots.Get(m_aClients[ClientID].m_LastAckedSnapshot, &TagTime, 0, 0) >= 0)
-				m_aClients[ClientID].m_Latency = (int)(((time_get()-TagTime)*1000)/time_freq());
+				m_aClients[ClientID].m_Latency = (int)(((time_get() - TagTime) * 1000) / time_freq());
 
 			// add message to report the input timing
 			// skip packets that are old
 			if(IntendedTick > m_aClients[ClientID].m_LastInputTick)
 			{
-				int TimeLeft = ((TickStartTime(IntendedTick)-time_get())*1000) / time_freq();
+				const int TimeLeft = (TickStartTime(IntendedTick) - time_get()) / (time_freq() / 1000);
 
-				CMsgPacker Msg(NETMSG_INPUTTIMING, true);
-				Msg.AddInt(IntendedTick);
-				Msg.AddInt(TimeLeft);
-				SendMsg(&Msg, 0, ClientID);
+				CMsgPacker Msgp(NETMSG_INPUTTIMING, true);
+				Msgp.AddInt(IntendedTick);
+				Msgp.AddInt(TimeLeft);
+				SendMsg(&Msgp, 0, ClientID);
 			}
 
 			m_aClients[ClientID].m_LastInputTick = IntendedTick;
@@ -1885,7 +1885,8 @@ void CServer::ProcessClientPacket(CNetChunk *pPacket)
 			for(int i = 0; i < Size / 4; i++)
 				pInput->m_aData[i] = Unpacker.GetInt();
 
-			mem_copy(m_aClients[ClientID].m_LatestInput.m_aData, pInput->m_aData, MAX_INPUT_SIZE*sizeof(int));
+			GameServer()->OnClientPrepareInput(ClientID, pInput->m_aData);
+			mem_copy(m_aClients[ClientID].m_LatestInput.m_aData, pInput->m_aData, MAX_INPUT_SIZE * sizeof(int));
 
 			m_aClients[ClientID].m_CurrentInput++;
 			m_aClients[ClientID].m_CurrentInput %= 200;
@@ -2857,6 +2858,23 @@ int CServer::Run()
 
 			while(t > TickStartTime(m_CurrentGameTick+1))
 			{
+				for(int c = 0; c < MAX_CLIENTS; c++)
+				{
+					if(m_aClients[c].m_State != CClient::STATE_INGAME)
+						continue;
+					bool ClientHadInput = false;
+					for(auto &Input : m_aClients[c].m_aInputs)
+					{
+						if(Input.m_GameTick == Tick() + 1)
+						{
+							GameServer()->OnClientPredictedEarlyInput(c, Input.m_aData);
+							ClientHadInput = true;
+						}
+					}
+					if(!ClientHadInput)
+						GameServer()->OnClientPredictedEarlyInput(c, nullptr);
+				}
+
 				m_CurrentGameTick++;
 				NewTicks++;
 
@@ -2893,20 +2911,24 @@ int CServer::Run()
 						}
 					}
 				}
-				
+
 				// apply new input
 				for(int c = 0; c < MAX_CLIENTS; c++)
 				{
 					if(m_aClients[c].m_State != CClient::STATE_INGAME)
 						continue;
-					for(int i = 0; i < 200; i++)
+					bool ClientHadInput = false;
+					for(auto &Input : m_aClients[c].m_aInputs)
 					{
-						if(m_aClients[c].m_aInputs[i].m_GameTick == Tick())
+						if(Input.m_GameTick == Tick())
 						{
-							GameServer()->OnClientPredictedInput(c, m_aClients[c].m_aInputs[i].m_aData);
+							GameServer()->OnClientPredictedInput(c, Input.m_aData);
+							ClientHadInput = true;
 							break;
 						}
 					}
+					if(!ClientHadInput)
+						GameServer()->OnClientPredictedInput(c, nullptr);
 				}
 
 				GameServer()->OnTick();
@@ -2924,6 +2946,10 @@ int CServer::Run()
 					lock_release(m_GameServerCmdLock);
 				} 
 #endif
+				if(ErrorShutdown())
+				{
+					break;
+				}
 			}
 
 			// snap game

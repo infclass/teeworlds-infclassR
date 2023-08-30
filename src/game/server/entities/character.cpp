@@ -364,6 +364,8 @@ void CCharacter::Tick()
 
 	// Previnput
 	m_PrevInput = m_Input;
+
+	m_PrevPos = m_Core.m_Pos;
 }
 
 void CCharacter::TickDeferred()
@@ -784,4 +786,5 @@ void CCharacter::SetTeams(CGameTeams *pTeams)
 void CCharacter::DDRaceInit()
 {
 	m_Core.m_Id = GetPlayer()->GetCID();
+	m_PrevPos = m_Pos;
 }

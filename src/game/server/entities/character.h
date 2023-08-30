@@ -192,6 +192,7 @@ protected:
 	
 	int m_AntiFireTime;
 	int m_PainSoundTimer;
+	vec2 m_PrevPos;
 	
 	bool m_IsFrozen;
 	int m_FrozenTime;
