@@ -599,6 +599,13 @@ void CInfClassHuman::OnKilledCharacter(CInfClassCharacter *pVictim, const DeathC
 		{
 			OnNinjaTargetKiller(Assisted);
 		}
+		if(GameController()->GetRoundType() == ERoundType::Survival)
+		{
+			if(Context.DamageType == DAMAGE_TYPE::NINJA)
+			{
+				m_pCharacter->Heal(1);
+			}
+		}
 		break;
 	case PLAYERCLASS_MEDIC:
 		if(!Assisted)
