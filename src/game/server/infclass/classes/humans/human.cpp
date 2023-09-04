@@ -1984,9 +1984,13 @@ void CInfClassHuman::OnPortalGunFired(WeaponFireContext *pFireContext)
 
 	vec2 OldPos = GetPos();
 	m_pCharacter->m_Core.m_Pos = PortalPos;
-	m_pCharacter->m_Core.m_HookedPlayer = -1;
+	if(m_pCharacter->m_Core.m_HookedPlayer >= 0)
+	{
+		m_pCharacter->ResetHook();
+	}
 	m_pCharacter->m_Core.m_HookState = HOOK_RETRACTED;
 	m_pCharacter->m_Core.m_HookPos = PortalPos;
+
 	float SelfDamage = Config()->m_InfScientistTpSelfharm;
 	if(SelfDamage)
 	{

@@ -101,6 +101,7 @@ void CCharacterCore::Reset()
 
 void CCharacterCore::Tick(bool UseInput, CParams* pParams)
 {
+	bool DoDeferredTick = true;
 	m_MoveRestrictions = m_pCollision->GetMoveRestrictions(m_Pos);
 
 	const CTuningParams* pTuningParams = pParams->m_pTuningParams;
@@ -193,14 +194,14 @@ void CCharacterCore::Tick(bool UseInput, CParams* pParams)
 				m_HookState = HOOK_FLYING;
 				m_HookPos = m_Pos + TargetDirection * PhysicalSize() * 1.5f;
 				m_HookDir = TargetDirection;
-				m_HookedPlayer = -1;
+				SetHookedPlayer(-1);
 				m_HookTick = 0;
 				m_TriggeredEvents |= COREEVENT_HOOK_LAUNCH;
 			}
 		}
 		else
 		{
-			m_HookedPlayer = -1;
+			SetHookedPlayer(-1);
 			m_HookState = HOOK_IDLE;
 			m_HookPos = m_Pos;
 		}
@@ -226,7 +227,7 @@ void CCharacterCore::Tick(bool UseInput, CParams* pParams)
 	// do hook
 	if(m_HookState == HOOK_IDLE)
 	{
-		m_HookedPlayer = -1;
+		SetHookedPlayer(-1);
 		m_HookState = HOOK_IDLE;
 		m_HookPos = m_Pos;
 	}
@@ -289,7 +290,7 @@ void CCharacterCore::Tick(bool UseInput, CParams* pParams)
 					{
 						m_TriggeredEvents |= COREEVENT_HOOK_ATTACH_PLAYER;
 						m_HookState = HOOK_GRABBED;
-						m_HookedPlayer = i;
+						SetHookedPlayer(i);
 						Distance = distance(m_HookPos, pCharCore->m_Pos);
 					}
 				}
@@ -324,7 +325,7 @@ void CCharacterCore::Tick(bool UseInput, CParams* pParams)
 			else
 			{
 				// release hook
-				m_HookedPlayer = -1;
+				SetHookedPlayer(-1);
 				m_HookState = HOOK_RETRACTED;
 				m_HookPos = m_Pos;
 			}
@@ -359,7 +360,7 @@ void CCharacterCore::Tick(bool UseInput, CParams* pParams)
 		m_HookTick++;
 		if(m_HookedPlayer != -1 && (m_HookTick > pParams->m_HookGrabTime || !m_pWorld->m_apCharacters[m_HookedPlayer]))
 		{
-			m_HookedPlayer = -1;
+			SetHookedPlayer(-1);
 			m_HookState = HOOK_RETRACTED;
 			m_HookPos = m_Pos;
 		}
@@ -371,6 +372,14 @@ void CCharacterCore::Tick(bool UseInput, CParams* pParams)
 			m_HookPos = m_Pos;
 		}
 	}
+
+	if(DoDeferredTick)
+		TickDeferred(pParams);
+}
+
+void CCharacterCore::TickDeferred(CParams *pParams)
+{
+	const CTuningParams* pTuningParams = pParams->m_pTuningParams;
 
 	if(m_pWorld)
 	{
@@ -533,7 +542,7 @@ void CCharacterCore::Read(const CNetObj_CharacterCore *pObjCore)
 	m_HookPos.y = pObjCore->m_HookY;
 	m_HookDir.x = pObjCore->m_HookDx / 256.0f;
 	m_HookDir.y = pObjCore->m_HookDy / 256.0f;
-	m_HookedPlayer = pObjCore->m_HookedPlayer;
+	SetHookedPlayer(pObjCore->m_HookedPlayer);
 	m_Jumped = pObjCore->m_Jumped;
 	m_Direction = pObjCore->m_Direction;
 	m_Angle = pObjCore->m_Angle;
@@ -615,7 +624,7 @@ void CCharacterCore::TryBecomePassenger(CCharacterCore *pTaxi)
 	}
 
 	pTaxi->SetPassenger(this);
-	m_HookedPlayer = -1;
+	SetHookedPlayer(-1);
 	m_HookState = HOOK_RETRACTED;
 	m_HookPos = m_Pos;
 }

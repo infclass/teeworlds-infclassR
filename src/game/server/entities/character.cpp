@@ -292,6 +292,14 @@ void CCharacter::OnDirectInput(CNetObj_PlayerInput *pNewInput)
 	mem_copy(&m_LatestPrevInput, &m_LatestInput, sizeof(m_LatestInput));
 }
 
+void CCharacter::ResetHook()
+{
+	m_Core.SetHookedPlayer(-1);
+	m_Core.m_HookState = HOOK_RETRACTED;
+	m_Core.m_TriggeredEvents |= COREEVENT_HOOK_RETRACT;
+	m_Core.m_HookPos = m_Core.m_Pos;
+}
+
 void CCharacter::ResetInput()
 {
 	m_Input.m_Direction = 0;
@@ -348,9 +356,7 @@ void CCharacter::Tick()
 		{
 			if(IsZombie() == pHookedPlayer->IsZombie() && pHookedPlayer->HookProtectionEnabled())
 			{
-				m_Core.m_HookedPlayer = -1;
-				m_Core.m_HookState = HOOK_RETRACTED;
-				m_Core.m_HookPos = GetPos();
+				ResetHook();
 			}
 		}
 	}

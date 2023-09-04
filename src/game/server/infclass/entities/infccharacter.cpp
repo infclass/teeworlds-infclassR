@@ -1920,7 +1920,7 @@ int CInfClassCharacter::GetHookedPlayer() const
 
 void CInfClassCharacter::SetHookedPlayer(int ClientID)
 {
-	m_Core.m_HookedPlayer = ClientID;
+	m_Core.SetHookedPlayer(ClientID);
 
 	if(ClientID >= 0)
 	{
@@ -2607,8 +2607,5 @@ void CInfClassCharacter::TeleToId(int TeleNumber, int TeleType)
 		GameWorld()->ReleaseHooked(GetPlayer()->GetCID());
 	}
 
-	m_Core.m_HookedPlayer = -1;
-	m_Core.m_HookState = HOOK_RETRACTED;
-	m_Core.m_TriggeredEvents |= COREEVENT_HOOK_RETRACT;
-	m_Core.m_HookPos = m_Core.m_Pos;
+	ResetHook();
 }
