@@ -322,7 +322,7 @@ void CInfClassCharacter::Snap(int SnappingClient)
 	}
 
 	// Send freeze info only to the version that can handle it correctly
-	if(IsInfected() && IsFrozen())
+	if(IsFrozen())
 	{
 		IServer::CClientInfo ClientInfo = {0};
 		if(SnappingClient != SERVER_DEMO_CLIENT)
