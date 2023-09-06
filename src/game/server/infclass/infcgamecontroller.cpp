@@ -43,6 +43,40 @@ static const char *gs_aRoundNames[] = {
 	"invalid",
 };
 
+static const char *aHintMessages[] = {
+	_("Taxi prevents ammo regeneration for all passengers."),
+	_("Choosing a random class grants full armor."),
+	_("You can toggle hook protection by pressing f3 (\"Vote yes\" keybind)."),
+	_("Mercenary can reduce ammo usage during flight by tapping instead of holding down the \"fire\" button."),
+	_("Mercenary's grenades prevent zombies from healing."),
+	_("Medic can heal Heroes using the grenade launcher."),
+	_("Medic and Biologist can use hammer to instantly kill an infected."),
+	_("Hero can stand still for a short time to be pointed towards the flag."),
+	_("Hero's turrets are great for detecting Ghosts."),
+	_("Hero's flags fully restore ammo to all humans"),
+	_("Soldier's bombs can hit through walls."),
+	_("Ninja's slash deals 9 damage by default. One more pistol shot will kill an infected with no armor."),
+	_("Ninja with a single strength upgrade can kill an armorless infected with a single slash."),
+	_("Ninja doesn't need to directly kill their target. An assist with a laser blind or grenade stun will still grant the rewards."),
+	_("Ninja heals slightly on a target kill."),
+	_("Sniper deals double as much damage in locked position."),
+	_("Scientist can use Taxi to teleport his teammates into safety."),
+	_("Scientist can get a white hole after 15 kills."),
+	_("Scientist can rocket jump with the laser rifle."),
+	_("Biologist's bouncy shotgun can be used to hit the infected around corners."),
+	_("Smoker heals by hooking humans."),
+	_("Boomer can infect through narrow walls."),
+	_("Hunter receives no knockback from Medic's shotgun."),
+	_("Bat can heal by hitting humans."),
+	_("Spider doesn't need to be in Web mode to automatically grab any humans touching its hook."),
+	_("Spider can be hooked and transported by teammates to extend its hook trap."),
+	_("Slug can heal itself and allies over time up to 13 HP with its slime."),
+	_("Slug can hold down the \"fire\" button to automatically spread slime. The hammer swings won't hurt humans this way though."),
+	_("Voodoo can unfreeze an Undead while in Spirit mode."),
+	_("Witch can spawn the infected through narrow walls."),
+	_("Undead can be removed from a game by throwing it into kill tiles or reviving it as a Medic.")
+};
+
 const char *toString(ROUND_TYPE RoundType)
 {
 	int Index = static_cast<int>(RoundType);
@@ -2601,6 +2635,17 @@ void CInfClassGameController::Tick()
 
 		m_SuggestMoreRounds = false;
 		m_MoreRoundsSuggested = true;
+	}
+
+	if(time_get() - m_timeSinceHint > time_freq() * g_Config.m_HintsInterval * 60 && g_Config.m_HintsInterval != 0)
+	{
+		if(NumPlayers > 0)
+		{
+			GameServer()->SendChatTarget_Localization(-1, CHATCATEGORY_DEFAULT,
+				aHintMessages[secure_rand() % sizeof(aHintMessages) / sizeof(aHintMessages[0] - 1)]);
+
+			m_timeSinceHint = time_get();
+		}
 	}
 }
 
