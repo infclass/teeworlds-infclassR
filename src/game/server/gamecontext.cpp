@@ -4169,10 +4169,9 @@ bool CGameContext::WriteClassHelpPage(dynamic_string *pOutput, const char *pLang
 		break;
 	case PLAYERCLASS_BAT:
 		AddLine(_C("Bat", "Bat can jump endlessly in the air but it cannot infect humans."));
-		AddLine(_C("Bat", "Instead, it can hammer humans to reduce their health or even kill them."));
+		AddLine(_C("Bat", "Instead, it can hammer humans to steal their health and heal itself."));
 		AddLine(_C("Bat", "The hammer is also useful for healing the infected."));
-		AddLine(_C("Bat", "It can also inflict 1 damage point per second by hooking humans, which"
-						  " sucks their blood, restoring the Bat's health."));
+		AddLine(_C("Bat", "It can also inflict 1 damage point per second by hooking humans."));
 		break;
 	case PLAYERCLASS_GHOST:
 		AddLine(_C("Ghost", "The Ghost is invisible until a human comes nearby, it takes damage,"
