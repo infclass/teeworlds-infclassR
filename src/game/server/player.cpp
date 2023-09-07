@@ -464,6 +464,11 @@ bool CPlayer::IsPlaying()
 	return m_pCharacter && m_pCharacter->IsAlive();
 }
 
+bool CPlayer::IsInGame() const
+{
+	return m_IsInGame && m_IsReady && !IsSpectator();
+}
+
 /* INFECTION MODIFICATION START ***************************************/
 PLAYERCLASS CPlayer::GetClass() const
 {
@@ -473,11 +478,6 @@ PLAYERCLASS CPlayer::GetClass() const
 bool CPlayer::IsZombie() const
 {
 	return (m_class > END_HUMANCLASS);
-}
-
-bool CPlayer::IsActuallyZombie() const
-{
-	return IsZombie() && !IsSpectator();
 }
 
 bool CPlayer::IsHuman() const

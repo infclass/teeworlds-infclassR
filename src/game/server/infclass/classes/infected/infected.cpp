@@ -379,7 +379,7 @@ void CInfClassInfected::OnCharacterSnap(int SnappingClient)
 	else
 	{
 		const CInfClassPlayer *pDestClient = GameController()->GetPlayer(SnappingClient);
-		if(pDestClient && pDestClient->IsActuallyZombie())
+		if(pDestClient && pDestClient->IsInGame() && pDestClient->IsZombie())
 		{
 			if(m_pCharacter->GetHealthArmorSum() < 10)
 			{

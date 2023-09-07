@@ -162,6 +162,7 @@ public:
 	int IsPaused();
 
 	bool IsPlaying();
+	bool IsInGame() const;
 
 	int m_ShowOthers;
 	bool m_ShowAll;
@@ -189,7 +190,6 @@ public:
 	
 	PLAYERCLASS GetClass() const;
 	bool IsZombie() const;
-	bool IsActuallyZombie() const;
 	bool IsHuman() const;
 	bool IsSpectator() const;
 	bool IsKnownClass(int c);

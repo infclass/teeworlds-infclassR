@@ -249,7 +249,7 @@ void CInfClassGameController::OnPlayerDisconnect(CPlayer *pBasePlayer, EClientDr
 	if(!aIgnoreReasons.Contains(Type))
 	{
 		CInfClassPlayer *pPlayer = CInfClassPlayer::GetInstance(pBasePlayer);
-		if(pPlayer && pPlayer->IsActuallyZombie() && m_InfectedStarted)
+		if(pPlayer && pPlayer->IsInGame() && pPlayer->IsZombie() && m_InfectedStarted)
 		{
 			int NumHumans;
 			int NumInfected;
@@ -2448,20 +2448,20 @@ void CInfClassGameController::SendKillMessage(int Victim, const DeathContext &Co
 
 int CInfClassGameController::GetClientIdForNewWitch() const
 {
-	ClientsArray UnsafeInfected;
+	ClientsArray SuitableInfected;
 	ClientsArray SafeInfected;
 
 	for(int ClientID : m_WitchCallers)
 	{
 		CInfClassPlayer *pPlayer = GetPlayer(ClientID);
-		if(!pPlayer)
+		if(!pPlayer || !pPlayer->IsInGame())
 			continue;
 		if(pPlayer->GetClass() == PLAYERCLASS_WITCH)
 			continue;
-		if(!pPlayer->IsActuallyZombie())
+		if(!pPlayer->IsZombie())
 			continue;
 
-		UnsafeInfected.Add(ClientID);
+		SuitableInfected.Add(ClientID);
 
 		if(!IsSafeWitchCandidate(ClientID))
 			continue;
@@ -2469,20 +2469,20 @@ int CInfClassGameController::GetClientIdForNewWitch() const
 		SafeInfected.Add(ClientID);
 	}
 
-	if(UnsafeInfected.IsEmpty())
+	if(SuitableInfected.IsEmpty())
 	{
 		// fallback
 		for(int ClientID = 0; ClientID < MAX_CLIENTS; ClientID++)
 		{
 			CInfClassPlayer *pPlayer = GetPlayer(ClientID);
-			if(!pPlayer)
+			if(!pPlayer || !pPlayer->IsInGame())
 				continue;
 			if(pPlayer->GetClass() == PLAYERCLASS_WITCH)
 				continue;
-			if(!pPlayer->IsActuallyZombie())
+			if(!pPlayer->IsZombie())
 				continue;
 
-			UnsafeInfected.Add(ClientID);
+			SuitableInfected.Add(ClientID);
 
 			if(!IsSafeWitchCandidate(ClientID))
 				continue;
@@ -2491,17 +2491,17 @@ int CInfClassGameController::GetClientIdForNewWitch() const
 		}
 	}
 
-	if(UnsafeInfected.IsEmpty())
+	if(SuitableInfected.IsEmpty())
 	{
 		Console()->Print(IConsole::OUTPUT_LEVEL_DEBUG, "witch", "Unable to find any suitable player");
 		return -1;
 	}
 
-	const ClientsArray &Candidates = SafeInfected.IsEmpty() ? UnsafeInfected : SafeInfected;
+	const ClientsArray &Candidates = SafeInfected.IsEmpty() ? SuitableInfected : SafeInfected;
 	int id = random_int(0, Candidates.Size() - 1);
 	char aBuf[512];
 	/* debug */
-	str_format(aBuf, sizeof(aBuf), "going through MAX_CLIENTS=%d, zombie_count=%d, random_int=%d, id=%d", MAX_CLIENTS, static_cast<int>(UnsafeInfected.Size()), id, UnsafeInfected[id]);
+	str_format(aBuf, sizeof(aBuf), "going through MAX_CLIENTS=%d, zombie_count=%d, random_int=%d, id=%d", MAX_CLIENTS, static_cast<int>(SuitableInfected.Size()), id, SuitableInfected[id]);
 	Console()->Print(IConsole::OUTPUT_LEVEL_DEBUG, "witch", aBuf);
 	/* /debug */
 	CInfClassPlayer *pPlayer = GetPlayer(Candidates[id]);
@@ -4227,10 +4227,10 @@ int CInfClassGameController::GetInfectedCount(PLAYERCLASS InfectedPlayerClass) c
 	for(int i = 0; i < MAX_CLIENTS; i++)
 	{
 		const CInfClassPlayer *pPlayer = GetPlayer(i);
-		if(!pPlayer)
+		if(!pPlayer || !pPlayer->IsInGame())
 			continue;
 
-		if(!pPlayer->IsActuallyZombie())
+		if(!pPlayer->IsZombie())
 			continue;
 
 		if(InfectedPlayerClass != PLAYERCLASS_INVALID)
