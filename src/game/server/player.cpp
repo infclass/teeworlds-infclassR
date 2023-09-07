@@ -95,10 +95,6 @@ void CPlayer::Reset()
 	m_class = PLAYERCLASS_NONE;
 	m_InfectionTick = -1;
 	SetLanguage(Server()->GetClientLanguage(m_ClientID));
-	for(int i=0; i<NB_PLAYERCLASS; i++)
-	{
-		m_knownClass[i] = false;
-	}
 
 	m_HookProtectionAutomatic = true;
 
@@ -488,11 +484,6 @@ bool CPlayer::IsHuman() const
 bool CPlayer::IsSpectator() const
 {
 	return GetTeam() == TEAM_SPECTATORS;
-}
-
-bool CPlayer::IsKnownClass(int c)
-{
-	return m_knownClass[c];
 }
 
 const char *CPlayer::GetName(int SnappingClient) const

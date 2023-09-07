@@ -731,11 +731,11 @@ void CInfClassPlayer::SendClassIntro()
 			GameServer()->SendBroadcast_Localization(GetCID(), BROADCAST_PRIORITY_GAMEANNOUNCE, BROADCAST_DURATION_GAMEANNOUNCE,
 				_("You are an infected: {str:ClassName}"), "ClassName", pTranslated, NULL);
 
-		if(!IsKnownClass(Class))
+		if(!m_aKnownClasses[Class])
 		{
 			const char *className = CInfClassGameController::GetClassName(Class);
 			GameServer()->SendChatTarget_Localization(GetCID(), CHATCATEGORY_DEFAULT, _("Type “/help {str:ClassName}” for more information about your class"), "ClassName", className, NULL);
-			m_knownClass[Class] = true;
+																																														   m_aKnownClasses[Class] = true;
 		}
 	}
 }

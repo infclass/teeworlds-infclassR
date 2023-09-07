@@ -183,8 +183,6 @@ protected:
 
 public:
 	int m_HumanTime;
-	
-	bool m_knownClass[NB_PLAYERCLASS];
 
 	int m_InfectionTick;
 	
@@ -192,7 +190,6 @@ public:
 	bool IsInfected() const;
 	bool IsHuman() const;
 	bool IsSpectator() const;
-	bool IsKnownClass(int c);
 
 	const char *GetLanguage() const;
 	void SetLanguage(const char* pLanguage);

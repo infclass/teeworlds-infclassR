@@ -149,6 +149,8 @@ protected:
 	CInfClassGameController *m_pGameController = nullptr;
 	CInfClassPlayerClass *m_pInfcPlayerClass = nullptr;
 
+	bool m_aKnownClasses[NB_PLAYERCLASS]{};
+
 	PLAYERCLASS m_PreferredClass;
 	bool m_AntiPing = false;
 
