@@ -3,7 +3,6 @@
 
 #include <engine/console.h>
 #include <engine/shared/protocol.h>
-#include <game/infclass/classes.h>
 
 enum
 {

@@ -342,7 +342,7 @@ void CServer::CClient::Reset(bool ResetScore)
 		mem_zero(m_Memory, sizeof(m_Memory));
 		
 		m_Session.m_RoundId = -1;
-		m_Session.m_Class = PLAYERCLASS_NONE;
+		m_Session.m_Class = 0;
 		m_Session.m_MuteTick = 0;
 		m_Session.m_LastInfectionTime = 0;
 		

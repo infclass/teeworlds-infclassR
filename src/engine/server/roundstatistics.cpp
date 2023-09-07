@@ -1,5 +1,7 @@
 #include "roundstatistics.h"
 
+#include <game/infclass/classes.h>
+
 int CRoundStatistics::CPlayer::OnScoreEvent(int EventType, int Class)
 {
 	int Points = 0;
