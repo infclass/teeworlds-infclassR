@@ -320,7 +320,7 @@ void CCharacterCore::Tick(bool UseInput, CParams* pParams)
 		if(m_HookedPlayer != -1)
 		{
 			CCharacterCore *pCharCore = m_pWorld->m_apCharacters[m_HookedPlayer];
-			if(pCharCore)
+			if(pCharCore && m_pTeams->CanKeepHook(m_Id, pCharCore->m_Id))
 				m_HookPos = pCharCore->m_Pos;
 			else
 			{

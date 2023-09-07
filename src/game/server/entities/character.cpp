@@ -347,20 +347,7 @@ void CCharacter::Tick()
 	CoreTickParams.m_HookMode = GetEffectiveHookMode();
 	
 	m_Core.Tick(true, &CoreTickParams);
-	
-	//Hook protection
-	if(m_Core.m_HookedPlayer >= 0)
-	{
-		CPlayer *pHookedPlayer = GameServer()->m_apPlayers[m_Core.m_HookedPlayer];
-		if(pHookedPlayer)
-		{
-			if(IsInfected() == pHookedPlayer->IsInfected() && pHookedPlayer->HookProtectionEnabled())
-			{
-				ResetHook();
-			}
-		}
-	}
-	
+
 	HandleWaterJump();
 	HandleWeapons();
 

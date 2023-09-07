@@ -26,9 +26,7 @@ void CTeamsCore::Team(int ClientID, int Team)
 
 bool CTeamsCore::CanKeepHook(int ClientID1, int ClientID2) const
 {
-	if(m_aTeam[ClientID1] == (m_IsDDRace16 ? VANILLA_TEAM_SUPER : TEAM_SUPER) || m_aTeam[ClientID2] == (m_IsDDRace16 ? VANILLA_TEAM_SUPER : TEAM_SUPER) || ClientID1 == ClientID2)
-		return true;
-	return m_aTeam[ClientID1] == m_aTeam[ClientID2];
+	return CanHook(ClientID1, ClientID2);
 }
 
 bool CTeamsCore::CanCollide(int ClientID1, int ClientID2) const
