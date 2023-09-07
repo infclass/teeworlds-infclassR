@@ -354,7 +354,7 @@ void CCharacter::Tick()
 		CPlayer *pHookedPlayer = GameServer()->m_apPlayers[m_Core.m_HookedPlayer];
 		if(pHookedPlayer)
 		{
-			if(IsZombie() == pHookedPlayer->IsZombie() && pHookedPlayer->HookProtectionEnabled())
+			if(IsInfected() == pHookedPlayer->IsInfected() && pHookedPlayer->HookProtectionEnabled())
 			{
 				ResetHook();
 			}
@@ -679,9 +679,9 @@ int CCharacter::PrivateGetPlayerClass() const
 		return m_pPlayer->GetClass();
 }
 
-bool CCharacter::IsZombie() const
+bool CCharacter::IsInfected() const
 {
-	return m_pPlayer->IsZombie();
+	return m_pPlayer->IsInfected();
 }
 
 bool CCharacter::IsHuman() const

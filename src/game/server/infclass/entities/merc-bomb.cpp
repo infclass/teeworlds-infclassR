@@ -60,7 +60,7 @@ void CMercenaryBomb::Tick()
 
 	for(TEntityPtr<CInfClassCharacter> pChr = GameWorld()->FindFirst<CInfClassCharacter>(); pChr; ++pChr)
 	{
-		if(!pChr->IsZombie() || !pChr->CanDie())
+		if(!pChr->IsInfected() || !pChr->CanDie())
 			continue;
 
 		float Len = distance(pChr->GetPos(), GetPos());

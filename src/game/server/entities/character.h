@@ -213,7 +213,7 @@ public:
 public:
 	vec2 GetDirection() const;
 
-	bool IsZombie() const;
+	bool IsInfected() const;
 	bool IsHuman() const;
 	void SetAntiFire();
 	void Freeze(float Time, int Player, FREEZEREASON Reason);

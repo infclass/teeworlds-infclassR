@@ -85,7 +85,7 @@ void CInfClassCharacter::OnCharacterSpawned(const SpawnContext &Context)
 
 void CInfClassCharacter::OnCharacterInInfectionZone()
 {
-	if(IsZombie())
+	if(IsInfected())
 	{
 		if(Server()->Tick() >= m_HealTick + (Server()->TickSpeed()/g_Config.m_InfInfzoneHealRate))
 		{
@@ -320,7 +320,7 @@ void CInfClassCharacter::Snap(int SnappingClient)
 	}
 
 	// Send freeze info only to the version that can handle it correctly
-	if(IsZombie() && IsFrozen())
+	if(IsInfected() && IsFrozen())
 	{
 		IServer::CClientInfo ClientInfo = {0};
 		if(SnappingClient != SERVER_DEMO_CLIENT)
@@ -535,7 +535,7 @@ bool CInfClassCharacter::TakeDamage(SDamageContext DamageContext)
 
 	if(Mode == TAKEDAMAGEMODE::INFECTION)
 	{
-		if(!pKillerPlayer || !pKillerPlayer->IsZombie() || !IsHuman())
+		if(!pKillerPlayer || !pKillerPlayer->IsInfected() || !IsHuman())
 		{
 			// The infection is only possible if the killer is a zombie and the target is a human
 			Mode = TAKEDAMAGEMODE::NOINFECTION;
@@ -582,9 +582,9 @@ bool CInfClassCharacter::TakeDamage(SDamageContext DamageContext)
 
 	if(From != GetCID() && pKillerPlayer)
 	{
-		if(IsZombie())
+		if(IsInfected())
 		{
-			if(pKillerPlayer->IsZombie())
+			if(pKillerPlayer->IsInfected())
 			{
 				return false;
 			}
@@ -592,7 +592,7 @@ bool CInfClassCharacter::TakeDamage(SDamageContext DamageContext)
 		else
 		{
 			//If the player is a new infected, don't infected other -> nobody knows that he is infected.
-			if(!pKillerPlayer->IsZombie() || (Server()->Tick() - pKillerPlayer->m_InfectionTick)*Server()->TickSpeed() < 0.5)
+			if(!pKillerPlayer->IsInfected() || (Server()->Tick() - pKillerPlayer->m_InfectionTick)*Server()->TickSpeed() < 0.5)
 			{
 				return false;
 			}
@@ -2152,7 +2152,7 @@ void CInfClassCharacter::PreCoreTick()
 			}
 			for(CCharacter *p = (CCharacter *)GameWorld()->FindFirst(CGameWorld::ENTTYPE_CHARACTER); p; p = (CCharacter *)p->TypeNext())
 			{
-				if(p->IsZombie())
+				if(p->IsInfected())
 					continue;
 
 				int cellHumanX = static_cast<int>(round(p->GetPos().x)) / 32;

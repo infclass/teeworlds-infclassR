@@ -249,7 +249,7 @@ void CInfClassGameController::OnPlayerDisconnect(CPlayer *pBasePlayer, EClientDr
 	if(!aIgnoreReasons.Contains(Type))
 	{
 		CInfClassPlayer *pPlayer = CInfClassPlayer::GetInstance(pBasePlayer);
-		if(pPlayer && pPlayer->IsInGame() && pPlayer->IsZombie() && m_InfectedStarted)
+		if(pPlayer && pPlayer->IsInGame() && pPlayer->IsInfected() && m_InfectedStarted)
 		{
 			int NumHumans;
 			int NumInfected;
@@ -448,7 +448,7 @@ void CInfClassGameController::HandleCharacterTiles(CInfClassCharacter *pCharacte
 	{
 		pCharacter->Die(pCharacter->GetCID(), DAMAGE_TYPE::DEATH_TILE);
 	}
-	else if(pCharacter->IsZombie() && Indices.Contains(ZONE_DAMAGE_DEATH_INFECTED))
+	else if(pCharacter->IsInfected() && Indices.Contains(ZONE_DAMAGE_DEATH_INFECTED))
 	{
 		pCharacter->Die(pCharacter->GetCID(), DAMAGE_TYPE::DEATH_TILE);
 	}
@@ -2060,7 +2060,7 @@ void CInfClassGameController::UpdateNinjaTargets()
 
 	for(int i = 0; i < MAX_CLIENTS; i++)
 	{
-		if(GetCharacter(i) && GetCharacter(i)->IsZombie())
+		if(GetCharacter(i) && GetCharacter(i)->IsInfected())
 		{
 			InfectedCount++;
 			if(GetPlayer(i)->GetClass() == PLAYERCLASS_UNDEAD)
@@ -2247,7 +2247,7 @@ void CInfClassGameController::DoTeamChange(CPlayer *pBasePlayer, int Team, bool 
 		}
 	}
 
-	if((Team != TEAM_SPECTATORS) && IsInfectionStarted() && !pPlayer->IsZombie())
+	if((Team != TEAM_SPECTATORS) && IsInfectionStarted() && !pPlayer->IsInfected())
 	{
 		PLAYERCLASS c = ChooseInfectedClass(pPlayer);
 		pPlayer->SetClass(c);
@@ -2265,7 +2265,7 @@ void CInfClassGameController::GetPlayerCounter(int ClientException, int& NumHuma
 	{
 		if(Iter.ClientID() == ClientException) continue;
 		
-		if(Iter.Player()->IsZombie()) NumInfected++;
+		if(Iter.Player()->IsInfected()) NumInfected++;
 		else NumHumans++;
 	}
 }
@@ -2458,7 +2458,7 @@ int CInfClassGameController::GetClientIdForNewWitch() const
 			continue;
 		if(pPlayer->GetClass() == PLAYERCLASS_WITCH)
 			continue;
-		if(!pPlayer->IsZombie())
+		if(!pPlayer->IsInfected())
 			continue;
 
 		SuitableInfected.Add(ClientID);
@@ -2479,7 +2479,7 @@ int CInfClassGameController::GetClientIdForNewWitch() const
 				continue;
 			if(pPlayer->GetClass() == PLAYERCLASS_WITCH)
 				continue;
-			if(!pPlayer->IsZombie())
+			if(!pPlayer->IsInfected())
 				continue;
 
 			SuitableInfected.Add(ClientID);
@@ -2752,7 +2752,7 @@ void CInfClassGameController::RoundTickAfterInitialInfection()
 		while(Iter.Next())
 		{
 			CInfClassPlayer *pPlayer = Iter.Player();
-			if(pPlayer->IsZombie() || pPlayer->IsInfectionStarted())
+			if(pPlayer->IsInfected() || pPlayer->IsInfectionStarted())
 			{
 				pPlayer->KillCharacter(); // Infect the player
 				pPlayer->m_DieTick = m_RoundStartTick;
@@ -3442,7 +3442,7 @@ void CInfClassGameController::RewardTheKillers(CInfClassCharacter *pVictim, cons
 		return;
 	}
 
-	if(pVictim->IsZombie())
+	if(pVictim->IsInfected())
 	{
 		PLAYERCLASS VictimClass = static_cast<PLAYERCLASS>(pVictim->GetPlayerClass());
 		int ScoreEvent = SCOREEVENT_KILL_INFECTED;
@@ -3513,7 +3513,7 @@ void CInfClassGameController::OnCharacterDeath(CInfClassCharacter *pVictim, cons
 		if(pVictim->IsHuman())
 		{
 			const CInfClassPlayer *pKiller = GetPlayer(Context.Killer);
-			if(pKiller && pKiller->IsZombie() && pKiller->GetCharacter())
+			if(pKiller && pKiller->IsInfected() && pKiller->GetCharacter())
 			{
 				pVictim->GetPlayer()->SetFollowTarget(pKiller->GetCID(), 5.0);
 			}
@@ -3531,7 +3531,7 @@ void CInfClassGameController::OnCharacterDeath(CInfClassCharacter *pVictim, cons
 
 			if(p && Len < 800.0f)
 			{
-				int Points = (pVictim->IsZombie() ? 8 : 14);
+				int Points = (pVictim->IsInfected() ? 8 : 14);
 				new CFlyingPoint(GameServer(), pVictim->m_Pos, p->GetCID(), Points, pVictim->m_Core.m_Vel);
 			}
 		}
@@ -3663,7 +3663,7 @@ void CInfClassGameController::OnCharacterSpawned(CInfClassCharacter *pCharacter)
 		}
 	}
 
-	if(pCharacter->IsZombie())
+	if(pCharacter->IsInfected())
 	{
 		FallInLoveIfInfectedEarly(pCharacter);
 		pCharacter->SetHealthArmor(10, InfectedBonusArmor());
@@ -3791,7 +3791,7 @@ void CInfClassGameController::DoWincheck()
 	{
 		for(TEntityPtr<CInfClassCharacter> p = GameWorld()->FindFirst<CInfClassCharacter>(); p; ++p)
 		{
-			if(p->IsZombie())
+			if(p->IsInfected())
 			{
 				GameServer()->SendEmoticon(p->GetCID(), EMOTICON_GHOST);
 			}
@@ -3922,11 +3922,11 @@ bool CInfClassGameController::TryRespawn(CInfClassPlayer *pPlayer, SpawnContext 
 
 	if(m_InfectedStarted)
 		pPlayer->StartInfection();
-		
-	if(pPlayer->IsZombie() && m_ExplosionStarted)
+
+	if(pPlayer->IsInfected() && m_ExplosionStarted)
 		return false;
 
-	if(m_InfectedStarted && pPlayer->IsZombie() && random_prob(Config()->m_InfProbaSpawnNearWitch / 100.0f))
+	if(m_InfectedStarted && pPlayer->IsInfected() && random_prob(Config()->m_InfProbaSpawnNearWitch / 100.0f))
 	{
 		CInfClassPlayerIterator<PLAYERITER_INGAME> Iter(GameServer()->m_apPlayers);
 		while(Iter.Next())
@@ -3952,8 +3952,8 @@ bool CInfClassGameController::TryRespawn(CInfClassPlayer *pPlayer, SpawnContext 
 			}
 		}
 	}
-			
-	int Type = (pPlayer->IsZombie() ? 0 : 1);
+
+	int Type = (pPlayer->IsInfected() ? 0 : 1);
 
 	if(m_SpawnPoints[Type].size() == 0)
 	{
@@ -4078,7 +4078,7 @@ PLAYERCLASS CInfClassGameController::ChooseInfectedClass(const CInfClassPlayer *
 	{
 		++PlayersCount;
 		const int AnotherPlayerClass = Iter.Player()->GetClass();
-		if(Iter.Player()->IsZombie()) nbInfected++;
+		if(Iter.Player()->IsInfected()) nbInfected++;
 		nbClass[AnotherPlayerClass]++;
 	}
 
@@ -4230,7 +4230,7 @@ int CInfClassGameController::GetInfectedCount(PLAYERCLASS InfectedPlayerClass) c
 		if(!pPlayer || !pPlayer->IsInGame())
 			continue;
 
-		if(!pPlayer->IsZombie())
+		if(!pPlayer->IsInfected())
 			continue;
 
 		if(InfectedPlayerClass != PLAYERCLASS_INVALID)

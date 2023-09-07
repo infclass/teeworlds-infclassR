@@ -757,7 +757,7 @@ void CInfClassHuman::OnHammerFired(WeaponFireContext *pFireContext)
 		if(GameServer()->Collision()->IntersectLine(ProjStartPos, pTarget->GetPos()))
 			continue;
 
-		if(pTarget->IsZombie())
+		if(pTarget->IsInfected())
 		{
 			vec2 Dir;
 			if(length(pTarget->GetPos() - GetPos()) > 0.0f)
@@ -2193,7 +2193,7 @@ void CInfClassHuman::OnHeroFlagTaken(CInfClassCharacter *pHero)
 	// Find other players
 	for(TEntityPtr<CInfClassCharacter> p = GameWorld()->FindFirst<CInfClassCharacter>(); p; ++p)
 	{
-		if(p->IsZombie() || p == m_pCharacter)
+		if(p->IsInfected() || p == m_pCharacter)
 			continue;
 
 		CInfClassHuman *pHumanClass = CInfClassHuman::GetInstance(p);

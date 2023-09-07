@@ -189,7 +189,7 @@ public:
 	int m_InfectionTick;
 	
 	PLAYERCLASS GetClass() const;
-	bool IsZombie() const;
+	bool IsInfected() const;
 	bool IsHuman() const;
 	bool IsSpectator() const;
 	bool IsKnownClass(int c);

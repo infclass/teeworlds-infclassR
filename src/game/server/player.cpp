@@ -475,7 +475,7 @@ PLAYERCLASS CPlayer::GetClass() const
 	return static_cast<PLAYERCLASS>(m_class);
 }
 
-bool CPlayer::IsZombie() const
+bool CPlayer::IsInfected() const
 {
 	return (m_class > END_HUMANCLASS);
 }

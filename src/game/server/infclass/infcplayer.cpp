@@ -159,7 +159,7 @@ void CInfClassPlayer::Snap(int SnappingClient)
 
 		pInfClassPlayer->m_Class = m_class;
 		pInfClassPlayer->m_Flags = 0;
-		if(IsZombie())
+		if(IsInfected())
 		{
 			pInfClassPlayer->m_Flags |= INFCLASS_PLAYER_FLAG_INFECTED;
 		}
@@ -235,7 +235,7 @@ void CInfClassPlayer::HandleInfection()
 	{
 		return;
 	}
-	if(IsZombie() && (m_InfectionType == INFECTION_TYPE::REGULAR))
+	if(IsInfected() && (m_InfectionType == INFECTION_TYPE::REGULAR))
 	{
 		// Do not infect if inf class already set
 		m_InfectionType = INFECTION_TYPE::NO;
@@ -392,7 +392,7 @@ void CInfClassPlayer::SetClass(PLAYERCLASS NewClass)
 
 	if(!SameTeam)
 	{
-		if(IsZombie())
+		if(IsInfected())
 		{
 			SetCharacterClass(new(m_ClientID) CInfClassInfected(this));
 		}
@@ -423,7 +423,7 @@ void CInfClassPlayer::SetClass(PLAYERCLASS NewClass)
 	}
 	m_pInfcPlayerClass->OnPlayerClassChanged();
 
-	GameController()->SetPlayerInfected(GetCID(), IsZombie());
+	GameController()->SetPlayerInfected(GetCID(), IsInfected());
 	SendClassIntro();
 }
 
@@ -445,7 +445,7 @@ void CInfClassPlayer::StartInfection(int InfectiousPlayerCID, INFECTION_TYPE Inf
 {
 	dbg_assert(InfectionType != INFECTION_TYPE::NO, "Invalid infection");
 
-	if((InfectionType == INFECTION_TYPE::REGULAR) && IsZombie())
+	if((InfectionType == INFECTION_TYPE::REGULAR) && IsInfected())
 		return;
 
 	m_InfectionType = InfectionType;

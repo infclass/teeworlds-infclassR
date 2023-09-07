@@ -1187,7 +1187,7 @@ void CGameContext::OnTick()
 	{
 		if(m_apPlayers[i] && m_apPlayers[i]->GetCharacter())
 		{
-			m_apPlayers[i]->GetCharacter()->m_Core.m_Infected = m_apPlayers[i]->IsZombie();
+			m_apPlayers[i]->GetCharacter()->m_Core.m_Infected = m_apPlayers[i]->IsInfected();
 			m_apPlayers[i]->GetCharacter()->m_Core.m_InLove = m_apPlayers[i]->GetCharacter()->IsInLove();
 			m_apPlayers[i]->GetCharacter()->m_Core.m_HookProtected = m_apPlayers[i]->HookProtectionEnabled();
 
@@ -3368,7 +3368,7 @@ bool CGameContext::PrivateMessage(const char* pStr, int ClientID, bool TeamChat)
 		CheckTeam = true;
 		if(m_apPlayers[ClientID]->GetTeam() == TEAM_SPECTATORS)
 			CheckTeam = TEAM_SPECTATORS;
-		if(m_apPlayers[ClientID]->IsZombie())
+		if(m_apPlayers[ClientID]->IsInfected())
 			CheckTeam = TEAM_RED;
 		else
 			CheckTeam = TEAM_BLUE;
@@ -3561,7 +3561,7 @@ bool CGameContext::PrivateMessage(const char* pStr, int ClientID, bool TeamChat)
 						continue;
 					else if(CheckTeam == TEAM_RED && m_apPlayers[i]->IsHuman())
 						continue;
-					else if(CheckTeam == TEAM_BLUE && m_apPlayers[i]->IsZombie())
+					else if(CheckTeam == TEAM_BLUE && m_apPlayers[i]->IsInfected())
 						continue;
 				}
 				

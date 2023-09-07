@@ -379,7 +379,7 @@ void CInfClassInfected::OnCharacterSnap(int SnappingClient)
 	else
 	{
 		const CInfClassPlayer *pDestClient = GameController()->GetPlayer(SnappingClient);
-		if(pDestClient && pDestClient->IsInGame() && pDestClient->IsZombie())
+		if(pDestClient && pDestClient->IsInGame() && pDestClient->IsInfected())
 		{
 			if(m_pCharacter->GetHealthArmorSum() < 10)
 			{
@@ -531,7 +531,7 @@ void CInfClassInfected::OnHammerFired(WeaponFireContext *pFireContext)
 
 			vec2 Force = vec2(0.f, -1.f) + normalize(Dir + vec2(0.f, -1.1f)) * 10.0f;
 
-			if(pTarget->IsZombie())
+			if(pTarget->IsInfected())
 			{
 				if(pTarget->IsFrozen())
 				{
@@ -674,7 +674,7 @@ void CInfClassInfected::DoBoomerExplosion()
 
 			float DamageToDeal = 1 + ((Damage - 1) * NormalizedLength);
 			pTarget->TakeDamage(ForceDir * Force * NormalizedLength, DamageToDeal, GetCID(), DAMAGE_TYPE::BOOMER_EXPLOSION);
-			if(pTarget->IsZombie())
+			if(pTarget->IsInfected())
 			{
 				pTarget->TryUnfreeze(GetCID());
 				if(!pTarget->IsFrozen())
@@ -684,7 +684,7 @@ void CInfClassInfected::DoBoomerExplosion()
 			}
 
 			const CInfClassPlayer *pTargetPlayer = pTarget->GetPlayer();
-			if(pTarget->IsZombie() || (pTargetPlayer && pTargetPlayer->IsInfectionStarted()))
+			if(pTarget->IsInfected() || (pTargetPlayer && pTargetPlayer->IsInfectionStarted()))
 			{
 				const float BoomerHelperDuration = 30;
 				pTarget->AddHelper(GetCID(), BoomerHelperDuration);
@@ -794,7 +794,7 @@ void CInfClassInfected::SpiderPreCoreTick()
 		// Find other players
 		for(CInfClassCharacter *p = (CInfClassCharacter *)GameWorld()->FindFirst(CGameWorld::ENTTYPE_CHARACTER); p; p = (CInfClassCharacter *)p->TypeNext())
 		{
-			if(p->IsZombie())
+			if(p->IsInfected())
 				continue;
 
 			vec2 IntersectPos;

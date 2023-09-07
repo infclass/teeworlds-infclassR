@@ -66,7 +66,7 @@ void CTurret::Tick()
 
 	for(TEntityPtr<CInfClassCharacter> pChr = GameWorld()->FindFirst<CInfClassCharacter>(); pChr; ++pChr)
 	{
-		if(!pChr->IsZombie() || !pChr->CanDie())
+		if(!pChr->IsInfected() || !pChr->CanDie())
 			continue;
 
 		float Len2 = distance2(pChr->GetPos(), GetPos());
@@ -128,7 +128,7 @@ void CTurret::AttackTargets()
 	{
 		if(!m_ammunition) break;
 
-		if(!pChr->IsZombie() || !pChr->CanDie())
+		if(!pChr->IsInfected() || !pChr->CanDie())
 			continue;
 
 		float Len = distance(pChr->m_Pos, m_Pos);
