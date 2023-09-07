@@ -66,6 +66,7 @@ public:
 
 	void IncreaseCurrentRoundCounter() override;
 
+	void TickBeforeWorld() override;
 	void Tick() override;
 	void OnGameRestart() override;
 	void Snap(int SnappingClient) override;

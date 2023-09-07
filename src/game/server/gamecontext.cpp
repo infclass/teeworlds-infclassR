@@ -1182,19 +1182,6 @@ void CGameContext::OnTick()
 	
 	m_Collision.SetTime(m_pController->GetTime());
 
-	//update core properties important for hook
-	for(int i = 0; i < MAX_CLIENTS; i++)
-	{
-		if(m_apPlayers[i] && m_apPlayers[i]->GetCharacter())
-		{
-			m_apPlayers[i]->GetCharacter()->m_Core.m_Infected = m_apPlayers[i]->IsInfected();
-			m_apPlayers[i]->GetCharacter()->m_Core.m_InLove = m_apPlayers[i]->GetCharacter()->IsInLove();
-			m_apPlayers[i]->GetCharacter()->m_Core.m_HookProtected = m_apPlayers[i]->HookProtectionEnabled();
-
-			m_apPlayers[i]->GetCharacter()->Teams()->m_Core.SetProtected(i, m_apPlayers[i]->HookProtectionEnabled());
-		}
-	}
-	
 	m_pController->TickBeforeWorld();
 
 	// copy tuning
