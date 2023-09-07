@@ -105,7 +105,11 @@ public:
 	bool TryRespawn(CInfClassPlayer *pPlayer, SpawnContext *pContext);
 	PLAYERCLASS ChooseHumanClass(const CInfClassPlayer *pPlayer) const;
 	PLAYERCLASS ChooseInfectedClass(const CInfClassPlayer *pPlayer) const;
+
 	bool GetPlayerClassEnabled(PLAYERCLASS PlayerClass) const;
+	bool SetPlayerClassEnabled(PLAYERCLASS PlayerClass, bool Enabled);
+	bool SetPlayerClassProbability(int PlayerClass, int Probability);
+
 	int GetMinPlayersForClass(PLAYERCLASS PlayerClass) const;
 	int GetClassPlayerLimit(PLAYERCLASS PlayerClass) const;
 	int GetPlayerClassProbability(PLAYERCLASS PlayerClass) const;

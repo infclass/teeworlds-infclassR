@@ -471,9 +471,7 @@ public:
 	void SetMaxAmmo(INFWEAPON WID, int n) override;
 
 	int GetClientNbRound(int ClientID) override;
-	
-	void SetPlayerClassEnabled(int PlayerClass, bool Enabled) override;
-	void SetPlayerClassProbability(int PlayerClass, int Probability) override;
+
 	bool IsClientLogged(int ClientID) override;
 #ifdef CONF_SQL
 	void Login(int ClientID, const char* pUsername, const char* pPassword) override;

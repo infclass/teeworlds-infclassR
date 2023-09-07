@@ -2311,10 +2311,10 @@ void CInfClassGameController::SetAvailabilities(std::vector<int> value)
 	if(value.size() < ValuesNumber)
 		value.resize(ValuesNumber, 0);
 
-	for(int PlayerClass = START_HUMANCLASS + 1; PlayerClass < END_HUMANCLASS; PlayerClass++)
+	for(PLAYERCLASS PlayerClass : AllHumanClasses())
 	{
 		const int ClassEnabledValue = value.at(PlayerClass - START_HUMANCLASS - 1);
-		Server()->SetPlayerClassEnabled(PlayerClass, ClassEnabledValue);
+		SetPlayerClassEnabled(PlayerClass, ClassEnabledValue);
 	}
 }
 
@@ -2334,7 +2334,7 @@ void CInfClassGameController::SetProbabilities(std::vector<int> value)
 	for(int PlayerClass = START_INFECTEDCLASS + 1; PlayerClass < END_INFECTEDCLASS; PlayerClass++)
 	{
 		const int ClassProbability = value.at(PlayerClass - START_INFECTEDCLASS - 1);
-		Server()->SetPlayerClassProbability(PlayerClass, ClassProbability);
+		SetPlayerClassProbability(PlayerClass, ClassProbability);
 	}
 	for(int i = 0; i < ExtraValuesNumber; ++i)
 	{
@@ -3169,8 +3169,8 @@ void CInfClassGameController::StartFunRound(const FunRoundConfiguration &Configu
 	SetAvailabilities(std::vector<int>());
 	Config()->m_InfGhoulStomachSize = Config()->m_FunRoundGhoulStomachSize;
 
-	Server()->SetPlayerClassEnabled(Configuration.HumanClass, true);
-	Server()->SetPlayerClassProbability(Configuration.InfectedClass, 100);
+	SetPlayerClassEnabled(Configuration.HumanClass, true);
+	SetPlayerClassProbability(Configuration.InfectedClass, 100);
 	const char *HumanClassText = CInfClassGameController::GetClassPluralDisplayName(Configuration.HumanClass);
 	const char *InfectedClassText = CInfClassGameController::GetClassPluralDisplayName(Configuration.InfectedClass);
 
@@ -4159,6 +4159,94 @@ bool CInfClassGameController::GetPlayerClassEnabled(PLAYERCLASS PlayerClass) con
 	}
 
 	return false;
+}
+
+bool CInfClassGameController::SetPlayerClassEnabled(PLAYERCLASS PlayerClass, bool Enabled)
+{
+	const int Value = Enabled ? 1 : 0;
+	switch(PlayerClass)
+	{
+	case PLAYERCLASS_MERCENARY:
+		Config()->m_InfEnableMercenary = Value;
+		break;
+	case PLAYERCLASS_MEDIC:
+		Config()->m_InfEnableMedic = Value;
+		break;
+	case PLAYERCLASS_HERO:
+		Config()->m_InfEnableHero = Value;
+		break;
+	case PLAYERCLASS_ENGINEER:
+		Config()->m_InfEnableEngineer = Value;
+		break;
+	case PLAYERCLASS_SOLDIER:
+		Config()->m_InfEnableSoldier = Value;
+		break;
+	case PLAYERCLASS_NINJA:
+		Config()->m_InfEnableNinja = Value;
+		break;
+	case PLAYERCLASS_SNIPER:
+		Config()->m_InfEnableSniper = Value;
+		break;
+	case PLAYERCLASS_SCIENTIST:
+		Config()->m_InfEnableScientist = Value;
+		break;
+	case PLAYERCLASS_BIOLOGIST:
+		Config()->m_InfEnableBiologist = Value;
+		break;
+	case PLAYERCLASS_LOOPER:
+		Config()->m_InfEnableLooper = Value;
+		break;
+	default:
+		Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "controller", "WARNING: Invalid SetPlayerClassEnabled() call");
+		return false;
+	}
+
+	return true;
+}
+
+bool CInfClassGameController::SetPlayerClassProbability(int PlayerClass, int Probability)
+{
+	switch (PlayerClass)
+	{
+	case PLAYERCLASS_SMOKER:
+		Config()->m_InfProbaSmoker = Probability;
+		break;
+	case PLAYERCLASS_BOOMER:
+		Config()->m_InfProbaBoomer = Probability;
+		break;
+	case PLAYERCLASS_HUNTER:
+		Config()->m_InfProbaHunter = Probability;
+		break;
+	case PLAYERCLASS_BAT:
+		Config()->m_InfProbaBat = Probability;
+		break;
+	case PLAYERCLASS_GHOST:
+		Config()->m_InfProbaGhost = Probability;
+		break;
+	case PLAYERCLASS_SPIDER:
+		Config()->m_InfProbaSpider = Probability;
+		break;
+	case PLAYERCLASS_GHOUL:
+		Config()->m_InfProbaGhoul = Probability;
+		break;
+	case PLAYERCLASS_SLUG:
+		Config()->m_InfProbaSlug = Probability;
+		break;
+	case PLAYERCLASS_VOODOO:
+		Config()->m_InfProbaVoodoo = Probability;
+		break;
+	case PLAYERCLASS_WITCH:
+		Config()->m_InfProbaWitch = Probability;
+		break;
+	case PLAYERCLASS_UNDEAD:
+		Config()->m_InfProbaUndead = Probability;
+		break;
+	default:
+		Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "controller", "WARNING: Invalid SetPlayerClassProbability() call");
+		return false;
+	}
+
+	return true;
 }
 
 int CInfClassGameController::GetMinPlayersForClass(PLAYERCLASS PlayerClass) const

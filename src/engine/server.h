@@ -402,10 +402,6 @@ public:
 	virtual int GetMaxAmmo(INFWEAPON WID) = 0;
 	virtual void SetMaxAmmo(INFWEAPON WID, int n) = 0;
 
-	virtual void SetPlayerClassEnabled(int PlayerClass, bool Enabled) = 0;
-
-	virtual void SetPlayerClassProbability(int PlayerClass, int Probability) = 0;
-	
 	virtual bool IsClientLogged(int ClientID) = 0;
 #ifdef CONF_SQL
 	virtual void Login(int ClientID, const char* pUsername, const char* pPassword) = 0;
