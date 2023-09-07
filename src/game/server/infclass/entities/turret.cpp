@@ -3,10 +3,10 @@
 #include "turret.h"
 
 #include <engine/config.h>
+#include <engine/server/roundstatistics.h>
 #include <engine/shared/config.h>
 #include <game/generated/protocol.h>
 #include <game/server/gamecontext.h>
-#include <engine/server/roundstatistics.h>
 
 #include <game/server/infclass/damage_type.h>
 #include <game/server/infclass/infcgamecontroller.h>
@@ -31,8 +31,8 @@ CTurret::CTurret(CGameContext *pGameContext, vec2 Pos, int Owner, vec2 Direction
 	m_foundTarget = false;
 	m_ammunition = Config()->m_InfTurretAmmunition;
 	m_EvalTick = Server()->Tick();
-	m_LifeSpan = Server()->TickSpeed()*Config()->m_InfTurretDuration;
-	m_WarmUpCounter = Server()->TickSpeed()*Config()->m_InfTurretWarmUpDuration;
+	m_LifeSpan = Server()->TickSpeed() * Config()->m_InfTurretDuration;
+	m_WarmUpCounter = Server()->TickSpeed() * Config()->m_InfTurretWarmUpDuration;
 	m_Type = Type;
 	for(int &ID : m_IDs)
 	{
@@ -53,7 +53,7 @@ CTurret::~CTurret()
 
 void CTurret::Tick()
 {
-	//marked for destroy
+	// marked for destroy
 	if(IsMarkedForDestroy())
 		return;
 
@@ -84,15 +84,15 @@ void CTurret::Tick()
 		Die(pKiller);
 	}
 
-	//reduce lifespan
+	// reduce lifespan
 	m_LifeSpan--;
 
-	//reloading in progress
+	// reloading in progress
 	if(m_ReloadCounter > 0)
 	{
 		m_ReloadCounter--;
 
-		if(m_Radius > 15.0f) //shrink radius
+		if(m_Radius > 15.0f) // shrink radius
 		{
 			m_Radius -= m_RadiusGrowthRate;
 			if(m_Radius < 15.0f)
@@ -100,22 +100,22 @@ void CTurret::Tick()
 				m_Radius = 15.0f;
 			}
 		}
-		return; //some reload tick-cycles necessary
+		return; // some reload tick-cycles necessary
 	}
 
-	//Reloading finished, warm up in progress
-	if ( m_WarmUpCounter > 0 )
+	// Reloading finished, warm up in progress
+	if(m_WarmUpCounter > 0)
 	{
-			m_WarmUpCounter--;
+		m_WarmUpCounter--;
 
-			if(m_Radius < 45.0f)
-			{
-				m_Radius += m_RadiusGrowthRate;
-				if(m_Radius > 45.0f)
-					m_Radius = 45.0f;
-			}
+		if(m_Radius < 45.0f)
+		{
+			m_Radius += m_RadiusGrowthRate;
+			if(m_Radius > 45.0f)
+				m_Radius = 45.0f;
+		}
 
-			return; //some warmup tick-cycles necessary
+		return; // some warmup tick-cycles necessary
 	}
 
 	AttackTargets();
@@ -123,10 +123,11 @@ void CTurret::Tick()
 
 void CTurret::AttackTargets()
 {
-	//warmup finished, ready to find target
-	for(CInfClassCharacter *pChr = (CInfClassCharacter*) GameWorld()->FindFirst(CGameWorld::ENTTYPE_CHARACTER); pChr; pChr = (CInfClassCharacter *)pChr->TypeNext())
+	// warmup finished, ready to find target
+	for(TEntityPtr<CInfClassCharacter> pChr = GameWorld()->FindFirst<CInfClassCharacter>(); pChr; ++pChr)
 	{
-		if(!m_ammunition) break;
+		if(!m_ammunition)
+			break;
 
 		if(!pChr->IsInfected() || !pChr->CanDie())
 			continue;
@@ -134,7 +135,7 @@ void CTurret::AttackTargets()
 		float Len = distance(pChr->m_Pos, m_Pos);
 
 		// attack zombie
-		if (Len < (float)Config()->m_InfTurretRadarRange) //800
+		if(Len < (float)Config()->m_InfTurretRadarRange) // 800
 		{
 			if(GameServer()->Collision()->IntersectLine(m_Pos, pChr->m_Pos, nullptr, nullptr))
 			{
@@ -146,17 +147,17 @@ void CTurret::AttackTargets()
 
 			switch(m_Type)
 			{
-				case LASER:
-					new CInfClassLaser(GameServer(), m_Pos, Direction, GameServer()->Tuning()->m_LaserReach, m_Owner, Config()->m_InfTurretDmgHealthLaser, DAMAGE_TYPE::TURRET_LASER);
-					m_ammunition--;
-					break;
-				case PLASMA:
-				{
-					CPlasma *pPlasma = new CPlasma(GameServer(), m_Pos, m_Owner, pChr->GetCID() , Direction, 0, 1);
-					pPlasma->SetDamageType(DAMAGE_TYPE::TURRET_PLASMA);
-				}
-					m_ammunition--;
-					break;
+			case LASER:
+				new CInfClassLaser(GameServer(), m_Pos, Direction, GameServer()->Tuning()->m_LaserReach, m_Owner, Config()->m_InfTurretDmgHealthLaser, DAMAGE_TYPE::TURRET_LASER);
+				m_ammunition--;
+				break;
+			case PLASMA:
+			{
+				CPlasma *pPlasma = new CPlasma(GameServer(), m_Pos, m_Owner, pChr->GetCID(), Direction, 0, 1);
+				pPlasma->SetDamageType(DAMAGE_TYPE::TURRET_PLASMA);
+			}
+				m_ammunition--;
+				break;
 			}
 
 			GameServer()->CreateSound(m_Pos, SOUND_LASER_FIRE);
@@ -166,10 +167,10 @@ void CTurret::AttackTargets()
 	// either the turret found one target (single projectile) or it is out of ammo due to fire at different targets (multi projectile)
 	if(!m_ammunition || m_foundTarget)
 	{
-		//Reload ammo
+		// Reload ammo
 		Reload();
 
-		m_WarmUpCounter = Server()->TickSpeed()*Config()->m_InfTurretWarmUpDuration;
+		m_WarmUpCounter = Server()->TickSpeed() * Config()->m_InfTurretWarmUpDuration;
 		m_ammunition = Config()->m_InfTurretAmmunition;
 		m_foundTarget = false;
 	}
@@ -177,14 +178,14 @@ void CTurret::AttackTargets()
 
 void CTurret::Reload()
 {
-	switch (m_Type)
+	switch(m_Type)
 	{
-		case LASER:
-			m_ReloadCounter = Server()->TickSpeed()*Config()->m_InfTurretLaserReloadDuration;
-			break;
-		case PLASMA:
-			m_ReloadCounter = Server()->TickSpeed()*Config()->m_InfTurretPlasmaReloadDuration;
-			break;
+	case LASER:
+		m_ReloadCounter = Server()->TickSpeed() * Config()->m_InfTurretLaserReloadDuration;
+		break;
+	case PLASMA:
+		m_ReloadCounter = Server()->TickSpeed() * Config()->m_InfTurretPlasmaReloadDuration;
+		break;
 	}
 }
 
@@ -203,8 +204,8 @@ void CTurret::Snap(int SnappingClient)
 	const CInfClassPlayer *pPlayer = GameController()->GetPlayer(SnappingClient);
 	const bool AntiPing = pPlayer && pPlayer->GetAntiPingEnabled();
 
-	float time = (Server()->Tick()-m_StartTick)/(float)Server()->TickSpeed();
-	float angle = fmodf(time*pi/2, 2.0f*pi);
+	float time = (Server()->Tick() - m_StartTick) / (float)Server()->TickSpeed();
+	float angle = fmodf(time * pi / 2, 2.0f * pi);
 
 	CNetObj_Laser *pObj = static_cast<CNetObj_Laser *>(Server()->SnapNewItem(NETOBJTYPE_LASER, m_ID, sizeof(CNetObj_Laser)));
 
