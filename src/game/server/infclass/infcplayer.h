@@ -90,6 +90,9 @@ public:
 	void CloseMapMenu();
 	bool MapMenuClickable();
 
+	void HookProtection(bool Value, bool Automatic = true);
+	bool HookProtectionEnabled() { return m_HookProtection; }
+
 	EPlayerScoreMode GetScoreMode() const;
 	void SetScoreMode(EPlayerScoreMode Mode);
 
@@ -148,6 +151,8 @@ protected:
 
 	CInfClassGameController *m_pGameController = nullptr;
 	CInfClassPlayerClass *m_pInfcPlayerClass = nullptr;
+	bool m_HookProtection{};
+	bool m_HookProtectionAutomatic{};
 
 	bool m_aKnownClasses[NB_PLAYERCLASS]{};
 

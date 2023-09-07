@@ -90,13 +90,9 @@ void CPlayer::Reset()
 	m_aOriginalName[0] = 0;
 
 	m_WinAsHuman = 0;
-	m_HookProtection = false;
-	m_HookProtectionAutomatic = true;
 	m_class = PLAYERCLASS_NONE;
 	m_InfectionTick = -1;
 	SetLanguage(Server()->GetClientLanguage(m_ClientID));
-
-	m_HookProtectionAutomatic = true;
 
 	m_PrevTuningParams = *m_pGameServer->Tuning();
 	m_NextTuningParams = m_PrevTuningParams;
@@ -190,24 +186,6 @@ void CPlayer::HandleTuningParams()
 	}
 	
 	m_NextTuningParams = *GameServer()->Tuning();
-}
-
-void CPlayer::HookProtection(bool Value, bool Automatic)
-{
-	if(m_HookProtection != Value)
-	{
-		m_HookProtection = Value;
-		
-		if(!m_HookProtectionAutomatic || !Automatic)
-		{
-			if(m_HookProtection)
-				GameServer()->SendChatTarget_Localization(GetCID(), CHATCATEGORY_DEFAULT, _("Hook protection enabled"), NULL);
-			else
-				GameServer()->SendChatTarget_Localization(GetCID(), CHATCATEGORY_DEFAULT, _("Hook protection disabled"), NULL);
-		}
-	}
-	
-	m_HookProtectionAutomatic = Automatic;
 }
 
 void CPlayer::Snap(int SnappingClient)

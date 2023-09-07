@@ -21,6 +21,9 @@ CInfClassPlayer::CInfClassPlayer(CInfClassGameController *pGameController, int C
 	m_class = PLAYERCLASS_INVALID;
 	m_PreferredClass = PLAYERCLASS_INVALID;
 
+	m_HookProtection = false;
+	m_HookProtectionAutomatic = true;
+
 	SetClass(PLAYERCLASS_NONE);
 }
 
@@ -473,6 +476,24 @@ void CInfClassPlayer::CloseMapMenu()
 bool CInfClassPlayer::MapMenuClickable()
 {
 	return (m_MapMenu > 0 && (m_MapMenuTick > Server()->TickSpeed()/2));
+}
+
+void CInfClassPlayer::HookProtection(bool Value, bool Automatic)
+{
+	if(m_HookProtection != Value)
+	{
+		m_HookProtection = Value;
+
+		if(!m_HookProtectionAutomatic || !Automatic)
+		{
+			if(m_HookProtection)
+				GameServer()->SendChatTarget_Localization(GetCID(), CHATCATEGORY_DEFAULT, _("Hook protection enabled"), NULL);
+			else
+				GameServer()->SendChatTarget_Localization(GetCID(), CHATCATEGORY_DEFAULT, _("Hook protection disabled"), NULL);
+		}
+	}
+
+	m_HookProtectionAutomatic = Automatic;
 }
 
 EPlayerScoreMode CInfClassPlayer::GetScoreMode() const
