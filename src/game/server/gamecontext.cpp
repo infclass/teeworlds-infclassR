@@ -4117,7 +4117,7 @@ bool CGameContext::WriteClassHelpPage(dynamic_string *pOutput, const char *pLang
 		AddLine(_C("Sniper", "The Sniper can lock the position in mid-air for 15 seconds with the"
 							 " hammer."));
 		AddLine(_C("Sniper", "The locked position increases the Sniper's rifle damage from usual"
-							 " 10-13 to 20 damage points."));
+							 " 10-13 to 30 damage points."));
 		AddLine(_C("Sniper", "They can also jump two times in the air."));
 		break;
 	case PLAYERCLASS_SCIENTIST:
