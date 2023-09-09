@@ -145,6 +145,7 @@ public:
 	float GetWhiteHoleLifeSpan() const;
 	bool IsClassChooserEnabled() const;
 	int GetTaxiMode() const;
+	int GetGhoulStomackSize() const;
 	EPlayerScoreMode GetPlayerScoreMode(int SnappingClient) const;
 
 	float GetTimeLimit() const;

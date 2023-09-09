@@ -3053,6 +3053,14 @@ int CInfClassGameController::GetTaxiMode() const
 	return Config()->m_InfTaxi;
 }
 
+int CInfClassGameController::GetGhoulStomackSize() const
+{
+	if(GetRoundType() == ROUND_TYPE::FUN)
+		return Config()->m_FunRoundGhoulStomachSize;
+
+	return Config()->m_InfGhoulStomachSize;
+}
+
 EPlayerScoreMode CInfClassGameController::GetPlayerScoreMode(int SnappingClient) const
 {
 	if(IsGameOver())

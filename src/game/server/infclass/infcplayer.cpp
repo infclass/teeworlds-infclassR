@@ -542,13 +542,13 @@ int CInfClassPlayer::GetSpectatingCID() const
 
 float CInfClassPlayer::GetGhoulPercent() const
 {
-	return clamp(m_GhoulLevel/static_cast<float>(g_Config.m_InfGhoulStomachSize), 0.0f, 1.0f);
+	return clamp(m_GhoulLevel/static_cast<float>(GameController()->GetGhoulStomackSize()), 0.0f, 1.0f);
 }
 
 void CInfClassPlayer::IncreaseGhoulLevel(int Diff)
 {
 	int NewGhoulLevel = m_GhoulLevel + Diff;
-	m_GhoulLevel = clamp(NewGhoulLevel, 0, g_Config.m_InfGhoulStomachSize);
+	m_GhoulLevel = clamp(NewGhoulLevel, 0, GameController()->GetGhoulStomackSize());
 }
 
 void CInfClassPlayer::SetRandomClassChoosen()
