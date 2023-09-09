@@ -2026,6 +2026,11 @@ int CInfClassCharacter::GetFreezer() const
 	return IsFrozen() ? m_LastFreezer : -1;
 }
 
+void CInfClassCharacter::ResetBlinding()
+{
+	m_BlindnessTicks = 0;
+}
+
 void CInfClassCharacter::MakeBlind(int ClientID, float Duration)
 {
 	m_BlindnessTicks = Server()->TickSpeed() * Duration;

@@ -175,6 +175,8 @@ public:
 	int GetFreezer() const;
 
 	bool IsBlind() const { return m_BlindnessTicks > 0; }
+
+	void ResetBlinding();
 	void MakeBlind(int ClientID, float Duration);
 
 	float WebHookLength() const;
