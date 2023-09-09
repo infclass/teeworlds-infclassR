@@ -269,9 +269,6 @@ private:
 	void GetPlayerCounter(int ClientException, int& NumHumans, int& NumInfected);
 	int GetMinimumInfectedForPlayers(int PlayersNumber) const;
 
-	void SetAvailabilities(std::vector<int> value);
-	void SetProbabilities(std::vector<int> value);
-
 	int GetClientIdForNewWitch() const;
 	bool IsSafeWitchCandidate(int ClientID) const;
 	ClientsArray m_WitchCallers;
@@ -299,11 +296,9 @@ private:
 	ROUND_TYPE m_RoundType = ROUND_TYPE::NORMAL;
 	ROUND_TYPE m_QueuedRoundType = ROUND_TYPE::NORMAL;
 
+	FunRoundConfiguration m_FunRoundConfiguration;
 	std::vector<FunRoundConfiguration> m_FunRoundConfigurations;
 	int m_FunRoundsPassed = 0;
-
-	std::vector<int> m_DefaultAvailabilities;
-	std::vector<int> m_DefaultProbabilities;
 
 	bool m_InfectedStarted;
 	bool m_RoundStarted = false;

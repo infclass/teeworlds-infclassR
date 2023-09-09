@@ -2302,44 +2302,6 @@ int CInfClassGameController::GetMinimumInfectedForPlayers(int PlayersNumber) con
 	return NumFirstInfected;
 }
 
-void CInfClassGameController::SetAvailabilities(std::vector<int> value)
-{
-	static const int ValuesNumber = NB_HUMANCLASS;
-	if(value.size() < ValuesNumber)
-		value.resize(ValuesNumber, 0);
-
-	for(PLAYERCLASS PlayerClass : AllHumanClasses())
-	{
-		const int ClassEnabledValue = value.at(PlayerClass - START_HUMANCLASS - 1);
-		SetPlayerClassEnabled(PlayerClass, ClassEnabledValue);
-	}
-}
-
-void CInfClassGameController::SetProbabilities(std::vector<int> value)
-{
-	int *extraConfigValues[] =
-		{
-			// The order is still important!
-			&g_Config.m_InfGhoulThreshold,
-			&g_Config.m_InfGhoulStomachSize,
-		};
-	static const int ExtraValuesNumber = sizeof(extraConfigValues) / sizeof(extraConfigValues[0]);
-	static const int ValuesNumber = NB_INFECTEDCLASS + ExtraValuesNumber;
-	if(value.size() < ValuesNumber)
-		value.resize(ValuesNumber, 0);
-
-	for(int PlayerClass = START_INFECTEDCLASS + 1; PlayerClass < END_INFECTEDCLASS; PlayerClass++)
-	{
-		const int ClassProbability = value.at(PlayerClass - START_INFECTEDCLASS - 1);
-		SetPlayerClassProbability(PlayerClass, ClassProbability);
-	}
-	for(int i = 0; i < ExtraValuesNumber; ++i)
-	{
-		const int newValue = value.at(NB_INFECTEDCLASS + i);
-		*extraConfigValues[i] = newValue;
-	}
-}
-
 int CInfClassGameController::GetMinimumInfected() const
 {
 	int NumPlayers = 0;
@@ -3162,30 +3124,6 @@ void CInfClassGameController::StartFunRound()
 	const char *pTitle = Config()->m_FunRoundTitle;
 	char aBuf[256];
 
-	// zombies
-	std::vector<int> InfectedProbabilities;
-	for(PLAYERCLASS PlayerClass : AllInfectedClasses())
-	{
-		InfectedProbabilities.push_back(GetPlayerClassProbability(PlayerClass));
-	}
-	const auto extraConfigValues =
-		{
-			// The order is still important!
-			Config()->m_InfGhoulThreshold,
-			Config()->m_InfGhoulStomachSize,
-		};
-	for(const int &extraValue : extraConfigValues)
-	{
-		InfectedProbabilities.push_back(extraValue);
-	}
-
-	// humans
-	std::vector<int> HumanAvailabilities;
-	for(PLAYERCLASS PlayerClass : AllHumanClasses())
-	{
-		HumanAvailabilities.push_back(GetPlayerClassEnabled(PlayerClass));
-	}
-
 	std::vector<const char *> phrases = {
 		", glhf!",
 		", not ez!",
@@ -3194,12 +3132,8 @@ void CInfClassGameController::StartFunRound()
 		", that's gg",
 		", good luck!"};
 	const char *random_phrase = phrases[random_int(0, phrases.size() - 1)];
-	SetProbabilities(std::vector<int>());
-	SetAvailabilities(std::vector<int>());
-	Config()->m_InfGhoulStomachSize = Config()->m_FunRoundGhoulStomachSize;
+	m_FunRoundConfiguration = Configuration;
 
-	SetPlayerClassEnabled(Configuration.HumanClass, true);
-	SetPlayerClassProbability(Configuration.InfectedClass, 100);
 	const char *HumanClassText = CInfClassGameController::GetClassPluralDisplayName(Configuration.HumanClass);
 	const char *InfectedClassText = CInfClassGameController::GetClassPluralDisplayName(Configuration.InfectedClass);
 
@@ -3207,9 +3141,6 @@ void CInfClassGameController::StartFunRound()
 
 	GameServer()->CreateSoundGlobal(SOUND_CTF_CAPTURE);
 	GameServer()->SendChatTarget(-1, aBuf);
-
-	m_DefaultAvailabilities = HumanAvailabilities;
-	m_DefaultProbabilities = InfectedProbabilities;
 
 	for(int i = 0; i < MAX_CLIENTS; ++i)
 	{
@@ -3223,8 +3154,6 @@ void CInfClassGameController::StartFunRound()
 
 void CInfClassGameController::EndFunRound()
 {
-	SetAvailabilities(m_DefaultAvailabilities);
-	SetProbabilities(m_DefaultProbabilities);
 	m_FunRoundsPassed++;
 }
 
@@ -4161,6 +4090,11 @@ PLAYERCLASS CInfClassGameController::ChooseInfectedClass(const CInfClassPlayer *
 
 bool CInfClassGameController::GetPlayerClassEnabled(PLAYERCLASS PlayerClass) const
 {
+	if(GetRoundType() == ROUND_TYPE::FUN)
+	{
+		return PlayerClass == m_FunRoundConfiguration.HumanClass;
+	}
+
 	switch(PlayerClass)
 	{
 	case PLAYERCLASS_ENGINEER:
@@ -4306,6 +4240,11 @@ int CInfClassGameController::GetClassPlayerLimit(PLAYERCLASS PlayerClass) const
 
 int CInfClassGameController::GetPlayerClassProbability(PLAYERCLASS PlayerClass) const
 {
+	if(GetRoundType() == ROUND_TYPE::FUN)
+	{
+		return PlayerClass == m_FunRoundConfiguration.InfectedClass;
+	}
+
 	switch(PlayerClass)
 	{
 	case PLAYERCLASS_SMOKER:
