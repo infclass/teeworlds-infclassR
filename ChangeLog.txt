@@ -1,4 +1,14 @@
 InfclassR v1.5.0_alpha8
+- Blinding effect now canceled on the player revived
+- Fixed 'Fun Round' settings kept for other rounds
+  (in some cases)
+- Spectators now can see players personal pickups
+- Fixed Bat and Sniper help pages
+- Added hint messages
+- Fixed Sniper position immediately unlocked if jump
+  was pressed before the lock
+- Medic now see Hero healing icons if grenade launcher
+  is active
 - Fixed '(connecting)' player infection
 - Fixed hook visibility for distant characters
 - Added slime (visual) effect on poison damage taken

@@ -4,6 +4,7 @@
 
 General:
 - Added 'timeout code' support
+- Enabled DDRace HUD
 - Ghost visibility for spectators now depends on `sv_strict_spectate_mode` config option
 - "Forced spectator" mode reworked for compatibility with DDNet client
 - Added `/me` chat command
@@ -11,6 +12,7 @@ General:
 - Added `/prefer_class <classname>` chat command
 - Weapon change now allowed during ammo reload
 - Added broadcast message about coming infection
+- Just-killed human's camera now follows the killer
 - Balancing infection now delayed
 - Turret destruction score reduced from 3 to 1 sp
 - Biologist laser now does NoAmmo sound on fire failed
@@ -20,8 +22,10 @@ General:
 - Added damage zone type (deals a certain damage)
 - Added a broadcast warning about kick for inactivity
 - Taxi passengers now collide with solid ground
+- Sniper position re-lock now enabled if 1+ seconds remaining
 - Spider hook limit indicator now visible only for the team
 - Spider hook changed from web to pulling one after grab
+- Added slime (visual) effect on poison damage taken
 - Introduced 'smart' map rotation
 - Names are now checked for confusing with existing ones
 - "By-hammer senders" are now considered as killer helpers
@@ -30,8 +34,15 @@ General:
 - Added `/sp`, `/lp` aliases for the save/load position commands
 - Hero flag indicator now properly animated for standing heroes
 - Merc bomb self-damage now dealt on behalf of the player who triggered the explosion
+- Player last infection time now saved in session (now it is expected that if you reconnect you won't be 'first infected' if it is not your turn yet)
+- 'Last picked class' now also remembered across maps
+- Previously picked/given human class won't be ever given randomly again
+- Spectators now can see players personal pickups
+- Added hint messages
+- Medic now see Hero healing icons if grenade launcher is active
 
 Balancing:
+- Bat's hook lifestealing replaced with hammer lifestealing (+2 HP per hit)
 - Medic now gets a grenade on enemy killed
 - Scientists now get the superweapon after 15 kills
 - Scientists now get 0.5 kill progression per assisting
@@ -40,6 +51,7 @@ Balancing:
 - Engineer and Looper walls now can't be built on spawns
 - Ninja targets are now set individually
 - `inf_merc_bombs` reduced from 16 to 15 (restored the value used before v1.4.0_alpha6)
+- Slime now gives the healing effect for 2 seconds
 - Frozen witch now can not spawn the infected
 - The game now tries to pick the witch among callers
 - Boomer healing effect now depends on the distance
@@ -57,6 +69,13 @@ Fixes:
 - Fixed missing help for messaging commands
 - Fixed taxi behavior on character team changes
 - Fixed spider hook for player id=0
+- Fixed Tele layer processing (for maps with teleports)
+- Fixed hook visibility for distant characters
+- Fixed '(connecting)' player infection
+- Fixed Sniper position immediately unlocked if jump was pressed before the lock
+- Fixed Bat and Sniper help pages
+- Fixed 'Fun Round' settings kept for other rounds (in some cases)
+- Fixed blinding effect on the player revived (now it the effect 'll be canceled)
 
 Maps:
 - Updated `infc_canyon` (tech update simplifying the quads geometry)
