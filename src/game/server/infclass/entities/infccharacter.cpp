@@ -53,6 +53,8 @@ void CInfClassCharacter::ResetClassObject()
 
 void CInfClassCharacter::OnCharacterSpawned(const SpawnContext &Context)
 {
+	m_NeededFaketuning = FAKETUNE_NOCOLL;
+
 	SetAntiFire();
 	m_IsFrozen = false;
 	m_FrozenTime = -1;

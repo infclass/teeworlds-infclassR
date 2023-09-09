@@ -80,9 +80,6 @@ bool CCharacter::Spawn(CPlayer *pPlayer, vec2 Pos)
 
 	m_NeededFaketuning = 0; // reset fake tunings on respawn and send the client
 
-	// Infclass:
-	m_NeededFaketuning = FAKETUNE_NOCOLL;
-
 	return true;
 }
 
