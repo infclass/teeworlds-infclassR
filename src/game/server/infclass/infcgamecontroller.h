@@ -158,7 +158,7 @@ public:
 	bool GetHeroFlagPosition(vec2 *pFlagPosition) const;
 	bool IsPositionAvailableForHumans(const vec2 &FlagPosition) const;
 
-	void StartFunRound(const FunRoundConfiguration &Configuration);
+	void StartFunRound();
 	void EndFunRound();
 	void ResetFinalExplosion();
 	void SaveRoundRules();

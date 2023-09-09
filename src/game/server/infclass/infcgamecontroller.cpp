@@ -2126,15 +2126,12 @@ void CInfClassGameController::StartRound()
 		break;
 	case ROUND_TYPE::FUN:
 	{
-		const auto Configs = m_FunRoundConfigurations;
-		if (Configs.empty())
+		if(m_FunRoundConfigurations.empty())
 		{
 			m_RoundType = ROUND_TYPE::NORMAL;
 			break;
 		}
-		const int type = random_int(0, Configs.size() - 1);
-		const FunRoundConfiguration &Configuration = Configs[type];
-		StartFunRound(Configuration);
+		StartFunRound();
 	}
 		break;
 	case ROUND_TYPE::FAST:
@@ -3145,8 +3142,15 @@ bool CInfClassGameController::IsPositionAvailableForHumans(const vec2 &Position)
 	}
 }
 
-void CInfClassGameController::StartFunRound(const FunRoundConfiguration &Configuration)
+void CInfClassGameController::StartFunRound()
 {
+	if(m_FunRoundConfigurations.empty())
+		return;
+
+	const auto &Configs = m_FunRoundConfigurations;
+	const int type = random_int(0, Configs.size() - 1);
+	const FunRoundConfiguration &Configuration = Configs[type];
+
 	const char *pTitle = Config()->m_FunRoundTitle;
 	char aBuf[256];
 
