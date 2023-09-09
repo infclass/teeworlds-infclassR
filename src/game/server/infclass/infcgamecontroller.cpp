@@ -43,7 +43,27 @@ static const char *gs_aRoundNames[] = {
 	"invalid",
 };
 
-static const char *aHintMessages[] = {
+class CHintMessage
+{
+public:
+	CHintMessage(const char *pText) :
+		m_pText(pText)
+	{
+	}
+
+	CHintMessage(const char *pText, const char *pArg1Name, void *pArg1Value) :
+		m_pText(pText),
+		m_pArg1Name(pArg1Name),
+		m_pArg1Value(pArg1Value)
+	{
+	}
+
+	const char *m_pText{};
+	const char *m_pArg1Name{};
+	void *m_pArg1Value{};
+};
+
+static const CHintMessage gs_aHintMessages[] = {
 	_("Taxi prevents ammo regeneration for all passengers."),
 	_("Choosing a random class grants full armor."),
 	_("You can toggle hook protection by pressing f3 (\"Vote yes\" keybind)."),
@@ -61,7 +81,11 @@ static const char *aHintMessages[] = {
 	_("Ninja heals slightly on a target kill."),
 	_("Sniper deals double as much damage in locked position."),
 	_("Scientist can use Taxi to teleport his teammates into safety."),
-	_("Scientist can get a white hole after 15 kills."),
+	{
+		_("Scientist can get a white hole after {int:Kills} kills."),
+		"Kills",
+		&g_Config.m_InfWhiteHoleMinimalKills,
+	},
 	_("Scientist can rocket jump with the laser rifle."),
 	_("Biologist's bouncy shotgun can be used to hit the infected around corners."),
 	_("Smoker heals by hooking humans."),
@@ -70,12 +94,15 @@ static const char *aHintMessages[] = {
 	_("Bat can heal by hitting humans."),
 	_("Spider doesn't need to be in Web mode to automatically grab any humans touching its hook."),
 	_("Spider can be hooked and transported by teammates to extend its hook trap."),
-	_("Slug can heal itself and allies over time up to 13 HP with its slime."),
+	{
+		_("Slug can heal itself and allies over time up to {int:MaxHP} HP with its slime."),
+		"MaxHP",
+		&g_Config.m_InfSlimeMaxHeal,
+	},
 	_("Slug can hold down the \"fire\" button to automatically spread slime. The hammer swings won't hurt humans this way though."),
 	_("Voodoo can unfreeze an Undead while in Spirit mode."),
 	_("Witch can spawn the infected through narrow walls."),
-	_("Undead can be removed from a game by throwing it into kill tiles or reviving it as a Medic.")
-};
+	_("Undead can be removed from a game by throwing it into kill tiles or reviving it as a Medic.")};
 
 const char *toString(ROUND_TYPE RoundType)
 {
@@ -2613,14 +2640,22 @@ void CInfClassGameController::Tick()
 		m_MoreRoundsSuggested = true;
 	}
 
-	if(time_get() - m_timeSinceHint > time_freq() * g_Config.m_HintsInterval * 60 && g_Config.m_HintsInterval != 0)
+	if(time_get() - m_TimeSinceHint > time_freq() * g_Config.m_HintsInterval * 60 && g_Config.m_HintsInterval != 0)
 	{
 		if(NumPlayers > 0)
 		{
-			GameServer()->SendChatTarget_Localization(-1, CHATCATEGORY_DEFAULT,
-				aHintMessages[secure_rand() % sizeof(aHintMessages) / sizeof(aHintMessages[0] - 1)]);
+			const int MessageIndex = random_int(0, std::size(gs_aHintMessages) - 1);
+			const CHintMessage &Message = gs_aHintMessages[MessageIndex];
+			if (Message.m_pArg1Value)
+			{
+				GameServer()->SendChatTarget_Localization(-1, CHATCATEGORY_DEFAULT, Message.m_pText, Message.m_pArg1Name, Message.m_pArg1Value);
+			}
+			else
+			{
+				GameServer()->SendChatTarget_Localization(-1, CHATCATEGORY_DEFAULT, Message.m_pText);
+			}
 
-			m_timeSinceHint = time_get();
+			m_TimeSinceHint = time_get();
 		}
 	}
 }
