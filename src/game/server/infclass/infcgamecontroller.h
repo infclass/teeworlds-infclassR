@@ -305,7 +305,7 @@ private:
 	bool m_SuggestMoreRounds = false;
 	bool m_MoreRoundsSuggested = false;
 
-	int64_t m_TimeSinceHint = 0;
+	static int64_t m_TimeSinceHint;
 };
 
 #endif

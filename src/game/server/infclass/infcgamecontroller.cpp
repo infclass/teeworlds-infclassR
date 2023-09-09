@@ -150,6 +150,8 @@ struct InfclassPlayerPersistantData : public CGameContext::CPersistentClientData
 	int m_LastInfectionTime = 0;
 };
 
+int64_t CInfClassGameController::m_TimeSinceHint = 0;
+
 CInfClassGameController::CInfClassGameController(class CGameContext *pGameServer)
 : IGameController(pGameServer), m_Teams(pGameServer)
 {
