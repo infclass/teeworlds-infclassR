@@ -168,7 +168,10 @@ int CInfClassInfected::GetDefaultEmote() const
 	if(m_pCharacter->IsInvisible())
 		EmoteNormal = EMOTE_BLINK;
 
-	if(m_pCharacter->IsInLove() || m_pCharacter->IsInSlowMotion() || m_pCharacter->HasHallucination())
+	if(m_pCharacter->IsInLove())
+		EmoteNormal = EMOTE_HAPPY;
+
+	if(m_pCharacter->IsInSlowMotion() || m_pCharacter->HasHallucination())
 		EmoteNormal = EMOTE_SURPRISE;
 
 	if(m_pCharacter->IsFrozen())
