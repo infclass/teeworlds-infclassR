@@ -3638,7 +3638,7 @@ void CInfClassGameController::OnCharacterDeath(CInfClassCharacter *pVictim, cons
 	}
 }
 
-void CInfClassGameController::OnCharacterSpawned(CInfClassCharacter *pCharacter)
+void CInfClassGameController::OnCharacterSpawned(CInfClassCharacter *pCharacter, const SpawnContext &Context)
 {
 	IGameController::OnCharacterSpawn(pCharacter);
 
@@ -3662,6 +3662,11 @@ void CInfClassGameController::OnCharacterSpawned(CInfClassCharacter *pCharacter)
 	{
 		FallInLoveIfInfectedEarly(pCharacter);
 		pCharacter->SetHealthArmor(10, InfectedBonusArmor());
+
+		if(Context.SpawnType == SpawnContext::MapSpawn)
+		{
+			pCharacter->GrantSpawnProtection();
+		}
 	}
 }
 

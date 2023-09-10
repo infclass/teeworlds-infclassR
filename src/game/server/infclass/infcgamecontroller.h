@@ -95,7 +95,7 @@ public:
 
 	int OnCharacterDeath(class CCharacter *pVictim, class CPlayer *pKiller, int Weapon) override;
 	void OnCharacterDeath(CInfClassCharacter *pVictim, const DeathContext &Context);
-	void OnCharacterSpawned(CInfClassCharacter *pCharacter);
+	void OnCharacterSpawned(CInfClassCharacter *pCharacter, const SpawnContext &Context);
 	void OnClassChooserRequested(CInfClassCharacter *pCharacter);
 	void CheckRoundFailed();
 	void DoWincheck() override;

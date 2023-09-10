@@ -82,7 +82,7 @@ void CInfClassCharacter::OnCharacterSpawned(const SpawnContext &Context)
 
 	m_pClass->OnCharacterSpawned(Context);
 
-	GameController()->OnCharacterSpawned(this);
+	GameController()->OnCharacterSpawned(this, Context);
 }
 
 void CInfClassCharacter::OnCharacterInInfectionZone()
