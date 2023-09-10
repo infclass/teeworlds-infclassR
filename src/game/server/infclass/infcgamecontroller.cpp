@@ -3724,14 +3724,6 @@ void CInfClassGameController::OnCharacterSpawned(CInfClassCharacter *pCharacter,
 		pCharacter->GiveRandomClassSelectionBonus();
 	}
 
-	if((GetRoundType() == ROUND_TYPE::FUN) && !IsInfectionStarted() && pCharacter->GetPlayerClass() == PLAYERCLASS_NONE)
-	{
-		if(pPlayer)
-		{
-			pPlayer->SetClass(ChooseHumanClass(pPlayer));
-		}
-	}
-
 	if(pCharacter->IsInfected())
 	{
 		FallInLoveIfInfectedEarly(pCharacter);
@@ -3741,6 +3733,14 @@ void CInfClassGameController::OnCharacterSpawned(CInfClassCharacter *pCharacter,
 		{
 			float Duration = g_Config.m_InfSpawnProtectionTime / 1000.0f;
 			pCharacter->GrantSpawnProtection(Duration);
+		}
+	}
+
+	if((GetRoundType() == ROUND_TYPE::FUN) && !IsInfectionStarted() && pCharacter->GetPlayerClass() == PLAYERCLASS_NONE)
+	{
+		if(pPlayer)
+		{
+			pPlayer->SetClass(ChooseHumanClass(pPlayer));
 		}
 	}
 }
