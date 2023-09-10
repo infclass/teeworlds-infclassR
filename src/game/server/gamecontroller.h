@@ -180,8 +180,6 @@ public:
 
 	//
 /* INFECTION MODIFICATION START ***************************************/
-	virtual bool IsSpawnable(vec2 Position, int TeleZoneIndex) = 0;
-
 	int GetRoundId() { return m_RoundId; }
 	/* INFECTION MODIFICATION END *****************************************/
 

@@ -771,13 +771,13 @@ bool CInfClassInfected::FindWitchSpawnPosition(vec2 &Position)
 		TestAngle = Angle + i * (pi / 32.0f);
 		Position = GetPos() + vec2(cos(TestAngle), sin(TestAngle)) * 84.0f;
 
-		if(GameController()->IsSpawnable(Position, ZONE_TELE_NOWITCH))
+		if(GameController()->IsSpawnable(Position, EZoneTele::NoWitch))
 			return true;
 
 		TestAngle = Angle - i * (pi / 32.0f);
 		Position = GetPos() + vec2(cos(TestAngle), sin(TestAngle)) * 84.0f;
 
-		if(GameController()->IsSpawnable(Position, ZONE_TELE_NOWITCH))
+		if(GameController()->IsSpawnable(Position, EZoneTele::NoWitch))
 			return true;
 	}
 

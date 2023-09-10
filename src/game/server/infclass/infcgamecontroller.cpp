@@ -627,6 +627,11 @@ int CInfClassGameController::GetDamageZoneValueAt(const vec2 &Pos, ZoneData *pDa
 	return GetZoneValueAt(m_ZoneHandle_icDamage, Pos, pData);
 }
 
+EZoneTele CInfClassGameController::GetTeleportZoneValueAt(const vec2 &Pos, ZoneData *pData) const
+{
+	return static_cast<EZoneTele>(GetZoneValueAt(m_ZoneHandle_icTeleport, Pos, pData));
+}
+
 int CInfClassGameController::GetBonusZoneValueAt(const vec2 &Pos, ZoneData *pData) const
 {
 	return GetZoneValueAt(m_ZoneHandle_icBonus, Pos, pData);
@@ -3889,7 +3894,7 @@ void CInfClassGameController::DoWincheck()
 	}
 }
 
-bool CInfClassGameController::IsSpawnable(vec2 Pos, int TeleZoneIndex)
+bool CInfClassGameController::IsSpawnable(vec2 Pos, EZoneTele TeleZoneIndex)
 {
 	//First check if there is a tee too close
 	CCharacter *aEnts[MAX_CLIENTS];
@@ -3900,26 +3905,26 @@ bool CInfClassGameController::IsSpawnable(vec2 Pos, int TeleZoneIndex)
 		if(distance(aEnts[c]->m_Pos, Pos) <= 60)
 			return false;
 	}
-	
-	//Check the center
-	int TeleIndex = GameServer()->Collision()->GetZoneValueAt(m_ZoneHandle_icTeleport, Pos);
+
+	// Check the center
+	EZoneTele TeleIndex = GetTeleportZoneValueAt(Pos);
 	if(GameServer()->Collision()->CheckPoint(Pos))
 		return false;
-	if(TeleZoneIndex && TeleIndex == TeleZoneIndex)
+	if((TeleZoneIndex != EZoneTele::Null) && (TeleIndex == TeleZoneIndex))
 		return false;
-	
-	//Check the border of the tee. Kind of extrem, but more precise
-	for(int i=0; i<16; i++)
+
+	// Check the border of the tee. Kind of extrem, but more precise
+	for(int i = 0; i < 16; i++)
 	{
 		float Angle = i * (2.0f * pi / 16.0f);
 		vec2 CheckPos = Pos + vec2(cos(Angle), sin(Angle)) * 30.0f;
-		TeleIndex = GameServer()->Collision()->GetZoneValueAt(m_ZoneHandle_icTeleport, CheckPos);
+		TeleIndex = GetTeleportZoneValueAt(CheckPos);
 		if(GameServer()->Collision()->CheckPoint(CheckPos))
 			return false;
-		if(TeleZoneIndex && TeleIndex == TeleZoneIndex)
+		if((TeleZoneIndex != EZoneTele::Null) && (TeleIndex == TeleZoneIndex))
 			return false;
 	}
-	
+
 	return true;
 }
 
@@ -3983,7 +3988,7 @@ bool CInfClassGameController::TryRespawn(CInfClassPlayer *pPlayer, SpawnContext 
 	for(int i = 0; i < m_SpawnPoints[Type].size(); i++)
 	{
 		int I = (i + RandomShift)%m_SpawnPoints[Type].size();
-		if(IsSpawnable(m_SpawnPoints[Type][I], 0))
+		if(IsSpawnable(m_SpawnPoints[Type][I], EZoneTele::Null))
 		{
 			pContext->SpawnPos = m_SpawnPoints[Type][I];
 			pContext->SpawnType = SpawnContext::MapSpawn;

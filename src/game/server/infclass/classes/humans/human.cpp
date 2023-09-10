@@ -1,4 +1,5 @@
 #include "human.h"
+#include "game/mapitems.h"
 
 #include <engine/server/roundstatistics.h>
 #include <engine/shared/config.h>
@@ -2096,7 +2097,7 @@ bool CInfClassHuman::FindPortalPosition(vec2 *pPosition)
 		PortalShift = PortalDir * Iterator;
 		vec2 PortalPos = GetPos() + PortalShift;
 
-		if(GameServer()->m_pController->IsSpawnable(PortalPos, ZONE_TELE_NOSCIENTIST))
+		if(GameController()->IsSpawnable(PortalPos, EZoneTele::NoScientist))
 		{
 			*pPosition = PortalPos;
 			return true;

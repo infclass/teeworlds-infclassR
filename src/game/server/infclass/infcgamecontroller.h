@@ -85,6 +85,7 @@ public:
 	bool HumanWallAllowedInPos(const vec2 &Pos) const;
 	int GetZoneValueAt(int ZoneHandle, const vec2 &Pos, ZoneData *pData = nullptr) const;
 	int GetDamageZoneValueAt(const vec2 &Pos, ZoneData *pData = nullptr) const;
+	EZoneTele GetTeleportZoneValueAt(const vec2 &Pos, ZoneData *pData = nullptr) const;
 	int GetBonusZoneValueAt(const vec2 &Pos, ZoneData *pData = nullptr) const;
 
 	void CreateExplosion(const vec2 &Pos, int Owner, DAMAGE_TYPE DamageType, float DamageFactor = 1.0f);
@@ -151,7 +152,7 @@ public:
 	float GetTimeLimit() const;
 	float GetInfectionDelay() const;
 
-	bool IsSpawnable(vec2 Pos, int TeleZoneIndex) override;
+	bool IsSpawnable(vec2 Pos, EZoneTele TeleZoneIndex);
 
 	const ClientsArray &GetValidNinjaTargets() const { return m_NinjaTargets; }
 
