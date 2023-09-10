@@ -22,6 +22,7 @@ MACRO_ALLOC_POOL_ID_IMPL(CInfClassInfected, MAX_CLIENTS)
 CInfClassInfected::CInfClassInfected(CInfClassPlayer *pPlayer)
 	: CInfClassPlayerClass(pPlayer)
 {
+	SetNormalEmote(EMOTE_ANGRY);
 }
 
 CInfClassInfected *CInfClassInfected::GetInstance(CInfClassCharacter *pCharacter)
@@ -157,7 +158,7 @@ bool CInfClassInfected::SetupSkin(const CSkinContext &Context, CWeakSkinInfo *pO
 
 int CInfClassInfected::GetDefaultEmote() const
 {
-	int EmoteNormal = EMOTE_ANGRY;
+	int EmoteNormal = m_NormalEmote;
 
 	if(!m_pCharacter)
 		return EmoteNormal;

@@ -12,6 +12,7 @@
 CInfClassPlayerClass::CInfClassPlayerClass(CInfClassPlayer *pPlayer)
 	: m_pPlayer(pPlayer)
 {
+	m_NormalEmote = EMOTE_NORMAL;
 }
 
 CGameContext *CInfClassPlayerClass::GameContext() const
@@ -147,9 +148,14 @@ bool CInfClassPlayerClass::IsZombie() const
 	return !IsHuman();
 }
 
+void CInfClassPlayerClass::SetNormalEmote(int Emote)
+{
+	m_NormalEmote = Emote;
+}
+
 int CInfClassPlayerClass::GetDefaultEmote() const
 {
-	return EMOTE_NORMAL;
+	return m_NormalEmote;
 }
 
 void CInfClassPlayerClass::GetAmmoRegenParams(int Weapon, WeaponRegenParams *pParams)

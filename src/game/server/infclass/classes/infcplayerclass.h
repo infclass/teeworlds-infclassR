@@ -36,6 +36,7 @@ public:
 	virtual SkinGetter GetSkinGetter() const = 0;
 	virtual void SetupSkinContext(CSkinContext *pOutput, bool ForSameTeam) const = 0;
 
+	void SetNormalEmote(int Emote);
 	virtual int GetDefaultEmote() const;
 	virtual void GetAmmoRegenParams(int Weapon, WeaponRegenParams *pParams);
 	virtual int GetJumps() const;
@@ -114,6 +115,7 @@ protected:
 
 	CInfClassPlayer *m_pPlayer = nullptr;
 	CInfClassCharacter *m_pCharacter = nullptr;
+	int m_NormalEmote;
 
 	int m_Poison = 0;
 	int m_PoisonTick = 0;
