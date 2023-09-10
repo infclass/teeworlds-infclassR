@@ -15,6 +15,13 @@ enum class DAMAGE_TYPE;
 enum class INFWEAPON;
 enum class TAKEDAMAGEMODE;
 
+enum FREEZEREASON
+{
+	FREEZEREASON_FLASH = 0,
+	FREEZEREASON_UNDEAD = 1,
+	FREEZEREASON_INFECTION = 2,
+};
+
 struct SDamageContext;
 struct DeathContext;
 
@@ -168,7 +175,9 @@ public:
 	bool IsInvincible() const; // Invincible here means "ignores all damage"
 	void SetInvincible(int Invincible);
 	bool HasHallucination() const;
-	void Unfreeze() override;
+	void Freeze(float Time, int Player, FREEZEREASON Reason);
+	bool IsFrozen() const;
+	void Unfreeze();
 	void TryUnfreeze(int UnfreezerCID = -1);
 	FREEZEREASON GetFreezeReason() const { return m_FreezeReason; }
 	int GetFreezer() const;
@@ -276,6 +285,10 @@ protected:
 	int m_DamageTaken = 0;
 	icArray<CDamagePoint, 4> m_TakenDamageDetails;
 	bool m_PositionLocked = false;
+
+	bool m_IsFrozen = false;
+	int m_FrozenTime;
+	FREEZEREASON m_FreezeReason;
 
 	int m_SlowMotionTick;
 	int m_SlowEffectApplicant;

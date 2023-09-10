@@ -27,8 +27,6 @@ CCharacter::CCharacter(CGameWorld *pWorld) :
 
 	m_AntiFireTime = 0;
 	m_PainSoundTimer = 0;
-	m_IsFrozen = false;
-	m_FrozenTime = -1;
 	m_DartLifeSpan = -1;
 	m_InAirTick = 0;
 	m_InWater = 0;
@@ -206,9 +204,6 @@ void CCharacter::FireWeapon()
 
 void CCharacter::HandleWeapons()
 {
-	if(IsFrozen())
-		return;
-		
 	//ninja
 	HandleNinja();
 
@@ -686,38 +681,6 @@ void CCharacter::SlipperyEffect()
 {
 	if(m_SlipperyTick <= 0)
 		m_SlipperyTick = Server()->TickSpeed()/2;
-}
-
-void CCharacter::Freeze(float Time, int Player, FREEZEREASON Reason)
-{
-	if(m_IsFrozen && m_FreezeReason == FREEZEREASON_UNDEAD)
-		return;
-	
-	m_IsFrozen = true;
-	m_FrozenTime = Server()->TickSpeed()*Time;
-	m_FreezeReason = Reason;
-	
-	m_LastFreezer = Player;
-
-	m_Core.m_FreezeStart = Server()->Tick();
-}
-
-void CCharacter::Unfreeze()
-{
-	m_IsFrozen = false;
-	m_FrozenTime = 0;
-	m_Core.m_FreezeStart = 0;
-
-	if(m_pPlayer)
-	{
-		GameServer()->ClearBroadcast(m_pPlayer->GetCID(), BROADCAST_PRIORITY_EFFECTSTATE);
-	}
-	GameServer()->CreatePlayerSpawn(GetPos());
-}
-
-bool CCharacter::IsFrozen() const
-{
-	return m_IsFrozen;
 }
 
 int CCharacter::GetEffectiveHookMode() const

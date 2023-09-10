@@ -9,16 +9,6 @@
 
 class CGameTeams;
 
-/* INFECTION MODIFICATION START ***************************************/
-enum FREEZEREASON
-{
-	FREEZEREASON_FLASH = 0,
-	FREEZEREASON_UNDEAD = 1,
-	FREEZEREASON_INFECTION = 2,
-};
-
-/* INFECTION MODIFICATION END *****************************************/
-
 enum
 {
 	FAKETUNE_FREEZE = 1,
@@ -183,10 +173,7 @@ protected:
 	int m_AntiFireTime;
 	int m_PainSoundTimer;
 	vec2 m_PrevPos;
-	
-	bool m_IsFrozen;
-	int m_FrozenTime;
-	FREEZEREASON m_FreezeReason;
+
 	int m_InAirTick;
 
 public:
@@ -204,9 +191,6 @@ public:
 	bool IsInfected() const;
 	bool IsHuman() const;
 	void SetAntiFire();
-	void Freeze(float Time, int Player, FREEZEREASON Reason);
-	bool IsFrozen() const;
-	virtual void Unfreeze();
 	bool IsInLove() const;
 	void LoveEffect(float Time);
 	void HallucinationEffect();

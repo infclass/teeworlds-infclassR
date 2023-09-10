@@ -1,6 +1,7 @@
 #include "infccharacter.h"
 #include "engine/server.h"
 #include "game/infclass/classes.h"
+#include "game/server/entities/character.h"
 
 #include <engine/server/mapconverter.h>
 #include <engine/server/roundstatistics.h>
@@ -59,6 +60,8 @@ void CInfClassCharacter::OnCharacterSpawned(const SpawnContext &Context)
 	m_IsFrozen = false;
 	m_FrozenTime = -1;
 	m_LoveTick = -1;
+	m_FrozenTime = -1;
+	m_FreezeReason = FREEZEREASON_FLASH;
 	m_SlowMotionTick = -1;
 	m_HallucinationTick = -1;
 	m_SlipperyTick = -1;
@@ -364,6 +367,9 @@ void CInfClassCharacter::SpecialSnapForClient(int SnappingClient, bool *pDoSnap)
 
 void CInfClassCharacter::HandleNinja()
 {
+	if(IsFrozen())
+		return;
+
 	if(!m_pClass)
 		return;
 
@@ -1978,9 +1984,36 @@ bool CInfClassCharacter::HasHallucination() const
 	return m_HallucinationTick > 0;
 }
 
+void CInfClassCharacter::Freeze(float Time, int Player, FREEZEREASON Reason)
+{
+	if(m_IsFrozen && m_FreezeReason == FREEZEREASON_UNDEAD)
+		return;
+
+	m_IsFrozen = true;
+	m_FrozenTime = Server()->TickSpeed()*Time;
+	m_FreezeReason = Reason;
+
+	m_LastFreezer = Player;
+
+	m_Core.m_FreezeStart = Server()->Tick();
+}
+
+bool CInfClassCharacter::IsFrozen() const
+{
+	return m_IsFrozen;
+}
+
 void CInfClassCharacter::Unfreeze()
 {
-	CCharacter::Unfreeze();
+	m_IsFrozen = false;
+	m_FrozenTime = 0;
+	m_Core.m_FreezeStart = 0;
+
+	if(m_pPlayer)
+	{
+		GameServer()->ClearBroadcast(m_pPlayer->GetCID(), BROADCAST_PRIORITY_EFFECTSTATE);
+	}
+	GameServer()->CreatePlayerSpawn(GetPos());
 
 	if(m_FreezeReason == FREEZEREASON_UNDEAD)
 	{
