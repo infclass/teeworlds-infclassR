@@ -2092,16 +2092,13 @@ void CInfClassCharacter::MakeInvisible()
 	m_InvisibleTick = 0;
 }
 
-void CInfClassCharacter::GrantSpawnProtection()
+void CInfClassCharacter::GrantSpawnProtection(float Duration)
 {
 	// Indicate time left being protected via eyes
-	if(m_ProtectionTick <= 0)
+	m_ProtectionTick = Server()->TickSpeed() * Duration;
+	if(!IsFrozen() && !IsInvisible())
 	{
-		m_ProtectionTick = Server()->TickSpeed() * g_Config.m_InfSpawnProtectionTime / 1000;
-		if(!IsFrozen() && !IsInvisible())
-		{
-			SetEmote(EMOTE_SURPRISE, Server()->Tick() + m_ProtectionTick);
-		}
+		SetEmote(EMOTE_SURPRISE, Server()->Tick() + m_ProtectionTick);
 	}
 }
 

@@ -192,7 +192,7 @@ public:
 	void GiveRandomClassSelectionBonus();
 	void MakeVisible();
 	void MakeInvisible();
-	void GrantSpawnProtection();
+	void GrantSpawnProtection(float Duration);
 
 	bool PositionIsLocked() const;
 	void LockPosition();

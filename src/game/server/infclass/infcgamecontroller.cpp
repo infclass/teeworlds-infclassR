@@ -3665,7 +3665,8 @@ void CInfClassGameController::OnCharacterSpawned(CInfClassCharacter *pCharacter,
 
 		if(Context.SpawnType == SpawnContext::MapSpawn)
 		{
-			pCharacter->GrantSpawnProtection();
+			float Duration = g_Config.m_InfSpawnProtectionTime / 1000.0f;
+			pCharacter->GrantSpawnProtection(Duration);
 		}
 	}
 }
