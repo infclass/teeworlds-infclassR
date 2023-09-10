@@ -511,11 +511,6 @@ void CCharacter::Die(int Killer, int Weapon)
 {
 }
 
-bool CCharacter::TakeDamage(vec2 Force, int Dmg, int From, int Weapon, TAKEDAMAGEMODE Mode)
-{
-	return false;
-}
-
 //TODO: Move the emote stuff to a function
 void CCharacter::SnapCharacter(int SnappingClient, int ID)
 {

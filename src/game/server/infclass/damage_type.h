@@ -1,6 +1,13 @@
 #ifndef INFCLASS_DAMAGE_TYPE_H
 #define INFCLASS_DAMAGE_TYPE_H
 
+enum class TAKEDAMAGEMODE
+{
+	NOINFECTION=0,
+	INFECTION,
+	ALLOW_SELFHARM, // works like NOINFECTION but also harms the owner of the damage with 50%
+};
+
 // Everything that can kill should be listed here
 enum class DAMAGE_TYPE
 {

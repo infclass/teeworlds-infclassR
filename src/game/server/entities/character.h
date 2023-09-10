@@ -17,13 +17,6 @@ enum FREEZEREASON
 	FREEZEREASON_INFECTION = 2,
 };
 
-enum class TAKEDAMAGEMODE
-{
-	NOINFECTION=0,
-	INFECTION,
-	ALLOW_SELFHARM, // works like NOINFECTION but also harms the owner of the damage with 50%
-};
-
 /* INFECTION MODIFICATION END *****************************************/
 
 enum
@@ -75,7 +68,6 @@ public:
 	virtual void FireWeapon();
 
 	virtual void Die(int Killer, int Weapon);
-	virtual bool TakeDamage(vec2 Force, int Dmg, int From, int Weapon, TAKEDAMAGEMODE Mode);
 
 	bool Spawn(class CPlayer *pPlayer, vec2 Pos);
 	bool Remove();

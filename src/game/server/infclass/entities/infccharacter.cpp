@@ -501,11 +501,11 @@ void CInfClassCharacter::FireWeapon()
 bool CInfClassCharacter::TakeDamage(const vec2 &Force, float FloatDmg, int From, DAMAGE_TYPE DamageType)
 {
 	SDamageContext DamageContext;
-	DamageContext.Killer = From;
-	DamageContext.DamageType = DamageType;
-	DamageContext.Force = Force;
-
 	{
+		DamageContext.Killer = From;
+		DamageContext.DamageType = DamageType;
+		DamageContext.Force = Force;
+
 		int Dmg = FloatDmg;
 		if(FloatDmg != Dmg)
 		{
@@ -513,17 +513,10 @@ bool CInfClassCharacter::TakeDamage(const vec2 &Force, float FloatDmg, int From,
 			Dmg += ExtraDmg;
 		}
 		DamageContext.Damage = Dmg;
+		DamageContext.Weapon = CInfClassGameController::DamageTypeToWeapon(DamageType, &DamageContext.Mode);
 	}
 
-	DamageContext.Weapon = CInfClassGameController::DamageTypeToWeapon(DamageType, &DamageContext.Mode);
-	return TakeDamage(DamageContext);
-}
-
-bool CInfClassCharacter::TakeDamage(SDamageContext DamageContext)
-{
-	const int From = DamageContext.Killer;
 	const int &Weapon = DamageContext.Weapon;
-	const DAMAGE_TYPE DamageType = DamageContext.DamageType;
 	TAKEDAMAGEMODE &Mode = DamageContext.Mode;
 	int &Dmg = DamageContext.Damage;
 
@@ -698,12 +691,6 @@ bool CInfClassCharacter::TakeDamage(SDamageContext DamageContext)
 	SetEmote(EMOTE_PAIN, Server()->Tick() + 500 * Server()->TickSpeed() / 1000);
 
 	return true;
-}
-
-bool CInfClassCharacter::TakeDamage(vec2 Force, int Dmg, int From, int Weapon, TAKEDAMAGEMODE Mode)
-{
-	DAMAGE_TYPE DamageType = DAMAGE_TYPE::INVALID;
-	return TakeDamage(Force, Dmg, From, DamageType);
 }
 
 bool CInfClassCharacter::Heal(int HitPoints, int FromCID)

@@ -12,6 +12,7 @@
 #include <vector>
 
 enum class DAMAGE_TYPE;
+enum class TAKEDAMAGEMODE;
 
 enum class GROWING_EXPLOSION_EFFECT
 {
@@ -46,7 +47,7 @@ private:
 	int m_GrowingMap_Size;
 	DAMAGE_TYPE m_DamageType;
 	int m_TriggeredByCID;
-	TAKEDAMAGEMODE m_TakeDamageMode = TAKEDAMAGEMODE::NOINFECTION;
+	TAKEDAMAGEMODE m_TakeDamageMode;
 	
 	vec2 m_SeedPos;
 	int m_SeedX;
