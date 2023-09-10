@@ -1487,6 +1487,33 @@ void CInfClassGameController::ConSetClass(IConsole::IResult *pResult)
 	Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "inf_set_class", "Unknown class");
 }
 
+FunRoundConfiguration CInfClassGameController::ParseFunRoundConfigArguments(IConsole::IResult *pResult)
+{
+	FunRoundConfiguration FunRoundConfig;
+
+	for(int argN = 0; argN < pResult->NumArguments(); ++argN)
+	{
+		const char *pArgument = pResult->GetString(argN);
+		bool Ok = true;
+		const PLAYERCLASS PlayerClass = CInfClassGameController::GetClassByName(pArgument, &Ok);
+		if(!Ok)
+		{
+			// Ignore other words (there can be "undeads vs heroes", ignore "vs" in such case)
+			continue;
+		}
+		if((PlayerClass > START_HUMANCLASS) && (PlayerClass < END_HUMANCLASS))
+		{
+			FunRoundConfig.HumanClass = PlayerClass;
+		}
+		if((PlayerClass > START_INFECTEDCLASS) && (PlayerClass < END_INFECTEDCLASS))
+		{
+			FunRoundConfig.InfectedClass = PlayerClass;
+		}
+	}
+
+	return FunRoundConfig;
+}
+
 void CInfClassGameController::ConQueueSpecialRound(IConsole::IResult *pResult, void *pUserData)
 {
 	CInfClassGameController *pSelf = (CInfClassGameController *)pUserData;
@@ -1545,31 +1572,21 @@ void CInfClassGameController::ConQueueFunRound(IConsole::IResult *pResult, void 
 
 void CInfClassGameController::ConStartSpecialFunRound(IConsole::IResult *pResult, void *pUserData)
 {
-#if 0
 	CInfClassGameController *pSelf = (CInfClassGameController *)pUserData;
-	FunRoundConfiguration Configuration;
+	FunRoundConfiguration FunRoundConfig = ParseFunRoundConfigArguments(pResult);
 
-	for(int argN = 0; argN < pResult->NumArguments(); ++argN)
+	std::vector<FunRoundConfiguration> aOldConfigurations;
+	std::swap(pSelf->m_FunRoundConfigurations, aOldConfigurations);
+	pSelf->m_FunRoundConfigurations = {FunRoundConfig};
+
+	pSelf->QueueRoundType(ROUND_TYPE::FUN);
+
+	if(!pSelf->m_Warmup)
 	{
-		const char *argument = pResult->GetString(argN);
-		const int PlayerClass = CInfClassGameController::GetClassByName(argument);
-		if((PlayerClass > START_HUMANCLASS) && (PlayerClass < END_HUMANCLASS))
-		{
-			Configuration.HumanClass = PlayerClass;
-		}
-		if((PlayerClass > START_INFECTEDCLASS) && (PlayerClass < END_INFECTEDCLASS))
-		{
-			Configuration.InfectedClass = PlayerClass;
-		}
+		pSelf->StartRound();
 	}
 
-	if(!Configuration.HumanClass || !Configuration.InfectedClass)
-	{
-		pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "server", "invalid special fun round configuration");
-		return;
-	}
-	pSelf->StartFunRound(Configuration);
-#endif
+	std::swap(pSelf->m_FunRoundConfigurations, aOldConfigurations);
 }
 
 void CInfClassGameController::ConClearFunRounds(IConsole::IResult *pResult, void *pUserData)
@@ -1582,29 +1599,9 @@ void CInfClassGameController::ConClearFunRounds(IConsole::IResult *pResult, void
 void CInfClassGameController::ConAddFunRound(IConsole::IResult *pResult, void *pUserData)
 {
 	CInfClassGameController *pSelf = (CInfClassGameController *)pUserData;
-	FunRoundConfiguration Settings;
+	FunRoundConfiguration FunRoundConfig = ParseFunRoundConfigArguments(pResult);
 
-	for(int argN = 0; argN < pResult->NumArguments(); ++argN)
-	{
-		const char *pArgument = pResult->GetString(argN);
-		bool Ok = true;
-		const PLAYERCLASS PlayerClass = CInfClassGameController::GetClassByName(pArgument, &Ok);
-		if(!Ok)
-		{
-			// Ignore other words (there can be "undeads vs heroes", ignore "vs" in such case)
-			continue;
-		}
-		if((PlayerClass > START_HUMANCLASS) && (PlayerClass < END_HUMANCLASS))
-		{
-			Settings.HumanClass = PlayerClass;
-		}
-		if((PlayerClass > START_INFECTEDCLASS) && (PlayerClass < END_INFECTEDCLASS))
-		{
-			Settings.InfectedClass = PlayerClass;
-		}
-	}
-
-	if((Settings.HumanClass == PLAYERCLASS_INVALID) || (Settings.InfectedClass == PLAYERCLASS_INVALID))
+	if((FunRoundConfig.HumanClass == PLAYERCLASS_INVALID) || (FunRoundConfig.InfectedClass == PLAYERCLASS_INVALID))
 	{
 		pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "server", "invalid special fun round configuration");
 		return;
@@ -1612,13 +1609,13 @@ void CInfClassGameController::ConAddFunRound(IConsole::IResult *pResult, void *p
 	else
 	{
 		char aBuf[256];
-		const char *HumanClassText = CInfClassGameController::GetClassPluralDisplayName(Settings.HumanClass);
-		const char *InfectedClassText = CInfClassGameController::GetClassPluralDisplayName(Settings.InfectedClass);
+		const char *HumanClassText = CInfClassGameController::GetClassPluralDisplayName(FunRoundConfig.HumanClass);
+		const char *InfectedClassText = CInfClassGameController::GetClassPluralDisplayName(FunRoundConfig.InfectedClass);
 		str_format(aBuf, sizeof(aBuf), "Added fun round: %s vs %s", InfectedClassText, HumanClassText);
 		pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "server", aBuf);
 	}
 
-	pSelf->m_FunRoundConfigurations.push_back(Settings);
+	pSelf->m_FunRoundConfigurations.push_back(FunRoundConfig);
 }
 
 void CInfClassGameController::ConStartFastRound(IConsole::IResult *pResult, void *pUserData)
