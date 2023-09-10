@@ -265,6 +265,9 @@ protected:
 	int m_BlindnessTicks = 0;
 	int m_LastBlinder = -1;
 
+	int m_ProtectionTick = 0;
+
+	int m_InfZoneTick = 0;
 	int m_DamageZoneTick;
 	float m_DamageZoneDealtDamage = 0;
 

@@ -1,7 +1,6 @@
 /* (c) Magnus Auvinen. See licence.txt in the root of the distribution for more information. */
 /* If you are missing that file, acquire a complete release at teeworlds.com.				*/
 #include "character.h"
-#include "projectile.h"
 
 #include <engine/shared/config.h>
 
@@ -31,10 +30,8 @@ CCharacter::CCharacter(CGameWorld *pWorld) :
 	m_IsFrozen = false;
 	m_FrozenTime = -1;
 	m_DartLifeSpan = -1;
-	m_InfZoneTick = 0;
 	m_InAirTick = 0;
 	m_InWater = 0;
-	m_ProtectionTick = 0;
 	m_WaterJumpLifeSpan = 0;
 	m_HasIndicator = false;
 /* INFECTION MODIFICATION END *****************************************/

@@ -180,9 +180,6 @@ protected:
 protected:
 	virtual void OnTotalHealthChanged(int Difference) = 0;
 
-	int m_InfZoneTick;
-	int m_ProtectionTick;
-	
 	int m_AntiFireTime;
 	int m_PainSoundTimer;
 	vec2 m_PrevPos;
@@ -191,7 +188,6 @@ protected:
 	int m_FrozenTime;
 	FREEZEREASON m_FreezeReason;
 	int m_InAirTick;
-	vec2 m_SpawnPosition;
 
 public:
 	bool m_HasIndicator;
