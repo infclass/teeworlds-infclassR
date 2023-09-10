@@ -407,6 +407,14 @@ void CInfClassInfected::OnCharacterSpawned(const SpawnContext &Context)
 	m_SlimeEffectTicks = 0;
 	m_SlimeLastHealTick = 0;
 	m_LaserWallTick = 0;
+
+	if(Context.SpawnType == SpawnContext::MapSpawn)
+	{
+		if(GetPlayerClass() == PLAYERCLASS_GHOST)
+		{
+			m_pCharacter->MakeInvisible();
+		}
+	}
 }
 
 void CInfClassInfected::OnCharacterDeath(DAMAGE_TYPE DamageType)

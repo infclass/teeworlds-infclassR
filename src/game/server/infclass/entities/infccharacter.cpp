@@ -2086,6 +2086,12 @@ void CInfClassCharacter::MakeVisible()
 	m_InvisibleTick = Server()->Tick();
 }
 
+void CInfClassCharacter::MakeInvisible()
+{
+	m_IsInvisible = true;
+	m_InvisibleTick = 0;
+}
+
 void CInfClassCharacter::GrantSpawnProtection()
 {
 	// Indicate time left being protected via eyes
@@ -2158,9 +2164,7 @@ void CInfClassCharacter::PreCoreTick()
 			int cellGhostX = static_cast<int>(round(GetPos().x)) / 32;
 			int cellGhostY = static_cast<int>(round(GetPos().y)) / 32;
 
-			vec2 SeedPos = vec2(16.0f, 16.0f) + vec2(
-													static_cast<float>(static_cast<int>(round(GetPos().x)) / 32) * 32.0,
-													static_cast<float>(static_cast<int>(round(GetPos().y)) / 32) * 32.0);
+			vec2 SeedPos = vec2(16.0f, 16.0f) + vec2(cellGhostX * 32.0, cellGhostY * 32.0);
 
 			for(int y = 0; y < GHOST_SEARCHMAP_SIZE; y++)
 			{
