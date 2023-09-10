@@ -1841,8 +1841,24 @@ void CInfClassGameController::ChatWitch(IConsole::IResult *pResult)
 
 	Console()->Print(IConsole::OUTPUT_LEVEL_DEBUG, "conwitch", "ChatWitch() called");
 
-	int MaxWitches = GetClassPlayerLimit(PLAYERCLASS_WITCH);
 	const bool Winter = EventsDirector::IsWinter();
+
+	{
+		bool CanCallWitch = true;
+		if(!CanCallWitch)
+		{
+			const char *pMessage =  _("The witch is not available in this round");
+			if(Winter)
+			{
+				pMessage = _("The Santa is not available in this round");
+			}
+
+			GameServer()->SendChatTarget_Localization(ClientID, CHATCATEGORY_DEFAULT, pMessage, nullptr);
+			return;
+		}
+	}
+
+	int MaxWitches = GetClassPlayerLimit(PLAYERCLASS_WITCH);
 	if(Winter)
 	{
 		// Santa is a new Witch; allow only one Santa at time.
