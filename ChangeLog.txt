@@ -1,4 +1,6 @@
 InfclassR v1.5.0_alpha8
+- Fixed (Biologist) bouncing bullets disappeared if
+  shoot right into the wall
 - Fixed Biologist shotgun could hit through walls
 - Blinding effect now canceled on the player revived
 - Fixed 'Fun Round' settings kept for other rounds

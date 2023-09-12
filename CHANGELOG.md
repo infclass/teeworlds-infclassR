@@ -65,6 +65,7 @@ Fixes:
 - Fixed a few bugs in votes
 - Fixed sound on Biologist laser fired with ammo < 10
 - Fixed Biologist shotgun could hit through walls
+- Fixed (Biologist) bouncing bullets disappeared if shoot right into the wall
 - Fixed langs list in /lang description
 - Fixed translation for some Merc text strings
 - Fixed missing help for messaging commands

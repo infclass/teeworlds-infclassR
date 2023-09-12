@@ -105,8 +105,11 @@ vec2 CInfClassPlayerClass::GetDirection() const
 
 vec2 CInfClassPlayerClass::GetProjectileStartPos(float Offset) const
 {
-	vec2 ProjStartPos = GetPos() + GetDirection() * Offset;
-	return ProjStartPos;
+	vec2 From = GetPos();
+	vec2 To = From + GetDirection() * Offset;
+	GameServer()->Collision()->IntersectLine(From, To, nullptr, &To);
+
+	return To;
 }
 
 float CInfClassPlayerClass::GetProximityRadius() const
