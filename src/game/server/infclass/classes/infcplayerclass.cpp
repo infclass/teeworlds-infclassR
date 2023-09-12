@@ -103,6 +103,12 @@ vec2 CInfClassPlayerClass::GetDirection() const
 	return vec2(0, 0);
 }
 
+vec2 CInfClassPlayerClass::GetProjectileStartPos(float Offset) const
+{
+	vec2 ProjStartPos = GetPos() + GetDirection() * Offset;
+	return ProjStartPos;
+}
+
 float CInfClassPlayerClass::GetProximityRadius() const
 {
 	if(m_pCharacter)

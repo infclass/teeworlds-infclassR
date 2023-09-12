@@ -102,6 +102,7 @@ public:
 	int GetCID() const;
 	vec2 GetPos() const;
 	vec2 GetDirection() const;
+	vec2 GetProjectileStartPos(float Offset) const;
 	float GetProximityRadius() const;
 
 protected:

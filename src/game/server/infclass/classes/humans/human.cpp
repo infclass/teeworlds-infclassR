@@ -743,8 +743,7 @@ void CInfClassHuman::OnHammerFired(WeaponFireContext *pFireContext)
 		break;
 	}
 
-	const vec2 Direction = GetDirection();
-	const vec2 ProjStartPos = GetPos() + Direction * GetHammerProjOffset();
+	const vec2 ProjStartPos = GetProjectileStartPos(GetHammerProjOffset());
 
 	// Lookup for humans
 	ClientsArray Targets;
@@ -799,7 +798,7 @@ void CInfClassHuman::OnGunFired(WeaponFireContext *pFireContext)
 		return;
 
 	vec2 Direction = GetDirection();
-	vec2 ProjStartPos = GetPos()+Direction*GetProximityRadius()*0.75f;
+	vec2 ProjStartPos = GetProjectileStartPos(GetProximityRadius() * 0.75f);
 
 	DAMAGE_TYPE DamageType = DAMAGE_TYPE::GUN;
 	
@@ -846,7 +845,7 @@ void CInfClassHuman::OnShotgunFired(WeaponFireContext *pFireContext)
 		return;
 	
 	vec2 Direction = GetDirection();
-	vec2 ProjStartPos = GetPos() + Direction * GetProximityRadius() * 0.75f;
+	vec2 ProjStartPos = GetProjectileStartPos(GetProximityRadius() * 0.75f);
 
 	float Force = 2.0f;
 	int ShotSpread = 3;
