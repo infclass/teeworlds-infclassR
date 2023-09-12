@@ -57,9 +57,12 @@ void CBouncingBullet::Tick()
 	}
 	
 	m_LifeSpan--;
-	
+
+	vec2 NewPos;
+	int Collide = GameServer()->Collision()->IntersectLine(PrevPos, CurPos, nullptr, &NewPos);
+
 	const float ProjectileRadius = 6.0f;
-	CInfClassCharacter *pTargetChr = CInfClassCharacter::GetInstance(GameServer()->m_World.IntersectCharacter(PrevPos, CurPos, ProjectileRadius, CurPos));
+	CInfClassCharacter *pTargetChr = CInfClassCharacter::GetInstance(GameServer()->m_World.IntersectCharacter(PrevPos, NewPos, ProjectileRadius, NewPos));
 
 	if(pTargetChr)
 	{
@@ -70,51 +73,48 @@ void CBouncingBullet::Tick()
 		}
 
 		GameWorld()->DestroyEntity(this);
+		return;
 	}
-	else
-	{
-		vec2 LastPos;
-		int Collide = GameServer()->Collision()->IntersectLine(PrevPos, CurPos, NULL, &LastPos);
-		if(Collide)
-		{			
-			//Thanks to TeeBall 0.6
-			vec2 CollisionPos;
-			CollisionPos.x = LastPos.x;
-			CollisionPos.y = CurPos.y;
-			int CollideY = GameServer()->Collision()->IntersectLine(PrevPos, CollisionPos, NULL, NULL);
-			CollisionPos.x = CurPos.x;
-			CollisionPos.y = LastPos.y;
-			int CollideX = GameServer()->Collision()->IntersectLine(PrevPos, CollisionPos, NULL, NULL);
 
-			m_Pos = LastPos;
-			m_ActualPos = m_Pos;
-			vec2 vel;
-			vel.x = m_Direction.x;
-			vel.y = m_Direction.y + 2*GameServer()->Tuning()->m_ShotgunCurvature/10000*Ct*GameServer()->Tuning()->m_ShotgunSpeed;
-			
-			if (CollideX && !CollideY)
-			{
-				m_Direction.x = -vel.x;
-				m_Direction.y = vel.y;
-			}
-			else if (!CollideX && CollideY)
-			{
-				m_Direction.x = vel.x;
-				m_Direction.y = -vel.y;
-			}
-			else
-			{
-				m_Direction.x = -vel.x;
-				m_Direction.y = -vel.y;
-			}
-			
-			m_Direction.x *= (100 - 50) / 100.0;
-			m_Direction.y *= (100 - 50) / 100.0;
-			m_StartTick = Server()->Tick();
-			
-			m_ActualDir = normalize(m_Direction);
-			m_BounceLeft--;
+	if(Collide)
+	{
+		// Thanks to TeeBall 0.6
+		vec2 CollisionPos;
+		CollisionPos.x = NewPos.x;
+		CollisionPos.y = CurPos.y;
+		int CollideY = GameServer()->Collision()->IntersectLine(PrevPos, CollisionPos, NULL, NULL);
+		CollisionPos.x = CurPos.x;
+		CollisionPos.y = NewPos.y;
+		int CollideX = GameServer()->Collision()->IntersectLine(PrevPos, CollisionPos, NULL, NULL);
+
+		m_Pos = NewPos;
+		m_ActualPos = m_Pos;
+		vec2 vel;
+		vel.x = m_Direction.x;
+		vel.y = m_Direction.y + 2 * GameServer()->Tuning()->m_ShotgunCurvature / 10000 * Ct * GameServer()->Tuning()->m_ShotgunSpeed;
+
+		if(CollideX && !CollideY)
+		{
+			m_Direction.x = -vel.x;
+			m_Direction.y = vel.y;
 		}
+		else if(!CollideX && CollideY)
+		{
+			m_Direction.x = vel.x;
+			m_Direction.y = -vel.y;
+		}
+		else
+		{
+			m_Direction.x = -vel.x;
+			m_Direction.y = -vel.y;
+		}
+
+		m_Direction.x *= (100 - 50) / 100.0;
+		m_Direction.y *= (100 - 50) / 100.0;
+		m_StartTick = Server()->Tick();
+
+		m_ActualDir = normalize(m_Direction);
+		m_BounceLeft--;
 	}
 }
 

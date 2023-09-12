@@ -64,6 +64,7 @@ Fixes:
 - Fixed spawn protection
 - Fixed a few bugs in votes
 - Fixed sound on Biologist laser fired with ammo < 10
+- Fixed Biologist shotgun could hit through walls
 - Fixed langs list in /lang description
 - Fixed translation for some Merc text strings
 - Fixed missing help for messaging commands
