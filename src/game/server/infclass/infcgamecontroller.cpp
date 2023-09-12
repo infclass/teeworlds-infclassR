@@ -150,7 +150,7 @@ struct InfclassPlayerPersistantData : public CGameContext::CPersistentClientData
 	int m_LastInfectionTime = 0;
 };
 
-int64_t CInfClassGameController::m_TimeSinceHint = 0;
+int64_t CInfClassGameController::m_LastTipTime = 0;
 
 CInfClassGameController::CInfClassGameController(class CGameContext *pGameServer)
 : IGameController(pGameServer), m_Teams(pGameServer)
@@ -2139,6 +2139,68 @@ void CInfClassGameController::FreePlayerOwnSnapItems()
 	Server()->SnapFreeID(m_PlayerOwnCursorID);
 }
 
+void CInfClassGameController::SendHintMessage()
+{
+	if((g_Config.m_TipsInterval == 0) || (time_get() - m_LastTipTime < time_freq() * g_Config.m_TipsInterval * 60))
+		return;
+
+	m_LastTipTime = time_get();
+
+	const int MessageIndex = random_int(0, std::size(gs_aHintMessages) - 1);
+	const CHintMessage &Message = gs_aHintMessages[MessageIndex];
+	dynamic_string Buffer;
+	const char *pPrevLang = nullptr;
+	bool Sent = false;
+
+	const auto PrepareBufferForLanguage = [&](const char *pLang) {
+		if(!pPrevLang || str_comp(pLang, pPrevLang) != 0)
+		{
+			pPrevLang = pLang;
+
+			FormatHintMessage(Message, &Buffer, pLang);
+		}
+	};
+
+	for(int CID = 0; CID < MAX_CLIENTS; ++CID)
+	{
+		const CInfClassPlayer *pPlayer = GetPlayer(CID);
+		if(!pPlayer || pPlayer->IsBot() || !pPlayer->m_IsReady)
+			continue;
+		PrepareBufferForLanguage(GetPlayer(CID)->GetLanguage());
+		GameServer()->SendChatTarget(CID, Buffer.buffer());
+	}
+
+	if(Sent && g_Config.m_SvDemoChat)
+	{
+		// for demo record
+		CNetMsg_Sv_Chat Msg;
+		Msg.m_Team = 0;
+		Msg.m_ClientID = -1;
+
+		PrepareBufferForLanguage("en");
+		Msg.m_pMessage = Buffer.buffer();
+		Server()->SendPackMsg(&Msg, MSGFLAG_VITAL | MSGFLAG_NOSEND, SERVER_DEMO_CLIENT);
+
+		char aBuf[256];
+		str_format(aBuf, sizeof(aBuf), "*** %s", Msg.m_pMessage);
+		Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "chat", aBuf);
+	}
+}
+
+void CInfClassGameController::FormatHintMessage(const CHintMessage &Message, dynamic_string *pBuffer, const char *pLanguage) const
+{
+	pBuffer->clear();
+	pBuffer->append("TIP: ");
+	if (Message.m_pArg1Value)
+	{
+		Server()->Localization()->Format_L(*pBuffer, pLanguage, Message.m_pText, Message.m_pArg1Name, Message.m_pArg1Value);
+	}
+	else
+	{
+		Server()->Localization()->Format_L(*pBuffer, pLanguage, Message.m_pText);
+	}
+}
+
 void CInfClassGameController::OnInfectionTriggered()
 {
 	MaybeSuggestMoreRounds();
@@ -2663,24 +2725,8 @@ void CInfClassGameController::Tick()
 		m_MoreRoundsSuggested = true;
 	}
 
-	if(time_get() - m_TimeSinceHint > time_freq() * g_Config.m_HintsInterval * 60 && g_Config.m_HintsInterval != 0)
-	{
-		if(NumPlayers > 0)
-		{
-			const int MessageIndex = random_int(0, std::size(gs_aHintMessages) - 1);
-			const CHintMessage &Message = gs_aHintMessages[MessageIndex];
-			if (Message.m_pArg1Value)
-			{
-				GameServer()->SendChatTarget_Localization(-1, CHATCATEGORY_DEFAULT, Message.m_pText, Message.m_pArg1Name, Message.m_pArg1Value);
-			}
-			else
-			{
-				GameServer()->SendChatTarget_Localization(-1, CHATCATEGORY_DEFAULT, Message.m_pText);
-			}
-
-			m_TimeSinceHint = time_get();
-		}
-	}
+	if(NumPlayers)
+		SendHintMessage();
 }
 
 void CInfClassGameController::OnGameRestart()

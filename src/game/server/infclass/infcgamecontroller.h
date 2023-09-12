@@ -11,6 +11,7 @@
 #include <engine/console.h>
 
 class CGameWorld;
+class CHintMessage;
 class CInfClassCharacter;
 class CInfClassPlayer;
 struct CNetObj_GameInfo;
@@ -262,6 +263,9 @@ private:
 	void ReservePlayerOwnSnapItems();
 	void FreePlayerOwnSnapItems();
 
+	void SendHintMessage();
+	void FormatHintMessage(const CHintMessage &Message, dynamic_string *pBuffer, const char *pLanguage) const;
+
 	void OnInfectionTriggered();
 	void MaybeSuggestMoreRounds();
 	void SnapMapMenu(int SnappingClient, CNetObj_GameInfo *pGameInfoObj);
@@ -306,7 +310,7 @@ private:
 	bool m_SuggestMoreRounds = false;
 	bool m_MoreRoundsSuggested = false;
 
-	static int64_t m_TimeSinceHint;
+	static int64_t m_LastTipTime;
 };
 
 #endif
