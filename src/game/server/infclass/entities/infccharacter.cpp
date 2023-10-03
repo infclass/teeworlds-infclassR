@@ -2397,6 +2397,11 @@ void CInfClassCharacter::SnapCharacter(int SnappingClient, int ID)
 		if(m_aWeapons[m_ActiveWeapon].m_Ammo > 0)
 			pCharacter->m_AmmoCount = m_aWeapons[m_ActiveWeapon].m_Ammo;
 	}
+	else if(pSnappingClient && pSnappingClient->IsHuman() == m_pPlayer->IsHuman())
+	{
+		pCharacter->m_Health = m_Health;
+		pCharacter->m_Armor = clamp<int>(m_Armor, 0, 10);
+	}
 
 	/* INFECTION MODIFICATION START ***************************************/
 	if(GetInfWeaponID(m_ActiveWeapon) == INFWEAPON::MERCENARY_GUN)
