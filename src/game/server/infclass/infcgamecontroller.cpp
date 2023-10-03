@@ -3660,9 +3660,10 @@ void CInfClassGameController::OnCharacterDeath(CInfClassCharacter *pVictim, cons
 		}
 	}
 
-	if(DamageType != DAMAGE_TYPE::GAME)
+	// Do not infect on disconnect or joining spec
+	bool Infect = DamageType != DAMAGE_TYPE::GAME;
+	if(Infect)
 	{
-		// Do not infect on disconnect or joining spec
 		pVictim->GetPlayer()->StartInfection(Context.Killer, InfectionType);
 	}
 
@@ -3995,7 +3996,8 @@ bool CInfClassGameController::TryRespawn(CInfClassPlayer *pPlayer, SpawnContext 
 		return false;
 	}
 
-	if(m_InfectedStarted)
+	bool Infect = m_InfectedStarted;
+	if(Infect)
 		pPlayer->StartInfection();
 
 	if(pPlayer->IsInfected() && m_ExplosionStarted)
