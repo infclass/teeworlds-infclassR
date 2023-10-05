@@ -216,6 +216,11 @@ void CInfClassPlayerClass::OnPlayerClassChanged()
 
 	// Enable hook protection by default for both infected and humans on class changed
 	m_pPlayer->HookProtection(true);
+
+	if(m_pCharacter)
+	{
+		GameServer()->CreatePlayerSpawn(GetPos(), GameController()->GetMaskForPlayerWorldEvent(GetCID()));
+	}
 }
 
 void CInfClassPlayerClass::PrepareToDie(const DeathContext &Context, bool *pRefusedToDie)

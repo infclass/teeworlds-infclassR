@@ -1875,8 +1875,6 @@ void CInfClassCharacter::SetClass(CInfClassPlayerClass *pClass)
 	m_QueuedWeapon = -1;
 	m_TakenDamageDetails.Clear();
 
-	GameServer()->CreatePlayerSpawn(GetPos());
-
 	if(GetPlayerClass() == PLAYERCLASS_NONE)
 	{
 		OpenClassChooser();

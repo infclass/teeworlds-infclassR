@@ -49,6 +49,8 @@ void CInfClassPlayer::TryRespawn()
 	m_pCharacter = pCharacter;
 	m_pCharacter->Spawn(this, Context.SpawnPos);
 	OnCharacterSpawned(Context);
+
+	GameServer()->CreatePlayerSpawn(Context.SpawnPos, GameController()->GetMaskForPlayerWorldEvent(m_ClientID));
 }
 
 int CInfClassPlayer::GetScore(int SnappingClient) const
