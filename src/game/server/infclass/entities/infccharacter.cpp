@@ -333,7 +333,7 @@ void CInfClassCharacter::Snap(int SnappingClient)
 			Server()->GetClientInfo(SnappingClient, &ClientInfo);
 		}
 
-		if(ClientInfo.m_InfClassVersion > VERSION_INFC_150)
+		if((ClientInfo.m_InfClassVersion > VERSION_INFC_150) || (ClientInfo.m_DDNetVersion >= 17030))
 		{
 			pDDNetCharacter->m_FreezeStart = m_Core.m_FreezeStart;
 			pDDNetCharacter->m_FreezeEnd = Server()->Tick() + m_FrozenTime;
