@@ -12,21 +12,24 @@ static const char WinterSuffix[] = "_winter";
 enum class EventType
 {
 	None,
+	Generic,
 	Winter,
 };
 
 static EventType PreloadedMapEventType = EventType::None;
+static char aEventId[32] = {0};
 
 const char *EventsDirector::GetMapConverterId(const char *pConverterId)
 {
-	static char CustomId[32] = { 0 };
-	if(PreloadedMapEventType == EventType::Winter)
+	static char CustomConverterId[32] = {0};
+	switch(PreloadedMapEventType)
 	{
-		if(CustomId[0] == 0)
-		{
-			str_format(&CustomId[0], sizeof(CustomId), "%s%s", pConverterId, WinterSuffix);
-		}
-		return CustomId;
+	case EventType::None:
+	case EventType::Generic:
+		break;
+	case EventType::Winter:
+		str_format(&CustomConverterId[0], sizeof(CustomConverterId), "%s_%s", pConverterId, g_Config.m_InfEvent);
+		return CustomConverterId;
 	}
 
 	return pConverterId;
@@ -34,15 +37,27 @@ const char *EventsDirector::GetMapConverterId(const char *pConverterId)
 
 void EventsDirector::SetPreloadedMapName(const char *pName)
 {
+	const char *pEvent = g_Config.m_InfEvent;
 	PreloadedMapEventType = EventType::None;
 
-	const int NameLength = str_length(pName);
-	if(NameLength > sizeof(WinterSuffix))
+	if(pEvent[0])
 	{
-		int ExpectedSuffixOffset = NameLength - sizeof(WinterSuffix) + 1;
-		if(str_comp(&pName[ExpectedSuffixOffset], WinterSuffix) == 0)
+		const int NameLength = str_length(pName);
+		const int EventLength = str_length(pEvent);
+		if(NameLength > EventLength + 1)
 		{
-			PreloadedMapEventType = EventType::Winter;
+			int ExpectedSuffixOffset = NameLength - EventLength + 1;
+			if(str_comp(&pName[ExpectedSuffixOffset], pEvent) == 0)
+			{
+				if(str_comp(pEvent, "winter") == 0)
+				{
+					PreloadedMapEventType = EventType::Winter;
+				}
+				else
+				{
+					PreloadedMapEventType = EventType::Generic;
+				}
+			}
 		}
 	}
 }
@@ -78,7 +93,7 @@ void EventsDirector::SetupSkin(const CSkinContext &Context, CWeakSkinInfo *pOutp
 				"santa_warpaint",
 			};
 
-			for (const char *pSkin : SkinsWithSanta)
+			for(const char *pSkin : SkinsWithSanta)
 			{
 				const char *pSkinBaseName = &pSkin[6];
 				if(str_comp(pOutput->pSkinName, pSkinBaseName) == 0)
@@ -93,11 +108,11 @@ void EventsDirector::SetupSkin(const CSkinContext &Context, CWeakSkinInfo *pOutp
 
 const char *EventsDirector::GetEventMapName(const char *pMapName)
 {
-	bool CurrentEventWinter = str_comp(g_Config.m_InfEvent, "winter") == 0;
-	if(CurrentEventWinter)
+	const char *pEvent = g_Config.m_InfEvent;
+	if(pEvent[0])
 	{
 		static char MapName[128];
-		str_format(MapName, sizeof(MapName), "%s%s", pMapName, WinterSuffix);
+		str_format(MapName, sizeof(MapName), "%s_%s", pMapName, pEvent);
 		return MapName;
 	}
 
