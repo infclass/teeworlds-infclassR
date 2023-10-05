@@ -36,6 +36,8 @@ public:
 	// returns nullptr if successful, error string if failed
 	const char *SetCharacterTeam(int ClientID, int Team);
 
+	int64_t TeamMask(int Team, int ExceptID = -1, int Asker = -1);
+
 	int Count(int Team) const;
 
 	// need to be very careful using this method. SERIOUSLY...

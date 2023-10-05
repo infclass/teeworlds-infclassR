@@ -82,6 +82,7 @@ public:
 
 	bool CanSeeDetails(int Who, int Whom) const;
 	int64_t GetBlindCharactersMask(int ExcludeCID) const;
+	int64_t GetMaskForPlayerWorldEvent(int Asker, int ExceptID = -1);
 
 	bool HumanWallAllowedInPos(const vec2 &Pos) const;
 	int GetZoneValueAt(int ZoneHandle, const vec2 &Pos, ZoneData *pData = nullptr) const;

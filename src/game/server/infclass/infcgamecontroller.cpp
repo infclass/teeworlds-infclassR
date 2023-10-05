@@ -594,6 +594,18 @@ int64_t CInfClassGameController::GetBlindCharactersMask(int ExcludeCID) const
 	return Mask;
 }
 
+int64_t CInfClassGameController::GetMaskForPlayerWorldEvent(int Asker, int ExceptID)
+{
+	if(Asker == -1)
+		return CmaskAllExceptOne(ExceptID);
+
+	const CInfClassCharacter *pCharacter = GetCharacter(Asker);
+	if(!pCharacter || !pCharacter->IsInvisible())
+		return CmaskAllExceptOne(ExceptID);
+
+	return m_Teams.TeamMask(GetPlayerTeam(Asker), ExceptID, Asker);
+}
+
 bool CInfClassGameController::HumanWallAllowedInPos(const vec2 &Pos) const
 {
 	const float Radius = 32.0f;
