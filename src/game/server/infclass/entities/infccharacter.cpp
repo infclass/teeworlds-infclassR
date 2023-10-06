@@ -1004,7 +1004,7 @@ void CInfClassCharacter::GetDeathContext(const SDamageContext &DamageContext, De
 	};
 
 	ClientsArray MustBeKillerOrAssistant;
-	// If killed with a LASER_WALL then the Engineer must be either the Killer orthe  Assistant
+	// If killed with a LASER_WALL then the Engineer must be either the Killer or the Assistant
 	if(DamageType == DAMAGE_TYPE::LASER_WALL)
 	{
 		// GivenKiller is the wall owner
@@ -1048,6 +1048,7 @@ void CInfClassCharacter::GetDeathContext(const SDamageContext &DamageContext, De
 	case DAMAGE_TYPE::INFECTION_TILE:
 	case DAMAGE_TYPE::KILL_COMMAND:
 	case DAMAGE_TYPE::LASER_WALL:
+	case DAMAGE_TYPE::SCIENTIST_TELEPORT:
 		DirectKill = false;
 	default:
 		break;
