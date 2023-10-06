@@ -450,6 +450,10 @@ void CInfClassPlayer::UpdateSkin()
 	{
 		m_SkinGetter = nullptr;
 	}
+
+	const CWeakSkinInfo SkinInfo = GetSkinInfo(SERVER_DEMO_CLIENT);
+	m_TeeInfos = CTeeInfo(SkinInfo.pSkinName, SkinInfo.UseCustomColor, SkinInfo.ColorBody, SkinInfo.ColorFeet);
+	m_TeeInfos.ToSixup();
 }
 
 void CInfClassPlayer::StartInfection(int InfectiousPlayerCID, INFECTION_TYPE InfectionType)
