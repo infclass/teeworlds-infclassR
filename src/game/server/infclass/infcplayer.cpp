@@ -206,27 +206,7 @@ void CInfClassPlayer::SnapClientInfo(int SnappingClient, int SnappingClientMappe
 	StrToInts(&pClientInfo->m_Clan0, 3, GetClan(SnappingClient));
 	pClientInfo->m_Country = Server()->ClientCountry(m_ClientID);
 
-	IServer::CClientInfo ClientInfo = {0};
-	if(SnappingClient != SERVER_DEMO_CLIENT)
-	{
-		Server()->GetClientInfo(SnappingClient, &ClientInfo);
-	}
-
-	CWeakSkinInfo SkinInfo;
-	if(m_SkinGetter)
-	{
-		CInfClassPlayer *pSnappingClient = GameController()->GetPlayer(SnappingClient);
-
-		bool SameTeam = pSnappingClient && (m_Team == pSnappingClient->m_Team) && (IsHuman() == pSnappingClient->IsHuman());
-
-		const CSkinContext &SkinContext = SameTeam ? m_SameTeamSkinContext : m_DiffTeamSkinContext;
-		m_SkinGetter(SkinContext, &SkinInfo, ClientInfo.m_DDNetVersion, ClientInfo.m_InfClassVersion);
-		EventsDirector::SetupSkin(SkinContext, &SkinInfo, ClientInfo.m_DDNetVersion, ClientInfo.m_InfClassVersion);
-	}
-	else
-	{
-		SkinInfo.pSkinName = "default";
-	}
+	const CWeakSkinInfo SkinInfo = GetSkinInfo(SnappingClient);
 
 	StrToInts(&pClientInfo->m_Skin0, 6, SkinInfo.pSkinName);
 	pClientInfo->m_UseCustomColor = SkinInfo.UseCustomColor;
@@ -306,6 +286,32 @@ int CInfClassPlayer::GetDefaultEmote() const
 		return m_pInfcPlayerClass->GetDefaultEmote();
 
 	return CPlayer::GetDefaultEmote();
+}
+
+CWeakSkinInfo CInfClassPlayer::GetSkinInfo(int SnappingClient) const
+{
+	CWeakSkinInfo SkinInfo;
+	if(m_SkinGetter)
+	{
+		IServer::CClientInfo ClientInfo = {0};
+		if(SnappingClient != SERVER_DEMO_CLIENT)
+		{
+			Server()->GetClientInfo(SnappingClient, &ClientInfo);
+		}
+
+		CInfClassPlayer *pSnappingClient = GameController()->GetPlayer(SnappingClient);
+
+		bool SameTeam = pSnappingClient && (m_Team == pSnappingClient->m_Team) && (IsHuman() == pSnappingClient->IsHuman());
+
+		const CSkinContext &SkinContext = SameTeam ? m_SameTeamSkinContext : m_DiffTeamSkinContext;
+		m_SkinGetter(SkinContext, &SkinInfo, ClientInfo.m_DDNetVersion, ClientInfo.m_InfClassVersion);
+		EventsDirector::SetupSkin(SkinContext, &SkinInfo, ClientInfo.m_DDNetVersion, ClientInfo.m_InfClassVersion);
+	}
+	else
+	{
+		SkinInfo.pSkinName = "default";
+	}
+	return SkinInfo;
 }
 
 bool CInfClassPlayer::GetAntiPingEnabled() const

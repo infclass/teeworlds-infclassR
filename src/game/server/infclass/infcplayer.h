@@ -57,6 +57,7 @@ public:
 	void Snap(int SnappingClient) override;
 	void SnapClientInfo(int SnappingClient, int SnappingClientMappedId) override;
 	int GetDefaultEmote() const override;
+	CWeakSkinInfo GetSkinInfo(int SnappingClient) const;
 
 	bool GetAntiPingEnabled() const;
 	void SetAntiPingEnabled(bool Enabled);
