@@ -99,6 +99,7 @@ class CServer : public IServer
 	class CConfig *m_pConfig;
 	class IConsole *m_pConsole;
 	class IStorage *m_pStorage;
+	class IRegister *m_pRegister;
 
 	class CDbConnectionPool *m_pConnectionPool;
 
@@ -267,8 +268,6 @@ public:
 	int64_t m_ServerInfoRequestLogTick;
 	int m_ServerInfoRequestLogRecords;
 
-	CRegister m_Register;
-
 	char m_aErrorShutdownReason[128];
 
 	std::vector<CNameBan> m_vNameBans;
@@ -380,6 +379,7 @@ public:
 	void CacheServerInfoSixup(CCache *pCache, bool SendClients);
 	void SendServerInfo(const NETADDR *pAddr, int Token, int Type, bool SendClients);
 	void GetServerInfoSixup(CPacker *pPacker, int Token, bool SendClients);
+	bool RateLimitServerInfoConnless();
 	void SendServerInfoConnless(const NETADDR *pAddr, int Token, int Type);
 	void UpdateRegisterServerInfo();
 	void UpdateServerInfo(bool Resend = false);
@@ -396,7 +396,6 @@ public:
 	void StopRecord(int ClientID) override;
 	bool IsRecording(int ClientID) override;
 
-	void InitRegister(CNetServer *pNetServer, IEngineMasterServer *pMasterServer, IConsole *pConsole);
 	int Run();
 
 	static void ConKick(IConsole::IResult *pResult, void *pUser);

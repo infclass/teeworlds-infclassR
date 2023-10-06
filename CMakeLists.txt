@@ -304,6 +304,7 @@ if(NOT CMAKE_CROSSCOMPILING)
 endif()
 find_package(ZLIB REQUIRED)
 find_package(Crypto)
+find_package(CURL)
 if(DOWNLOAD_GTEST)
   find_package(Git)
 endif()
@@ -355,6 +356,7 @@ function(show_dependency_status OUTPUT_NAME NAME)
   endif()
 endfunction()
 
+show_dependency_status("Curl" CURL)
 if(TARGET_OS AND TARGET_OS STREQUAL "mac")
   show_dependency_status("Dmg tools" DMGTOOLS)
 endif()
@@ -660,6 +662,8 @@ set_glob(ENGINE_SHARED GLOB src/engine/shared
   filecollection.cpp
   filecollection.h
   global_uuid_manager.cpp
+  http.cpp
+  http.h
   huffman.cpp
   huffman.h
   jobs.cpp
@@ -769,6 +773,7 @@ add_library(game-shared EXCLUDE_FROM_ALL STATIC ${GAME_SHARED} ${GAME_GENERATED_
 list(APPEND TARGETS_OWN engine-gfx engine-shared game-shared)
 
 target_link_libraries(engine-shared PUBLIC
+  CURL::libcurl
   ZLIB::ZLIB
   ${CMAKE_THREAD_LIBS_INIT}
 )
