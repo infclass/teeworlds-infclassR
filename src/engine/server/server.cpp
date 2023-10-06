@@ -1,24 +1,22 @@
 /* (c) Magnus Auvinen. See licence.txt in the root of the distribution for more information. */
-/* If you are missing that file, acquire a complete release at teeworlds.com.				*/
+/* If you are missing that file, acquire a complete release at teeworlds.com.                */
 
 #include "server.h"
 
 #include <base/logger.h>
 #include <base/math.h>
 #include <base/system.h>
-#include <base/tl/array.h>
 
 #include <engine/config.h>
 #include <engine/console.h>
 #include <engine/engine.h>
 #include <engine/map.h>
-#include <engine/masterserver.h>
 #include <engine/server.h>
 #include <engine/storage.h>
 
 #include <engine/shared/compression.h>
 #include <engine/shared/config.h>
-#include <engine/shared/datafile.h>
+#include <engine/shared/console.h>
 #include <engine/shared/demo.h>
 #include <engine/shared/econ.h>
 #include <engine/shared/filecollection.h>
@@ -311,8 +309,8 @@ void CServerBan::ConBanRegionRange(IConsole::IResult *pResult, void *pUser)
 void CServer::CClient::Reset(bool ResetScore)
 {
 	// reset input
-	for(int i = 0; i < 200; i++)
-		m_aInputs[i].m_GameTick = -1;
+	for(auto &Input : m_aInputs)
+		Input.m_GameTick = -1;
 	m_CurrentInput = 0;
 	mem_zero(&m_LatestInput, sizeof(m_LatestInput));
 
@@ -927,9 +925,7 @@ static inline bool RepackMsg(const CMsgPacker *pMsg, CPacker &Packer, bool Sixup
 				MsgId += 1;
 			else if(MsgId == NETMSG_RCON_LINE)
 				MsgId = protocol7::NETMSG_RCON_LINE;
-			else if(MsgId >= NETMSG_AUTH_CHALLENGE && MsgId <= NETMSG_AUTH_RESULT)
-				MsgId += 4;
-			else if(MsgId >= NETMSG_PING && MsgId <= NETMSG_ERROR)
+			else if(MsgId >= NETMSG_PING && MsgId <= NETMSG_PING_REPLY)
 				MsgId += 4;
 			else if(MsgId >= NETMSG_RCON_CMD_ADD && MsgId <= NETMSG_RCON_CMD_REM)
 				MsgId -= 11;
@@ -1369,6 +1365,13 @@ int CServer::DelClientCallback(int ClientID, EClientDropType Type, const char *p
 	return 0;
 }
 
+void CServer::SendRconType(int ClientID, bool UsernameReq)
+{
+	CMsgPacker Msg(NETMSG_RCONTYPE, true);
+	Msg.AddInt(UsernameReq);
+	SendMsg(&Msg, MSGFLAG_VITAL, ClientID);
+}
+
 void CServer::GetMapInfo(char *pMapName, int MapNameSize, int *pMapSize, SHA256_DIGEST *pMapSha256, int *pMapCrc)
 {
 	str_copy(pMapName, GetMapName(), MapNameSize);
@@ -1482,11 +1485,11 @@ void CServer::SendRconLogLine(int ClientID, const CLogMessage *pMessage)
 	{
 		str_append(aLine, pLine, pStart - pLine + 1);
 		str_append(aLine, pStart + 2, pStart - pLine + pEnd - pStart - 1);
-		str_append(aLine, pEnd + 2, sizeof(aLine));
+		str_append(aLine, pEnd + 2);
 
 		str_append(aLineWithoutIps, pLine, pStart - pLine + 1);
-		str_append(aLineWithoutIps, "XXX", sizeof(aLineWithoutIps));
-		str_append(aLineWithoutIps, pEnd + 2, sizeof(aLineWithoutIps));
+		str_append(aLineWithoutIps, "XXX");
+		str_append(aLineWithoutIps, pEnd + 2);
 
 		pLine = aLine;
 		pLineWithoutIps = aLineWithoutIps;
@@ -1694,7 +1697,7 @@ void CServer::ProcessClientPacket(CNetChunk *pPacket)
 				}
 				m_aClients[ClientID].m_ConnectionID = *pConnectionID;
 				m_aClients[ClientID].m_DDNetVersion = DDNetVersion;
-				str_copy(m_aClients[ClientID].m_aDDNetVersionStr, pDDNetVersionStr, sizeof(m_aClients[ClientID].m_aDDNetVersionStr));
+				str_copy(m_aClients[ClientID].m_aDDNetVersionStr, pDDNetVersionStr);
 				m_aClients[ClientID].m_DDNetVersionSettled = true;
 				m_aClients[ClientID].m_GotDDNetVersionPacket = true;
 				m_aClients[ClientID].m_State = CClient::STATE_AUTH;
@@ -1714,7 +1717,7 @@ void CServer::ProcessClientPacket(CNetChunk *pPacket)
 		}
 		else if(Msg == NETMSG_INFO)
 		{
-			if((pPacket->m_Flags&NET_CHUNKFLAG_VITAL) != 0 && (m_aClients[ClientID].m_State == CClient::STATE_PREAUTH || m_aClients[ClientID].m_State == CClient::STATE_AUTH))
+			if((pPacket->m_Flags & NET_CHUNKFLAG_VITAL) != 0 && (m_aClients[ClientID].m_State == CClient::STATE_PREAUTH || m_aClients[ClientID].m_State == CClient::STATE_AUTH))
 			{
 				const char *pVersion = Unpacker.GetString(CUnpacker::SANITIZE_CC);
 				if(!str_utf8_check(pVersion))
@@ -1990,8 +1993,8 @@ void CServer::ProcessClientPacket(CNetChunk *pPacket)
 		}
 		else if(Msg == NETMSG_PING)
 		{
-			CMsgPacker Msg(NETMSG_PING_REPLY, true);
-			SendMsg(&Msg, 0, ClientID);
+			CMsgPacker Msgp(NETMSG_PING_REPLY, true);
+			SendMsg(&Msgp, MSGFLAG_FLUSH, ClientID);
 		}
 		else if(Msg == NETMSG_PINGEX)
 		{
@@ -2006,18 +2009,11 @@ void CServer::ProcessClientPacket(CNetChunk *pPacket)
 		}
 		else
 		{
-			if(g_Config.m_Debug)
+			if(Config()->m_Debug)
 			{
-				char aHex[] = "0123456789ABCDEF";
-				char aBuf[512];
-
-				for(int b = 0; b < pPacket->m_DataSize && b < 32; b++)
-				{
-					aBuf[b*3] = aHex[((const unsigned char *)pPacket->m_pData)[b]>>4];
-					aBuf[b*3+1] = aHex[((const unsigned char *)pPacket->m_pData)[b]&0xf];
-					aBuf[b*3+2] = ' ';
-					aBuf[b*3+3] = 0;
-				}
+				constexpr int MaxDumpedDataSize = 32;
+				char aBuf[MaxDumpedDataSize * 3 + 1];
+				str_hex(aBuf, sizeof(aBuf), pPacket->m_pData, minimum(pPacket->m_DataSize, MaxDumpedDataSize));
 
 				char aBufMsg[256];
 				str_format(aBufMsg, sizeof(aBufMsg), "strange message ClientID=%d msg=%d data_size=%d", ClientID, Msg, pPacket->m_DataSize);
@@ -2029,7 +2025,7 @@ void CServer::ProcessClientPacket(CNetChunk *pPacket)
 	else
 	{
 		// game message
-		if((pPacket->m_Flags&NET_CHUNKFLAG_VITAL) != 0 && m_aClients[ClientID].m_State >= CClient::STATE_READY)
+		if((pPacket->m_Flags & NET_CHUNKFLAG_VITAL) != 0 && m_aClients[ClientID].m_State >= CClient::STATE_READY)
 			GameServer()->OnMessage(Msg, &Unpacker, ClientID);
 	}
 }
@@ -2165,55 +2161,53 @@ void CServer::SendServerInfo(const NETADDR *pAddr, int Token, int Type, bool Sen
 	ADD_INT(p, Token);
 
 	p.AddString(GameServer()->Version(), 32);
-	
-	{
+
 #ifdef CONF_SQL
-		if(g_Config.m_InfChallenge)
+	if(Config()->m_InfChallenge)
+	{
+		lock_wait(m_ChallengeLock);
+		int ScoreType = ChallengeTypeToScoreType(m_ChallengeType);
+		switch(ScoreType)
 		{
-			lock_wait(m_ChallengeLock);
-			int ScoreType = ChallengeTypeToScoreType(m_ChallengeType);
-			switch(ScoreType)
-			{
-				case SQL_SCORETYPE_ENGINEER_SCORE:
-					str_format(aBuf, sizeof(aBuf), "%s | %s: %s", g_Config.m_SvName, "EngineerOfTheDay", m_aChallengeWinner);
-					break;
-				case SQL_SCORETYPE_MERCENARY_SCORE:
-					str_format(aBuf, sizeof(aBuf), "%s | %s: %s", g_Config.m_SvName, "MercenaryOfTheDay", m_aChallengeWinner);
-					break;
-				case SQL_SCORETYPE_SCIENTIST_SCORE:
-					str_format(aBuf, sizeof(aBuf), "%s | %s: %s", g_Config.m_SvName, "ScientistOfTheDay", m_aChallengeWinner);
-					break;
-				case SQL_SCORETYPE_BIOLOGIST_SCORE:
-					str_format(aBuf, sizeof(aBuf), "%s | %s: %s", g_Config.m_SvName, "BiologistOfTheDay", m_aChallengeWinner);
-					break;
-				case SQL_SCORETYPE_LOOPER_SCORE:
-					str_format(aBuf, sizeof(aBuf), "%s | %s: %s", g_Config.m_SvName, "LooperOfTheDay", m_aChallengeWinner);
-					break;
-				case SQL_SCORETYPE_NINJA_SCORE:
-					str_format(aBuf, sizeof(aBuf), "%s | %s: %s", g_Config.m_SvName, "NinjaOfTheDay", m_aChallengeWinner);
-					break;
-				case SQL_SCORETYPE_SOLDIER_SCORE:
-					str_format(aBuf, sizeof(aBuf), "%s | %s: %s", g_Config.m_SvName, "SoldierOfTheDay", m_aChallengeWinner);
-					break;
-				case SQL_SCORETYPE_SNIPER_SCORE:
-					str_format(aBuf, sizeof(aBuf), "%s | %s: %s", g_Config.m_SvName, "SniperOfTheDay", m_aChallengeWinner);
-					break;
-				case SQL_SCORETYPE_MEDIC_SCORE:
-					str_format(aBuf, sizeof(aBuf), "%s | %s: %s", g_Config.m_SvName, "MedicOfTheDay", m_aChallengeWinner);
-					break;
-				case SQL_SCORETYPE_HERO_SCORE:
-					str_format(aBuf, sizeof(aBuf), "%s | %s: %s", g_Config.m_SvName, "HeroOfTheDay", m_aChallengeWinner);
-					break;
-			}
-			lock_release(m_ChallengeLock);
+		case SQL_SCORETYPE_ENGINEER_SCORE:
+			str_format(aBuf, sizeof(aBuf), "%s | %s: %s", Config()->m_SvName, "EngineerOfTheDay", m_aChallengeWinner);
+			break;
+		case SQL_SCORETYPE_MERCENARY_SCORE:
+			str_format(aBuf, sizeof(aBuf), "%s | %s: %s", Config()->m_SvName, "MercenaryOfTheDay", m_aChallengeWinner);
+			break;
+		case SQL_SCORETYPE_SCIENTIST_SCORE:
+			str_format(aBuf, sizeof(aBuf), "%s | %s: %s", Config()->m_SvName, "ScientistOfTheDay", m_aChallengeWinner);
+			break;
+		case SQL_SCORETYPE_BIOLOGIST_SCORE:
+			str_format(aBuf, sizeof(aBuf), "%s | %s: %s", Config()->m_SvName, "BiologistOfTheDay", m_aChallengeWinner);
+			break;
+		case SQL_SCORETYPE_LOOPER_SCORE:
+			str_format(aBuf, sizeof(aBuf), "%s | %s: %s", Config()->m_SvName, "LooperOfTheDay", m_aChallengeWinner);
+			break;
+		case SQL_SCORETYPE_NINJA_SCORE:
+			str_format(aBuf, sizeof(aBuf), "%s | %s: %s", Config()->m_SvName, "NinjaOfTheDay", m_aChallengeWinner);
+			break;
+		case SQL_SCORETYPE_SOLDIER_SCORE:
+			str_format(aBuf, sizeof(aBuf), "%s | %s: %s", Config()->m_SvName, "SoldierOfTheDay", m_aChallengeWinner);
+			break;
+		case SQL_SCORETYPE_SNIPER_SCORE:
+			str_format(aBuf, sizeof(aBuf), "%s | %s: %s", Config()->m_SvName, "SniperOfTheDay", m_aChallengeWinner);
+			break;
+		case SQL_SCORETYPE_MEDIC_SCORE:
+			str_format(aBuf, sizeof(aBuf), "%s | %s: %s", Config()->m_SvName, "MedicOfTheDay", m_aChallengeWinner);
+			break;
+		case SQL_SCORETYPE_HERO_SCORE:
+			str_format(aBuf, sizeof(aBuf), "%s | %s: %s", Config()->m_SvName, "HeroOfTheDay", m_aChallengeWinner);
+			break;
 		}
-#else
-		memcpy(aBuf, g_Config.m_SvName, sizeof(aBuf));
-#endif
+		lock_release(m_ChallengeLock);
 	}
+#else
+	memcpy(aBuf, Config()->m_SvName, sizeof(aBuf));
+#endif
 
 	const char *pMapName = GetMapName();
-	if(g_Config.m_SvHideInfo)
+	if(Config()->m_SvHideInfo)
 	{
 		// Full hide
 		ClientCount = 0;
@@ -2221,9 +2215,9 @@ void CServer::SendServerInfo(const NETADDR *pAddr, int Token, int Type, bool Sen
 		SendClients = false;
 		pMapName = "";
 	}
-	else if (g_Config.m_SvInfoMaxClients >= 0)
+	else if (Config()->m_SvInfoMaxClients >= 0)
 	{
-		ClientCount = minimum(ClientCount, g_Config.m_SvInfoMaxClients);
+		ClientCount = minimum(ClientCount, Config()->m_SvInfoMaxClients);
 		PlayerCount = minimum(ClientCount, PlayerCount);
 	}
 
@@ -2256,7 +2250,7 @@ void CServer::SendServerInfo(const NETADDR *pAddr, int Token, int Type, bool Sen
 	p.AddString(GameServer()->GameType(), 16);
 
 	// flags
-	ADD_INT(p, g_Config.m_Password[0] ? SERVER_FLAG_PASSWORD : 0);
+	ADD_INT(p, Config()->m_Password[0] ? SERVER_FLAG_PASSWORD : 0);
 
 	int MaxClients = m_NetServer.MaxClients();
 	if(Type == SERVERINFO_VANILLA || Type == SERVERINFO_INGAME)
@@ -2275,7 +2269,7 @@ void CServer::SendServerInfo(const NETADDR *pAddr, int Token, int Type, bool Sen
 	}
 
 	ADD_INT(p, PlayerCount); // num players
-	ADD_INT(p, MaxClients-g_Config.m_SvSpectatorSlots); // max players
+	ADD_INT(p, MaxClients - Config()->m_SvSpectatorSlots); // max players
 	ADD_INT(p, ClientCount); // num clients
 	ADD_INT(p, MaxClients); // max clients
 
@@ -2708,8 +2702,7 @@ int CServer::Run()
 	Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "server", "version " GAME_RELEASE_VERSION " on " CONF_PLATFORM_STRING " " CONF_ARCH_STRING);
 	if(GIT_SHORTREV_HASH)
 	{
-		char aBuf[64];
-		str_format(aBuf, sizeof(aBuf), "Git revision hash: %s", GIT_SHORTREV_HASH);
+		str_format(aBuf, sizeof(aBuf), "git revision hash: %s", GIT_SHORTREV_HASH);
 		Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "server", aBuf);
 	}
 
@@ -2896,7 +2889,7 @@ int CServer::Run()
 			// snap game
 			if(NewTicks)
 			{
-				if(g_Config.m_SvHighBandwidth || (m_CurrentGameTick%2) == 0)
+				if(Config()->m_SvHighBandwidth || (m_CurrentGameTick % 2) == 0)
 					DoSnapshot();
 
 				UpdateClientRconCommands();
