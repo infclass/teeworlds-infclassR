@@ -236,8 +236,8 @@ public:
 	vec2 m_HookDir;
 	int m_HookTick;
 	int m_HookState;
-	int m_HookedPlayer;
 	std::set<int> m_AttachedPlayers;
+	int HookedPlayer() const { return m_HookedPlayer; }
 	void SetHookedPlayer(int HookedPlayer);
 
 	bool m_HookProtected;
@@ -288,6 +288,7 @@ public:
 private:
 	CTeamsCore *m_pTeams;
 	int m_MoveRestrictions;
+	int m_HookedPlayer;
 
 	// InfClass
 public:

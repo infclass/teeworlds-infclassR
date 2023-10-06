@@ -1776,10 +1776,7 @@ void CInfClassGameController::ConLoadPosition(IConsole::IResult *pResult)
 	pCharacter->m_Core.m_Pos = Position;
 	pCharacter->m_Core.m_Vel = vec2(0, 0);
 	GameWorld()->ReleaseHooked(ClientID);
-	pCharacter->m_Core.m_HookedPlayer = -1;
-	pCharacter->m_Core.m_HookState = HOOK_RETRACTED;
-	pCharacter->m_Core.m_TriggeredEvents |= COREEVENT_HOOK_RETRACT;
-	pCharacter->m_Core.m_HookPos = Position;
+	pCharacter->ResetHook();
 }
 
 void CInfClassGameController::ConSetHealthArmor(IConsole::IResult *pResult, void *pUserData)

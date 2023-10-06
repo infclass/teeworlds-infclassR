@@ -528,7 +528,7 @@ bool CCharacter::IsSnappingCharacterInView(int SnappingClientID)
 		for(const auto &AttachedPlayerID : m_Core.m_AttachedPlayers)
 		{
 			CCharacter *pOtherPlayer = GameServer()->GetPlayerChar(AttachedPlayerID);
-			if(pOtherPlayer && pOtherPlayer->m_Core.m_HookedPlayer == ID)
+			if(pOtherPlayer && pOtherPlayer->m_Core.HookedPlayer() == ID)
 			{
 				if(!NetworkClippedLine(SnappingClientID, m_Pos, pOtherPlayer->m_Pos))
 				{
@@ -685,7 +685,7 @@ void CCharacter::SlipperyEffect()
 
 int CCharacter::GetEffectiveHookMode() const
 {
-	if(m_Core.m_HookedPlayer >= 0)
+	if(m_Core.HookedPlayer() >= 0)
 		return 0;
 
 	return m_HookMode;

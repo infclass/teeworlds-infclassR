@@ -1909,7 +1909,7 @@ vec2 CInfClassCharacter::GetHookPos() const
 
 int CInfClassCharacter::GetHookedPlayer() const
 {
-	return m_Core.m_HookedPlayer;
+	return m_Core.HookedPlayer();
 }
 
 void CInfClassCharacter::SetHookedPlayer(int ClientID)
@@ -2253,7 +2253,7 @@ void CInfClassCharacter::PreCoreTick()
 		}
 	}
 
-	if(!m_InWater && !IsGrounded() && (m_Core.m_HookState != HOOK_GRABBED || m_Core.m_HookedPlayer != -1))
+	if(!m_InWater && !IsGrounded() && (m_Core.m_HookState != HOOK_GRABBED || m_Core.HookedPlayer() != -1))
 	{
 		m_InAirTick++;
 	}

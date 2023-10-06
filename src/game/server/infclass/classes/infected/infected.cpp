@@ -298,7 +298,7 @@ void CInfClassInfected::OnCharacterPostCoreTick()
 {
 	CInfClassPlayerClass::OnCharacterPostCoreTick();
 
-	int HookerPlayer = m_pCharacter->m_Core.m_HookedPlayer;
+	int HookerPlayer = m_pCharacter->m_Core.HookedPlayer();
 	if(HookerPlayer >= 0)
 	{
 		CInfClassCharacter *pVictimChar = GameController()->GetCharacter(HookerPlayer);
