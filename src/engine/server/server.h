@@ -356,11 +356,12 @@ public:
 		public:
 			CCacheChunk(const void *pData, int Size);
 			CCacheChunk(const CCacheChunk &) = delete;
+			CCacheChunk(CCacheChunk &&) = default;
 
 			std::vector<uint8_t> m_vData;
 		};
 
-		std::list<CCacheChunk> m_Cache;
+		std::vector<CCacheChunk> m_vCache;
 
 		CCache();
 		~CCache();
@@ -375,9 +376,13 @@ public:
 	void FillAntibot(CAntibotRoundData *pData) override;
 
 	void ExpireServerInfo() override;
+	void CacheServerInfo(CCache *pCache, int Type, bool SendClients);
+	void CacheServerInfoSixup(CCache *pCache, bool SendClients);
 	void SendServerInfo(const NETADDR *pAddr, int Token, int Type, bool SendClients);
+	void GetServerInfoSixup(CPacker *pPacker, int Token, bool SendClients);
 	void SendServerInfoConnless(const NETADDR *pAddr, int Token, int Type);
-	void UpdateServerInfo();
+	void UpdateRegisterServerInfo();
+	void UpdateServerInfo(bool Resend = false);
 
 	void PumpNetwork(bool PacketWaiting);
 

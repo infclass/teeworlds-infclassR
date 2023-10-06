@@ -1716,6 +1716,8 @@ void CGameContext::OnClientConnected(int ClientID, void *pData)
 	m_BroadcastStates[ClientID].m_Priority = BROADCAST_PRIORITY_LOWEST;
 	m_BroadcastStates[ClientID].m_PrevMessage[0] = 0;
 	m_BroadcastStates[ClientID].m_NextMessage[0] = 0;
+
+	Server()->ExpireServerInfo();
 }
 
 void CGameContext::OnClientDrop(int ClientID, EClientDropType Type, const char *pReason)
@@ -1752,6 +1754,8 @@ void CGameContext::OnClientDrop(int ClientID, EClientDropType Type, const char *
 		// reset mutes for everyone that muted this player
 		CGameContext::m_ClientMuted[i][ClientID] = false;
 	}
+
+	Server()->ExpireServerInfo();
 }
 
 void CGameContext::OnClientEngineJoin(int ClientID, bool Sixup)
@@ -2318,6 +2322,7 @@ void CGameContext::OnMessage(int MsgID, CUnpacker *pUnpacker, int ClientID)
 #ifndef CONF_FORCE_COUNTRY_BY_IP
 			Server()->SetClientCountry(ClientID, pMsg->m_Country);
 #endif
+			Server()->ExpireServerInfo();
 		}
 		else if (MsgID == NETMSGTYPE_CL_EMOTICON && !m_World.m_Paused)
 		{
@@ -2445,6 +2450,8 @@ void CGameContext::OnMessage(int MsgID, CUnpacker *pUnpacker, int ClientID)
 		pPlayer->m_IsReady = true;
 		CNetMsg_Sv_ReadyToEnter m;
 		Server()->SendPackMsg(&m, MSGFLAG_VITAL | MSGFLAG_FLUSH, ClientID);
+
+		Server()->ExpireServerInfo();
 	}
 }
 

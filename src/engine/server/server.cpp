@@ -1801,6 +1801,7 @@ void CServer::ProcessClientPacket(CNetChunk *pPacket)
 				if(m_aClients[ClientID].m_WaitingTime <= 0)
 				{
 					GameServer()->OnClientEnter(ClientID);
+					ExpireServerInfo();
 				}
 			}
 		}
@@ -2094,7 +2095,7 @@ static inline int GetCacheIndex(int Type, bool SendClient)
 
 CServer::CCache::CCache()
 {
-	m_Cache.clear();
+	m_vCache.clear();
 }
 
 CServer::CCache::~CCache()
@@ -2109,16 +2110,18 @@ CServer::CCache::CCacheChunk::CCacheChunk(const void *pData, int Size)
 
 void CServer::CCache::AddChunk(const void *pData, int Size)
 {
-	m_Cache.emplace_back(pData, Size);
+	m_vCache.emplace_back(pData, Size);
 }
 
 void CServer::CCache::Clear()
 {
-	m_Cache.clear();
+	m_vCache.clear();
 }
 
-void CServer::SendServerInfo(const NETADDR *pAddr, int Token, int Type, bool SendClients)
+void CServer::CacheServerInfo(CCache *pCache, int Type, bool SendClients)
 {
+	pCache->Clear();
+
 	// One chance to improve the protocol!
 	CPacker p;
 	char aBuf[256];
@@ -2145,20 +2148,9 @@ void CServer::SendServerInfo(const NETADDR *pAddr, int Token, int Type, bool Sen
 #define ADD_INT(p, x) \
 	do \
 	{ \
-		str_format(aBuf, sizeof(aBuf), "%d", x); \
+		str_from_int(x, aBuf); \
 		(p).AddString(aBuf, 0); \
 	} while(0)
-
-	switch(Type)
-	{
-	case SERVERINFO_EXTENDED: ADD_RAW(p, SERVERBROWSE_INFO_EXTENDED); break;
-	case SERVERINFO_64_LEGACY: ADD_RAW(p, SERVERBROWSE_INFO_64_LEGACY); break;
-	case SERVERINFO_VANILLA: ADD_RAW(p, SERVERBROWSE_INFO); break;
-	case SERVERINFO_INGAME: ADD_RAW(p, SERVERBROWSE_INFO); break;
-	default: dbg_assert(false, "unknown serverinfo type");
-	}
-
-	ADD_INT(p, Token);
 
 	p.AddString(GameServer()->Version(), 32);
 
@@ -2233,8 +2225,8 @@ void CServer::SendServerInfo(const NETADDR *pAddr, int Token, int Type, bool Sen
 		}
 		else
 		{
-			char aNameBuf[64];
-			str_format(aNameBuf, sizeof(aNameBuf), "%s [%d/%d]", aBuf, ClientCount, m_NetServer.MaxClients());
+			const int MaxClients = maximum(ClientCount, m_NetServer.MaxClients());
+			str_format(aBuf, sizeof(aBuf), "%s [%d/%d]", aBuf, ClientCount, MaxClients);
 			p.AddString(aBuf, 64);
 		}
 	}
@@ -2279,45 +2271,39 @@ void CServer::SendServerInfo(const NETADDR *pAddr, int Token, int Type, bool Sen
 	const void *pPrefix = p.Data();
 	int PrefixSize = p.Size();
 
-	CPacker pp;
-	CNetChunk Packet;
-	int PacketsSent = 0;
-	int PlayersSent = 0;
-	Packet.m_ClientID = -1;
-	Packet.m_Address = *pAddr;
-	Packet.m_Flags = NETSENDFLAG_CONNLESS;
+	CPacker q;
+	int ChunksStored = 0;
+	int PlayersStored = 0;
 
-	#define SEND(size) \
-		do \
-		{ \
-			Packet.m_pData = pp.Data(); \
-			Packet.m_DataSize = size; \
-			m_NetServer.Send(&Packet); \
-			PacketsSent++; \
-		} while(0)
+#define SAVE(size) \
+	do \
+	{ \
+		pCache->AddChunk(q.Data(), size); \
+		ChunksStored++; \
+	} while(0)
 
-	#define RESET() \
-		do \
-		{ \
-			pp.Reset(); \
-			pp.AddRaw(pPrefix, PrefixSize); \
-		} while(0)
+#define RESET() \
+	do \
+	{ \
+		q.Reset(); \
+		q.AddRaw(pPrefix, PrefixSize); \
+	} while(0)
 
 	RESET();
 
 	if(Type == SERVERINFO_64_LEGACY)
-		pp.AddInt(PlayersSent); // offset
+		q.AddInt(PlayersStored); // offset
 
 	if(!SendClients)
 	{
-		SEND(pp.Size());
+		SAVE(q.Size());
 		return;
 	}
 
 	if(Type == SERVERINFO_EXTENDED)
 	{
-		pPrefix = SERVERBROWSE_INFO_EXTENDED_MORE;
-		PrefixSize = sizeof(SERVERBROWSE_INFO_EXTENDED_MORE);
+		pPrefix = "";
+		PrefixSize = 0;
 	}
 
 	int Remaining;
@@ -2353,9 +2339,9 @@ void CServer::SendServerInfo(const NETADDR *pAddr, int Token, int Type, bool Sen
 					break;
 
 				// Otherwise we're SERVERINFO_64_LEGACY.
-				SEND(pp.Size());
+				SAVE(q.Size());
 				RESET();
-				pp.AddInt(PlayersSent); // offset
+				q.AddInt(PlayersStored); // offset
 				Remaining = 24;
 			}
 			if(Remaining > 0)
@@ -2363,40 +2349,113 @@ void CServer::SendServerInfo(const NETADDR *pAddr, int Token, int Type, bool Sen
 				Remaining--;
 			}
 
-			int PreviousSize = pp.Size();
+			int PreviousSize = q.Size();
 
-			pp.AddString(ClientName(i), MAX_NAME_LENGTH); // client name
-			pp.AddString(ClientClan(i), MAX_CLAN_LENGTH); // client clan
+			q.AddString(ClientName(i), MAX_NAME_LENGTH); // client name
+			q.AddString(ClientClan(i), MAX_CLAN_LENGTH); // client clan
 
-			ADD_INT(pp, m_aClients[i].m_Country); // client country
-			ADD_INT(pp, RoundStatistics()->PlayerScore(i)); // client score
-			ADD_INT(pp, GameServer()->IsClientPlayer(i) ? 1 : 0); // is player?
+			ADD_INT(q, m_aClients[i].m_Country); // client country
+			ADD_INT(q, RoundStatistics()->PlayerScore(i)); // client score
+			ADD_INT(q, GameServer()->IsClientPlayer(i) ? 1 : 0); // is player?
 			if(Type == SERVERINFO_EXTENDED)
-				pp.AddString("", 0); // extra info, reserved
+				q.AddString("", 0); // extra info, reserved
 
 			if(Type == SERVERINFO_EXTENDED)
 			{
-				if(pp.Size() >= NET_MAX_PAYLOAD)
+				if(q.Size() >= NET_MAX_PAYLOAD - 18) // 8 bytes for type, 10 bytes for the largest token
 				{
 					// Retry current player.
 					i--;
-					SEND(PreviousSize);
+					SAVE(PreviousSize);
 					RESET();
-					ADD_INT(pp, Token);
-					ADD_INT(pp, PacketsSent);
-					pp.AddString("", 0); // extra info, reserved
+					ADD_INT(q, ChunksStored);
+					q.AddString("", 0); // extra info, reserved
 					continue;
 				}
 			}
-			PlayersSent++;
+			PlayersStored++;
 		}
 	}
 
-	SEND(pp.Size());
-	#undef SEND
-	#undef RESET
-	#undef ADD_RAW
-	#undef ADD_INT
+	SAVE(q.Size());
+#undef SAVE
+#undef RESET
+#undef ADD_RAW
+#undef ADD_INT
+}
+
+void CServer::CacheServerInfoSixup(CCache *pCache, bool SendClients)
+{
+	pCache->Clear();
+}
+
+void CServer::SendServerInfo(const NETADDR *pAddr, int Token, int Type, bool SendClients)
+{
+	CPacker p;
+	char aBuf[128];
+	p.Reset();
+
+	CCache *pCache = &m_aServerInfoCache[GetCacheIndex(Type, SendClients)];
+
+#define ADD_RAW(p, x) (p).AddRaw(x, sizeof(x))
+#define ADD_INT(p, x) \
+	do \
+	{ \
+		str_from_int(x, aBuf); \
+		(p).AddString(aBuf, 0); \
+	} while(0)
+
+	CNetChunk Packet;
+	Packet.m_ClientID = -1;
+	Packet.m_Address = *pAddr;
+	Packet.m_Flags = NETSENDFLAG_CONNLESS;
+
+	for(const auto &Chunk : pCache->m_vCache)
+	{
+		p.Reset();
+		if(Type == SERVERINFO_EXTENDED)
+		{
+			if(&Chunk == &pCache->m_vCache.front())
+				p.AddRaw(SERVERBROWSE_INFO_EXTENDED, sizeof(SERVERBROWSE_INFO_EXTENDED));
+			else
+				p.AddRaw(SERVERBROWSE_INFO_EXTENDED_MORE, sizeof(SERVERBROWSE_INFO_EXTENDED_MORE));
+			ADD_INT(p, Token);
+		}
+		else if(Type == SERVERINFO_64_LEGACY)
+		{
+			ADD_RAW(p, SERVERBROWSE_INFO_64_LEGACY);
+			ADD_INT(p, Token);
+		}
+		else if(Type == SERVERINFO_VANILLA || Type == SERVERINFO_INGAME)
+		{
+			ADD_RAW(p, SERVERBROWSE_INFO);
+			ADD_INT(p, Token);
+		}
+		else
+		{
+			dbg_assert(false, "unknown serverinfo type");
+		}
+
+		p.AddRaw(Chunk.m_vData.data(), Chunk.m_vData.size());
+		Packet.m_pData = p.Data();
+		Packet.m_DataSize = p.Size();
+		m_NetServer.Send(&Packet);
+	}
+}
+
+void CServer::GetServerInfoSixup(CPacker *pPacker, int Token, bool SendClients)
+{
+	if(Token != -1)
+	{
+		pPacker->Reset();
+		pPacker->AddRaw(SERVERBROWSE_INFO, sizeof(SERVERBROWSE_INFO));
+		pPacker->AddInt(Token);
+	}
+
+	SendClients = SendClients && Token != -1;
+
+	CCache::CCacheChunk &FirstChunk = m_aSixupServerInfoCache[SendClients].m_vCache.front();
+	pPacker->AddRaw(FirstChunk.m_vData.data(), FirstChunk.m_vData.size());
 }
 
 void CServer::FillAntibot(CAntibotRoundData *pData)
@@ -2408,18 +2467,37 @@ void CServer::ExpireServerInfo()
 	m_ServerInfoNeedsUpdate = true;
 }
 
-void CServer::UpdateServerInfo()
+void CServer::UpdateServerInfo(bool Resend)
 {
 	if(m_RunServer == UNINITIALIZED)
 		return;
 
-	for(int i = 0; i < MAX_CLIENTS; ++i)
+	for(int i = 0; i < 3; i++)
+		for(int j = 0; j < 2; j++)
+			CacheServerInfo(&m_aServerInfoCache[i * 2 + j], i, j);
+
+	for(int i = 0; i < 2; i++)
+		CacheServerInfoSixup(&m_aSixupServerInfoCache[i], i);
+
+	if(Resend)
 	{
-		if(m_aClients[i].m_State != CClient::STATE_EMPTY)
+		for(int i = 0; i < MaxClients(); ++i)
 		{
-			SendServerInfo(m_NetServer.ClientAddr(i), -1, SERVERINFO_INGAME, false);
+			if(m_aClients[i].m_State != CClient::STATE_EMPTY)
+			{
+				if(!IsSixup(i))
+					SendServerInfo(m_NetServer.ClientAddr(i), -1, SERVERINFO_INGAME, false);
+				else
+				{
+					CMsgPacker Msg(protocol7::NETMSG_SERVERINFO, true, true);
+					GetServerInfoSixup(&Msg, -1, false);
+					SendMsg(&Msg, MSGFLAG_VITAL | MSGFLAG_FLUSH, i);
+				}
+			}
 		}
 	}
+
+	m_ServerInfoNeedsUpdate = false;
 }
 
 void CServer::PumpNetwork(bool PacketWaiting)
@@ -2717,6 +2795,7 @@ int CServer::Run()
 		m_Lastheartbeat = 0;
 		m_GameStartTime = time_get();
 
+		UpdateServerInfo();
 		while(m_RunServer < STOPPING)
 		{
 			if(NonActive)
@@ -2780,7 +2859,11 @@ int CServer::Run()
 					m_ServerInfoFirstRequest = 0;
 					Kernel()->ReregisterInterface(GameServer());
 					GameServer()->OnInit();
-					UpdateServerInfo();
+					if(ErrorShutdown())
+					{
+						break;
+					}
+					UpdateServerInfo(true);
 				}
 				else
 				{
@@ -2897,6 +2980,9 @@ int CServer::Run()
 
 			// master server stuff
 			m_Register.RegisterUpdate(m_NetServer.NetType());
+
+			if(m_ServerInfoNeedsUpdate)
+				UpdateServerInfo();
 
 			if(!NonActive)
 				PumpNetwork(PacketWaiting);
@@ -3332,7 +3418,7 @@ void CServer::ConchainSpecialInfoupdate(IConsole::IResult *pResult, void *pUserD
 	pfnCallback(pResult, pCallbackUserData);
 	if(pResult->NumArguments())
 	{
-		((CServer *)pUserData)->UpdateServerInfo();
+		((CServer *)pUserData)->UpdateServerInfo(true);
 	}
 }
 
