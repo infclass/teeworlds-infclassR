@@ -2511,6 +2511,9 @@ void CServer::UpdateRegisterServerInfo()
 	{
 		if(m_aClients[i].m_State != CClient::STATE_EMPTY)
 		{
+			if(ClientIsBot(i))
+				continue;
+
 			if(GameServer()->IsClientPlayer(i))
 				PlayerCount++;
 
@@ -2559,6 +2562,9 @@ void CServer::UpdateRegisterServerInfo()
 	{
 		if(m_aClients[i].m_State != CClient::STATE_EMPTY)
 		{
+			if(ClientIsBot(i))
+				continue;
+
 			char aCName[32];
 			char aCClan[32];
 
