@@ -1555,46 +1555,6 @@ static inline int MsgFromSixup(int Msg, bool System)
 	return Msg;
 }
 
-bool CServer::InitCaptcha()
-{
-	IOHANDLE File = Storage()->OpenFile("security/captcha.txt", IOFLAG_READ, IStorage::TYPE_ALL);
-	if(!File)
-		return false;
-	
-	char CaptchaText[16];
-	bool isEndOfFile = false;
-	while(!isEndOfFile)
-	{
-		isEndOfFile = true;
-		
-		//Load one line
-		int LineLenth = 0;
-		char c;
-		while(io_read(File, &c, 1))
-		{
-			isEndOfFile = false;
-			
-			if(c == '\n') break;
-			else
-			{
-				CaptchaText[LineLenth] = c;
-				LineLenth++;
-			}
-		}
-		
-		CaptchaText[LineLenth] = 0;
-		
-		if(CaptchaText[0])
-		{
-			m_NetServer.AddCaptcha(CaptchaText);
-		}
-	}
-
-	io_close(File);
-	
-	return true;
-}
-
 bool CServer::GenerateClientMap(const char *pMapFilePath, const char *pMapName)
 {
 	if(!m_pMap->Load(pMapFilePath))
@@ -1775,7 +1735,7 @@ void CServer::ProcessClientPacket(CNetChunk *pPacket)
 				{
 					return;
 				}
-				if(!Config()->m_InfCaptcha && Config()->m_Password[0] != 0 && str_comp(Config()->m_Password, pPassword) != 0)
+				if(Config()->m_Password[0] != 0 && str_comp(Config()->m_Password, pPassword) != 0)
 				{
 					// wrong password
 					m_NetServer.Drop(ClientID, EClientDropType::WrongPassword, "Wrong password");
@@ -2206,12 +2166,6 @@ void CServer::SendServerInfo(const NETADDR *pAddr, int Token, int Type, bool Sen
 
 	p.AddString(GameServer()->Version(), 32);
 	
-	//Add captcha if needed
-	if(g_Config.m_InfCaptcha)
-	{
-		str_format(aBuf, sizeof(aBuf), "%s - PASSWORD: %s", g_Config.m_SvName, m_NetServer.GetCaptcha(pAddr));
-	}
-	else
 	{
 #ifdef CONF_SQL
 		if(g_Config.m_InfChallenge)
@@ -2737,16 +2691,6 @@ int CServer::Run()
 
 	if(Port == 0)
 		dbg_msg("server", "using port %d", BindAddr.port);
-
-	if(g_Config.m_InfCaptcha)
-	{
-		InitCaptcha();
-		if(!m_NetServer.IsCaptchaInitialized())
-		{
-			dbg_msg("server", "failed to create captcha list -> disable captcha");
-			g_Config.m_InfCaptcha = 0;
-		}
-	}
 
 	m_NetServer.SetCallbacks(NewClientCallback, NewClientNoAuthCallback, ClientRejoinCallback, DelClientCallback, this);
 

@@ -399,12 +399,6 @@ class CNetServer
 
 	CNetRecvUnpacker m_RecvUnpacker;
 
-	struct CCaptcha
-	{
-		char m_aText[16];
-	};
-	std::vector<CCaptcha> m_vCaptcha;
-
 	void OnTokenCtrlMsg(NETADDR &Addr, int ControlMsg, const CNetPacketConstruct &Packet);
 	int OnSixupCtrlMsg(NETADDR &Addr, CNetChunk *pChunk, int ControlMsg, const CNetPacketConstruct &Packet, SECURITY_TOKEN &ResponseToken, SECURITY_TOKEN Token);
 	void OnPreConnMsg(NETADDR &Addr, CNetPacketConstruct &Packet);
@@ -459,10 +453,6 @@ public:
 	SECURITY_TOKEN GetToken(const NETADDR &Addr);
 	// vanilla token/gametick shouldn't be negative
 	SECURITY_TOKEN GetVanillaToken(const NETADDR &Addr) { return absolute(GetToken(Addr)); }
-
-	void AddCaptcha(const char *pText);
-	const char *GetCaptcha(const NETADDR *pAddr, bool Debug = false);
-	bool IsCaptchaInitialized() const { return m_vCaptcha.size() > 0; }
 };
 
 class CNetConsole

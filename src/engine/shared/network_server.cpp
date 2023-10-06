@@ -814,32 +814,3 @@ const char *CNetServer::ErrorString(int ClientID)
 {
 	return m_aSlots[ClientID].m_Connection.ErrorString();
 }
-
-const char* CNetServer::GetCaptcha(const NETADDR* pAddr, bool Debug)
-{
-	if(!m_vCaptcha.size())
-		return "???";
-
-	unsigned int IpHash = 0;
-	for(unsigned int i=0; i<4; i++)
-	{
-		IpHash |= (pAddr->ip[i]<<(i*8));
-	}
-
-	unsigned int CaptchaId = IpHash % m_vCaptcha.size();
-
-	if(Debug)
-	{
-		char aBuf[64];
-		net_addr_str(pAddr, aBuf, 64, 0);
-	}
-
-	return m_vCaptcha[CaptchaId].m_aText;
-}
-
-void CNetServer::AddCaptcha(const char* pText)
-{
-	CCaptcha Captcha;
-	str_copy(Captcha.m_aText, pText);
-	m_vCaptcha.emplace_back(Captcha);
-}

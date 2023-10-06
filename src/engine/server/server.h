@@ -491,7 +491,6 @@ public:
 	void Logout(int ClientID) override;
 #endif
 private:
-	bool InitCaptcha();
 	bool GenerateClientMap(const char *pMapFilePath, const char *pMapName);
 	
 public:
