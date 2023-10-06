@@ -2,6 +2,7 @@
 /* If you are missing that file, acquire a complete release at teeworlds.com.                */
 #include <atomic>
 #include <cctype>
+#include <charconv>
 #include <cmath>
 #include <cstdarg>
 #include <cstdio>
@@ -82,8 +83,6 @@
 #if defined(CONF_PLATFORM_SOLARIS)
 #include <sys/filio.h>
 #endif
-
-extern "C" {
 
 IOHANDLE io_stdin()
 {
@@ -3423,10 +3422,37 @@ int str_isallnum(const char *str)
 	return 1;
 }
 
-int str_toint(const char *str) { return str_toint_base(str, 10); }
-int str_toint_base(const char *str, int base) { return strtol(str, NULL, base); }
-unsigned long str_toulong_base(const char *str, int base) { return strtoul(str, NULL, base); }
-float str_tofloat(const char *str) { return strtod(str, NULL); }
+int str_toint(const char *str)
+{
+	return str_toint_base(str, 10);
+}
+
+int str_toint_base(const char *str, int base)
+{
+	return strtol(str, nullptr, base);
+}
+
+unsigned long str_toulong_base(const char *str, int base)
+{
+	return strtoul(str, nullptr, base);
+}
+
+int64_t str_toint64_base(const char *str, int base)
+{
+	return strtoll(str, nullptr, base);
+}
+
+float str_tofloat(const char *str)
+{
+	return strtod(str, nullptr);
+}
+
+void str_from_int(int value, char *buffer, size_t buffer_size)
+{
+	buffer[0] = '\0'; // Fix false positive clang-analyzer-core.UndefinedBinaryOperatorResult when using result
+	auto result = std::to_chars(buffer, buffer + buffer_size - 1, value);
+	result.ptr[0] = '\0';
+}
 
 int str_utf8_comp_nocase(const char *a, const char *b)
 {
@@ -4236,6 +4262,69 @@ int os_version_str(char *version, int length)
 #endif
 }
 
+void os_locale_str(char *locale, size_t length)
+{
+#if defined(CONF_FAMILY_WINDOWS)
+	wchar_t wide_buffer[LOCALE_NAME_MAX_LENGTH];
+	dbg_assert(GetUserDefaultLocaleName(wide_buffer, std::size(wide_buffer)) > 0, "GetUserDefaultLocaleName failure");
+
+	const std::string buffer = windows_wide_to_utf8(wide_buffer);
+	str_copy(locale, buffer.c_str(), length);
+#elif defined(CONF_PLATFORM_MACOS)
+	CFLocaleRef locale_ref = CFLocaleCopyCurrent();
+	CFStringRef locale_identifier_ref = static_cast<CFStringRef>(CFLocaleGetValue(locale_ref, kCFLocaleIdentifier));
+
+	// Count number of UTF16 codepoints, +1 for zero-termination.
+	// Assume maximum possible length for encoding as UTF-8.
+	CFIndex locale_identifier_size = (UTF8_BYTE_LENGTH * CFStringGetLength(locale_identifier_ref) + 1) * sizeof(char);
+	char *locale_identifier = (char *)malloc(locale_identifier_size);
+	dbg_assert(CFStringGetCString(locale_identifier_ref, locale_identifier, locale_identifier_size, kCFStringEncodingUTF8), "CFStringGetCString failure");
+
+	str_copy(locale, locale_identifier, length);
+
+	free(locale_identifier);
+	CFRelease(locale_ref);
+#else
+	static const char *ENV_VARIABLES[] = {
+		"LC_ALL",
+		"LC_MESSAGES",
+		"LANG",
+	};
+
+	locale[0] = '\0';
+	for(const char *env_variable : ENV_VARIABLES)
+	{
+		const char *env_value = getenv(env_variable);
+		if(env_value)
+		{
+			str_copy(locale, env_value, length);
+			break;
+		}
+	}
+#endif
+
+	// Ensure RFC 3066 format:
+	// - use hyphens instead of underscores
+	// - truncate locale string after first non-standard letter
+	for(int i = 0; i < str_length(locale); ++i)
+	{
+		if(locale[i] == '_')
+		{
+			locale[i] = '-';
+		}
+		else if(locale[i] != '-' && !(locale[i] >= 'a' && locale[i] <= 'z') && !(locale[i] >= 'A' && locale[i] <= 'Z') && !(locale[i] >= '0' && locale[i] <= '9'))
+		{
+			locale[i] = '\0';
+			break;
+		}
+	}
+
+	// Use default if we could not determine the locale,
+	// i.e. if only the C or POSIX locale is available.
+	if(locale[0] == '\0' || str_comp(locale, "C") == 0 || str_comp(locale, "POSIX") == 0)
+		str_copy(locale, "en-US", length);
+}
+
 #if defined(CONF_EXCEPTION_HANDLING)
 #if defined(CONF_FAMILY_WINDOWS)
 static HMODULE exception_handling_module = nullptr;
@@ -4282,7 +4371,6 @@ void set_exception_handler_log_file(const char *log_file_path)
 #endif
 }
 #endif
-}
 
 std::chrono::nanoseconds time_get_nanoseconds()
 {

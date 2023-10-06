@@ -40,8 +40,6 @@
 #include <chrono>
 #include <functional>
 
-extern "C" {
-
 /**
  * @defgroup Debug
  *
@@ -1172,6 +1170,23 @@ void net_unix_close(UNIXSOCKET sock);
 void str_append(char *dst, const char *src, int dst_size);
 
 /**
+ * Appends a string to a fixed-size array of chars.
+ *
+ * @ingroup Strings
+ *
+ * @param dst Array that shall receive the string.
+ * @param src String to append.
+ *
+ * @remark The strings are treated as zero-terminated strings.
+ * @remark Guarantees that dst string will contain zero-termination.
+ */
+template<int N>
+void str_append(char (&dst)[N], const char *src)
+{
+	str_append(dst, src, N);
+}
+
+/**
  * Copies a string to another.
  *
  * @ingroup Strings
@@ -1184,6 +1199,23 @@ void str_append(char *dst, const char *src, int dst_size);
  * @remark Guarantees that dst string will contain zero-termination.
  */
 void str_copy(char *dst, const char *src, int dst_size);
+
+/**
+ * Copies a string to a fixed-size array of chars.
+ *
+ * @ingroup Strings
+ *
+ * @param dst Array that shall receive the string.
+ * @param src String to be copied.
+ *
+ * @remark The strings are treated as zero-terminated strings.
+ * @remark Guarantees that dst string will contain zero-termination.
+ */
+template<int N>
+void str_copy(char (&dst)[N], const char *src)
+{
+	str_copy(dst, src, N);
+}
 
 /**
  * Truncates a utf8 encoded string to a given length.
@@ -2042,6 +2074,14 @@ int str_toint_base(const char *str, int base);
 unsigned long str_toulong_base(const char *str, int base);
 float str_tofloat(const char *str);
 
+void str_from_int(int value, char *buffer, size_t buffer_size);
+
+template<size_t N>
+void str_from_int(int value, char (&dst)[N])
+{
+	str_from_int(value, dst, N);
+}
+
 /**
  * Determines whether a character is whitespace.
  *
@@ -2528,11 +2568,24 @@ void set_console_msg_color(const void *rgbvoid);
 */
 int os_version_str(char *version, int length);
 
+/**
+ * Returns a string of the preferred locale of the user / operating system.
+ * The string conforms to [RFC 3066](https://www.ietf.org/rfc/rfc3066.txt)
+ * and only contains the characters `a`-`z`, `A`-`Z`, `0`-`9` and `-`.
+ * If the preferred locale could not be determined this function
+ * falls back to the locale `"en-US"`.
+ *
+ * @param locale Buffer to use for the output.
+ * @param length Length of the output buffer.
+ *
+ * @remark The destination buffer will be zero-terminated.
+ */
+void os_locale_str(char *locale, size_t length);
+
 #if defined(CONF_EXCEPTION_HANDLING)
 void init_exception_handler();
 void set_exception_handler_log_file(const char *log_file_path);
 #endif
-}
 
 /**
  * Fetches a sample from a high resolution timer and converts it in nanoseconds.
@@ -2668,23 +2721,6 @@ bool shell_unregister_application(const char *executable, bool *updated);
  */
 void shell_update();
 #endif
-
-/**
- * Copies a string to a fixed-size array of chars.
- *
- * @ingroup Strings
- *
- * @param dst Array that shall receive the string.
- * @param src String to be copied.
- *
- * @remark The strings are treated as zero-terminated strings.
- * @remark Guarantees that dst string will contain zero-termination.
- */
-template<int N>
-void str_copy(char (&dst)[N], const char *src)
-{
-	str_copy(dst, src, N);
-}
 
 template<>
 struct std::hash<NETADDR>
