@@ -2529,7 +2529,24 @@ void CServer::UpdateRegisterServerInfo()
 	char aVersion[64];
 	char aMapSha256[SHA256_MAXSTRSIZE];
 
-	sha256_str(m_aCurrentMapSha256[MAP_TYPE_SIX], aMapSha256, sizeof(aMapSha256));
+	const char *pMapName = GetMapName();
+	if(Config()->m_SvHideInfo)
+	{
+		// Full hide
+		ClientCount = 0;
+		PlayerCount = 0;
+		pMapName = "";
+	}
+	else if (Config()->m_SvInfoMaxClients >= 0)
+	{
+		ClientCount = minimum(ClientCount, Config()->m_SvInfoMaxClients);
+		PlayerCount = minimum(ClientCount, PlayerCount);
+	}
+
+	if(pMapName[0])
+		sha256_str(m_aCurrentMapSha256[MAP_TYPE_SIX], aMapSha256, sizeof(aMapSha256));
+	else
+		aMapSha256[0] = '\0';
 
 	char aInfo[16384];
 	str_format(aInfo, sizeof(aInfo),
@@ -2552,7 +2569,7 @@ void CServer::UpdateRegisterServerInfo()
 		JsonBool(g_Config.m_Password[0]),
 		EscapeJson(aGameType, sizeof(aGameType), GameServer()->GameType()),
 		EscapeJson(aName, sizeof(aName), g_Config.m_SvName),
-		EscapeJson(aMapName, sizeof(aMapName), m_aCurrentMap),
+		EscapeJson(aMapName, sizeof(aMapName), pMapName),
 		aMapSha256,
 		m_aCurrentMapSize[MAP_TYPE_SIX],
 		EscapeJson(aVersion, sizeof(aVersion), GameServer()->Version()));
@@ -2564,6 +2581,11 @@ void CServer::UpdateRegisterServerInfo()
 		{
 			if(ClientIsBot(i))
 				continue;
+
+			if(ClientCount == 0)
+				break;
+
+			--ClientCount;
 
 			char aCName[32];
 			char aCClan[32];
@@ -3812,6 +3834,7 @@ void CServer::RegisterCommands()
 	Console()->Register("name_bans", "", CFGFLAG_SERVER, ConNameBans, this, "List all name bans");
 
 	Console()->Chain("sv_name", ConchainSpecialInfoupdate, this);
+	Console()->Chain("sv_hide_info", ConchainSpecialInfoupdate, this);
 	Console()->Chain("password", ConchainSpecialInfoupdate, this);
 
 	Console()->Chain("sv_max_clients_per_ip", ConchainMaxclientsperipUpdate, this);
