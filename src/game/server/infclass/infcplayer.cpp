@@ -436,6 +436,8 @@ void CInfClassPlayer::SetClass(PLAYERCLASS NewClass)
 
 	GameController()->SetPlayerInfected(GetCID(), IsInfected());
 	SendClassIntro();
+
+	Server()->ExpireServerInfo();
 }
 
 void CInfClassPlayer::UpdateSkin()
