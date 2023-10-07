@@ -3856,14 +3856,33 @@ void CInfClassGameController::DoWincheck()
 		return;
 	}
 
+	if(!m_InfectedStarted)
+	{
+		return;
+	}
+
 	bool HumanVictoryConditionsMet = false;
+	bool TimeIsOver = false;
 	const int Seconds = (Server()->Tick() - m_RoundStartTick) / ((float)Server()->TickSpeed());
 	if(GetTimeLimit() > 0 && Seconds >= GetTimeLimit() * 60)
 	{
+		TimeIsOver = true;
+	}
+
+	if(TimeIsOver)
+	{
 		HumanVictoryConditionsMet = true;
 	}
+
+	if(!HumanVictoryConditionsMet)
+	{
+		return;
+	}
+
+	bool NeedFinalExplosion = true;
+
 	//Start the final explosion if the time is over
-	if(m_InfectedStarted && !m_ExplosionStarted && HumanVictoryConditionsMet)
+	if(NeedFinalExplosion && !m_ExplosionStarted)
 	{
 		for(TEntityPtr<CInfClassCharacter> p = GameWorld()->FindFirst<CInfClassCharacter>(); p; ++p)
 		{
@@ -3939,12 +3958,16 @@ void CInfClassGameController::DoWincheck()
 				p->Die(p->GetCID(), DAMAGE_TYPE::GAME_FINAL_EXPLOSION);
 			}
 		}
-
-		//If no more explosions, game over, decide who win
 		if(!NewExplosion)
 		{
-			AnnounceTheWinner(NumHumans);
+			NeedFinalExplosion = false;
 		}
+	}
+
+	//If no more explosions, game over, decide who win
+	if(!NeedFinalExplosion)
+	{
+		AnnounceTheWinner(NumHumans);
 	}
 }
 
