@@ -19,10 +19,6 @@ jobs:
             cc: "gcc", cxx: "g++"
           }
     steps:
-    - name: Install the dependencies
-      run: |
-        sudo apt-get install libmaxminddb-dev
-
     - uses: actions/checkout@v3
       with:
         path: "scripts"
@@ -31,6 +27,9 @@ jobs:
     - uses: actions/checkout@v3
       with:
         path: "scripts/ci/sources"
+
+    - name: Install the dependencies
+      run: ./scripts/scripts/prepare-system.sh
 
     - name: Add the CI build configuration
       run: |
