@@ -2262,12 +2262,19 @@ void CGameContext::OnVoteNetMessage(const CNetMsg_Cl_Vote *pMsg, int ClientID)
 
 	CPlayer *pPlayer = m_apPlayers[ClientID];
 
+	int64_t Now = Server()->Tick();
+
+	pPlayer->m_LastVoteTry = Now;
+
 	if(!pMsg->m_Vote)
 		return;
 
 	pPlayer->m_Vote = pMsg->m_Vote;
 	pPlayer->m_VotePos = ++m_VotePos;
 	m_VoteUpdate = true;
+
+	CNetMsg_Sv_YourVote Msg = {pMsg->m_Vote};
+	Server()->SendPackMsg(&Msg, MSGFLAG_VITAL, ClientID);
 }
 
 void CGameContext::OnSetTeamNetMessage(const CNetMsg_Cl_SetTeam *pMsg, int ClientID)
