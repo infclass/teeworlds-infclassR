@@ -1197,26 +1197,24 @@ void CInfClassHuman::BroadcastWeaponState() const
 	{
 		if(m_pCharacter->GetActiveWeapon() == WEAPON_LASER)
 		{
-			const int MIN_ZOMBIES = 4;
-			const int DAMAGE_ON_REVIVE = 17;
+			int MinimumHP = Config()->m_InfRevivalDamage + 1;
+			int MinimumInfected = Config()->m_InfRevivalMinInfected;
 
-			if(m_pCharacter->GetHealthArmorSum() <= DAMAGE_ON_REVIVE)
+			if(m_pCharacter->GetHealthArmorSum() < MinimumHP)
 			{
-				int MinHp = DAMAGE_ON_REVIVE + 1;
 				GameServer()->SendBroadcast_Localization(GetPlayer()->GetCID(),
 					BROADCAST_PRIORITY_WEAPONSTATE, BROADCAST_DURATION_REALTIME,
 					_("You need at least {int:MinHp} HP to revive a zombie"),
-					"MinHp", &MinHp,
+					"MinHp", &MinimumHP,
 					NULL
 				);
 			}
-			else if(GameController()->GetInfectedCount() <= MIN_ZOMBIES)
+			else if(GameController()->GetInfectedCount() < MinimumInfected)
 			{
-				int MinZombies = MIN_ZOMBIES+1;
 				GameServer()->SendBroadcast_Localization(GetPlayer()->GetCID(),
 					BROADCAST_PRIORITY_WEAPONSTATE, BROADCAST_DURATION_REALTIME,
 					_("Too few zombies to revive anyone (less than {int:MinZombies})"),
-					"MinZombies", &MinZombies,
+					"MinZombies", &MinimumInfected,
 					NULL
 				);
 			}

@@ -26,7 +26,7 @@ bool CMedicLaser::OnCharacterHit(CInfClassCharacter *pHit)
 		return false;
 
 	int MinimumHP = Config()->m_InfRevivalDamage + 1;
-	int MinimumInfected = 5;
+	int MinimumInfected = Config()->m_InfRevivalMinInfected;
 
 	if(pMedic->GetHealthArmorSum() < MinimumHP)
 	{
