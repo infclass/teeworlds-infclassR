@@ -1807,11 +1807,241 @@ void CGameContext::GetMapNameFromCommand(char* pMapName, const char *pCommand)
 	pMapName[k] = 0;
 }
 
-// will be called when a player wants to start a vote
-void CGameContext::OnCallVote(void *pRawMsg, int ClientID)
+void *CGameContext::PreProcessMsg(int *pMsgID, CUnpacker *pUnpacker, int ClientID)
+{
+	void *pRawMsg = m_NetObjHandler.SecureUnpackMsg(*pMsgID, pUnpacker);
+
+	if(!pRawMsg)
+	{
+		if(g_Config.m_Debug)
+		{
+			int MsgID = *pMsgID;
+			char aBuf[256];
+			str_format(aBuf, sizeof(aBuf), "dropped weird message '%s' (%d), failed on '%s'", m_NetObjHandler.GetMsgName(MsgID), MsgID, m_NetObjHandler.FailedMsgOn());
+			Console()->Print(IConsole::OUTPUT_LEVEL_DEBUG, "server", aBuf);
+		}
+	}
+
+	return pRawMsg;
+}
+
+void CGameContext::CensorMessage(char *pCensoredMessage, const char *pMessage, int Size)
+{
+	str_copy(pCensoredMessage, pMessage, Size);
+}
+
+void CGameContext::OnMessage(int MsgID, CUnpacker *pUnpacker, int ClientID)
+{
+	void *pRawMsg = PreProcessMsg(&MsgID, pUnpacker, ClientID);
+
+	if(!pRawMsg)
+		return;
+
+	CPlayer *pPlayer = m_apPlayers[ClientID];
+
+	if(pPlayer && MsgID == NETMSGTYPE_CL_ISDDNETLEGACY)
+	{
+		int DDNetVersion = pUnpacker->GetInt();
+
+		if(g_Config.m_SvBannedVersions[0] != '\0' && IsVersionBanned(DDNetVersion))
+		{
+			Server()->Kick(ClientID, "unsupported client");
+		}
+
+		Server()->SetClientDDNetVersion(ClientID, DDNetVersion);
+	}
+
+	//HACK: DDNet Client did something wrong that we can detect
+	//Round and Score conditions are here only to prevent false-positif
+	if(!pPlayer && Server()->GetClientNbRound(ClientID) == 0)
+	{
+		Server()->Kick(ClientID, "Kicked (is probably a dummy)");
+		return;
+	}
+
+	if(Server()->ClientIngame(ClientID))
+	{
+		switch(MsgID)
+		{
+		case NETMSGTYPE_CL_SAY:
+			OnSayNetMessage(static_cast<CNetMsg_Cl_Say *>(pRawMsg), ClientID, pUnpacker);
+			break;
+		case NETMSGTYPE_CL_CALLVOTE:
+			OnCallVoteNetMessage(static_cast<CNetMsg_Cl_CallVote *>(pRawMsg), ClientID);
+			break;
+		case NETMSGTYPE_CL_VOTE:
+			OnVoteNetMessage(static_cast<CNetMsg_Cl_Vote *>(pRawMsg), ClientID);
+			break;
+		case NETMSGTYPE_CL_SETTEAM:
+			OnSetTeamNetMessage(static_cast<CNetMsg_Cl_SetTeam *>(pRawMsg), ClientID);
+			break;
+		case NETMSGTYPE_CL_SETSPECTATORMODE:
+			OnSetSpectatorModeNetMessage(static_cast<CNetMsg_Cl_SetSpectatorMode *>(pRawMsg), ClientID);
+			break;
+		case NETMSGTYPE_CL_CHANGEINFO:
+			OnChangeInfoNetMessage(static_cast<CNetMsg_Cl_ChangeInfo *>(pRawMsg), ClientID);
+			break;
+		case NETMSGTYPE_CL_EMOTICON:
+			OnEmoticonNetMessage(static_cast<CNetMsg_Cl_Emoticon *>(pRawMsg), ClientID);
+			break;
+		case NETMSGTYPE_CL_KILL:
+			OnKillNetMessage(static_cast<CNetMsg_Cl_Kill *>(pRawMsg), ClientID);
+			break;
+		default:
+			break;
+		}
+	}
+	if(MsgID == NETMSGTYPE_CL_STARTINFO)
+	{
+		OnStartInfoNetMessage(static_cast<CNetMsg_Cl_StartInfo *>(pRawMsg), ClientID);
+	}
+}
+
+void CGameContext::OnSayNetMessage(const CNetMsg_Cl_Say *pMsg, int ClientID, const CUnpacker *pUnpacker)
+{
+	if(!str_utf8_check(pMsg->m_pMessage))
+	{
+		return;
+	}
+	CPlayer *pPlayer = m_apPlayers[ClientID];
+	if(g_Config.m_SvSpamprotection && pPlayer->m_LastChat && pPlayer->m_LastChat + Server()->TickSpeed() > Server()->Tick())
+		return;
+
+	int Team = pMsg->m_Team;
+
+	// trim right and set maximum length to 256 utf8-characters
+	int Length = 0;
+	const char *p = pMsg->m_pMessage;
+	const char *pEnd = 0;
+	while(*p)
+	{
+		const char *pStrOld = p;
+		int Code = str_utf8_decode(&p);
+
+		// check if unicode is not empty
+		if(!str_utf8_isspace(Code))
+		{
+			pEnd = 0;
+		}
+		else if(pEnd == 0)
+			pEnd = pStrOld;
+
+		if(++Length >= 256)
+		{
+			*(const_cast<char *>(p)) = 0;
+			break;
+		}
+	}
+	if(pEnd != 0)
+		*(const_cast<char *>(pEnd)) = 0;
+
+	// drop empty and autocreated spam messages (more than 32 characters per second)
+	if(Length == 0 || (g_Config.m_SvSpamprotection && pPlayer->m_LastChat && pPlayer->m_LastChat + Server()->TickSpeed() * ((31 + Length) / 32) > Server()->Tick()))
+		return;
+
+	if(Team)
+	{
+		if(pPlayer->GetTeam() == TEAM_SPECTATORS)
+		{
+			Team = CHAT_SPEC;
+		}
+		else
+		{
+			Team = m_pController->GetPlayerTeam(pPlayer->GetCID());
+		}
+	}
+	else
+	{
+		Team = CHAT_ALL;
+	}
+
+	pPlayer->m_LastChat = Server()->Tick();
+
+	/* INFECTION MODIFICATION START ***************************************/
+	if(pMsg->m_pMessage[0] == '/')
+	{
+		if(str_comp_nocase_num(pMsg->m_pMessage + 1, "w ", 2) == 0)
+		{
+			char aWhisperMsg[256];
+			str_copy(aWhisperMsg, pMsg->m_pMessage + 3, 256);
+			Whisper(pPlayer->GetCID(), aWhisperMsg);
+		}
+		else if(str_comp_nocase_num(pMsg->m_pMessage + 1, "whisper ", 8) == 0)
+		{
+			char aWhisperMsg[256];
+			str_copy(aWhisperMsg, pMsg->m_pMessage + 9, 256);
+			Whisper(pPlayer->GetCID(), aWhisperMsg);
+		}
+		else if(str_comp_nocase_num(pMsg->m_pMessage + 1, "c ", 2) == 0)
+		{
+			char aWhisperMsg[256];
+			str_copy(aWhisperMsg, pMsg->m_pMessage + 3, 256);
+			Converse(pPlayer->GetCID(), aWhisperMsg);
+		}
+		else if(str_comp_nocase_num(pMsg->m_pMessage + 1, "converse ", 9) == 0)
+		{
+			char aWhisperMsg[256];
+			str_copy(aWhisperMsg, pMsg->m_pMessage + 10, 256);
+			Converse(pPlayer->GetCID(), aWhisperMsg);
+		}
+		else if(str_comp_num(pMsg->m_pMessage + 1, "msg ", 4) == 0)
+		{
+			PrivateMessage(pMsg->m_pMessage + 5, ClientID, (Team != CGameContext::CHAT_ALL));
+		}
+		else if(str_comp_num(pMsg->m_pMessage + 1, "mute ", 5) == 0)
+		{
+			MutePlayer(pMsg->m_pMessage + 6, ClientID);
+		}
+		else
+		{
+			switch(Server()->GetAuthedState(ClientID))
+			{
+			case IServer::AUTHED_ADMIN:
+				Console()->SetAccessLevel(IConsole::ACCESS_LEVEL_ADMIN);
+				break;
+			case IServer::AUTHED_MOD:
+				Console()->SetAccessLevel(IConsole::ACCESS_LEVEL_MOD);
+				break;
+			default:
+				Console()->SetAccessLevel(IConsole::ACCESS_LEVEL_USER);
+			}
+
+			{
+				CClientChatLogger Logger(this, ClientID, log_get_scope_logger());
+				CLogScope Scope(&Logger);
+				Console()->ExecuteLineFlag(pMsg->m_pMessage + 1, CFGFLAG_CHAT, ClientID, (Team != CGameContext::CHAT_ALL));
+			}
+
+			char aBuf[256];
+			str_format(aBuf, sizeof(aBuf), "%d used %s", ClientID, pMsg->m_pMessage);
+			Console()->Print(IConsole::OUTPUT_LEVEL_DEBUG, "chat-command", aBuf);
+
+			Console()->SetAccessLevel(IConsole::ACCESS_LEVEL_ADMIN);
+		}
+	}
+	else
+	{
+		if(Server()->GetClientSession(ClientID) && Server()->GetClientSession(ClientID)->m_MuteTick > 0)
+		{
+			int Time = Server()->GetClientSession(ClientID)->m_MuteTick / Server()->TickSpeed();
+			SendChatTarget_Localization(ClientID, CHATCATEGORY_ACCUSATION, _("You are muted for {sec:Duration}"), "Duration", &Time, NULL);
+		}
+		else
+		{
+			// Inverse order and add ligature for arabic
+			dynamic_string Buffer;
+			Buffer.copy(pMsg->m_pMessage);
+			Server()->Localization()->ArabicShaping(Buffer);
+			SendChat(ClientID, Team, Buffer.buffer());
+		}
+	}
+	/* INFECTION MODIFICATION END *****************************************/
+}
+
+void CGameContext::OnCallVoteNetMessage(const CNetMsg_Cl_CallVote *pMsg, int ClientID)
 {
 	CPlayer *pPlayer = m_apPlayers[ClientID];
-	if (!pPlayer)
+	if(!pPlayer)
 		return;
 
 	if(RateLimitPlayerVote(ClientID))
@@ -1821,7 +2051,6 @@ void CGameContext::OnCallVote(void *pRawMsg, int ClientID)
 	char aDesc[VOTE_DESC_LENGTH] = {0};
 	char aCmd[VOTE_CMD_LENGTH] = {0};
 	char aReason[VOTE_REASON_LENGTH] = "No reason given";
-	CNetMsg_Cl_CallVote *pMsg = (CNetMsg_Cl_CallVote *)pRawMsg;
 	if(!str_utf8_check(pMsg->m_pType) || !str_utf8_check(pMsg->m_pReason) || !str_utf8_check(pMsg->m_pValue))
 	{
 		return;
@@ -1878,14 +2107,14 @@ void CGameContext::OnCallVote(void *pRawMsg, int ClientID)
 						return;
 					}
 					OPTION_VOTE_TYPE OptionVoteType = GetOptionVoteType(pOption->m_aCommand);
-					if (OptionVoteType & MAP_VOTE_BITS) // this is a map vote
+					if(OptionVoteType & MAP_VOTE_BITS) // this is a map vote
 					{
-						if (OptionVoteType == SV_MAP || OptionVoteType == CHANGE_MAP)
+						if(OptionVoteType == SV_MAP || OptionVoteType == CHANGE_MAP)
 						{
 							// check if we are already playing on the map the user wants to vote
 							char MapName[VOTE_CMD_LENGTH] = {0};
 							GetMapNameFromCommand(MapName, pOption->m_aCommand);
-							if (str_comp_nocase(MapName, g_Config.m_SvMap) == 0)
+							if(str_comp_nocase(MapName, g_Config.m_SvMap) == 0)
 							{
 								char aBufVoteMap[128];
 								str_format(aBufVoteMap, sizeof(aBufVoteMap), "Server is already on map %s", MapName);
@@ -1895,9 +2124,9 @@ void CGameContext::OnCallVote(void *pRawMsg, int ClientID)
 						}
 
 						int RoundCount = m_pController->GetRoundCount();
-						if (m_pController->IsRoundEndTime())
+						if(m_pController->IsRoundEndTime())
 							RoundCount++;
-						if (g_Config.m_InfMinRoundsForMapVote > RoundCount && Server()->GetActivePlayerCount() > 1)
+						if(g_Config.m_InfMinRoundsForMapVote > RoundCount && Server()->GetActivePlayerCount() > 1)
 						{
 							char aBufVoteMap[128];
 							str_format(aBufVoteMap, sizeof(aBufVoteMap), "Each map must be played at least %i rounds before calling a map vote", g_Config.m_InfMinRoundsForMapVote);
@@ -1909,12 +2138,12 @@ void CGameContext::OnCallVote(void *pRawMsg, int ClientID)
 					{
 						// copy information to start a vote
 						str_format(aChatmsg, sizeof(aChatmsg), "'%s' called vote to change server option '%s' (%s)", Server()->ClientName(ClientID),
-								pOption->m_aDescription, aReason);
+							pOption->m_aDescription, aReason);
 						str_format(aDesc, sizeof(aDesc), "%s", pOption->m_aDescription);
 						str_format(aCmd, sizeof(aCmd), "%s", pOption->m_aCommand);
 						break;
 					}
-					if (g_Config.m_InfMinPlayerNumberForMapVote <= 1 || OptionVoteType == OTHER_OPTION_VOTE_TYPE)
+					if(g_Config.m_InfMinPlayerNumberForMapVote <= 1 || OptionVoteType == OTHER_OPTION_VOTE_TYPE)
 					{
 						// (this is not a map vote) or ("InfMinPlayerNumberForMapVote <= 1" and we keep default behaviour)
 						if(!m_pController->CanVote() && (Authed != IServer::AUTHED_ADMIN))
@@ -1922,10 +2151,10 @@ void CGameContext::OnCallVote(void *pRawMsg, int ClientID)
 							SendChatTarget(ClientID, "Votes are only allowed when the round start.");
 							return;
 						}
-						
-						// copy information to start a vote 
+
+						// copy information to start a vote
 						str_format(aChatmsg, sizeof(aChatmsg), "'%s' called vote to change server option '%s' (%s)", Server()->ClientName(ClientID),
-								pOption->m_aDescription, aReason);
+							pOption->m_aDescription, aReason);
 						str_format(aDesc, sizeof(aDesc), "%s", pOption->m_aDescription);
 						str_format(aCmd, sizeof(aCmd), "%s", pOption->m_aCommand);
 						break;
@@ -1997,462 +2226,273 @@ void CGameContext::OnCallVote(void *pRawMsg, int ClientID)
 	}
 }
 
-void *CGameContext::PreProcessMsg(int *pMsgID, CUnpacker *pUnpacker, int ClientID)
+void CGameContext::OnVoteNetMessage(const CNetMsg_Cl_Vote *pMsg, int ClientID)
 {
-	void *pRawMsg = m_NetObjHandler.SecureUnpackMsg(*pMsgID, pUnpacker);
-
-	if(!pRawMsg)
+	CPlayer *pPlayer = m_apPlayers[ClientID];
+	if(m_VoteLanguageTick[ClientID] > 0)
 	{
-		if(g_Config.m_Debug)
+		if(!pMsg->m_Vote)
+			return;
+
+		if(pMsg->m_Vote)
 		{
-			int MsgID = *pMsgID;
-			char aBuf[256];
-			str_format(aBuf, sizeof(aBuf), "dropped weird message '%s' (%d), failed on '%s'", m_NetObjHandler.GetMsgName(MsgID), MsgID, m_NetObjHandler.FailedMsgOn());
-			Console()->Print(IConsole::OUTPUT_LEVEL_DEBUG, "server", aBuf);
+			if(pMsg->m_Vote > 0)
+			{
+				SetClientLanguage(ClientID, m_VoteLanguage[ClientID]);
+			}
+
+			m_VoteLanguageTick[ClientID] = 0;
+
+			CNetMsg_Sv_VoteSet Msg;
+			Msg.m_Timeout = 0;
+			Msg.m_pDescription = "";
+			Msg.m_pReason = "";
+			Server()->SendPackMsg(&Msg, MSGFLAG_VITAL, ClientID);
 		}
 	}
+	else if(m_VoteCloseTime && pPlayer->m_Vote == 0)
+	{
+		if(!pMsg->m_Vote)
+			return;
 
-	return pRawMsg;
+		pPlayer->m_Vote = pMsg->m_Vote;
+		pPlayer->m_VotePos = ++m_VotePos;
+		m_VoteUpdate = true;
+	}
+	else
+	{
+		if(!pMsg->m_Vote)
+			return;
+
+		m_pController->OnPlayerVoteCommand(ClientID, pMsg->m_Vote);
+	}
 }
 
-void CGameContext::CensorMessage(char *pCensoredMessage, const char *pMessage, int Size)
+void CGameContext::OnSetTeamNetMessage(const CNetMsg_Cl_SetTeam *pMsg, int ClientID)
 {
-	str_copy(pCensoredMessage, pMessage, Size);
-}
-
-void CGameContext::OnMessage(int MsgID, CUnpacker *pUnpacker, int ClientID)
-{
-	void *pRawMsg = PreProcessMsg(&MsgID, pUnpacker, ClientID);
-
-	if(!pRawMsg)
+	if(m_World.m_Paused)
 		return;
 
 	CPlayer *pPlayer = m_apPlayers[ClientID];
 
-	if(pPlayer && MsgID == NETMSGTYPE_CL_ISDDNETLEGACY)
+	if(pPlayer->GetTeam() == pMsg->m_Team || (g_Config.m_SvSpamprotection && pPlayer->m_LastSetTeam && pPlayer->m_LastSetTeam + Server()->TickSpeed() * 3 > Server()->Tick()))
+		return;
+
+	if(pPlayer->m_TeamChangeTick > Server()->Tick())
 	{
-		int DDNetVersion = pUnpacker->GetInt();
-
-		if(g_Config.m_SvBannedVersions[0] != '\0' && IsVersionBanned(DDNetVersion))
-		{
-			Server()->Kick(ClientID, "unsupported client");
-		}
-
-		Server()->SetClientDDNetVersion(ClientID, DDNetVersion);
-	}
-
-	//HACK: DDNet Client did something wrong that we can detect
-	//Round and Score conditions are here only to prevent false-positif
-	if(!pPlayer && Server()->GetClientNbRound(ClientID) == 0)
-	{
-		Server()->Kick(ClientID, "Kicked (is probably a dummy)");
+		pPlayer->m_LastSetTeam = Server()->Tick();
+		int TimeLeft = (pPlayer->m_TeamChangeTick - Server()->Tick()) / Server()->TickSpeed();
+		char aBuf[128];
+		str_format(aBuf, sizeof(aBuf), "Time to wait before changing team: %02d:%02d", TimeLeft / 60, TimeLeft % 60);
+		SendBroadcast(ClientID, aBuf, BROADCAST_PRIORITY_GAMEANNOUNCE, BROADCAST_DURATION_GAMEANNOUNCE);
 		return;
 	}
 
-	if(Server()->ClientIngame(ClientID))
+	/* INFECTION MODIFICATION START ***************************************/
+	if(pMsg->m_Team == TEAM_SPECTATORS && !m_pController->CanJoinTeam(TEAM_SPECTATORS, ClientID))
 	{
-		if(MsgID == NETMSGTYPE_CL_SAY)
+		SendBroadcast_Localization(ClientID, BROADCAST_PRIORITY_GAMEANNOUNCE, BROADCAST_DURATION_GAMEANNOUNCE, _("You can't join the spectators right now"), NULL);
+		return;
+	}
+	/* INFECTION MODIFICATION END *****************************************/
+
+	// Switch team on given client and kill/respawn him
+	if(m_pController->CanJoinTeam(pMsg->m_Team, ClientID))
+	{
+		if(m_pController->CanChangeTeam(pPlayer, pMsg->m_Team))
 		{
-			if(g_Config.m_SvSpamprotection && pPlayer->m_LastChat && pPlayer->m_LastChat+Server()->TickSpeed() > Server()->Tick())
-				return;
-
-			CNetMsg_Cl_Say *pMsg = (CNetMsg_Cl_Say *)pRawMsg;
-			if(!str_utf8_check(pMsg->m_pMessage))
-			{
-				return;
-			}
-			int Team = pMsg->m_Team;
-
-			// trim right and set maximum length to 256 utf8-characters
-			int Length = 0;
-			const char *p = pMsg->m_pMessage;
-			const char *pEnd = 0;
-			while(*p)
-			{
-				const char *pStrOld = p;
-				int Code = str_utf8_decode(&p);
-
-				// check if unicode is not empty
-				if(!str_utf8_isspace(Code))
-				{
-					pEnd = 0;
-				}
-				else if(pEnd == 0)
-					pEnd = pStrOld;
-
-				if(++Length >= 256)
-				{
-					*(const_cast<char *>(p)) = 0;
-					break;
-				}
-			}
-			if(pEnd != 0)
-				*(const_cast<char *>(pEnd)) = 0;
-
-			// drop empty and autocreated spam messages (more than 32 characters per second)
-			if(Length == 0 || (g_Config.m_SvSpamprotection && pPlayer->m_LastChat && pPlayer->m_LastChat+Server()->TickSpeed() * ((31 + Length) / 32) > Server()->Tick()))
-				return;
-
-			if(Team)
-			{
-				if(pPlayer->GetTeam() == TEAM_SPECTATORS)
-				{
-					Team = CHAT_SPEC;
-				}
-				else
-				{
-					Team = m_pController->GetPlayerTeam(pPlayer->GetCID());
-				}
-			}
-			else
-			{
-				Team = CHAT_ALL;
-			}
-
-			pPlayer->m_LastChat = Server()->Tick();
-			
-			
-/* INFECTION MODIFICATION START ***************************************/
-			if(pMsg->m_pMessage[0] == '/')
-			{
-				if(str_comp_nocase_num(pMsg->m_pMessage + 1, "w ", 2) == 0)
-				{
-					char aWhisperMsg[256];
-					str_copy(aWhisperMsg, pMsg->m_pMessage + 3, 256);
-					Whisper(pPlayer->GetCID(), aWhisperMsg);
-				}
-				else if(str_comp_nocase_num(pMsg->m_pMessage + 1, "whisper ", 8) == 0)
-				{
-					char aWhisperMsg[256];
-					str_copy(aWhisperMsg, pMsg->m_pMessage + 9, 256);
-					Whisper(pPlayer->GetCID(), aWhisperMsg);
-				}
-				else if(str_comp_nocase_num(pMsg->m_pMessage + 1, "c ", 2) == 0)
-				{
-					char aWhisperMsg[256];
-					str_copy(aWhisperMsg, pMsg->m_pMessage + 3, 256);
-					Converse(pPlayer->GetCID(), aWhisperMsg);
-				}
-				else if(str_comp_nocase_num(pMsg->m_pMessage + 1, "converse ", 9) == 0)
-				{
-					char aWhisperMsg[256];
-					str_copy(aWhisperMsg, pMsg->m_pMessage + 10, 256);
-					Converse(pPlayer->GetCID(), aWhisperMsg);
-				}
-				else if(str_comp_num(pMsg->m_pMessage + 1, "msg ", 4) == 0)
-				{
-					PrivateMessage(pMsg->m_pMessage + 5, ClientID, (Team != CGameContext::CHAT_ALL));
-				}
-				else if(str_comp_num(pMsg->m_pMessage + 1, "mute ", 5) == 0)
-				{
-					MutePlayer(pMsg->m_pMessage + 6, ClientID);
-				}
-				else
-				{
-					switch(Server()->GetAuthedState(ClientID))
-					{
-					case IServer::AUTHED_ADMIN:
-						Console()->SetAccessLevel(IConsole::ACCESS_LEVEL_ADMIN);
-						break;
-					case IServer::AUTHED_MOD:
-						Console()->SetAccessLevel(IConsole::ACCESS_LEVEL_MOD);
-						break;
-					default:
-						Console()->SetAccessLevel(IConsole::ACCESS_LEVEL_USER);
-					}
-
-					{
-						CClientChatLogger Logger(this, ClientID, log_get_scope_logger());
-						CLogScope Scope(&Logger);
-						Console()->ExecuteLineFlag(pMsg->m_pMessage + 1, CFGFLAG_CHAT, ClientID, (Team != CGameContext::CHAT_ALL));
-					}
-
-					char aBuf[256];
-					str_format(aBuf, sizeof(aBuf), "%d used %s", ClientID, pMsg->m_pMessage);
-					Console()->Print(IConsole::OUTPUT_LEVEL_DEBUG, "chat-command", aBuf);
-
-					Console()->SetAccessLevel(IConsole::ACCESS_LEVEL_ADMIN);
-				}
-			}
-			else
-			{
-				if(Server()->GetClientSession(ClientID) && Server()->GetClientSession(ClientID)->m_MuteTick > 0)
-				{
-					int Time = Server()->GetClientSession(ClientID)->m_MuteTick/Server()->TickSpeed();
-					SendChatTarget_Localization(ClientID, CHATCATEGORY_ACCUSATION, _("You are muted for {sec:Duration}"), "Duration", &Time, NULL);
-				}
-				else
-				{
-					//Inverse order and add ligature for arabic
-					dynamic_string Buffer;
-					Buffer.copy(pMsg->m_pMessage);
-					Server()->Localization()->ArabicShaping(Buffer);
-					SendChat(ClientID, Team, Buffer.buffer());
-				}
-			}
-/* INFECTION MODIFICATION END *****************************************/
-		}
-		else if(MsgID == NETMSGTYPE_CL_CALLVOTE)
-		{
-			OnCallVote(pRawMsg, ClientID);
-		}
-		else if(MsgID == NETMSGTYPE_CL_VOTE)
-		{
-			if(m_VoteLanguageTick[ClientID] > 0)
-			{
-				CNetMsg_Cl_Vote *pMsg = (CNetMsg_Cl_Vote *)pRawMsg;
-				if(!pMsg->m_Vote)
-					return;
-
-				if(pMsg->m_Vote)
-				{
-					if(pMsg->m_Vote > 0)
-					{
-						SetClientLanguage(ClientID, m_VoteLanguage[ClientID]);
-					}
-					
-					m_VoteLanguageTick[ClientID] = 0;
-					
-					CNetMsg_Sv_VoteSet Msg;
-					Msg.m_Timeout = 0;
-					Msg.m_pDescription = "";
-					Msg.m_pReason = "";
-					Server()->SendPackMsg(&Msg, MSGFLAG_VITAL, ClientID);
-				}
-			}
-			else if(m_VoteCloseTime && pPlayer->m_Vote == 0)
-			{
-				CNetMsg_Cl_Vote *pMsg = (CNetMsg_Cl_Vote *)pRawMsg;
-				if(!pMsg->m_Vote)
-					return;
-
-				pPlayer->m_Vote = pMsg->m_Vote;
-				pPlayer->m_VotePos = ++m_VotePos;
+			pPlayer->m_LastSetTeam = Server()->Tick();
+			if(pPlayer->GetTeam() == TEAM_SPECTATORS || pMsg->m_Team == TEAM_SPECTATORS)
 				m_VoteUpdate = true;
-			}
-			else
-			{
-				CNetMsg_Cl_Vote *pMsg = (CNetMsg_Cl_Vote *)pRawMsg;
-				if(!pMsg->m_Vote)
-					return;
-
-				m_pController->OnPlayerVoteCommand(ClientID, pMsg->m_Vote);
-			}
+			m_pController->DoTeamChange(pPlayer, pMsg->m_Team);
+			pPlayer->m_TeamChangeTick = Server()->Tick();
 		}
-		else if (MsgID == NETMSGTYPE_CL_SETTEAM && !m_World.m_Paused)
-		{
-			CNetMsg_Cl_SetTeam *pMsg = (CNetMsg_Cl_SetTeam *)pRawMsg;
+		else
+			SendBroadcast(ClientID, "Teams must be balanced, please join other team", BROADCAST_PRIORITY_GAMEANNOUNCE, BROADCAST_DURATION_GAMEANNOUNCE);
+	}
+}
 
-			if(pPlayer->GetTeam() == pMsg->m_Team || (g_Config.m_SvSpamprotection && pPlayer->m_LastSetTeam && pPlayer->m_LastSetTeam+Server()->TickSpeed()*3 > Server()->Tick()))
-				return;
+void CGameContext::OnSetSpectatorModeNetMessage(const CNetMsg_Cl_SetSpectatorMode *pMsg, int ClientID)
+{
+	if(m_World.m_Paused)
+		return;
 
-			if(pPlayer->m_TeamChangeTick > Server()->Tick())
-			{
-				pPlayer->m_LastSetTeam = Server()->Tick();
-				int TimeLeft = (pPlayer->m_TeamChangeTick - Server()->Tick())/Server()->TickSpeed();
-				char aBuf[128];
-				str_format(aBuf, sizeof(aBuf), "Time to wait before changing team: %02d:%02d", TimeLeft/60, TimeLeft%60);
-				SendBroadcast(ClientID, aBuf, BROADCAST_PRIORITY_GAMEANNOUNCE, BROADCAST_DURATION_GAMEANNOUNCE);
-				return;
-			}
-			
-/* INFECTION MODIFICATION START ***************************************/
-			if(pMsg->m_Team == TEAM_SPECTATORS && !m_pController->CanJoinTeam(TEAM_SPECTATORS, ClientID))
-			{
-				SendBroadcast_Localization(ClientID, BROADCAST_PRIORITY_GAMEANNOUNCE, BROADCAST_DURATION_GAMEANNOUNCE, _("You can't join the spectators right now"), NULL);
-				return;
-			}
-/* INFECTION MODIFICATION END *****************************************/
+	CPlayer *pPlayer = m_apPlayers[ClientID];
+	if(pPlayer->GetTeam() != TEAM_SPECTATORS || pPlayer->m_SpectatorID == pMsg->m_SpectatorID || ClientID == pMsg->m_SpectatorID ||
+		(g_Config.m_SvSpamprotection && pPlayer->m_LastSetSpectatorMode && pPlayer->m_LastSetSpectatorMode + Server()->TickSpeed() * 3 > Server()->Tick()))
+		return;
 
-			// Switch team on given client and kill/respawn him
-			if(m_pController->CanJoinTeam(pMsg->m_Team, ClientID))
-			{
-				if(m_pController->CanChangeTeam(pPlayer, pMsg->m_Team))
-				{
-					pPlayer->m_LastSetTeam = Server()->Tick();
-					if(pPlayer->GetTeam() == TEAM_SPECTATORS || pMsg->m_Team == TEAM_SPECTATORS)
-						m_VoteUpdate = true;
-					m_pController->DoTeamChange(pPlayer, pMsg->m_Team);
-					pPlayer->m_TeamChangeTick = Server()->Tick();
-				}
-				else
-					SendBroadcast(ClientID, "Teams must be balanced, please join other team", BROADCAST_PRIORITY_GAMEANNOUNCE, BROADCAST_DURATION_GAMEANNOUNCE);
-			}
-		}
-		else if (MsgID == NETMSGTYPE_CL_SETSPECTATORMODE && !m_World.m_Paused)
-		{
-			CNetMsg_Cl_SetSpectatorMode *pMsg = (CNetMsg_Cl_SetSpectatorMode *)pRawMsg;
+	pPlayer->m_LastSetSpectatorMode = Server()->Tick();
+	if(pMsg->m_SpectatorID != SPEC_FREEVIEW && (!m_apPlayers[pMsg->m_SpectatorID] || m_apPlayers[pMsg->m_SpectatorID]->GetTeam() == TEAM_SPECTATORS))
+		SendChatTarget(ClientID, "Invalid spectator id used");
+	else
+		pPlayer->m_SpectatorID = pMsg->m_SpectatorID;
+}
 
-			if(pPlayer->GetTeam() != TEAM_SPECTATORS || pPlayer->m_SpectatorID == pMsg->m_SpectatorID || ClientID == pMsg->m_SpectatorID ||
-				(g_Config.m_SvSpamprotection && pPlayer->m_LastSetSpectatorMode && pPlayer->m_LastSetSpectatorMode+Server()->TickSpeed()*3 > Server()->Tick()))
-				return;
+void CGameContext::OnChangeInfoNetMessage(const CNetMsg_Cl_ChangeInfo *pMsg, int ClientID)
+{
+	CPlayer *pPlayer = m_apPlayers[ClientID];
+	if(g_Config.m_SvSpamprotection && pPlayer->m_LastChangeInfo && pPlayer->m_LastChangeInfo + Server()->TickSpeed() * g_Config.m_SvInfoChangeDelay > Server()->Tick())
+		return;
 
-			pPlayer->m_LastSetSpectatorMode = Server()->Tick();
-			if(pMsg->m_SpectatorID != SPEC_FREEVIEW && (!m_apPlayers[pMsg->m_SpectatorID] || m_apPlayers[pMsg->m_SpectatorID]->GetTeam() == TEAM_SPECTATORS))
-				SendChatTarget(ClientID, "Invalid spectator id used");
-			else
-				pPlayer->m_SpectatorID = pMsg->m_SpectatorID;
-		}
-		else if (MsgID == NETMSGTYPE_CL_CHANGEINFO)
-		{
-			if(g_Config.m_SvSpamprotection && pPlayer->m_LastChangeInfo && pPlayer->m_LastChangeInfo + Server()->TickSpeed() * g_Config.m_SvInfoChangeDelay > Server()->Tick())
-				return;
+	if(!str_utf8_check(pMsg->m_pName) || !str_utf8_check(pMsg->m_pClan) || !str_utf8_check(pMsg->m_pSkin))
+	{
+		return;
+	}
+	pPlayer->m_LastChangeInfo = Server()->Tick();
 
-			CNetMsg_Cl_ChangeInfo *pMsg = (CNetMsg_Cl_ChangeInfo *)pRawMsg;
-			if(!str_utf8_check(pMsg->m_pName) || !str_utf8_check(pMsg->m_pClan) || !str_utf8_check(pMsg->m_pSkin))
-			{
-				return;
-			}
-			pPlayer->m_LastChangeInfo = Server()->Tick();
+	// set infos
+	if(!pPlayer->m_ClientNameLocked && Server()->WouldClientNameChange(ClientID, pMsg->m_pName))
+	{
+		char aOldName[MAX_NAME_LENGTH];
+		str_copy(aOldName, Server()->ClientName(ClientID), sizeof(aOldName));
 
-			// set infos
-			if(!pPlayer->m_ClientNameLocked && Server()->WouldClientNameChange(ClientID, pMsg->m_pName))
-			{
-				char aOldName[MAX_NAME_LENGTH];
-				str_copy(aOldName, Server()->ClientName(ClientID), sizeof(aOldName));
+		Server()->SetClientName(ClientID, pMsg->m_pName);
 
-				Server()->SetClientName(ClientID, pMsg->m_pName);
-
-				SendChatTarget_Localization(-1, CHATCATEGORY_PLAYER, _("{str:PlayerName} changed their name to {str:NewName}"), "PlayerName", aOldName, "NewName", Server()->ClientName(ClientID), NULL);
-				char aBuf[256];
-				str_format(aBuf, sizeof(aBuf), "change_name previous='%s' now='%s'", aOldName, Server()->ClientName(ClientID));
-				Console()->Print(IConsole::OUTPUT_LEVEL_DEBUG, "game", aBuf);
-			}
-			Server()->SetClientClan(ClientID, pMsg->m_pClan);
+		SendChatTarget_Localization(-1, CHATCATEGORY_PLAYER, _("{str:PlayerName} changed their name to {str:NewName}"), "PlayerName", aOldName, "NewName", Server()->ClientName(ClientID), NULL);
+		char aBuf[256];
+		str_format(aBuf, sizeof(aBuf), "change_name previous='%s' now='%s'", aOldName, Server()->ClientName(ClientID));
+		Console()->Print(IConsole::OUTPUT_LEVEL_DEBUG, "game", aBuf);
+	}
+	Server()->SetClientClan(ClientID, pMsg->m_pClan);
 #ifndef CONF_FORCE_COUNTRY_BY_IP
-			Server()->SetClientCountry(ClientID, pMsg->m_Country);
+	Server()->SetClientCountry(ClientID, pMsg->m_Country);
 #endif
-			Server()->ExpireServerInfo();
-		}
-		else if (MsgID == NETMSGTYPE_CL_EMOTICON && !m_World.m_Paused)
-		{
-			CNetMsg_Cl_Emoticon *pMsg = (CNetMsg_Cl_Emoticon *)pRawMsg;
+	Server()->ExpireServerInfo();
+}
 
-			// Still apply a reasonable limit: 1-2 emotes per tick
-			if(g_Config.m_SvSpamprotection && pPlayer->m_LastEmote &&
-				pPlayer->m_LastEmote + maximum(Server()->TickSpeed() * g_Config.m_SvEmoticonDelay, g_Config.m_SvHighBandwidth ? 1 : 2) > Server()->Tick())
-				return;
+void CGameContext::OnEmoticonNetMessage(const CNetMsg_Cl_Emoticon *pMsg, int ClientID)
+{
+	if(m_World.m_Paused)
+		return;
 
-			pPlayer->m_LastEmote = Server()->Tick();
+	CPlayer *pPlayer = m_apPlayers[ClientID];
 
-			SendEmoticon(ClientID, pMsg->m_Emoticon);
-		}
-		else if (MsgID == NETMSGTYPE_CL_KILL && !m_World.m_Paused)
-		{
-			if(pPlayer->m_LastKill && pPlayer->m_LastKill+Server()->TickSpeed()*3 > Server()->Tick())
-				return;
+	// Still apply a reasonable limit: 1-2 emotes per tick
+	if(g_Config.m_SvSpamprotection && pPlayer->m_LastEmote &&
+		pPlayer->m_LastEmote + maximum(Server()->TickSpeed() * g_Config.m_SvEmoticonDelay, g_Config.m_SvHighBandwidth ? 1 : 2) > Server()->Tick())
+		return;
 
-			pPlayer->m_LastKill = Server()->Tick();
-			pPlayer->KillCharacter(WEAPON_SELF);
-		}
+	pPlayer->m_LastEmote = Server()->Tick();
+
+	SendEmoticon(ClientID, pMsg->m_Emoticon);
+}
+
+void CGameContext::OnKillNetMessage(const CNetMsg_Cl_Kill *pMsg, int ClientID)
+{
+	if(m_World.m_Paused)
+		return;
+
+	CPlayer *pPlayer = m_apPlayers[ClientID];
+	if(pPlayer->m_LastKill && pPlayer->m_LastKill + Server()->TickSpeed() * 3 > Server()->Tick())
+		return;
+
+	pPlayer->m_LastKill = Server()->Tick();
+	pPlayer->KillCharacter(WEAPON_SELF);
+}
+
+void CGameContext::OnStartInfoNetMessage(const CNetMsg_Cl_StartInfo *pMsg, int ClientID)
+{
+	CPlayer *pPlayer = m_apPlayers[ClientID];
+
+	if(pPlayer->m_IsReady)
+		return;
+
+	if(!str_utf8_check(pMsg->m_pName))
+	{
+		Server()->Kick(ClientID, "name is not valid utf8");
+		return;
+	}
+	if(!str_utf8_check(pMsg->m_pClan))
+	{
+		Server()->Kick(ClientID, "clan is not valid utf8");
+		return;
+	}
+	if(!str_utf8_check(pMsg->m_pSkin))
+	{
+		Server()->Kick(ClientID, "skin is not valid utf8");
+		return;
 	}
 
-	if(MsgID == NETMSGTYPE_CL_STARTINFO)
+	pPlayer->m_LastChangeInfo = Server()->Tick();
+
+	// set start infos
+	Server()->SetClientName(ClientID, pMsg->m_pName);
+	// trying to set client name can delete the player object, check if it still exists
+	if(!m_apPlayers[ClientID])
 	{
-		if(Server()->ClientIngame(ClientID))
-			return;
+		return;
+	}
+	Server()->SetClientClan(ClientID, pMsg->m_pClan);
+	Server()->SetClientCountry(ClientID, pMsg->m_Country);
 
-		if(pPlayer->m_IsReady)
-			return;
-
-		CNetMsg_Cl_StartInfo *pMsg = (CNetMsg_Cl_StartInfo *)pRawMsg;
-
-		if(!str_utf8_check(pMsg->m_pName))
-		{
-			Server()->Kick(ClientID, "name is not valid utf8");
-			return;
-		}
-		if(!str_utf8_check(pMsg->m_pClan))
-		{
-			Server()->Kick(ClientID, "clan is not valid utf8");
-			return;
-		}
-		if(!str_utf8_check(pMsg->m_pSkin))
-		{
-			Server()->Kick(ClientID, "skin is not valid utf8");
-			return;
-		}
-
-		pPlayer->m_LastChangeInfo = Server()->Tick();
-
-		// set start infos
-		Server()->SetClientName(ClientID, pMsg->m_pName);
-		// trying to set client name can delete the player object, check if it still exists
-		if(!m_apPlayers[ClientID])
-		{
-			return;
-		}
-		Server()->SetClientClan(ClientID, pMsg->m_pClan);
-		Server()->SetClientCountry(ClientID, pMsg->m_Country);
-
-		/* INFECTION MODIFICATION START ***************************************/
-		if(!Server()->GetClientMemory(ClientID, CLIENTMEMORY_LANGUAGESELECTION))
-		{
+	/* INFECTION MODIFICATION START ***************************************/
+	if(!Server()->GetClientMemory(ClientID, CLIENTMEMORY_LANGUAGESELECTION))
+	{
 #ifdef CONF_GEOLOCATION
-			char aAddrStr[NETADDR_MAXSTRSIZE];
-			Server()->GetClientAddr(ClientID, aAddrStr, sizeof(aAddrStr));
-			std::string ip(aAddrStr);
+		char aAddrStr[NETADDR_MAXSTRSIZE];
+		Server()->GetClientAddr(ClientID, aAddrStr, sizeof(aAddrStr));
+		std::string ip(aAddrStr);
 
-			int LocatedCountry = Geolocation::get_country_iso_numeric_code(ip);
+		int LocatedCountry = Geolocation::get_country_iso_numeric_code(ip);
 #ifdef CONF_FORCE_COUNTRY_BY_IP
-			Server()->SetClientCountry(ClientID, LocatedCountry);
+		Server()->SetClientCountry(ClientID, LocatedCountry);
 #endif // CONF_FORCE_COUNTRY_BY_IP
 #else
-			int LocatedCountry = -1;
+		int LocatedCountry = -1;
 #endif // CONF_GEOLOCATION
 
-			const char *const pLangFromClient = CLocalization::LanguageCodeByCountryCode(pMsg->m_Country);
-			const char *const pLangForIp = CLocalization::LanguageCodeByCountryCode(LocatedCountry);
+		const char *const pLangFromClient = CLocalization::LanguageCodeByCountryCode(pMsg->m_Country);
+		const char *const pLangForIp = CLocalization::LanguageCodeByCountryCode(LocatedCountry);
 
-			const char *const pDefaultLang = "en";
-			const char *pLangForVote = "";
+		const char *const pDefaultLang = "en";
+		const char *pLangForVote = "";
 
-			if(pLangFromClient[0] && (str_comp(pLangFromClient, pDefaultLang) != 0))
-				pLangForVote = pLangFromClient;
-			else if(pLangForIp[0] && (str_comp(pLangForIp, pDefaultLang) != 0))
-				pLangForVote = pLangForIp;
+		if(pLangFromClient[0] && (str_comp(pLangFromClient, pDefaultLang) != 0))
+			pLangForVote = pLangFromClient;
+		else if(pLangForIp[0] && (str_comp(pLangForIp, pDefaultLang) != 0))
+			pLangForVote = pLangForIp;
 
-			dbg_msg("lang", "init_language ClientID=%d, lang from flag: \"%s\", lang for IP: \"%s\"", ClientID, pLangFromClient, pLangForIp);
+		dbg_msg("lang", "init_language ClientID=%d, lang from flag: \"%s\", lang for IP: \"%s\"", ClientID, pLangFromClient, pLangForIp);
 
-			SetClientLanguage(ClientID, pDefaultLang);
+		SetClientLanguage(ClientID, pDefaultLang);
 
-			if(pLangForVote[0])
-			{
-				CNetMsg_Sv_VoteSet Msg;
-				Msg.m_Timeout = 10;
-				Msg.m_pReason = "";
-				str_copy(m_VoteLanguage[ClientID], pLangForVote, sizeof(m_VoteLanguage[ClientID]));
-				Msg.m_pDescription = Server()->Localization()->Localize(m_VoteLanguage[ClientID], _("Switch language to english?"));
-				Server()->SendPackMsg(&Msg, MSGFLAG_VITAL, ClientID);
-				m_VoteLanguageTick[ClientID] = 10 * Server()->TickSpeed();
-			}
-			else
-			{
-				SendChatTarget_Localization(ClientID, CHATCATEGORY_DEFAULT, _("You can change the language of this mod using the command /language."), NULL);
-				SendChatTarget_Localization(ClientID, CHATCATEGORY_DEFAULT, _("If your language is not available, you can help with translation (/help translate)."), NULL);
-			}
-
-			Server()->SetClientMemory(ClientID, CLIENTMEMORY_LANGUAGESELECTION, true);
+		if(pLangForVote[0])
+		{
+			CNetMsg_Sv_VoteSet Msg;
+			Msg.m_Timeout = 10;
+			Msg.m_pReason = "";
+			str_copy(m_VoteLanguage[ClientID], pLangForVote, sizeof(m_VoteLanguage[ClientID]));
+			Msg.m_pDescription = Server()->Localization()->Localize(m_VoteLanguage[ClientID], _("Switch language to english?"));
+			Server()->SendPackMsg(&Msg, MSGFLAG_VITAL, ClientID);
+			m_VoteLanguageTick[ClientID] = 10 * Server()->TickSpeed();
 		}
-		/* INFECTION MODIFICATION END *****************************************/
+		else
+		{
+			SendChatTarget_Localization(ClientID, CHATCATEGORY_DEFAULT, _("You can change the language of this mod using the command /language."), NULL);
+			SendChatTarget_Localization(ClientID, CHATCATEGORY_DEFAULT, _("If your language is not available, you can help with translation (/help translate)."), NULL);
+		}
 
-		// send clear vote options
-		CNetMsg_Sv_VoteClearOptions ClearMsg;
-		Server()->SendPackMsg(&ClearMsg, MSGFLAG_VITAL, ClientID);
-
-		// begin sending vote options
-		pPlayer->m_SendVoteIndex = 0;
-
-		// send tuning parameters to client
-		SendTuningParams(ClientID);
-
-		// client is ready to enter
-		pPlayer->m_IsReady = true;
-		CNetMsg_Sv_ReadyToEnter m;
-		Server()->SendPackMsg(&m, MSGFLAG_VITAL | MSGFLAG_FLUSH, ClientID);
-
-		Server()->ExpireServerInfo();
+		Server()->SetClientMemory(ClientID, CLIENTMEMORY_LANGUAGESELECTION, true);
 	}
+	/* INFECTION MODIFICATION END *****************************************/
+
+	// send clear vote options
+	CNetMsg_Sv_VoteClearOptions ClearMsg;
+	Server()->SendPackMsg(&ClearMsg, MSGFLAG_VITAL, ClientID);
+
+	// begin sending vote options
+	pPlayer->m_SendVoteIndex = 0;
+
+	// send tuning parameters to client
+	SendTuningParams(ClientID);
+
+	// client is ready to enter
+	pPlayer->m_IsReady = true;
+	CNetMsg_Sv_ReadyToEnter m;
+	Server()->SendPackMsg(&m, MSGFLAG_VITAL | MSGFLAG_FLUSH, ClientID);
+
+	Server()->ExpireServerInfo();
 }
 
 void CGameContext::ConConverse(IConsole::IResult *pResult, void *pUserData)

@@ -244,6 +244,15 @@ public:
 	void *PreProcessMsg(int *pMsgID, CUnpacker *pUnpacker, int ClientID);
 	void CensorMessage(char *pCensoredMessage, const char *pMessage, int Size);
 	void OnMessage(int MsgID, CUnpacker *pUnpacker, int ClientID) override;
+	void OnSayNetMessage(const CNetMsg_Cl_Say *pMsg, int ClientID, const CUnpacker *pUnpacker);
+	void OnCallVoteNetMessage(const CNetMsg_Cl_CallVote *pMsg, int ClientID);
+	void OnVoteNetMessage(const CNetMsg_Cl_Vote *pMsg, int ClientID);
+	void OnSetTeamNetMessage(const CNetMsg_Cl_SetTeam *pMsg, int ClientID);
+	void OnSetSpectatorModeNetMessage(const CNetMsg_Cl_SetSpectatorMode *pMsg, int ClientID);
+	void OnChangeInfoNetMessage(const CNetMsg_Cl_ChangeInfo *pMsg, int ClientID);
+	void OnEmoticonNetMessage(const CNetMsg_Cl_Emoticon *pMsg, int ClientID);
+	void OnKillNetMessage(const CNetMsg_Cl_Kill *pMsg, int ClientID);
+	void OnStartInfoNetMessage(const CNetMsg_Cl_StartInfo *pMsg, int ClientID);
 
 	bool OnClientDataPersist(int ClientID, void *pData) override;
 	void OnClientConnected(int ClientID, void *pData) override;
@@ -344,7 +353,6 @@ private:
 		MAP_VOTE_BITS = SV_MAP | CHANGE_MAP | SKIP_MAP, // Yeah, this is just '3'
 	};
 	
-	void OnCallVote(void *pRawMsg, int ClientID);
 	static OPTION_VOTE_TYPE GetOptionVoteType(const char *pVoteCommand);
 	void GetMapNameFromCommand(char* pMapName, const char *pCommand);
 
