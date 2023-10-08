@@ -2228,7 +2228,6 @@ void CGameContext::OnCallVoteNetMessage(const CNetMsg_Cl_CallVote *pMsg, int Cli
 
 void CGameContext::OnVoteNetMessage(const CNetMsg_Cl_Vote *pMsg, int ClientID)
 {
-	CPlayer *pPlayer = m_apPlayers[ClientID];
 	if(m_VoteLanguageTick[ClientID] > 0)
 	{
 		if(!pMsg->m_Vote)
@@ -2249,23 +2248,26 @@ void CGameContext::OnVoteNetMessage(const CNetMsg_Cl_Vote *pMsg, int ClientID)
 			Msg.m_pReason = "";
 			Server()->SendPackMsg(&Msg, MSGFLAG_VITAL, ClientID);
 		}
+		return;
 	}
-	else if(m_VoteCloseTime && pPlayer->m_Vote == 0)
-	{
-		if(!pMsg->m_Vote)
-			return;
 
-		pPlayer->m_Vote = pMsg->m_Vote;
-		pPlayer->m_VotePos = ++m_VotePos;
-		m_VoteUpdate = true;
-	}
-	else
+	if(!m_VoteCloseTime)
 	{
 		if(!pMsg->m_Vote)
 			return;
 
 		m_pController->OnPlayerVoteCommand(ClientID, pMsg->m_Vote);
+		return;
 	}
+
+	CPlayer *pPlayer = m_apPlayers[ClientID];
+
+	if(!pMsg->m_Vote)
+		return;
+
+	pPlayer->m_Vote = pMsg->m_Vote;
+	pPlayer->m_VotePos = ++m_VotePos;
+	m_VoteUpdate = true;
 }
 
 void CGameContext::OnSetTeamNetMessage(const CNetMsg_Cl_SetTeam *pMsg, int ClientID)
@@ -2373,6 +2375,12 @@ void CGameContext::OnEmoticonNetMessage(const CNetMsg_Cl_Emoticon *pMsg, int Cli
 		pPlayer->m_LastEmote + maximum(Server()->TickSpeed() * g_Config.m_SvEmoticonDelay, g_Config.m_SvHighBandwidth ? 1 : 2) > Server()->Tick())
 		return;
 
+	CCharacter *pChr = pPlayer->GetCharacter();
+
+	// player needs a character to send emotes
+	if(!pChr)
+		return;
+
 	pPlayer->m_LastEmote = Server()->Tick();
 
 	SendEmoticon(ClientID, pMsg->m_Emoticon);
@@ -2385,6 +2393,10 @@ void CGameContext::OnKillNetMessage(const CNetMsg_Cl_Kill *pMsg, int ClientID)
 
 	CPlayer *pPlayer = m_apPlayers[ClientID];
 	if(pPlayer->m_LastKill && pPlayer->m_LastKill + Server()->TickSpeed() * 3 > Server()->Tick())
+		return;
+
+	CCharacter *pChr = pPlayer->GetCharacter();
+	if(!pChr)
 		return;
 
 	pPlayer->m_LastKill = Server()->Tick();
