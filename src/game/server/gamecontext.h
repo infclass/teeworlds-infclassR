@@ -215,7 +215,7 @@ public:
 
 	// network
 	void CallVote(int ClientID, const char *aDesc, const char *aCmd, const char *pReason, const char *aChatmsg);
-	void SendChatTarget(int To, const char *pText);
+	void SendChatTarget(int To, const char *pText) override;
 	void SendChat(int ClientID, int Team, const char *pText, int SpamProtectionClientID = -1);
 	void SendEmoticon(int ClientID, int Emoticon);
 	void SendWeaponPickup(int ClientID, int Weapon);
@@ -333,7 +333,7 @@ private:
 	void ConChangeLog(IConsole::IResult *pResult);
 	static void ConReloadChangeLog(IConsole::IResult *pResult, void *pUserData);
 
-	bool PrivateMessage(const char* pStr, int ClientID, bool TeamChat);
+	void PrivateMessage(const char* pStr, int ClientID, bool TeamChat);
 	void Whisper(int ClientID, char *pStr);
 	void WhisperID(int ClientID, int VictimID, const char *pMessage);
 	void Converse(int ClientID, const char *pStr);

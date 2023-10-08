@@ -816,6 +816,10 @@ void CGameContext::SendBroadcast_Localization_P(int To, int Priority, int LifeSp
 
 void CGameContext::SendChat(int ChatterClientID, int Team, const char *pText, int SpamProtectionClientID)
 {
+	if(SpamProtectionClientID >= 0 && SpamProtectionClientID < MAX_CLIENTS)
+		if(ProcessSpamProtection(SpamProtectionClientID))
+			return;
+
 	char aBuf[256], aText[256];
 	str_copy(aText, pText, sizeof(aText));
 	if(ChatterClientID >= 0 && ChatterClientID < MAX_CLIENTS)
@@ -1904,9 +1908,6 @@ void CGameContext::OnSayNetMessage(const CNetMsg_Cl_Say *pMsg, int ClientID, con
 		return;
 	}
 	CPlayer *pPlayer = m_apPlayers[ClientID];
-	if(g_Config.m_SvSpamprotection && pPlayer->m_LastChat && pPlayer->m_LastChat + Server()->TickSpeed() > Server()->Tick())
-		return;
-
 	int Team = pMsg->m_Team;
 
 	// trim right and set maximum length to 256 utf8-characters
@@ -1936,7 +1937,7 @@ void CGameContext::OnSayNetMessage(const CNetMsg_Cl_Say *pMsg, int ClientID, con
 		*(const_cast<char *>(pEnd)) = 0;
 
 	// drop empty and autocreated spam messages (more than 32 characters per second)
-	if(Length == 0 || (g_Config.m_SvSpamprotection && pPlayer->m_LastChat && pPlayer->m_LastChat + Server()->TickSpeed() * ((31 + Length) / 32) > Server()->Tick()))
+	if(Length == 0 || (pMsg->m_pMessage[0] != '/' && (g_Config.m_SvSpamprotection && pPlayer->m_LastChat && pPlayer->m_LastChat + Server()->TickSpeed() * ((31 + Length) / 32) > Server()->Tick())))
 		return;
 
 	if(Team)
@@ -1955,35 +1956,33 @@ void CGameContext::OnSayNetMessage(const CNetMsg_Cl_Say *pMsg, int ClientID, con
 		Team = CHAT_ALL;
 	}
 
-	pPlayer->m_LastChat = Server()->Tick();
-
-	/* INFECTION MODIFICATION START ***************************************/
 	if(pMsg->m_pMessage[0] == '/')
 	{
-		if(str_comp_nocase_num(pMsg->m_pMessage + 1, "w ", 2) == 0)
+		if(str_startswith_nocase(pMsg->m_pMessage + 1, "w "))
 		{
 			char aWhisperMsg[256];
 			str_copy(aWhisperMsg, pMsg->m_pMessage + 3, 256);
 			Whisper(pPlayer->GetCID(), aWhisperMsg);
 		}
-		else if(str_comp_nocase_num(pMsg->m_pMessage + 1, "whisper ", 8) == 0)
+		else if(str_startswith_nocase(pMsg->m_pMessage + 1, "whisper "))
 		{
 			char aWhisperMsg[256];
 			str_copy(aWhisperMsg, pMsg->m_pMessage + 9, 256);
 			Whisper(pPlayer->GetCID(), aWhisperMsg);
 		}
-		else if(str_comp_nocase_num(pMsg->m_pMessage + 1, "c ", 2) == 0)
+		else if(str_startswith_nocase(pMsg->m_pMessage + 1, "c "))
 		{
 			char aWhisperMsg[256];
 			str_copy(aWhisperMsg, pMsg->m_pMessage + 3, 256);
 			Converse(pPlayer->GetCID(), aWhisperMsg);
 		}
-		else if(str_comp_nocase_num(pMsg->m_pMessage + 1, "converse ", 9) == 0)
+		else if(str_startswith_nocase(pMsg->m_pMessage + 1, "converse "))
 		{
 			char aWhisperMsg[256];
 			str_copy(aWhisperMsg, pMsg->m_pMessage + 10, 256);
 			Converse(pPlayer->GetCID(), aWhisperMsg);
 		}
+		/* INFECTION MODIFICATION START ***************************************/
 		else if(str_comp_num(pMsg->m_pMessage + 1, "msg ", 4) == 0)
 		{
 			PrivateMessage(pMsg->m_pMessage + 5, ClientID, (Team != CGameContext::CHAT_ALL));
@@ -2028,19 +2027,11 @@ void CGameContext::OnSayNetMessage(const CNetMsg_Cl_Say *pMsg, int ClientID, con
 	}
 	else
 	{
-		if(Server()->GetClientSession(ClientID) && Server()->GetClientSession(ClientID)->m_MuteTick > 0)
-		{
-			int Time = Server()->GetClientSession(ClientID)->m_MuteTick / Server()->TickSpeed();
-			SendChatTarget_Localization(ClientID, CHATCATEGORY_ACCUSATION, _("You are muted for {sec:Duration}"), "Duration", &Time, NULL);
-		}
-		else
-		{
-			// Inverse order and add ligature for arabic
-			dynamic_string Buffer;
-			Buffer.copy(pMsg->m_pMessage);
-			Server()->Localization()->ArabicShaping(Buffer);
-			SendChat(ClientID, Team, Buffer.buffer());
-		}
+		// Inverse order and add ligature for arabic
+		dynamic_string Buffer;
+		Buffer.copy(pMsg->m_pMessage);
+		Server()->Localization()->ArabicShaping(Buffer);
+		SendChat(ClientID, Team, Buffer.buffer(), ClientID);
 	}
 	/* INFECTION MODIFICATION END *****************************************/
 }
@@ -3380,15 +3371,11 @@ void CGameContext::ConAbout(IConsole::IResult *pResult)
 	Buffer.clear();
 }
 
-bool CGameContext::PrivateMessage(const char* pStr, int ClientID, bool TeamChat)
-{	
-	if(Server()->GetClientSession(ClientID) && Server()->GetClientSession(ClientID)->m_MuteTick > 0)
-	{
-		int Time = Server()->GetClientSession(ClientID)->m_MuteTick/Server()->TickSpeed();
-		SendChatTarget_Localization(ClientID, CHATCATEGORY_ACCUSATION, _("You are muted for {sec:Duration}"), "Duration", &Time, NULL);
-		return false;
-	}
-	
+void CGameContext::PrivateMessage(const char* pStr, int ClientID, bool TeamChat)
+{
+	if(ProcessSpamProtection(ClientID))
+		return;
+
 	bool ArgumentFound = false;
 	const char* pArgumentIter = pStr;
 	while(*pArgumentIter)
@@ -3407,7 +3394,7 @@ bool CGameContext::PrivateMessage(const char* pStr, int ClientID, bool TeamChat)
 		SendChatTarget(ClientID, "Usage: /msg <username or group> <message>");
 		SendChatTarget(ClientID, "Send a private message to a player or a group of players");
 		SendChatTarget(ClientID, "Available groups: !near, !engineer, !soldier, ...");
-		return true;
+		return;
 	}
 	
 	dynamic_string FinalMessage;
@@ -3572,7 +3559,7 @@ bool CGameContext::PrivateMessage(const char* pStr, int ClientID, bool TeamChat)
 					{
 						const char *pMessage = pStr[c] == 0 ? &pStr[c] : &pStr[c + 1];
 						WhisperID(ClientID, i, pMessage);
-						return true;
+						return;
 					}
 				}
 			}
@@ -3593,7 +3580,7 @@ bool CGameContext::PrivateMessage(const char* pStr, int ClientID, bool TeamChat)
 	if(!aChatTitle[0])
 	{
 		SendChatTarget_Localization(ClientID, CHATCATEGORY_DEFAULT, _("No player was found with this name"));
-		return true;
+		return;
 	}
 	
 	pStr += c;
@@ -3671,8 +3658,6 @@ bool CGameContext::PrivateMessage(const char* pStr, int ClientID, bool TeamChat)
 			NumPlayerFound++;
 		}
 	}
-	
-	return true;
 }
 
 void CGameContext::MutePlayer(const char* pStr, int ClientID)
@@ -4804,6 +4789,10 @@ bool CGameContext::ProcessSpamProtection(int ClientID, bool RespectChatInitialDe
 {
 	if(!m_apPlayers[ClientID])
 		return false;
+	if(g_Config.m_SvSpamprotection && m_apPlayers[ClientID]->m_LastChat && m_apPlayers[ClientID]->m_LastChat + Server()->TickSpeed() * g_Config.m_SvChatDelay > Server()->Tick())
+		return true;
+
+	m_apPlayers[ClientID]->m_LastChat = Server()->Tick();
 
 	int Muted = 0;
 	if(Server()->GetClientSession(ClientID) && Server()->GetClientSession(ClientID)->m_MuteTick > 0)
