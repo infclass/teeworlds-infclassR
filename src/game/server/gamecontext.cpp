@@ -4111,7 +4111,6 @@ bool CGameContext::WriteClassHelpPage(dynamic_string *pOutput, const char *pLang
 	{
 	case PLAYERCLASS_INVALID:
 	case PLAYERCLASS_NONE:
-	case NB_PLAYERCLASS:
 	case START_INFECTEDCLASS:
 	case END_INFECTEDCLASS:
 	// case NB_INFECTEDCLASS:
