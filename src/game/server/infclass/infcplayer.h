@@ -91,8 +91,8 @@ public:
 	void CloseMapMenu();
 	bool MapMenuClickable();
 
-	void HookProtection(bool Value, bool Automatic = true);
-	bool HookProtectionEnabled() { return m_HookProtection; }
+	void SetHookProtection(bool Value, bool Automatic = true);
+	bool HookProtectionEnabled() const { return m_HookProtection; }
 
 	EPlayerScoreMode GetScoreMode() const;
 	void SetScoreMode(EPlayerScoreMode Mode);

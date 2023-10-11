@@ -492,7 +492,7 @@ bool CInfClassPlayer::MapMenuClickable()
 	return (m_MapMenu > 0 && (m_MapMenuTick > Server()->TickSpeed()/2));
 }
 
-void CInfClassPlayer::HookProtection(bool Value, bool Automatic)
+void CInfClassPlayer::SetHookProtection(bool Value, bool Automatic)
 {
 	if(m_HookProtection != Value)
 	{

@@ -221,7 +221,7 @@ void CInfClassPlayerClass::OnPlayerClassChanged()
 	UpdateSkin();
 
 	// Enable hook protection by default for both infected and humans on class changed
-	m_pPlayer->HookProtection(true);
+	m_pPlayer->SetHookProtection(true);
 
 	if(m_pCharacter)
 	{

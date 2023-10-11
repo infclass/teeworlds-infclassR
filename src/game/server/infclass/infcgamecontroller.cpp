@@ -1835,7 +1835,7 @@ void CInfClassGameController::ConSetHookProtection(IConsole::IResult *pResult)
 	}
 
 	bool Automatic = false;
-	pPlayer->HookProtection(Protection, Automatic);
+	pPlayer->SetHookProtection(Protection, Automatic);
 }
 
 void CInfClassGameController::ChatWitch(IConsole::IResult *pResult, void *pUserData)
@@ -4555,6 +4555,6 @@ void CInfClassGameController::OnPlayerVoteCommand(int ClientID, int Vote)
 	}
 	else
 	{
-		pPlayer->HookProtection(!pPlayer->HookProtectionEnabled(), false);
+		pPlayer->SetHookProtection(!pPlayer->HookProtectionEnabled(), false);
 	}
 }
