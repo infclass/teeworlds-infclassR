@@ -4558,3 +4558,9 @@ void CInfClassGameController::OnPlayerVoteCommand(int ClientID, int Vote)
 		pPlayer->SetHookProtection(!pPlayer->HookProtectionEnabled(), false);
 	}
 }
+
+void CInfClassGameController::OnPlayerClassChanged(CInfClassPlayer *pPlayer)
+{
+	SetPlayerInfected(pPlayer->GetCID(), pPlayer->IsInfected());
+	Server()->ExpireServerInfo();
+}

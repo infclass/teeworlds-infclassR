@@ -128,6 +128,7 @@ public:
 	bool CanVote() override;
 
 	void OnPlayerVoteCommand(int ClientID, int Vote) override;
+	void OnPlayerClassChanged(CInfClassPlayer *pPlayer);
 
 	void OnPlayerConnect(CPlayer *pPlayer) override;
 	void OnPlayerDisconnect(CPlayer *pBasePlayer, EClientDropType Type, const char *pReason) override;

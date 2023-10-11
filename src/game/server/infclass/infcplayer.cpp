@@ -433,11 +433,9 @@ void CInfClassPlayer::SetClass(PLAYERCLASS NewClass)
 		}
 	}
 	m_pInfcPlayerClass->OnPlayerClassChanged();
+	GameController()->OnPlayerClassChanged(this);
 
-	GameController()->SetPlayerInfected(GetCID(), IsInfected());
 	SendClassIntro();
-
-	Server()->ExpireServerInfo();
 }
 
 void CInfClassPlayer::UpdateSkin()
