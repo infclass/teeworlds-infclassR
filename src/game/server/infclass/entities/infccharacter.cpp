@@ -144,13 +144,13 @@ void CInfClassCharacter::OnCharacterOutOfInfectionZone()
 	m_ProtectionTick = 0;
 }
 
-void CInfClassCharacter::OnCharacterInDamageZone(float Damage)
+void CInfClassCharacter::OnCharacterInDamageZone(float Damage, float DamageInterval)
 {
 	constexpr DAMAGE_TYPE DamageType = DAMAGE_TYPE::DAMAGE_TILE;
 
 	const int Tick = Server()->Tick();
 
-	if(m_DamageZoneTick < 0 || (Tick >= (m_DamageZoneTick + Server()->TickSpeed())))
+	if(m_DamageZoneTick < 0 || (Tick >= (m_DamageZoneTick + Server()->TickSpeed() * DamageInterval)))
 		m_DamageZoneDealtDamage = 0;
 
 	if(Damage > m_DamageZoneDealtDamage)

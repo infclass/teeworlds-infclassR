@@ -92,7 +92,7 @@ public:
 	void OnCharacterSpawned(const SpawnContext &Context);
 	void OnCharacterInInfectionZone();
 	void OnCharacterOutOfInfectionZone();
-	void OnCharacterInDamageZone(float Damage);
+	void OnCharacterInDamageZone(float Damage, float DamageInterval = 1.0f);
 
 	void Destroy() override;
 	void Tick() override;
