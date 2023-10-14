@@ -536,7 +536,15 @@ void CInfClassGameController::HandleCharacterTiles(CInfClassCharacter *pCharacte
 	}
 	else if(pCharacter->IsAlive() && Indices.Contains(ZONE_DAMAGE_INFECTION))
 	{
-		pCharacter->OnCharacterInInfectionZone();
+		if((GetRoundType() == ERoundType::Survival) && pCharacter->IsHuman())
+		{
+			int Damage = 3;
+			pCharacter->OnCharacterInDamageZone(Damage, 0.25f);
+		}
+		else
+		{
+			pCharacter->OnCharacterInInfectionZone();
+		}
 	}
 	if(pCharacter->IsAlive() && !Indices.Contains(ZONE_DAMAGE_INFECTION))
 	{
