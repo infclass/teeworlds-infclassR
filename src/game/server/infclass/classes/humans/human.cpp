@@ -302,6 +302,12 @@ void CInfClassHuman::OnPlayerSnap(int SnappingClient, int InfClassVersion)
 				break;
 			}
 			break;
+		case PLAYERCLASS_SCIENTIST:
+			if(m_pCharacter && m_pCharacter->IsAlive())
+			{
+				pClassInfo->m_Data1 = f2fx(m_KillsProgression);
+			}
+			break;
 		case PLAYERCLASS_LOOPER:
 			for(TEntityPtr<CLooperWall> pWall = GameWorld()->FindFirst<CLooperWall>(); pWall; ++pWall)
 			{
