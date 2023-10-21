@@ -116,7 +116,7 @@ void CMercenaryBomb::Snap(int SnappingClient)
 	{
 		vec2 PosStart = m_Pos + vec2(R * cos(AngleStart + AngleStep*i), R * sin(AngleStart + AngleStep*i));
 
-		CNetObj_Pickup *pP = static_cast<CNetObj_Pickup *>(Server()->SnapNewItem(NETOBJTYPE_PICKUP, m_IDs[i], sizeof(CNetObj_Pickup)));
+		CNetObj_Pickup *pP = Server()->SnapNewItem<CNetObj_Pickup>(m_IDs[i]);
 		if(!pP)
 			return;
 

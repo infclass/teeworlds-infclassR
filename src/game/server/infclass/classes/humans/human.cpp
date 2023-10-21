@@ -269,7 +269,7 @@ void CInfClassHuman::OnPlayerSnap(int SnappingClient, int InfClassVersion)
 		return;
 	}
 
-	CNetObj_InfClassClassInfo *pClassInfo = static_cast<CNetObj_InfClassClassInfo *>(Server()->SnapNewItem(NETOBJTYPE_INFCLASSCLASSINFO, GetCID(), sizeof(CNetObj_InfClassClassInfo)));
+	CNetObj_InfClassClassInfo *pClassInfo = Server()->SnapNewItem<CNetObj_InfClassClassInfo>(GetCID());
 	if(!pClassInfo)
 		return;
 	pClassInfo->m_Class = GetPlayerClass();
@@ -1573,7 +1573,7 @@ void CInfClassHuman::SnapHero(int SnappingClient)
 
 		if(CurrentTick > TickLimit)
 		{
-			CNetObj_Laser *pObj = static_cast<CNetObj_Laser *>(Server()->SnapNewItem(NETOBJTYPE_LASER, m_pCharacter->GetCursorID(), sizeof(CNetObj_Laser)));
+			CNetObj_Laser *pObj = Server()->SnapNewItem<CNetObj_Laser>(m_pCharacter->GetCursorID());
 			if(!pObj)
 				return;
 
@@ -1661,7 +1661,7 @@ void CInfClassHuman::SnapLooper(int SnappingClient)
 		{
 			for(int i = 0; i < 2; i++)
 			{
-				CNetObj_Laser *pObj = static_cast<CNetObj_Laser *>(Server()->SnapNewItem(NETOBJTYPE_LASER, m_BarrierHintIDs[i], sizeof(CNetObj_Laser)));
+				CNetObj_Laser *pObj = Server()->SnapNewItem<CNetObj_Laser>(m_BarrierHintIDs[i]);
 
 				if(!pObj)
 					return;

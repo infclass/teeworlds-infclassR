@@ -116,6 +116,8 @@ void CLooperWall::Snap(int SnappingClient)
 
 	const CInfClassPlayer *pPlayer = GameController()->GetPlayer(SnappingClient);
 	const bool AntiPing = pPlayer && pPlayer->GetAntiPingEnabled();
+	int SnappingClientVersion = GameServer()->GetClientVersion(SnappingClient);
+	CSnapContext Context(SnappingClientVersion);
 
 	vec2 dirVec = vec2(m_Pos.x-m_Pos2.x, m_Pos.y-m_Pos2.y);
 	vec2 dirVecN = normalize(dirVec);
@@ -130,32 +132,12 @@ void CLooperWall::Snap(int SnappingClient)
 		}
 		
 		// draws the first two dots + the lasers
-		{
-			CNetObj_Laser *pObj = static_cast<CNetObj_Laser *>(Server()->SnapNewItem(NETOBJTYPE_LASER, m_IDs[i], sizeof(CNetObj_Laser))); //removed m_ID
-			if(!pObj)
-				return;
+		GameServer()->SnapLaserObject(Context, m_IDs[i], m_Pos + dirVecT, m_Pos2 + dirVecT, m_SnapStartTick);
 
-			pObj->m_X = (int)m_Pos.x+dirVecT.x; 
-			pObj->m_Y = (int)m_Pos.y+dirVecT.y;
-			pObj->m_FromX = (int)m_Pos2.x+dirVecT.x; 
-			pObj->m_FromY = (int)m_Pos2.y+dirVecT.y;
-
-			pObj->m_StartTick = m_SnapStartTick;
-		}
-		
 		// draws one dot at the end of each laser
 		if(!AntiPing)
 		{
-			CNetObj_Laser *pObj = static_cast<CNetObj_Laser *>(Server()->SnapNewItem(NETOBJTYPE_LASER, m_EndPointIDs[i], sizeof(CNetObj_Laser)));
-			if(!pObj)
-				return;
-
-			pObj->m_X = (int)m_Pos2.x+dirVecT.x; 
-			pObj->m_Y = (int)m_Pos2.y+dirVecT.y;
-			pObj->m_FromX = (int)m_Pos2.x+dirVecT.x; 
-			pObj->m_FromY = (int)m_Pos2.y+dirVecT.y;
-
-			pObj->m_StartTick = Server()->Tick();
+			GameServer()->SnapLaserObject(Context, m_EndPointIDs[i], m_Pos2 + dirVecT, m_Pos2 + dirVecT, Server()->Tick());
 		}
 	}
 

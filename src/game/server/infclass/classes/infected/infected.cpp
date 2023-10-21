@@ -219,7 +219,7 @@ void CInfClassInfected::OnPlayerSnap(int SnappingClient, int InfClassVersion)
 		return;
 	}
 
-	CNetObj_InfClassClassInfo *pClassInfo = static_cast<CNetObj_InfClassClassInfo *>(Server()->SnapNewItem(NETOBJTYPE_INFCLASSCLASSINFO, GetCID(), sizeof(CNetObj_InfClassClassInfo)));
+	CNetObj_InfClassClassInfo *pClassInfo = Server()->SnapNewItem<CNetObj_InfClassClassInfo>(GetCID());
 	if(!pClassInfo)
 		return;
 	pClassInfo->m_Class = GetPlayerClass();

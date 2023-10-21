@@ -203,23 +203,14 @@ void CTurret::Snap(int SnappingClient)
 
 	const CInfClassPlayer *pPlayer = GameController()->GetPlayer(SnappingClient);
 	const bool AntiPing = pPlayer && pPlayer->GetAntiPingEnabled();
+	int SnappingClientVersion = GameServer()->GetClientVersion(SnappingClient);
+	CSnapContext Context(SnappingClientVersion);
 
 	float time = (Server()->Tick() - m_StartTick) / (float)Server()->TickSpeed();
 	float angle = fmodf(time * pi / 2, 2.0f * pi);
-
-	CNetObj_Laser *pObj = static_cast<CNetObj_Laser *>(Server()->SnapNewItem(NETOBJTYPE_LASER, m_ID, sizeof(CNetObj_Laser)));
-
-	if(!pObj)
-		return;
-
-	pObj->m_X = (int)m_Pos.x;
-	pObj->m_Y = (int)m_Pos.y;
-	pObj->m_FromX = (int)m_Pos.x;
-	pObj->m_FromY = (int)m_Pos.y;
-	pObj->m_StartTick = Server()->Tick();
+	GameServer()->SnapLaserObject(Context, GetID(), m_Pos, m_Pos, Server()->Tick(), GetOwner());
 
 	int Dots = AntiPing ? 2 : std::size(m_IDs);
-
 	for(int i = 0; i < Dots; i++)
 	{
 		float shiftedAngle = angle + 2.0 * pi * i / static_cast<float>(Dots);

@@ -59,32 +59,17 @@ void CBiologistMine::Snap(int SnappingClient)
 
 	float AngleStep = 2.0f * pi / m_Vertices;
 	float Radius = 32.0f;
+
+	int SnappingClientVersion = GameServer()->GetClientVersion(SnappingClient);
+	CSnapContext Context(SnappingClientVersion);
+
 	for(int i = 0; i < m_Vertices; i++)
 	{
 		vec2 VertexPos = m_Pos + vec2(Radius * cos(AngleStep*i), Radius * sin(AngleStep*i));
-		
-		CNetObj_Laser *pObj = static_cast<CNetObj_Laser *>(Server()->SnapNewItem(NETOBJTYPE_LASER, m_IDs[i], sizeof(CNetObj_Laser)));
-		if(!pObj)
-			return;
-
-		pObj->m_X = (int)VertexPos.x;
-		pObj->m_Y = (int)VertexPos.y;
-		pObj->m_FromX = (int)m_Pos.x;
-		pObj->m_FromY = (int)m_Pos.y;
-		pObj->m_StartTick = Server()->Tick()-4;
+		GameServer()->SnapLaserObject(Context, m_IDs[i], VertexPos, m_Pos, Server()->Tick() - 4, GetOwner());
 	}
-	
-	{
-		CNetObj_Laser *pObj = static_cast<CNetObj_Laser *>(Server()->SnapNewItem(NETOBJTYPE_LASER, m_IDs[m_Vertices], sizeof(CNetObj_Laser)));
-		if(!pObj)
-			return;
 
-		pObj->m_X = (int)m_EndPos.x;
-		pObj->m_Y = (int)m_EndPos.y;
-		pObj->m_FromX = (int)m_Pos.x;
-		pObj->m_FromY = (int)m_Pos.y;
-		pObj->m_StartTick = Server()->Tick()-4;
-	}
+	GameServer()->SnapLaserObject(Context, m_IDs[m_Vertices], m_EndPos, m_Pos, Server()->Tick() - 4, GetOwner());
 }
 
 void CBiologistMine::Tick()

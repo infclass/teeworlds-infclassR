@@ -31,7 +31,7 @@ bool CPlacedObject::DoSnapForClient(int SnappingClient)
 
 CNetObj_InfClassObject *CPlacedObject::SnapInfClassObject()
 {
-	CNetObj_InfClassObject *pInfClassObject = static_cast<CNetObj_InfClassObject *>(Server()->SnapNewItem(NETOBJTYPE_INFCLASSOBJECT, m_InfClassObjectID, sizeof(CNetObj_InfClassObject)));
+	CNetObj_InfClassObject *pInfClassObject = Server()->SnapNewItem<CNetObj_InfClassObject>(m_InfClassObjectID);
 	if(!pInfClassObject)
 		return nullptr;
 

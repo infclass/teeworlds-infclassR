@@ -736,8 +736,7 @@ void CInfClassGameController::CreateExplosionDiskGfx(vec2 Pos, float InnerRadius
 
 void CInfClassGameController::SendHammerDot(const vec2 &Pos, int SnapID)
 {
-	CNetObj_Projectile *pObj = static_cast<CNetObj_Projectile *>(Server()->SnapNewItem(NETOBJTYPE_PROJECTILE, SnapID, sizeof(CNetObj_Projectile)));
-
+	CNetObj_Projectile *pObj = Server()->SnapNewItem<CNetObj_Projectile>(SnapID);
 	if(!pObj)
 		return;;
 
@@ -3269,7 +3268,7 @@ void CInfClassGameController::EndFunRound()
 
 void CInfClassGameController::Snap(int SnappingClient)
 {
-	CNetObj_GameInfo *pGameInfoObj = (CNetObj_GameInfo *)Server()->SnapNewItem(NETOBJTYPE_GAMEINFO, 0, sizeof(CNetObj_GameInfo));
+	CNetObj_GameInfo *pGameInfoObj = Server()->SnapNewItem<CNetObj_GameInfo>(0);
 	if(!pGameInfoObj)
 		return;
 
@@ -3300,7 +3299,7 @@ void CInfClassGameController::Snap(int SnappingClient)
 
 	SnapMapMenu(SnappingClient, pGameInfoObj);
 
-	CNetObj_InfClassGameInfo *pInfclassGameInfoObj = (CNetObj_InfClassGameInfo *)Server()->SnapNewItem(NETOBJTYPE_INFCLASSGAMEINFO, 0, sizeof(CNetObj_InfClassGameInfo));
+	CNetObj_InfClassGameInfo *pInfclassGameInfoObj = Server()->SnapNewItem<CNetObj_InfClassGameInfo>(0);
 	pInfclassGameInfoObj->m_Version = 2;
 	pInfclassGameInfoObj->m_Flags = 0;
 	pInfclassGameInfoObj->m_TimeLimitInSeconds = GetTimeLimit() * 60;
@@ -3320,7 +3319,7 @@ void CInfClassGameController::Snap(int SnappingClient)
 		pGameInfoEx->m_Version = GAMEINFO_CURVERSION;
 	}
 
-	CNetObj_GameData *pGameDataObj = (CNetObj_GameData *)Server()->SnapNewItem(NETOBJTYPE_GAMEDATA, 0, sizeof(CNetObj_GameData));
+	CNetObj_GameData *pGameDataObj = Server()->SnapNewItem<CNetObj_GameData>(0);
 	if(!pGameDataObj)
 		return;
 

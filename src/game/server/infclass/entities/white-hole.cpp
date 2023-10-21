@@ -93,6 +93,8 @@ void CWhiteHole::Snap(int SnappingClient)
 
 	const CInfClassPlayer *pPlayer = GameController()->GetPlayer(SnappingClient);
 	const bool AntiPing = pPlayer && pPlayer->GetAntiPingEnabled();
+	int SnappingClientVersion = GameServer()->GetClientVersion(SnappingClient);
+	CSnapContext Context(SnappingClientVersion);
 
 	// Draw AntiPing white hole effect
 	if(AntiPing)
@@ -104,16 +106,7 @@ void CWhiteHole::Snap(int SnappingClient)
 		{
 			vec2 PartPosStart = m_Pos + vec2(Radius * cos(AngleStep*i), Radius * sin(AngleStep*i));
 			vec2 PartPosEnd = m_Pos + vec2(Radius * cos(AngleStep*(i+1)), Radius * sin(AngleStep*(i+1)));
-		
-			CNetObj_Laser *pObj = static_cast<CNetObj_Laser *>(Server()->SnapNewItem(NETOBJTYPE_LASER, m_IDs[i], sizeof(CNetObj_Laser)));
-			if(!pObj)
-				return;
-
-			pObj->m_X = (int)PartPosStart.x;
-			pObj->m_Y = (int)PartPosStart.y;
-			pObj->m_FromX = (int)PartPosEnd.x;
-			pObj->m_FromY = (int)PartPosEnd.y;
-			pObj->m_StartTick = Server()->Tick();
+			GameServer()->SnapLaserObject(Context, m_IDs[i], PartPosStart, PartPosEnd, Server()->Tick());
 		}
 		return;
 	}

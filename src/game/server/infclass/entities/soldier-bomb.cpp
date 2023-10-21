@@ -113,7 +113,7 @@ void CSoldierBomb::Snap(int SnappingClient)
 	{
 		float shiftedAngle = m_Angle + 2.0 * pi * static_cast<float>(i) / static_cast<float>(m_IDBomb.size());
 
-		CNetObj_Projectile *pProj = static_cast<CNetObj_Projectile *>(Server()->SnapNewItem(NETOBJTYPE_PROJECTILE, m_IDBomb[i], sizeof(CNetObj_Projectile)));
+		CNetObj_Projectile *pProj = Server()->SnapNewItem<CNetObj_Projectile>(m_IDBomb[i]);
 		pProj->m_X = (int)(m_Pos.x + m_DetectionRadius * cos(shiftedAngle));
 		pProj->m_Y = (int)(m_Pos.y + m_DetectionRadius * sin(shiftedAngle));
 		pProj->m_VelX = (int)(0.0f);
