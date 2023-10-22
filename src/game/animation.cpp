@@ -4,6 +4,8 @@
 #include <game/layers.h>
 #include <game/animation.h>
 
+#include <engine/map.h>
+
 void GetAnimationTransform(float GlobalTime, int Env, CLayers* pLayers, vec2& Position, float& Angle)
 {
 	CEnvPoint *pPoints = 0;

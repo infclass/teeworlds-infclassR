@@ -1,7 +1,11 @@
 /* (c) Magnus Auvinen. See licence.txt in the root of the distribution for more information. */
 /* If you are missing that file, acquire a complete release at teeworlds.com.                */
 #include "layers.h"
+
 #include "gamecore.h"
+#include "mapitems.h"
+
+#include <engine/map.h>
 
 CLayers::CLayers()
 {
@@ -108,10 +112,10 @@ void CLayers::Init(IMap *pMap)
 
 CMapItemGroup *CLayers::GetGroup(int Index) const
 {
-	return static_cast<CMapItemGroup *>(m_pMap->GetItem(m_GroupsStart+Index, 0, 0));
+	return static_cast<CMapItemGroup *>(m_pMap->GetItem(m_GroupsStart + Index));
 }
 
 CMapItemLayer *CLayers::GetLayer(int Index) const
 {
-	return static_cast<CMapItemLayer *>(m_pMap->GetItem(m_LayersStart+Index, 0, 0));
+	return static_cast<CMapItemLayer *>(m_pMap->GetItem(m_LayersStart + Index));
 }

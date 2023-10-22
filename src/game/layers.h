@@ -3,8 +3,13 @@
 #ifndef GAME_LAYERS_H
 #define GAME_LAYERS_H
 
-#include <engine/map.h>
-#include <game/mapitems.h>
+class IKernel;
+class IMap;
+
+struct CMapItemGroup;
+struct CMapItemGroupEx;
+struct CMapItemLayer;
+struct CMapItemLayerTilemap;
 
 class CLayers
 {
