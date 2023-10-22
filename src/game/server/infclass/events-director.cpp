@@ -116,7 +116,7 @@ const char *EventsDirector::GetEventMapName(const char *pMapName)
 		return MapName;
 	}
 
-	return pMapName;
+	return nullptr;
 }
 
 bool EventsDirector::IsWinter()

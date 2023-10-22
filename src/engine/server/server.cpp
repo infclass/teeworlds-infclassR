@@ -2765,23 +2765,32 @@ int CServer::LoadMap(const char *pMapName)
 
 	char aBuf[IO_MAX_PATH_LENGTH];
 /* INFECTION MODIFICATION START ***************************************/
-	const char *pMapFileName = EventsDirector::GetEventMapName(pMapName);
-
-	str_format(aBuf, sizeof(aBuf), "maps/%s.map", pMapFileName);
-
-	if(!GenerateClientMap(aBuf, pMapFileName))
+	const char *pLoadedMapFileName = nullptr;
+	const char *pEventMapName = EventsDirector::GetEventMapName(pMapName);
+	for(const char *pMapFileName : {pEventMapName, pMapName})
 	{
-		if(str_comp(pMapFileName, pMapName) == 0)
-			return 0;
+		if(!pMapFileName)
+			continue;
 
-		pMapFileName = pMapName;
 		str_format(aBuf, sizeof(aBuf), "maps/%s.map", pMapFileName);
 
-		if(!GenerateClientMap(aBuf, pMapFileName))
-			return 0;
-	}
+		if(str_startswith(pMapName, "infc_"))
+		{
+			if(!GenerateClientMap(aBuf, pMapFileName))
+				continue;
+		}
+		else
+		{
+			continue;
+		}
 
-	str_format(aBuf, sizeof(aBuf), "map_loaded name='%s' file='maps/%s.map'", pMapName, pMapFileName);
+		pLoadedMapFileName = pMapFileName;
+		break;
+	}
+	if(!pLoadedMapFileName)
+		return 0;
+
+	str_format(aBuf, sizeof(aBuf), "map_loaded name='%s' file='maps/%s.map'", pMapName, pLoadedMapFileName);
 	Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "server", aBuf);
 /* INFECTION MODIFICATION END *****************************************/
 
