@@ -4,7 +4,7 @@
 #include <base/system.h>
 
 template<typename T, int NamesCount>
-const char *toStringImpl(T Value, const char *(&apNames)[NamesCount])
+[[nodiscard]] const char *toStringImpl(T Value, const char *(&apNames)[NamesCount])
 {
 	// T::Invalid and T::Count are equal to avoid extra case in switch()
 	static_assert(static_cast<int>(T::Count) + 1 == NamesCount);
@@ -18,7 +18,7 @@ const char *toStringImpl(T Value, const char *(&apNames)[NamesCount])
 }
 
 template<typename T>
-T fromString(const char *pString)
+[[nodiscard]] T fromString(const char *pString)
 {
 	for(int i = 0; i < static_cast<int>(T::Count); ++i)
 	{
