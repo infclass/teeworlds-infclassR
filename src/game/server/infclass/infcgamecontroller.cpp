@@ -156,7 +156,7 @@ CInfClassGameController::CInfClassGameController(class CGameContext *pGameServer
 	m_GrowingMap = new int[m_MapWidth*m_MapHeight];
 
 	m_RoundType = GetDefaultRoundType();
-	m_QueuedRoundType = m_RoundType;
+	m_QueuedRoundType = ERoundType::Invalid;
 	m_InfectedStarted = false;
 
 	for(int j=0; j<m_MapHeight; j++)
@@ -2220,8 +2220,14 @@ void CInfClassGameController::StartRound()
 {
 	const bool StartAfterGameOver = IsGameOver();
 
-	m_RoundType = m_QueuedRoundType;
-	QueueRoundType(GetDefaultRoundType());
+	ERoundType NewRoundType = m_QueuedRoundType;
+	if (NewRoundType == ERoundType::Invalid)
+	{
+		NewRoundType = GetDefaultRoundType();
+	}
+
+	m_RoundType = NewRoundType;
+	QueueRoundType(ERoundType::Invalid);
 
 	switch(GetRoundType())
 	{
