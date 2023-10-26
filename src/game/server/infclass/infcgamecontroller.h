@@ -121,6 +121,7 @@ public:
 	int GetInfectedCount(PLAYERCLASS InfectedPlayerClass = PLAYERCLASS_INVALID) const;
 	int GetMinPlayers() const;
 
+	ERoundType GetDefaultRoundType() const;
 	ERoundType GetRoundType() const;
 	void QueueRoundType(ERoundType RoundType);
 

@@ -155,8 +155,10 @@ CInfClassGameController::CInfClassGameController(class CGameContext *pGameServer
 	m_MapHeight = GameServer()->Collision()->GetHeight();
 	m_GrowingMap = new int[m_MapWidth*m_MapHeight];
 
+	m_RoundType = GetDefaultRoundType();
+	m_QueuedRoundType = m_RoundType;
 	m_InfectedStarted = false;
-	
+
 	for(int j=0; j<m_MapHeight; j++)
 	{
 		for(int i=0; i<m_MapWidth; i++)
@@ -2219,7 +2221,7 @@ void CInfClassGameController::StartRound()
 	const bool StartAfterGameOver = IsGameOver();
 
 	m_RoundType = m_QueuedRoundType;
-	QueueRoundType(ERoundType::Normal);
+	QueueRoundType(GetDefaultRoundType());
 
 	switch(GetRoundType())
 	{
@@ -4428,6 +4430,16 @@ int CInfClassGameController::GetInfectedCount(PLAYERCLASS InfectedPlayerClass) c
 int CInfClassGameController::GetMinPlayers() const
 {
 	return Config()->m_InfMinPlayers;
+}
+
+ERoundType CInfClassGameController::GetDefaultRoundType() const
+{
+	// Never return invalid
+	ERoundType RoundType = fromString<ERoundType>(Config()->m_InfDefaultRoundType);
+	if (RoundType == ERoundType::Invalid)
+		RoundType = ERoundType::Normal;
+
+	return RoundType;
 }
 
 ERoundType CInfClassGameController::GetRoundType() const

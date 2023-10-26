@@ -28,6 +28,7 @@ MACRO_CONFIG_INT(InfInitialInfectionDelay, inf_initial_infection_delay, 10, 0, 1
 MACRO_CONFIG_INT(InfTrainingMode, inf_training_mode, 0, 0, 1, CFGFLAG_SERVER, "Enable the training mode (with commands)")
 
 MACRO_CONFIG_STR(InfEvent, inf_event, 64, "", CFGFLAG_SERVER, "Special event")
+MACRO_CONFIG_STR(InfDefaultRoundType, inf_default_round_type, 64, "", CFGFLAG_SERVER, "Default round type")
 
 MACRO_CONFIG_INT(InfMinPlayers, inf_min_players, 2, 0, 64, CFGFLAG_SERVER, "Minimum number of players to start the round")
 MACRO_CONFIG_INT(InfTeamBalanceSeconds, inf_teambalance_seconds, 10, 0, 1000, CFGFLAG_SERVER, "How many seconds to wait before autobalancing teams")
