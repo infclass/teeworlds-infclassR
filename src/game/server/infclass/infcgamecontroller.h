@@ -27,13 +27,13 @@ enum class EPlayerScoreMode;
 
 using ClientsArray = icArray<int, MAX_CLIENTS>;
 
-enum class ROUND_TYPE
+enum class ERoundType
 {
-	NORMAL,
-	FUN,
-	FAST,
-	COUNT,
-	INVALID = COUNT,
+	Normal,
+	Fun,
+	Fast,
+	Count,
+	Invalid = Count,
 };
 
 enum class CLASS_AVAILABILITY
@@ -44,7 +44,7 @@ enum class CLASS_AVAILABILITY
 	LIMIT_EXCEEDED,
 };
 
-static const char *toString(ROUND_TYPE RoundType);
+static const char *toString(ERoundType RoundType);
 
 struct FunRoundConfiguration
 {
@@ -121,8 +121,8 @@ public:
 	int GetInfectedCount(PLAYERCLASS InfectedPlayerClass = PLAYERCLASS_INVALID) const;
 	int GetMinPlayers() const;
 
-	ROUND_TYPE GetRoundType() const;
-	void QueueRoundType(ROUND_TYPE RoundType);
+	ERoundType GetRoundType() const;
+	void QueueRoundType(ERoundType RoundType);
 
 	CLASS_AVAILABILITY GetPlayerClassAvailability(PLAYERCLASS PlayerClass, const CInfClassPlayer *pForPlayer = nullptr) const;
 	bool CanVote() override;
@@ -302,8 +302,8 @@ private:
 	ClientsArray m_NinjaTargets;
 	int m_PlayerOwnCursorID = -1;
 
-	ROUND_TYPE m_RoundType = ROUND_TYPE::NORMAL;
-	ROUND_TYPE m_QueuedRoundType = ROUND_TYPE::NORMAL;
+	ERoundType m_RoundType = ERoundType::Normal;
+	ERoundType m_QueuedRoundType = ERoundType::Normal;
 
 	FunRoundConfiguration m_FunRoundConfiguration;
 	std::vector<FunRoundConfiguration> m_FunRoundConfigurations;

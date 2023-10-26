@@ -104,7 +104,7 @@ static const CHintMessage gs_aHintMessages[] = {
 	_("Witch can spawn the infected through narrow walls."),
 	_("Undead can be removed from a game by throwing it into kill tiles or reviving it as a Medic.")};
 
-const char *toString(ROUND_TYPE RoundType)
+const char *toString(ERoundType RoundType)
 {
 	int Index = static_cast<int>(RoundType);
 	if((Index < 0) || (Index >= std::size(gs_aRoundNames)))
@@ -115,17 +115,17 @@ const char *toString(ROUND_TYPE RoundType)
 	return gs_aRoundNames[Index];
 }
 
-ROUND_TYPE GetTypeByName(const char *pName)
+ERoundType GetTypeByName(const char *pName)
 {
-	for(int i = 0; i < static_cast<int>(ROUND_TYPE::COUNT); ++i)
+	for(int i = 0; i < static_cast<int>(ERoundType::Count); ++i)
 	{
 		if(str_comp(pName, gs_aRoundNames[i]) == 0)
 		{
-			return static_cast<ROUND_TYPE>(i);
+			return static_cast<ERoundType>(i);
 		}
 	}
 
-	return ROUND_TYPE::INVALID;
+	return ERoundType::Invalid;
 }
 
 enum class ROUND_CANCELATION_REASON
@@ -1517,8 +1517,8 @@ void CInfClassGameController::ConQueueSpecialRound(IConsole::IResult *pResult, v
 {
 	CInfClassGameController *pSelf = (CInfClassGameController *)pUserData;
 	const char *pRoundTypeName = pResult->GetString(0);
-	ROUND_TYPE Type = GetTypeByName(pRoundTypeName);
-	if(Type == ROUND_TYPE::INVALID)
+	ERoundType Type = GetTypeByName(pRoundTypeName);
+	if(Type == ERoundType::Invalid)
 	{
 		return;
 	}
@@ -1543,7 +1543,7 @@ void CInfClassGameController::ConStartFunRound(IConsole::IResult *pResult, void 
 		return;
 	}
 
-	pSelf->QueueRoundType(ROUND_TYPE::FUN);
+	pSelf->QueueRoundType(ERoundType::Fun);
 	pSelf->StartRound();
 }
 
@@ -1566,7 +1566,7 @@ void CInfClassGameController::ConQueueFunRound(IConsole::IResult *pResult, void 
 		return;
 	}
 
-	pSelf->QueueRoundType(ROUND_TYPE::FUN);
+	pSelf->QueueRoundType(ERoundType::Fun);
 }
 
 void CInfClassGameController::ConStartSpecialFunRound(IConsole::IResult *pResult, void *pUserData)
@@ -1578,7 +1578,7 @@ void CInfClassGameController::ConStartSpecialFunRound(IConsole::IResult *pResult
 	std::swap(pSelf->m_FunRoundConfigurations, aOldConfigurations);
 	pSelf->m_FunRoundConfigurations = {FunRoundConfig};
 
-	pSelf->QueueRoundType(ROUND_TYPE::FUN);
+	pSelf->QueueRoundType(ERoundType::Fun);
 
 	if(!pSelf->m_Warmup)
 	{
@@ -1620,14 +1620,14 @@ void CInfClassGameController::ConAddFunRound(IConsole::IResult *pResult, void *p
 void CInfClassGameController::ConStartFastRound(IConsole::IResult *pResult, void *pUserData)
 {
 	CInfClassGameController *pSelf = (CInfClassGameController *)pUserData;
-	pSelf->QueueRoundType(ROUND_TYPE::FAST);
+	pSelf->QueueRoundType(ERoundType::Fast);
 	pSelf->StartRound();
 }
 
 void CInfClassGameController::ConQueueFastRound(IConsole::IResult *pResult, void *pUserData)
 {
 	CInfClassGameController *pSelf = (CInfClassGameController *)pUserData;
-	pSelf->QueueRoundType(ROUND_TYPE::FAST);
+	pSelf->QueueRoundType(ERoundType::Fast);
 }
 
 void CInfClassGameController::ConMapRotationStatus(IConsole::IResult *pResult, void *pUserData)
@@ -2235,27 +2235,27 @@ void CInfClassGameController::StartRound()
 	const bool StartAfterGameOver = IsGameOver();
 
 	m_RoundType = m_QueuedRoundType;
-	QueueRoundType(ROUND_TYPE::NORMAL);
+	QueueRoundType(ERoundType::Normal);
 
 	switch(GetRoundType())
 	{
-	case ROUND_TYPE::NORMAL:
+	case ERoundType::Normal:
 		break;
-	case ROUND_TYPE::FUN:
+	case ERoundType::Fun:
 	{
 		if(m_FunRoundConfigurations.empty())
 		{
-			m_RoundType = ROUND_TYPE::NORMAL;
+			m_RoundType = ERoundType::Normal;
 			break;
 		}
 		StartFunRound();
 	}
 		break;
-	case ROUND_TYPE::FAST:
+	case ERoundType::Fast:
 		GameServer()->CreateSoundGlobal(SOUND_CTF_CAPTURE);
 		GameServer()->SendChatTarget(-1, "Starting the 'fast' round. Good luck everyone!");
 		break;
-	case ROUND_TYPE::INVALID:
+	case ERoundType::Invalid:
 		break;
 	}
 
@@ -2324,13 +2324,13 @@ void CInfClassGameController::EndRound(ROUND_END_REASON Reason)
 
 	switch(GetRoundType())
 	{
-	case ROUND_TYPE::NORMAL:
-	case ROUND_TYPE::FAST:
+	case ERoundType::Normal:
+	case ERoundType::Fast:
 		break;
-	case ROUND_TYPE::FUN:
+	case ERoundType::Fun:
 		EndFunRound();
 		break;
-	case ROUND_TYPE::INVALID:
+	case ERoundType::Invalid:
 		break;
 	}
 
@@ -2386,7 +2386,7 @@ void CInfClassGameController::GetPlayerCounter(int ClientException, int& NumHuma
 
 int CInfClassGameController::GetMinimumInfectedForPlayers(int PlayersNumber) const
 {
-	if(GetRoundType() == ROUND_TYPE::FAST)
+	if(GetRoundType() == ERoundType::Fast)
 	{
 		//  7 | 3 vs 4 | 3.01
 		//  8 | 3 vs 5 | 3.44
@@ -2964,7 +2964,7 @@ void CInfClassGameController::MaybeSendStatistics()
 		return;
 	}
 
-	if(GetRoundType() != ROUND_TYPE::NORMAL)
+	if(GetRoundType() != ERoundType::Normal)
 		return;
 
 	Server()->SendStatistics();
@@ -3095,12 +3095,12 @@ bool CInfClassGameController::AreTurretsEnabled() const
 
 bool CInfClassGameController::MercBombsEnabled() const
 {
-	return GetRoundType() != ROUND_TYPE::FUN;
+	return GetRoundType() != ERoundType::Fun;
 }
 
 bool CInfClassGameController::WhiteHoleEnabled() const
 {
-	if(GetRoundType() == ROUND_TYPE::FAST)
+	if(GetRoundType() == ERoundType::Fast)
 		return false;
 
 	if(Server()->GetActivePlayerCount() < Config()->m_InfMinPlayersForWhiteHole)
@@ -3126,7 +3126,7 @@ int CInfClassGameController::GetTaxiMode() const
 
 int CInfClassGameController::GetGhoulStomackSize() const
 {
-	if(GetRoundType() == ROUND_TYPE::FUN)
+	if(GetRoundType() == ERoundType::Fun)
 		return Config()->m_FunRoundGhoulStomachSize;
 
 	return Config()->m_InfGhoulStomachSize;
@@ -3167,9 +3167,9 @@ float CInfClassGameController::GetTimeLimit() const
 
 	switch(GetRoundType())
 	{
-	case ROUND_TYPE::FUN:
+	case ERoundType::Fun:
 		return minimum<float>(BaseTimeLimit, Config()->m_FunRoundDuration);
-	case ROUND_TYPE::FAST:
+	case ERoundType::Fast:
 		return clamp<float>(BaseTimeLimit * 0.5, 1, 3);
 	default:
 		return BaseTimeLimit;
@@ -3514,7 +3514,7 @@ void CInfClassGameController::RewardTheKillers(CInfClassCharacter *pVictim, cons
 	{
 		PLAYERCLASS VictimClass = static_cast<PLAYERCLASS>(pVictim->GetPlayerClass());
 		int ScoreEvent = SCOREEVENT_KILL_INFECTED;
-		bool ClassSpecialProcessingEnabled = (GetRoundType() != ROUND_TYPE::FUN) || (GetPlayerClassProbability(VictimClass) == 0);
+		bool ClassSpecialProcessingEnabled = (GetRoundType() != ERoundType::Fun) || (GetPlayerClassProbability(VictimClass) == 0);
 		if(ClassSpecialProcessingEnabled)
 		{
 			switch(VictimClass)
@@ -3627,7 +3627,7 @@ void CInfClassGameController::OnCharacterDeath(CInfClassCharacter *pVictim, cons
 	{
 		ClassSpecialProcessingEnabled = false;
 	}
-	else if((GetRoundType() == ROUND_TYPE::FUN) && !pVictim->IsHuman() && GetPlayerClassProbability(VictimClass))
+	else if((GetRoundType() == ERoundType::Fun) && !pVictim->IsHuman() && GetPlayerClassProbability(VictimClass))
 	{
 		ClassSpecialProcessingEnabled = false;
 	}
@@ -3690,7 +3690,7 @@ void CInfClassGameController::OnCharacterDeath(CInfClassCharacter *pVictim, cons
 		RespawnDelay = Server()->TickSpeed() * 0.5f;
 	}
 
-	if(GetRoundType() == ROUND_TYPE::FAST)
+	if(GetRoundType() == ERoundType::Fast)
 	{
 		RespawnDelay *= 0.5;
 	}
@@ -3736,7 +3736,7 @@ void CInfClassGameController::OnCharacterSpawned(CInfClassCharacter *pCharacter,
 		}
 	}
 
-	if((GetRoundType() == ROUND_TYPE::FUN) && !IsInfectionStarted() && pCharacter->GetPlayerClass() == PLAYERCLASS_NONE)
+	if((GetRoundType() == ERoundType::Fun) && !IsInfectionStarted() && pCharacter->GetPlayerClass() == PLAYERCLASS_NONE)
 	{
 		if(pPlayer)
 		{
@@ -3749,7 +3749,7 @@ void CInfClassGameController::OnClassChooserRequested(CInfClassCharacter *pChara
 {
 	CInfClassPlayer *pPlayer = pCharacter->GetPlayer();
 
-	if(GetRoundType() == ROUND_TYPE::FUN)
+	if(GetRoundType() == ERoundType::Fun)
 	{
 		pPlayer->SetRandomClassChoosen();
 		// Read this as "player didn't choose this class"
@@ -4109,7 +4109,7 @@ PLAYERCLASS CInfClassGameController::ChooseHumanClass(const CInfClassPlayer *pPl
 	{
 		double &ClassProbability = GetClassProbabilityRef(PlayerClass);
 		ClassProbability = GetPlayerClassEnabled(PlayerClass) ? 1.0f : 0.0f;
-		if(GetRoundType() != ROUND_TYPE::FUN)
+		if(GetRoundType() != ERoundType::Fun)
 		{
 			CLASS_AVAILABILITY Availability = GetPlayerClassAvailability(PlayerClass, pPlayer);
 			if(Availability != CLASS_AVAILABILITY::AVAILABLE)
@@ -4137,7 +4137,7 @@ PLAYERCLASS CInfClassGameController::ChooseHumanClass(const CInfClassPlayer *pPl
 	}
 
 	// Random is not fair enough. We keep the last classes took by the player, and avoid to give those again
-	if(GetRoundType() != ROUND_TYPE::FUN)
+	if(GetRoundType() != ERoundType::Fun)
 	{
 		if(AvailableClasses > 1)
 		{
@@ -4188,7 +4188,7 @@ PLAYERCLASS CInfClassGameController::ChooseInfectedClass(const CInfClassPlayer *
 	{
 		double &ClassProbability = Probability[PlayerClass - START_INFECTEDCLASS - 1];
 		ClassProbability = GetPlayerClassProbability(PlayerClass);
-		if(GetRoundType() == ROUND_TYPE::FUN)
+		if(GetRoundType() == ERoundType::Fun)
 		{
 			// We care only about the class enablement
 			continue;
@@ -4231,7 +4231,7 @@ PLAYERCLASS CInfClassGameController::ChooseInfectedClass(const CInfClassPlayer *
 
 bool CInfClassGameController::GetPlayerClassEnabled(PLAYERCLASS PlayerClass) const
 {
-	if(GetRoundType() == ROUND_TYPE::FUN)
+	if(GetRoundType() == ERoundType::Fun)
 	{
 		return PlayerClass == m_FunRoundConfiguration.HumanClass;
 	}
@@ -4381,7 +4381,7 @@ int CInfClassGameController::GetClassPlayerLimit(PLAYERCLASS PlayerClass) const
 
 int CInfClassGameController::GetPlayerClassProbability(PLAYERCLASS PlayerClass) const
 {
-	if(GetRoundType() == ROUND_TYPE::FUN)
+	if(GetRoundType() == ERoundType::Fun)
 	{
 		return PlayerClass == m_FunRoundConfiguration.InfectedClass;
 	}
@@ -4446,12 +4446,12 @@ int CInfClassGameController::GetMinPlayers() const
 	return Config()->m_InfMinPlayers;
 }
 
-ROUND_TYPE CInfClassGameController::GetRoundType() const
+ERoundType CInfClassGameController::GetRoundType() const
 {
 	return m_RoundType;
 }
 
-void CInfClassGameController::QueueRoundType(ROUND_TYPE RoundType)
+void CInfClassGameController::QueueRoundType(ERoundType RoundType)
 {
 	dbg_msg("controller", "Queued round: %s", toString(RoundType));
 	m_QueuedRoundType = RoundType;
