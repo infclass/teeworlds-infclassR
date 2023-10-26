@@ -16,6 +16,7 @@
 #include <game/server/infclass/infcplayer.h>
 
 #include <base/tl/ic_array.h>
+#include <base/tl/ic_enum.h>
 #include <engine/shared/config.h>
 #include <engine/server/mapconverter.h>
 #include <engine/server/roundstatistics.h>
@@ -42,6 +43,13 @@ static const char *gs_aRoundNames[] = {
 	"fast",
 	"invalid",
 };
+
+const char *toString(ERoundType RoundType)
+{
+	return toStringImpl(RoundType, gs_aRoundNames);
+}
+
+template ERoundType fromString<ERoundType>(const char *pString);
 
 class CHintMessage
 {
@@ -103,30 +111,6 @@ static const CHintMessage gs_aHintMessages[] = {
 	_("Voodoo can unfreeze an Undead while in Spirit mode."),
 	_("Witch can spawn the infected through narrow walls."),
 	_("Undead can be removed from a game by throwing it into kill tiles or reviving it as a Medic.")};
-
-const char *toString(ERoundType RoundType)
-{
-	int Index = static_cast<int>(RoundType);
-	if((Index < 0) || (Index >= std::size(gs_aRoundNames)))
-	{
-		dbg_msg("Controller", "toString(ROUND_TYPE %d): out of range!", Index);
-		return "invalid";
-	}
-	return gs_aRoundNames[Index];
-}
-
-ERoundType GetTypeByName(const char *pName)
-{
-	for(int i = 0; i < static_cast<int>(ERoundType::Count); ++i)
-	{
-		if(str_comp(pName, gs_aRoundNames[i]) == 0)
-		{
-			return static_cast<ERoundType>(i);
-		}
-	}
-
-	return ERoundType::Invalid;
-}
 
 enum class ROUND_CANCELATION_REASON
 {
@@ -1517,7 +1501,7 @@ void CInfClassGameController::ConQueueSpecialRound(IConsole::IResult *pResult, v
 {
 	CInfClassGameController *pSelf = (CInfClassGameController *)pUserData;
 	const char *pRoundTypeName = pResult->GetString(0);
-	ERoundType Type = GetTypeByName(pRoundTypeName);
+	ERoundType Type = fromString<ERoundType>(pRoundTypeName);
 	if(Type == ERoundType::Invalid)
 	{
 		return;
