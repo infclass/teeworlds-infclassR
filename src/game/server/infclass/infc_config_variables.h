@@ -1,5 +1,14 @@
 // NO INCLUDE GUARDS!
 
+#ifndef MACRO_CONFIG_INT
+
+#error "Config macros must be defined"
+#define MACRO_CONFIG_INT(Name, ScriptName, Def, Min, Max, Save, Desc);
+#define MACRO_CONFIG_COL(Name, ScriptName, Def, Save, Desc);
+#define MACRO_CONFIG_STR(Name, ScriptName, Len, Def, Save, Desc);
+
+#endif
+
 MACRO_CONFIG_STR(PlayerLogfile, playerlogfile, 128, "", CFGFLAG_SERVER, "Filename to log joined players info to")
 
 MACRO_CONFIG_STR(AboutSourceUrl, about_source_url, 128, "https://github.com/InfectionDust/teeworlds-infclassR", CFGFLAG_SERVER, "The server source code URL")
