@@ -1236,6 +1236,7 @@ void CInfClassGameController::RegisterChatCommands(IConsole *pConsole)
 	pConsole->Register("start_fast_round", "", CFGFLAG_SERVER, ConStartFastRound, this, "Start a faster gameplay round");
 	pConsole->Register("queue_fast_round", "", CFGFLAG_SERVER, ConQueueFastRound, this, "Queue a faster gameplay round");
 	pConsole->Register("queue_fun_round", "", CFGFLAG_SERVER, ConQueueFunRound, this, "Queue a fun gameplay round");
+	pConsole->Register("print_players_picking", "", CFGFLAG_SERVER, ConPrintPlayerPickingTimestamp, this, "");
 	pConsole->Register("map_rotation_status", "", CFGFLAG_SERVER, ConMapRotationStatus, this, "Print the status of map rotation");
 
 	pConsole->Register("save_maps_data", "s[filename]", CFGFLAG_SERVER, ConSaveMapsData, this, "Save the map rotation data to a file");
@@ -1614,6 +1615,41 @@ void CInfClassGameController::ConQueueFastRound(IConsole::IResult *pResult, void
 {
 	CInfClassGameController *pSelf = (CInfClassGameController *)pUserData;
 	pSelf->QueueRoundType(ERoundType::Fast);
+}
+
+void CInfClassGameController::ConPrintPlayerPickingTimestamp(IConsole::IResult *pResult, void *pUserData)
+{
+	CInfClassGameController *pSelf = (CInfClassGameController *)pUserData;
+	pSelf->ConPrintPlayerPickingTimestamp(pResult);
+}
+
+void CInfClassGameController::ConPrintPlayerPickingTimestamp(IConsole::IResult *pResult)
+{
+	char aBuf[256];
+	int CurrentTimestamp = time_timestamp();
+	for(int i = 0; i < MAX_CLIENTS; i++)
+	{
+		CInfClassPlayer *pPlayer = GetPlayer(i);
+		if(pPlayer == nullptr)
+			continue;
+		if(pPlayer->IsBot())
+			continue;
+
+		int Timestamp = pPlayer->GetInfectionTimestamp();
+
+		const char *pPickedSecondsAgo = "";
+		char aSecondsBuf[32];
+		if(Timestamp && CurrentTimestamp > Timestamp)
+		{
+			int SecondsAgo = CurrentTimestamp - Timestamp;
+			str_format(aSecondsBuf, sizeof(aSecondsBuf), " (%d seconds ago)", SecondsAgo);
+			pPickedSecondsAgo = aSecondsBuf;
+		}
+
+		str_format(aBuf, sizeof(aBuf), "id=%d name='%s' team='%d' ts=%d%s", i, Server()->ClientName(i), pPlayer->GetTeam(), Timestamp, pPickedSecondsAgo);
+
+		Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "server", aBuf);
+	}
 }
 
 void CInfClassGameController::ConMapRotationStatus(IConsole::IResult *pResult, void *pUserData)

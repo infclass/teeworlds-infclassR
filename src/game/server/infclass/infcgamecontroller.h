@@ -214,6 +214,8 @@ public:
 
 	static void ConStartFastRound(IConsole::IResult *pResult, void *pUserData);
 	static void ConQueueFastRound(IConsole::IResult *pResult, void *pUserData);
+	static void ConPrintPlayerPickingTimestamp(IConsole::IResult *pResult, void *pUserData);
+	void ConPrintPlayerPickingTimestamp(IConsole::IResult *pResult);
 	static void ConMapRotationStatus(IConsole::IResult *pResult, void *pUserData);
 	static void ConSaveMapsData(IConsole::IResult *pResult, void *pUserData);
 	static void ConPrintMapsData(IConsole::IResult *pResult, void *pUserData);
