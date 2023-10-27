@@ -67,6 +67,8 @@ public:
 
 	void IncreaseCurrentRoundCounter() override;
 
+	void DoTeamBalance() override;
+
 	void TickBeforeWorld() override;
 	void Tick() override;
 	void OnGameRestart() override;
@@ -256,8 +258,12 @@ public:
 protected:
 	void RoundTickBeforeInitialInfection();
 	void RoundTickAfterInitialInfection();
+
+	void SetPlayerPickedTimestamp(CInfClassPlayer *pPlayer, int Timestamp) const;
+
 	int InfectHumans(int NumHumansToInfect);
-	void UpdateBalanceFactors(int NumHumans, int NumInfected);
+	void ForcePlayersBalance(int PlayersToBalance);
+	void UpdateBalanceFactors();
 
 	void MaybeSendStatistics();
 	void CancelTheRound(ROUND_CANCELATION_REASON Reason);
@@ -274,6 +280,9 @@ private:
 	void FormatHintMessage(const CHintMessage &Message, dynamic_string *pBuffer, const char *pLanguage) const;
 
 	void OnInfectionTriggered();
+
+	void StartInfectionGameplay(int PlayersToInfect);
+
 	void MaybeSuggestMoreRounds();
 	void SnapMapMenu(int SnappingClient, CNetObj_GameInfo *pGameInfoObj);
 	void FallInLoveIfInfectedEarly(CInfClassCharacter *pCharacter);

@@ -163,7 +163,7 @@ public:
 	*/
 	virtual bool CanBeMovedOnBalance(int ClientID);
 
-	void DoTeamBalance();
+	virtual void DoTeamBalance();
 
 	virtual void TickBeforeWorld();
 	virtual void Tick();

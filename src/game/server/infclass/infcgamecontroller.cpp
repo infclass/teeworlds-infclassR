@@ -194,6 +194,40 @@ void CInfClassGameController::IncreaseCurrentRoundCounter()
 	MaybeSuggestMoreRounds();
 }
 
+void CInfClassGameController::DoTeamBalance()
+{
+	int NumHumans = 0;
+	int NumInfected = 0;
+	GetPlayerCounter(-1, NumHumans, NumInfected);
+
+	const int NumPlayers = NumHumans + NumInfected;
+	const int NumFirstPickedPlayers = GetMinimumInfectedForPlayers(NumPlayers);
+	const int PlayersToBalance = maximum<int>(0, NumFirstPickedPlayers - NumInfected);
+
+	if(PlayersToBalance == 0)
+	{
+		m_InfUnbalancedTick = -1;
+	}
+	else if (m_InfUnbalancedTick < 0)
+	{
+		m_InfUnbalancedTick = Server()->Tick();
+		GameServer()->SendChatTarget_Localization(-1, CHATCATEGORY_INFECTION,
+			_("The game is not balanced. Infection is coming."), nullptr);
+	}
+	else
+	{
+		int BalancingTick = m_InfUnbalancedTick + Server()->TickSpeed() * Config()->m_InfTeamBalanceSeconds;
+		if(Server()->Tick() > BalancingTick)
+		{
+			ForcePlayersBalance(PlayersToBalance);
+		}
+		else
+		{
+			BroadcastInfectionComing(BalancingTick);
+		}
+	}
+}
+
 void CInfClassGameController::OnPlayerConnect(CPlayer *pPlayer)
 {
 	IGameController::OnPlayerConnect(pPlayer);
@@ -2230,7 +2264,45 @@ void CInfClassGameController::FormatHintMessage(const CHintMessage &Message, dyn
 
 void CInfClassGameController::OnInfectionTriggered()
 {
+	int NumHumans = 0;
+	int NumInfected = 0;
+	GetPlayerCounter(-1, NumHumans, NumInfected);
+
+	const int NumPlayers = NumHumans + NumInfected;
+	const int NumFirstPickedPlayers = GetMinimumInfectedForPlayers(NumPlayers);
+
+	const int PlayersToInfect = maximum<int>(0, NumFirstPickedPlayers - NumInfected);
+	StartInfectionGameplay(PlayersToInfect);
+
+	m_InfUnbalancedTick = -1;
 	MaybeSuggestMoreRounds();
+}
+
+void CInfClassGameController::StartInfectionGameplay(int PlayersToInfect)
+{
+	InfectHumans(PlayersToInfect);
+
+	CInfClassPlayerIterator<PLAYERITER_INGAME> Iter(GameServer()->m_apPlayers);
+	while(Iter.Next())
+	{
+		CInfClassPlayer *pPlayer = Iter.Player();
+		if(pPlayer->GetClass() == PLAYERCLASS_NONE)
+		{
+			pPlayer->SetClass(ChooseHumanClass(pPlayer));
+			pPlayer->SetRandomClassChoosen();
+			CInfClassCharacter *pCharacter = Iter.Player()->GetCharacter();
+			if(pCharacter)
+			{
+				pCharacter->GiveRandomClassSelectionBonus();
+			}
+		}
+		if(pPlayer->IsInfected() || pPlayer->IsInfectionStarted())
+		{
+			pPlayer->KillCharacter(); // Infect the player
+			pPlayer->m_DieTick = m_RoundStartTick;
+			continue;
+		}
+	}
 }
 
 void CInfClassGameController::MaybeSuggestMoreRounds()
@@ -2389,10 +2461,16 @@ void CInfClassGameController::DoTeamChange(CPlayer *pBasePlayer, int Team, bool 
 		}
 	}
 
-	if((Team != TEAM_SPECTATORS) && IsInfectionStarted() && !pPlayer->IsInfected())
+	if(Team != TEAM_SPECTATORS)
 	{
-		PLAYERCLASS c = ChooseInfectedClass(pPlayer);
-		pPlayer->SetClass(c);
+		if(IsInfectionStarted())
+		{
+			if (!pPlayer->IsInfected())
+			{
+				PLAYERCLASS c = ChooseInfectedClass(pPlayer);
+				pPlayer->SetClass(c);
+			}
+		}
 	}
 }
 
@@ -2777,101 +2855,40 @@ void CInfClassGameController::RoundTickAfterInitialInfection()
 	bool StartInfectionTrigger = GetInfectionStartTick() == Server()->Tick();
 
 	if(StartInfectionTrigger)
-	{
 		OnInfectionTriggered();
-		m_InfUnbalancedTick = -1;
-	}
 
+	// Ensure that the newly joined players have correct state/class
 	CInfClassPlayerIterator<PLAYERITER_INGAME> Iter(GameServer()->m_apPlayers);
 	while(Iter.Next())
 	{
 		CInfClassPlayer *pPlayer = Iter.Player();
-		// Set the player class if not set yet
 		if(pPlayer->GetClass() == PLAYERCLASS_NONE)
 		{
-			if(StartInfectionTrigger)
-			{
-				pPlayer->SetClass(ChooseHumanClass(pPlayer));
-				pPlayer->SetRandomClassChoosen();
-				CInfClassCharacter *pCharacter = Iter.Player()->GetCharacter();
-				if(pCharacter)
-				{
-					pCharacter->GiveRandomClassSelectionBonus();
-				}
-			}
-			else
-			{
-				pPlayer->KillCharacter(); // Infect the player
-				pPlayer->StartInfection();
-				pPlayer->m_DieTick = m_RoundStartTick;
-			}
+			pPlayer->KillCharacter(); // Infect the player
+			pPlayer->StartInfection();
+			pPlayer->m_DieTick = m_RoundStartTick;
 		}
 	}
 
-	int NumHumans = 0;
-	int NumInfected = 0;
-	GetPlayerCounter(-1, NumHumans, NumInfected);
+	if(!StartInfectionTrigger)
+		DoTeamBalance();
 
-	const int NumPlayers = NumHumans + NumInfected;
-	const int NumMinimumInfected = GetMinimumInfectedForPlayers(NumPlayers);
+	UpdateBalanceFactors();
+}
 
-	const bool GameBalanced = NumInfected >= NumMinimumInfected;
-	const int PlayersToInfect = maximum<int>(0, NumMinimumInfected - NumInfected);
-	int NewInfected = 0;
-	if(StartInfectionTrigger)
+void CInfClassGameController::SetPlayerPickedTimestamp(CInfClassPlayer *pPlayer, int Timestamp) const
+{
+	const int PrevInfectionTimestamp = pPlayer->GetInfectionTimestamp();
+	pPlayer->SetInfectionTimestamp(Timestamp);
+
+	if(PrevInfectionTimestamp && Timestamp > PrevInfectionTimestamp)
 	{
-		if(!GameBalanced)
-		{
-			NewInfected = InfectHumans(PlayersToInfect);
-		}
+		int PrevInfectionSeconds = Timestamp - PrevInfectionTimestamp;
+		dbg_msg("server", "SetPlayerPickedTimestamp: Pick cid=%d (previously picked %d seconds ago)", pPlayer->GetCID(), PrevInfectionSeconds);
 	}
 	else
 	{
-		if(GameBalanced)
-		{
-			m_InfUnbalancedTick = -1;
-		}
-		else if (m_InfUnbalancedTick < 0)
-		{
-			m_InfUnbalancedTick = Server()->Tick();
-			GameServer()->SendChatTarget_Localization(-1, CHATCATEGORY_INFECTION,
-				_("The game is not balanced. Infection is coming."), nullptr);
-		}
-		else
-		{
-			int BalancingTick = m_InfUnbalancedTick + Server()->TickSpeed() * Config()->m_InfTeamBalanceSeconds;
-			if(Server()->Tick() > BalancingTick)
-			{
-				// Force balance
-				NewInfected = InfectHumans(PlayersToInfect);
-				GameServer()->SendChatTarget_Localization(-1, CHATCATEGORY_INFECTION,
-					_("Someone was infected to balance the game."), nullptr);
-			}
-			else
-			{
-				BroadcastInfectionComing(BalancingTick);
-			}
-		}
-	}
-
-	NumInfected += NewInfected;
-	NumHumans -= NewInfected;
-
-	UpdateBalanceFactors(NumHumans, NumInfected);
-
-	if(StartInfectionTrigger)
-	{
-		Iter.Reset();
-		while(Iter.Next())
-		{
-			CInfClassPlayer *pPlayer = Iter.Player();
-			if(pPlayer->IsInfected() || pPlayer->IsInfectionStarted())
-			{
-				pPlayer->KillCharacter(); // Infect the player
-				pPlayer->m_DieTick = m_RoundStartTick;
-				continue;
-			}
-		}
+		dbg_msg("server", "SetPlayerPickedTimestamp: Pick cid=%d (was not picked before)", pPlayer->GetCID());
 	}
 }
 
@@ -2902,18 +2919,7 @@ int CInfClassGameController::InfectHumans(int NumHumansToInfect)
 	}
 
 	const auto Sorter = [](const CInfClassPlayer *p1, const CInfClassPlayer *p2) -> bool {
-		const int ts1 = p1->GetInfectionTimestamp();
-		const int ts2 = p2->GetInfectionTimestamp();
-		if(ts1 == 0)
-		{
-			if(ts2 == 0)
-			{
-				return false;
-			}
-			return true;
-		}
-
-		return ts1 < ts2;
+		return p1->GetInfectionTimestamp() < p2->GetInfectionTimestamp();
 	};
 
 	std::stable_sort(Humans.begin(), Humans.end(), Sorter);
@@ -2923,9 +2929,6 @@ int CInfClassGameController::InfectHumans(int NumHumansToInfect)
 	int NewInfected = 0;
 	for(CInfClassPlayer *pPlayer : Humans)
 	{
-		const int PrevInfectionTimestamp = pPlayer->GetInfectionTimestamp();
-		pPlayer->SetInfectionTimestamp(Timestamp);
-
 		pPlayer->KillCharacter(); // Infect the player
 		pPlayer->StartInfection();
 		pPlayer->m_DieTick = m_RoundStartTick;
@@ -2936,16 +2939,7 @@ int CInfClassGameController::InfectHumans(int NumHumansToInfect)
 				"VictimName", Server()->ClientName(pPlayer->GetCID()),
 				nullptr);
 
-		if(PrevInfectionTimestamp && Timestamp > PrevInfectionTimestamp)
-		{
-			int PrevInfectionSeconds = Timestamp - PrevInfectionTimestamp;
-			dbg_msg("server", "InfectHumans(): Infect cid=%d (previously infected %d seconds ago)", pPlayer->GetCID(), PrevInfectionSeconds);
-		}
-		else
-		{
-			dbg_msg("server", "InfectHumans(): Infect cid=%d (was not infected before)", pPlayer->GetCID());
-		}
-
+		SetPlayerPickedTimestamp(pPlayer, Timestamp);
 		if(NewInfected >= NumHumansToInfect)
 		{
 			break;
@@ -2955,8 +2949,20 @@ int CInfClassGameController::InfectHumans(int NumHumansToInfect)
 	return NewInfected;
 }
 
-void CInfClassGameController::UpdateBalanceFactors(int NumHumans, int NumInfected)
+void CInfClassGameController::ForcePlayersBalance(int PlayersToBalance)
 {
+	// Force balance
+	InfectHumans(PlayersToBalance);
+	GameServer()->SendChatTarget_Localization(-1, CHATCATEGORY_INFECTION,
+		_("Someone was infected to balance the game."), nullptr);
+}
+
+void CInfClassGameController::UpdateBalanceFactors()
+{
+	int NumHumans = 0;
+	int NumInfected = 0;
+	GetPlayerCounter(-1, NumHumans, NumInfected);
+
 	if(NumInfected == 1)
 	{
 		m_InfBalanceBoostFactor = 1;
