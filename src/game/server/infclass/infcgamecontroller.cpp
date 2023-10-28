@@ -2463,14 +2463,7 @@ void CInfClassGameController::DoTeamChange(CPlayer *pBasePlayer, int Team, bool 
 
 	if(Team != TEAM_SPECTATORS)
 	{
-		if(IsInfectionStarted())
-		{
-			if (!pPlayer->IsInfected())
-			{
-				PLAYERCLASS c = ChooseInfectedClass(pPlayer);
-				pPlayer->SetClass(c);
-			}
-		}
+		PreparePlayerToJoin(pPlayer);
 	}
 }
 
@@ -2874,6 +2867,18 @@ void CInfClassGameController::RoundTickAfterInitialInfection()
 		DoTeamBalance();
 
 	UpdateBalanceFactors();
+}
+
+void CInfClassGameController::PreparePlayerToJoin(CInfClassPlayer *pPlayer)
+{
+	if(IsInfectionStarted())
+	{
+		if (!pPlayer->IsInfected())
+		{
+			PLAYERCLASS c = ChooseInfectedClass(pPlayer);
+			pPlayer->SetClass(c);
+		}
+	}
 }
 
 void CInfClassGameController::SetPlayerPickedTimestamp(CInfClassPlayer *pPlayer, int Timestamp) const
@@ -3384,11 +3389,7 @@ CPlayer *CInfClassGameController::CreatePlayer(int ClientID, bool IsSpectator, v
 		pPlayer->SetInfectionTimestamp(pPersistent->m_LastInfectionTime);
 	}
 
-	if(IsInfectionStarted())
-	{
-		PLAYERCLASS c = ChooseInfectedClass(pPlayer);
-		pPlayer->SetClass(c);
-	}
+	PreparePlayerToJoin(pPlayer);
 
 	return pPlayer;
 }

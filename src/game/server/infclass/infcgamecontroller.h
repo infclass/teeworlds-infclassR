@@ -259,6 +259,7 @@ protected:
 	void RoundTickBeforeInitialInfection();
 	void RoundTickAfterInitialInfection();
 
+	void PreparePlayerToJoin(CInfClassPlayer *pPlayer);
 	void SetPlayerPickedTimestamp(CInfClassPlayer *pPlayer, int Timestamp) const;
 
 	int InfectHumans(int NumHumansToInfect);
