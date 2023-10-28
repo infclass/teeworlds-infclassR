@@ -316,6 +316,9 @@ void CInfClassCharacter::Snap(int SnappingClient)
 	if(IsFrozen())
 		pDDNetCharacter->m_Flags |= CHARACTERFLAG_MOVEMENTS_DISABLED;
 
+	if(IsInLove())
+		pDDNetCharacter->m_Flags |= CHARACTERFLAG_HAMMER_HIT_DISABLED;
+
 	pDDNetCharacter->m_Jumps = m_Core.m_Jumps;
 	pDDNetCharacter->m_JumpedTotal = m_Core.m_JumpedTotal;
 
