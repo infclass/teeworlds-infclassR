@@ -2159,92 +2159,7 @@ void CInfClassCharacter::PreCoreTick()
 		}
 		else
 		{
-			// Search nearest human
-			int cellGhostX = static_cast<int>(round(GetPos().x)) / 32;
-			int cellGhostY = static_cast<int>(round(GetPos().y)) / 32;
-
-			vec2 SeedPos = vec2(16.0f, 16.0f) + vec2(cellGhostX * 32.0, cellGhostY * 32.0);
-
-			for(int y = 0; y < GHOST_SEARCHMAP_SIZE; y++)
-			{
-				for(int x = 0; x < GHOST_SEARCHMAP_SIZE; x++)
-				{
-					vec2 Tile = SeedPos + vec2(32.0f * (x - GHOST_RADIUS), 32.0f * (y - GHOST_RADIUS));
-					if(GameServer()->Collision()->CheckPoint(Tile))
-					{
-						m_GhostSearchMap[y * GHOST_SEARCHMAP_SIZE + x] = 0x8;
-					}
-					else
-					{
-						m_GhostSearchMap[y * GHOST_SEARCHMAP_SIZE + x] = 0x0;
-					}
-				}
-			}
-			for(CCharacter *p = (CCharacter *)GameWorld()->FindFirst(CGameWorld::ENTTYPE_CHARACTER); p; p = (CCharacter *)p->TypeNext())
-			{
-				if(p->IsInfected())
-					continue;
-
-				int cellHumanX = static_cast<int>(round(p->GetPos().x)) / 32;
-				int cellHumanY = static_cast<int>(round(p->GetPos().y)) / 32;
-
-				int cellX = cellHumanX - cellGhostX + GHOST_RADIUS;
-				int cellY = cellHumanY - cellGhostY + GHOST_RADIUS;
-
-				if(cellX >= 0 && cellX < GHOST_SEARCHMAP_SIZE && cellY >= 0 && cellY < GHOST_SEARCHMAP_SIZE)
-				{
-					m_GhostSearchMap[cellY * GHOST_SEARCHMAP_SIZE + cellX] |= 0x2;
-				}
-			}
-			m_GhostSearchMap[GHOST_RADIUS * GHOST_SEARCHMAP_SIZE + GHOST_RADIUS] |= 0x1;
-			bool HumanFound = false;
-			for(int i = 0; i < GHOST_RADIUS; i++)
-			{
-				for(int y = 0; y < GHOST_SEARCHMAP_SIZE; y++)
-				{
-					for(int x = 0; x < GHOST_SEARCHMAP_SIZE; x++)
-					{
-						if(!((m_GhostSearchMap[y * GHOST_SEARCHMAP_SIZE + x] & 0x1) || (m_GhostSearchMap[y * GHOST_SEARCHMAP_SIZE + x] & 0x8)))
-						{
-							if(
-								(
-									(x > 0 && (m_GhostSearchMap[y * GHOST_SEARCHMAP_SIZE + x - 1] & 0x1)) ||
-									(x < GHOST_SEARCHMAP_SIZE - 1 && (m_GhostSearchMap[y * GHOST_SEARCHMAP_SIZE + x + 1] & 0x1)) ||
-									(y > 0 && (m_GhostSearchMap[(y - 1) * GHOST_SEARCHMAP_SIZE + x] & 0x1)) ||
-									(y < GHOST_SEARCHMAP_SIZE - 1 && (m_GhostSearchMap[(y + 1) * GHOST_SEARCHMAP_SIZE + x] & 0x1))) ||
-								((random_prob(0.25f)) && ((x > 0 && y > 0 && (m_GhostSearchMap[(y - 1) * GHOST_SEARCHMAP_SIZE + x - 1] & 0x1)) ||
-															 (x > 0 && y < GHOST_SEARCHMAP_SIZE - 1 && (m_GhostSearchMap[(y + 1) * GHOST_SEARCHMAP_SIZE + x - 1] & 0x1)) ||
-															 (x < GHOST_SEARCHMAP_SIZE - 1 && y > 0 && (m_GhostSearchMap[(y - 1) * GHOST_SEARCHMAP_SIZE + x + 1] & 0x1)) ||
-															 (x < GHOST_SEARCHMAP_SIZE - 1 && y < GHOST_SEARCHMAP_SIZE - 1 && (m_GhostSearchMap[(y + 1) * GHOST_SEARCHMAP_SIZE + x + 1] & 0x1)))))
-							{
-								m_GhostSearchMap[y * GHOST_SEARCHMAP_SIZE + x] |= 0x4;
-								//~ if((Server()->Tick()%5 == 0) && i == (Server()->Tick()/5)%GHOST_RADIUS)
-								//~ {
-								//~ vec2 HintPos = vec2(
-								//~ 32.0f*(cellGhostX + (x - GHOST_RADIUS))+16.0f,
-								//~ 32.0f*(cellGhostY + (y - GHOST_RADIUS))+16.0f);
-								//~ GameServer()->CreateHammerHit(HintPos);
-								//~ }
-								if(m_GhostSearchMap[y * GHOST_SEARCHMAP_SIZE + x] & 0x2)
-								{
-									HumanFound = true;
-								}
-							}
-						}
-					}
-				}
-				for(int y = 0; y < GHOST_SEARCHMAP_SIZE; y++)
-				{
-					for(int x = 0; x < GHOST_SEARCHMAP_SIZE; x++)
-					{
-						if(m_GhostSearchMap[y * GHOST_SEARCHMAP_SIZE + x] & 0x4)
-						{
-							m_GhostSearchMap[y * GHOST_SEARCHMAP_SIZE + x] |= 0x1;
-						}
-					}
-				}
-			}
-
+			bool HumanFound = HasHumansNearby();
 			if(HumanFound)
 			{
 				MakeVisible();
@@ -2319,6 +2234,96 @@ void CInfClassCharacter::PostCoreTick()
 	// Some classes (namely Sniper) resets the input to lock the position
 	// Restore the Input value after physics handling is done to fix the m_PrevInput
 	m_Input = m_InputBackup;
+}
+
+bool CInfClassCharacter::HasHumansNearby()
+{
+	// Search nearest human
+	int cellGhostX = static_cast<int>(round(GetPos().x)) / 32;
+	int cellGhostY = static_cast<int>(round(GetPos().y)) / 32;
+
+	vec2 SeedPos = vec2(16.0f, 16.0f) + vec2(cellGhostX * 32.0, cellGhostY * 32.0);
+
+	for(int y = 0; y < GHOST_SEARCHMAP_SIZE; y++)
+	{
+		for(int x = 0; x < GHOST_SEARCHMAP_SIZE; x++)
+		{
+			vec2 Tile = SeedPos + vec2(32.0f * (x - GHOST_RADIUS), 32.0f * (y - GHOST_RADIUS));
+			if(GameServer()->Collision()->CheckPoint(Tile))
+			{
+				m_GhostSearchMap[y * GHOST_SEARCHMAP_SIZE + x] = 0x8;
+			}
+			else
+			{
+				m_GhostSearchMap[y * GHOST_SEARCHMAP_SIZE + x] = 0x0;
+			}
+		}
+	}
+	for(CCharacter *p = (CCharacter *)GameWorld()->FindFirst(CGameWorld::ENTTYPE_CHARACTER); p; p = (CCharacter *)p->TypeNext())
+	{
+		if(p->IsInfected())
+			continue;
+
+		int cellHumanX = static_cast<int>(round(p->GetPos().x)) / 32;
+		int cellHumanY = static_cast<int>(round(p->GetPos().y)) / 32;
+
+		int cellX = cellHumanX - cellGhostX + GHOST_RADIUS;
+		int cellY = cellHumanY - cellGhostY + GHOST_RADIUS;
+
+		if(cellX >= 0 && cellX < GHOST_SEARCHMAP_SIZE && cellY >= 0 && cellY < GHOST_SEARCHMAP_SIZE)
+		{
+			m_GhostSearchMap[cellY * GHOST_SEARCHMAP_SIZE + cellX] |= 0x2;
+		}
+	}
+	m_GhostSearchMap[GHOST_RADIUS * GHOST_SEARCHMAP_SIZE + GHOST_RADIUS] |= 0x1;
+	for(int i = 0; i < GHOST_RADIUS; i++)
+	{
+		for(int y = 0; y < GHOST_SEARCHMAP_SIZE; y++)
+		{
+			for(int x = 0; x < GHOST_SEARCHMAP_SIZE; x++)
+			{
+				if(!((m_GhostSearchMap[y * GHOST_SEARCHMAP_SIZE + x] & 0x1) || (m_GhostSearchMap[y * GHOST_SEARCHMAP_SIZE + x] & 0x8)))
+				{
+					if(
+						(
+							(x > 0 && (m_GhostSearchMap[y * GHOST_SEARCHMAP_SIZE + x - 1] & 0x1)) ||
+							(x < GHOST_SEARCHMAP_SIZE - 1 && (m_GhostSearchMap[y * GHOST_SEARCHMAP_SIZE + x + 1] & 0x1)) ||
+							(y > 0 && (m_GhostSearchMap[(y - 1) * GHOST_SEARCHMAP_SIZE + x] & 0x1)) ||
+							(y < GHOST_SEARCHMAP_SIZE - 1 && (m_GhostSearchMap[(y + 1) * GHOST_SEARCHMAP_SIZE + x] & 0x1))) ||
+						((random_prob(0.25f)) && ((x > 0 && y > 0 && (m_GhostSearchMap[(y - 1) * GHOST_SEARCHMAP_SIZE + x - 1] & 0x1)) ||
+													 (x > 0 && y < GHOST_SEARCHMAP_SIZE - 1 && (m_GhostSearchMap[(y + 1) * GHOST_SEARCHMAP_SIZE + x - 1] & 0x1)) ||
+													 (x < GHOST_SEARCHMAP_SIZE - 1 && y > 0 && (m_GhostSearchMap[(y - 1) * GHOST_SEARCHMAP_SIZE + x + 1] & 0x1)) ||
+													 (x < GHOST_SEARCHMAP_SIZE - 1 && y < GHOST_SEARCHMAP_SIZE - 1 && (m_GhostSearchMap[(y + 1) * GHOST_SEARCHMAP_SIZE + x + 1] & 0x1)))))
+					{
+						m_GhostSearchMap[y * GHOST_SEARCHMAP_SIZE + x] |= 0x4;
+						//~ if((Server()->Tick()%5 == 0) && i == (Server()->Tick()/5)%GHOST_RADIUS)
+						//~ {
+						//~ vec2 HintPos = vec2(
+						//~ 32.0f*(cellGhostX + (x - GHOST_RADIUS))+16.0f,
+						//~ 32.0f*(cellGhostY + (y - GHOST_RADIUS))+16.0f);
+						//~ GameServer()->CreateHammerHit(HintPos);
+						//~ }
+						if(m_GhostSearchMap[y * GHOST_SEARCHMAP_SIZE + x] & 0x2)
+						{
+							return true;
+						}
+					}
+				}
+			}
+		}
+		for(int y = 0; y < GHOST_SEARCHMAP_SIZE; y++)
+		{
+			for(int x = 0; x < GHOST_SEARCHMAP_SIZE; x++)
+			{
+				if(m_GhostSearchMap[y * GHOST_SEARCHMAP_SIZE + x] & 0x4)
+				{
+					m_GhostSearchMap[y * GHOST_SEARCHMAP_SIZE + x] |= 0x1;
+				}
+			}
+		}
+	}
+
+	return false;
 }
 
 void CInfClassCharacter::SnapCharacter(int SnappingClient, int ID)

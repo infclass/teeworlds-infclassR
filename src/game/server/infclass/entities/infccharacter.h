@@ -241,6 +241,7 @@ public:
 protected:
 	void PreCoreTick() override;
 	void PostCoreTick() override;
+	bool HasHumansNearby();
 
 	void SnapCharacter(int SnappingClient, int ID) override;
 
