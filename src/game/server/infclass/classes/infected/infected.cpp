@@ -525,6 +525,11 @@ void CInfClassInfected::OnHammerFired(WeaponFireContext *pFireContext)
 
 		for(const int TargetCID : Targets)
 		{
+			if (m_pCharacter->IsInLove())
+			{
+				break;
+			}
+
 			CInfClassCharacter *pTarget = GameController()->GetCharacter(TargetCID);
 
 			if(GameServer()->Collision()->IntersectLine(ProjStartPos, pTarget->GetPos()))
