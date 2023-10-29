@@ -458,7 +458,13 @@ bool CServer::SetClientNameImpl(int ClientID, const char *pNameRequest, bool Set
 			{
 				str_copy(aBuf, "Kicked (your name is banned)");
 			}
-			Kick(ClientID, aBuf);
+			// Kick(ClientID, aBuf);
+
+			char aAddrStr[NETADDR_MAXSTRSIZE];
+			net_addr_str(m_NetServer.ClientAddr(ClientID), aAddrStr, sizeof(aAddrStr), false);
+			str_format(aBuf, sizeof(aBuf), "client ip=%s banned for using name '%s'", aAddrStr, pNameRequest);
+			Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "name_ban", aBuf);
+			Ban(ClientID, -1, "");
 		}
 		return false;
 	}
