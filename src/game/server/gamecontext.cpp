@@ -1130,6 +1130,23 @@ void CGameContext::OnPreTickTeehistorian()
 {
 }
 
+bool CGameContext::OnClientDDNetVersionKnown(int ClientID)
+{
+	IServer::CClientInfo Info;
+	dbg_assert(Server()->GetClientInfo(ClientID, &Info), "failed to get client info");
+	int ClientVersion = Info.m_DDNetVersion;
+	dbg_msg("ddnet", "cid=%d version=%d", ClientID, ClientVersion);
+
+	// Autoban known bot versions.
+	if(g_Config.m_SvBannedVersions[0] != '\0' && IsVersionBanned(ClientVersion))
+	{
+		Server()->Kick(ClientID, "unsupported client");
+		return true;
+	}
+
+	return false;
+}
+
 void CGameContext::OnTick()
 {
 	for(int i=0; i<MAX_CLIENTS; i++)
@@ -1634,6 +1651,13 @@ void CGameContext::ProgressVoteOptions(int ClientID)
 
 void CGameContext::OnClientEnter(int ClientID)
 {
+	IServer::CClientInfo Info;
+	if(Server()->GetClientInfo(ClientID, &Info) && Info.m_GotDDNetVersion)
+	{
+		if(OnClientDDNetVersionKnown(ClientID))
+			return; // kicked
+	}
+
 	m_pController->OnPlayerConnect(m_apPlayers[ClientID]);
 
 	// world.insert_entity(&players[client_id]);
@@ -1842,19 +1866,6 @@ void CGameContext::OnMessage(int MsgID, CUnpacker *pUnpacker, int ClientID)
 		return;
 
 	CPlayer *pPlayer = m_apPlayers[ClientID];
-
-	if(pPlayer && MsgID == NETMSGTYPE_CL_ISDDNETLEGACY)
-	{
-		int DDNetVersion = pUnpacker->GetInt();
-
-		if(g_Config.m_SvBannedVersions[0] != '\0' && IsVersionBanned(DDNetVersion))
-		{
-			Server()->Kick(ClientID, "unsupported client");
-		}
-
-		Server()->SetClientDDNetVersion(ClientID, DDNetVersion);
-	}
-
 	//HACK: DDNet Client did something wrong that we can detect
 	//Round and Score conditions are here only to prevent false-positif
 	if(!pPlayer && Server()->GetClientNbRound(ClientID) == 0)
@@ -1878,6 +1889,9 @@ void CGameContext::OnMessage(int MsgID, CUnpacker *pUnpacker, int ClientID)
 			break;
 		case NETMSGTYPE_CL_SETTEAM:
 			OnSetTeamNetMessage(static_cast<CNetMsg_Cl_SetTeam *>(pRawMsg), ClientID);
+			break;
+		case NETMSGTYPE_CL_ISDDNETLEGACY:
+			OnIsDDNetLegacyNetMessage(static_cast<CNetMsg_Cl_IsDDNetLegacy *>(pRawMsg), ClientID, pUnpacker);
 			break;
 		case NETMSGTYPE_CL_SETSPECTATORMODE:
 			OnSetSpectatorModeNetMessage(static_cast<CNetMsg_Cl_SetSpectatorMode *>(pRawMsg), ClientID);
@@ -2317,6 +2331,22 @@ void CGameContext::OnSetTeamNetMessage(const CNetMsg_Cl_SetTeam *pMsg, int Clien
 		else
 			SendBroadcast(ClientID, "Teams must be balanced, please join other team", BROADCAST_PRIORITY_GAMEANNOUNCE, BROADCAST_DURATION_GAMEANNOUNCE);
 	}
+}
+
+void CGameContext::OnIsDDNetLegacyNetMessage(const CNetMsg_Cl_IsDDNetLegacy *pMsg, int ClientID, CUnpacker *pUnpacker)
+{
+	IServer::CClientInfo Info;
+	if(Server()->GetClientInfo(ClientID, &Info) && Info.m_GotDDNetVersion)
+	{
+		return;
+	}
+	int DDNetVersion = pUnpacker->GetInt();
+	if(pUnpacker->Error() || DDNetVersion < 0)
+	{
+		DDNetVersion = VERSION_DDRACE;
+	}
+	Server()->SetClientDDNetVersion(ClientID, DDNetVersion);
+	OnClientDDNetVersionKnown(ClientID);
 }
 
 void CGameContext::OnSetSpectatorModeNetMessage(const CNetMsg_Cl_SetSpectatorMode *pMsg, int ClientID)

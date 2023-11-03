@@ -248,6 +248,7 @@ public:
 	void OnCallVoteNetMessage(const CNetMsg_Cl_CallVote *pMsg, int ClientID);
 	void OnVoteNetMessage(const CNetMsg_Cl_Vote *pMsg, int ClientID);
 	void OnSetTeamNetMessage(const CNetMsg_Cl_SetTeam *pMsg, int ClientID);
+	void OnIsDDNetLegacyNetMessage(const CNetMsg_Cl_IsDDNetLegacy *pMsg, int ClientID, CUnpacker *pUnpacker);
 	void OnSetSpectatorModeNetMessage(const CNetMsg_Cl_SetSpectatorMode *pMsg, int ClientID);
 	void OnChangeInfoNetMessage(const CNetMsg_Cl_ChangeInfo *pMsg, int ClientID);
 	void OnEmoticonNetMessage(const CNetMsg_Cl_Emoticon *pMsg, int ClientID);
@@ -277,6 +278,7 @@ public:
 
 	// DDRace
 	void OnPreTickTeehistorian() override;
+	bool OnClientDDNetVersionKnown(int ClientID);
 	void FillAntibot(CAntibotRoundData *pData) override;
 	bool ProcessSpamProtection(int ClientID, bool RespectChatInitialDelay = true);
 	// Describes the time when the first player joined the server.
