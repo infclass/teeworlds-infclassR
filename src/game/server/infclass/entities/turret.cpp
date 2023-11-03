@@ -69,7 +69,7 @@ void CTurret::Tick()
 		if(!pChr->IsInfected() || !pChr->CanDie())
 			continue;
 
-		float Len2 = distance2(pChr->GetPos(), GetPos());
+		float Len2 = distance_squared(pChr->GetPos(), GetPos());
 
 		// selfdestruction
 		if(Len2 < ClosestLength)

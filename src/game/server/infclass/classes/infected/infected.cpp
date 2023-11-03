@@ -712,7 +712,7 @@ void CInfClassInfected::DoBoomerExplosion()
 		const float InnerRadius2 = InnerRadius * InnerRadius;
 		for(TEntityPtr<CTurret> pTarget = GameWorld()->FindFirst<CTurret>(); pTarget; ++pTarget)
 		{
-			if(!pTarget->IsMarkedForDestroy() && distance2(pTarget->GetPos(), Pos) <= InnerRadius2)
+			if(!pTarget->IsMarkedForDestroy() && distance_squared(pTarget->GetPos(), Pos) <= InnerRadius2)
 			{
 				pTarget->Die(m_pCharacter);
 			}

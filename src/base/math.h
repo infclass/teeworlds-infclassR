@@ -4,10 +4,12 @@
 #define BASE_MATH_H
 
 #include <algorithm>
-#include <math.h>
-#include <stdlib.h>
+#include <cmath>
+#include <cstdlib>
 
 using std::clamp;
+
+constexpr float pi = 3.1415926535897932384626433f;
 
 constexpr inline int round_to_int(float f)
 {
@@ -19,15 +21,44 @@ constexpr inline int round_truncate(float f)
 	return (int)f;
 }
 
-inline int round_ceil(float f)
-{
-	return (int)ceilf(f);
-}
-
 template<typename T, typename TB>
 constexpr inline T mix(const T a, const T b, TB amount)
 {
 	return a + (b - a) * amount;
+}
+
+template<typename T, typename TB>
+inline T bezier(const T p0, const T p1, const T p2, const T p3, TB amount)
+{
+	// De-Casteljau Algorithm
+	const T c10 = mix(p0, p1, amount);
+	const T c11 = mix(p1, p2, amount);
+	const T c12 = mix(p2, p3, amount);
+
+	const T c20 = mix(c10, c11, amount);
+	const T c21 = mix(c11, c12, amount);
+
+	return mix(c20, c21, amount); // c30
+}
+
+inline float random_float()
+{
+	return rand() / (float)(RAND_MAX);
+}
+
+inline float random_float(float min, float max)
+{
+	return min + random_float() * (max - min);
+}
+
+inline float random_float(float max)
+{
+	return random_float(0.0f, max);
+}
+
+inline float random_angle()
+{
+	return 2.0f * pi * (rand() / std::nextafter((float)RAND_MAX, std::numeric_limits<float>::max()));
 }
 
 constexpr int fxpscale = 1 << 10;
@@ -85,8 +116,6 @@ public:
 	}
 };
 
-constexpr float pi = 3.1415926535897932384626433f;
-
 template<typename T>
 constexpr inline T minimum(T a, T b)
 {
@@ -125,7 +154,6 @@ constexpr inline T in_range(T a, T upper)
 }
 
 // Infclass
-float random_float();
 bool random_prob(float f);
 int random_int(int Min, int Max);
 int random_distribution(double* pProb, double* pProb2);
