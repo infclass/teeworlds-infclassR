@@ -698,8 +698,6 @@ const char *CInfClassPlayer::GetClan(int SnappingClient) const
 
 void CInfClassPlayer::HandleAutoRespawn()
 {
-	int InfClassVersion = Server()->GetClientInfclassVersion(m_ClientID);
-
 	float AutoSpawnInterval = 3;
 	if(!m_pCharacter && m_DieTick+Server()->TickSpeed() * AutoSpawnInterval <= Server()->Tick())
 	{
