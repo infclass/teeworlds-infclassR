@@ -255,16 +255,16 @@ Objects = [
 	]),
 
 	NetObjectEx("InfClassObject", "object@infclass", [
-		NetIntAny("m_Flags"),
-		NetIntRange("m_Owner", -1, 'MAX_CLIENTS-1'),
-		NetIntAny("m_X"),
-		NetIntAny("m_Y"),
-		NetIntAny("m_X2"),
-		NetIntAny("m_Y2"),
-		NetIntAny("m_Type"),
-		NetIntAny("m_StartTick"),
-		NetIntAny("m_EndTick"),
-	]),
+		NetIntAny("m_Flags", 0),
+		NetIntRange("m_Owner", -1, 'MAX_CLIENTS-1', -1),
+		NetIntAny("m_X", 0),
+		NetIntAny("m_Y", 0),
+		NetIntAny("m_X2", 0),
+		NetIntAny("m_Y2", 0),
+		NetIntAny("m_Type", 0),
+		NetIntAny("m_StartTick", 0),
+		NetIntAny("m_EndTick", 0),
+	], validate_size=False),
 
 	NetObjectEx("InfClassPlayer", "player@infclass", [
 		NetIntAny("m_Flags"),
