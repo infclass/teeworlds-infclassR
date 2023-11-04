@@ -500,6 +500,7 @@ Messages = [
 
 	NetMessageEx("InfClass_ServerParams", "server-params1@infclass", [
 		NetIntAny("m_Version", 0),
+		NetIntRange("m_WhiteHoleMinKills", 0, 255),
 	]),
 
 	### Client messages

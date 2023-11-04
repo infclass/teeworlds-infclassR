@@ -772,8 +772,12 @@ void CInfClassGameController::SendHammerDot(const vec2 &Pos, int SnapID)
 
 void CInfClassGameController::SendServerParams(int ClientID) const
 {
-	CNetMsg_InfClass_ServerParams Msg;
-	Msg.m_Version = 0;
+	CNetMsg_InfClass_ServerParams Msg{};
+	Msg.m_Version = 1;
+	if(WhiteHoleEnabled())
+	{
+		Msg.m_WhiteHoleMinKills = Config()->m_InfWhiteHoleMinimalKills;
+	}
 
 	if(ClientID == -1)
 	{
