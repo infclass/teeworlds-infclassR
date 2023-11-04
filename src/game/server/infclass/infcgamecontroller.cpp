@@ -237,6 +237,8 @@ void CInfClassGameController::OnPlayerConnect(CPlayer *pPlayer)
 
 	Server()->RoundStatistics()->ResetPlayer(ClientID);
 
+	SendServerParams(pPlayer->GetCID());
+
 	if(!Server()->ClientPrevIngame(ClientID))
 	{
 		GameServer()->SendChatTarget_Localization(-1, CHATCATEGORY_PLAYER, _("{str:PlayerName} entered and joined the game"), "PlayerName", Server()->ClientName(ClientID), nullptr);
@@ -768,6 +770,38 @@ void CInfClassGameController::SendHammerDot(const vec2 &Pos, int SnapID)
 	pObj->m_StartTick = Server()->Tick();
 }
 
+void CInfClassGameController::SendServerParams(int ClientID) const
+{
+	CNetMsg_InfClass_ServerParams Msg;
+	Msg.m_Version = 0;
+
+	if(ClientID == -1)
+	{
+		Server()->SendPackMsg(&Msg, MSGFLAG_VITAL | MSGFLAG_NOSEND, SERVER_DEMO_CLIENT);
+
+		for(int i = 0; i < MAX_CLIENTS; ++i)
+		{
+			CInfClassPlayer *pPlayer = GetPlayer(i);
+			if(pPlayer)
+			{
+				int InfclassVersion = Server()->GetClientInfclassVersion(i);
+				if(InfclassVersion >= VERSION_INFC_180)
+				{
+					Server()->SendPackMsg(&Msg, MSGFLAG_VITAL | MSGFLAG_NORECORD, i);
+				}
+			}
+		}
+	}
+	else
+	{
+		int InfclassVersion = Server()->GetClientInfclassVersion(ClientID);
+		if(InfclassVersion >= VERSION_INFC_180)
+		{
+			Server()->SendPackMsg(&Msg, MSGFLAG_VITAL | MSGFLAG_NORECORD, ClientID);
+		}
+	}
+}
+
 void CInfClassGameController::ResetFinalExplosion()
 {
 	m_ExplosionStarted = false;
@@ -786,6 +820,7 @@ void CInfClassGameController::ResetFinalExplosion()
 
 void CInfClassGameController::SaveRoundRules()
 {
+	SendServerParams(-1);
 }
 
 int CInfClassGameController::GetRoundTick() const

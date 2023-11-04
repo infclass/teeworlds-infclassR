@@ -97,6 +97,7 @@ public:
 	void CreateExplosionDiskGfx(vec2 Pos, float InnerRadius, float DamageRadius, int Owner);
 
 	void SendHammerDot(const vec2 &Pos, int SnapID);
+	void SendServerParams(int ClientID) const;
 
 	int OnCharacterDeath(class CCharacter *pVictim, class CPlayer *pKiller, int Weapon) override;
 	void OnCharacterDeath(CInfClassCharacter *pVictim, const DeathContext &Context);

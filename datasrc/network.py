@@ -498,6 +498,10 @@ Messages = [
 		NetIntRange("m_Weapon", -3, 'NUM_WEAPONS-1'),
 	]),
 
+	NetMessageEx("InfClass_ServerParams", "server-params1@infclass", [
+		NetIntAny("m_Version", 0),
+	]),
+
 	### Client messages
 	NetMessage("Cl_Say", [
 		NetBool("m_Team"),
