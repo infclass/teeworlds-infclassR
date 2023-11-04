@@ -276,7 +276,7 @@ void CInfClassHuman::OnPlayerSnap(int SnappingClient, int InfClassVersion)
 	pClassInfo->m_Flags = 0;
 	pClassInfo->m_Data1 = -1;
 
-	if(SnappingClient == GetCID() || SnappingClient == SERVER_DEMO_CLIENT)
+	if(GameController()->CanSeeDetails(SnappingClient, GetCID()))
 	{
 		switch(GetPlayerClass())
 		{

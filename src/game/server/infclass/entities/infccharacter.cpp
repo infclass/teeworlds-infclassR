@@ -2396,7 +2396,7 @@ void CInfClassCharacter::SnapCharacter(int SnappingClient, int ID)
 		}
 	}
 
-	if(m_pPlayer->GetCID() == SnappingClient || SnappingClient == SERVER_DEMO_CLIENT ||
+	if(GameController()->CanSeeDetails(SnappingClient, GetCID()) ||
 		(!g_Config.m_SvStrictSpectateMode && m_pPlayer->GetCID() == SnappingSpectatorID))
 	{
 		pCharacter->m_Health = m_Health;
