@@ -63,11 +63,19 @@ void CScientistMine::Snap(int SnappingClient)
 
 	float Radius = GetProximityRadius();
 
-	if(Server()->GetClientInfclassVersion(SnappingClient))
+	int InfclassVersion = Server()->GetClientInfclassVersion(SnappingClient);
+	if(InfclassVersion)
 	{
 		CNetObj_InfClassObject *pInfClassObject = SnapInfClassObject();
 		if(!pInfClassObject)
 			return;
+
+		pInfClassObject->m_StartTick = m_StartTick;
+		if(InfclassVersion >= VERSION_INFC_180)
+		{
+			pInfClassObject->m_Flags |= INFCLASS_OBJECT_FLAG_RELY_ON_CLIENTSIDE_RENDERING;
+			return;
+		}
 	}
 
 	const CInfClassPlayer *pPlayer = GameController()->GetPlayer(SnappingClient);
