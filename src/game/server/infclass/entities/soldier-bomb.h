@@ -29,7 +29,6 @@ private:
 	array<int> m_IDBomb;
 	int m_nbBomb;
 	int m_ChargedBomb;
-	float m_DetectionRadius;
 };
 
 #endif

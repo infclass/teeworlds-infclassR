@@ -11,12 +11,13 @@
 
 #include <cmath>
 
+constexpr float SoldierBombRadius = 60.0f;
+
 CSoldierBomb::CSoldierBomb(CGameContext *pGameContext, vec2 Pos, int Owner) :
-	CPlacedObject(pGameContext, CGameWorld::ENTTYPE_SOLDIER_BOMB, Pos, Owner)
+	CPlacedObject(pGameContext, CGameWorld::ENTTYPE_SOLDIER_BOMB, Pos, Owner, SoldierBombRadius)
 {
 	m_InfClassObjectType = INFCLASS_OBJECT_TYPE_SOLDIER_BOMB;
 	GameWorld()->InsertEntity(this);
-	m_DetectionRadius = 60.0f;
 	m_StartTick = Server()->Tick();
 
 	m_nbBomb = Config()->m_InfSoldierBombs;
@@ -114,8 +115,8 @@ void CSoldierBomb::Snap(int SnappingClient)
 		float shiftedAngle = m_Angle + 2.0 * pi * static_cast<float>(i) / static_cast<float>(m_IDBomb.size());
 
 		CNetObj_Projectile *pProj = Server()->SnapNewItem<CNetObj_Projectile>(m_IDBomb[i]);
-		pProj->m_X = (int)(m_Pos.x + m_DetectionRadius * cos(shiftedAngle));
-		pProj->m_Y = (int)(m_Pos.y + m_DetectionRadius * sin(shiftedAngle));
+		pProj->m_X = (int)(m_Pos.x + SoldierBombRadius * cos(shiftedAngle));
+		pProj->m_Y = (int)(m_Pos.y + SoldierBombRadius * sin(shiftedAngle));
 		pProj->m_VelX = (int)(0.0f);
 		pProj->m_VelY = (int)(0.0f);
 		pProj->m_StartTick = Server()->Tick();
