@@ -264,6 +264,7 @@ Objects = [
 		NetIntAny("m_Type", 0),
 		NetIntAny("m_StartTick", 0),
 		NetIntAny("m_EndTick", 0),
+		NetIntAny("m_ProximityRadius", 0),
 	], validate_size=False),
 
 	NetObjectEx("InfClassPlayer", "player@infclass", [

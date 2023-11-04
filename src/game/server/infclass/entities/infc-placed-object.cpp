@@ -57,5 +57,7 @@ CNetObj_InfClassObject *CPlacedObject::SnapInfClassObject()
 		pInfClassObject->m_Y2 = 0;
 	}
 
+	pInfClassObject->m_ProximityRadius = f2fx(GetProximityRadius());
+
 	return pInfClassObject;
 }
