@@ -101,13 +101,20 @@ void CSoldierBomb::Snap(int SnappingClient)
 	if(!DoSnapForClient(SnappingClient))
 		return;
 
-	if(Server()->GetClientInfclassVersion(SnappingClient))
+	int InfclassVersion = Server()->GetClientInfclassVersion(SnappingClient);
+	if(InfclassVersion)
 	{
 		CNetObj_InfClassObject *pInfClassObject = SnapInfClassObject();
 		if(!pInfClassObject)
 			return;
 
 		pInfClassObject->m_StartTick = m_StartTick;
+		pInfClassObject->m_Data1 = m_nbBomb;
+		if(InfclassVersion >= VERSION_INFC_180)
+		{
+			pInfClassObject->m_Flags |= INFCLASS_OBJECT_FLAG_RELY_ON_CLIENTSIDE_RENDERING;
+			return;
+		}
 	}
 
 	for(int i = 0; i < m_nbBomb; i++)

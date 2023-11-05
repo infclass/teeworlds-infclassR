@@ -778,6 +778,7 @@ void CInfClassGameController::SendServerParams(int ClientID) const
 	{
 		Msg.m_WhiteHoleMinKills = Config()->m_InfWhiteHoleMinimalKills;
 	}
+	Msg.m_SoldierBombs = Config()->m_InfSoldierBombs;
 
 	if(ClientID == -1)
 	{

@@ -265,6 +265,7 @@ Objects = [
 		NetIntAny("m_StartTick", 0),
 		NetIntAny("m_EndTick", 0),
 		NetIntAny("m_ProximityRadius", 0),
+		NetIntAny("m_Data1", 0),
 	], validate_size=False),
 
 	NetObjectEx("InfClassPlayer", "player@infclass", [
@@ -500,7 +501,8 @@ Messages = [
 
 	NetMessageEx("InfClass_ServerParams", "server-params1@infclass", [
 		NetIntAny("m_Version", 0),
-		NetIntRange("m_WhiteHoleMinKills", 0, 255),
+		NetIntRange("m_WhiteHoleMinKills", 0, 255, 0),
+		NetIntRange("m_SoldierBombs", 0, 255, 0),
 	]),
 
 	### Client messages
