@@ -135,14 +135,3 @@ void CSoldierBomb::TickPaused()
 {
 	++m_StartTick;
 }
-
-bool CSoldierBomb::AddBomb()
-{
-	if(m_nbBomb < m_IDBomb.size())
-	{
-		m_nbBomb++;
-		return true;
-	}
-	else
-		return false;
-}

@@ -3085,7 +3085,6 @@ void CInfClassGameController::AnnounceTheWinner(int NumHumans)
 				Server()->RoundStatistics()->OnScoreEvent(Iter.ClientID(), SCOREEVENT_HUMAN_SURVIVE, Iter.Player()->GetClass(), Server()->ClientName(Iter.ClientID()), Console());
 				Server()->RoundStatistics()->SetPlayerAsWinner(Iter.ClientID());
 				GameServer()->SendScoreSound(Iter.ClientID());
-				Iter.Player()->m_WinAsHuman++;
 
 				GameServer()->SendChatTarget_Localization(Iter.ClientID(), CHATCATEGORY_SCORE, _("You have survived, +5 points"), NULL);
 				str_format(aBuf, sizeof(aBuf), "survived player='%s'", Server()->ClientName(Iter.ClientID()));

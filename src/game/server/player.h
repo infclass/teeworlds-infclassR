@@ -96,7 +96,6 @@ public:
 	bool m_ForceBalanced;
 	int m_LastActionTick;
 	int m_LastActionMoveTick;
-	bool m_StolenSkin;
 	int m_TeamChangeTick;
 	struct
 	{
@@ -195,8 +194,6 @@ public:
 	const char *GetOriginalName() const { return m_aOriginalName; }
 
 	bool m_ClientNameLocked;
-
-	int m_WinAsHuman;
 
 	CTuningParams m_PrevTuningParams;
 	CTuningParams m_NextTuningParams;

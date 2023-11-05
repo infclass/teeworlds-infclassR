@@ -93,7 +93,6 @@ void CPlayer::Reset()
 	m_ClientNameLocked = false;
 	m_aOriginalName[0] = 0;
 
-	m_WinAsHuman = 0;
 	m_class = PLAYERCLASS_NONE;
 	m_InfectionTick = -1;
 	SetLanguage(Server()->GetClientLanguage(m_ClientID));

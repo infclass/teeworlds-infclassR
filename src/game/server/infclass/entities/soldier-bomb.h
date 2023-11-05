@@ -18,7 +18,6 @@ public:
 	void TickPaused() override;
 
 	void Explode();
-	bool AddBomb();
 	int GetNbBombs() const { return m_nbBomb; }
 
 private:
