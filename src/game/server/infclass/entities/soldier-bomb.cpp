@@ -122,10 +122,10 @@ void CSoldierBomb::Snap(int SnappingClient)
 		float shiftedAngle = m_Angle + 2.0 * pi * static_cast<float>(i) / static_cast<float>(m_IDBomb.size());
 
 		CNetObj_Projectile *pProj = Server()->SnapNewItem<CNetObj_Projectile>(m_IDBomb[i]);
-		pProj->m_X = (int)(m_Pos.x + SoldierBombRadius * cos(shiftedAngle));
-		pProj->m_Y = (int)(m_Pos.y + SoldierBombRadius * sin(shiftedAngle));
-		pProj->m_VelX = (int)(0.0f);
-		pProj->m_VelY = (int)(0.0f);
+		pProj->m_X = m_Pos.x + SoldierBombRadius * std::cos(shiftedAngle);
+		pProj->m_Y = m_Pos.y + SoldierBombRadius * std::sin(shiftedAngle);
+		pProj->m_VelX = 0;
+		pProj->m_VelY = 0;
 		pProj->m_StartTick = Server()->Tick();
 		pProj->m_Type = WEAPON_GRENADE;
 	}

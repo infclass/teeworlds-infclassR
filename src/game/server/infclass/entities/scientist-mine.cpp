@@ -91,19 +91,18 @@ void CScientistMine::Snap(int SnappingClient)
 	
 	for(int i=0; i<NumSide; i++)
 	{
-		vec2 PartPosStart = m_Pos + vec2(Radius * cos(AngleStep*i), Radius * sin(AngleStep*i));
-		vec2 PartPosEnd = m_Pos + vec2(Radius * cos(AngleStep*(i+1)), Radius * sin(AngleStep*(i+1)));
+		vec2 PartPosStart = m_Pos + direction(AngleStep * i) * Radius;
+		vec2 PartPosEnd = m_Pos + direction(AngleStep * (i + 1)) * Radius;
 		GameServer()->SnapLaserObject(Context, m_IDs[i], PartPosStart, PartPosEnd, Server()->Tick(), GetOwner());
 	}
 
 	if(!AntiPing)
 	{
-		for(int i=0; i<CScientistMine::NUM_PARTICLES; i++)
+		for(int i = 0; i < CScientistMine::NUM_PARTICLES; i++)
 		{
-			float RandomRadius = random_float()*(Radius-4.0f);
-			float RandomAngle = 2.0f * pi * random_float();
-			vec2 ParticlePos = m_Pos + vec2(RandomRadius * cos(RandomAngle), RandomRadius * sin(RandomAngle));
-			GameController()->SendHammerDot(ParticlePos, m_IDs[CScientistMine::NUM_SIDE+i]);
+			float RandomRadius = random_float() * (Radius - 4.0f);
+			vec2 ParticlePos = m_Pos + random_direction() * RandomRadius;
+			GameController()->SendHammerDot(ParticlePos, m_IDs[CScientistMine::NUM_SIDE + i]);
 		}
 	}
 }
