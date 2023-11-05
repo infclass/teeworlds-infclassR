@@ -30,8 +30,7 @@ CTurret::CTurret(CGameContext *pGameContext, vec2 Pos, int Owner, vec2 Direction
 	m_Radius = 15.0f;
 	m_foundTarget = false;
 	m_ammunition = Config()->m_InfTurretAmmunition;
-	m_EvalTick = Server()->Tick();
-	m_LifeSpan = Server()->TickSpeed() * Config()->m_InfTurretDuration;
+	m_EndTick = m_StartTick + Server()->TickSpeed() * Config()->m_InfTurretDuration;
 	m_WarmUpCounter = Server()->TickSpeed() * Config()->m_InfTurretWarmUpDuration;
 	m_Type = Type;
 	for(int &ID : m_IDs)
@@ -57,7 +56,7 @@ void CTurret::Tick()
 	if(IsMarkedForDestroy())
 		return;
 
-	if(m_LifeSpan < 0)
+	if(Server()->Tick() >= m_EndTick)
 		Reset();
 
 	CInfClassCharacter *pKiller = nullptr;
@@ -83,9 +82,6 @@ void CTurret::Tick()
 	{
 		Die(pKiller);
 	}
-
-	// reduce lifespan
-	m_LifeSpan--;
 
 	// reloading in progress
 	if(m_ReloadCounter > 0)
@@ -119,6 +115,11 @@ void CTurret::Tick()
 	}
 
 	AttackTargets();
+}
+
+void CTurret::TickPaused()
+{
+	++m_EndTick;
 }
 
 void CTurret::AttackTargets()
@@ -199,6 +200,9 @@ void CTurret::Snap(int SnappingClient)
 		CNetObj_InfClassObject *pInfClassObject = SnapInfClassObject();
 		if(!pInfClassObject)
 			return;
+
+		pInfClassObject->m_StartTick = m_StartTick;
+		pInfClassObject->m_EndTick = m_EndTick;
 	}
 
 	const CInfClassPlayer *pPlayer = GameController()->GetPlayer(SnappingClient);

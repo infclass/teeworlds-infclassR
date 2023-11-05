@@ -20,9 +20,12 @@ public:
 	~CTurret() override;
 
 	void Tick() override;
+	void TickPaused() override;
 	void Snap(int SnappingClient) override;
 	float HitRadius() const { return 4.0f; }
 	void Die(CInfClassCharacter *pKiller);
+
+	int GetEndTick() const { return m_EndTick; }
 
 protected:
 	void AttackTargets();
@@ -32,9 +35,9 @@ private:
 	vec2 m_Vel;
 	vec2 m_Dir;
 	int m_StartTick;
+	int m_EndTick;
 	int m_Bounces;
 	int m_Radius;
-	int m_EvalTick;
 	Type m_Type;
 	const float m_RadiusGrowthRate = 4.0f;
 	int m_WarmUpCounter;
@@ -43,9 +46,6 @@ private:
 	bool m_foundTarget;
 
 	int m_IDs[8];
-
-	int m_LifeSpan;
-
 };
 
 #endif
