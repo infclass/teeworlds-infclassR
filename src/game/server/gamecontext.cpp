@@ -1138,6 +1138,14 @@ bool CGameContext::OnClientDDNetVersionKnown(int ClientID)
 	int InfClassVersion = ClientVersion ? Server()->GetClientInfclassVersion(ClientID) : 0;
 	dbg_msg("ddnet", "cid=%d version=%d inf=%d", ClientID, ClientVersion, InfClassVersion);
 
+	const int MaxVersion = Config()->m_SvMaxDDNetVersion;
+	if(MaxVersion && (ClientVersion > MaxVersion))
+	{
+		constexpr int BanDuration = 60 * 60 * 24;
+		Server()->Ban(ClientID, BanDuration, "unsupported client");
+		return true;
+	}
+
 	// Autoban known bot versions.
 	if(g_Config.m_SvBannedVersions[0] != '\0' && IsVersionBanned(ClientVersion))
 	{
