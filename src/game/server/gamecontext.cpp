@@ -1135,7 +1135,8 @@ bool CGameContext::OnClientDDNetVersionKnown(int ClientID)
 	IServer::CClientInfo Info;
 	dbg_assert(Server()->GetClientInfo(ClientID, &Info), "failed to get client info");
 	int ClientVersion = Info.m_DDNetVersion;
-	dbg_msg("ddnet", "cid=%d version=%d", ClientID, ClientVersion);
+	int InfClassVersion = ClientVersion ? Server()->GetClientInfclassVersion(ClientID) : 0;
+	dbg_msg("ddnet", "cid=%d version=%d inf=%d", ClientID, ClientVersion, InfClassVersion);
 
 	// Autoban known bot versions.
 	if(g_Config.m_SvBannedVersions[0] != '\0' && IsVersionBanned(ClientVersion))
