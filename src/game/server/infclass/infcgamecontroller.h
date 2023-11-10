@@ -106,6 +106,7 @@ public:
 	void CheckRoundFailed();
 	void DoWincheck() override;
 	void StartRound() override;
+	void ResetRoundData();
 	void EndRound() override;
 	void EndRound(ROUND_END_REASON Reason);
 	void DoTeamChange(class CPlayer *pPlayer, int Team, bool DoChatMsg = true) override;

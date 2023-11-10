@@ -2401,9 +2401,29 @@ void CInfClassGameController::StartRound()
 
 	SaveRoundRules();
 
+	for(int i = 0; i < MAX_CLIENTS; i++)
+	{
+		CInfClassPlayer *pPlayer = GetPlayer(i);
+		if(pPlayer)
+		{
+			Server()->SetClientMemory(i, CLIENTMEMORY_ROUNDSTART_OR_MAPCHANGE, true);
+		}
+	}
+
 	m_RoundStarted = true;
 	IGameController::StartRound();
 
+	if(StartAfterGameOver)
+	{
+		IncreaseCurrentRoundCounter();
+	}
+
+	ResetRoundData();
+	OnStartRound();
+}
+
+void CInfClassGameController::ResetRoundData()
+{
 	Server()->ResetStatistics();
 
 	for(int i = 0; i < MAX_CLIENTS; i++)
@@ -2411,20 +2431,12 @@ void CInfClassGameController::StartRound()
 		CInfClassPlayer *pPlayer = GetPlayer(i);
 		if(pPlayer)
 		{
-			Server()->SetClientMemory(i, CLIENTMEMORY_ROUNDSTART_OR_MAPCHANGE, true);
 			pPlayer->ResetRoundData();
 		}
 	}
 
 	m_HeroGiftTick = 0;
 	m_WitchCallers.Clear();
-
-	if(StartAfterGameOver)
-	{
-		IncreaseCurrentRoundCounter();
-	}
-
-	OnStartRound();
 }
 
 void CInfClassGameController::EndRound()
