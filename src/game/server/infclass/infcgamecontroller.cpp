@@ -2399,8 +2399,6 @@ void CInfClassGameController::StartRound()
 		break;
 	}
 
-	SaveRoundRules();
-
 	for(int i = 0; i < MAX_CLIENTS; i++)
 	{
 		CInfClassPlayer *pPlayer = GetPlayer(i);
@@ -2419,6 +2417,7 @@ void CInfClassGameController::StartRound()
 	}
 
 	ResetRoundData();
+	SaveRoundRules();
 	OnStartRound();
 }
 
