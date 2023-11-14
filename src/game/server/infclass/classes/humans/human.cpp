@@ -621,6 +621,13 @@ void CInfClassHuman::OnHumanHammerHitHuman(CInfClassCharacter *pTarget)
 			}
 		}
 	}
+	if(GetPlayerClass() == PLAYERCLASS_BIOLOGIST)
+	{
+		if(pTarget->IsPoisoned())
+		{
+			pTarget->ResetPoisonEffect();
+		}
+	}
 }
 
 void CInfClassHuman::OnHookAttachedPlayer()
