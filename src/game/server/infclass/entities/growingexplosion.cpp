@@ -309,7 +309,7 @@ void CGrowingExplosion::Tick()
 					m_Hit[p->GetCID()] = true;
 					break;
 				case GROWING_EXPLOSION_EFFECT::POISON_INFECTED:
-					p->GetClass()->Poison(Config()->m_InfPoisonDamage, m_Owner, DAMAGE_TYPE::MERCENARY_GRENADE);
+					p->Poison(Config()->m_InfPoisonDamage, m_Owner, DAMAGE_TYPE::MERCENARY_GRENADE);
 					p->GetClass()->DisableHealing(Config()->m_InfPoisonDuration / 1000.0f, m_Owner, DAMAGE_TYPE::MERCENARY_GRENADE);
 					GameServer()->SendEmoticon(p->GetCID(), EMOTICON_DROP);
 					m_Hit[p->GetCID()] = true;

@@ -233,16 +233,6 @@ void CInfClassPlayerClass::PrepareToDie(const DeathContext &Context, bool *pRefu
 {
 }
 
-void CInfClassPlayerClass::Poison(int Count, int From, DAMAGE_TYPE DamageType)
-{
-	if(Count > m_Poison)
-	{
-		m_Poison = Count;
-		m_PoisonFrom = From;
-		m_PoisonDamageType = DamageType;
-	}
-}
-
 void CInfClassPlayerClass::DisableHealing(float Duration, int From, DAMAGE_TYPE DamageType)
 {
 	m_HealingDisabledTicks = maximum<int>(m_HealingDisabledTicks, Duration * Server()->TickSpeed());
@@ -275,34 +265,6 @@ void CInfClassPlayerClass::OnCharacterPreCoreTick()
 
 void CInfClassPlayerClass::OnCharacterTick()
 {
-	if(m_Poison > 0)
-	{
-		if(m_PoisonTick == 0)
-		{
-			m_Poison--;
-			vec2 Force(0, 0);
-			static const int PoisonDamage = 1;
-			m_pCharacter->TakeDamage(Force, PoisonDamage, m_PoisonFrom, m_PoisonDamageType);
-			if(m_Poison >= 0)
-			{
-				int Damage = maximum(Config()->m_InfPoisonDamage, 1);
-				const float PoisonDurationSeconds = Config()->m_InfPoisonDuration / 1000.0;
-				const float DamageIntervalSeconds = PoisonDurationSeconds / Damage;
-				m_PoisonTick = Server()->TickSpeed() * DamageIntervalSeconds;
-			}
-
-			const CInfClassPlayer *pPoisonerPlayer = GameController()->GetPlayer(m_PoisonFrom);
-			if(pPoisonerPlayer && pPoisonerPlayer->GetClass() == PLAYERCLASS_SLUG)
-			{
-				GameServer()->CreateDeath(GetPos(), m_PoisonFrom);
-			}
-		}
-		else
-		{
-			m_PoisonTick--;
-		}
-	}
-
 	if(m_HealingDisabledTicks > 0)
 	{
 		m_HealingDisabledTicks--;
@@ -333,7 +295,6 @@ void CInfClassPlayerClass::OnCharacterSnap(int SnappingClient)
 
 void CInfClassPlayerClass::OnCharacterSpawned(const SpawnContext &Context)
 {
-	m_Poison = 0;
 	m_HealingDisabledTicks = 0;
 
 	UpdateSkin();

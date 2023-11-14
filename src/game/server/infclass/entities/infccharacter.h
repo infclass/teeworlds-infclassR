@@ -202,6 +202,10 @@ public:
 	float SlowMotionEffect(float Duration, int FromCID);
 	void CancelSlowMotion();
 
+	bool IsPoisoned() const;
+	void Poison(int Count, int From, DAMAGE_TYPE DamageType);
+	void ResetPoisonEffect();
+
 	void ResetMovementsInput();
 	void ResetHookInput();
 
@@ -294,6 +298,11 @@ protected:
 
 	int m_SlowMotionTick;
 	int m_SlowEffectApplicant;
+
+	int m_Poison = 0;
+	int m_PoisonTick = 0;
+	int m_PoisonFrom = 0;
+	DAMAGE_TYPE m_PoisonDamageType;
 
 	bool m_IsInvisible = false;
 	int m_InvisibleTick = 0;

@@ -55,7 +55,6 @@ public:
 	void OnPlayerClassChanged();
 
 	virtual void PrepareToDie(const DeathContext &Context, bool *pRefusedToDie);
-	void Poison(int Count, int From, DAMAGE_TYPE DamageType);
 
 	bool IsHealingDisabled() const;
 	void DisableHealing(float Duration, int From, DAMAGE_TYPE DamageType);
@@ -116,11 +115,6 @@ protected:
 	CInfClassPlayer *m_pPlayer = nullptr;
 	CInfClassCharacter *m_pCharacter = nullptr;
 	int m_NormalEmote;
-
-	int m_Poison = 0;
-	int m_PoisonTick = 0;
-	int m_PoisonFrom = 0;
-	DAMAGE_TYPE m_PoisonDamageType;
 
 	int m_HealingDisabledTicks = 0;
 };

@@ -2115,7 +2115,7 @@ bool CInfClassHuman::FindPortalPosition(vec2 *pPosition)
 void CInfClassHuman::OnSlimeEffect(int Owner)
 {
 	int Count = Config()->m_InfSlimePoisonDamage;
-	Poison(Count, Owner, DAMAGE_TYPE::SLUG_SLIME);
+	m_pCharacter->Poison(Count, Owner, DAMAGE_TYPE::SLUG_SLIME);
 }
 
 bool CInfClassHuman::HasWhiteHole() const

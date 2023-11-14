@@ -62,6 +62,7 @@ void CInfClassCharacter::OnCharacterSpawned(const SpawnContext &Context)
 	m_LoveTick = -1;
 	m_FrozenTime = -1;
 	m_FreezeReason = FREEZEREASON_FLASH;
+	m_Poison = 0;
 	m_SlowMotionTick = -1;
 	m_HallucinationTick = -1;
 	m_SlipperyTick = -1;
@@ -197,6 +198,34 @@ void CInfClassCharacter::Tick()
 			_("You are blinded: {sec:EffectDuration}"),
 			"EffectDuration", &EffectSec,
 			nullptr);
+	}
+
+	if(m_Poison > 0)
+	{
+		if(m_PoisonTick == 0)
+		{
+			m_Poison--;
+			vec2 Force(0, 0);
+			static const int PoisonDamage = 1;
+			TakeDamage(Force, PoisonDamage, m_PoisonFrom, m_PoisonDamageType);
+			if(m_Poison >= 0)
+			{
+				int Damage = maximum(Config()->m_InfPoisonDamage, 1);
+				const float PoisonDurationSeconds = Config()->m_InfPoisonDuration / 1000.0;
+				const float DamageIntervalSeconds = PoisonDurationSeconds / Damage;
+				m_PoisonTick = Server()->TickSpeed() * DamageIntervalSeconds;
+			}
+
+			const CInfClassPlayer *pPoisonerPlayer = GameController()->GetPlayer(m_PoisonFrom);
+			if(pPoisonerPlayer && pPoisonerPlayer->GetClass() == PLAYERCLASS_SLUG)
+			{
+				GameServer()->CreateDeath(GetPos(), m_PoisonFrom);
+			}
+		}
+		else
+		{
+			m_PoisonTick--;
+		}
 	}
 
 	if(m_LastHelper.m_Tick > 0)
@@ -915,6 +944,26 @@ float CInfClassCharacter::SlowMotionEffect(float Duration, int FromCID)
 void CInfClassCharacter::CancelSlowMotion()
 {
 	m_SlowMotionTick = -1;
+}
+
+bool CInfClassCharacter::IsPoisoned() const
+{
+	return m_Poison > 0;
+}
+
+void CInfClassCharacter::Poison(int Count, int From, DAMAGE_TYPE DamageType)
+{
+	if(Count > m_Poison)
+	{
+		m_Poison = Count;
+		m_PoisonFrom = From;
+		m_PoisonDamageType = DamageType;
+	}
+}
+
+void CInfClassCharacter::ResetPoisonEffect()
+{
+	m_Poison = 0;
 }
 
 void CInfClassCharacter::ResetMovementsInput()
