@@ -2143,6 +2143,12 @@ bool CInfClassHuman::FindPortalPosition(vec2 *pPosition)
 void CInfClassHuman::OnSlimeEffect(int Owner)
 {
 	int Count = Config()->m_InfSlimePoisonDamage;
+	if(GetPlayerClass() == PLAYERCLASS_BIOLOGIST)
+	{
+		// Note: actually probably the character 'll stay in the slime for
+		// more than 1 tick and it 'll result in 2 damage dealt
+		Count = 1;
+	}
 	m_pCharacter->Poison(Count, Owner, DAMAGE_TYPE::SLUG_SLIME);
 }
 
