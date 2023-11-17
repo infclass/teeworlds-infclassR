@@ -217,8 +217,7 @@ void CInfClassCharacter::Tick()
 				m_PoisonTick = CurrentTick + Server()->TickSpeed() * DamageIntervalSeconds;
 			}
 
-			const CInfClassPlayer *pPoisonerPlayer = GameController()->GetPlayer(m_PoisonFrom);
-			if(pPoisonerPlayer && pPoisonerPlayer->GetClass() == PLAYERCLASS_SLUG)
+			if(m_PoisonDamageType == DAMAGE_TYPE::SLUG_SLIME)
 			{
 				GameServer()->CreateDeath(GetPos(), m_PoisonFrom);
 			}
