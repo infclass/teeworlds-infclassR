@@ -180,6 +180,7 @@ void CInfClassCharacter::Destroy()
 void CInfClassCharacter::Tick()
 {
 	const vec2 PrevPos = m_Core.m_Pos;
+	const int CurrentTick = Server()->Tick();
 
 	if(m_pClass)
 	{
@@ -202,7 +203,7 @@ void CInfClassCharacter::Tick()
 
 	if(m_Poison > 0)
 	{
-		if(m_PoisonTick == 0)
+		if(m_PoisonTick <= CurrentTick)
 		{
 			m_Poison--;
 			vec2 Force(0, 0);
@@ -213,7 +214,7 @@ void CInfClassCharacter::Tick()
 				int Damage = maximum(Config()->m_InfPoisonDamage, 1);
 				const float PoisonDurationSeconds = Config()->m_InfPoisonDuration / 1000.0;
 				const float DamageIntervalSeconds = PoisonDurationSeconds / Damage;
-				m_PoisonTick = Server()->TickSpeed() * DamageIntervalSeconds;
+				m_PoisonTick = CurrentTick + Server()->TickSpeed() * DamageIntervalSeconds;
 			}
 
 			const CInfClassPlayer *pPoisonerPlayer = GameController()->GetPlayer(m_PoisonFrom);
@@ -221,10 +222,6 @@ void CInfClassCharacter::Tick()
 			{
 				GameServer()->CreateDeath(GetPos(), m_PoisonFrom);
 			}
-		}
-		else
-		{
-			m_PoisonTick--;
 		}
 	}
 
@@ -285,6 +282,8 @@ void CInfClassCharacter::TickPaused()
 	{
 		m_DamageZoneTick++;
 	}
+	if(m_PoisonTick)
+		m_PoisonTick++;
 }
 
 void CInfClassCharacter::Snap(int SnappingClient)
@@ -964,6 +963,7 @@ void CInfClassCharacter::Poison(int Count, int From, DAMAGE_TYPE DamageType)
 void CInfClassCharacter::ResetPoisonEffect()
 {
 	m_Poison = 0;
+	// Do not reset m_PoisonTick here to prevent extra poisoning
 }
 
 void CInfClassCharacter::ResetMovementsInput()
