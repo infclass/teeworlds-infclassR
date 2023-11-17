@@ -666,18 +666,25 @@ bool CInfClassCharacter::TakeDamage(const vec2 &Force, float FloatDmg, int From,
 	{
 		HandleDamage(From, Dmg, DamageType);
 
+		bool IgnoreArmor = false;
+		if(DamageType == DAMAGE_TYPE::SLUG_SLIME)
+			IgnoreArmor = true;
+
 		int Armor = GetArmor();
-		if(Armor)
+		if(!IgnoreArmor)
 		{
-			if(Dmg <= Armor)
+			if(Armor)
 			{
-				Armor -= Dmg;
-				Dmg = 0;
-			}
-			else
-			{
-				Dmg -= Armor;
-				Armor = 0;
+				if(Dmg <= Armor)
+				{
+					Armor -= Dmg;
+					Dmg = 0;
+				}
+				else
+				{
+					Dmg -= Armor;
+					Armor = 0;
+				}
 			}
 		}
 
