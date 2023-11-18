@@ -2044,7 +2044,7 @@ void CInfClassHuman::OnBiologistLaserFired(WeaponFireContext *pFireContext)
 			GameWorld()->DestroyEntity(pMine);
 	}
 
-	int Lasers = 15;
+	int Lasers = Config()->m_InfBioMineLasers;
 	int PerLaserDamage = 10;
 	new CBiologistMine(GameServer(), GetPos(), To, GetCID(), Lasers, PerLaserDamage);
 	pFireContext->AmmoConsumed = pFireContext->AmmoAvailable;
