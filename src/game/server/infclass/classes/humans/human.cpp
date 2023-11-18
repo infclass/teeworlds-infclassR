@@ -528,6 +528,20 @@ void CInfClassHuman::OnCharacterSnap(int SnappingClient)
 					pP->m_Subtype = 0;
 					break;
 				}
+			case PLAYERCLASS_BIOLOGIST:
+				if(m_pCharacter->IsPoisoned())
+				{
+					CNetObj_Pickup *pP = Server()->SnapNewItem<CNetObj_Pickup>(m_pCharacter->GetHeartID());
+					if(!pP)
+						return;
+
+					const vec2 Pos = m_pCharacter->GetPos();
+					pP->m_X = Pos.x;
+					pP->m_Y = Pos.y - 60.0;
+					pP->m_Type = POWERUP_HEALTH;
+					pP->m_Subtype = 0;
+				}
+				break;
 			default:
 				break;
 			}
