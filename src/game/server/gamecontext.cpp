@@ -3024,6 +3024,8 @@ void CGameContext::ConRemoveVote(IConsole::IResult *pResult, void *pUserData)
 	{
 		if(str_comp_nocase(pDescription, pOption->m_aDescription) == 0)
 			break;
+		if(str_comp_nocase(pDescription, pOption->m_aCommand) == 0)
+			break;
 		pOption = pOption->m_pNext;
 	}
 	if(!pOption)
