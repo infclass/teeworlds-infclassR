@@ -3222,6 +3222,11 @@ float CInfClassGameController::GetWhiteHoleLifeSpan() const
 	return Config()->m_InfWhiteHoleLifeSpan;
 }
 
+int CInfClassGameController::MinimumInfectedForRevival() const
+{
+	return Config()->m_InfRevivalMinInfected;
+}
+
 bool CInfClassGameController::IsClassChooserEnabled() const
 {
 	return Config()->m_InfClassChooser;

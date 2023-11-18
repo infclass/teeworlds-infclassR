@@ -152,6 +152,7 @@ public:
 	bool MercBombsEnabled() const;
 	bool WhiteHoleEnabled() const;
 	float GetWhiteHoleLifeSpan() const;
+	int MinimumInfectedForRevival() const;
 	bool IsClassChooserEnabled() const;
 	int GetTaxiMode() const;
 	int GetGhoulStomackSize() const;

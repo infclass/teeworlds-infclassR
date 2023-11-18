@@ -1232,7 +1232,7 @@ void CInfClassHuman::BroadcastWeaponState() const
 		if(m_pCharacter->GetActiveWeapon() == WEAPON_LASER)
 		{
 			int MinimumHP = Config()->m_InfRevivalDamage + 1;
-			int MinimumInfected = Config()->m_InfRevivalMinInfected;
+			int MinimumInfected = GameController()->MinimumInfectedForRevival();
 
 			if(m_pCharacter->GetHealthArmorSum() < MinimumHP)
 			{
