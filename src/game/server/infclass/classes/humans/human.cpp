@@ -846,17 +846,6 @@ void CInfClassHuman::OnGunFired(WeaponFireContext *pFireContext)
 			Direction,
 			(int)(Server()->TickSpeed()*GameServer()->Tuning()->m_GunLifetime),
 			1, 0, 0, -1, DamageType);
-		
-		// pack the Projectile and send it to the client Directly
-		CNetObj_Projectile p;
-		pProj->FillInfo(&p);
-		
-		CMsgPacker Msg(NETMSGTYPE_SV_EXTRAPROJECTILE);
-		Msg.AddInt(1);
-		for(unsigned i = 0; i < sizeof(CNetObj_Projectile)/sizeof(int); i++)
-			Msg.AddInt(((int *)&p)[i]);
-		
-		Server()->SendMsg(&Msg, MSGFLAG_VITAL, GetCID());
 	}
 
 	if(GetPlayerClass() == PLAYERCLASS_MERCENARY)
@@ -898,9 +887,6 @@ void CInfClassHuman::OnShotgunFired(WeaponFireContext *pFireContext)
 		break;
 	}
 
-	CMsgPacker Msg(NETMSGTYPE_SV_EXTRAPROJECTILE);
-	Msg.AddInt(ShotSpread * 2 + 1);
-
 	for(int i = -ShotSpread; i <= ShotSpread; ++i)
 	{
 		const float Spreading = i * 0.07f;
@@ -918,12 +904,6 @@ void CInfClassHuman::OnShotgunFired(WeaponFireContext *pFireContext)
 				GetCID(),
 				ProjStartPos,
 				Direction);
-
-			// pack the Projectile and send it to the client Directly
-			CNetObj_Projectile p;
-			pProj->FillInfo(&p);
-			for(unsigned i = 0; i < sizeof(CNetObj_Projectile)/sizeof(int); i++)
-				Msg.AddInt(((int *)&p)[i]);
 		}
 		else
 		{
@@ -934,16 +914,8 @@ void CInfClassHuman::OnShotgunFired(WeaponFireContext *pFireContext)
 				Direction,
 				(int)(Server()->TickSpeed() * LifeTime),
 				Damage, false, Force, -1, DamageType);
-
-			// pack the Projectile and send it to the client Directly
-			CNetObj_Projectile p;
-			pProj->FillInfo(&p);
-			for(unsigned i = 0; i < sizeof(CNetObj_Projectile)/sizeof(int); i++)
-				Msg.AddInt(((int *)&p)[i]);
 		}
 	}
-
-	Server()->SendMsg(&Msg, MSGFLAG_VITAL, GetCID());
 
 	GameServer()->CreateSound(GetPos(), SOUND_SHOTGUN_FIRE);
 }
@@ -984,16 +956,6 @@ void CInfClassHuman::OnGrenadeFired(WeaponFireContext *pFireContext)
 			pProj->FlashGrenade();
 			pProj->SetFlashRadius(8);
 		}
-
-		// pack the Projectile and send it to the client Directly
-		CNetObj_Projectile p;
-		pProj->FillInfo(&p);
-
-		CMsgPacker Msg(NETMSGTYPE_SV_EXTRAPROJECTILE);
-		Msg.AddInt(1);
-		for(unsigned i = 0; i < sizeof(CNetObj_Projectile) / sizeof(int); i++)
-			Msg.AddInt(((int *)&p)[i]);
-		Server()->SendMsg(&Msg, MSGFLAG_VITAL, GetCID());
 
 		GameServer()->CreateSound(GetPos(), SOUND_GRENADE_FIRE);
 	}
@@ -1974,22 +1936,11 @@ void CInfClassHuman::OnMercGrenadeFired(WeaponFireContext *pFireContext)
 
 	int ShotSpread = 2;
 
-	CMsgPacker Msg(NETMSGTYPE_SV_EXTRAPROJECTILE);
-	Msg.AddInt(ShotSpread * 2 + 1);
-
 	for(int i = -ShotSpread; i <= ShotSpread; ++i)
 	{
 		float a = BaseAngle + random_float() / 3.0f;
 
 		CScatterGrenade *pProj = new CScatterGrenade(GameServer(), GetCID(), GetPos(), vec2(cosf(a), sinf(a)));
-
-		// pack the Projectile and send it to the client Directly
-		CNetObj_Projectile p;
-		pProj->FillInfo(&p);
-
-		for(unsigned i = 0; i < sizeof(CNetObj_Projectile) / sizeof(int); i++)
-			Msg.AddInt(((int *)&p)[i]);
-		Server()->SendMsg(&Msg, MSGFLAG_VITAL, GetCID());
 	}
 
 	GameServer()->CreateSound(GetPos(), SOUND_GRENADE_FIRE);
