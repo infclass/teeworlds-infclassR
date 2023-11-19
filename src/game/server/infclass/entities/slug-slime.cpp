@@ -14,13 +14,14 @@ CSlugSlime::CSlugSlime(CGameContext *pGameContext, vec2 Pos, int Owner) :
 	CPlacedObject(pGameContext, EntityId, Pos, Owner)
 {
 	m_StartTick = Server()->Tick();
-	m_EndTick = m_StartTick + Server()->TickSpeed() * Config()->m_InfSlimeDuration;
+	m_EndTick = m_StartTick;
 	GameWorld()->InsertEntity(this);
 }
 
 void CSlugSlime::Tick()
 {
-	if(m_MarkedForDestroy) return;
+	if(IsMarkedForDestroy())
+		return;
 
 	if(Server()->Tick() >= m_EndTick)
 	{
@@ -71,8 +72,12 @@ void CSlugSlime::Snap(int SnappingClient)
 	}
 }
 
-void CSlugSlime::Replenish(int PlayerID)
+bool CSlugSlime::Replenish(int PlayerID, int EndTick)
 {
+	if(m_EndTick > EndTick)
+		return false;
+
 	m_Owner = PlayerID;
-	m_EndTick = Server()->Tick() + Server()->TickSpeed() * Config()->m_InfSlimeDuration;
+	m_EndTick = EndTick;
+	return true;
 }

@@ -17,7 +17,7 @@ public:
 	void Snap(int SnappingClient) override;
 	int GetEndTick() const { return m_EndTick; }
 
-	void Replenish(int PlayerID);
+	bool Replenish(int PlayerID, int EndTick);
 
 private:
 	int m_StartTick = 0;

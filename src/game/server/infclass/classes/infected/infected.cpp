@@ -737,7 +737,13 @@ void CInfClassInfected::PlaceSlugSlime(WeaponFireContext *pFireContext)
 
 	if(pSlime)
 	{
-		pFireContext->FireAccepted = true;
+		int MaxLifeSpan = Server()->TickSpeed() * Config()->m_InfSlimeDuration;
+		int NewEndTick = Server()->Tick() + MaxLifeSpan;
+
+		if(pSlime->Replenish(GetCID(), NewEndTick))
+		{
+			pFireContext->FireAccepted = true;
+		}
 	}
 }
 
@@ -761,14 +767,7 @@ CSlugSlime *CInfClassInfected::PlaceSlime(vec2 PlaceToPos, float MinDistance)
 		}
 		if(d <= MinDistance / 2)
 		{
-			// Replenish the slime
-			int MaxLifeSpan = Server()->TickSpeed() * Config()->m_InfSlimeDuration;
-			int RemainingTicks = pSlime->GetEndTick() - Server()->TickSpeed();
-			if(RemainingTicks < MaxLifeSpan)
-			{
-				pSlime->Replenish(GetCID());
-				return pSlime;
-			}
+			return pSlime;
 		}
 	}
 
