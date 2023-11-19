@@ -36,6 +36,9 @@ LegacyProjectileFlags = [f"CLIENTID_BIT{i}" for i in range(8)] + [
 ProjectileFlags = [
 	"BOUNCE_HORIZONTAL", "BOUNCE_VERTICAL", "EXPLOSIVE", "FREEZE", "NORMALIZE_VEL",
 ]
+LaserFlags = [
+	"NO_PREDICT",
+]
 
 LaserTypes = ["RIFLE", "SHOTGUN", "DOOR", "FREEZE", "DRAGGER", "GUN", "PLASMA"]
 DraggerTypes = ["WEAK", "WEAK_NW", "NORMAL", "NORMAL_NW", "STRONG", "STRONG_NW"]
@@ -106,6 +109,7 @@ Flags = [
 	Flags("EXPLAYERFLAG", ExPlayerFlags),
 	Flags("LEGACYPROJECTILEFLAG", LegacyProjectileFlags),
 	Flags("PROJECTILEFLAG", ProjectileFlags),
+	Flags("LASERFLAG", LaserFlags),
 	Flags("INFCLASS_PLAYER_FLAG", InfClassPlayerFlags),
 	Flags("INFCLASS_OBJECT_FLAG", InfClassObjectFlags),
 	Flags("INFCLASS_CLASSINFO_FLAG", InfClassClassInfoFlags),
@@ -278,11 +282,11 @@ Objects = [
 	]),
 
 	NetObjectEx("InfClassGameInfo", "gameinfo@infclass", [
-		NetIntAny("m_Version"),
-		NetIntAny("m_Flags"),
-		NetIntRange("m_TimeLimitInSeconds", 0, 'max_int'),
-		NetIntAny("m_HeroGiftTick"),
-	]),
+		NetIntAny("m_Version", 0),
+		NetIntAny("m_Flags", 0),
+		NetIntRange("m_TimeLimitInSeconds", 0, 'max_int', 0),
+		NetIntAny("m_HeroGiftTick", -1),
+	], validate_size=False),
 
 	NetObjectEx("InfClassClassInfo", "classinfo@infclass", [
 		NetIntAny("m_Flags"),
@@ -339,6 +343,7 @@ Objects = [
 		NetIntAny("m_Type"),
 		NetIntAny("m_SwitchNumber", -1),
 		NetIntAny("m_Subtype", -1),
+		NetIntAny("m_Flags", 0),
 	]),
 
 	NetObjectEx("DDNetProjectile", "ddnet-projectile@netobj.ddnet.tw", [
@@ -446,7 +451,7 @@ Messages = [
 	]),
 
 	NetMessage("Sv_TuneParams", []),
-	NetMessage("Sv_ExtraProjectile", []),
+	NetMessage("Unused", []),
 	NetMessage("Sv_ReadyToEnter", []),
 
 	NetMessage("Sv_WeaponPickup", [
@@ -568,7 +573,7 @@ Messages = [
 		NetIntAny("m_PlayerTimeBest"),
 	]),
 
-	NetMessage("Unused", []),
+	NetMessage("Unused2", []),
 
 	NetMessage("Sv_TeamsStateLegacy", []),
 
