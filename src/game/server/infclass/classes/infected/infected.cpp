@@ -731,16 +731,17 @@ void CInfClassInfected::DoBoomerExplosion()
 
 void CInfClassInfected::PlaceSlugSlime(WeaponFireContext *pFireContext)
 {
+	static constexpr float MinDistance = 84.0f;
 	vec2 CheckPos = GetPos() + GetDirection() * 64.0f;
-	bool Accepted = PlaceSlime(CheckPos);
+	CSlugSlime *pSlime = PlaceSlime(CheckPos, MinDistance);
 
-	if(Accepted)
+	if(pSlime)
 	{
 		pFireContext->FireAccepted = true;
 	}
 }
 
-CSlugSlime *CInfClassInfected::PlaceSlime(vec2 PlaceToPos)
+CSlugSlime *CInfClassInfected::PlaceSlime(vec2 PlaceToPos, float MinDistance)
 {
 	if(m_pCharacter->IsInLove())
 		return nullptr;
@@ -750,7 +751,6 @@ CSlugSlime *CInfClassInfected::PlaceSlime(vec2 PlaceToPos)
 		return nullptr;
 	}
 
-	static const float MinDistance = 84.0f;
 	float DistanceToTheNearestSlime = MinDistance * 2;
 	for(TEntityPtr<CSlugSlime> pSlime = GameWorld()->FindFirst<CSlugSlime>(); pSlime; ++pSlime)
 	{

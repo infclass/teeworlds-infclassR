@@ -61,7 +61,7 @@ protected:
 
 	void DoBoomerExplosion();
 	void PlaceSlugSlime(WeaponFireContext *pFireContext);
-	CSlugSlime *PlaceSlime(vec2 PlaceToPos);
+	CSlugSlime *PlaceSlime(vec2 PlaceToPos, float MinDistance);
 
 	void SetHookOnLimit(bool OnLimit);
 
