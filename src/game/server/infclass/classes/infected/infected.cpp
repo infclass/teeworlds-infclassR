@@ -762,7 +762,9 @@ bool CInfClassInfected::PlaceSlime(vec2 PlaceToPos)
 		if(d <= MinDistance / 2)
 		{
 			// Replenish the slime
-			if(pSlime->GetMaxLifeSpan() - pSlime->GetLifeSpan() > Server()->TickSpeed())
+			int MaxLifeSpan = Server()->TickSpeed() * Config()->m_InfSlimeDuration;
+			int RemainingTicks = pSlime->GetEndTick() - Server()->TickSpeed();
+			if(RemainingTicks < MaxLifeSpan)
 			{
 				pSlime->Replenish(GetCID());
 				return true;

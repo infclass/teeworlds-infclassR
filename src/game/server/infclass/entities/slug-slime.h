@@ -3,23 +3,25 @@
 #ifndef GAME_SERVER_ENTITIES_SLUG_SLIME_H
 #define GAME_SERVER_ENTITIES_SLUG_SLIME_H
 
-#include "infcentity.h"
+#include "infc-placed-object.h"
 
-class CSlugSlime : public CInfCEntity
+class CSlugSlime : public CPlacedObject
 {
 public:
 	static int EntityId;
 
 	CSlugSlime(CGameContext *pGameContext, vec2 Pos, int Owner);
 
-	virtual void Tick();
+	void Tick() override;
+	void TickPaused() override;
+	void Snap(int SnappingClient) override;
+	int GetEndTick() const { return m_EndTick; }
 
-	int GetLifeSpan() const;
-	int GetMaxLifeSpan();
 	void Replenish(int PlayerID);
 
-public:
-	int m_LifeSpan;
+private:
+	int m_StartTick = 0;
+	int m_EndTick = 0;
 };
 
 #endif

@@ -12,8 +12,10 @@
 #include "infccharacter.h"
 #include "growingexplosion.h"
 
+int CScientistMine::EntityId = CGameWorld::ENTTYPE_SCIENTIST_MINE;
+
 CScientistMine::CScientistMine(CGameContext *pGameContext, vec2 Pos, int Owner) :
-	CPlacedObject(pGameContext, CGameWorld::ENTTYPE_SCIENTIST_MINE, Pos, Owner, pGameContext->Config()->m_InfMineRadius)
+	CPlacedObject(pGameContext, EntityId, Pos, Owner, pGameContext->Config()->m_InfMineRadius)
 {
 	m_InfClassObjectType = INFCLASS_OBJECT_TYPE_SCIENTIST_MINE;
 	GameWorld()->InsertEntity(this);

@@ -11,22 +11,23 @@
 int CSlugSlime::EntityId = CGameWorld::ENTTYPE_SLUG_SLIME;
 
 CSlugSlime::CSlugSlime(CGameContext *pGameContext, vec2 Pos, int Owner) :
-	CInfCEntity(pGameContext, EntityId, Pos, Owner)
+	CPlacedObject(pGameContext, EntityId, Pos, Owner)
 {
-	m_LifeSpan = Server()->TickSpeed()*Config()->m_InfSlimeDuration;
+	m_StartTick = Server()->Tick();
+	m_EndTick = m_StartTick + Server()->TickSpeed() * Config()->m_InfSlimeDuration;
 	GameWorld()->InsertEntity(this);
 }
 
 void CSlugSlime::Tick()
 {
 	if(m_MarkedForDestroy) return;
-	
-	if(m_LifeSpan <= 0)
+
+	if(Server()->Tick() >= m_EndTick)
 	{
 		GameWorld()->DestroyEntity(this);
 		return;
 	}
-	
+
 	// Find other players
 	for(CInfClassCharacter *p = (CInfClassCharacter*) GameWorld()->FindFirst(CGameWorld::ENTTYPE_CHARACTER); p; p = (CInfClassCharacter *)p->TypeNext())
 	{
@@ -35,27 +36,43 @@ void CSlugSlime::Tick()
 		
 		p->GetClass()->OnSlimeEffect(m_Owner);
 	}
-	
-	if((m_LifeSpan % 20) == 0)
+
+	int ExistsForTicks = Server()->Tick() - m_StartTick;
+	if((ExistsForTicks % 20) == 0)
 	{
 		GameServer()->CreateDeath(m_Pos, m_Owner);
 	}
-	
-	m_LifeSpan--;
 }
 
-int CSlugSlime::GetLifeSpan() const
+void CSlugSlime::TickPaused()
 {
-	return m_LifeSpan;
+	m_StartTick++;
+	m_EndTick++;
 }
 
-int CSlugSlime::GetMaxLifeSpan()
+void CSlugSlime::Snap(int SnappingClient)
 {
-	return Server()->TickSpeed()*Config()->m_InfSlimeDuration;
+	// Do not snap Slime at all to prevent possible crash on owner indicator rendering
+	// (Infclass clients up to v0.1.8 can handle up to 8 indicators and CRASH on overflow
+	if constexpr (true)
+		return;
+
+	if(!DoSnapForClient(SnappingClient))
+		return;
+
+	if(Server()->GetClientInfclassVersion(SnappingClient))
+	{
+		CNetObj_InfClassObject *pInfClassObject = SnapInfClassObject();
+		if(!pInfClassObject)
+			return;
+
+		pInfClassObject->m_StartTick = m_StartTick;
+		pInfClassObject->m_EndTick = m_EndTick;
+	}
 }
 
 void CSlugSlime::Replenish(int PlayerID)
 {
 	m_Owner = PlayerID;
-	m_LifeSpan = GetMaxLifeSpan();
+	m_EndTick = Server()->Tick() + Server()->TickSpeed() * Config()->m_InfSlimeDuration;
 }

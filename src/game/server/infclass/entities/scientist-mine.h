@@ -16,6 +16,8 @@ public:
 	};
 	
 public:
+	static int EntityId;
+
 	CScientistMine(CGameContext *pGameContext, vec2 Pos, int Owner);
 	virtual ~CScientistMine();
 
