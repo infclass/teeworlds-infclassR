@@ -39,7 +39,7 @@ void CBiologistMine::Explode()
 	float RandomShift = random_float() * 2.0f * pi;
 	for(int i = 0; i < m_Lasers; i++)
 	{
-		new CBiologistLaser(GameServer(), m_Pos, vec2(cos(RandomShift + AngleStep * i), sin(RandomShift + AngleStep * i)), m_Owner, m_PerLaserDamage);
+		new CBiologistLaser(GameServer(), m_Pos, direction(RandomShift + AngleStep * i), m_Owner, m_PerLaserDamage);
 	}
 	
 	GameWorld()->DestroyEntity(this);
@@ -65,7 +65,7 @@ void CBiologistMine::Snap(int SnappingClient)
 
 	for(int i = 0; i < m_Vertices; i++)
 	{
-		vec2 VertexPos = m_Pos + vec2(Radius * cos(AngleStep*i), Radius * sin(AngleStep*i));
+		vec2 VertexPos = m_Pos + direction(AngleStep * i) * Radius;
 		GameServer()->SnapLaserObject(Context, m_IDs[i], VertexPos, m_Pos, Server()->Tick() - 4, GetOwner());
 	}
 
