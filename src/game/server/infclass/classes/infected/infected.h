@@ -6,6 +6,8 @@
 #include <game/server/alloc.h>
 #include <game/server/infclass/death_context.h>
 
+class CSlugSlime;
+
 class CInfClassInfected : public CInfClassPlayerClass
 {
 	MACRO_ALLOC_POOL_ID()
@@ -59,7 +61,7 @@ protected:
 
 	void DoBoomerExplosion();
 	void PlaceSlugSlime(WeaponFireContext *pFireContext);
-	bool PlaceSlime(vec2 PlaceToPos);
+	CSlugSlime *PlaceSlime(vec2 PlaceToPos);
 
 	void SetHookOnLimit(bool OnLimit);
 

@@ -740,14 +740,14 @@ void CInfClassInfected::PlaceSlugSlime(WeaponFireContext *pFireContext)
 	}
 }
 
-bool CInfClassInfected::PlaceSlime(vec2 PlaceToPos)
+CSlugSlime *CInfClassInfected::PlaceSlime(vec2 PlaceToPos)
 {
 	if(m_pCharacter->IsInLove())
-		return false;
+		return nullptr;
 
 	if(!GameServer()->Collision()->IntersectLine(GetPos(), PlaceToPos, 0x0, &PlaceToPos))
 	{
-		return false;
+		return nullptr;
 	}
 
 	static const float MinDistance = 84.0f;
@@ -767,18 +767,18 @@ bool CInfClassInfected::PlaceSlime(vec2 PlaceToPos)
 			if(RemainingTicks < MaxLifeSpan)
 			{
 				pSlime->Replenish(GetCID());
-				return true;
+				return pSlime;
 			}
 		}
 	}
 
 	if(DistanceToTheNearestSlime < MinDistance)
 	{
-		return false;
+		return nullptr;
 	}
 
-	new CSlugSlime(GameServer(), PlaceToPos, GetCID());
-	return true;
+	CSlugSlime *pNewSlime = new CSlugSlime(GameServer(), PlaceToPos, GetCID());
+	return pNewSlime;
 }
 
 bool CInfClassInfected::FindWitchSpawnPosition(vec2 &Position)
