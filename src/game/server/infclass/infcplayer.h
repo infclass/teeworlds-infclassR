@@ -97,6 +97,8 @@ public:
 	EPlayerScoreMode GetScoreMode() const;
 	void SetScoreMode(EPlayerScoreMode Mode);
 
+	int DieTick() const { return m_DieTick; }
+
 	void ResetTheTargetToFollow();
 	void SetFollowTarget(int ClientID, float Duration);
 	int TargetToFollow() const;
