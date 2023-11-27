@@ -65,92 +65,92 @@ bool CInfClassInfected::SetupSkin(const CSkinContext &Context, CWeakSkinInfo *pO
 {
 	switch(Context.PlayerClass)
 	{
-		case PLAYERCLASS_SMOKER:
-			pOutput->UseCustomColor = 1;
-			pOutput->pSkinName = "cammostripes";
-			pOutput->ColorBody = 3866368;
+	case PLAYERCLASS_SMOKER:
+		pOutput->UseCustomColor = 1;
+		pOutput->pSkinName = "cammostripes";
+		pOutput->ColorBody = 3866368;
+		pOutput->ColorFeet = 65414;
+		break;
+	case PLAYERCLASS_BOOMER:
+		pOutput->pSkinName = "saddo";
+		pOutput->UseCustomColor = 1;
+		pOutput->ColorBody = 3866368;
+		pOutput->ColorFeet = 65414;
+		break;
+	case PLAYERCLASS_HUNTER:
+		pOutput->pSkinName = "warpaint";
+		pOutput->UseCustomColor = 1;
+		pOutput->ColorBody = 3866368;
+		pOutput->ColorFeet = 65414;
+		break;
+	case PLAYERCLASS_BAT:
+		pOutput->pSkinName = "limekitty";
+		pOutput->UseCustomColor = 1;
+		pOutput->ColorBody = 3866368;
+		pOutput->ColorFeet = 2866368;
+		break;
+	case PLAYERCLASS_GHOST:
+		pOutput->pSkinName = "twintri";
+		pOutput->UseCustomColor = 1;
+		pOutput->ColorBody = 3866368;
+		pOutput->ColorFeet = 65414;
+		break;
+	case PLAYERCLASS_SPIDER:
+		pOutput->pSkinName = "pinky";
+		pOutput->UseCustomColor = 1;
+		pOutput->ColorBody = 3866368;
+		if(Context.ExtraData1)
+		{
+			pOutput->ColorFeet = 16776960; // Dark red
+		}
+		else
+		{
 			pOutput->ColorFeet = 65414;
-			break;
-		case PLAYERCLASS_BOOMER:
-			pOutput->pSkinName = "saddo";
-			pOutput->UseCustomColor = 1;
+		}
+		break;
+	case PLAYERCLASS_GHOUL:
+		pOutput->pSkinName = "cammo";
+		pOutput->UseCustomColor = 1;
+		{
+			float Percent = Context.ExtraData1 / 100.0f;
+			int Hue = 58 * (1.0f - Percent * 0.8f);
+			pOutput->ColorBody = (Hue << 16) + (255 << 8);
+		}
+		pOutput->ColorFeet = 65414;
+		break;
+	case PLAYERCLASS_SLUG:
+		pOutput->pSkinName = "coala";
+		pOutput->UseCustomColor = 1;
+		pOutput->ColorBody = 3866368;
+		pOutput->ColorFeet = 65414;
+		break;
+	case PLAYERCLASS_VOODOO:
+		pOutput->pSkinName = "bluestripe";
+		pOutput->UseCustomColor = 1;
+		if(!Context.ExtraData1)
+		{
 			pOutput->ColorBody = 3866368;
-			pOutput->ColorFeet = 65414;
-			break;
-		case PLAYERCLASS_HUNTER:
-			pOutput->pSkinName = "warpaint";
-			pOutput->UseCustomColor = 1;
-			pOutput->ColorBody = 3866368;
-			pOutput->ColorFeet = 65414;
-			break;
-		case PLAYERCLASS_BAT:
-			pOutput->pSkinName = "limekitty";
-			pOutput->UseCustomColor = 1;
-			pOutput->ColorBody = 3866368;
-			pOutput->ColorFeet = 2866368;
-			break;
-		case PLAYERCLASS_GHOST:
-			pOutput->pSkinName = "twintri";
-			pOutput->UseCustomColor = 1;
-			pOutput->ColorBody = 3866368;
-			pOutput->ColorFeet = 65414;
-			break;
-		case PLAYERCLASS_SPIDER:
-			pOutput->pSkinName = "pinky";
-			pOutput->UseCustomColor = 1;
-			pOutput->ColorBody = 3866368;
-			if(Context.ExtraData1)
-			{
-				pOutput->ColorFeet = 16776960; // Dark red
-			}
-			else
-			{
-				pOutput->ColorFeet = 65414;
-			}
-			break;
-		case PLAYERCLASS_GHOUL:
-			pOutput->pSkinName = "cammo";
-			pOutput->UseCustomColor = 1;
-			{
-				float Percent = Context.ExtraData1 / 100.0f;
-				int Hue = 58 * (1.0f - Percent * 0.8f);
-				pOutput->ColorBody = (Hue<<16) + (255<<8);
-			}
-			pOutput->ColorFeet = 65414;
-			break;
-		case PLAYERCLASS_SLUG:
-			pOutput->pSkinName = "coala";
-			pOutput->UseCustomColor = 1;
-			pOutput->ColorBody = 3866368;
-			pOutput->ColorFeet = 65414;
-			break;
-		case PLAYERCLASS_VOODOO:
-			pOutput->pSkinName = "bluestripe";
-			pOutput->UseCustomColor = 1;
-			if(!Context.ExtraData1)
-			{
-				pOutput->ColorBody = 3866368;
-			}
-			else
-			{
-				pOutput->ColorBody = 6183936; // grey-green
-			}
-			pOutput->ColorFeet = 65414;
-			break;
-		case PLAYERCLASS_UNDEAD:
-			pOutput->pSkinName = "redstripe";
-			pOutput->UseCustomColor = 1;
-			pOutput->ColorBody = 3014400;
-			pOutput->ColorFeet = 13168;
-			break;
-		case PLAYERCLASS_WITCH:
-			pOutput->pSkinName = "redbopp";
-			pOutput->UseCustomColor = 1;
-			pOutput->ColorBody = 16776744;
-			pOutput->ColorFeet = 13168;
-			break;
-		default:
-			return false;
+		}
+		else
+		{
+			pOutput->ColorBody = 6183936; // grey-green
+		}
+		pOutput->ColorFeet = 65414;
+		break;
+	case PLAYERCLASS_UNDEAD:
+		pOutput->pSkinName = "redstripe";
+		pOutput->UseCustomColor = 1;
+		pOutput->ColorBody = 3014400;
+		pOutput->ColorFeet = 13168;
+		break;
+	case PLAYERCLASS_WITCH:
+		pOutput->pSkinName = "redbopp";
+		pOutput->UseCustomColor = 1;
+		pOutput->ColorBody = 16776744;
+		pOutput->ColorFeet = 13168;
+		break;
+	default:
+		return false;
 	}
 
 	return true;
