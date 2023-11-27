@@ -23,7 +23,8 @@ protected:
 	CSessionPool m_Pool;
 
 public:
-	virtual ~CNetSession() {}
+	virtual ~CNetSession() = default;
+
 	void Init()
 	{
 		m_Pool.Reset();

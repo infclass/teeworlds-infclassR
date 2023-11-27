@@ -26,56 +26,57 @@ enum
 class CRoundStatistics
 {
 public:
-	class CPlayer
+	class CPlayerStats
 	{
 	public:
-		int m_Score;
-		int m_EngineerScore;
-		int m_SoldierScore;
-		int m_ScientistScore;
-		int m_BiologistScore;
-		int m_LooperScore;
-		int m_MedicScore;
-		int m_HeroScore;
-		int m_NinjaScore;
-		int m_MercenaryScore;
-		int m_SniperScore;
-		
-		int m_SmokerScore;
-		int m_HunterScore;
-		int m_BatScore;
-		int m_BoomerScore;
-		int m_GhostScore;
-		int m_SpiderScore;
-		int m_GhoulScore;
-		int m_SlugScore;
-		int m_VoodooScore;
-		int m_UndeadScore;
-		int m_WitchScore;
-		
-		bool m_WasSpectator;
-		bool m_Won;
-	
+		int m_Score{};
+		int m_EngineerScore{};
+		int m_SoldierScore{};
+		int m_ScientistScore{};
+		int m_BiologistScore{};
+		int m_LooperScore{};
+		int m_MedicScore{};
+		int m_HeroScore{};
+		int m_NinjaScore{};
+		int m_MercenaryScore{};
+		int m_SniperScore{};
+
+		int m_SmokerScore{};
+		int m_HunterScore{};
+		int m_BatScore{};
+		int m_BoomerScore{};
+		int m_GhostScore{};
+		int m_SpiderScore{};
+		int m_GhoulScore{};
+		int m_SlugScore{};
+		int m_VoodooScore{};
+		int m_UndeadScore{};
+		int m_WitchScore{};
+
+		bool m_WasSpectator{};
+		bool m_Won{};
+
 	public:
-		CPlayer() { Reset(); }
-		void Reset() { mem_zero(this, sizeof(CPlayer)); }
+		CPlayerStats() = default;
+
+		void Reset() { *this = CPlayerStats{}; }
 		int OnScoreEvent(int EventType, int Class);
 	};
 
 public:
-	CPlayer m_aPlayers[MAX_CLIENTS];
-	int m_NumPlayersMin;
-	int m_NumPlayersMax;
-	int m_PlayedTicks;
+	CPlayerStats m_aPlayers[MAX_CLIENTS];
+	int m_NumPlayersMin{};
+	int m_NumPlayersMax{};
+	int m_PlayedTicks{};
 	
 public:
-	CRoundStatistics() { Reset(); }
-	void Reset() { mem_zero(this, sizeof(CRoundStatistics)); }
+	CRoundStatistics() = default;
+	void Reset() { *this = CRoundStatistics{}; }
 	void ResetPlayer(int ClientID);
 	void OnScoreEvent(int ClientID, int EventType, int Class, const char* Name, IConsole* console);
 	void SetPlayerAsWinner(int ClientID);
 	
-	CRoundStatistics::CPlayer* PlayerStatistics(int ClientID);
+	CRoundStatistics::CPlayerStats* PlayerStatistics(int ClientID);
 	int PlayerScore(int ClientID);
 	
 	int NumWinners() const;

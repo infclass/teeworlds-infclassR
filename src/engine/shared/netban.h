@@ -66,7 +66,7 @@ protected:
 		int m_Hash;
 		int m_HashIndex; // matching parts for ranges, 0 for addr
 
-		CNetHash() {}
+		CNetHash() = default;
 		CNetHash(const NETADDR *pAddr);
 		CNetHash(const CNetRange *pRange);
 
@@ -205,7 +205,7 @@ void CNetBan::MakeBanInfo(const CBan<T> *pBan, char *pBuf, unsigned BuffSize, in
 	// build type based part
 	char aBuf[256];
 	if(Type == MSGTYPE_PLAYER)
-		str_copy(aBuf, "You have been banned", sizeof(aBuf));
+		str_copy(aBuf, "You have been banned");
 	else
 	{
 		char aTemp[256];

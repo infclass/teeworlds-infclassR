@@ -76,7 +76,7 @@ bool CheckClientID(int ClientID)
 
 void CGameContext::Construct(int Resetting)
 {
-	m_Resetting = 0;
+	m_Resetting = false;
 	m_pServer = 0;
 	m_pConfig = 0;
 
@@ -151,7 +151,6 @@ void CGameContext::Clear()
 
 	m_Resetting = true;
 	this->~CGameContext();
-	mem_zero(this, sizeof(*this));
 	new (this) CGameContext(RESET);
 
 	m_pVoteOptionHeap = pVoteOptionHeap;

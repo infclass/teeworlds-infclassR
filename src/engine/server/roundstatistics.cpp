@@ -2,7 +2,7 @@
 
 #include <game/infclass/classes.h>
 
-int CRoundStatistics::CPlayer::OnScoreEvent(int EventType, int Class)
+int CRoundStatistics::CPlayerStats::OnScoreEvent(int EventType, int Class)
 {
 	int Points = 0;
 	switch(EventType)
@@ -152,7 +152,7 @@ void CRoundStatistics::SetPlayerAsWinner(int ClientID)
 		m_aPlayers[ClientID].m_Won = true;
 }
 
-CRoundStatistics::CPlayer* CRoundStatistics::PlayerStatistics(int ClientID)
+CRoundStatistics::CPlayerStats* CRoundStatistics::PlayerStatistics(int ClientID)
 {
 	if(ClientID >= 0 && ClientID < MAX_CLIENTS)
 		return &m_aPlayers[ClientID];

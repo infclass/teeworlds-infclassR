@@ -591,6 +591,8 @@ add_custom_command(OUTPUT "src/game/generated/wordlist.h"
 
 # Sources
 set(BASE
+  src/base/bezier.cpp
+  src/base/bezier.h
   src/base/color.cpp
   src/base/color.h
   src/base/detect.h
