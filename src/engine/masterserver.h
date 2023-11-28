@@ -7,7 +7,7 @@
 
 class IMasterServer : public IInterface
 {
-	MACRO_INTERFACE("masterserver", 0)
+	MACRO_INTERFACE("masterserver")
 public:
 
 	enum
@@ -30,7 +30,7 @@ public:
 
 class IEngineMasterServer : public IMasterServer
 {
-	MACRO_INTERFACE("enginemasterserver", 0)
+	MACRO_INTERFACE("enginemasterserver")
 public:
 };
 

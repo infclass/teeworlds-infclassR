@@ -26,7 +26,7 @@ public:
 
 class IEngine : public IInterface
 {
-	MACRO_INTERFACE("engine", 0)
+	MACRO_INTERFACE("engine")
 
 protected:
 	class CJobPool m_JobPool;

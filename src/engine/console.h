@@ -14,7 +14,7 @@ static const ColorRGBA gs_ConsoleDefaultColor(1, 1, 1, 1);
 enum LEVEL : char;
 class IConsole : public IInterface
 {
-	MACRO_INTERFACE("console", 0)
+	MACRO_INTERFACE("console")
 public:
 	//	TODO: rework/cleanup
 	enum
