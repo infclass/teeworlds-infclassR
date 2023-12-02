@@ -42,21 +42,15 @@ void EventsDirector::SetPreloadedMapName(const char *pName)
 
 	if(pEvent[0])
 	{
-		const int NameLength = str_length(pName);
-		const int EventLength = str_length(pEvent);
-		if(NameLength > EventLength + 1)
+		if(str_endswith(pName, pEvent))
 		{
-			int ExpectedSuffixOffset = NameLength - EventLength + 1;
-			if(str_comp(&pName[ExpectedSuffixOffset], pEvent) == 0)
+			if(str_comp(pEvent, "winter") == 0)
 			{
-				if(str_comp(pEvent, "winter") == 0)
-				{
-					PreloadedMapEventType = EventType::Winter;
-				}
-				else
-				{
-					PreloadedMapEventType = EventType::Generic;
-				}
+				PreloadedMapEventType = EventType::Winter;
+			}
+			else
+			{
+				PreloadedMapEventType = EventType::Generic;
 			}
 		}
 	}
