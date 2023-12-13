@@ -1672,6 +1672,32 @@ void CGameContext::OnClientEnter(int ClientID)
 	m_apPlayers[ClientID]->m_IsInGame = true;
 	m_apPlayers[ClientID]->Respawn();
 
+	for(const IConsole::CCommandInfo *pCmd = Console()->FirstCommandInfo(IConsole::ACCESS_LEVEL_USER, CFGFLAG_CHAT);
+		pCmd; pCmd = pCmd->NextCommandInfo(IConsole::ACCESS_LEVEL_USER, CFGFLAG_CHAT))
+	{
+		const char *pName = pCmd->m_pName;
+
+		if(Server()->IsSixup(ClientID))
+		{
+			if(!str_comp_nocase(pName, "w") || !str_comp_nocase(pName, "whisper"))
+				continue;
+
+			protocol7::CNetMsg_Sv_CommandInfo Msg;
+			Msg.m_pName = pName;
+			Msg.m_pArgsFormat = pCmd->m_pParams;
+			Msg.m_pHelpText = pCmd->m_pHelp;
+			Server()->SendPackMsg(&Msg, MSGFLAG_VITAL | MSGFLAG_NORECORD, ClientID);
+		}
+		else
+		{
+			CNetMsg_Sv_CommandInfo Msg;
+			Msg.m_pName = pName;
+			Msg.m_pArgsFormat = pCmd->m_pParams;
+			Msg.m_pHelpText = pCmd->m_pHelp;
+			Server()->SendPackMsg(&Msg, MSGFLAG_VITAL | MSGFLAG_NORECORD, ClientID);
+		}
+	}
+
 	m_VoteUpdate = true;
 
 	// send active vote
