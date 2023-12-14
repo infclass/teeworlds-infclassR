@@ -1265,6 +1265,40 @@ const char *CInfClassGameController::GetClassDisplayName(PLAYERCLASS PlayerClass
 		case PLAYERCLASS_NONE:
 		default:
 			return pDefaultText ? pDefaultText : _("Unknown class");
+		}
+}
+
+const char *CInfClassGameController::GetClassDisplayNameForKilledBy(PLAYERCLASS PlayerClass, const char *pDefaultText)
+{
+	switch(PlayerClass)
+	{
+		// Only the infected classes are used for now; do not add others to keep the translations smaller
+	case PLAYERCLASS_SMOKER:
+		return _C("For 'Killed by <>'", "a Smoker");
+	case PLAYERCLASS_BOOMER:
+		return _C("For 'Killed by <>'", "a Boomer");
+	case PLAYERCLASS_HUNTER:
+		return _C("For 'Killed by <>'", "a Hunter");
+	case PLAYERCLASS_BAT:
+		return _C("For 'Killed by <>'", "a Bat");
+	case PLAYERCLASS_GHOST:
+		return _C("For 'Killed by <>'", "a Ghost");
+	case PLAYERCLASS_SPIDER:
+		return _C("For 'Killed by <>'", "a Spider");
+	case PLAYERCLASS_GHOUL:
+		return _C("For 'Killed by <>'", "a Ghoul");
+	case PLAYERCLASS_SLUG:
+		return _C("For 'Killed by <>'", "a Slug");
+	case PLAYERCLASS_VOODOO:
+		return _C("For 'Killed by <>'", "a Voodoo");
+	case PLAYERCLASS_WITCH:
+		return _C("For 'Killed by <>'", "a Witch");
+	case PLAYERCLASS_UNDEAD:
+		return _C("For 'Killed by <>'", "an Undead");
+
+	case PLAYERCLASS_NONE:
+	default:
+		return pDefaultText ? pDefaultText : _C("For 'Killed by <>'", "someone unknown");
 	}
 }
 
@@ -2951,6 +2985,8 @@ void CInfClassGameController::OnKillOrInfection(int Victim, const DeathContext &
 
 	const CInfClassPlayer *pVictim = GetPlayer(Victim);
 	const CInfClassPlayer *pKiller = Context.Killer < 0 ? pVictim : GetPlayer(Context.Killer);
+	const int Tick = Server()->Tick();
+	const int TickSpeed = Server()->TickSpeed();
 
 	if(pKiller && pKiller->IsHuman() && (pVictim != pKiller))
 	{
@@ -2963,6 +2999,158 @@ void CInfClassGameController::OnKillOrInfection(int Victim, const DeathContext &
 	if(!m_SurvivalState.KilledPlayers.Contains(Victim))
 	{
 		m_SurvivalState.KilledPlayers.Add(Victim);
+	}
+
+	const CInfClassCharacter *pVictimCharacter = pVictim->GetCharacter();
+	if(pKiller && pKiller != pVictim)
+	{
+		const PLAYERCLASS KillerClass = pKiller->GetClass();
+		icArray<const char *, 20> PossibleMessages;
+		switch(Context.DamageType)
+		{
+		case EDamageType::BOOMER_EXPLOSION:
+			PossibleMessages.Add(("{str:PlayerName} was exploded by {str:Killer}."));
+			PossibleMessages.Add(("{str:PlayerName} was eliminated by {str:Killer}."));
+			PossibleMessages.Add(("{str:PlayerName} met a boomer."));
+			break;
+		case EDamageType::SLUG_SLIME:
+			PossibleMessages.Add(("{str:PlayerName} had no aid against {str:Killer}."));
+			break;
+		case EDamageType::SCIENTIST_MINE:
+			PossibleMessages.Add(("{str:PlayerName} was electrified by {str:Killer}."));
+			break;
+		case EDamageType::DRYING_HOOK:
+			if(pVictimCharacter->m_Core.m_AttachedPlayers.size() >= 2)
+			{
+				const float StretchingDistance = 12 * TileSizeF;
+				const float StretchingDistance2 = StretchingDistance * StretchingDistance;
+				int Stretchers = 0;
+				for(const auto &AttachedPlayerID : pVictimCharacter->m_Core.m_AttachedPlayers)
+				{
+					const CCharacter *pOtherPlayer = GameServer()->GetPlayerChar(AttachedPlayerID);
+					if(pOtherPlayer && distance_squared(pOtherPlayer->GetPos(), pVictimCharacter->GetPos()) > StretchingDistance2)
+					{
+						Stretchers++;
+						if(Stretchers >= 2)
+							break;
+					}
+				}
+
+				if(Stretchers >= 2)
+				{
+					PossibleMessages.Clear();
+					PossibleMessages.Add(("{str:PlayerName} did a stretching exercise."));
+				}
+				break;
+			}
+			break;
+		default:
+			break;
+		}
+
+		switch(KillerClass)
+		{
+		case PLAYERCLASS_SMOKER:
+			if(Context.DamageType == EDamageType::DRYING_HOOK)
+			{
+				PossibleMessages.Add(("{str:PlayerName} was drained by {str:Killer}."));
+			}
+			break;
+		case PLAYERCLASS_GHOST:
+			PossibleMessages.Add(("{str:PlayerName} was surprised by {str:Killer}."));
+			break;
+		case PLAYERCLASS_BAT:
+			PossibleMessages.Add(("{str:PlayerName} was bitten by {str:Killer}."));
+			break;
+		default:
+			break;
+		}
+
+		const CInfClassCharacter *pVictimCharacter = pVictim->GetCharacter();
+		if(pVictimCharacter->GetAttackTick() + TickSpeed * 1.25f < Tick)
+		{
+			PossibleMessages.Add("{str:PlayerName} kinda gave up.");
+		}
+		else if(pVictimCharacter->GetLastNoAmmoSoundTick() + Server()->TickSpeed() * 0.6 < Tick)
+		{
+			PossibleMessages.Add("{str:PlayerName} had no ammo to kill them all.");
+		}
+
+		const char *apPlayerKilledByMessages[] = {
+			_("{str:PlayerName} was destroyed by {str:Killer}."),
+			_("{str:PlayerName} was slain by {str:Killer}."),
+			_("{str:PlayerName} was decapitated by {str:Killer}."),
+			_("{str:PlayerName} was chopped up by {str:Killer}."),
+			_("{str:PlayerName} was removed from this world by {str:Killer}."),
+		};
+
+		if(PossibleMessages.IsEmpty())
+		{
+			for(const char *pMessage : apPlayerKilledByMessages)
+			{
+				PossibleMessages.Add(pMessage);
+			}
+		}
+		else
+		{
+			PossibleMessages.Add(apPlayerKilledByMessages[random_int(0, std::size(apPlayerKilledByMessages) - 1)]);
+		}
+
+		if(PossibleMessages.Size() > 1)
+		{
+			for(std::size_t i = 0; i < PossibleMessages.Size(); ++i)
+			{
+				if(PossibleMessages.At(i) == m_LastUsedKillMessage)
+				{
+					PossibleMessages.RemoveAt(i);
+				}
+			}
+		}
+
+		const char *pMessage = PossibleMessages.At(random_int(0, PossibleMessages.Size() - 1));
+		m_LastUsedKillMessage = pMessage;
+
+		const char *pKillerText = GetClassDisplayNameForKilledBy(KillerClass);
+		GameServer()->SendChatTarget_Localization(-1, CHATCATEGORY_PLAYER,
+			pMessage,
+			"PlayerName", GameServer()->Server()->ClientName(Victim),
+			"Killer", pKillerText,
+			nullptr);
+	}
+	else
+	{
+		icArray<const char *, 20> PossibleMessages;
+
+		const icArray<EDamageType, 2> BadTiles = {
+			EDamageType::DEATH_TILE,
+			EDamageType::INFECTION_TILE,
+		};
+		if(BadTiles.Contains(Context.DamageType))
+		{
+			PossibleMessages.Add(("{str:PlayerName} made a wrong step."));
+		}
+
+		const char *apPlayerDeathMessages[] = {
+			_("{str:PlayerName} didn't survive in this round."),
+		};
+
+		if(PossibleMessages.IsEmpty())
+		{
+			for(const char *pMessage : apPlayerDeathMessages)
+			{
+				PossibleMessages.Add(pMessage);
+			}
+		}
+		else
+		{
+			PossibleMessages.Add(apPlayerDeathMessages[random_int(0, std::size(apPlayerDeathMessages) - 1)]);
+		}
+
+		const char *pMessage = PossibleMessages.At(random_int(0, PossibleMessages.Size() - 1));
+		GameServer()->SendChatTarget_Localization(-1, CHATCATEGORY_PLAYER,
+			pMessage,
+			"PlayerName", GameServer()->Server()->ClientName(Victim),
+			nullptr);
 	}
 }
 

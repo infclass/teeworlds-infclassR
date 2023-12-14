@@ -196,6 +196,7 @@ public:
 	static const char *GetClassName(PLAYERCLASS PlayerClass);
 	static const char *GetClassPluralName(PLAYERCLASS PlayerClass);
 	static const char *GetClassDisplayName(PLAYERCLASS PlayerClass, const char *pDefaultText = nullptr);
+	static const char *GetClassDisplayNameForKilledBy(PLAYERCLASS PlayerClass, const char *pDefaultText = nullptr);
 	static const char *GetClanForClass(PLAYERCLASS PlayerClass, const char *pDefaultText = nullptr);
 	static const char *GetClassPluralDisplayName(PLAYERCLASS PlayerClass);
 	static PLAYERCLASS MenuClassToPlayerClass(int MenuClass);
@@ -333,6 +334,7 @@ private:
 		icArray<int, MAX_CLIENTS> KilledPlayers;
 	} m_SurvivalState;
 	int m_BestSurvivalScore = 0;
+	const char *m_LastUsedKillMessage = nullptr;
 
 	bool m_AllowSurvivalAutostart = false;
 
