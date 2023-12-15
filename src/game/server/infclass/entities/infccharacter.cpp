@@ -97,13 +97,9 @@ void CInfClassCharacter::OnCharacterInInfectionZone()
 		{
 			m_HealTick = Server()->Tick();
 			int BonusArmor = GameController()->InfectedBonusArmor();
-			if(m_Armor < BonusArmor)
+			if(m_Health < 10 || m_Armor < BonusArmor)
 			{
 				Heal(1);
-			}
-			else
-			{
-				IncreaseHealth(1);
 			}
 			if(m_InfZoneTick < 0)
 			{
