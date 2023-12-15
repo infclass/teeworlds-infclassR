@@ -39,7 +39,7 @@ void CSlugSlime::Tick()
 	}
 
 	int ExistsForTicks = Server()->Tick() - m_StartTick;
-	if((ExistsForTicks % 20) == 0)
+	if((ExistsForTicks % 20) == 1)
 	{
 		GameServer()->CreateDeath(m_Pos, m_Owner);
 	}
