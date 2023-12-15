@@ -3780,6 +3780,13 @@ void CInfClassGameController::Snap(int SnappingClient)
 			return;
 
 		pGameInfoEx->m_Flags = GAMEINFOFLAG_PREDICT_VANILLA | GAMEINFOFLAG_DONT_MASK_ENTITIES;
+
+		if(InfClassVersion == 0)
+		{
+			// We use DDRace entities to show infection and other custom infclass tiles (see CClientGameTileGetter::GetClientGameTileIndex)
+			pGameInfoEx->m_Flags |= GAMEINFOFLAG_ENTITIES_DDNET;
+		}
+
 		pGameInfoEx->m_Flags2 = GAMEINFOFLAG2_HUD_HEALTH_ARMOR | GAMEINFOFLAG2_HUD_AMMO | GAMEINFOFLAG2_HUD_DDRACE;
 		pGameInfoEx->m_Flags2 |= GAMEINFOFLAG2_NO_WEAK_HOOK;
 		pGameInfoEx->m_Flags2 |= GAMEINFOFLAG2_NO_SKIN_CHANGE_FOR_FROZEN;
