@@ -175,15 +175,16 @@ void CInfClassCharacter::Destroy()
 
 void CInfClassCharacter::Tick()
 {
+	if(!m_pClass)
+	{
+		// Sometimes m_pClass is still nullptr on the very first tick
+		// of a new round when the Reset is not complete yet.
+		return;
+	}
+
 	const vec2 PrevPos = m_Core.m_Pos;
 	const int CurrentTick = Server()->Tick();
-
-	if(m_pClass)
-	{
-		// On the very first tick of a new round when the Reset is not complete yet,
-		// The character can (still) be in a special zone while still have no class assigned.
-		GameController()->HandleCharacterTiles(this);
-	}
+	GameController()->HandleCharacterTiles(this);
 
 	CCharacter::Tick();
 
@@ -225,10 +226,7 @@ void CInfClassCharacter::Tick()
 		--m_LastHelper.m_Tick;
 	}
 
-	if(m_pClass)
-	{
-		m_pClass->OnCharacterTick();
-	}
+	m_pClass->OnCharacterTick();
 }
 
 void CInfClassCharacter::TickDeferred()
