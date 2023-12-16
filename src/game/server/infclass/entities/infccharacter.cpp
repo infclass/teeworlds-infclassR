@@ -522,8 +522,12 @@ void CInfClassCharacter::FireWeapon()
 	}
 }
 
-bool CInfClassCharacter::TakeDamage(const vec2 &Force, float FloatDmg, int From, EDamageType DamageType)
+bool CInfClassCharacter::TakeDamage(const vec2 &Force, float FloatDmg, int From, EDamageType DamageType, float *pDamagePointsLeft)
 {
+	float TakenPlaceholder{};
+	float &DamageLeft = pDamagePointsLeft ? *pDamagePointsLeft : TakenPlaceholder;
+	DamageLeft = 0;
+
 	SDamageContext DamageContext;
 	{
 		DamageContext.Killer = From;
@@ -639,6 +643,7 @@ bool CInfClassCharacter::TakeDamage(const vec2 &Force, float FloatDmg, int From,
 
 	if(m_Health <= 0)
 	{
+		DamageLeft = FloatDmg;
 		return false;
 	}
 
@@ -684,6 +689,10 @@ bool CInfClassCharacter::TakeDamage(const vec2 &Force, float FloatDmg, int From,
 		}
 
 		int Health = GetHealth() - Dmg;
+		if(Health < 0)
+		{
+			DamageLeft = Dmg - GetHealth();
+		}
 		SetHealthArmor(Health, Armor);
 
 		if(From >= 0 && From != GetCID())

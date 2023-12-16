@@ -103,7 +103,7 @@ public:
 
 	void FireWeapon() override;
 
-	bool TakeDamage(const vec2 &Force, float Dmg, int From, EDamageType DamageType);
+	bool TakeDamage(const vec2 &Force, float Dmg, int From, EDamageType DamageType, float *pDamagePointsLeft = nullptr);
 
 	bool Heal(int HitPoints, int FromCID = -1);
 	bool GiveHealth(int HitPoints, int FromCID = -1);
