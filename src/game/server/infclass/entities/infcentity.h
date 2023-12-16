@@ -8,6 +8,9 @@
 inline constexpr int TileSize = 32;
 inline constexpr float TileSizeF = 32.0f;
 
+template <class T, int StackCapacity>
+class icArray;
+
 class CGameContext;
 class CInfClassCharacter;
 class CInfClassGameController;
@@ -28,6 +31,8 @@ public:
 
 	static EntityFilter GetOwnerFilterFunction(int Owner);
 	EntityFilter GetOwnerFilterFunction();
+
+	static EntityFilter GetExceptEntitiesFilterFunction(const icArray<const CEntity *, 10> &aEntities);
 
 	void Reset() override;
 	void Tick() override;

@@ -1,16 +1,24 @@
 #include "infcentity.h"
 
+#include <base/tl/ic_array.h>
+
 #include <game/animation.h>
 #include <game/server/gamecontext.h>
 #include <game/server/infclass/entities/infccharacter.h>
 #include <game/server/infclass/infcgamecontroller.h>
 
 static int FilterOwnerID = -1;
+static icArray<const CEntity *, 10> aFilterEntities;
 
 static bool OwnerFilter(const CEntity *pEntity)
 {
 	const CInfCEntity *pInfEntity = static_cast<const CInfCEntity *>(pEntity);
 	return pInfEntity->GetOwner() == FilterOwnerID;
+}
+
+static bool ExceptEntitiesFilter(const CEntity *pEntity)
+{
+	return !aFilterEntities.Contains(pEntity);
 }
 
 CInfCEntity::CInfCEntity(CGameContext *pGameContext, int ObjectType, vec2 Pos, int Owner,
@@ -48,6 +56,12 @@ EntityFilter CInfCEntity::GetOwnerFilterFunction(int Owner)
 EntityFilter CInfCEntity::GetOwnerFilterFunction()
 {
 	return GetOwnerFilterFunction(GetOwner());
+}
+
+EntityFilter CInfCEntity::GetExceptEntitiesFilterFunction(const icArray<const CEntity *, 10> &aEntities)
+{
+	aFilterEntities = aEntities;
+	return ExceptEntitiesFilter;
 }
 
 void CInfCEntity::Reset()

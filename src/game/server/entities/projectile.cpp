@@ -71,7 +71,7 @@ void CProjectile::Tick()
 	int Collide = GameServer()->Collision()->IntersectLine(PrevPos, CurPos, &CurPos, 0);
 	const float ProjectileRadius = 6.0f;
 	CCharacter *OwnerChar = GameServer()->GetPlayerChar(m_Owner);
-	CInfClassCharacter *TargetChr = CInfClassCharacter::GetInstance(GameServer()->m_World.IntersectCharacter(PrevPos, CurPos, ProjectileRadius, CurPos, OwnerChar));
+	CInfClassCharacter *TargetChr = CInfClassCharacter::GetInstance(GameWorld()->IntersectCharacter(PrevPos, CurPos, ProjectileRadius, CurPos, GetExceptEntitiesFilterFunction({OwnerChar})));
 
 	m_LifeSpan--;
 	
