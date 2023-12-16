@@ -2274,11 +2274,11 @@ void CGameContext::OnCallVoteNetMessage(const CNetMsg_Cl_CallVote *pMsg, int Cli
 
 void CGameContext::OnVoteNetMessage(const CNetMsg_Cl_Vote *pMsg, int ClientID)
 {
+	if(!pMsg->m_Vote)
+		return;
+
 	if(m_VoteLanguageTick[ClientID] > 0)
 	{
-		if(!pMsg->m_Vote)
-			return;
-
 		if(pMsg->m_Vote)
 		{
 			if(pMsg->m_Vote > 0)
@@ -2297,24 +2297,16 @@ void CGameContext::OnVoteNetMessage(const CNetMsg_Cl_Vote *pMsg, int ClientID)
 		return;
 	}
 
-	if(!m_VoteCloseTime)
-	{
-		if(!pMsg->m_Vote)
-			return;
-
-		m_pController->OnPlayerVoteCommand(ClientID, pMsg->m_Vote);
-		return;
-	}
-
 	CPlayer *pPlayer = m_apPlayers[ClientID];
+
+	if(!m_VoteCloseTime || pPlayer->m_Vote)
+	{
+		m_pController->OnPlayerVoteCommand(ClientID, pMsg->m_Vote);
+	}
 
 	int64_t Now = Server()->Tick();
 
 	pPlayer->m_LastVoteTry = Now;
-
-	if(!pMsg->m_Vote)
-		return;
-
 	pPlayer->m_Vote = pMsg->m_Vote;
 	pPlayer->m_VotePos = ++m_VotePos;
 	m_VoteUpdate = true;
