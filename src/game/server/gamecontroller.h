@@ -190,6 +190,7 @@ public:
 	virtual int GetPlayerTeam(int ClientID) const = 0;
 	virtual const char *GetTeamName(int Team);
 	virtual int GetAutoTeam(int NotThisID);
+	virtual void OnTeamChangeRequested(int ClientID, int Team) = 0;
 	virtual bool CanJoinTeam(int Team, int NotThisID);
 	bool CanChangeTeam(CPlayer *pPplayer, int JoinTeam);
 	int ClampTeam(int Team);

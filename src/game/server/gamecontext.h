@@ -166,6 +166,7 @@ public:
 	void SendVoteSet(int ClientID);
 	void SendVoteStatus(int ClientID, int Total, int Yes, int No);
 	void AbortVoteKickOnDisconnect(int ClientID);
+	void RequestVotesUpdate();
 
 	bool HasActiveVote() const;
 

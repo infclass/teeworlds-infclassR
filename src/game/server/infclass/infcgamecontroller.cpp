@@ -3376,6 +3376,25 @@ bool CInfClassGameController::MapRotationEnabled() const
 	return true;
 }
 
+void CInfClassGameController::OnTeamChangeRequested(int ClientID, int Team)
+{
+	CPlayer *pPlayer = GetPlayer(ClientID);
+	// Switch team on given client and kill/respawn him
+	if(CanJoinTeam(Team, ClientID))
+	{
+		if(CanChangeTeam(pPlayer, Team))
+		{
+			pPlayer->m_LastSetTeam = Server()->Tick();
+			if(pPlayer->GetTeam() == TEAM_SPECTATORS || Team == TEAM_SPECTATORS)
+				GameServer()->RequestVotesUpdate();
+			DoTeamChange(pPlayer, Team);
+			pPlayer->m_TeamChangeTick = Server()->Tick();
+		}
+		else
+			GameServer()->SendBroadcast(ClientID, "Teams must be balanced, please join other team", BROADCAST_PRIORITY_GAMEANNOUNCE, BROADCAST_DURATION_GAMEANNOUNCE);
+	}
+}
+
 bool CInfClassGameController::CanJoinTeam(int Team, int ClientID)
 {
 	if(Team != TEAM_SPECTATORS)

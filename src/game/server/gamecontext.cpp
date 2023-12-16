@@ -1019,6 +1019,11 @@ void CGameContext::AbortVoteKickOnDisconnect(int ClientID)
 	}
 }
 
+void CGameContext::RequestVotesUpdate()
+{
+	m_VoteUpdate = true;
+}
+
 bool CGameContext::HasActiveVote() const
 {
 	return m_VoteCloseTime;
@@ -2343,20 +2348,7 @@ void CGameContext::OnSetTeamNetMessage(const CNetMsg_Cl_SetTeam *pMsg, int Clien
 	}
 	/* INFECTION MODIFICATION END *****************************************/
 
-	// Switch team on given client and kill/respawn him
-	if(m_pController->CanJoinTeam(pMsg->m_Team, ClientID))
-	{
-		if(m_pController->CanChangeTeam(pPlayer, pMsg->m_Team))
-		{
-			pPlayer->m_LastSetTeam = Server()->Tick();
-			if(pPlayer->GetTeam() == TEAM_SPECTATORS || pMsg->m_Team == TEAM_SPECTATORS)
-				m_VoteUpdate = true;
-			m_pController->DoTeamChange(pPlayer, pMsg->m_Team);
-			pPlayer->m_TeamChangeTick = Server()->Tick();
-		}
-		else
-			SendBroadcast(ClientID, "Teams must be balanced, please join other team", BROADCAST_PRIORITY_GAMEANNOUNCE, BROADCAST_DURATION_GAMEANNOUNCE);
-	}
+	m_pController->OnTeamChangeRequested(ClientID, pMsg->m_Team);
 }
 
 void CGameContext::OnIsDDNetLegacyNetMessage(const CNetMsg_Cl_IsDDNetLegacy *pMsg, int ClientID, CUnpacker *pUnpacker)

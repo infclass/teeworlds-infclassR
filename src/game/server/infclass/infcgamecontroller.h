@@ -152,6 +152,7 @@ public:
 
 	bool IsInfectionStarted() const;
 	bool MapRotationEnabled() const override;
+	void OnTeamChangeRequested(int ClientID, int Team) override;
 	bool CanJoinTeam(int Team, int ClientID) override;
 	bool AreTurretsEnabled() const;
 	bool MercBombsEnabled() const;
