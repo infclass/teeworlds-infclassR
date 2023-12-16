@@ -179,8 +179,6 @@ protected:
 
 public:
 	int m_HumanTime;
-
-	int m_InfectionTick;
 	
 	PLAYERCLASS GetClass() const;
 	bool IsInfected() const;

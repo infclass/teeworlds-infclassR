@@ -123,6 +123,8 @@ public:
 	IServer *Server() const { return CPlayer::Server(); }
 
 	void ResetRoundData();
+	void ResetInfectionTick();
+	int GetInfectionTick() const { return m_InfectionTick; }
 
 	void OnKill();
 	void OnDeath();
@@ -154,6 +156,7 @@ protected:
 
 	CInfClassGameController *m_pGameController = nullptr;
 	CInfClassPlayerClass *m_pInfcPlayerClass = nullptr;
+	int m_InfectionTick;
 	bool m_HookProtection{};
 	bool m_HookProtectionAutomatic{};
 

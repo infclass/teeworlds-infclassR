@@ -21,6 +21,7 @@ CInfClassPlayer::CInfClassPlayer(CInfClassGameController *pGameController, int C
 	m_class = PLAYERCLASS_INVALID;
 	m_PreferredClass = PLAYERCLASS_INVALID;
 
+	m_InfectionTick = -1;
 	m_HookProtection = false;
 	m_HookProtectionAutomatic = true;
 
@@ -637,6 +638,11 @@ void CInfClassPlayer::ResetRoundData()
 	m_Deaths = 0;
 	m_Assists = 0;
 	m_Score = 0;
+}
+
+void CInfClassPlayer::ResetInfectionTick()
+{
+	m_InfectionTick = -1;
 }
 
 void CInfClassPlayer::OnKill()
