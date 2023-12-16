@@ -233,11 +233,6 @@ void CInfClassPlayer::HandleInfection()
 		return;
 	}
 
-	if(IsHuman())
-	{
-		m_InfectionTick = Server()->Tick();
-	}
-
 	const PLAYERCLASS PreviousClass = GetClass();
 	CInfClassPlayer *pInfectiousPlayer = GameController()->GetPlayer(m_InfectiousPlayerCID);
 
@@ -412,10 +407,12 @@ void CInfClassPlayer::SetClass(PLAYERCLASS NewClass)
 		if(IsInfected())
 		{
 			SetCharacterClass(new(m_ClientID) CInfClassInfected(this));
+			m_InfectionTick = Server()->Tick();
 		}
 		else
 		{
 			SetCharacterClass(new(m_ClientID) CInfClassHuman(this));
+			m_InfectionTick = -1;
 		}
 	}
 
@@ -638,11 +635,6 @@ void CInfClassPlayer::ResetRoundData()
 	m_Deaths = 0;
 	m_Assists = 0;
 	m_Score = 0;
-}
-
-void CInfClassPlayer::ResetInfectionTick()
-{
-	m_InfectionTick = -1;
 }
 
 void CInfClassPlayer::OnKill()

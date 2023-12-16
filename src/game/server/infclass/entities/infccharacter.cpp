@@ -627,7 +627,7 @@ bool CInfClassCharacter::TakeDamage(const vec2 &Force, float FloatDmg, int From,
 		else
 		{
 			//If the player is a new infected, don't infected other -> nobody knows that he is infected.
-			if(!pKillerPlayer->IsInfected() || (Server()->Tick() - pKillerPlayer->GetInfectionTick()) * Server()->TickSpeed() < 0.5)
+			if(!pKillerPlayer->IsInfected() || (Server()->Tick() - pKillerPlayer->GetInfectionTick()) < Server()->TickSpeed() * 0.5)
 			{
 				return false;
 			}
@@ -2492,11 +2492,7 @@ void CInfClassCharacter::ClassSpawnAttributes()
 
 	const PLAYERCLASS PlayerClass = GetPlayerClass();
 	const bool isHuman = PlayerClass < END_HUMANCLASS; // PLAYERCLASS_NONE is also a human (not infected) class
-	if(isHuman)
-	{
-		GetPlayer()->ResetInfectionTick();
-	}
-	else
+	if(!isHuman)
 	{
 		Armor = 0;
 	}

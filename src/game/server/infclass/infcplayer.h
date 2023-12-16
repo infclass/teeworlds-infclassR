@@ -123,7 +123,6 @@ public:
 	IServer *Server() const { return CPlayer::Server(); }
 
 	void ResetRoundData();
-	void ResetInfectionTick();
 	int GetInfectionTick() const { return m_InfectionTick; }
 
 	void OnKill();
