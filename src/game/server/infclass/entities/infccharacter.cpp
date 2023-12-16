@@ -2339,18 +2339,19 @@ void CInfClassCharacter::SnapCharacter(int SnappingClient, int ID)
 		}
 	}
 
+	int NormalizedArmor = clamp<int>(std::ceil(m_Armor * 10.0f / m_MaxArmor), 0, 10);
 	if(GameController()->CanSeeDetails(SnappingClient, GetCID()) ||
 		(!g_Config.m_SvStrictSpectateMode && m_pPlayer->GetCID() == SnappingSpectatorID))
 	{
 		pCharacter->m_Health = m_Health;
-		pCharacter->m_Armor = clamp<int>(m_Armor, 0, 10);
+		pCharacter->m_Armor = NormalizedArmor;
 		if(m_aWeapons[m_ActiveWeapon].m_Ammo > 0)
 			pCharacter->m_AmmoCount = m_aWeapons[m_ActiveWeapon].m_Ammo;
 	}
 	else if(pSnappingClient && pSnappingClient->IsHuman() == m_pPlayer->IsHuman())
 	{
 		pCharacter->m_Health = m_Health;
-		pCharacter->m_Armor = clamp<int>(m_Armor, 0, 10);
+		pCharacter->m_Armor = NormalizedArmor;
 	}
 
 	if(IsInvisible())
