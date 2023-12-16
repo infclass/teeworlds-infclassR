@@ -155,6 +155,7 @@ protected:
 
 	CInfClassGameController *m_pGameController = nullptr;
 	CInfClassPlayerClass *m_pInfcPlayerClass = nullptr;
+	int m_HumanTime{};
 	int m_InfectionTick;
 	bool m_HookProtection{};
 	bool m_HookProtectionAutomatic{};

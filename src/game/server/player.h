@@ -178,8 +178,6 @@ protected:
 	char m_aLanguage[16];
 
 public:
-	int m_HumanTime;
-	
 	PLAYERCLASS GetClass() const;
 	bool IsInfected() const;
 	bool IsHuman() const;
