@@ -45,6 +45,7 @@ private:
 	int m_MaxGrowing;
 	int m_GrowingMap_Length;
 	int m_GrowingMap_Size;
+	int m_VisualizedTiles{};
 	EDamageType m_DamageType;
 	int m_TriggeredByCID;
 	TAKEDAMAGEMODE m_TakeDamageMode;

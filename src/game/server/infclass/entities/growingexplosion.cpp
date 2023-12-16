@@ -156,6 +156,7 @@ void CGrowingExplosion::Tick()
 				{
 					m_pGrowingMap[j*m_GrowingMap_Length+i] = tick;
 					NewTile = true;
+					m_VisualizedTiles++;
 					vec2 TileCenter = m_SeedPos + vec2(32.0f*(i-m_MaxGrowing) - 16.0f + random_float()*32.0f, 32.0f*(j-m_MaxGrowing) - 16.0f + random_float()*32.0f);
 					switch(m_ExplosionEffect)
 					{
@@ -172,7 +173,7 @@ void CGrowingExplosion::Tick()
 						}
 						break;
 					case GROWING_EXPLOSION_EFFECT::HEAL_HUMANS:
-						if(random_prob(0.1f))
+						if(m_VisualizedTiles % 8 == 0)
 						{
 							GameServer()->CreateDeath(TileCenter, m_Owner);
 						}
