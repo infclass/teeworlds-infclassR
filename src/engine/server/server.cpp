@@ -162,7 +162,7 @@ void CSnapIdPool::FreeId(int Id)
 
 	m_InUsage--;
 	m_aIds[Id].m_State = ID_TIMED;
-	m_aIds[Id].m_Timeout = time_get() + time_freq() * 5;
+	m_aIds[Id].m_Timeout = time_get() + time_freq() * 10;
 	m_aIds[Id].m_Next = -1;
 
 	if(m_LastTimed != -1)
