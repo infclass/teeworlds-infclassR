@@ -10,11 +10,13 @@
 class CInfClassLaser : public CInfCEntity
 {
 public:
-	CInfClassLaser(CGameContext *pGameContext, vec2 Pos, vec2 Direction, float StartEnergy, int Owner, int Dmg, EDamageType DamageType = EDamageType::INVALID);
+	CInfClassLaser(CGameContext *pGameContext, vec2 Pos, vec2 Direction, float StartEnergy, int Owner, int Dmg, EDamageType DamageType, bool Bounce = true);
 
 	void Tick() override;
 	void TickPaused() override;
 	void Snap(int SnappingClient) override;
+
+	virtual void DoBounce();
 
 	void SetExplosive(bool Explosive);
 
@@ -23,8 +25,6 @@ protected:
 
 	virtual bool HitCharacter(vec2 From, vec2 To);
 	virtual bool OnCharacterHit(CInfClassCharacter *pHit);
-
-	virtual void DoBounce();
 
 protected:
 	vec2 m_From;

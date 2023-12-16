@@ -21,12 +21,16 @@ CInfClassLaser::CInfClassLaser(CGameContext *pGameContext, vec2 Pos, vec2 Direct
 	m_BounceCost = GameServer()->Tuning()->m_LaserBounceCost;
 }
 
-CInfClassLaser::CInfClassLaser(CGameContext *pGameContext, vec2 Pos, vec2 Direction, float StartEnergy, int Owner, int Dmg, EDamageType DamageType)
-	: CInfClassLaser(pGameContext, Pos, Direction, StartEnergy, Owner, Dmg, CGameWorld::ENTTYPE_LASER)
+CInfClassLaser::CInfClassLaser(CGameContext *pGameContext, vec2 Pos, vec2 Direction, float StartEnergy, int Owner, int Dmg, EDamageType DamageType, bool Bounce) :
+	CInfClassLaser(pGameContext, Pos, Direction, StartEnergy, Owner, Dmg, CGameWorld::ENTTYPE_LASER)
 {
 	m_DamageType = DamageType;
 	GameWorld()->InsertEntity(this);
-	DoBounce();
+
+	if(Bounce)
+	{
+		DoBounce();
+	}
 }
 
 bool CInfClassLaser::HitCharacter(vec2 From, vec2 To)
