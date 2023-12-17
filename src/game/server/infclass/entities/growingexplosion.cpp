@@ -341,7 +341,7 @@ void CGrowingExplosion::Tick()
 					int Damage = GetActualDamage();
 					if(Damage)
 					{
-						p->TakeDamage(normalize(p->m_Pos - m_SeedPos)*10.0f, Damage, m_Owner, m_DamageType);
+						p->TakeDamage(normalize(p->m_Pos - m_SeedPos) * 4.0f, Damage, m_Owner, m_DamageType);
 					}
 					m_Hit[p->GetCID()] = true;
 					break;
