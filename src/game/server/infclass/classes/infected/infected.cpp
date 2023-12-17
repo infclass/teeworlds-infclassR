@@ -205,17 +205,9 @@ int CInfClassInfected::GetJumps() const
 
 void CInfClassInfected::OnPlayerSnap(int SnappingClient, int InfClassVersion)
 {
-	if(InfClassVersion < VERSION_INFC_160)
+	if(InfClassVersion < VERSION_INFC_140)
 	{
-		// Ghost visibility supported since v0.1.6
-		return;
-	}
-
-	if(!m_pCharacter)
-		return;
-
-	if(m_pCharacter->IsInvisible() && !GameController()->CanSeeDetails(SnappingClient, GetCID()))
-	{
+		// CNetObj_InfClassClassInfo introduced in v0.1.4
 		return;
 	}
 
@@ -226,8 +218,14 @@ void CInfClassInfected::OnPlayerSnap(int SnappingClient, int InfClassVersion)
 	pClassInfo->m_Flags = 0;
 	pClassInfo->m_Data1 = -1;
 
-	if(m_pCharacter->IsInvisible())
-		pClassInfo->m_Flags |= INFCLASS_CLASSINFO_FLAG_IS_INVISIBLE;
+	if(GameController()->CanSeeDetails(SnappingClient, GetCID()))
+	{
+		if(m_pCharacter)
+		{
+			if(m_pCharacter->IsInvisible())
+				pClassInfo->m_Flags |= INFCLASS_CLASSINFO_FLAG_IS_INVISIBLE;
+		}
+	}
 }
 
 bool CInfClassInfected::CanDie() const

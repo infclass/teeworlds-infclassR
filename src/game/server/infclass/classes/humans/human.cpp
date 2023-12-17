@@ -310,6 +310,12 @@ void CInfClassHuman::OnPlayerSnap(int SnappingClient, int InfClassVersion)
 		default:
 			break;
 		}
+
+		if(m_pCharacter)
+		{
+			if(m_pCharacter->IsInvisible())
+				pClassInfo->m_Flags |= INFCLASS_CLASSINFO_FLAG_IS_INVISIBLE;
+		}
 	}
 }
 
