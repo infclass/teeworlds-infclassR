@@ -328,7 +328,7 @@ CEntity *CGameWorld::IntersectEntity(vec2 Pos0, vec2 Pos1, float Radius, vec2 *N
 }
 
 // TODO: should be more general
-CCharacter *CGameWorld::IntersectCharacter(vec2 Pos0, vec2 Pos1, float Radius, vec2& NewPos, EntityFilter FilterFunction, int CollideWith)
+CCharacter *CGameWorld::IntersectCharacter(vec2 Pos0, vec2 Pos1, float Radius, vec2 &NewPos, EntityFilter FilterFunction, int CollideWith, bool InfectedOnly)
 {
 	// Find other players
 	float ClosestLen = distance(Pos0, Pos1) * 100.0f;
@@ -340,7 +340,7 @@ CCharacter *CGameWorld::IntersectCharacter(vec2 Pos0, vec2 Pos1, float Radius, v
 		if(FilterFunction && !FilterFunction(p))
 			continue;
 
-		if(!p->m_Core.m_Infected)
+		if(InfectedOnly && !p->m_Core.m_Infected)
 			continue;
 
 		if(CollideWith != -1 && !p->CanCollide(CollideWith))
