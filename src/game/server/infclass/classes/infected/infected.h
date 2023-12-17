@@ -8,6 +8,9 @@
 
 class CSlugSlime;
 
+constexpr int GHOST_RADIUS = 11;
+constexpr int GHOST_SEARCHMAP_SIZE = (2 * GHOST_RADIUS + 1);
+
 class CInfClassInfected : public CInfClassPlayerClass
 {
 	MACRO_ALLOC_POOL_ID()
@@ -65,13 +68,17 @@ protected:
 
 	void SetHookOnLimit(bool OnLimit);
 
+	void GhostPreCoreTick();
 	void SpiderPreCoreTick();
 	bool HasDrainingHook() const;
+	bool HasHumansNearby();
 
 	int m_HookDmgTick = 0;
 	int m_SlimeEffectTicks = 0;
 	int m_SlimeLastHealTick = 0;
 	int m_LaserWallTick = 0;
+	char m_GhostSearchMap[GHOST_SEARCHMAP_SIZE * GHOST_SEARCHMAP_SIZE];
+	int m_LastSeenTick = 0;
 
 	int m_VoodooTimeAlive = 0;
 	DeathContext m_VoodooDeathContext;
