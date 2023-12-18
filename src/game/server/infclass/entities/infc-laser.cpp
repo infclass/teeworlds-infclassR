@@ -129,3 +129,8 @@ void CInfClassLaser::Snap(int SnappingClient)
 	CSnapContext Context(SnappingClientVersion);
 	GameServer()->SnapLaserObject(Context, GetID(), m_Pos, m_From, m_EvalTick, GetOwner());
 }
+
+void CInfClassLaser::SetExplosive(bool Explosive)
+{
+	m_Explosive = Explosive;
+}

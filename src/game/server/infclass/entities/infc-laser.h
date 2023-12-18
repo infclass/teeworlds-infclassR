@@ -15,6 +15,9 @@ public:
 	void Tick() override;
 	void TickPaused() override;
 	void Snap(int SnappingClient) override;
+
+	void SetExplosive(bool Explosive);
+
 protected:
 	CInfClassLaser(CGameContext *pGameContext, vec2 Pos, vec2 Direction, float StartEnergy, int Owner, int Dmg, int ObjType);
 
@@ -33,6 +36,7 @@ protected:
 	int m_BounceCost = 0;
 	int m_EvalTick = 0;
 	int m_Dmg = 0;
+	bool m_Explosive = false;
 };
 
 #endif // GAME_SERVER_INFCLASS_ENTITIES_LASER_H
