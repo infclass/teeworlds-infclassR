@@ -4700,9 +4700,9 @@ void CGameContext::OnShutdown()
 	//reset votes.
 	EndVote();
 
-	delete m_pController;
-	m_pController = 0;
+	m_pController = nullptr;
 	Clear();
+	delete m_pController;
 }
 
 void CGameContext::OnSnap(int ClientID)
