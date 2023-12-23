@@ -2066,7 +2066,8 @@ void CInfClassHuman::OnSlimeEffect(int Owner)
 		// more than 1 tick and it 'll result in 2 damage dealt
 		Count = 1;
 	}
-	m_pCharacter->Poison(Count, Owner, DAMAGE_TYPE::SLUG_SLIME);
+	const float Interval = 1.25f;
+	m_pCharacter->Poison(Count, Owner, DAMAGE_TYPE::SLUG_SLIME, Interval);
 }
 
 bool CInfClassHuman::HasWhiteHole() const
