@@ -200,7 +200,7 @@ public:
 	void CancelSlowMotion();
 
 	bool IsPoisoned() const;
-	void Poison(int Count, int From, DAMAGE_TYPE DamageType);
+	void Poison(int Count, int From, DAMAGE_TYPE DamageType, float Interval = 1.0f);
 	void ResetPoisonEffect();
 
 	void ResetMovementsInput();
@@ -296,6 +296,7 @@ protected:
 	int m_SlowEffectApplicant;
 
 	int m_Poison = 0;
+	float m_PoisonEffectInterval{};
 	int m_PoisonTick = 0;
 	int m_PoisonFrom = 0;
 	DAMAGE_TYPE m_PoisonDamageType;

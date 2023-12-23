@@ -309,8 +309,14 @@ void CGrowingExplosion::Tick()
 					m_Hit[p->GetCID()] = true;
 					break;
 				case GROWING_EXPLOSION_EFFECT::POISON_INFECTED:
-					p->Poison(Config()->m_InfPoisonDamage, m_Owner, DAMAGE_TYPE::MERCENARY_GRENADE);
+				{
+					int Damage = maximum(Config()->m_InfPoisonDamage, 1);
+					const float PoisonDurationSeconds = Config()->m_InfPoisonDuration / 1000.0;
+					const float DamageIntervalSeconds = PoisonDurationSeconds / Damage;
+
+					p->Poison(Damage, m_Owner, DAMAGE_TYPE::MERCENARY_GRENADE, DamageIntervalSeconds);
 					p->GetClass()->DisableHealing(Config()->m_InfPoisonDuration / 1000.0f, m_Owner, DAMAGE_TYPE::MERCENARY_GRENADE);
+				}
 					GameServer()->SendEmoticon(p->GetCID(), EMOTICON_DROP);
 					m_Hit[p->GetCID()] = true;
 					break;

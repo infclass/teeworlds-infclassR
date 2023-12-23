@@ -206,13 +206,7 @@ void CInfClassCharacter::Tick()
 			vec2 Force(0, 0);
 			static const int PoisonDamage = 1;
 			TakeDamage(Force, PoisonDamage, m_PoisonFrom, m_PoisonDamageType);
-			if(m_Poison >= 0)
-			{
-				int Damage = maximum(Config()->m_InfPoisonDamage, 1);
-				const float PoisonDurationSeconds = Config()->m_InfPoisonDuration / 1000.0;
-				const float DamageIntervalSeconds = PoisonDurationSeconds / Damage;
-				m_PoisonTick = CurrentTick + Server()->TickSpeed() * DamageIntervalSeconds;
-			}
+			m_PoisonTick = CurrentTick + Server()->TickSpeed() * m_PoisonEffectInterval;
 
 			if(m_PoisonDamageType == DAMAGE_TYPE::SLUG_SLIME)
 			{
@@ -957,11 +951,13 @@ bool CInfClassCharacter::IsPoisoned() const
 	return m_Poison > 0;
 }
 
-void CInfClassCharacter::Poison(int Count, int From, DAMAGE_TYPE DamageType)
+void CInfClassCharacter::Poison(int Count, int From, DAMAGE_TYPE DamageType, float Interval)
 {
-	if(Count > m_Poison)
+	bool JustPoisoned = m_PoisonTick > Server()->Tick();
+	if(Count > m_Poison + JustPoisoned ? 1 : 0)
 	{
 		m_Poison = Count;
+		m_PoisonEffectInterval = Interval;
 		m_PoisonFrom = From;
 		m_PoisonDamageType = DamageType;
 	}
