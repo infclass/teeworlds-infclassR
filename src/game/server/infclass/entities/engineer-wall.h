@@ -12,8 +12,10 @@ class CEngineerWall : public CPlacedObject
 public:
 	static int EntityId;
 
-	CEngineerWall(CGameContext *pGameContext, vec2 Pos, vec2 Direction, int Owner);
+	CEngineerWall(CGameContext *pGameContext, vec2 Pos, int Owner);
 	~CEngineerWall() override;
+
+	void SetEndPosition(vec2 EndPosition);
 
 	void Tick() override;
 	void TickPaused() override;
@@ -24,10 +26,10 @@ public:
 private:
 	void PrepareSnapData();
 
-	int m_EndTick;
-	int m_EndPointID;
-	int m_WallFlashTicks;
-	int m_SnapStartTick = 0;
+	int m_EndTick{};
+	int m_EndPointID{};
+	int m_WallFlashTicks{};
+	int m_SnapStartTick{};
 };
 
 #endif

@@ -43,19 +43,6 @@ CInfClassHuman::CInfClassHuman(CInfClassPlayer *pPlayer)
 	: CInfClassPlayerClass(pPlayer)
 {
 	m_BroadcastWhiteHoleReady = -100;
-
-	for(int i = 0; i < m_BarrierHintIDs.Capacity(); ++i)
-	{
-		m_BarrierHintIDs.Add(Server()->SnapNewID());
-	}
-}
-
-CInfClassHuman::~CInfClassHuman()
-{
-	for(int ID : m_BarrierHintIDs)
-	{
-		Server()->SnapFreeID(ID);
-	}
 }
 
 CInfClassHuman *CInfClassHuman::GetInstance(CInfClassPlayer *pPlayer)
@@ -482,14 +469,8 @@ void CInfClassHuman::OnCharacterSnap(int SnappingClient)
 	case PLAYERCLASS_HERO:
 		SnapHero(SnappingClient);
 		break;
-	case PLAYERCLASS_ENGINEER:
-		SnapEngineer(SnappingClient);
-		break;
 	case PLAYERCLASS_SCIENTIST:
 		SnapScientist(SnappingClient);
-		break;
-	case PLAYERCLASS_LOOPER:
-		SnapLooper(SnappingClient);
 		break;
 	default:
 		break;
@@ -1030,8 +1011,6 @@ void CInfClassHuman::OnLaserFired(WeaponFireContext *pFireContext)
 
 void CInfClassHuman::GiveClassAttributes()
 {
-	m_FirstShot = true;
-
 	m_ResetKillsTick = -1;
 	m_TurretCount = 0;
 	m_NinjaTargetTick = 0;
@@ -1634,68 +1613,6 @@ void CInfClassHuman::SnapHero(int SnappingClient)
 	}
 }
 
-void CInfClassHuman::SnapEngineer(int SnappingClient)
-{
-	const CInfClassPlayer *pDestClient = GameController()->GetPlayer(SnappingClient);
-	bool ShowFirstShot = (SnappingClient == -1) || (pDestClient && pDestClient->IsHuman());
-
-	if(ShowFirstShot && !m_FirstShot)
-	{
-		CEngineerWall *pCurrentWall = NULL;
-		for(CEngineerWall *pWall = (CEngineerWall *)GameWorld()->FindFirst(CGameWorld::ENTTYPE_ENGINEER_WALL); pWall; pWall = (CEngineerWall *)pWall->TypeNext())
-		{
-			if(pWall->GetOwner() == GetCID())
-			{
-				pCurrentWall = pWall;
-				break;
-			}
-		}
-
-		if(!pCurrentWall)
-		{
-			int SnappingClientVersion = GameServer()->GetClientVersion(SnappingClient);
-			CSnapContext Context(SnappingClientVersion);
-			GameServer()->SnapLaserObject(Context, m_BarrierHintIDs.First(), m_FirstShotCoord, m_FirstShotCoord, Server()->Tick(), GetCID());
-		}
-	}
-}
-
-void CInfClassHuman::SnapLooper(int SnappingClient)
-{
-	const CInfClassPlayer *pDestClient = GameController()->GetPlayer(SnappingClient);
-	bool ShowFirstShot = (SnappingClient == -1) || (pDestClient && pDestClient->IsHuman());
-
-	if(ShowFirstShot && !m_FirstShot)
-	{
-		CLooperWall *pCurrentWall = NULL;
-		for(CLooperWall *pWall = (CLooperWall *)GameWorld()->FindFirst(CGameWorld::ENTTYPE_LOOPER_WALL); pWall; pWall = (CLooperWall *)pWall->TypeNext())
-		{
-			if(pWall->GetOwner() == GetCID())
-			{
-				pCurrentWall = pWall;
-				break;
-			}
-		}
-
-		if(!pCurrentWall)
-		{
-			for(int i = 0; i < 2; i++)
-			{
-				CNetObj_Laser *pObj = Server()->SnapNewItem<CNetObj_Laser>(m_BarrierHintIDs[i]);
-
-				if(!pObj)
-					return;
-
-				pObj->m_X = (int)m_FirstShotCoord.x - CLooperWall::THICKNESS * i + (CLooperWall::THICKNESS * 0.5);
-				pObj->m_Y = (int)m_FirstShotCoord.y;
-				pObj->m_FromX = (int)m_FirstShotCoord.x - CLooperWall::THICKNESS * i + (CLooperWall::THICKNESS * 0.5);
-				pObj->m_FromY = (int)m_FirstShotCoord.y;
-				pObj->m_StartTick = Server()->Tick();
-			}
-		}
-	}
-}
-
 void CInfClassHuman::SnapScientist(int SnappingClient)
 {
 	if(SnappingClient != m_pPlayer->GetCID())
@@ -1732,24 +1649,33 @@ void CInfClassHuman::ActivateNinja(WeaponFireContext *pFireContext)
 
 void CInfClassHuman::PlaceEngineerWall(WeaponFireContext *pFireContext)
 {
+	TEntityPtr<CEngineerWall> pExistingWall;
 	for(TEntityPtr<CEngineerWall> pWall = GameWorld()->FindFirst<CEngineerWall>(); pWall; ++pWall)
 	{
 		if(pWall->GetOwner() == GetCID())
-			GameWorld()->DestroyEntity(pWall);
+		{
+			if(pWall->HasSecondPosition())
+			{
+				GameWorld()->DestroyEntity(pWall);
+			}
+			else
+			{
+				pExistingWall = pWall;
+			}
+			break;
+		}
 	}
 
-	if(m_FirstShot)
+	if(!pExistingWall)
 	{
-		m_FirstShot = false;
-		m_FirstShotCoord = GetPos();
+		pExistingWall = new CEngineerWall(GameServer(), GetPos(), GetCID());
 	}
-	else if(distance(m_FirstShotCoord, GetPos()) > 10.0)
+	else if(distance(pExistingWall->GetPos(), GetPos()) > 10.0)
 	{
-		m_FirstShot = true;
-
+		vec2 FirstPos = pExistingWall->GetPos();
 		for(int i = 0; i < 15; i++)
 		{
-			vec2 TestPos = m_FirstShotCoord + (GetPos() - m_FirstShotCoord) * (static_cast<float>(i) / 14.0f);
+			vec2 TestPos = FirstPos + (GetPos() - FirstPos) * (static_cast<float>(i) / 14.0f);
 			if(!GameController()->HumanWallAllowedInPos(TestPos))
 			{
 				pFireContext->FireAccepted = false;
@@ -1760,7 +1686,7 @@ void CInfClassHuman::PlaceEngineerWall(WeaponFireContext *pFireContext)
 
 		if(pFireContext->FireAccepted)
 		{
-			new CEngineerWall(GameServer(), m_FirstShotCoord, GetPos(), GetCID());
+			pExistingWall->SetEndPosition(GetPos());
 			GameServer()->CreateSound(GetPos(), SOUND_LASER_FIRE);
 		}
 	}
@@ -1768,24 +1694,33 @@ void CInfClassHuman::PlaceEngineerWall(WeaponFireContext *pFireContext)
 
 void CInfClassHuman::PlaceLooperWall(WeaponFireContext *pFireContext)
 {
-	for(CLooperWall *pWall = (CLooperWall *)GameWorld()->FindFirst(CGameWorld::ENTTYPE_LOOPER_WALL); pWall; pWall = (CLooperWall *)pWall->TypeNext())
+	TEntityPtr<CLooperWall> pExistingWall;
+	for(TEntityPtr<CLooperWall> pWall = GameWorld()->FindFirst<CLooperWall>(); pWall; ++pWall)
 	{
 		if(pWall->GetOwner() == GetCID())
-			GameWorld()->DestroyEntity(pWall);
+		{
+			if(pWall->HasSecondPosition())
+			{
+				GameWorld()->DestroyEntity(pWall);
+			}
+			else
+			{
+				pExistingWall = pWall;
+			}
+			break;
+		}
 	}
 
-	if(m_FirstShot)
+	if(!pExistingWall)
 	{
-		m_FirstShot = false;
-		m_FirstShotCoord = GetPos();
+		pExistingWall = new CLooperWall(GameServer(), GetPos(), GetCID());
 	}
-	else if(distance(m_FirstShotCoord, GetPos()) > 10.0)
+	else if(distance(pExistingWall->GetPos(), GetPos()) > 10.0)
 	{
-		m_FirstShot = true;
-
+		vec2 FirstPos = pExistingWall->GetPos();
 		for(int i = 0; i < 15; i++)
 		{
-			vec2 TestPos = m_FirstShotCoord + (GetPos() - m_FirstShotCoord) * (static_cast<float>(i) / 14.0f);
+			vec2 TestPos = FirstPos + (GetPos() - FirstPos) * (static_cast<float>(i) / 14.0f);
 			if(!GameController()->HumanWallAllowedInPos(TestPos))
 			{
 				pFireContext->FireAccepted = false;
@@ -1796,7 +1731,7 @@ void CInfClassHuman::PlaceLooperWall(WeaponFireContext *pFireContext)
 
 		if(pFireContext->FireAccepted)
 		{
-			new CLooperWall(GameServer(), m_FirstShotCoord, GetPos(), GetCID());
+			pExistingWall->SetEndPosition(GetPos());
 			GameServer()->CreateSound(GetPos(), SOUND_LASER_FIRE);
 		}
 	}

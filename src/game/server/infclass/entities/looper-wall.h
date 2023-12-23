@@ -14,9 +14,11 @@ public:
 		NUM_PARTICLES = 18,
 	};
 public:
-	CLooperWall(CGameContext *pGameContext, vec2 Pos, vec2 Direction, int Owner);
+	CLooperWall(CGameContext *pGameContext, vec2 Pos, int Owner);
 	~CLooperWall() override;
-	
+
+	void SetEndPosition(vec2 EndPosition);
+
 	void Tick() override;
 	void TickPaused() override;
 	void Snap(int SnappingClient) override;
@@ -27,14 +29,12 @@ private:
 
 	void PrepareSnapData();
 
-	int m_EndTick;
+	int m_EndTick{};
 
-	int m_IDs[2];
-	int m_EndPointIDs[2];
-	const float g_BarrierMaxLength = 400.0;
-	const float g_BarrierRadius = 0.0;
-	int m_ParticleIDs[NUM_PARTICLES];
-	int m_SnapStartTick = 0;
+	int m_IDs[2]{};
+	int m_EndPointIDs[2]{};
+	int m_ParticleIDs[NUM_PARTICLES]{};
+	int m_SnapStartTick{};
 };
 
 #endif

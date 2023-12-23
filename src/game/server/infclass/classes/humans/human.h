@@ -22,7 +22,6 @@ class CInfClassHuman : public CInfClassPlayerClass
 
 public:
 	explicit CInfClassHuman(CInfClassPlayer *pPlayer);
-	~CInfClassHuman();
 
 	static CInfClassHuman *GetInstance(CInfClassPlayer *pPlayer);
 	static CInfClassHuman *GetInstance(CInfClassCharacter *pCharacter);
@@ -82,8 +81,6 @@ protected:
 	void GiveNinjaBuf();
 
 	void SnapHero(int SnappingClient);
-	void SnapEngineer(int SnappingClient);
-	void SnapLooper(int SnappingClient);
 	void SnapScientist(int SnappingClient);
 
 	void ActivateNinja(WeaponFireContext *pFireContext);
@@ -107,9 +104,6 @@ protected:
 	bool FindPortalPosition(vec2 *pPosition);
 
 private:
-	bool m_FirstShot = false;
-	vec2 m_FirstShotCoord;
-
 	icArray<int, 2> m_BarrierHintIDs;
 
 	int m_BonusTick = 0;

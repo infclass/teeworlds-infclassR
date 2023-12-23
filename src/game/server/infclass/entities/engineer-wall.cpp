@@ -15,29 +15,19 @@
 #include "game/server/infclass/entities/infcentity.h"
 #include "infccharacter.h"
 
-const float g_BarrierMaxLength = 300.0;
-const float g_BarrierRadius = 0.0;
+static const float g_BarrierMaxLength = 300.0;
+static const float g_BarrierRadius = 0.0;
 
 int CEngineerWall::EntityId = CGameWorld::ENTTYPE_ENGINEER_WALL;
 
-CEngineerWall::CEngineerWall(CGameContext *pGameContext, vec2 Pos1, vec2 Pos2, int Owner)
+CEngineerWall::CEngineerWall(CGameContext *pGameContext, vec2 Pos1, int Owner)
 	: CPlacedObject(pGameContext, EntityId, Pos1, Owner)
 {
 	m_InfClassObjectType = INFCLASS_OBJECT_TYPE_LASER_WALL;
-	m_InfClassObjectFlags = INFCLASS_OBJECT_FLAG_HAS_SECOND_POSITION;
-
-	if(distance(Pos1, Pos2) > g_BarrierMaxLength)
-	{
-		m_Pos2 = Pos1 + normalize(Pos2 - Pos1)*g_BarrierMaxLength;
-	}
-	else
-	{
-		m_Pos2 = Pos2;
-	}
-	m_EndTick = Server()->Tick() + Server()->TickSpeed() * Config()->m_InfBarrierLifeSpan;
-	GameWorld()->InsertEntity(this);
 	m_EndPointID = Server()->SnapNewID();
-	m_WallFlashTicks = 0;
+	m_Pos2 = Pos1;
+
+	GameWorld()->InsertEntity(this);
 }
 
 CEngineerWall::~CEngineerWall()
@@ -45,9 +35,32 @@ CEngineerWall::~CEngineerWall()
 	Server()->SnapFreeID(m_EndPointID);
 }
 
+void CEngineerWall::SetEndPosition(vec2 EndPosition)
+{
+	if(distance(m_Pos, EndPosition) > g_BarrierMaxLength)
+	{
+		m_Pos2 = m_Pos + normalize(EndPosition - m_Pos) * g_BarrierMaxLength;
+	}
+	else
+	{
+		m_Pos2 = EndPosition;
+	}
+
+	m_InfClassObjectFlags = INFCLASS_OBJECT_FLAG_HAS_SECOND_POSITION;
+
+	m_EndTick = Server()->Tick() + Server()->TickSpeed() * Config()->m_InfBarrierLifeSpan;
+}
+
 void CEngineerWall::Tick()
 {
-	if(m_MarkedForDestroy) return;
+	if(IsMarkedForDestroy())
+		return;
+
+	if(!HasSecondPosition())
+	{
+		m_SnapStartTick = Server()->Tick();
+		return;
+	}
 
 	if (m_WallFlashTicks > 0) 
 		m_WallFlashTicks--;
@@ -95,21 +108,28 @@ void CEngineerWall::Snap(int SnappingClient)
 		if(!pInfClassObject)
 			return;
 
-		pInfClassObject->m_EndTick = m_EndTick;
+		if(HasSecondPosition())
+		{
+			pInfClassObject->m_EndTick = m_EndTick;
+		}
+		else
+		{
+			// Snap fake second position to fix OwnerIcon position
+			pInfClassObject->m_EndTick = -1;
+			pInfClassObject->m_Flags |= INFCLASS_OBJECT_FLAG_HAS_SECOND_POSITION;
+			pInfClassObject->m_X2 = pInfClassObject->m_X;
+			pInfClassObject->m_Y2 = pInfClassObject->m_Y - 1;
+		}
 	}
-
-	const CInfClassPlayer *pPlayer = GameController()->GetPlayer(SnappingClient);
-	const bool AntiPing = pPlayer && pPlayer->GetAntiPingEnabled();
 
 	int SnappingClientVersion = GameServer()->GetClientVersion(SnappingClient);
 	CSnapContext Context(SnappingClientVersion);
 
 	GameServer()->SnapLaserObject(Context, GetID(), m_Pos, m_Pos2, m_SnapStartTick, m_Owner);
 
-	if(!AntiPing)
+	if(HasSecondPosition())
 	{
-		vec2 Pos = m_Pos2;
-		GameServer()->SnapLaserObject(Context, m_EndPointID, Pos, Pos, Server()->Tick(), m_Owner);
+		GameServer()->SnapLaserObject(Context, m_EndPointID, m_Pos2, m_Pos2, Server()->Tick(), m_Owner);
 	}
 }
 
