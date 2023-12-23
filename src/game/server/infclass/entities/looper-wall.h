@@ -15,11 +15,11 @@ public:
 	};
 public:
 	CLooperWall(CGameContext *pGameContext, vec2 Pos, vec2 Direction, int Owner);
-	virtual ~CLooperWall();
+	~CLooperWall() override;
 	
-	virtual void Tick();
-	virtual void TickPaused();
-	virtual void Snap(int SnappingClient);
+	void Tick() override;
+	void TickPaused() override;
+	void Snap(int SnappingClient) override;
 	int GetEndTick() const { return m_EndTick; }
 
 private:
