@@ -1186,7 +1186,7 @@ void CInfClassHuman::BroadcastWeaponState() const
 			}
 		}
 
-		if(pCurrentWall)
+		if(pCurrentWall && pCurrentWall->HasSecondPosition())
 		{
 			int RemainingTicks = pCurrentWall->GetEndTick() - CurrentTick;
 			int Seconds = 1 + RemainingTicks / Server()->TickSpeed();
@@ -1241,7 +1241,7 @@ void CInfClassHuman::BroadcastWeaponState() const
 			}
 		}
 
-		if(pCurrentWall)
+		if(pCurrentWall && pCurrentWall->HasSecondPosition())
 		{
 			int RemainingTicks = pCurrentWall->GetEndTick() - CurrentTick;
 			int Seconds = 1 + RemainingTicks / Server()->TickSpeed();
