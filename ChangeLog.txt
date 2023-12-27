@@ -1,4 +1,26 @@
 InfclassR v1.5.0_alpha8
+- Scientist white hole spawning and final explosion now does not push the owner
+- InfclassProtocol: Looper and Engineer walls 'first point'
+  now exposed as object (and thus has owner icons)
+- Fixed missing HP restore sound in infection zone
+- Fixed inconsistent poisoning (sometimes taking 1 extra HP)
+- Slime poisoning interval increased to 1.25 sec
+- Biologist now see a Heart icon above poisoned humans
+- Biologist mine lasers number reduced from 15 to 12
+- Biologist is now immune to *continuous* poisoning effect
+- Biologist now can use the hammer to stop the poisoning effect on humans
+- Slime poisoning effect now ignores the armor (and takes health points)
+- Slime poisoning now deals 4 damage (was 5)
+- InfWhiteHoleMinimalKills exposed to infclass clients
+- Proximity radius now snapped for infclass objects
+- Class details now snapped for specs (with restrictions)
+- Hammer hit events now suppressed if the character is 'in love'
+- DDNet: Expose 'hit_disabled' flag for characters 'in love'
+- Implemented DDNet masterserver registration
+- Scientist died from teleportation now gives score
+  for the involved infected
+- Ghost spawn events now not visible for humans
+- Enabled freeze state for DDNet-17.3+
 - Fixed (Biologist) bouncing bullets disappeared if
   shoot right into the wall
 - Fixed Biologist shotgun could hit through walls

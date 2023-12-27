@@ -4,10 +4,13 @@
 
 General:
 - Added 'timeout code' support
+- Implemented DDNet masterserver registration
 - Enabled DDRace HUD
+- Ghost spawn events now not visible for humans
 - Ghost visibility for spectators now depends on `sv_strict_spectate_mode` config option
 - "Forced spectator" mode reworked for compatibility with DDNet client
 - Added `/me` chat command
+- Enabled freeze state for DDNet-17.3+
 - Dynamically toggle the turrets enablement during the round
 - Added `/prefer_class <classname>` chat command
 - Weapon change now allowed during ammo reload
@@ -17,6 +20,7 @@ General:
 - Turret destruction score reduced from 3 to 1 sp
 - Biologist laser now does NoAmmo sound on fire failed
 - Biologist mine is now kept on a new placement failed
+- Scientist died from teleportation now gives score for the involved infected
 - Implemented entities animation
 - Added health and armor pickups support
 - Added damage zone type (deals a certain damage)
@@ -40,18 +44,27 @@ General:
 - Spectators now can see players personal pickups
 - Added hint messages
 - Medic now see Hero healing icons if grenade launcher is active
+- Hammer hit events now suppressed if the character is 'in love'
 
-Balancing:
+Balance:
 - Bat's hook lifestealing replaced with hammer lifestealing (+2 HP per hit)
 - Medic now gets a grenade on enemy killed
 - Scientists now get the superweapon after 15 kills
 - Scientists now get 0.5 kill progression per assisting
+- Scientist white hole spawning and final explosion now does not push the owner
 - White hole is disabled for games with less than 8 players
+- Biologist mine lasers number reduced from 15 to 12
+- Biologist is now immune to *continuous* poisoning effect
+- Biologist now can use the hammer to stop the poisoning effect on humans
+- Biologist now see a Heart icon above poisoned humans
 - Looper wall effect is now applied continuously
 - Engineer and Looper walls now can't be built on spawns
 - Ninja targets are now set individually
 - `inf_merc_bombs` reduced from 16 to 15 (restored the value used before v1.4.0_alpha6)
 - Slime now gives the healing effect for 2 seconds
+- Slime poisoning effect now ignores the armor (and takes health points)
+- Slime poisoning damage reduces from 5 to 4
+- Slime poisoning interval increased from 1.0 to 1.25 sec
 - Frozen witch now can not spawn the infected
 - The game now tries to pick the witch among callers
 - Boomer healing effect now depends on the distance
@@ -78,17 +91,23 @@ Fixes:
 - Fixed Bat and Sniper help pages
 - Fixed 'Fun Round' settings kept for other rounds (in some cases)
 - Fixed blinding effect on the player revived (now it the effect 'll be canceled)
+- Fixed inconsistent poisoning (sometimes taking 1 extra HP)
+- Fixed missing HP restore sound in infection zone
 
 Maps:
 - Updated `infc_canyon` (tech update simplifying the quads geometry)
 - Fixed `infc_half_provence` borders
 - Added infection zones highlight to `infc_sewers`
+- Added infc_headquarter_winter by Pointer
 
 Maintenance:
 - Added 'pingex' capability support from DDNet
 - Added `kill_pl` command from DDNet
 - Added `set_hook_protection`, `set_invincible` commands
 - Added `sv_slash_me` config variable
+- Added `inf_bio_mine_lasers` config variable
+- Added `start_round ?s[round_type]` command
+- `remove_vote` now also lookup the votes by the command
 
 ## InfclassR v1.4.2 - 2022-04-21
 
