@@ -219,6 +219,7 @@ int CInfClassPlayerClass::GetPlayerClass() const
 void CInfClassPlayerClass::OnPlayerClassChanged()
 {
 	UpdateSkin();
+	SetNormalEmote(EMOTE_NORMAL);
 
 	// Enable hook protection by default for both infected and humans on class changed
 	m_pPlayer->SetHookProtection(true);
