@@ -65,7 +65,7 @@ void CScientistLaser::CreateWhiteHole(const vec2 &CenterPos, const vec2 &To)
 {
 	// Create a white hole entity
 	CInfClassCharacter *pOwnerChar = GetOwnerCharacter();
-	CInfClassHuman *pHuman = pOwnerChar ? CInfClassHuman::GetInstance(pOwnerChar->GetPlayer()) : nullptr;
+	CInfClassHuman *pHuman = CInfClassHuman::GetInstance(pOwnerChar->GetPlayer());
 
 	if(!pHuman || !pHuman->HasWhiteHole())
 	{

@@ -409,6 +409,12 @@ void CGrowingExplosion::ProcessMercenaryBombHit(CInfClassCharacter *pCharacter)
 	{
 		InnerRadius = OuterRadius * 0.9;
 	}
+	bool AffectOwner = true;
+	if(m_DamageType == DAMAGE_TYPE::WHITE_HOLE)
+		AffectOwner = false;
+
+	if(!AffectOwner && (pCharacter->GetCID() == GetOwner()))
+		return;
 
 	if(!Config()->m_InfShockwaveAffectHumans)
 	{

@@ -762,12 +762,21 @@ void CInfClassGameController::CreateExplosion(const vec2 &Pos, int Owner, DAMAGE
 	if(DamageFactor != 0)
 	{
 		// deal damage
+		bool AffectOwner = true;
+		if(DamageType == DAMAGE_TYPE::WHITE_HOLE)
+			AffectOwner = false;
+
 		CInfClassCharacter *apEnts[MAX_CLIENTS];
 		float Radius = 135.0f;
 		float InnerRadius = 48.0f;
 		int Num = GameWorld()->FindEntities(Pos, Radius, (CEntity**)apEnts, MAX_CLIENTS, CGameWorld::ENTTYPE_CHARACTER);
 		for(int i = 0; i < Num; i++)
 		{
+			if(apEnts[i]->GetCID() == Owner)
+			{
+				if(!AffectOwner)
+					continue;
+			}
 			if(!Config()->m_InfShockwaveAffectHumans)
 			{
 				if(apEnts[i]->GetCID() == Owner)
