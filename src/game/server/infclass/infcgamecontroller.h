@@ -20,7 +20,7 @@ struct DeathContext;
 struct ZoneData;
 
 enum class TAKEDAMAGEMODE;
-enum class DAMAGE_TYPE;
+enum class EDamageType;
 enum class ROUND_CANCELATION_REASON;
 enum class ROUND_END_REASON;
 enum class EPlayerScoreMode;
@@ -97,8 +97,8 @@ public:
 
 	void ExecuteFileEx(const char *pBaseName);
 
-	void CreateExplosion(const vec2 &Pos, int Owner, DAMAGE_TYPE DamageType, float DamageFactor = 1.0f);
-	void CreateExplosionDisk(vec2 Pos, float InnerRadius, float DamageRadius, int Damage, float Force, int Owner, DAMAGE_TYPE DamageType);
+	void CreateExplosion(const vec2 &Pos, int Owner, EDamageType DamageType, float DamageFactor = 1.0f);
+	void CreateExplosionDisk(vec2 Pos, float InnerRadius, float DamageRadius, int Damage, float Force, int Owner, EDamageType DamageType);
 	void CreateExplosionDiskGfx(vec2 Pos, float InnerRadius, float DamageRadius, int Owner);
 
 	void SendHammerDot(const vec2 &Pos, int SnapID);
@@ -199,7 +199,7 @@ public:
 	static const char *GetClanForClass(PLAYERCLASS PlayerClass, const char *pDefaultText = nullptr);
 	static const char *GetClassPluralDisplayName(PLAYERCLASS PlayerClass);
 	static PLAYERCLASS MenuClassToPlayerClass(int MenuClass);
-	static int DamageTypeToWeapon(DAMAGE_TYPE DamageType, TAKEDAMAGEMODE *pMode = nullptr);
+	static int DamageTypeToWeapon(EDamageType DamageType, TAKEDAMAGEMODE *pMode = nullptr);
 
 	int GetPlayerTeam(int ClientID) const override;
 	void SetPlayerInfected(int ClientID, bool Infected);

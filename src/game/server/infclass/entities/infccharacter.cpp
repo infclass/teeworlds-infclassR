@@ -116,7 +116,7 @@ void CInfClassCharacter::OnCharacterInInfectionZone()
 
 		SDamageContext DamageContext;
 		DamageContext.Killer = GetCID();
-		DamageContext.DamageType = DAMAGE_TYPE::INFECTION_TILE;
+		DamageContext.DamageType = EDamageType::INFECTION_TILE;
 		DamageContext.Mode = TAKEDAMAGEMODE::INFECTION;
 
 		GetDeathContext(DamageContext, &Context);
@@ -143,7 +143,7 @@ void CInfClassCharacter::OnCharacterOutOfInfectionZone()
 
 void CInfClassCharacter::OnCharacterInDamageZone(float Damage, float DamageInterval)
 {
-	constexpr DAMAGE_TYPE DamageType = DAMAGE_TYPE::DAMAGE_TILE;
+	constexpr EDamageType DamageType = EDamageType::DAMAGE_TILE;
 
 	const int Tick = Server()->Tick();
 
@@ -208,7 +208,7 @@ void CInfClassCharacter::Tick()
 			TakeDamage(Force, PoisonDamage, m_PoisonFrom, m_PoisonDamageType);
 			m_PoisonTick = CurrentTick + Server()->TickSpeed() * m_PoisonEffectInterval;
 
-			if(m_PoisonDamageType == DAMAGE_TYPE::SLUG_SLIME)
+			if(m_PoisonDamageType == EDamageType::SLUG_SLIME)
 			{
 				GameServer()->CreateDeath(GetPos(), m_PoisonFrom);
 			}
@@ -522,7 +522,7 @@ void CInfClassCharacter::FireWeapon()
 	}
 }
 
-bool CInfClassCharacter::TakeDamage(const vec2 &Force, float FloatDmg, int From, DAMAGE_TYPE DamageType)
+bool CInfClassCharacter::TakeDamage(const vec2 &Force, float FloatDmg, int From, EDamageType DamageType)
 {
 	SDamageContext DamageContext;
 	{
@@ -662,7 +662,7 @@ bool CInfClassCharacter::TakeDamage(const vec2 &Force, float FloatDmg, int From,
 		HandleDamage(From, Dmg, DamageType);
 
 		bool IgnoreArmor = false;
-		if(DamageType == DAMAGE_TYPE::SLUG_SLIME)
+		if(DamageType == EDamageType::SLUG_SLIME)
 			IgnoreArmor = true;
 
 		int Armor = GetArmor();
@@ -815,7 +815,7 @@ PLAYERCLASS CInfClassCharacter::GetPlayerClass() const
 		return m_pPlayer->GetClass();
 }
 
-void CInfClassCharacter::HandleDamage(int From, int Damage, DAMAGE_TYPE DamageType)
+void CInfClassCharacter::HandleDamage(int From, int Damage, EDamageType DamageType)
 {
 	if(!m_TakenDamageDetails.IsEmpty())
 	{
@@ -859,7 +859,7 @@ void CInfClassCharacter::PrepareToDie(const DeathContext &Context, bool *pRefuse
 {
 	switch(Context.DamageType)
 	{
-	case DAMAGE_TYPE::DEATH_TILE:
+	case EDamageType::DEATH_TILE:
 		if(m_Invincible >= 3)
 		{
 			*pRefusedToDie = true;
@@ -869,9 +869,9 @@ void CInfClassCharacter::PrepareToDie(const DeathContext &Context, bool *pRefuse
 		{
 			return;
 		}
-	case DAMAGE_TYPE::GAME:
-	case DAMAGE_TYPE::KILL_COMMAND:
-	case DAMAGE_TYPE::GAME_FINAL_EXPLOSION:
+	case EDamageType::GAME:
+	case EDamageType::KILL_COMMAND:
+	case EDamageType::GAME_FINAL_EXPLOSION:
 		// Accept the death to go with the default self kill routine
 		return;
 	default:
@@ -951,7 +951,7 @@ bool CInfClassCharacter::IsPoisoned() const
 	return m_Poison > 0;
 }
 
-void CInfClassCharacter::Poison(int Count, int From, DAMAGE_TYPE DamageType, float Interval)
+void CInfClassCharacter::Poison(int Count, int From, EDamageType DamageType, float Interval)
 {
 	bool JustPoisoned = m_PoisonTick > Server()->Tick();
 	if(Count > m_Poison + JustPoisoned ? 1 : 0)
@@ -1013,13 +1013,13 @@ void CInfClassCharacter::GetDeathContext(const SDamageContext &DamageContext, De
 	pContext->DamageType = DamageContext.DamageType;
 
 	const int GivenKiller = DamageContext.Killer;
-	const DAMAGE_TYPE DamageType = DamageContext.DamageType;
+	const EDamageType DamageType = DamageContext.DamageType;
 
 	switch(DamageContext.DamageType)
 	{
-	case DAMAGE_TYPE::GAME:
-	case DAMAGE_TYPE::GAME_FINAL_EXPLOSION:
-	case DAMAGE_TYPE::GAME_INFECTION:
+	case EDamageType::GAME:
+	case EDamageType::GAME_FINAL_EXPLOSION:
+	case EDamageType::GAME_INFECTION:
 		return;
 	default:
 		break;
@@ -1060,7 +1060,7 @@ void CInfClassCharacter::GetDeathContext(const SDamageContext &DamageContext, De
 
 	ClientsArray MustBeKillerOrAssistant;
 	// If killed with a LASER_WALL then the Engineer must be either the Killer or the Assistant
-	if(DamageType == DAMAGE_TYPE::LASER_WALL)
+	if(DamageType == EDamageType::LASER_WALL)
 	{
 		// GivenKiller is the wall owner
 		AddUnique(GivenKiller, &MustBeKillerOrAssistant);
@@ -1076,7 +1076,7 @@ void CInfClassCharacter::GetDeathContext(const SDamageContext &DamageContext, De
 			continue;
 		}
 
-		if(Enforcer.m_DamageType == DAMAGE_TYPE::WHITE_HOLE)
+		if(Enforcer.m_DamageType == EDamageType::WHITE_HOLE)
 		{
 			AddUnique(Enforcer.m_CID, &MustBeKillerOrAssistant);
 			break;
@@ -1099,11 +1099,11 @@ void CInfClassCharacter::GetDeathContext(const SDamageContext &DamageContext, De
 
 	bool DirectKill = true;
 	switch(DamageType) {
-	case DAMAGE_TYPE::DEATH_TILE:
-	case DAMAGE_TYPE::INFECTION_TILE:
-	case DAMAGE_TYPE::KILL_COMMAND:
-	case DAMAGE_TYPE::LASER_WALL:
-	case DAMAGE_TYPE::SCIENTIST_TELEPORT:
+	case EDamageType::DEATH_TILE:
+	case EDamageType::INFECTION_TILE:
+	case EDamageType::KILL_COMMAND:
+	case EDamageType::LASER_WALL:
+	case EDamageType::SCIENTIST_TELEPORT:
 		DirectKill = false;
 	default:
 		break;
@@ -1144,7 +1144,7 @@ void CInfClassCharacter::GetDeathContext(const SDamageContext &DamageContext, De
 		// It means that the dealt damage does not matter.
 		bool DirectDieCall = m_TakenDamageDetails.Last().From != GivenKiller || m_TakenDamageDetails.Last().DamageType != DamageType;
 
-		bool SniperOneshot = (DamageType == DAMAGE_TYPE::SNIPER_RIFLE) && (m_TakenDamageDetails.Last().From == GivenKiller) && (m_TakenDamageDetails.Last().Amount >= 20);
+		bool SniperOneshot = (DamageType == EDamageType::SNIPER_RIFLE) && (m_TakenDamageDetails.Last().From == GivenKiller) && (m_TakenDamageDetails.Last().Amount >= 20);
 		bool InevitableDeath = DirectDieCall || (DamageContext.Mode == TAKEDAMAGEMODE::INFECTION) || SniperOneshot;
 
 		if(InevitableDeath)
@@ -1268,7 +1268,7 @@ void CInfClassCharacter::UpdateLastHookers(const ClientsArray &Hookers, int Hook
 	m_LastHookerTick = HookerTick;
 }
 
-void CInfClassCharacter::UpdateLastEnforcer(int ClientID, float Force, DAMAGE_TYPE DamageType, int Tick)
+void CInfClassCharacter::UpdateLastEnforcer(int ClientID, float Force, EDamageType DamageType, int Tick)
 {
 	if(Force < 3)
 		return;
@@ -1776,14 +1776,14 @@ void CInfClassCharacter::HandleIndirectKillerCleanup()
 
 void CInfClassCharacter::Die(int Killer, int Weapon)
 {
-	DAMAGE_TYPE DamageType = DAMAGE_TYPE::INVALID;
+	EDamageType DamageType = EDamageType::INVALID;
 	switch(Weapon)
 	{
 	case WEAPON_SELF:
-		DamageType = DAMAGE_TYPE::KILL_COMMAND;
+		DamageType = EDamageType::KILL_COMMAND;
 		break;
 	case WEAPON_GAME:
-		DamageType = DAMAGE_TYPE::GAME;
+		DamageType = EDamageType::GAME;
 		break;
 	default:
 		dbg_msg("infclass", "Invalid Die() event: victim=%d, killer=%d, weapon=%d", GetCID(), Killer, Weapon);
@@ -1792,7 +1792,7 @@ void CInfClassCharacter::Die(int Killer, int Weapon)
 	Die(Killer, DamageType);
 }
 
-void CInfClassCharacter::Die(int Killer, DAMAGE_TYPE DamageType)
+void CInfClassCharacter::Die(int Killer, EDamageType DamageType)
 {
 	dbg_msg("server", "CInfClassCharacter::Die: victim: %d, killer: %d, DT: %d", GetCID(), Killer, static_cast<int>(DamageType));
 
@@ -1831,7 +1831,7 @@ void CInfClassCharacter::Die(const DeathContext &Context)
 	// a nice sound
 	GameServer()->CreateSound(GetPos(), SOUND_PLAYER_DIE);
 
-	if(Context.DamageType == DAMAGE_TYPE::INFECTION_TILE)
+	if(Context.DamageType == EDamageType::INFECTION_TILE)
 	{
 		return;
 	}

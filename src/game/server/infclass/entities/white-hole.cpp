@@ -172,7 +172,7 @@ void CWhiteHole::MoveCharacters()
 			Intensity = clamp(1.0f-Distance/m_Radius+0.5f, 0.0f, 1.0f)*m_PlayerPullStrength;
 			pCharacter->m_Core.m_Vel += normalize(Dir)*Intensity;
 			pCharacter->m_Core.m_Vel *= m_PlayerDrag;
-			pCharacter->UpdateLastEnforcer(GetOwner(), Intensity, DAMAGE_TYPE::WHITE_HOLE, Server()->Tick());
+			pCharacter->UpdateLastEnforcer(GetOwner(), Intensity, EDamageType::WHITE_HOLE, Server()->Tick());
 		}
 	}
 }
@@ -186,7 +186,7 @@ void CWhiteHole::Tick()
 	int LifeSpan = m_EndTick - CurrentTick;
 	if(Server()->Tick() >= m_EndTick)
 	{
-		new CGrowingExplosion(GameServer(), m_Pos, vec2(0.0, -1.0), m_Owner, 20, DAMAGE_TYPE::WHITE_HOLE);
+		new CGrowingExplosion(GameServer(), m_Pos, vec2(0.0, -1.0), m_Owner, 20, EDamageType::WHITE_HOLE);
 		Reset();
 	}
 	else 

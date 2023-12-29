@@ -15,7 +15,7 @@ CPlasma::CPlasma(CGameContext *pGameContext, vec2 Pos, int Owner, int TrackedPla
 	: CInfCEntity(pGameContext, CGameWorld::ENTTYPE_PLASMA, Pos, Owner)
 {
 	m_Freeze = Freeze;
-	m_DamageType = DAMAGE_TYPE::NO_DAMAGE;
+	m_DamageType = EDamageType::NO_DAMAGE;
 	m_TrackedPlayer = TrackedPlayer;
 	m_Dir = Direction;
 	m_Explosive = Explosive;
@@ -72,7 +72,7 @@ void CPlasma::Tick()
 	
 }
 
-void CPlasma::SetDamageType(DAMAGE_TYPE Type)
+void CPlasma::SetDamageType(EDamageType Type)
 {
 	m_DamageType = Type;
 }

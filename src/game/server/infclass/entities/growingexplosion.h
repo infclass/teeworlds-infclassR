@@ -11,7 +11,7 @@
 
 #include <vector>
 
-enum class DAMAGE_TYPE;
+enum class EDamageType;
 enum class TAKEDAMAGEMODE;
 
 enum class GROWING_EXPLOSION_EFFECT
@@ -29,7 +29,7 @@ class CGrowingExplosion : public CInfCEntity
 {
 public:
 	CGrowingExplosion(CGameContext *pGameContext, vec2 Pos, vec2 Dir, int Owner, int Radius, GROWING_EXPLOSION_EFFECT ExplosionEffect);
-	CGrowingExplosion(CGameContext *pGameContext, vec2 Pos, vec2 Dir, int Owner, int Radius, DAMAGE_TYPE DamageType);
+	CGrowingExplosion(CGameContext *pGameContext, vec2 Pos, vec2 Dir, int Owner, int Radius, EDamageType DamageType);
 
 	void Tick() override;
 	void TickPaused() override;
@@ -45,7 +45,7 @@ private:
 	int m_MaxGrowing;
 	int m_GrowingMap_Length;
 	int m_GrowingMap_Size;
-	DAMAGE_TYPE m_DamageType;
+	EDamageType m_DamageType;
 	int m_TriggeredByCID;
 	TAKEDAMAGEMODE m_TakeDamageMode;
 	

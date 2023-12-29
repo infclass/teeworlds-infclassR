@@ -85,7 +85,7 @@ void CMercenaryBomb::Explode(int TriggeredBy)
 	if(m_Load > 1)
 	{
 		GameServer()->CreateSound(m_Pos, SOUND_GRENADE_EXPLODE);
-		CGrowingExplosion *pExplosion = new CGrowingExplosion(GameServer(), m_Pos, vec2(0.0, -1.0), m_Owner, 16.0f * Factor, DAMAGE_TYPE::MERCENARY_BOMB);
+		CGrowingExplosion *pExplosion = new CGrowingExplosion(GameServer(), m_Pos, vec2(0.0, -1.0), m_Owner, 16.0f * Factor, EDamageType::MERCENARY_BOMB);
 		pExplosion->SetTriggeredBy(TriggeredBy);
 	}
 

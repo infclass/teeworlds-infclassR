@@ -8,7 +8,7 @@
 CBiologistLaser::CBiologistLaser(CGameContext *pGameContext, vec2 Pos, vec2 Direction, int Owner, int Dmg) :
 	CInfClassLaser(pGameContext, Pos, Direction, 400.0f, Owner, Dmg, CGameWorld::ENTTYPE_LASER)
 {
-	m_DamageType = DAMAGE_TYPE::BIOLOGIST_MINE;
+	m_DamageType = EDamageType::BIOLOGIST_MINE;
 	m_MaxBounces = 4;
 	m_BounceCost = -100;
 
@@ -30,7 +30,7 @@ bool CBiologistLaser::HitCharacter(vec2 From, vec2 To)
 		float Len = distance(p->m_Pos, IntersectPos);
 		if(Len < p->m_ProximityRadius)
 		{
-			p->TakeDamage(vec2(0.f, 0.f), m_Dmg, m_Owner, DAMAGE_TYPE::BIOLOGIST_MINE);
+			p->TakeDamage(vec2(0.f, 0.f), m_Dmg, m_Owner, EDamageType::BIOLOGIST_MINE);
 			// Always return false to continue hits
 			return false;
 		}

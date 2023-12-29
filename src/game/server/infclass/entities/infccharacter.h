@@ -11,7 +11,7 @@ class CInfClassPlayer;
 class CInfClassPlayerClass;
 class CWhiteHole;
 
-enum class DAMAGE_TYPE;
+enum class EDamageType;
 enum class INFWEAPON;
 enum class TAKEDAMAGEMODE;
 
@@ -33,7 +33,7 @@ struct CHelperInfo
 
 struct CDamagePoint
 {
-	DAMAGE_TYPE DamageType;
+	EDamageType DamageType;
 	int From = 0;
 	int Amount = 0;
 	int Tick = 0;
@@ -43,7 +43,7 @@ struct EnforcerInfo
 {
 	int m_CID;
 	int m_Tick;
-	DAMAGE_TYPE m_DamageType;
+	EDamageType m_DamageType;
 };
 
 struct WeaponFireContext
@@ -103,7 +103,7 @@ public:
 
 	void FireWeapon() override;
 
-	bool TakeDamage(const vec2 &Force, float Dmg, int From, DAMAGE_TYPE DamageType);
+	bool TakeDamage(const vec2 &Force, float Dmg, int From, EDamageType DamageType);
 
 	bool Heal(int HitPoints, int FromCID = -1);
 	bool GiveHealth(int HitPoints, int FromCID = -1);
@@ -122,7 +122,7 @@ public:
 	void HandleIndirectKillerCleanup();
 
 	void Die(int Killer, int Weapon) override;
-	void Die(int Killer, DAMAGE_TYPE DamageType);
+	void Die(int Killer, EDamageType DamageType);
 	void Die(const DeathContext &Context);
 
 	void GiveWeapon(int Weapon, int Ammo);
@@ -200,7 +200,7 @@ public:
 	void CancelSlowMotion();
 
 	bool IsPoisoned() const;
-	void Poison(int Count, int From, DAMAGE_TYPE DamageType, float Interval = 1.0f);
+	void Poison(int Count, int From, EDamageType DamageType, float Interval = 1.0f);
 	void ResetPoisonEffect();
 
 	void ResetMovementsInput();
@@ -217,7 +217,7 @@ public:
 
 	void UpdateLastHookers(const ClientsArray &Hookers, int HookerTick);
 
-	void UpdateLastEnforcer(int ClientID, float Force, DAMAGE_TYPE DamageType, int Tick);
+	void UpdateLastEnforcer(int ClientID, float Force, EDamageType DamageType, int Tick);
 
 	void RemoveReferencesToCID(int ClientID);
 
@@ -254,7 +254,7 @@ protected:
 	void TeleToId(int TeleNumber, int TeleType);
 
 	void ResetClassObject();
-	void HandleDamage(int From, int Damage, DAMAGE_TYPE DamageType);
+	void HandleDamage(int From, int Damage, EDamageType DamageType);
 
 	void OnTotalHealthChanged(int Difference) override;
 	void PrepareToDie(const DeathContext &Context, bool *pRefusedToDie);
@@ -299,7 +299,7 @@ protected:
 	float m_PoisonEffectInterval{};
 	int m_PoisonTick = 0;
 	int m_PoisonFrom = 0;
-	DAMAGE_TYPE m_PoisonDamageType;
+	EDamageType m_PoisonDamageType;
 
 	bool m_IsInvisible = false;
 	int m_Invincible = 0;

@@ -526,15 +526,15 @@ void CInfClassGameController::HandleCharacterTiles(CInfClassCharacter *pCharacte
 
 	if(Indices.Contains(ZONE_DAMAGE_DEATH))
 	{
-		pCharacter->Die(pCharacter->GetCID(), DAMAGE_TYPE::DEATH_TILE);
+		pCharacter->Die(pCharacter->GetCID(), EDamageType::DEATH_TILE);
 	}
 	else if(pCharacter->GetPlayerClass() != PLAYERCLASS_UNDEAD && Indices.Contains(ZONE_DAMAGE_DEATH_NOUNDEAD))
 	{
-		pCharacter->Die(pCharacter->GetCID(), DAMAGE_TYPE::DEATH_TILE);
+		pCharacter->Die(pCharacter->GetCID(), EDamageType::DEATH_TILE);
 	}
 	else if(pCharacter->IsInfected() && Indices.Contains(ZONE_DAMAGE_DEATH_INFECTED))
 	{
-		pCharacter->Die(pCharacter->GetCID(), DAMAGE_TYPE::DEATH_TILE);
+		pCharacter->Die(pCharacter->GetCID(), EDamageType::DEATH_TILE);
 	}
 	else if(pCharacter->IsAlive() && Indices.Contains(ZONE_DAMAGE_INFECTION))
 	{
@@ -754,7 +754,7 @@ void CInfClassGameController::ExecuteFileEx(const char *pBaseName)
 	Console()->ExecuteFile(pFileName, -1, true);
 }
 
-void CInfClassGameController::CreateExplosion(const vec2 &Pos, int Owner, DAMAGE_TYPE DamageType, float DamageFactor)
+void CInfClassGameController::CreateExplosion(const vec2 &Pos, int Owner, EDamageType DamageType, float DamageFactor)
 {
 	int Weapon = WEAPON_WORLD;
 	GameServer()->CreateExplosion(Pos, Owner, Weapon);
@@ -763,7 +763,7 @@ void CInfClassGameController::CreateExplosion(const vec2 &Pos, int Owner, DAMAGE
 	{
 		// deal damage
 		bool AffectOwner = true;
-		if(DamageType == DAMAGE_TYPE::WHITE_HOLE)
+		if(DamageType == EDamageType::WHITE_HOLE)
 			AffectOwner = false;
 
 		CInfClassCharacter *apEnts[MAX_CLIENTS];
@@ -804,7 +804,7 @@ void CInfClassGameController::CreateExplosion(const vec2 &Pos, int Owner, DAMAGE
 }
 
 // Thanks to Stitch for the idea
-void CInfClassGameController::CreateExplosionDisk(vec2 Pos, float InnerRadius, float DamageRadius, int Damage, float Force, int Owner, DAMAGE_TYPE DamageType)
+void CInfClassGameController::CreateExplosionDisk(vec2 Pos, float InnerRadius, float DamageRadius, int Damage, float Force, int Owner, EDamageType DamageType)
 {
 	CreateExplosionDiskGfx(Pos, InnerRadius, DamageRadius, Owner);
 
@@ -1373,7 +1373,7 @@ PLAYERCLASS CInfClassGameController::MenuClassToPlayerClass(int MenuClass)
 	return PlayerClass;
 }
 
-int CInfClassGameController::DamageTypeToWeapon(DAMAGE_TYPE DamageType, TAKEDAMAGEMODE *pMode)
+int CInfClassGameController::DamageTypeToWeapon(EDamageType DamageType, TAKEDAMAGEMODE *pMode)
 {
 	int Weapon = WEAPON_GAME;
 	TAKEDAMAGEMODE HelperMode;
@@ -1383,77 +1383,78 @@ int CInfClassGameController::DamageTypeToWeapon(DAMAGE_TYPE DamageType, TAKEDAMA
 
 	switch(DamageType)
 	{
-	case DAMAGE_TYPE::INVALID:
-	case DAMAGE_TYPE::UNUSED1:
+	case EDamageType::INVALID:
+	case EDamageType::COUNT:
+	case EDamageType::UNUSED1:
 		break;
-	case DAMAGE_TYPE::NO_DAMAGE:
+	case EDamageType::NO_DAMAGE:
 		break;
 
-	case DAMAGE_TYPE::HAMMER:
-	case DAMAGE_TYPE::BITE:
-	case DAMAGE_TYPE::LASER_WALL:
-	case DAMAGE_TYPE::BIOLOGIST_MINE:
-	case DAMAGE_TYPE::TURRET_DESTRUCTION:
-	case DAMAGE_TYPE::TURRET_LASER:
-	case DAMAGE_TYPE::TURRET_PLASMA:
-	case DAMAGE_TYPE::WHITE_HOLE:
-	case DAMAGE_TYPE::SLUG_SLIME:
+	case EDamageType::HAMMER:
+	case EDamageType::BITE:
+	case EDamageType::LASER_WALL:
+	case EDamageType::BIOLOGIST_MINE:
+	case EDamageType::TURRET_DESTRUCTION:
+	case EDamageType::TURRET_LASER:
+	case EDamageType::TURRET_PLASMA:
+	case EDamageType::WHITE_HOLE:
+	case EDamageType::SLUG_SLIME:
 		Weapon = WEAPON_HAMMER;
 		break;
-	case DAMAGE_TYPE::SOLDIER_BOMB:
-	case DAMAGE_TYPE::MERCENARY_BOMB:
-	case DAMAGE_TYPE::SCIENTIST_MINE:
-	case DAMAGE_TYPE::SCIENTIST_TELEPORT:
+	case EDamageType::SOLDIER_BOMB:
+	case EDamageType::MERCENARY_BOMB:
+	case EDamageType::SCIENTIST_MINE:
+	case EDamageType::SCIENTIST_TELEPORT:
 		Mode = TAKEDAMAGEMODE::ALLOW_SELFHARM;
 		Weapon = WEAPON_HAMMER;
 		break;
-	case DAMAGE_TYPE::INFECTION_HAMMER:
-	case DAMAGE_TYPE::BOOMER_EXPLOSION:
+	case EDamageType::INFECTION_HAMMER:
+	case EDamageType::BOOMER_EXPLOSION:
 		Mode = TAKEDAMAGEMODE::INFECTION;
 		Weapon = WEAPON_HAMMER;
 		break;
-	case DAMAGE_TYPE::GUN:
-	case DAMAGE_TYPE::MERCENARY_GUN:
+	case EDamageType::GUN:
+	case EDamageType::MERCENARY_GUN:
 		Weapon = WEAPON_GUN;
 		break;
-	case DAMAGE_TYPE::SHOTGUN:
-	case DAMAGE_TYPE::MEDIC_SHOTGUN:
-	case DAMAGE_TYPE::BIOLOGIST_SHOTGUN:
+	case EDamageType::SHOTGUN:
+	case EDamageType::MEDIC_SHOTGUN:
+	case EDamageType::BIOLOGIST_SHOTGUN:
 		Weapon = WEAPON_SHOTGUN;
 		break;
-	case DAMAGE_TYPE::GRENADE:
-	case DAMAGE_TYPE::STUNNING_GRENADE:
-	case DAMAGE_TYPE::MERCENARY_GRENADE:
+	case EDamageType::GRENADE:
+	case EDamageType::STUNNING_GRENADE:
+	case EDamageType::MERCENARY_GRENADE:
 		Weapon = WEAPON_GRENADE;
 		break;
-	case DAMAGE_TYPE::LASER:
-	case DAMAGE_TYPE::SNIPER_RIFLE:
-	case DAMAGE_TYPE::SCIENTIST_LASER:
-	case DAMAGE_TYPE::LOOPER_LASER:
+	case EDamageType::LASER:
+	case EDamageType::SNIPER_RIFLE:
+	case EDamageType::SCIENTIST_LASER:
+	case EDamageType::LOOPER_LASER:
 		Weapon = WEAPON_LASER;
 		break;
-	case DAMAGE_TYPE::NINJA:
-	case DAMAGE_TYPE::DRYING_HOOK:
+	case EDamageType::NINJA:
+	case EDamageType::DRYING_HOOK:
 		Weapon = WEAPON_NINJA;
 		break;
 
-	case DAMAGE_TYPE::DEATH_TILE:
-	case DAMAGE_TYPE::INFECTION_TILE:
-	case DAMAGE_TYPE::DAMAGE_TILE:
+	case EDamageType::DEATH_TILE:
+	case EDamageType::INFECTION_TILE:
+	case EDamageType::DAMAGE_TILE:
 		Weapon = WEAPON_WORLD;
 		break;
-	case DAMAGE_TYPE::GAME:
+	case EDamageType::GAME:
 		Weapon = WEAPON_GAME;
 		break;
-	case DAMAGE_TYPE::KILL_COMMAND:
+	case EDamageType::KILL_COMMAND:
 		Weapon = WEAPON_SELF;
 		break;
-	case DAMAGE_TYPE::GAME_FINAL_EXPLOSION:
-	case DAMAGE_TYPE::GAME_INFECTION:
+	case EDamageType::GAME_FINAL_EXPLOSION:
+	case EDamageType::GAME_INFECTION:
 		// This is how the infection world work
 		Weapon = WEAPON_WORLD;
 		break;
-	case DAMAGE_TYPE::MEDIC_REVIVAL:
+	case EDamageType::MEDIC_REVIVAL:
 		Weapon = WEAPON_LASER;
 		Mode = TAKEDAMAGEMODE::ALLOW_SELFHARM;
 		break;
@@ -2812,7 +2813,7 @@ int CInfClassGameController::InfectedBonusArmor() const
 
 void CInfClassGameController::SendKillMessage(int Victim, const DeathContext &Context)
 {
-	DAMAGE_TYPE DamageType = Context.DamageType;
+	EDamageType DamageType = Context.DamageType;
 	int VanillaWeapon = DamageTypeToWeapon(DamageType);
 	int Killer = Context.Killer;
 	int Assistant = Context.Assistant;
@@ -2828,13 +2829,13 @@ void CInfClassGameController::SendKillMessage(int Victim, const DeathContext &Co
 
 	// Old clients have no idea about DAMAGE_TILEs,
 	// and we don't need a different UI indication
-	if(Context.DamageType == DAMAGE_TYPE::DAMAGE_TILE)
+	if(Context.DamageType == EDamageType::DAMAGE_TILE)
 	{
-		DamageType = DAMAGE_TYPE::DEATH_TILE;
+		DamageType = EDamageType::DEATH_TILE;
 	}
 
 	// Substitute the weapon for clients for better UI icon
-	if(DamageType == DAMAGE_TYPE::DEATH_TILE)
+	if(DamageType == EDamageType::DEATH_TILE)
 		VanillaWeapon = WEAPON_NINJA;
 
 	int DamageTypeInt = static_cast<int>(DamageType);
@@ -4063,7 +4064,7 @@ int CInfClassGameController::OnCharacterDeath(class CCharacter *pAbstractVictim,
 
 void CInfClassGameController::OnCharacterDeath(CInfClassCharacter *pVictim, const DeathContext &Context)
 {
-	const DAMAGE_TYPE DamageType = Context.DamageType;
+	const EDamageType DamageType = Context.DamageType;
 	const int Killer = Context.Killer;
 	const int Assistant = Context.Assistant;
 
@@ -4072,10 +4073,10 @@ void CInfClassGameController::OnCharacterDeath(CInfClassCharacter *pVictim, cons
 	RewardTheKillers(pVictim, Context);
 
 	int Weapon = DamageTypeToWeapon(DamageType);
-	static const icArray<DAMAGE_TYPE, 4> BadReasonsToDie = {
-		DAMAGE_TYPE::GAME, // Disconnect, joining spec, etc
-		DAMAGE_TYPE::KILL_COMMAND, // Self kill
-		DAMAGE_TYPE::GAME_FINAL_EXPLOSION,
+	static const icArray<EDamageType, 4> BadReasonsToDie = {
+		EDamageType::GAME, // Disconnect, joining spec, etc
+		EDamageType::KILL_COMMAND, // Self kill
+		EDamageType::GAME_FINAL_EXPLOSION,
 	};
 	if(!BadReasonsToDie.Contains(DamageType) && (Killer != pVictim->GetCID()))
 	{
@@ -4124,7 +4125,7 @@ void CInfClassGameController::OnCharacterDeath(CInfClassCharacter *pVictim, cons
 	bool ClassSpecialProcessingEnabled = true;
 
 	PLAYERCLASS VictimClass = static_cast<PLAYERCLASS>(pVictim->GetPlayerClass());
-	if(DamageType == DAMAGE_TYPE::GAME)
+	if(DamageType == EDamageType::GAME)
 	{
 		ClassSpecialProcessingEnabled = false;
 	}
@@ -4161,7 +4162,7 @@ void CInfClassGameController::OnCharacterDeath(CInfClassCharacter *pVictim, cons
 	}
 
 	// Do not infect on disconnect or joining spec
-	bool Infect = DamageType != DAMAGE_TYPE::GAME;
+	bool Infect = DamageType != EDamageType::GAME;
 	if(Infect)
 	{
 		pVictim->GetPlayer()->StartInfection(Context.Killer, InfectionType);
@@ -4170,9 +4171,9 @@ void CInfClassGameController::OnCharacterDeath(CInfClassCharacter *pVictim, cons
 	bool SelfKill = false;
 	switch (DamageType)
 	{
-	case DAMAGE_TYPE::TURRET_DESTRUCTION:
-	case DAMAGE_TYPE::DEATH_TILE:
-	case DAMAGE_TYPE::KILL_COMMAND:
+	case EDamageType::TURRET_DESTRUCTION:
+	case EDamageType::DEATH_TILE:
+	case EDamageType::KILL_COMMAND:
 		SelfKill = true;
 		break;
 	default:
@@ -4203,7 +4204,7 @@ void CInfClassGameController::OnCharacterDeath(CInfClassCharacter *pVictim, cons
 
 	pVictim->GetPlayer()->m_RespawnTick = Server()->Tick() + RespawnDelay;
 
-	if(Context.DamageType == DAMAGE_TYPE::INFECTION_TILE)
+	if(Context.DamageType == EDamageType::INFECTION_TILE)
 	{
 		int FreezeDuration = m_Warmup > 0 ? 0 : Config()->m_InfInfzoneFreezeDuration;
 		if(FreezeDuration > 0)
@@ -4424,7 +4425,7 @@ void CInfClassGameController::DoWincheck()
 					{
 						vec2 TilePos = vec2(16.0f, 16.0f) + vec2(i*32.0f, j*32.0f);
 						static const int Damage = 0;
-						CreateExplosion(TilePos, -1, DAMAGE_TYPE::NO_DAMAGE, Damage);
+						CreateExplosion(TilePos, -1, EDamageType::NO_DAMAGE, Damage);
 						GameServer()->CreateSound(TilePos, SOUND_GRENADE_EXPLODE);
 					}
 				}
@@ -4458,7 +4459,7 @@ void CInfClassGameController::DoWincheck()
 
 			if(m_GrowingMap[tileY*m_MapWidth+tileX] & 2 && p->GetPlayer())
 			{
-				p->Die(p->GetCID(), DAMAGE_TYPE::GAME_FINAL_EXPLOSION);
+				p->Die(p->GetCID(), EDamageType::GAME_FINAL_EXPLOSION);
 			}
 		}
 		if(!NewExplosion)

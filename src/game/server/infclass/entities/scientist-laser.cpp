@@ -15,7 +15,7 @@
 CScientistLaser::CScientistLaser(CGameContext *pGameContext, vec2 Pos, vec2 Direction, float StartEnergy, int Owner, int Dmg)
 	: CInfClassLaser(pGameContext, Pos, Direction, StartEnergy, Owner, Dmg, CGameWorld::ENTTYPE_LASER)
 {
-	m_DamageType = DAMAGE_TYPE::SCIENTIST_LASER;
+	m_DamageType = EDamageType::SCIENTIST_LASER;
 	
 	GameWorld()->InsertEntity(this);
 	DoBounce();
@@ -71,7 +71,7 @@ void CScientistLaser::CreateWhiteHole(const vec2 &CenterPos, const vec2 &To)
 	{
 		return;
 	}
-	new CGrowingExplosion(GameServer(), CenterPos, vec2(0.0, -1.0), m_Owner, 5, DAMAGE_TYPE::WHITE_HOLE);
+	new CGrowingExplosion(GameServer(), CenterPos, vec2(0.0, -1.0), m_Owner, 5, EDamageType::WHITE_HOLE);
 	new CWhiteHole(GameServer(), To, m_Owner);
 
 	// Make it unavailable

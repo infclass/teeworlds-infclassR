@@ -139,11 +139,11 @@ void CScatterGrenade::Explode()
 {
 	if(m_IsFlashGrenade)
 	{
-		new CGrowingExplosion(GameServer(), m_ActualPos, m_ActualDir, m_Owner, 4, DAMAGE_TYPE::STUNNING_GRENADE);
+		new CGrowingExplosion(GameServer(), m_ActualPos, m_ActualDir, m_Owner, 4, EDamageType::STUNNING_GRENADE);
 	}
 	else
 	{
-		new CGrowingExplosion(GameServer(), m_ActualPos, m_ActualDir, m_Owner, 4, DAMAGE_TYPE::MERCENARY_GRENADE);
+		new CGrowingExplosion(GameServer(), m_ActualPos, m_ActualDir, m_Owner, 4, EDamageType::MERCENARY_GRENADE);
 	}
 	
 	GameWorld()->DestroyEntity(this);

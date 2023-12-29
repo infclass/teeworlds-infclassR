@@ -10,7 +10,7 @@
 class CInfClassLaser : public CInfCEntity
 {
 public:
-	CInfClassLaser(CGameContext *pGameContext, vec2 Pos, vec2 Direction, float StartEnergy, int Owner, int Dmg, DAMAGE_TYPE DamageType = DAMAGE_TYPE::INVALID);
+	CInfClassLaser(CGameContext *pGameContext, vec2 Pos, vec2 Direction, float StartEnergy, int Owner, int Dmg, EDamageType DamageType = EDamageType::INVALID);
 
 	void Tick() override;
 	void TickPaused() override;
@@ -26,7 +26,7 @@ protected:
 protected:
 	vec2 m_From;
 	vec2 m_Dir;
-	DAMAGE_TYPE m_DamageType;
+	EDamageType m_DamageType;
 	float m_Energy;
 	int m_Bounces = 0;
 	int m_MaxBounces = 0;

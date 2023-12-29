@@ -3,14 +3,14 @@
 
 #include "base/vmath.h"
 
-enum class DAMAGE_TYPE;
+enum class EDamageType;
 enum class TAKEDAMAGEMODE;
 
 struct SDamageContext
 {
 	int Killer = -1;
 	int Assistant = -1;
-	DAMAGE_TYPE DamageType = static_cast<DAMAGE_TYPE>(0);
+	EDamageType DamageType = static_cast<EDamageType>(0);
 	int Weapon = 0;
 	TAKEDAMAGEMODE Mode = static_cast<TAKEDAMAGEMODE>(0);
 	int Damage = 0;

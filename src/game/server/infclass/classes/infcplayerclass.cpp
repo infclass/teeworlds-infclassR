@@ -234,7 +234,7 @@ void CInfClassPlayerClass::PrepareToDie(const DeathContext &Context, bool *pRefu
 {
 }
 
-void CInfClassPlayerClass::DisableHealing(float Duration, int From, DAMAGE_TYPE DamageType)
+void CInfClassPlayerClass::DisableHealing(float Duration, int From, EDamageType DamageType)
 {
 	m_HealingDisabledTicks = maximum<int>(m_HealingDisabledTicks, Duration * Server()->TickSpeed());
 }
@@ -302,7 +302,7 @@ void CInfClassPlayerClass::OnCharacterSpawned(const SpawnContext &Context)
 	GiveClassAttributes();
 }
 
-void CInfClassPlayerClass::OnCharacterDeath(DAMAGE_TYPE DamageType)
+void CInfClassPlayerClass::OnCharacterDeath(EDamageType DamageType)
 {
 	if(m_pCharacter->HasPassenger())
 	{

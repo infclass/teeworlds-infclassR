@@ -551,7 +551,7 @@ void CInfClassHuman::OnCharacterDamage(SDamageContext *pContext)
 		break;
 	}
 
-	if(pContext->DamageType == DAMAGE_TYPE::NINJA)
+	if(pContext->DamageType == EDamageType::NINJA)
 	{
 		// Humans are immune to Ninja's force
 		pContext->Force = vec2(0, 0);
@@ -589,7 +589,7 @@ void CInfClassHuman::OnKilledCharacter(CInfClassCharacter *pVictim, const DeathC
 		}
 		if(GameController()->GetRoundType() == ERoundType::Survival)
 		{
-			if(Context.DamageType == DAMAGE_TYPE::NINJA)
+			if(Context.DamageType == EDamageType::NINJA)
 			{
 				m_pCharacter->Heal(1);
 			}
@@ -720,7 +720,7 @@ void CInfClassHuman::HandleNinja()
 				// set his velocity to fast upward (for now)
 				m_apHitObjects.Add(pTarget);
 
-				pTarget->TakeDamage(vec2(0, -10.0f), minimum(g_pData->m_Weapons.m_Ninja.m_pBase->m_Damage + m_NinjaExtraDamage, 20), GetCID(), DAMAGE_TYPE::NINJA);
+				pTarget->TakeDamage(vec2(0, -10.0f), minimum(g_pData->m_Weapons.m_Ninja.m_pBase->m_Damage + m_NinjaExtraDamage, 20), GetCID(), EDamageType::NINJA);
 			}
 		}
 	}
@@ -802,7 +802,7 @@ void CInfClassHuman::OnHammerFired(WeaponFireContext *pFireContext)
 				Damage = 5;
 			}
 
-			pTarget->TakeDamage(Force, Damage, GetCID(), DAMAGE_TYPE::HAMMER);
+			pTarget->TakeDamage(Force, Damage, GetCID(), EDamageType::HAMMER);
 		}
 		else
 		{
@@ -834,10 +834,10 @@ void CInfClassHuman::OnGunFired(WeaponFireContext *pFireContext)
 	vec2 Direction = GetDirection();
 	vec2 ProjStartPos = GetProjectileStartPos(GetProximityRadius() * 0.75f);
 
-	DAMAGE_TYPE DamageType = DAMAGE_TYPE::GUN;
+	EDamageType DamageType = EDamageType::GUN;
 	
 	if(GetPlayerClass() == PLAYERCLASS_MERCENARY)
-		DamageType = DAMAGE_TYPE::MERCENARY_GUN;
+		DamageType = EDamageType::MERCENARY_GUN;
 
 	{
 		CProjectile *pProj = new CProjectile(GameContext(), WEAPON_GUN,
@@ -872,7 +872,7 @@ void CInfClassHuman::OnShotgunFired(WeaponFireContext *pFireContext)
 
 	float Force = 2.0f;
 	int ShotSpread = 3;
-	DAMAGE_TYPE DamageType = DAMAGE_TYPE::SHOTGUN;
+	EDamageType DamageType = EDamageType::SHOTGUN;
 
 	switch(GetPlayerClass())
 	{
@@ -881,7 +881,7 @@ void CInfClassHuman::OnShotgunFired(WeaponFireContext *pFireContext)
 		break;
 	case PLAYERCLASS_MEDIC:
 		Force = 10.0f;
-		DamageType = DAMAGE_TYPE::MEDIC_SHOTGUN;
+		DamageType = EDamageType::MEDIC_SHOTGUN;
 		break;
 	default:
 		break;
@@ -949,7 +949,7 @@ void CInfClassHuman::OnGrenadeFired(WeaponFireContext *pFireContext)
 			ProjStartPos,
 			Direction,
 			(int)(Server()->TickSpeed() * GameServer()->Tuning()->m_GrenadeLifetime),
-			1, true, 0, SOUND_GRENADE_EXPLODE, DAMAGE_TYPE::GRENADE);
+			1, true, 0, SOUND_GRENADE_EXPLODE, EDamageType::GRENADE);
 
 		if(GetPlayerClass() == PLAYERCLASS_NINJA)
 		{
@@ -973,7 +973,7 @@ void CInfClassHuman::OnLaserFired(WeaponFireContext *pFireContext)
 	vec2 Direction = GetDirection();
 	float StartEnergy = GameServer()->Tuning()->m_LaserReach;
 	int Damage = GameServer()->Tuning()->m_LaserDamage;
-	DAMAGE_TYPE DamageType = DAMAGE_TYPE::LASER;
+	EDamageType DamageType = EDamageType::LASER;
 
 	switch(GetPlayerClass())
 	{
@@ -997,12 +997,12 @@ void CInfClassHuman::OnLaserFired(WeaponFireContext *pFireContext)
 	case PLAYERCLASS_LOOPER:
 		StartEnergy *= 0.7f;
 		Damage = 5;
-		DamageType = DAMAGE_TYPE::LOOPER_LASER;
+		DamageType = EDamageType::LOOPER_LASER;
 		new CInfClassLaser(GameServer(), GetPos(), Direction, StartEnergy, GetCID(), Damage, DamageType);
 		break;
 	case PLAYERCLASS_SNIPER:
 		Damage = m_pCharacter->PositionIsLocked() ? 30 : random_int(10, 13);
-		DamageType = DAMAGE_TYPE::SNIPER_RIFLE;
+		DamageType = EDamageType::SNIPER_RIFLE;
 		new CInfClassLaser(GameServer(), GetPos(), Direction, StartEnergy, GetCID(), Damage, DamageType);
 		break;
 	default:
@@ -1943,7 +1943,7 @@ void CInfClassHuman::OnPortalGunFired(WeaponFireContext *pFireContext)
 	float SelfDamage = Config()->m_InfScientistTpSelfharm;
 	if(SelfDamage)
 	{
-		m_pCharacter->TakeDamage(vec2(0.0f, 0.0f), SelfDamage * 2, GetCID(), DAMAGE_TYPE::SCIENTIST_TELEPORT);
+		m_pCharacter->TakeDamage(vec2(0.0f, 0.0f), SelfDamage * 2, GetCID(), EDamageType::SCIENTIST_TELEPORT);
 	}
 	GameServer()->CreateDeath(OldPos, GetCID());
 	GameServer()->CreateDeath(PortalPos, GetCID());
@@ -2067,7 +2067,7 @@ void CInfClassHuman::OnSlimeEffect(int Owner)
 		Count = 1;
 	}
 	const float Interval = 1.25f;
-	m_pCharacter->Poison(Count, Owner, DAMAGE_TYPE::SLUG_SLIME, Interval);
+	m_pCharacter->Poison(Count, Owner, EDamageType::SLUG_SLIME, Interval);
 }
 
 bool CInfClassHuman::HasWhiteHole() const

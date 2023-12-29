@@ -69,7 +69,7 @@ void CBouncingBullet::Tick()
 		const float Damage = 1.33f;
 		if(pTargetChr)
 		{
-			pTargetChr->TakeDamage(m_Direction * 2, Damage, m_Owner, DAMAGE_TYPE::BIOLOGIST_SHOTGUN);
+			pTargetChr->TakeDamage(m_Direction * 2, Damage, m_Owner, EDamageType::BIOLOGIST_SHOTGUN);
 		}
 
 		GameWorld()->DestroyEntity(this);

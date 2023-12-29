@@ -37,7 +37,7 @@ CScientistMine::~CScientistMine()
 
 void CScientistMine::Explode(int DetonatedBy)
 {
-	new CGrowingExplosion(GameServer(), m_Pos, vec2(0.0, -1.0), m_Owner, 6, DAMAGE_TYPE::SCIENTIST_MINE);
+	new CGrowingExplosion(GameServer(), m_Pos, vec2(0.0, -1.0), m_Owner, 6, EDamageType::SCIENTIST_MINE);
 	GameWorld()->DestroyEntity(this);
 	
 	//Self damage
@@ -48,12 +48,12 @@ void CScientistMine::Explode(int DetonatedBy)
 		float Distance = distance(m_Pos, OwnerChar->GetPos());
 		if(Distance < OwnerChar->GetProximityRadius() + GetProximityRadius())
 		{
-			OwnerChar->TakeDamage(vec2(0.0f, 0.0f), MaxSelfDamage, DetonatedBy, DAMAGE_TYPE::SCIENTIST_MINE);
+			OwnerChar->TakeDamage(vec2(0.0f, 0.0f), MaxSelfDamage, DetonatedBy, EDamageType::SCIENTIST_MINE);
 		}
 		else if(Distance < OwnerChar->GetProximityRadius() + 2 * GetProximityRadius())
 		{
 			float Alpha = (Distance - GetProximityRadius() - OwnerChar->GetProximityRadius()) / GetProximityRadius();
-			OwnerChar->TakeDamage(vec2(0.0f, 0.0f), MaxSelfDamage * Alpha, DetonatedBy, DAMAGE_TYPE::SCIENTIST_MINE);
+			OwnerChar->TakeDamage(vec2(0.0f, 0.0f), MaxSelfDamage * Alpha, DetonatedBy, EDamageType::SCIENTIST_MINE);
 		}
 	}
 }

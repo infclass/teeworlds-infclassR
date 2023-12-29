@@ -13,7 +13,7 @@
 #include "projectile.h"
 
 CProjectile::CProjectile(CGameContext *pGameContext, int Type, int Owner, vec2 Pos, vec2 Dir, int Span,
-		int Damage, bool Explosive, float Force, int SoundImpact, DAMAGE_TYPE DamageType)
+		int Damage, bool Explosive, float Force, int SoundImpact, EDamageType DamageType)
 : CInfCEntity(pGameContext, CGameWorld::ENTTYPE_PROJECTILE, Pos, Owner)
 {
 	m_Type = Type;
@@ -86,7 +86,7 @@ void CProjectile::Tick()
 			vec2 Dir = normalize(PrevPos - CurPos);
 			if(length(Dir) > 1.1) Dir = normalize(m_StartPos - CurPos);
 			
-			new CGrowingExplosion(GameServer(), CurPos, Dir, m_Owner, m_FlashRadius, DAMAGE_TYPE::STUNNING_GRENADE);
+			new CGrowingExplosion(GameServer(), CurPos, Dir, m_Owner, m_FlashRadius, EDamageType::STUNNING_GRENADE);
 		}
 		else if(m_Explosive)
 		{

@@ -6,13 +6,13 @@
 #include <game/server/infclass/entities/infcentity.h>
 
 enum class TAKEDAMAGEMODE;
-enum class DAMAGE_TYPE;
+enum class EDamageType;
 
 class CProjectile : public CInfCEntity
 {
 public:
 	CProjectile(CGameContext *pGameContext, int Type, int Owner, vec2 Pos, vec2 Dir, int Span,
-		int Damage, bool Explosive, float Force, int SoundImpact, DAMAGE_TYPE DamageType);
+		int Damage, bool Explosive, float Force, int SoundImpact, EDamageType DamageType);
 
 	vec2 GetPos(float Time);
 	void FillInfo(CNetObj_Projectile *pProj);
@@ -28,7 +28,7 @@ private:
 	int m_Damage;
 	int m_SoundImpact;
 	int m_Weapon;
-	DAMAGE_TYPE m_DamageType;
+	EDamageType m_DamageType;
 	float m_Force;
 	int m_StartTick;
 	bool m_Explosive;

@@ -158,7 +158,7 @@ void CEngineerWall::OnHitInfected(CInfClassCharacter *pCharacter)
 		m_EndTick -= LifeSpanReducer;
 	}
 
-	pCharacter->Die(m_Owner, DAMAGE_TYPE::LASER_WALL);
+	pCharacter->Die(m_Owner, EDamageType::LASER_WALL);
 }
 
 void CEngineerWall::PrepareSnapData()

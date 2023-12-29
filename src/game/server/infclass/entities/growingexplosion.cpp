@@ -12,12 +12,12 @@
 #include "infccharacter.h"
 
 CGrowingExplosion::CGrowingExplosion(CGameContext *pGameContext, vec2 Pos, vec2 Dir, int Owner, int Radius, GROWING_EXPLOSION_EFFECT ExplosionEffect) :
-	CGrowingExplosion(pGameContext, Pos, Dir, Owner, Radius, DAMAGE_TYPE::NO_DAMAGE)
+	CGrowingExplosion(pGameContext, Pos, Dir, Owner, Radius, EDamageType::NO_DAMAGE)
 {
 	m_ExplosionEffect = ExplosionEffect;
 }
 
-CGrowingExplosion::CGrowingExplosion(CGameContext *pGameContext, vec2 Pos, vec2 Dir, int Owner, int Radius, DAMAGE_TYPE DamageType) :
+CGrowingExplosion::CGrowingExplosion(CGameContext *pGameContext, vec2 Pos, vec2 Dir, int Owner, int Radius, EDamageType DamageType) :
 	CInfCEntity(pGameContext, CGameWorld::ENTTYPE_GROWINGEXPLOSION, Pos, Owner)
 {
 	m_DamageType = DamageType;
@@ -26,22 +26,22 @@ CGrowingExplosion::CGrowingExplosion(CGameContext *pGameContext, vec2 Pos, vec2 
 
 	switch(DamageType)
 	{
-		case DAMAGE_TYPE::STUNNING_GRENADE:
+		case EDamageType::STUNNING_GRENADE:
 			m_ExplosionEffect = GROWING_EXPLOSION_EFFECT::FREEZE_INFECTED;
 			break;
-		case DAMAGE_TYPE::MERCENARY_GRENADE:
+		case EDamageType::MERCENARY_GRENADE:
 			m_ExplosionEffect = GROWING_EXPLOSION_EFFECT::POISON_INFECTED;
 			break;
-		case DAMAGE_TYPE::MERCENARY_BOMB:
+		case EDamageType::MERCENARY_BOMB:
 			m_ExplosionEffect = GROWING_EXPLOSION_EFFECT::BOOM_INFECTED;
 			break;
-		case DAMAGE_TYPE::SCIENTIST_LASER:
+		case EDamageType::SCIENTIST_LASER:
 			m_ExplosionEffect = GROWING_EXPLOSION_EFFECT::BOOM_INFECTED;
 			break;
-		case DAMAGE_TYPE::SCIENTIST_MINE:
+		case EDamageType::SCIENTIST_MINE:
 			m_ExplosionEffect = GROWING_EXPLOSION_EFFECT::ELECTRIC_INFECTED;
 			break;
-		case DAMAGE_TYPE::WHITE_HOLE:
+		case EDamageType::WHITE_HOLE:
 			m_ExplosionEffect = GROWING_EXPLOSION_EFFECT::BOOM_INFECTED;
 			break;
 		default:
@@ -186,7 +186,7 @@ void CGrowingExplosion::Tick()
 					case GROWING_EXPLOSION_EFFECT::BOOM_INFECTED:
 						if(random_prob(0.2f))
 						{
-							float DamageFactor = m_DamageType == DAMAGE_TYPE::MERCENARY_BOMB ? 0 : 1;
+							float DamageFactor = m_DamageType == EDamageType::MERCENARY_BOMB ? 0 : 1;
 							GameController()->CreateExplosion(TileCenter, m_Owner, m_DamageType, DamageFactor);
 						}
 						break;
@@ -314,8 +314,8 @@ void CGrowingExplosion::Tick()
 					const float PoisonDurationSeconds = Config()->m_InfPoisonDuration / 1000.0;
 					const float DamageIntervalSeconds = PoisonDurationSeconds / Damage;
 
-					p->Poison(Damage, m_Owner, DAMAGE_TYPE::MERCENARY_GRENADE, DamageIntervalSeconds);
-					p->GetClass()->DisableHealing(Config()->m_InfPoisonDuration / 1000.0f, m_Owner, DAMAGE_TYPE::MERCENARY_GRENADE);
+					p->Poison(Damage, m_Owner, EDamageType::MERCENARY_GRENADE, DamageIntervalSeconds);
+					p->GetClass()->DisableHealing(Config()->m_InfPoisonDuration / 1000.0f, m_Owner, EDamageType::MERCENARY_GRENADE);
 				}
 					GameServer()->SendEmoticon(p->GetCID(), EMOTICON_DROP);
 					m_Hit[p->GetCID()] = true;
@@ -410,7 +410,7 @@ void CGrowingExplosion::ProcessMercenaryBombHit(CInfClassCharacter *pCharacter)
 		InnerRadius = OuterRadius * 0.9;
 	}
 	bool AffectOwner = true;
-	if(m_DamageType == DAMAGE_TYPE::WHITE_HOLE)
+	if(m_DamageType == EDamageType::WHITE_HOLE)
 		AffectOwner = false;
 
 	if(!AffectOwner && (pCharacter->GetCID() == GetOwner()))

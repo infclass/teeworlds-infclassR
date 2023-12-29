@@ -16,12 +16,12 @@ CInfClassLaser::CInfClassLaser(CGameContext *pGameContext, vec2 Pos, vec2 Direct
 	m_Dmg = Dmg;
 	m_Energy = StartEnergy;
 	m_Dir = Direction;
-	m_DamageType = DAMAGE_TYPE::NO_DAMAGE;
+	m_DamageType = EDamageType::NO_DAMAGE;
 	m_MaxBounces = GameServer()->Tuning()->m_LaserBounceNum;
 	m_BounceCost = GameServer()->Tuning()->m_LaserBounceCost;
 }
 
-CInfClassLaser::CInfClassLaser(CGameContext *pGameContext, vec2 Pos, vec2 Direction, float StartEnergy, int Owner, int Dmg, DAMAGE_TYPE DamageType)
+CInfClassLaser::CInfClassLaser(CGameContext *pGameContext, vec2 Pos, vec2 Direction, float StartEnergy, int Owner, int Dmg, EDamageType DamageType)
 	: CInfClassLaser(pGameContext, Pos, Direction, StartEnergy, Owner, Dmg, CGameWorld::ENTTYPE_LASER)
 {
 	m_DamageType = DamageType;
@@ -50,7 +50,7 @@ bool CInfClassLaser::OnCharacterHit(CInfClassCharacter *pHit)
 {
 	pHit->TakeDamage(vec2(0.f, 0.f), m_Dmg, m_Owner, m_DamageType);
 
-	if(m_DamageType == DAMAGE_TYPE::LOOPER_LASER)
+	if(m_DamageType == EDamageType::LOOPER_LASER)
 	{
 		const float EffectDurationInSeconds = Config()->m_InfSlowMotionGunDuration * 0.1f;
 		pHit->SlowMotionEffect(EffectDurationInSeconds, GetOwner());

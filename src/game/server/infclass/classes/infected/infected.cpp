@@ -328,7 +328,7 @@ void CInfClassInfected::OnCharacterPostCoreTick()
 			if(m_HookDmgTick + Server()->TickSpeed() * Rate < Server()->Tick())
 			{
 				m_HookDmgTick = Server()->Tick();
-				pVictimChar->TakeDamage(vec2(0.0f, 0.0f), Damage, GetCID(), DAMAGE_TYPE::DRYING_HOOK);
+				pVictimChar->TakeDamage(vec2(0.0f, 0.0f), Damage, GetCID(), EDamageType::DRYING_HOOK);
 				if(HasDrainingHook())
 				{
 					m_pCharacter->Heal(Damage);
@@ -429,7 +429,7 @@ void CInfClassInfected::OnCharacterSpawned(const SpawnContext &Context)
 	}
 }
 
-void CInfClassInfected::OnCharacterDeath(DAMAGE_TYPE DamageType)
+void CInfClassInfected::OnCharacterDeath(EDamageType DamageType)
 {
 	CInfClassPlayerClass::OnCharacterDeath(DamageType);
 
@@ -443,13 +443,13 @@ void CInfClassInfected::OnCharacterDeath(DAMAGE_TYPE DamageType)
 	{
 		bool CanExplode = true;
 
-		if(DamageType == DAMAGE_TYPE::GAME)
+		if(DamageType == EDamageType::GAME)
 			CanExplode = false;
 
 		if(m_pCharacter->IsFrozen())
 			CanExplode = false;
 
-		if(m_pCharacter->IsInLove() && (DamageType == DAMAGE_TYPE::KILL_COMMAND))
+		if(m_pCharacter->IsInLove() && (DamageType == EDamageType::KILL_COMMAND))
 			CanExplode = false;
 
 		if(CanExplode)
@@ -464,7 +464,7 @@ void CInfClassInfected::OnCharacterDamage(SDamageContext *pContext)
 	switch(GetPlayerClass())
 	{
 	case PLAYERCLASS_HUNTER:
-		if(pContext->DamageType == DAMAGE_TYPE::MEDIC_SHOTGUN)
+		if(pContext->DamageType == EDamageType::MEDIC_SHOTGUN)
 		{
 			pContext->Force = vec2(0, 0);
 		}
@@ -498,7 +498,7 @@ void CInfClassInfected::OnHammerFired(WeaponFireContext *pFireContext)
 		if(!m_pCharacter->IsFrozen() && !m_pCharacter->IsInLove())
 		{
 			pFireContext->FireAccepted = false;
-			m_pCharacter->Die(GetCID(), DAMAGE_TYPE::BOOMER_EXPLOSION);
+			m_pCharacter->Die(GetCID(), EDamageType::BOOMER_EXPLOSION);
 		}
 
 		return;
@@ -593,12 +593,12 @@ void CInfClassInfected::OnHammerFired(WeaponFireContext *pFireContext)
 					continue;
 
 				int Damage = g_pData->m_Weapons.m_Hammer.m_pBase->m_Damage;
-				DAMAGE_TYPE DamageType = DAMAGE_TYPE::INFECTION_HAMMER;
+				EDamageType DamageType = EDamageType::INFECTION_HAMMER;
 
 				if(GetPlayerClass() == PLAYERCLASS_BAT)
 				{
 					Damage = Config()->m_InfBatDamage;
-					DamageType = DAMAGE_TYPE::BITE;
+					DamageType = EDamageType::BITE;
 
 					if(GameController()->GetRoundType() != ERoundType::Survival)
 					{
@@ -708,7 +708,7 @@ void CInfClassInfected::DoBoomerExplosion()
 				ForceDir = normalize(Diff);
 
 			float DamageToDeal = 1 + ((Damage - 1) * NormalizedLength);
-			pTarget->TakeDamage(ForceDir * Force * NormalizedLength, DamageToDeal, GetCID(), DAMAGE_TYPE::BOOMER_EXPLOSION);
+			pTarget->TakeDamage(ForceDir * Force * NormalizedLength, DamageToDeal, GetCID(), EDamageType::BOOMER_EXPLOSION);
 			if(pTarget->IsInfected())
 			{
 				pTarget->TryUnfreeze(GetCID());

@@ -9,7 +9,7 @@ enum class TAKEDAMAGEMODE
 };
 
 // Everything that can kill should be listed here
-enum class DAMAGE_TYPE
+enum class EDamageType
 {
 	INVALID,
 

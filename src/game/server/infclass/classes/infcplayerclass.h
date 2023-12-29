@@ -20,7 +20,7 @@ struct DeathContext;
 struct WeaponFireContext;
 struct WeaponRegenParams;
 
-enum class DAMAGE_TYPE;
+enum class EDamageType;
 
 class CInfClassPlayerClass
 {
@@ -57,7 +57,7 @@ public:
 	virtual void PrepareToDie(const DeathContext &Context, bool *pRefusedToDie);
 
 	bool IsHealingDisabled() const;
-	void DisableHealing(float Duration, int From, DAMAGE_TYPE DamageType);
+	void DisableHealing(float Duration, int From, EDamageType DamageType);
 
 	// Events
 	virtual void OnPlayerSnap(int SnappingClient, int InfClassVersion);
@@ -69,7 +69,7 @@ public:
 	virtual void OnCharacterTickDeferred();
 	virtual void OnCharacterSnap(int SnappingClient);
 	virtual void OnCharacterSpawned(const SpawnContext &Context);
-	virtual void OnCharacterDeath(DAMAGE_TYPE DamageType);
+	virtual void OnCharacterDeath(EDamageType DamageType);
 	virtual void OnCharacterDamage(SDamageContext *pContext);
 
 	virtual void OnKilledCharacter(CInfClassCharacter *pVictim, const DeathContext &Context);
