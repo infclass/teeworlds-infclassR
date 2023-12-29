@@ -2838,7 +2838,7 @@ void CInfClassGameController::SendKillMessage(int Victim, const DeathContext &Co
 		VanillaWeapon = WEAPON_NINJA;
 
 	int DamageTypeInt = static_cast<int>(DamageType);
-	dbg_msg("inf-proto", "Sent kill message victim=%d, damage_type=%d, killer=%d, assistant=%d", Victim, DamageTypeInt, Killer, Assistant);
+	dbg_msg("inf-proto", "Sent kill message victim=%d damage_type=%s killer=%d assistant=%d", Victim, toString(DamageType), Killer, Assistant);
 
 	CNetMsg_Inf_KillMsg InfClassMsg;
 	InfClassMsg.m_Killer = Killer;
