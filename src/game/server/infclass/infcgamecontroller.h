@@ -274,6 +274,7 @@ public:
 	int InfectedBonusArmor() const;
 
 	void SendKillMessage(int Victim, const DeathContext &Context);
+	void OnKillOrInfection(int Victim, const DeathContext &Context);
 
 protected:
 	void RoundTickBeforeInitialInfection();

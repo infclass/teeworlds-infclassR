@@ -2935,6 +2935,35 @@ void CInfClassGameController::SendKillMessage(int Victim, const DeathContext &Co
 		if(pAssistant && (pAssistant != pVictim))
 			pAssistant->OnAssist();
 	}
+
+	OnKillOrInfection(Victim, Context);
+}
+
+void CInfClassGameController::OnKillOrInfection(int Victim, const DeathContext &Context)
+{
+	if(GetRoundType() != ERoundType::Survival)
+		return;
+
+	int VanillaWeapon = DamageTypeToWeapon(Context.DamageType);
+
+	if(VanillaWeapon == WEAPON_GAME)
+		return;
+
+	const CInfClassPlayer *pVictim = GetPlayer(Victim);
+	const CInfClassPlayer *pKiller = Context.Killer < 0 ? pVictim : GetPlayer(Context.Killer);
+
+	if(pKiller && pKiller->IsHuman() && (pVictim != pKiller))
+	{
+		m_SurvivalState.Kills++;
+	}
+
+	if(!pVictim || pVictim->IsBot() || !pVictim->IsHuman())
+		return;
+
+	if(!m_SurvivalState.KilledPlayers.Contains(Victim))
+	{
+		m_SurvivalState.KilledPlayers.Add(Victim);
+	}
 }
 
 int CInfClassGameController::GetClientIdForNewWitch() const
