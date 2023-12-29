@@ -6,7 +6,7 @@
 #include <engine/shared/config.h>
 #include <game/server/gamecontext.h>
 #include <game/server/infclass/classes/infcplayerclass.h>
-#include <game/server/infclass/damage_type.h>
+#include <game/infclass/damage_type.h>
 #include <game/server/infclass/infcgamecontroller.h>
 
 #include "infccharacter.h"

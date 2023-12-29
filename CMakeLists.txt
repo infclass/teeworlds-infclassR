@@ -727,6 +727,8 @@ set_glob(GAME_SHARED GLOB src/game
   gamecore.h
   infclass/classes.cpp
   infclass/classes.h
+  infclass/damage_type.cpp
+  infclass/damage_type.h
   layers.cpp
   layers.h
   mapitems.h
@@ -855,7 +857,6 @@ set_glob(GAME_SERVER GLOB_RECURSE src/game/server
   infclass/classes/infected/infected.cpp
   infclass/classes/infected/infected.h
   infclass/damage_context.h
-  infclass/damage_type.h
   infclass/death_context.h
   infclass/entities/biologist-laser.cpp
   infclass/entities/biologist-laser.h

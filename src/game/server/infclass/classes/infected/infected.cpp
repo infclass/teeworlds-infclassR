@@ -11,7 +11,7 @@
 #include <engine/shared/config.h>
 #include <game/server/gamecontext.h>
 #include <game/server/infclass/damage_context.h>
-#include <game/server/infclass/damage_type.h>
+#include <game/infclass/damage_type.h>
 #include <game/server/infclass/entities/infccharacter.h>
 #include <game/server/infclass/infcgamecontroller.h>
 #include <game/server/infclass/infcplayer.h>

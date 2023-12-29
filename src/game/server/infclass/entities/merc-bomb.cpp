@@ -5,7 +5,7 @@
 
 #include "merc-bomb.h"
 
-#include <game/server/infclass/damage_type.h>
+#include <game/infclass/damage_type.h>
 #include <game/server/infclass/infcgamecontroller.h>
 
 #include "growingexplosion.h"

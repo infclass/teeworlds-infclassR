@@ -5,7 +5,7 @@
 
 #include "infcentity.h"
 
-#include <game/server/infclass/damage_type.h>
+#include <game/infclass/damage_type.h>
 
 class CInfClassLaser : public CInfCEntity
 {

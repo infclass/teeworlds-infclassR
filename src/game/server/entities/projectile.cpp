@@ -5,7 +5,7 @@
 #include <game/generated/protocol.h>
 #include <game/server/gamecontext.h>
 
-#include <game/server/infclass/damage_type.h>
+#include <game/infclass/damage_type.h>
 #include <game/server/infclass/entities/growingexplosion.h>
 #include <game/server/infclass/entities/infccharacter.h>
 #include <game/server/infclass/infcgamecontroller.h>

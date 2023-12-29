@@ -8,7 +8,7 @@
 
 #include <game/server/gamecontext.h>
 #include <game/server/infclass/classes/infcplayerclass.h>
-#include <game/server/infclass/damage_type.h>
+#include <game/infclass/damage_type.h>
 #include <game/server/infclass/death_context.h>
 #include <game/server/infclass/entities/flyingpoint.h>
 #include <game/server/infclass/entities/infccharacter.h>
@@ -53,61 +53,6 @@ const char *toString(ERoundType RoundType)
 }
 
 template ERoundType fromString<ERoundType>(const char *pString);
-
-static const char *gs_aDamageTypeNames[] = {
-	"invalid",
-	"unused1",
-
-	"hammer",
-	"gun",
-	"shotgun",
-	"grenade",
-	"laser",
-	"ninja",
-
-	"sniper_rifle",
-	"scientist_laser",
-	"medic_shotgun",
-	"biologist_shotgun",
-	"looper_laser",
-	"mercenary_gun",
-	"mercenary_grenade",
-	"scientist_teleport",
-	"stunning_grenade",
-
-	"laser_wall",
-	"soldier_bomb",
-	"scientist_mine",
-	"biologist_mine",
-	"mercenary_bomb",
-	"white_hole",
-	"turret_destruction",
-	"turret_laser",
-	"turret_plasma",
-
-	"infection_hammer",
-	"bite",
-	"boomer_explosion",
-	"slug_slime",
-	"drying_hook",
-
-	"death_tile",
-	"infection_tile",
-
-	"game",
-	"kill_command",
-	"game_final_explosion",
-	"game_infection",
-
-	"no_damage",
-	"medic_revival",
-	"damage_tile",
-};
-
-const char *toString(EDamageType DamageType)
-{
-	return toStringImpl(DamageType, gs_aDamageTypeNames);
-}
 
 class CHintMessage
 {

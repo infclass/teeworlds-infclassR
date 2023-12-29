@@ -16,7 +16,7 @@
 #include <game/server/entities/projectile.h>
 
 #include <game/server/infclass/damage_context.h>
-#include <game/server/infclass/damage_type.h>
+#include <game/infclass/damage_type.h>
 #include <game/server/infclass/death_context.h>
 #include <game/server/infclass/entities/plasma.h>
 #include <game/server/infclass/entities/superweapon-indicator.h>
