@@ -10,10 +10,7 @@ class CInfClassCharacter;
 class CHeroFlag : public CInfCEntity
 {
 public:
-	enum
-	{
-		SHIELD_COUNT = 4,
-	};
+	static constexpr int ms_SHIELD_COUNT = 4;
 
 	static const int ms_PhysSize = 14;
 
@@ -33,7 +30,7 @@ public:
 
 private:
 	int m_SpawnTick = 0;
-	int m_IDs[SHIELD_COUNT];
+	int m_IDs[ms_SHIELD_COUNT];
 	bool m_HasSpawnPosition = false;
 };
 

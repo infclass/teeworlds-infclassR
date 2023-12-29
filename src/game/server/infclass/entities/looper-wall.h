@@ -8,11 +8,8 @@ class CLooperWall : public CPlacedObject
 public:
 	static int EntityId;
 
-	enum
-	{
-		THICKNESS = 17,
-		NUM_PARTICLES = 18,
-	};
+	static constexpr int NUM_PARTICLES = 18;
+
 public:
 	CLooperWall(CGameContext *pGameContext, vec2 Pos, int Owner);
 	~CLooperWall() override;

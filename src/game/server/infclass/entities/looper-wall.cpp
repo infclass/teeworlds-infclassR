@@ -16,6 +16,8 @@
 static const float g_BarrierMaxLength = 400.0;
 static const float g_BarrierRadius = 0.0;
 
+static constexpr float g_Thickness = 17.0f;
+
 int CLooperWall::EntityId = CGameWorld::ENTTYPE_LOOPER_WALL;
 
 CLooperWall::CLooperWall(CGameContext *pGameContext, vec2 Pos1, int Owner) :
@@ -153,7 +155,7 @@ void CLooperWall::Snap(int SnappingClient)
 		{
 			// draws the first two dots + the lasers
 			vec2 Pos = m_Pos;
-			Pos.x += CLooperWall::THICKNESS * 0.5 - CLooperWall::THICKNESS * i;
+			Pos.x += g_Thickness * 0.5 - g_Thickness * i;
 			GameServer()->SnapLaserObject(Context, m_IDs[i], Pos, Pos, m_SnapStartTick);
 		}
 		return;
@@ -163,7 +165,7 @@ void CLooperWall::Snap(int SnappingClient)
 	const bool AntiPing = pPlayer && pPlayer->GetAntiPingEnabled();
 	vec2 dirVec = vec2(m_Pos.x-m_Pos2.x, m_Pos.y-m_Pos2.y);
 	vec2 dirVecN = normalize(dirVec);
-	vec2 dirVecT = vec2(dirVecN.y * THICKNESS * 0.5f, -dirVecN.x * THICKNESS * 0.5f);
+	vec2 dirVecT = vec2(dirVecN.y * g_Thickness * 0.5f, -dirVecN.x * g_Thickness * 0.5f);
 
 	for(int i = 0; i < 2; i++)
 	{
@@ -189,8 +191,8 @@ void CLooperWall::Snap(int SnappingClient)
 		vec2 startPos = vec2(m_Pos2.x+dirVecT.x, m_Pos2.y+dirVecT.y);
 		dirVecT.x = -dirVecT.x*2.0f;
 		dirVecT.y = -dirVecT.y*2.0f;
-		
-		int particleCount = length(dirVec)/g_BarrierMaxLength*NUM_PARTICLES;
+
+		int particleCount = length(dirVec) / g_BarrierMaxLength * static_cast<float>(NUM_PARTICLES);
 		for(int i=0; i<particleCount; i++)
 		{
 			float fRandom1 = random_float();

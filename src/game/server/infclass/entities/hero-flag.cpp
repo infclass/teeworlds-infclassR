@@ -128,13 +128,13 @@ void CHeroFlag::Snap(int SnappingClient)
 	{
 		const float Speed = 0.1f;
 		float AngleStart = (2.0f * pi * Server()->Tick()/static_cast<float>(Server()->TickSpeed())) * Speed;
-		float AngleStep = 2.0f * pi / CHeroFlag::SHIELD_COUNT;
+		float AngleStep = 2.0f * pi / ms_SHIELD_COUNT;
 
 		const vec2 DecorationsPivot(m_Pos.x, m_Pos.y - 20);
 		const float Radius = 38;
 
 		CSnapContext Context(SnappingClientVersion);
-		for(int i=0; i<CHeroFlag::SHIELD_COUNT; i++)
+		for(int i = 0; i < ms_SHIELD_COUNT; i++)
 		{
 			vec2 PosStart = DecorationsPivot + vec2(cos(AngleStart + AngleStep*i), sin(AngleStart + AngleStep*i)) * Radius;
 			int Type = i % 2 == 0 ? POWERUP_ARMOR : POWERUP_HEALTH;

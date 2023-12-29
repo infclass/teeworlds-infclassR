@@ -110,7 +110,7 @@ void CMercenaryBomb::Snap(int SnappingClient)
 	}
 
 	float AngleStart = (2.0f * pi * Server()->Tick()/static_cast<float>(Server()->TickSpeed()))/10.0f;
-	float AngleStep = 2.0f * pi / CMercenaryBomb::NUM_SIDE;
+	float AngleStep = 2.0f * pi / static_cast<float>(CMercenaryBomb::NUM_SIDE);
 	float R = 50.0f * static_cast<float>(m_Load) / Config()->m_InfMercBombs;
 	for(int i = 0; i < CMercenaryBomb::NUM_SIDE; i++)
 	{
