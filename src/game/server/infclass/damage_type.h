@@ -65,6 +65,10 @@ enum class EDamageType
 	NO_DAMAGE, // Sometimes we need DAMAGE_TYPE for the API and INVALID value does not fit
 	MEDIC_REVIVAL,
 	DAMAGE_TILE,
+
+	COUNT = DAMAGE_TILE
 };
+
+const char *toString(EDamageType DamageType);
 
 #endif // INFCLASS_DAMAGE_TYPE_H
