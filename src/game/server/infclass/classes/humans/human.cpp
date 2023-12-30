@@ -1915,9 +1915,11 @@ void CInfClassHuman::PlaceTurret(WeaponFireContext *pFireContext)
 
 		GameServer()->CreateSound(GetPos(), SOUND_GRENADE_FIRE);
 		m_TurretCount--;
-		char aBuf[256];
-		str_format(aBuf, sizeof(aBuf), "placed turret, %i left", m_TurretCount);
-		GameServer()->SendChatTarget_Localization(GetCID(), CHATCATEGORY_SCORE, aBuf, NULL);
+		int TurretsNumber = m_TurretCount;
+		GameServer()->SendChatTarget_Localization_P(GetCID(), CHATCATEGORY_SCORE, TurretsNumber,
+			_P("Placed a turret, {int:TurretsNumber} turret left", "Placed a turret, {int:TurretsNumber} turrets left"),
+			"TurretsNumber", &TurretsNumber,
+			nullptr);
 	}
 	else
 	{
