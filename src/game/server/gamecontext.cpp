@@ -5060,6 +5060,12 @@ bool CGameContext::RateLimitPlayerVote(int ClientID)
 	int64_t TickSpeed = Server()->TickSpeed();
 	CPlayer *pPlayer = m_apPlayers[ClientID];
 
+	if(g_Config.m_SvRconVote && !Server()->GetAuthedState(ClientID))
+	{
+		SendChatTarget(ClientID, "You can only vote after logging in.");
+		return true;
+	}
+
 	if(g_Config.m_SvSpamprotection && pPlayer->m_LastVoteTry && pPlayer->m_LastVoteTry + TickSpeed * 3 > Now)
 		return true;
 
