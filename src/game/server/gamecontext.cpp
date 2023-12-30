@@ -5070,6 +5070,9 @@ bool CGameContext::RateLimitPlayerVote(int ClientID)
 		return true;
 	}
 
+	if(Server()->GetAuthedState(ClientID))
+		return false;
+
 	int TimeLeft = pPlayer->m_LastVoteCall + TickSpeed * g_Config.m_SvVoteDelay - Now;
 	if(pPlayer->m_LastVoteCall && TimeLeft > 0)
 	{
