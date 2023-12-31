@@ -9,6 +9,7 @@
 #define BASE_SYSTEM_H
 
 #include "detect.h"
+#include "types.h"
 
 #ifndef __USE_GNU
 #define __USE_GNU
@@ -22,6 +23,7 @@
 #include <ctime>
 #include <functional>
 #include <mutex>
+#include <optional>
 #include <string>
 
 #ifdef __MINGW32__
@@ -225,11 +227,7 @@ enum
 	IOSEEK_START = 0,
 	IOSEEK_CUR = 1,
 	IOSEEK_END = 2,
-
-	IO_MAX_PATH_LENGTH = 512,
 };
-
-typedef void *IOHANDLE;
 
 /**
  * Opens a file.
@@ -682,38 +680,10 @@ void *thread_init_and_detach(void (*threadfunc)(void *), void *user, const char 
 	THREAD_ANNOTATION_ATTRIBUTE__(no_thread_safety_analysis)
 
 /**
- * @defgroup Locks
- *
- * Synchronization primitives.
- *
+ * @defgroup Semaphore
  * @see Threads
  */
 
-typedef CAPABILITY("mutex") void *LOCK;
-
-/**
- * @ingroup Locks
- */
-LOCK lock_create();
-/**
- * @ingroup Locks
- */
-void lock_destroy(LOCK lock);
-
-/**
- * @ingroup Locks
- */
-int lock_trylock(LOCK lock) TRY_ACQUIRE(1, lock);
-/**
- * @ingroup Locks
- */
-void lock_wait(LOCK lock) ACQUIRE(lock);
-/**
- * @ingroup Locks
- */
-void lock_unlock(LOCK lock) RELEASE(lock);
-
-/* Group: Semaphores */
 #if defined(CONF_FAMILY_WINDOWS)
 typedef void *SEMAPHORE;
 #elif defined(CONF_PLATFORM_MACOS)
@@ -836,41 +806,11 @@ ETimeSeason time_season();
  * @defgroup Network-General
  */
 
-/**
- * @ingroup Network-General
- */
-typedef struct NETSOCKET_INTERNAL *NETSOCKET;
+extern const NETADDR NETADDR_ZEROED;
 
 /**
  * @ingroup Network-General
  */
-enum
-{
-	NETADDR_MAXSTRSIZE = 1 + (8 * 4 + 7) + 1 + 1 + 5 + 1, // [XXXX:XXXX:XXXX:XXXX:XXXX:XXXX:XXXX:XXXX]:XXXXX
-
-	NETTYPE_LINK_BROADCAST = 4,
-
-	NETTYPE_INVALID = 0,
-	NETTYPE_IPV4 = 1,
-	NETTYPE_IPV6 = 2,
-	NETTYPE_WEBSOCKET_IPV4 = 8,
-
-	NETTYPE_ALL = NETTYPE_IPV4 | NETTYPE_IPV6 | NETTYPE_WEBSOCKET_IPV4,
-	NETTYPE_MASK = NETTYPE_ALL | NETTYPE_LINK_BROADCAST,
-};
-
-/**
- * @ingroup Network-General
- */
-typedef struct NETADDR
-{
-	unsigned int type;
-	unsigned char ip[16];
-	unsigned short port;
-
-	bool operator==(const NETADDR &other) const;
-	bool operator!=(const NETADDR &other) const { return !(*this == other); }
-} NETADDR;
 
 #ifdef CONF_FAMILY_UNIX
 /**
@@ -1850,6 +1790,7 @@ enum
 	TIME_MINS,
 	TIME_HOURS_CENTISECS,
 	TIME_MINS_CENTISECS,
+	TIME_SECS_CENTISECS,
 };
 
 /*
@@ -1902,15 +1843,7 @@ void str_escape(char **dst, const char *src, const char *end);
  *
  * @remark The strings are treated as zero-terminated strings.
  */
-typedef int (*FS_LISTDIR_CALLBACK)(const char *name, int is_dir, int dir_type, void *user);
 void fs_listdir(const char *dir, FS_LISTDIR_CALLBACK cb, int type, void *user);
-
-typedef struct
-{
-	const char *m_pName;
-	time_t m_TimeCreated; // seconds since UNIX Epoch
-	time_t m_TimeModified; // seconds since UNIX Epoch
-} CFsFileInfo;
 
 /**
  * Lists the files and folders in a directory and gets additional file information.
@@ -1924,7 +1857,6 @@ typedef struct
  *
  * @remark The strings are treated as zero-terminated strings.
  */
-typedef int (*FS_LISTDIR_CALLBACK_FILEINFO)(const CFsFileInfo *info, int is_dir, int dir_type, void *user);
 void fs_listdir_fileinfo(const char *dir, FS_LISTDIR_CALLBACK_FILEINFO cb, int type, void *user);
 
 /**
@@ -2274,14 +2206,6 @@ int str_isallnum(const char *str);
 int str_isallnum_hex(const char *str);
 
 unsigned str_quickhash(const char *str);
-
-enum
-{
-	/**
-	 * The maximum bytes necessary to encode one Unicode codepoint with UTF-8.
-	 */
-	UTF8_BYTE_LENGTH = 4,
-};
 
 int str_utf8_to_skeleton(const char *str, int *buf, int buf_len);
 
@@ -2822,6 +2746,7 @@ public:
  * @return The argument as a wide character string.
  *
  * @remark The argument string must be zero-terminated.
+ * @remark Fails with assertion error if passed utf8 is invalid.
  */
 std::wstring windows_utf8_to_wide(const char *str);
 
@@ -2831,11 +2756,12 @@ std::wstring windows_utf8_to_wide(const char *str);
  *
  * @param wide_str The wide character string to convert.
  *
- * @return The argument as a utf8 encoded string.
+ * @return The argument as a utf8 encoded string, wrapped in an optional.
+ * The optional is empty, if the wide string contains invalid codepoints.
  *
  * @remark The argument string must be zero-terminated.
  */
-std::string windows_wide_to_utf8(const wchar_t *wide_str);
+std::optional<std::string> windows_wide_to_utf8(const wchar_t *wide_str);
 
 /**
  * This is a RAII wrapper to initialize/uninitialize the Windows COM library,

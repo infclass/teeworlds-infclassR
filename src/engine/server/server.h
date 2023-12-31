@@ -101,6 +101,16 @@ class CServer : public IServer
 	class IStorage *m_pStorage;
 	class IRegister *m_pRegister;
 
+#if defined(CONF_UPNP)
+	CUPnP m_UPnP;
+#endif
+
+#if defined(CONF_FAMILY_UNIX)
+	UNIXSOCKETADDR m_ConnLoggingDestAddr;
+	bool m_ConnLoggingSocketCreated;
+	UNIXSOCKET m_ConnLoggingSocket;
+#endif
+
 	class CDbConnectionPool *m_pConnectionPool;
 
 public:
@@ -254,6 +264,13 @@ public:
 		NUM_MAP_TYPES
 	};
 
+	enum
+	{
+		RECORDER_MANUAL = MAX_CLIENTS,
+		RECORDER_AUTO = MAX_CLIENTS + 1,
+		NUM_RECORDERS = MAX_CLIENTS + 2,
+	};
+
 	char m_aPreviousMap[IO_MAX_PATH_LENGTH];
 	char m_aCurrentMap[IO_MAX_PATH_LENGTH];
 	SHA256_DIGEST m_aCurrentMapSha256[NUM_MAP_TYPES];
@@ -261,13 +278,10 @@ public:
 	unsigned char *m_apCurrentMapData[NUM_MAP_TYPES];
 	unsigned int m_aCurrentMapSize[NUM_MAP_TYPES];
 
-	CDemoRecorder m_aDemoRecorder[MAX_CLIENTS + 1];
+	CDemoRecorder m_aDemoRecorder[NUM_RECORDERS];
 
-	bool m_ServerInfoHighLoad;
 	int64_t m_ServerInfoFirstRequest;
 	int m_ServerInfoNumRequests;
-	int64_t m_ServerInfoRequestLogTick;
-	int m_ServerInfoRequestLogRecords;
 
 	char m_aErrorShutdownReason[128];
 
@@ -276,6 +290,9 @@ public:
 	size_t m_AnnouncementLastLine;
 	std::vector<std::string> m_vAnnouncements;
 	char m_aAnnouncementFile[IO_MAX_PATH_LENGTH];
+
+	std::shared_ptr<ILogger> m_pFileLogger = nullptr;
+	std::shared_ptr<ILogger> m_pStdoutLogger = nullptr;
 
 	CServer();
 	~CServer();
@@ -432,6 +449,19 @@ public:
 
 	void LogoutClient(int ClientID, const char *pReason);
 
+	void ConchainRconPasswordChangeGeneric(int Level, const char *pCurrent, IConsole::IResult *pResult);
+	static void ConchainRconPasswordChange(IConsole::IResult *pResult, void *pUserData, IConsole::FCommandCallback pfnCallback, void *pCallbackUserData);
+	static void ConchainRconModPasswordChange(IConsole::IResult *pResult, void *pUserData, IConsole::FCommandCallback pfnCallback, void *pCallbackUserData);
+	static void ConchainRconHelperPasswordChange(IConsole::IResult *pResult, void *pUserData, IConsole::FCommandCallback pfnCallback, void *pCallbackUserData);
+	static void ConchainMapUpdate(IConsole::IResult *pResult, void *pUserData, IConsole::FCommandCallback pfnCallback, void *pCallbackUserData);
+	static void ConchainSixupUpdate(IConsole::IResult *pResult, void *pUserData, IConsole::FCommandCallback pfnCallback, void *pCallbackUserData);
+	static void ConchainLoglevel(IConsole::IResult *pResult, void *pUserData, IConsole::FCommandCallback pfnCallback, void *pCallbackUserData);
+	static void ConchainStdoutOutputLevel(IConsole::IResult *pResult, void *pUserData, IConsole::FCommandCallback pfnCallback, void *pCallbackUserData);
+
+#if defined(CONF_FAMILY_UNIX)
+	static void ConchainConnLoggingServerChange(IConsole::IResult *pResult, void *pUserData, IConsole::FCommandCallback pfnCallback, void *pCallbackUserData);
+#endif
+
 	void RegisterCommands();
 
 	int SnapNewID() override;
@@ -460,6 +490,17 @@ public:
 
 	bool IsSixup(int ClientID) const override { return ClientID != SERVER_DEMO_CLIENT && m_aClients[ClientID].m_Sixup; }
 
+	void SetLoggers(std::shared_ptr<ILogger> &&pFileLogger, std::shared_ptr<ILogger> &&pStdoutLogger);
+
+#ifdef CONF_FAMILY_UNIX
+	enum CONN_LOGGING_CMD
+		{
+			OPEN_SESSION = 1,
+			CLOSE_SESSION = 2,
+		};
+
+	void SendConnLoggingCommand(CONN_LOGGING_CMD Cmd, const NETADDR *pAddr);
+#endif
 /* INFECTION MODIFICATION START ***************************************/
 public:
 	int GetClientInfclassVersion(int ClientID) const override;

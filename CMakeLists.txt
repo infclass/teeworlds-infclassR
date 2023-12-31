@@ -603,7 +603,7 @@ set(BASE
   src/base/hash_ctxt.h
   src/base/hash_libtomcrypt.cpp
   src/base/hash_openssl.cpp
-  src/base/lock_scope.h
+  src/base/lock.h
   src/base/log.cpp
   src/base/log.h
   src/base/logger.h
@@ -652,6 +652,8 @@ set_glob(ENGINE_INTERFACE GLOB src/engine
   warning.h
 )
 set_glob(ENGINE_SHARED GLOB src/engine/shared
+  assertion_logger.cpp
+  assertion_logger.h
   compression.cpp
   compression.h
   config.cpp

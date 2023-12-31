@@ -7,6 +7,8 @@
 #include <base/color.h>
 #include <engine/storage.h>
 
+#include <memory>
+
 static const ColorRGBA gs_ConsoleDefaultColor(1, 1, 1, 1);
 
 enum LEVEL : char;
@@ -123,13 +125,16 @@ public:
 	virtual void ResetServerGameSettings() = 0;
 
 	static LEVEL ToLogLevel(int ConsoleLevel);
+	static int ToLogLevelFilter(int ConsoleLevel);
 
 	// DDRace
 
-	bool m_Cheated;
+	virtual bool Cheated() const = 0;
+
+	virtual int FlagMask() const = 0;
 	virtual void SetFlagMask(int FlagMask) = 0;
 };
 
-extern IConsole *CreateConsole(int FlagMask);
+std::unique_ptr<IConsole> CreateConsole(int FlagMask);
 
 #endif // FILE_ENGINE_CONSOLE_H

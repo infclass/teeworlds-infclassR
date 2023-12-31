@@ -22,7 +22,7 @@ int main(int argc, const char **argv)
 
 	IStorage *pStorage = CreateLocalStorage();
 	IEngineMap *pMap = CreateEngineMap();
-	IConsole *pConsole = CreateConsole(0);
+	IConsole *pConsole = CreateConsole(0).release();
 
 	if(!pStorage)
 	{

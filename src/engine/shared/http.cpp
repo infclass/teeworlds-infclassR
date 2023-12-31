@@ -17,7 +17,7 @@
 
 // TODO: Non-global pls?
 static CURLSH *gs_pShare;
-static LOCK gs_aLocks[CURL_LOCK_DATA_LAST + 1];
+static CLock gs_aLocks[CURL_LOCK_DATA_LAST + 1];
 static bool gs_Initialized = false;
 
 static int GetLockIndex(int Data)
@@ -34,14 +34,14 @@ static void CurlLock(CURL *pHandle, curl_lock_data Data, curl_lock_access Access
 	(void)pHandle;
 	(void)Access;
 	(void)pUser;
-	lock_wait(gs_aLocks[GetLockIndex(Data)]);
+	gs_aLocks[GetLockIndex(Data)].lock();
 }
 
 static void CurlUnlock(CURL *pHandle, curl_lock_data Data, void *pUser) RELEASE(gs_aLocks[GetLockIndex(Data)])
 {
 	(void)pHandle;
 	(void)pUser;
-	lock_unlock(gs_aLocks[GetLockIndex(Data)]);
+	gs_aLocks[GetLockIndex(Data)].unlock();
 }
 
 int CurlDebug(CURL *pHandle, curl_infotype Type, char *pData, size_t DataSize, void *pUser)
@@ -88,13 +88,8 @@ bool HttpInit(IStorage *pStorage)
 		dbg_msg("http", "libcurl version %s (compiled = " LIBCURL_VERSION ")", pVersion->version);
 	}
 
-	for(auto &Lock : gs_aLocks)
-	{
-		Lock = lock_create();
-	}
 	curl_share_setopt(gs_pShare, CURLSHOPT_SHARE, CURL_LOCK_DATA_DNS);
 	curl_share_setopt(gs_pShare, CURLSHOPT_SHARE, CURL_LOCK_DATA_SSL_SESSION);
-	curl_share_setopt(gs_pShare, CURLSHOPT_SHARE, CURL_LOCK_DATA_CONNECT);
 	curl_share_setopt(gs_pShare, CURLSHOPT_LOCKFUNC, CurlLock);
 	curl_share_setopt(gs_pShare, CURLSHOPT_UNLOCKFUNC, CurlUnlock);
 
@@ -126,6 +121,7 @@ bool HttpHasIpresolveBug()
 CHttpRequest::CHttpRequest(const char *pUrl)
 {
 	str_copy(m_aUrl, pUrl);
+	sha256_init(&m_ActualSha256);
 }
 
 CHttpRequest::~CHttpRequest()
@@ -315,6 +311,9 @@ size_t CHttpRequest::OnData(char *pData, size_t DataSize)
 	{
 		return 0;
 	}
+
+	sha256_update(&m_ActualSha256, pData, DataSize);
+
 	if(!m_WriteToFile)
 	{
 		if(DataSize == 0)
@@ -361,6 +360,23 @@ int CHttpRequest::OnCompletion(int State)
 {
 	if(m_Abort)
 		State = HTTP_ABORTED;
+
+	if(State == HTTP_DONE && m_ExpectedSha256 != SHA256_ZEROED)
+	{
+		const SHA256_DIGEST ActualSha256 = sha256_finish(&m_ActualSha256);
+		if(ActualSha256 != m_ExpectedSha256)
+		{
+			if(g_Config.m_DbgCurl || m_LogProgress >= HTTPLOG::FAILURE)
+			{
+				char aActualSha256[SHA256_MAXSTRSIZE];
+				sha256_str(ActualSha256, aActualSha256, sizeof(aActualSha256));
+				char aExpectedSha256[SHA256_MAXSTRSIZE];
+				sha256_str(m_ExpectedSha256, aExpectedSha256, sizeof(aExpectedSha256));
+				dbg_msg("http", "SHA256 mismatch: got=%s, expected=%s, url=%s", aActualSha256, aExpectedSha256, m_aUrl);
+			}
+			State = HTTP_ERROR;
+		}
+	}
 
 	if(m_WriteToFile)
 	{

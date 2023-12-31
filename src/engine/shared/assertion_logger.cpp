@@ -1,36 +1,40 @@
 #include "assertion_logger.h"
 
+#include <base/lock.h>
 #include <base/logger.h>
 #include <base/system.h>
+
 #include <engine/shared/ringbuffer.h>
 #include <engine/storage.h>
 
-#include <mutex>
-
 class CAssertionLogger : public ILogger
 {
-	void Dump();
-
 	struct SDebugMessageItem
 	{
 		char m_aMessage[1024];
 	};
 
-	std::mutex m_DbgMessageMutex;
+	CLock m_DbgMessageMutex;
 	CStaticRingBuffer<SDebugMessageItem, sizeof(SDebugMessageItem) * 64, CRingBufferBase::FLAG_RECYCLE> m_DbgMessages;
 
 	char m_aAssertLogPath[IO_MAX_PATH_LENGTH];
 	char m_aGameName[256];
 
+	void Dump() REQUIRES(!m_DbgMessageMutex);
+
 public:
 	CAssertionLogger(const char *pAssertLogPath, const char *pGameName);
-	void Log(const CLogMessage *pMessage) override;
-	void GlobalFinish() override;
+	void Log(const CLogMessage *pMessage) override REQUIRES(!m_DbgMessageMutex);
+	void GlobalFinish() override REQUIRES(!m_DbgMessageMutex);
 };
 
 void CAssertionLogger::Log(const CLogMessage *pMessage)
 {
-	std::unique_lock<std::mutex> Lock(m_DbgMessageMutex);
+	if(m_Filter.Filters(pMessage))
+	{
+		return;
+	}
+	const CLockScope LockScope(m_DbgMessageMutex);
 	SDebugMessageItem *pMsgItem = (SDebugMessageItem *)m_DbgMessages.Allocate(sizeof(SDebugMessageItem));
 	str_copy(pMsgItem->m_aMessage, pMessage->m_aLine);
 }
@@ -48,8 +52,8 @@ void CAssertionLogger::Dump()
 	char aAssertLogFile[IO_MAX_PATH_LENGTH];
 	char aDate[64];
 	str_timestamp(aDate, sizeof(aDate));
-	str_format(aAssertLogFile, std::size(aAssertLogFile), "%s%s_assert_log_%d_%s.txt", m_aAssertLogPath, m_aGameName, pid(), aDate);
-	std::unique_lock<std::mutex> Lock(m_DbgMessageMutex);
+	str_format(aAssertLogFile, std::size(aAssertLogFile), "%s%s_assert_log_%s_%d.txt", m_aAssertLogPath, m_aGameName, aDate, pid());
+	const CLockScope LockScope(m_DbgMessageMutex);
 	IOHANDLE FileHandle = io_open(aAssertLogFile, IOFLAG_WRITE);
 	if(FileHandle)
 	{

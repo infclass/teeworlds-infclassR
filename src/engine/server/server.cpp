@@ -308,6 +308,30 @@ void CServerBan::ConBanRegionRange(IConsole::IResult *pResult, void *pUser)
 	ConBanRange(pResult, static_cast<CNetBan *>(pServerBan));
 }
 
+// Not thread-safe!
+class CRconClientLogger : public ILogger
+{
+	CServer *m_pServer;
+	int m_ClientID;
+
+public:
+	CRconClientLogger(CServer *pServer, int ClientID) :
+		m_pServer(pServer),
+		m_ClientID(ClientID)
+	{
+	}
+	void Log(const CLogMessage *pMessage) override;
+};
+
+void CRconClientLogger::Log(const CLogMessage *pMessage)
+{
+	if(m_Filter.Filters(pMessage))
+	{
+		return;
+	}
+	m_pServer->SendRconLogLine(m_ClientID, pMessage);
+}
+
 void CServer::CClient::Reset(bool ResetScore)
 {
 	// reset input
@@ -382,10 +406,11 @@ CServer::CServer()
 
 	m_ServerInfoFirstRequest = 0;
 	m_ServerInfoNumRequests = 0;
-	m_ServerInfoHighLoad = false;
+	m_ServerInfoNeedsUpdate = false;
 
-	m_ServerInfoRequestLogTick = 0;
-	m_ServerInfoRequestLogRecords = 0;
+#ifdef CONF_FAMILY_UNIX
+	m_ConnLoggingSocketCreated = false;
+#endif
 
 	m_pConnectionPool = new CDbConnectionPool();
 	m_pRegister = nullptr;
@@ -1886,7 +1911,7 @@ void CServer::ProcessClientPacket(CNetChunk *pPacket)
 			{
 				char aBuf[256];
 				str_format(aBuf, sizeof(aBuf), "ClientID=%d rcon='%s'", ClientID, pCmd);
-				Console()->Print(IConsole::OUTPUT_LEVEL_ADDINFO, "server", aBuf);
+				Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "server", aBuf);
 				m_RconClientID = ClientID;
 				m_RconAuthLevel = m_aClients[ClientID].m_Authed;
 				switch(m_aClients[ClientID].m_Authed)
@@ -1899,8 +1924,12 @@ void CServer::ProcessClientPacket(CNetChunk *pPacket)
 						break;
 					default:
 						Console()->SetAccessLevel(IConsole::ACCESS_LEVEL_USER);
-				}	
-				Console()->ExecuteLineFlag(pCmd, CFGFLAG_SERVER, ClientID, false);
+				}
+				{
+					CRconClientLogger Logger(this, ClientID);
+					CLogScope Scope(&Logger);
+					Console()->ExecuteLineFlag(pCmd, CFGFLAG_SERVER, ClientID);
+				}
 				Console()->SetAccessLevel(IConsole::ACCESS_LEVEL_ADMIN);
 				m_RconClientID = IServer::RCON_CID_SERV;
 				m_RconAuthLevel = AUTHED_ADMIN;
@@ -3820,6 +3849,97 @@ void CServer::LogoutClient(int ClientID, const char *pReason)
 	Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "server", aBuf);
 }
 
+void CServer::ConchainRconPasswordChangeGeneric(int Level, const char *pCurrent, IConsole::IResult *pResult)
+{
+}
+
+void CServer::ConchainRconPasswordChange(IConsole::IResult *pResult, void *pUserData, IConsole::FCommandCallback pfnCallback, void *pCallbackUserData)
+{
+	CServer *pThis = static_cast<CServer *>(pUserData);
+	pThis->ConchainRconPasswordChangeGeneric(AUTHED_ADMIN, pThis->Config()->m_SvRconPassword, pResult);
+	pfnCallback(pResult, pCallbackUserData);
+}
+
+void CServer::ConchainRconModPasswordChange(IConsole::IResult *pResult, void *pUserData, IConsole::FCommandCallback pfnCallback, void *pCallbackUserData)
+{
+	CServer *pThis = static_cast<CServer *>(pUserData);
+	pThis->ConchainRconPasswordChangeGeneric(AUTHED_MOD, pThis->Config()->m_SvRconModPassword, pResult);
+	pfnCallback(pResult, pCallbackUserData);
+}
+
+void CServer::ConchainRconHelperPasswordChange(IConsole::IResult *pResult, void *pUserData, IConsole::FCommandCallback pfnCallback, void *pCallbackUserData)
+{
+	CServer *pThis = static_cast<CServer *>(pUserData);
+	pThis->ConchainRconPasswordChangeGeneric(AUTHED_HELPER, pThis->Config()->m_SvRconHelperPassword, pResult);
+	pfnCallback(pResult, pCallbackUserData);
+}
+
+void CServer::ConchainMapUpdate(IConsole::IResult *pResult, void *pUserData, IConsole::FCommandCallback pfnCallback, void *pCallbackUserData)
+{
+	pfnCallback(pResult, pCallbackUserData);
+	if(pResult->NumArguments() >= 1)
+	{
+		CServer *pThis = static_cast<CServer *>(pUserData);
+		pThis->m_MapReload = str_comp(pThis->Config()->m_SvMap, pThis->m_aCurrentMap) != 0;
+	}
+}
+
+void CServer::ConchainSixupUpdate(IConsole::IResult *pResult, void *pUserData, IConsole::FCommandCallback pfnCallback, void *pCallbackUserData)
+{
+	pfnCallback(pResult, pCallbackUserData);
+	CServer *pThis = static_cast<CServer *>(pUserData);
+	if(pResult->NumArguments() >= 1 && pThis->m_aCurrentMap[0] != '\0')
+		pThis->m_MapReload |= (pThis->m_apCurrentMapData[MAP_TYPE_SIXUP] != 0) != (pResult->GetInteger(0) != 0);
+}
+
+void CServer::ConchainLoglevel(IConsole::IResult *pResult, void *pUserData, IConsole::FCommandCallback pfnCallback, void *pCallbackUserData)
+{
+	CServer *pSelf = (CServer *)pUserData;
+	pfnCallback(pResult, pCallbackUserData);
+	if(pResult->NumArguments())
+	{
+		pSelf->m_pFileLogger->SetFilter(CLogFilter{IConsole::ToLogLevelFilter(g_Config.m_Loglevel)});
+	}
+}
+
+void CServer::ConchainStdoutOutputLevel(IConsole::IResult *pResult, void *pUserData, IConsole::FCommandCallback pfnCallback, void *pCallbackUserData)
+{
+	CServer *pSelf = (CServer *)pUserData;
+	pfnCallback(pResult, pCallbackUserData);
+	if(pResult->NumArguments() && pSelf->m_pStdoutLogger)
+	{
+		pSelf->m_pStdoutLogger->SetFilter(CLogFilter{IConsole::ToLogLevelFilter(g_Config.m_StdoutOutputLevel)});
+	}
+}
+
+#if defined(CONF_FAMILY_UNIX)
+void CServer::ConchainConnLoggingServerChange(IConsole::IResult *pResult, void *pUserData, IConsole::FCommandCallback pfnCallback, void *pCallbackUserData)
+{
+	pfnCallback(pResult, pCallbackUserData);
+	if(pResult->NumArguments() == 1)
+	{
+		CServer *pServer = (CServer *)pUserData;
+
+		// open socket to send new connections
+		if(!pServer->m_ConnLoggingSocketCreated)
+		{
+			pServer->m_ConnLoggingSocket = net_unix_create_unnamed();
+			if(pServer->m_ConnLoggingSocket == -1)
+			{
+				pServer->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "server", "Failed to created socket for communication with the connection logging server.");
+			}
+			else
+			{
+				pServer->m_ConnLoggingSocketCreated = true;
+			}
+		}
+
+		// set the destination address for the connection logging
+		net_unix_set_addr(&pServer->m_ConnLoggingDestAddr, pResult->GetString(0));
+	}
+}
+#endif
+
 void CServer::RegisterCommands()
 {
 	m_pConsole = Kernel()->RequestInterface<IConsole>();
@@ -5699,4 +5819,10 @@ bool CServer::SetTimedOut(int ClientID, int OrigID)
 void CServer::SetErrorShutdown(const char *pReason)
 {
 	str_copy(m_aErrorShutdownReason, pReason);
+}
+
+void CServer::SetLoggers(std::shared_ptr<ILogger> &&pFileLogger, std::shared_ptr<ILogger> &&pStdoutLogger)
+{
+	m_pFileLogger = pFileLogger;
+	m_pStdoutLogger = pStdoutLogger;
 }

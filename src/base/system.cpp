@@ -12,10 +12,9 @@
 #include <iterator> // std::size
 #include <string_view>
 
-#include "system.h"
-
-#include "lock_scope.h"
+#include "lock.h"
 #include "logger.h"
+#include "system.h"
 
 #include <sys/types.h>
 
@@ -112,8 +111,8 @@ IOHANDLE io_current_exe()
 	{
 		return 0;
 	}
-	const std::string path = windows_wide_to_utf8(wide_path);
-	return io_open(path.c_str(), IOFLAG_READ);
+	const std::optional<std::string> path = windows_wide_to_utf8(wide_path);
+	return path.has_value() ? io_open(path.value().c_str(), IOFLAG_READ) : 0;
 #elif defined(CONF_PLATFORM_MACOS)
 	char path[IO_MAX_PATH_LENGTH];
 	uint32_t path_size = sizeof(path);
@@ -467,10 +466,9 @@ int io_sync(IOHANDLE io)
 #define ASYNC_BUFSIZE (8 * 1024)
 #define ASYNC_LOCAL_BUFSIZE (64 * 1024)
 
-// TODO: Use Thread Safety Analysis when this file is converted to C++
 struct ASYNCIO
 {
-	LOCK lock;
+	CLock lock;
 	IOHANDLE io;
 	SEMAPHORE sphore;
 	void *thread;
@@ -523,13 +521,12 @@ static void aio_handle_free_and_unlock(ASYNCIO *aio) RELEASE(aio->lock)
 	aio->refcount--;
 
 	do_free = aio->refcount == 0;
-	lock_unlock(aio->lock);
+	aio->lock.unlock();
 	if(do_free)
 	{
 		free(aio->buffer);
 		sphore_destroy(&aio->sphore);
-		lock_destroy(aio->lock);
-		free(aio);
+		delete aio;
 	}
 }
 
@@ -537,7 +534,7 @@ static void aio_thread(void *user)
 {
 	ASYNCIO *aio = (ASYNCIO *)user;
 
-	lock_wait(aio->lock);
+	aio->lock.lock();
 	while(true)
 	{
 		struct BUFFERS buffers;
@@ -556,9 +553,9 @@ static void aio_thread(void *user)
 				aio_handle_free_and_unlock(aio);
 				break;
 			}
-			lock_unlock(aio->lock);
+			aio->lock.unlock();
 			sphore_wait(&aio->sphore);
-			lock_wait(aio->lock);
+			aio->lock.lock();
 			continue;
 		}
 
@@ -582,26 +579,25 @@ static void aio_thread(void *user)
 			}
 		}
 		aio->read_pos = (aio->read_pos + buffers.len1 + buffers.len2) % aio->buffer_size;
-		lock_unlock(aio->lock);
+		aio->lock.unlock();
 
 		io_write(aio->io, local_buffer, local_buffer_len);
 		io_flush(aio->io);
 		result_io_error = io_error(aio->io);
 
-		lock_wait(aio->lock);
+		aio->lock.lock();
 		aio->error = result_io_error;
 	}
 }
 
 ASYNCIO *aio_new(IOHANDLE io)
 {
-	ASYNCIO *aio = (ASYNCIO *)malloc(sizeof(*aio));
+	ASYNCIO *aio = new ASYNCIO;
 	if(!aio)
 	{
 		return 0;
 	}
 	aio->io = io;
-	aio->lock = lock_create();
 	sphore_init(&aio->sphore);
 	aio->thread = 0;
 
@@ -609,8 +605,7 @@ ASYNCIO *aio_new(IOHANDLE io)
 	if(!aio->buffer)
 	{
 		sphore_destroy(&aio->sphore);
-		lock_destroy(aio->lock);
-		free(aio);
+		delete aio;
 		return 0;
 	}
 	aio->buffer_size = ASYNC_BUFSIZE;
@@ -625,8 +620,7 @@ ASYNCIO *aio_new(IOHANDLE io)
 	{
 		free(aio->buffer);
 		sphore_destroy(&aio->sphore);
-		lock_destroy(aio->lock);
-		free(aio);
+		delete aio;
 		return 0;
 	}
 	return aio;
@@ -655,12 +649,12 @@ static unsigned int next_buffer_size(unsigned int cur_size, unsigned int need_si
 
 void aio_lock(ASYNCIO *aio) ACQUIRE(aio->lock)
 {
-	lock_wait(aio->lock);
+	aio->lock.lock();
 }
 
 void aio_unlock(ASYNCIO *aio) RELEASE(aio->lock)
 {
-	lock_unlock(aio->lock);
+	aio->lock.unlock();
 	sphore_signal(&aio->sphore);
 }
 
@@ -745,7 +739,7 @@ int aio_error(ASYNCIO *aio)
 
 void aio_free(ASYNCIO *aio)
 {
-	lock_wait(aio->lock);
+	aio->lock.lock();
 	if(aio->thread)
 	{
 		thread_detach(aio->thread);
@@ -880,98 +874,6 @@ void *thread_init_and_detach(void (*threadfunc)(void *), void *u, const char *na
 	return thread;
 }
 
-#if defined(CONF_FAMILY_UNIX)
-typedef pthread_mutex_t LOCKINTERNAL;
-#elif defined(CONF_FAMILY_WINDOWS)
-typedef CRITICAL_SECTION LOCKINTERNAL;
-#else
-#error not implemented on this platform
-#endif
-
-LOCK lock_create()
-{
-	LOCKINTERNAL *lock = (LOCKINTERNAL *)malloc(sizeof(*lock));
-#if defined(CONF_FAMILY_UNIX)
-	int result;
-#endif
-
-	if(!lock)
-		return 0;
-
-#if defined(CONF_FAMILY_UNIX)
-	result = pthread_mutex_init(lock, 0x0);
-	if(result != 0)
-	{
-		dbg_msg("lock", "init failed: %d", result);
-		free(lock);
-		return 0;
-	}
-#elif defined(CONF_FAMILY_WINDOWS)
-	InitializeCriticalSection((LPCRITICAL_SECTION)lock);
-#else
-#error not implemented on this platform
-#endif
-	return (LOCK)lock;
-}
-
-void lock_destroy(LOCK lock)
-{
-#if defined(CONF_FAMILY_UNIX)
-	int result = pthread_mutex_destroy((LOCKINTERNAL *)lock);
-	if(result != 0)
-		dbg_msg("lock", "destroy failed: %d", result);
-#elif defined(CONF_FAMILY_WINDOWS)
-	DeleteCriticalSection((LPCRITICAL_SECTION)lock);
-#else
-#error not implemented on this platform
-#endif
-	free(lock);
-}
-
-int lock_trylock(LOCK lock)
-{
-#if defined(CONF_FAMILY_UNIX)
-	return pthread_mutex_trylock((LOCKINTERNAL *)lock);
-#elif defined(CONF_FAMILY_WINDOWS)
-	return !TryEnterCriticalSection((LPCRITICAL_SECTION)lock);
-#else
-#error not implemented on this platform
-#endif
-}
-
-#ifdef __clang__
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wthread-safety-analysis"
-#endif
-void lock_wait(LOCK lock)
-{
-#if defined(CONF_FAMILY_UNIX)
-	int result = pthread_mutex_lock((LOCKINTERNAL *)lock);
-	if(result != 0)
-		dbg_msg("lock", "lock failed: %d", result);
-#elif defined(CONF_FAMILY_WINDOWS)
-	EnterCriticalSection((LPCRITICAL_SECTION)lock);
-#else
-#error not implemented on this platform
-#endif
-}
-
-void lock_unlock(LOCK lock)
-{
-#if defined(CONF_FAMILY_UNIX)
-	int result = pthread_mutex_unlock((LOCKINTERNAL *)lock);
-	if(result != 0)
-		dbg_msg("lock", "unlock failed: %d", result);
-#elif defined(CONF_FAMILY_WINDOWS)
-	LeaveCriticalSection((LPCRITICAL_SECTION)lock);
-#else
-#error not implemented on this platform
-#endif
-}
-#ifdef __clang__
-#pragma clang diagnostic pop
-#endif
-
 #if defined(CONF_FAMILY_WINDOWS)
 void sphore_init(SEMAPHORE *sem)
 {
@@ -1063,6 +965,9 @@ int64_t time_freq()
 }
 
 /* -----  network ----- */
+
+const NETADDR NETADDR_ZEROED = {NETTYPE_INVALID, {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, 0};
+
 static void netaddr_to_sockaddr_in(const NETADDR *src, struct sockaddr_in *dest)
 {
 	mem_zero(dest, sizeof(struct sockaddr_in));
@@ -1556,9 +1461,9 @@ std::string windows_format_system_message(unsigned long error)
 	if(FormatMessageW(flags, NULL, error, 0, (LPWSTR)&wide_message, 0, NULL) == 0)
 		return "unknown error";
 
-	std::string message = windows_wide_to_utf8(wide_message);
+	std::optional<std::string> message = windows_wide_to_utf8(wide_message);
 	LocalFree(wide_message);
-	return message;
+	return message.value_or("(invalid UTF-16 in error message)");
 }
 #endif
 
@@ -2312,8 +2217,14 @@ int fs_storage_path(const char *appname, char *path, int max)
 		path[0] = '\0';
 		return -1;
 	}
-	const std::string home = windows_wide_to_utf8(wide_home);
-	str_format(path, max, "%s/%s", home.c_str(), appname);
+	const std::optional<std::string> home = windows_wide_to_utf8(wide_home);
+	if(!home.has_value())
+	{
+		log_error("filesystem", "ERROR: the APPDATA environment variable contains invalid UTF-16");
+		path[0] = '\0';
+		return -1;
+	}
+	str_format(path, max, "%s/%s", home.value().c_str(), appname);
 	return 0;
 #else
 	char *home = getenv("HOME");
@@ -2486,8 +2397,13 @@ char *fs_getcwd(char *buffer, int buffer_size)
 		buffer[0] = '\0';
 		return nullptr;
 	}
-	const std::string current_dir = windows_wide_to_utf8(wide_current_dir.c_str());
-	str_copy(buffer, current_dir.c_str(), buffer_size);
+	const std::optional<std::string> current_dir = windows_wide_to_utf8(wide_current_dir.c_str());
+	if(!current_dir.has_value())
+	{
+		buffer[0] = '\0';
+		return nullptr;
+	}
+	str_copy(buffer, current_dir.value().c_str(), buffer_size);
 	return buffer;
 #else
 	char *result = getcwd(buffer, buffer_size);
@@ -3553,8 +3469,12 @@ int str_time(int64_t centisecs, int format, char *buffer, int buffer_size)
 				(centisecs % hour) / min, (centisecs % min) / sec, centisecs % sec);
 		[[fallthrough]];
 	case TIME_MINS_CENTISECS:
-		return str_format(buffer, buffer_size, "%02" PRId64 ":%02" PRId64 ".%02" PRId64, centisecs / min,
-			(centisecs % min) / sec, centisecs % sec);
+		if(centisecs >= min)
+			return str_format(buffer, buffer_size, "%02" PRId64 ":%02" PRId64 ".%02" PRId64, centisecs / min,
+				(centisecs % min) / sec, centisecs % sec);
+		[[fallthrough]];
+	case TIME_SECS_CENTISECS:
+		return str_format(buffer, buffer_size, "%02" PRId64 ".%02" PRId64, (centisecs % min) / sec, centisecs % sec);
 	}
 
 	return -1;
@@ -4520,8 +4440,9 @@ void os_locale_str(char *locale, size_t length)
 	wchar_t wide_buffer[LOCALE_NAME_MAX_LENGTH];
 	dbg_assert(GetUserDefaultLocaleName(wide_buffer, std::size(wide_buffer)) > 0, "GetUserDefaultLocaleName failure");
 
-	const std::string buffer = windows_wide_to_utf8(wide_buffer);
-	str_copy(locale, buffer.c_str(), length);
+	const std::optional<std::string> buffer = windows_wide_to_utf8(wide_buffer);
+	dbg_assert(buffer.has_value(), "GetUserDefaultLocaleName returned invalid UTF-16");
+	str_copy(locale, buffer.value().c_str(), length);
 #elif defined(CONF_PLATFORM_MACOS)
 	CFLocaleRef locale_ref = CFLocaleCopyCurrent();
 	CFStringRef locale_identifier_ref = static_cast<CFStringRef>(CFLocaleGetValue(locale_ref, kCFLocaleIdentifier));
@@ -4646,20 +4567,23 @@ std::wstring windows_utf8_to_wide(const char *str)
 	const int orig_length = str_length(str);
 	if(orig_length == 0)
 		return L"";
-	const int size_needed = MultiByteToWideChar(CP_UTF8, 0, str, orig_length, nullptr, 0);
+	const int size_needed = MultiByteToWideChar(CP_UTF8, MB_ERR_INVALID_CHARS, str, orig_length, nullptr, 0);
+	dbg_assert(size_needed > 0, "Invalid UTF-8 passed to windows_utf8_to_wide");
 	std::wstring wide_string(size_needed, L'\0');
-	dbg_assert(MultiByteToWideChar(CP_UTF8, 0, str, orig_length, wide_string.data(), size_needed) == size_needed, "MultiByteToWideChar failure");
+	dbg_assert(MultiByteToWideChar(CP_UTF8, MB_ERR_INVALID_CHARS, str, orig_length, wide_string.data(), size_needed) == size_needed, "MultiByteToWideChar failure");
 	return wide_string;
 }
 
-std::string windows_wide_to_utf8(const wchar_t *wide_str)
+std::optional<std::string> windows_wide_to_utf8(const wchar_t *wide_str)
 {
 	const int orig_length = wcslen(wide_str);
 	if(orig_length == 0)
 		return "";
-	const int size_needed = WideCharToMultiByte(CP_UTF8, 0, wide_str, orig_length, nullptr, 0, nullptr, nullptr);
+	const int size_needed = WideCharToMultiByte(CP_UTF8, WC_ERR_INVALID_CHARS, wide_str, orig_length, nullptr, 0, nullptr, nullptr);
+	if(size_needed == 0)
+		return {};
 	std::string string(size_needed, '\0');
-	dbg_assert(WideCharToMultiByte(CP_UTF8, 0, wide_str, orig_length, string.data(), size_needed, nullptr, nullptr) == size_needed, "WideCharToMultiByte failure");
+	dbg_assert(WideCharToMultiByte(CP_UTF8, WC_ERR_INVALID_CHARS, wide_str, orig_length, string.data(), size_needed, nullptr, nullptr) == size_needed, "WideCharToMultiByte failure");
 	return string;
 }
 
