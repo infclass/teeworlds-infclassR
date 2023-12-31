@@ -459,8 +459,15 @@ void CInfClassInfected::OnCharacterDeath(EDamageType DamageType)
 	}
 }
 
+void CInfClassInfected::OnHookAttachedPlayer()
+{
+	m_LastSeenTick = Server()->Tick();
+}
+
 void CInfClassInfected::OnCharacterDamage(SDamageContext *pContext)
 {
+	m_LastSeenTick = Server()->Tick();
+
 	switch(GetPlayerClass())
 	{
 	case PLAYERCLASS_HUNTER:
@@ -471,7 +478,6 @@ void CInfClassInfected::OnCharacterDamage(SDamageContext *pContext)
 		break;
 	case PLAYERCLASS_GHOST:
 		m_pCharacter->MakeVisible();
-		m_LastSeenTick = Server()->Tick();
 		break;
 	case PLAYERCLASS_GHOUL:
 	{
@@ -586,6 +592,9 @@ void CInfClassInfected::OnHammerFired(WeaponFireContext *pFireContext)
 						}
 					}
 				}
+
+				CInfClassInfected *pInfectedTarget = CInfClassInfected::GetInstance(pTarget);
+				pInfectedTarget->m_LastSeenTick = Server()->Tick();
 			}
 			else
 			{

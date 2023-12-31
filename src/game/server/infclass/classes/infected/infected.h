@@ -44,6 +44,8 @@ public:
 	void OnCharacterDamage(SDamageContext *pContext) override;
 	void OnCharacterDeath(EDamageType DamageType) override;
 
+	void OnHookAttachedPlayer() override;
+
 	void OnHammerFired(WeaponFireContext *pFireContext) override;
 
 	void OnSlimeEffect(int Owner) override;

@@ -93,6 +93,7 @@ Fixes:
 - Fixed blinding effect on the player revived (now it the effect 'll be canceled)
 - Fixed inconsistent poisoning (sometimes taking 1 extra HP)
 - Fixed missing HP restore sound in infection zone
+- Fixed Ghost kept invisible on hit and some actions
 
 Maps:
 - Updated `infc_canyon` (tech update simplifying the quads geometry)
