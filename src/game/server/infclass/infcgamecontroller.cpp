@@ -4400,8 +4400,9 @@ void CInfClassGameController::OnCharacterDeath(CInfClassCharacter *pVictim, cons
 	const EDamageType DamageType = Context.DamageType;
 	const int Killer = Context.Killer;
 	const int Assistant = Context.Assistant;
+	const char *pDamageTypeStr = toString(DamageType);
 
-	dbg_msg("server", "OnCharacterDeath: victim: %d, DT: %d, killer: %d, assistant: %d", pVictim->GetCID(), static_cast<int>(DamageType), Killer, Assistant);
+	dbg_msg("server", "OnCharacterDeath: victim=%d damage_type=%s killer=%d assistant=%d", pVictim->GetCID(), pDamageTypeStr, Killer, Assistant);
 
 	RewardTheKillers(pVictim, Context);
 
