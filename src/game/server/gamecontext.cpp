@@ -111,6 +111,27 @@ void CGameContext::Construct(int Resetting)
 	}
 }
 
+void CGameContext::Destruct(int Resetting)
+{
+	for(int i = 0; i < m_LaserDots.size(); i++)
+		Server()->SnapFreeID(m_LaserDots[i].m_SnapID);
+	for(int i = 0; i < m_HammerDots.size(); i++)
+		Server()->SnapFreeID(m_HammerDots[i].m_SnapID);
+
+	for(auto &pPlayer : m_apPlayers)
+		delete pPlayer;
+
+	if(Resetting == NO_RESET)
+		delete m_pVoteOptionHeap;
+
+#ifdef CONF_GEOLOCATION
+	if(Resetting == NO_RESET)
+	{
+		Geolocation::Shutdown();
+	}
+#endif
+}
+
 CGameContext::CGameContext(int Resetting)
 {
 	Construct(Resetting);
@@ -123,22 +144,7 @@ CGameContext::CGameContext()
 
 CGameContext::~CGameContext()
 {
-	for(int i = 0; i < m_LaserDots.size(); i++)
-		Server()->SnapFreeID(m_LaserDots[i].m_SnapID);
-	for(int i = 0; i < m_HammerDots.size(); i++)
-		Server()->SnapFreeID(m_HammerDots[i].m_SnapID);
-	
-	for(int i = 0; i < MAX_CLIENTS; i++)
-		delete m_apPlayers[i];
-	if(!m_Resetting)
-		delete m_pVoteOptionHeap;
-	
-#ifdef CONF_GEOLOCATION
-	if(!m_Resetting)
-	{
-		Geolocation::Shutdown();
-	}
-#endif
+	Destruct(m_Resetting ? RESET : NO_RESET);
 }
 
 void CGameContext::Clear()
@@ -2768,11 +2774,11 @@ void CGameContext::ConTuneDump(IConsole::IResult *pResult, void *pUserData)
 {
 	CGameContext *pSelf = (CGameContext *)pUserData;
 	char aBuf[256];
-	for(int i = 0; i < pSelf->Tuning()->Num(); i++)
+	for(int i = 0; i < CTuningParams::Num(); i++)
 	{
-		float v;
-		pSelf->Tuning()->Get(i, &v);
-		str_format(aBuf, sizeof(aBuf), "%s %.2f", pSelf->Tuning()->ms_apNames[i], v);
+		float Value;
+		pSelf->Tuning()->Get(i, &Value);
+		str_format(aBuf, sizeof(aBuf), "%s %.2f", CTuningParams::Name(i), Value);
 		pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "tuning", aBuf);
 	}
 }

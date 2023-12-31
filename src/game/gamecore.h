@@ -40,6 +40,8 @@ public:
 
 class CTuningParams
 {
+	static const char *ms_apNames[];
+
 public:
 	CTuningParams()
 	{
@@ -49,15 +51,13 @@ public:
 #undef MACRO_TUNING_PARAM
 	}
 
-	bool operator==(const CTuningParams& TuningParams)
+	bool operator==(const CTuningParams& TuningParams) const
 	{
 #define MACRO_TUNING_PARAM(Name, ScriptName, Value, Description) if(m_##Name != TuningParams.m_##Name) return false;
 #include "tuning.h"
 #undef MACRO_TUNING_PARAM
 		return true;
 	}
-
-	static const char *ms_apNames[];
 
 #define MACRO_TUNING_PARAM(Name, ScriptName, Value, Description) CTuneParam m_##Name;
 #include "tuning.h"
@@ -71,6 +71,7 @@ public:
 	bool Set(const char *pName, float Value);
 	bool Get(int Index, float *pValue) const;
 	bool Get(const char *pName, float *pValue) const;
+	static const char *Name(int Index) { return ms_apNames[Index]; }
 };
 
 inline void StrToInts(int *pInts, int Num, const char *pStr)
