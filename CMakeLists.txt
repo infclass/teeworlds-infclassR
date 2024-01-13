@@ -848,6 +848,7 @@ set_src(ENGINE_SERVER GLOB_RECURSE src/engine/server
 
 set_glob(GAME_SERVER GLOB_RECURSE src/game/server
   alloc.h
+  ddracecommands.cpp
   entities/character.cpp
   entities/character.h
   entities/projectile.cpp
