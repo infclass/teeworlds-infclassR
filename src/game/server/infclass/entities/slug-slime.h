@@ -18,10 +18,13 @@ public:
 	int GetEndTick() const { return m_EndTick; }
 
 	bool Replenish(int PlayerID, int EndTick);
+	void SetDamage(int Damage, float Interval);
 
 private:
 	int m_StartTick = 0;
 	int m_EndTick = 0;
+	int m_Damage{};
+	float m_DamageInterval{};
 };
 
 #endif

@@ -113,7 +113,7 @@ public:
 	virtual void OnLaserFired(WeaponFireContext *pFireContext);
 	virtual void OnNinjaFired(WeaponFireContext *pFireContext);
 
-	virtual void OnSlimeEffect(int Owner) = 0;
+	virtual void OnSlimeEffect(int Owner, int Damage, float DamageInterval) = 0;
 	virtual void OnFloatingPointCollected(int Points);
 
 	virtual void GiveUpgrade() {}

@@ -2109,17 +2109,15 @@ bool CInfClassHuman::FindPortalPosition(vec2 *pPosition)
 	return false;
 }
 
-void CInfClassHuman::OnSlimeEffect(int Owner)
+void CInfClassHuman::OnSlimeEffect(int Owner, int Damage, float DamageInterval)
 {
-	int Count = Config()->m_InfSlimePoisonDamage;
 	if(GetPlayerClass() == PLAYERCLASS_BIOLOGIST)
 	{
 		// Note: actually probably the character 'll stay in the slime for
 		// more than 1 tick and it 'll result in 2 damage dealt
-		Count = 1;
+		Damage = 1;
 	}
-	const float Interval = 1.25f;
-	m_pCharacter->Poison(Count, Owner, EDamageType::SLUG_SLIME, Interval);
+	m_pCharacter->Poison(Damage, Owner, EDamageType::SLUG_SLIME, DamageInterval);
 }
 
 bool CInfClassHuman::HasWhiteHole() const

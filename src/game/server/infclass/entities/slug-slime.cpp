@@ -15,6 +15,10 @@ CSlugSlime::CSlugSlime(CGameContext *pGameContext, vec2 Pos, int Owner) :
 {
 	m_StartTick = Server()->Tick();
 	m_EndTick = m_StartTick;
+
+	m_Damage = Config()->m_InfSlimePoisonDamage;
+	m_DamageInterval = 1.25f;
+
 	GameWorld()->InsertEntity(this);
 }
 
@@ -35,7 +39,7 @@ void CSlugSlime::Tick()
 		if(!GameServer()->Collision()->AreConnected(p->m_Pos, m_Pos, 84.0f))
 			continue; // not in reach
 		
-		p->GetClass()->OnSlimeEffect(m_Owner);
+		p->GetClass()->OnSlimeEffect(m_Owner, m_Damage, m_DamageInterval);
 	}
 
 	int ExistsForTicks = Server()->Tick() - m_StartTick;
@@ -80,4 +84,10 @@ bool CSlugSlime::Replenish(int PlayerID, int EndTick)
 	m_Owner = PlayerID;
 	m_EndTick = EndTick;
 	return true;
+}
+
+void CSlugSlime::SetDamage(int Damage, float Interval)
+{
+	m_Damage = Damage;
+	m_DamageInterval = Interval;
 }

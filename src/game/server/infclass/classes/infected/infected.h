@@ -48,7 +48,7 @@ public:
 
 	void OnHammerFired(WeaponFireContext *pFireContext) override;
 
-	void OnSlimeEffect(int Owner) override;
+	void OnSlimeEffect(int Owner, int Damage, float DamageInterval) override;
 	void OnFloatingPointCollected(int Points) override;
 	void OnLaserWall();
 

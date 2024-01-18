@@ -996,7 +996,7 @@ bool CInfClassInfected::HasHumansNearby()
 	return false;
 }
 
-void CInfClassInfected::OnSlimeEffect(int Owner)
+void CInfClassInfected::OnSlimeEffect(int Owner, int Damage, float DamageInterval)
 {
 	if(!m_pCharacter->IsAlive())
 		return;

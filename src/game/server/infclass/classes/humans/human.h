@@ -66,7 +66,7 @@ public:
 	void OnGrenadeFired(WeaponFireContext *pFireContext) override;
 	void OnLaserFired(WeaponFireContext *pFireContext) override;
 
-	void OnSlimeEffect(int Owner) override;
+	void OnSlimeEffect(int Owner, int Damage, float DamageInterval) override;
 	bool HasWhiteHole() const;
 	void GiveWhiteHole();
 	void RemoveWhiteHole();
