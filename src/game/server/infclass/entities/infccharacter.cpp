@@ -1453,9 +1453,12 @@ void CInfClassCharacter::SetSuperWeaponIndicatorEnabled(bool Enabled)
 
 INFWEAPON CInfClassCharacter::GetInfWeaponID(int WID) const
 {
+	if(WID < 0)
+		WID = m_ActiveWeapon;
+
 	if(WID == WEAPON_HAMMER)
 	{
-		switch(PrivateGetPlayerClass())
+		switch(GetPlayerClass())
 		{
 		case PLAYERCLASS_NINJA:
 			return INFWEAPON::NINJA_HAMMER;
@@ -1465,7 +1468,7 @@ INFWEAPON CInfClassCharacter::GetInfWeaponID(int WID) const
 	}
 	else if(WID == WEAPON_GUN)
 	{
-		switch(PrivateGetPlayerClass())
+		switch(GetPlayerClass())
 		{
 		case PLAYERCLASS_MERCENARY:
 			return INFWEAPON::MERCENARY_GUN;
@@ -1476,7 +1479,7 @@ INFWEAPON CInfClassCharacter::GetInfWeaponID(int WID) const
 	}
 	else if(WID == WEAPON_SHOTGUN)
 	{
-		switch(PrivateGetPlayerClass())
+		switch(GetPlayerClass())
 		{
 		case PLAYERCLASS_MEDIC:
 			return INFWEAPON::MEDIC_SHOTGUN;
@@ -1490,7 +1493,7 @@ INFWEAPON CInfClassCharacter::GetInfWeaponID(int WID) const
 	}
 	else if(WID == WEAPON_GRENADE)
 	{
-		switch(PrivateGetPlayerClass())
+		switch(GetPlayerClass())
 		{
 		case PLAYERCLASS_MERCENARY:
 			return INFWEAPON::MERCENARY_GRENADE;
@@ -1512,7 +1515,7 @@ INFWEAPON CInfClassCharacter::GetInfWeaponID(int WID) const
 	}
 	else if(WID == WEAPON_LASER)
 	{
-		switch(PrivateGetPlayerClass())
+		switch(GetPlayerClass())
 		{
 		case PLAYERCLASS_ENGINEER:
 			return INFWEAPON::ENGINEER_LASER;

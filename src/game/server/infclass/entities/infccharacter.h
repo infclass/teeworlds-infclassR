@@ -129,6 +129,8 @@ public:
 	void Die(const DeathContext &Context);
 
 	void GiveWeapon(int Weapon, int Ammo);
+
+	int ActiveWeapon() const { return m_ActiveWeapon; }
 	void SetActiveWeapon(int Weapon);
 	void SetLastWeapon(int Weapon);
 	bool HasWeapon(int Weapon) const;
@@ -235,7 +237,7 @@ public:
 	bool HasSuperWeaponIndicator() const;
 	void SetSuperWeaponIndicatorEnabled(bool Enabled);
 
-	INFWEAPON GetInfWeaponID(int WID) const;
+	INFWEAPON GetInfWeaponID(int WID = -1) const;
 
 	using CCharacter::GameWorld;
 	using CCharacter::Server;
