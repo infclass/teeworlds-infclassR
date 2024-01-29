@@ -281,11 +281,16 @@ void CCharacter::OnDirectInput(CNetObj_PlayerInput *pNewInput)
 	mem_copy(&m_LatestPrevInput, &m_LatestInput, sizeof(m_LatestInput));
 }
 
-void CCharacter::ResetHook()
+void CCharacter::ReleaseHook()
 {
 	m_Core.SetHookedPlayer(-1);
 	m_Core.m_HookState = HOOK_RETRACTED;
 	m_Core.m_TriggeredEvents |= COREEVENT_HOOK_RETRACT;
+}
+
+void CCharacter::ResetHook()
+{
+	ReleaseHook();
 	m_Core.m_HookPos = m_Core.m_Pos;
 }
 
@@ -294,7 +299,7 @@ void CCharacter::ResetInput()
 	m_Input.m_Direction = 0;
 	m_Input.m_Hook = 0;
 	// simulate releasing the fire button
-	if((m_Input.m_Fire&1) != 0)
+	if((m_Input.m_Fire & 1) != 0)
 		m_Input.m_Fire++;
 	m_Input.m_Fire &= INPUT_STATE_MASK;
 	m_Input.m_Jump = 0;
@@ -384,7 +389,7 @@ void CCharacter::TickDeferred()
 		{
 			float f;
 			unsigned u;
-		}StartPosX, StartPosY, StartVelX, StartVelY;
+		} StartPosX, StartPosY, StartVelX, StartVelY;
 
 		StartPosX.f = StartPos.x;
 		StartPosY.f = StartPos.y;
@@ -527,7 +532,7 @@ bool CCharacter::IsSnappingCharacterInView(int SnappingClientID)
 	{
 		for(const auto &AttachedPlayerID : m_Core.m_AttachedPlayers)
 		{
-			CCharacter *pOtherPlayer = GameServer()->GetPlayerChar(AttachedPlayerID);
+			const CCharacter *pOtherPlayer = GameServer()->GetPlayerChar(AttachedPlayerID);
 			if(pOtherPlayer && pOtherPlayer->m_Core.HookedPlayer() == ID)
 			{
 				if(!NetworkClippedLine(SnappingClientID, m_Pos, pOtherPlayer->m_Pos))
@@ -594,36 +599,36 @@ void CCharacter::HandleSkippableTiles(int Index)
 			if(MaxSpeed > 0)
 			{
 				if(Direction.x > 0.0000001f)
-					SpeederAngle = -atan(Direction.y / Direction.x);
+					SpeederAngle = -std::atan(Direction.y / Direction.x);
 				else if(Direction.x < 0.0000001f)
-					SpeederAngle = atan(Direction.y / Direction.x) + 2.0f * asin(1.0f);
+					SpeederAngle = std::atan(Direction.y / Direction.x) + 2.0f * std::asin(1.0f);
 				else if(Direction.y > 0.0000001f)
-					SpeederAngle = asin(1.0f);
+					SpeederAngle = std::asin(1.0f);
 				else
-					SpeederAngle = asin(-1.0f);
+					SpeederAngle = std::asin(-1.0f);
 
 				if(SpeederAngle < 0)
-					SpeederAngle = 4.0f * asin(1.0f) + SpeederAngle;
+					SpeederAngle = 4.0f * std::asin(1.0f) + SpeederAngle;
 
 				if(TempVel.x > 0.0000001f)
-					TeeAngle = -atan(TempVel.y / TempVel.x);
+					TeeAngle = -std::atan(TempVel.y / TempVel.x);
 				else if(TempVel.x < 0.0000001f)
-					TeeAngle = atan(TempVel.y / TempVel.x) + 2.0f * asin(1.0f);
+					TeeAngle = std::atan(TempVel.y / TempVel.x) + 2.0f * std::asin(1.0f);
 				else if(TempVel.y > 0.0000001f)
-					TeeAngle = asin(1.0f);
+					TeeAngle = std::asin(1.0f);
 				else
-					TeeAngle = asin(-1.0f);
+					TeeAngle = std::asin(-1.0f);
 
 				if(TeeAngle < 0)
-					TeeAngle = 4.0f * asin(1.0f) + TeeAngle;
+					TeeAngle = 4.0f * std::asin(1.0f) + TeeAngle;
 
-				TeeSpeed = sqrt(pow(TempVel.x, 2) + pow(TempVel.y, 2));
+				TeeSpeed = std::sqrt(std::pow(TempVel.x, 2) + std::pow(TempVel.y, 2));
 
 				DiffAngle = SpeederAngle - TeeAngle;
-				SpeedLeft = MaxSpeed / 5.0f - cos(DiffAngle) * TeeSpeed;
-				if(abs((int)SpeedLeft) > Force && SpeedLeft > 0.0000001f)
+				SpeedLeft = MaxSpeed / 5.0f - std::cos(DiffAngle) * TeeSpeed;
+				if(absolute((int)SpeedLeft) > Force && SpeedLeft > 0.0000001f)
 					TempVel += Direction * Force;
-				else if(abs((int)SpeedLeft) > Force)
+				else if(absolute((int)SpeedLeft) > Force)
 					TempVel += Direction * -Force;
 				else
 					TempVel += Direction * SpeedLeft;
@@ -732,4 +737,41 @@ void CCharacter::DDRaceInit()
 {
 	m_Core.m_Id = GetPlayer()->GetCID();
 	m_PrevPos = m_Pos;
+}
+
+void CCharacter::SetPosition(const vec2 &Position)
+{
+	m_Core.m_Pos = Position;
+}
+
+void CCharacter::Move(vec2 RelPos)
+{
+	m_Core.m_Pos += RelPos;
+}
+
+void CCharacter::ResetVelocity()
+{
+	m_Core.m_Vel = vec2(0, 0);
+}
+
+void CCharacter::SetVelocity(vec2 NewVelocity)
+{
+	m_Core.m_Vel = ClampVel(m_MoveRestrictions, NewVelocity);
+}
+
+// The method is needed only to reproduce 'shotgun bug' ddnet#5258
+// Use SetVelocity() instead.
+void CCharacter::SetRawVelocity(vec2 NewVelocity)
+{
+	m_Core.m_Vel = NewVelocity;
+}
+
+void CCharacter::AddVelocity(vec2 Addition)
+{
+	SetVelocity(m_Core.m_Vel + Addition);
+}
+
+void CCharacter::ApplyMoveRestrictions()
+{
+	m_Core.m_Vel = ClampVel(m_MoveRestrictions, m_Core.m_Vel);
 }

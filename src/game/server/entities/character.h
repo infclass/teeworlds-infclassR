@@ -53,6 +53,7 @@ public:
 
 	void OnPredictedInput(CNetObj_PlayerInput *pNewInput);
 	void OnDirectInput(CNetObj_PlayerInput *pNewInput);
+	void ReleaseHook();
 	void ResetHook();
 	void ResetInput();
 	virtual void FireWeapon();
@@ -79,6 +80,15 @@ public:
 	bool IsAlive() const { return m_Alive; }
 	class CPlayer *GetPlayer() { return m_pPlayer; }
 
+	void SetPosition(const vec2 &Position);
+	void Move(vec2 RelPos);
+
+	void ResetVelocity();
+	void SetVelocity(vec2 NewVelocity);
+	void SetRawVelocity(vec2 NewVelocity);
+	void AddVelocity(vec2 Addition);
+	void ApplyMoveRestrictions();
+
 protected:
 	// player controlling this character
 	class CPlayer *m_pPlayer;
@@ -101,6 +111,8 @@ protected:
 
 	int m_ReloadTimer;
 	int m_AttackTick;
+
+	int m_MoveRestrictions;
 
 	int m_EmoteType;
 	int m_EmoteStop;

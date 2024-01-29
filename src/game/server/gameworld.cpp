@@ -51,9 +51,9 @@ int CGameWorld::FindEntities(vec2 Pos, float Radius, CEntity **ppEnts, int Max, 
 		return 0;
 
 	int Num = 0;
-	for(CEntity *pEnt = m_apFirstEntityTypes[Type];	pEnt; pEnt = pEnt->m_pNextTypeEntity)
+	for(CEntity *pEnt = m_apFirstEntityTypes[Type]; pEnt; pEnt = pEnt->m_pNextTypeEntity)
 	{
-		if(distance(pEnt->m_Pos, Pos) < Radius+pEnt->m_ProximityRadius)
+		if(distance(pEnt->m_Pos, Pos) < Radius + pEnt->m_ProximityRadius)
 		{
 			if(ppEnts)
 				ppEnts[Num] = pEnt;
@@ -167,8 +167,8 @@ void CGameWorld::Reset()
 void CGameWorld::RemoveEntities()
 {
 	// destroy objects marked for destruction
-	for(int i = 0; i < NUM_ENTTYPES; i++)
-		for(CEntity *pEnt = m_apFirstEntityTypes[i]; pEnt; )
+	for(auto *pEnt : m_apFirstEntityTypes)
+		for(; pEnt;)
 		{
 			m_pNextTraverseEntity = pEnt->m_pNextTypeEntity;
 			if(pEnt->m_MarkedForDestroy)
@@ -279,8 +279,8 @@ void CGameWorld::Tick()
 	else
 	{
 		// update all objects
-		for(int i = 0; i < NUM_ENTTYPES; i++)
-			for(CEntity *pEnt = m_apFirstEntityTypes[i]; pEnt; )
+		for(auto *pEnt : m_apFirstEntityTypes)
+			for(; pEnt;)
 			{
 				m_pNextTraverseEntity = pEnt->m_pNextTypeEntity;
 				pEnt->TickPaused();
@@ -447,12 +447,9 @@ void CGameWorld::ReleaseHooked(int ClientID)
 	CCharacter *pChr = (CCharacter *)CGameWorld::FindFirst(CGameWorld::ENTTYPE_CHARACTER);
 	for(; pChr; pChr = (CCharacter *)pChr->TypeNext())
 	{
-		CCharacterCore *pCore = pChr->Core();
-		if(pCore->HookedPlayer() == ClientID)
+		if(pChr->Core()->HookedPlayer() == ClientID && !pChr->IsSuper())
 		{
-			pCore->SetHookedPlayer(-1);
-			pCore->m_TriggeredEvents |= COREEVENT_HOOK_RETRACT;
-			pCore->m_HookState = HOOK_RETRACTED;
+			pChr->ReleaseHook();
 		}
 	}
 }
