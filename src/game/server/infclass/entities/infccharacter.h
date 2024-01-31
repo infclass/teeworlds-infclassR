@@ -96,6 +96,7 @@ public:
 	void OnCharacterInDamageZone(float Damage, float DamageInterval = 1.0f);
 
 	void Destroy() override;
+	void TickBeforeWorld();
 	void Tick() override;
 	void TickDeferred() override;
 	void TickPaused() override;

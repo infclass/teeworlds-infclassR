@@ -197,6 +197,13 @@ void CInfClassCharacter::Destroy()
 	CCharacter::Destroy();
 }
 
+void CInfClassCharacter::TickBeforeWorld()
+{
+	m_Core.m_Infected = IsInfected();
+	m_Core.m_InLove = IsInLove();
+	m_Core.m_HookProtected = GetPlayer()->HookProtectionEnabled();
+}
+
 void CInfClassCharacter::Tick()
 {
 	if(!m_pClass)

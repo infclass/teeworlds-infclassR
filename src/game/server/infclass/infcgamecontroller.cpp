@@ -3285,14 +3285,11 @@ void CInfClassGameController::TickBeforeWorld()
 	// update core properties important for hook
 	for(int i = 0; i < MAX_CLIENTS; i++)
 	{
-		CInfClassPlayer *pPlayer = GetPlayer(i);
-		if (pPlayer && pPlayer->GetCharacter())
+		CInfClassCharacter *pCharacter = GetCharacter(i);
+		if(pCharacter)
 		{
-			pPlayer->GetCharacter()->m_Core.m_Infected = pPlayer->IsInfected();
-			pPlayer->GetCharacter()->m_Core.m_InLove = pPlayer->GetCharacter()->IsInLove();
-			pPlayer->GetCharacter()->m_Core.m_HookProtected = pPlayer->HookProtectionEnabled();
-
-			m_Teams.m_Core.SetProtected(i, pPlayer->HookProtectionEnabled());
+			pCharacter->TickBeforeWorld();
+			m_Teams.m_Core.SetProtected(i, pCharacter->GetPlayer()->HookProtectionEnabled());
 		}
 	}
 }
