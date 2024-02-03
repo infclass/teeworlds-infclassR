@@ -759,19 +759,7 @@ void CCharacter::SetVelocity(vec2 NewVelocity)
 	m_Core.m_Vel = ClampVel(m_MoveRestrictions, NewVelocity);
 }
 
-// The method is needed only to reproduce 'shotgun bug' ddnet#5258
-// Use SetVelocity() instead.
-void CCharacter::SetRawVelocity(vec2 NewVelocity)
-{
-	m_Core.m_Vel = NewVelocity;
-}
-
 void CCharacter::AddVelocity(vec2 Addition)
 {
 	SetVelocity(m_Core.m_Vel + Addition);
-}
-
-void CCharacter::ApplyMoveRestrictions()
-{
-	m_Core.m_Vel = ClampVel(m_MoveRestrictions, m_Core.m_Vel);
 }

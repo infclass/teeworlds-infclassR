@@ -66,7 +66,7 @@ void CSuperWeaponIndicator::Tick()
 		return;
 
 	//refresh indicator position
-	m_Pos = m_OwnerChar->m_Core.m_Pos;
+	m_Pos = m_OwnerChar->Core()->m_Pos;
 	
 	if (m_IsWarmingUp) 
 	{

@@ -85,9 +85,7 @@ public:
 
 	void ResetVelocity();
 	void SetVelocity(vec2 NewVelocity);
-	void SetRawVelocity(vec2 NewVelocity);
 	void AddVelocity(vec2 Addition);
-	void ApplyMoveRestrictions();
 
 protected:
 	// player controlling this character
@@ -151,6 +149,7 @@ public:
 	int m_WaterJumpLifeSpan;
 	/* INFECTION MODIFICATION END *****************************************/
 
+protected:
 	// the player core for the physics
 	CCharacterCore m_Core;
 	CGameTeams *m_pTeams = nullptr;
@@ -211,9 +210,7 @@ public:
 
 	int GetEffectiveHookMode() const;
 
-	int m_MoveRestrictions;
-
-	CCharacterCore *Core() { return &m_Core; }
+	const CCharacterCore *Core() const { return &m_Core; }
 
 	virtual void PreCoreTick() { }
 	virtual void PostCoreTick();

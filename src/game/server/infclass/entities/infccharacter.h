@@ -104,6 +104,7 @@ public:
 	void SpecialSnapForClient(int SnappingClient, bool *pDoSnap);
 
 	void HandleNinja() override;
+	void HandleNinjaMove(float NinjaVelocity);
 	void HandleWeaponSwitch() override;
 
 	void FireWeapon() override;
@@ -116,6 +117,8 @@ public:
 
 	int GetHealth() const { return m_Health; }
 	int GetArmor() const { return m_Armor; }
+
+	void SetJumpsLimit(int Limit);
 
 	PLAYERCLASS GetPlayerClass() const;
 
@@ -236,7 +239,8 @@ public:
 	bool HasPassenger() const;
 	CInfClassCharacter *GetPassenger();
 	CInfClassCharacter *GetTaxiDriver();
-	void SetPassenger(CCharacter *pPassenger);
+	void SetPassenger(CInfClassCharacter *pPassenger);
+	void TryBecomePassenger(CInfClassCharacter *pTargetDriver);
 	int GetInfZoneTick();
 
 	bool HasSuperWeaponIndicator() const;

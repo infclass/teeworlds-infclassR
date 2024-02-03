@@ -295,10 +295,6 @@ void CInfClassPlayerClass::OnCharacterTickPaused()
 
 void CInfClassPlayerClass::OnCharacterPostCoreTick()
 {
-	if(m_pCharacter->m_Core.m_TriggeredEvents & COREEVENT_HOOK_ATTACH_PLAYER)
-	{
-		OnHookAttachedPlayer();
-	}
 }
 
 void CInfClassPlayerClass::OnCharacterTickDeferred()
@@ -402,7 +398,7 @@ void CInfClassPlayerClass::GiveClassAttributes()
 	}
 
 	m_pCharacter->TakeAllWeapons();
-	m_pCharacter->m_Core.m_Jumps = GetJumps();
+	m_pCharacter->SetJumpsLimit(GetJumps());
 }
 
 void CInfClassPlayerClass::DestroyChildEntities()

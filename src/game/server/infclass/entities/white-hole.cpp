@@ -170,8 +170,8 @@ void CWhiteHole::MoveCharacters()
 		if(Distance < m_Radius)
 		{
 			Intensity = clamp(1.0f-Distance/m_Radius+0.5f, 0.0f, 1.0f)*m_PlayerPullStrength;
-			pCharacter->m_Core.m_Vel += normalize(Dir)*Intensity;
-			pCharacter->m_Core.m_Vel *= m_PlayerDrag;
+			pCharacter->AddVelocity(normalize(Dir) * Intensity);
+			pCharacter->SetVelocity(pCharacter->Velocity() * m_PlayerDrag);
 			pCharacter->UpdateLastEnforcer(GetOwner(), Intensity, EDamageType::WHITE_HOLE, Server()->Tick());
 		}
 	}

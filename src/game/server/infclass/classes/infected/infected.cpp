@@ -310,7 +310,7 @@ void CInfClassInfected::OnCharacterPostCoreTick()
 {
 	CInfClassPlayerClass::OnCharacterPostCoreTick();
 
-	int HookerPlayer = m_pCharacter->m_Core.HookedPlayer();
+	int HookerPlayer = m_pCharacter->Core()->HookedPlayer();
 	if(HookerPlayer >= 0)
 	{
 		CInfClassCharacter *pVictimChar = GameController()->GetCharacter(HookerPlayer);
@@ -583,7 +583,7 @@ void CInfClassInfected::OnHammerFired(WeaponFireContext *pFireContext)
 
 					if(!pTarget->GetPlayer()->HookProtectionEnabled())
 					{
-						pTarget->m_Core.m_Vel += Force;
+						pTarget->AddVelocity(Force);
 
 						if(-Force.y > 6.f)
 						{
@@ -887,8 +887,6 @@ void CInfClassInfected::SpiderPreCoreTick()
 				// Note: typical Teeworlds clients restore m_HookMode = 1
 				// via "Direct weapon selection" / m_LatestInput.m_WantedWeapon
 				m_pCharacter->m_HookMode = 0;
-				m_pCharacter->m_Core.m_HookTick = 0;
-
 				break;
 			}
 		}

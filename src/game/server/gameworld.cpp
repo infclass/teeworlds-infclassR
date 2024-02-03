@@ -340,7 +340,7 @@ CCharacter *CGameWorld::IntersectCharacter(vec2 Pos0, vec2 Pos1, float Radius, v
 		if(FilterFunction && !FilterFunction(p))
 			continue;
 
-		if(InfectedOnly && !p->m_Core.m_Infected)
+		if(InfectedOnly && !p->Core()->m_Infected)
 			continue;
 
 		if(CollideWith != -1 && !p->CanCollide(CollideWith))
@@ -447,7 +447,7 @@ void CGameWorld::ReleaseHooked(int ClientID)
 	CCharacter *pChr = (CCharacter *)CGameWorld::FindFirst(CGameWorld::ENTTYPE_CHARACTER);
 	for(; pChr; pChr = (CCharacter *)pChr->TypeNext())
 	{
-		if(pChr->Core()->HookedPlayer() == ClientID && !pChr->IsSuper())
+		if(pChr->Core()->HookedPlayer() == ClientID)
 		{
 			pChr->ReleaseHook();
 		}

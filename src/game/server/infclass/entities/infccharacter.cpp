@@ -425,6 +425,16 @@ void CInfClassCharacter::HandleNinja()
 	m_pClass->HandleNinja();
 }
 
+void CInfClassCharacter::HandleNinjaMove(float NinjaVelocity)
+{
+	SetVelocity(m_DartDir * NinjaVelocity);
+
+	GameServer()->Collision()->MoveBox(&m_Core.m_Pos, &m_Core.m_Vel, CCharacterCore::PhysicalSizeVec2(), 0.f);
+
+	// reset velocity so the client doesn't predict stuff
+	ResetVelocity();
+}
+
 void CInfClassCharacter::HandleWeaponSwitch()
 {
 	// select Weapon
@@ -845,6 +855,11 @@ bool CInfClassCharacter::GiveArmor(int HitPoints, int FromCID)
 	}
 
 	return Armored;
+}
+
+void CInfClassCharacter::SetJumpsLimit(int Limit)
+{
+	m_Core.m_Jumps = Limit;
 }
 
 PLAYERCLASS CInfClassCharacter::GetPlayerClass() const
@@ -1449,9 +1464,14 @@ CInfClassCharacter *CInfClassCharacter::GetTaxiDriver()
 	return nullptr;
 }
 
-void CInfClassCharacter::SetPassenger(CCharacter *pPassenger)
+void CInfClassCharacter::SetPassenger(CInfClassCharacter *pPassenger)
 {
 	m_Core.SetPassenger(pPassenger ? &pPassenger->m_Core : nullptr);
+}
+
+void CInfClassCharacter::TryBecomePassenger(CInfClassCharacter *pTargetDriver)
+{
+	m_Core.TryBecomePassenger(&pTargetDriver->m_Core);
 }
 
 int CInfClassCharacter::GetInfZoneTick() // returns how many ticks long a player is already in InfZone
@@ -2294,6 +2314,11 @@ void CInfClassCharacter::PostCoreTick()
 
 	if(m_pClass)
 	{
+		if(m_Core.m_TriggeredEvents & COREEVENT_HOOK_ATTACH_PLAYER)
+		{
+			m_pClass->OnHookAttachedPlayer();
+		}
+
 		m_pClass->OnCharacterPostCoreTick();
 	}
 

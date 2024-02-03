@@ -2103,8 +2103,8 @@ void CInfClassGameController::ConLoadPosition(IConsole::IResult *pResult)
 	pPlayer->LoadSavedPosition(&Position);
 
 	pCharacter->m_Pos = Position;
-	pCharacter->m_Core.m_Pos = Position;
-	pCharacter->m_Core.m_Vel = vec2(0, 0);
+	pCharacter->SetPosition(Position);
+	pCharacter->ResetVelocity();
 	GameWorld()->ReleaseHooked(ClientID);
 	pCharacter->ResetHook();
 }
@@ -3020,12 +3020,12 @@ void CInfClassGameController::OnKillOrInfection(int Victim, const DeathContext &
 			PossibleMessages.Add(("{str:PlayerName} was electrified by {str:Killer}."));
 			break;
 		case EDamageType::DRYING_HOOK:
-			if(pVictimCharacter->m_Core.m_AttachedPlayers.size() >= 2)
+			if(pVictimCharacter->Core()->m_AttachedPlayers.size() >= 2)
 			{
 				const float StretchingDistance = 12 * TileSizeF;
 				const float StretchingDistance2 = StretchingDistance * StretchingDistance;
 				int Stretchers = 0;
-				for(const auto &AttachedPlayerID : pVictimCharacter->m_Core.m_AttachedPlayers)
+				for(const auto &AttachedPlayerID : pVictimCharacter->Core()->m_AttachedPlayers)
 				{
 					const CCharacter *pOtherPlayer = GameServer()->GetPlayerChar(AttachedPlayerID);
 					if(pOtherPlayer && distance_squared(pOtherPlayer->GetPos(), pVictimCharacter->GetPos()) > StretchingDistance2)
@@ -4433,7 +4433,7 @@ void CInfClassGameController::OnCharacterDeath(CInfClassCharacter *pVictim, cons
 			if(p && Len < 800.0f)
 			{
 				int Points = (pVictim->IsInfected() ? 8 : 14);
-				new CFlyingPoint(GameServer(), pVictim->m_Pos, p->GetCID(), Points, pVictim->m_Core.m_Vel);
+				new CFlyingPoint(GameServer(), pVictim->m_Pos, p->GetCID(), Points, pVictim->Velocity());
 			}
 		}
 	}

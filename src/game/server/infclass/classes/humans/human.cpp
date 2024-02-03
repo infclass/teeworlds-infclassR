@@ -476,9 +476,8 @@ void CInfClassHuman::OnCharacterPostCoreTick()
 	case PLAYERCLASS_SNIPER:
 		if(m_pCharacter->PositionIsLocked())
 		{
-			CCharacterCore *pCore = m_pCharacter->Core();
-			pCore->m_Vel = vec2(0.0f, 0.0f);
-			pCore->m_Pos = m_PositionLockPosition;
+			m_pCharacter->ResetVelocity();
+			m_pCharacter->SetPosition(m_PositionLockPosition);
 		}
 		break;
 	default:
@@ -676,11 +675,11 @@ void CInfClassHuman::OnHookAttachedPlayer()
 	if(!GameController()->GetTaxiMode())
 		return;
 
-	CCharacter *pHookedCharacter = GameController()->GetCharacter(m_pCharacter->GetHookedPlayer());
+	CInfClassCharacter *pHookedCharacter = GameController()->GetCharacter(m_pCharacter->GetHookedPlayer());
 	if(!pHookedCharacter || !pHookedCharacter->IsHuman())
 		return;
 
-	m_pCharacter->m_Core.TryBecomePassenger(&pHookedCharacter->m_Core);
+	m_pCharacter->TryBecomePassenger(pHookedCharacter);
 }
 
 void CInfClassHuman::HandleNinja()
@@ -692,7 +691,6 @@ void CInfClassHuman::HandleNinja()
 
 	m_pCharacter->m_DartLifeSpan--;
 
-	auto &m_Core = m_pCharacter->m_Core;
 	auto &m_DartLifeSpan = m_pCharacter->m_DartLifeSpan;
 	auto &m_DartDir = m_pCharacter->m_DartDir;
 	auto &m_DartOldVelAmount = m_pCharacter->m_DartOldVelAmount;
@@ -700,22 +698,19 @@ void CInfClassHuman::HandleNinja()
 	if(m_DartLifeSpan == 0)
 	{
 		// reset velocity
-		m_Core.m_Vel = m_DartDir * m_DartOldVelAmount;
+		m_pCharacter->SetVelocity(m_DartDir * m_DartOldVelAmount);
 	}
 
 	if(m_DartLifeSpan > 0)
 	{
+		vec2 OldPos = GetPos();
 		// Set velocity
 		float VelocityBuff = 1.0f + static_cast<float>(m_NinjaVelocityBuff) / 2.0f;
-		m_Core.m_Vel = m_DartDir * g_pData->m_Weapons.m_Ninja.m_Velocity * VelocityBuff;
-		vec2 OldPos = GetPos();
-		GameServer()->Collision()->MoveBox(&m_Core.m_Pos, &m_Core.m_Vel, CCharacterCore::PhysicalSizeVec2(), 0.f);
-
-		// reset velocity so the client doesn't predict stuff
-		m_Core.m_Vel = vec2(0.f, 0.f);
+		m_pCharacter->HandleNinjaMove(g_pData->m_Weapons.m_Ninja.m_Velocity * VelocityBuff);
 
 		// check if we Hit anything along the way
-		if(m_Core.m_Pos != OldPos)
+		vec2 NewPos = m_pCharacter->Core()->m_Pos;
+		if(NewPos != OldPos)
 		{
 			// Find other players
 			for(CInfClassCharacter *pTarget = (CInfClassCharacter *)GameWorld()->FindFirst(CGameWorld::ENTTYPE_CHARACTER); pTarget; pTarget = (CInfClassCharacter *)pTarget->TypeNext())
@@ -732,7 +727,7 @@ void CInfClassHuman::HandleNinja()
 					continue;
 
 				vec2 IntersectPos;
-				if(!closest_point_on_line(OldPos, m_Core.m_Pos, pTarget->GetPos(), IntersectPos))
+				if(!closest_point_on_line(OldPos, NewPos, pTarget->GetPos(), IntersectPos))
 					continue;
 
 				float Len = distance(pTarget->GetPos(), IntersectPos);
@@ -1698,7 +1693,7 @@ void CInfClassHuman::ActivateNinja(WeaponFireContext *pFireContext)
 
 		m_pCharacter->m_DartDir = GetDirection();
 		m_pCharacter->m_DartLifeSpan = g_pData->m_Weapons.m_Ninja.m_Movetime * Server()->TickSpeed() / 1000;
-		m_pCharacter->m_DartOldVelAmount = length(m_pCharacter->m_Core.m_Vel);
+		m_pCharacter->m_DartOldVelAmount = length(m_pCharacter->Velocity());
 
 		GameServer()->CreateSound(GetPos(), SOUND_NINJA_HIT);
 	}
@@ -1984,13 +1979,8 @@ void CInfClassHuman::OnPortalGunFired(WeaponFireContext *pFireContext)
 	}
 
 	vec2 OldPos = GetPos();
-	m_pCharacter->m_Core.m_Pos = PortalPos;
-	if(m_pCharacter->m_Core.HookedPlayer() >= 0)
-	{
-		m_pCharacter->ResetHook();
-	}
-	m_pCharacter->m_Core.m_HookState = HOOK_RETRACTED;
-	m_pCharacter->m_Core.m_HookPos = PortalPos;
+	m_pCharacter->SetPosition(PortalPos);
+	m_pCharacter->ResetHook();
 
 	float SelfDamage = Config()->m_InfScientistTpSelfharm;
 	if(SelfDamage)
