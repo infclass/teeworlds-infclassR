@@ -75,6 +75,7 @@ struct SpawnContext
 };
 
 using ClientsArray = icArray<int, MAX_CLIENTS>;
+using EntityFilter = bool (*)(const CEntity *);
 
 class CInfClassCharacter : public CCharacter
 {
@@ -85,6 +86,9 @@ public:
 
 	static const CInfClassCharacter *GetInstance(const CCharacter *pCharacter);
 	static CInfClassCharacter *GetInstance(CCharacter *pCharacter);
+
+	static EntityFilter GetInfectedFilterFunction();
+	static EntityFilter GetHumansFilterFunction();
 
 	void OnCharacterSpawned(const SpawnContext &Context);
 	void OnCharacterInInfectionZone();

@@ -26,6 +26,18 @@
 
 MACRO_ALLOC_POOL_ID_IMPL(CInfClassCharacter, MAX_CLIENTS)
 
+static bool HumansEntitiesFilter(const CEntity *pEntity)
+{
+	const CInfClassCharacter *pInfEntity = static_cast<const CInfClassCharacter *>(pEntity);
+	return pInfEntity->IsHuman();
+}
+
+static bool InfectedEntitiesFilter(const CEntity *pEntity)
+{
+	const CInfClassCharacter *pInfEntity = static_cast<const CInfClassCharacter *>(pEntity);
+	return !pInfEntity->IsHuman();
+}
+
 CInfClassCharacter::CInfClassCharacter(CInfClassGameController *pGameController) :
 	CCharacter(pGameController->GameWorld()), m_pGameController(pGameController)
 {
@@ -38,6 +50,16 @@ CInfClassCharacter::~CInfClassCharacter()
 {
 	FreeChildSnapIDs();
 	ResetClassObject();
+}
+
+EntityFilter CInfClassCharacter::GetInfectedFilterFunction()
+{
+	return InfectedEntitiesFilter;
+}
+
+EntityFilter CInfClassCharacter::GetHumansFilterFunction()
+{
+	return HumansEntitiesFilter;
 }
 
 void CInfClassCharacter::ResetClassObject()
