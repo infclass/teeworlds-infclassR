@@ -126,6 +126,15 @@ void CLooperWall::Snap(int SnappingClient)
 	if(!DoSnapForClient(SnappingClient))
 		return;
 
+	const CInfClassPlayer *pDestPlayer = GameController()->GetPlayer(SnappingClient);
+	if(!HasSecondPosition())
+	{
+		if(pDestPlayer && !pDestPlayer->IsHuman())
+		{
+			return;
+		}
+	}
+
 	if(Server()->GetClientInfclassVersion(SnappingClient))
 	{
 		CNetObj_InfClassObject *pInfClassObject = SnapInfClassObject();
@@ -161,8 +170,7 @@ void CLooperWall::Snap(int SnappingClient)
 		return;
 	}
 
-	const CInfClassPlayer *pPlayer = GameController()->GetPlayer(SnappingClient);
-	const bool AntiPing = pPlayer && pPlayer->GetAntiPingEnabled();
+	const bool AntiPing = pDestPlayer && pDestPlayer->GetAntiPingEnabled();
 	vec2 dirVec = vec2(m_Pos.x-m_Pos2.x, m_Pos.y-m_Pos2.y);
 	vec2 dirVecN = normalize(dirVec);
 	vec2 dirVecT = vec2(dirVecN.y * g_Thickness * 0.5f, -dirVecN.x * g_Thickness * 0.5f);

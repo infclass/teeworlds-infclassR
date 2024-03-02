@@ -102,6 +102,15 @@ void CEngineerWall::Snap(int SnappingClient)
 	if(!DoSnapForClient(SnappingClient))
 		return;
 
+	if(!HasSecondPosition())
+	{
+		const CInfClassPlayer *pDestPlayer = GameController()->GetPlayer(SnappingClient);
+		if(pDestPlayer && !pDestPlayer->IsHuman())
+		{
+			return;
+		}
+	}
+
 	if(Server()->GetClientInfclassVersion(SnappingClient))
 	{
 		CNetObj_InfClassObject *pInfClassObject = SnapInfClassObject();
