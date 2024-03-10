@@ -68,9 +68,12 @@ enum class INFWEAPON
 	MERCENARY_LASER,
 
 	BLINDING_LASER,
+
+	Count,
+	Invalid = Count,
 };
 
-constexpr int NB_INFWEAPON = static_cast<int>(INFWEAPON::BLINDING_LASER) + 1;
+constexpr int NB_INFWEAPON = static_cast<int>(INFWEAPON::Count);
 
 enum
 {
