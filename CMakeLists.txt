@@ -4,7 +4,7 @@ cmake_minimum_required(VERSION 3.15)
 project(InfclassR
     VERSION 1.5.0
 )
-set(VERSION_SUFFIX "_a8")
+set(VERSION_SUFFIX "")
 
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
