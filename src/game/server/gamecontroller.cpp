@@ -22,7 +22,8 @@ public:
 class CMapInfoEx : public CMapInfo
 {
 public:
-	int mTimestamp = 0;
+	int mTimestamp{};
+	bool mEnabled{};
 
 	const char *Name() const { return aMapName; }
 	void SetName(const char *pMapName);
@@ -518,11 +519,12 @@ void IGameController::GetMapRotationInfo(CMapRotationInfo *pMapRotationInfo)
 
 void IGameController::SyncSmartMapRotationData()
 {
-	s_aMapInfo.Clear();
+	// Disable all maps
+	for (CMapInfoEx &info : s_aMapInfo) {
+		info.mEnabled = false;
+	}
 
-	// handle maprotation
 	const char *pMapRotation = Config()->m_SvMaprotation;
-
 	const char *pNextMap = pMapRotation;
 	char aMapNameBuffer[64];
 	while(*pNextMap)
@@ -535,7 +537,15 @@ void IGameController::SyncSmartMapRotationData()
 		}
 		aMapNameBuffer[WordLen] = 0;
 
-		OnMapAdded(aMapNameBuffer);
+		CMapInfoEx *pInfo = GetMapInfo(aMapNameBuffer);
+		if(pInfo)
+		{
+			pInfo->mEnabled = true;
+		}
+		else
+		{
+			OnMapAdded(aMapNameBuffer);
+		}
 
 		pNextMap += WordLen + 1;
 	}
@@ -571,6 +581,9 @@ void IGameController::ConSmartMapRotationStatus()
 		if(NameLength > MaxMapNameLength)
 			MaxMapNameLength = NameLength;
 
+		if(!Info.mEnabled)
+			continue;
+
 		if(CurrentActivePlayers < Info.MinimumPlayers)
 			continue;
 
@@ -586,6 +599,8 @@ void IGameController::ConSmartMapRotationStatus()
 	for(int i = 0; i < s_aMapInfo.Size(); ++i)
 	{
 		const CMapInfoEx &Info = s_aMapInfo.At(i);
+		if(!Info.mEnabled)
+			continue;
 
 		bool Skipped = false;
 
@@ -708,6 +723,7 @@ void IGameController::OnMapAdded(const char *pMapName)
 	s_aMapInfo.Add({});
 	CMapInfoEx &Info = s_aMapInfo.Last();
 	Info.SetName(pMapName);
+	Info.mEnabled = true;
 	LoadMapConfig(pMapName, &Info);
 }
 
@@ -916,6 +932,9 @@ void IGameController::SmartMapCycle()
 
 	for(const CMapInfoEx &Info : s_aMapInfo)
 	{
+		if(!Info.mEnabled)
+			continue;
+
 		if(CurrentActivePlayers < Info.MinimumPlayers)
 			continue;
 
@@ -931,6 +950,8 @@ void IGameController::SmartMapCycle()
 	for(int i = 0; i < s_aMapInfo.Size(); ++i)
 	{
 		const CMapInfoEx &Info = s_aMapInfo.At(i);
+		if(!Info.mEnabled)
+			continue;
 
 		if(CurrentActivePlayers < Info.MinimumPlayers)
 			continue;
