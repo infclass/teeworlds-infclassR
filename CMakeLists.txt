@@ -58,6 +58,7 @@ option(GEOLOCATION "Enable geolocation support" ${GEOLOCATION_DEFAULT})
 option(MYSQL "Enable mysql support" OFF)
 option(TOOLS "Compile tools" ON)
 option(DOWNLOAD_GTEST "Download and compile GTest" ${AUTO_DEPENDENCIES_DEFAULT})
+option(BUILD_TESTS "Build tests" OFF)
 
 # Set the default build type to Release
 if(NOT(CMAKE_BUILD_TYPE))
@@ -421,7 +422,7 @@ endif()
 ########################################################################
 
 if(NOT(GTEST_FOUND) AND DOWNLOAD_GTEST)
-  set(DDNET_GTEST_VERSION 5c8ca58edfb304b2dd5e6061f83387470826dd87) # master as of 2021-04-07
+  set(DDNET_GTEST_VERSION v1.13.0)
   configure_file(cmake/Download_GTest_CMakeLists.txt.in googletest-download/CMakeLists.txt)
   execute_process(COMMAND ${CMAKE_COMMAND} -G "${CMAKE_GENERATOR}" .
     RESULT_VARIABLE result
@@ -461,9 +462,6 @@ if(NOT(GTEST_FOUND) AND DOWNLOAD_GTEST)
 
       set(GTEST_LIBRARIES gtest gmock)
       set(GTEST_INCLUDE_DIRS)
-      if(CMAKE_VERSION VERSION_LESS 2.8.11)
-        set(GTEST_INCLUDE_DIRS "${gtest_SOURCE_DIR}/include" "${gmock_SOURCE_DIR}/include")
-      endif()
     endif()
   endif()
 endif()
@@ -1136,10 +1134,8 @@ endif()
 # TESTS
 ########################################################################
 
-set(BUILD_TESTS ${GTEST_FOUND})
-
 if(BUILD_TESTS)
-  if(NOT GTEST_FOUND)
+  if(NOT TARGET gtest)
     message(SEND_ERROR "GTest not found, unable to build the tests")
   endif()
   enable_testing()
