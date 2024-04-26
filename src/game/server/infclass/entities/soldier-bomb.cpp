@@ -38,6 +38,9 @@ CSoldierBomb::~CSoldierBomb()
 
 void CSoldierBomb::Explode()
 {
+	if(Server()->Tick() < m_StartTick + Config()->m_InfDoubleClickFilterMs * Server()->TickSpeed() / 1000.0)
+		return;
+
 	CCharacter *pOwnerChar = GameServer()->GetPlayerChar(m_Owner);
 	if(!pOwnerChar)
 		return;

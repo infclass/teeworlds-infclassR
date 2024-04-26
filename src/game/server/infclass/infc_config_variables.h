@@ -92,6 +92,7 @@ MACRO_CONFIG_INT(InfSmokerHookDamage, inf_smoker_hook_damage, 2, 1, 10000, CFGFL
 MACRO_CONFIG_INT(InfSpiderCatchHumans, inf_spider_catch_humans, 1, 0, 1, CFGFLAG_SERVER, "Always catch humans with hook")
 MACRO_CONFIG_INT(InfInfzoneFreezeDuration, inf_infzone_freeze_duration, 2, 0, 10000, CFGFLAG_SERVER, "For how long infection zone will freeze humans (in seconds) (0 = disable)")
 MACRO_CONFIG_INT(InfLastEnforcerTimeMs, inf_last_enforcer_time_ms, 400, 0, 10000, CFGFLAG_SERVER, "For how long the last hooker will be forced as the char indirect killer (in ms)")
+MACRO_CONFIG_INT(InfDoubleClickFilterMs, inf_double_click_filter_ms, 140, 0, 10000, CFGFLAG_SERVER, "Filter out probably undesired 2nd clicks during given ms (affects soldier bomb)")
 
 MACRO_CONFIG_INT(InfProbaSmoker, inf_proba_smoker, 20, 0, 100, CFGFLAG_SERVER, "Probability for an infected to be a smoker")
 MACRO_CONFIG_INT(InfProbaHunter, inf_proba_hunter, 20, 0, 100, CFGFLAG_SERVER, "Probability for an infected to be a hunter")
