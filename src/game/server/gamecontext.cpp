@@ -956,6 +956,10 @@ void CGameContext::StartVote(const char *pDesc, const char *pCommand, const char
 		}
 	}
 
+	char aBuf[256];
+	str_format(aBuf, sizeof(aBuf), "Starting vote \"%s\" for command \"%s\"", pDesc, pCommand);
+	Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "vote", aBuf);
+
 	// start vote
 	m_VoteCloseTime = time_get() + time_freq() * g_Config.m_SvVoteTime;
 	str_copy(m_aVoteDescription, pDesc, sizeof(m_aVoteDescription));
@@ -968,6 +972,39 @@ void CGameContext::StartVote(const char *pDesc, const char *pCommand, const char
 
 void CGameContext::EndVote()
 {
+	if (m_VoteCloseTime == 0)
+		return;
+
+	{
+		char aBuf[256];
+		const auto GetVoteDisplayChar = [](int Vote) -> char {
+			if(Vote > 0)
+				return 'y';
+			if(Vote < 0)
+				return 'n';
+
+			return 'i';
+		};
+
+		for(int i = 0; i < MAX_CLIENTS; i++)
+		{
+			if(!m_apPlayers[i] || m_apPlayers[i]->IsBot())
+				continue;
+
+			if(m_apPlayers[i]->GetTeam() == TEAM_SPECTATORS) // don't count in votes by spectators
+				continue;
+
+			if(m_VoteEnforce != VOTE_ENFORCE_UNKNOWN)
+			{
+				// If the vote led to a decision then skip those who abstain
+				if(m_apPlayers[i]->m_Vote == 0)
+					continue;
+			}
+			str_format(aBuf, sizeof(aBuf), "cid=%d vote=%c name=\"%s\"", i, GetVoteDisplayChar(m_apPlayers[i]->m_Vote), Server()->ClientName(i));
+			Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "vote", aBuf);
+		}
+	}
+
 	m_VoteCloseTime = 0;
 	SendVoteSet(-1);
 }
