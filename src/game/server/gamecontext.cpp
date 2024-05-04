@@ -466,7 +466,7 @@ void CGameContext::SendChatTarget(int To, const char *pText)
 
 		char aBuf[256];
 		str_format(aBuf, sizeof(aBuf), "*** %s", pText);
-		Console()->Print(IConsole::OUTPUT_LEVEL_ADDINFO, "chat", aBuf);
+		Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "chat", aBuf);
 	}
 
 	Server()->SendPackMsg(&Msg, MSGFLAG_VITAL | MSGFLAG_NORECORD, To);
