@@ -1441,8 +1441,8 @@ void CGameContext::OnTick()
 		// abort the kick-vote on player-leave
 		if(m_VoteCloseTime == -1)
 		{
-			SendChat(-1, CGameContext::CHAT_ALL, "Vote aborted");
 			EndVote();
+			SendChat(-1, CGameContext::CHAT_ALL, "Vote aborted");
 		}
 		else
 		{
