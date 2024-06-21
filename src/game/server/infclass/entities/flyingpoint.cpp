@@ -37,6 +37,10 @@ void CFlyingPoint::Tick()
 			m_InitialAmount *= 0.98f;
 		}
 	}
+	else
+	{
+		MarkForDestroy();
+	}
 }
 
 void CFlyingPoint::Snap(int SnappingClient)
