@@ -1174,7 +1174,18 @@ void CInfClassCharacter::GetDeathContext(const SDamageContext &DamageContext, De
 	ClientsArray Assistants;
 	if(!DirectKill)
 	{
-		Killers = HookersRightNow;
+		if(IsPassenger())
+		{
+			const CInfClassCharacter *pDriver = GetTaxiDriver();
+			if(pDriver->m_LastHookerTick + 1 >= Server()->Tick())
+			{
+				Killers = pDriver->m_LastHookers;
+			}
+		}
+		else
+		{
+			Killers = HookersRightNow;
+		}
 
 		if(m_LastFreezer >= 0)
 		{
@@ -1431,7 +1442,7 @@ bool CInfClassCharacter::HasPassenger() const
 	return m_Core.m_Passenger;
 }
 
-CInfClassCharacter *CInfClassCharacter::GetPassenger()
+CInfClassCharacter *CInfClassCharacter::GetPassenger() const
 {
 	if(!m_Core.m_Passenger)
 	{
@@ -1440,7 +1451,7 @@ CInfClassCharacter *CInfClassCharacter::GetPassenger()
 
 	for(int i = 0; i < MAX_CLIENTS; i++)
 	{
-		CCharacterCore *pCharCore = GameServer()->m_World.m_Core.m_apCharacters[i];
+		CCharacterCore *pCharCore = GameWorld()->m_Core.m_apCharacters[i];
 		if(pCharCore == m_Core.m_Passenger)
 			return GameController()->GetCharacter(i);
 	}
@@ -1448,7 +1459,7 @@ CInfClassCharacter *CInfClassCharacter::GetPassenger()
 	return nullptr;
 }
 
-CInfClassCharacter *CInfClassCharacter::GetTaxiDriver()
+CInfClassCharacter *CInfClassCharacter::GetTaxi() const
 {
 	if(!IsPassenger())
 	{
@@ -1457,12 +1468,24 @@ CInfClassCharacter *CInfClassCharacter::GetTaxiDriver()
 
 	for(int i = 0; i < MAX_CLIENTS; i++)
 	{
-		CCharacterCore *pCharCore = GameServer()->m_World.m_Core.m_apCharacters[i];
+		CCharacterCore *pCharCore = GameWorld()->m_Core.m_apCharacters[i];
 		if(pCharCore && (pCharCore->m_Passenger == &m_Core))
 			return GameController()->GetCharacter(i);
 	}
 
 	return nullptr;
+}
+
+CInfClassCharacter *CInfClassCharacter::GetTaxiDriver() const
+{
+	CInfClassCharacter *pDriver = nullptr;
+	CInfClassCharacter *pTaxi = GetTaxi();
+	while(pTaxi)
+	{
+		pDriver = pTaxi;
+		pTaxi = pTaxi->GetTaxi();
+	}
+	return pDriver;
 }
 
 void CInfClassCharacter::SetPassenger(CInfClassCharacter *pPassenger)

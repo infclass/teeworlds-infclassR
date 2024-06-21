@@ -237,8 +237,10 @@ public:
 	void SaturateVelocity(vec2 Force, float MaxSpeed);
 	bool IsPassenger() const;
 	bool HasPassenger() const;
-	CInfClassCharacter *GetPassenger();
-	CInfClassCharacter *GetTaxiDriver();
+	CInfClassCharacter *GetPassenger() const;
+	CInfClassCharacter *GetTaxi() const;
+	// Driver is the last Taxi in a chain
+	CInfClassCharacter *GetTaxiDriver() const;
 	void SetPassenger(CInfClassCharacter *pPassenger);
 	void TryBecomePassenger(CInfClassCharacter *pTargetDriver);
 	int GetInfZoneTick();
