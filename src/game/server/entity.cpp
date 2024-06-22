@@ -54,6 +54,15 @@ bool CEntity::GameLayerClipped(vec2 CheckPos)
 	       round_to_int(CheckPos.y) / 32 < -200 || round_to_int(CheckPos.y) / 32 > GameServer()->Collision()->GetHeight() + 200;
 }
 
+std::optional<CViewParams> GetViewParams(const CGameContext *pGameServer, int SnappingClient)
+{
+	if(SnappingClient == SERVER_DEMO_CLIENT || pGameServer->m_apPlayers[SnappingClient]->m_ShowAll)
+		return {};
+
+	const CPlayer *pPlayer = pGameServer->m_apPlayers[SnappingClient];
+	return CViewParams{pPlayer->m_ViewPos, pPlayer->m_ShowDistance};
+}
+
 bool NetworkClipped(const CGameContext *pGameServer, int SnappingClient, vec2 CheckPos)
 {
 	if(SnappingClient == SERVER_DEMO_CLIENT || pGameServer->m_apPlayers[SnappingClient]->m_ShowAll)
