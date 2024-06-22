@@ -317,7 +317,7 @@ else()
   set(MYSQL_LIBRARIES)
 endif()
 find_package(PNG)
-find_package(PythonInterp 3)
+find_package(Python3)
 find_package(SQLite3)
 find_package(Threads)
 
@@ -373,11 +373,11 @@ if(MYSQL)
 endif()
 show_dependency_status("OpenSSL Crypto" CRYPTO)
 show_dependency_status("PNG" PNG)
-show_dependency_status("PythonInterp" PYTHONINTERP)
+show_dependency_status("Python3" Python3)
 show_dependency_status("SQLite3" SQLite3)
 show_dependency_status("Zlib" ZLIB)
 
-if(NOT(PYTHONINTERP_FOUND))
+if(NOT(Python3_FOUND))
   message(SEND_ERROR "You must install Python to compile ${CMAKE_PROJECT_NAME}")
 endif()
 if(NOT(SQLite3_FOUND))
@@ -496,7 +496,7 @@ file(COPY data DESTINATION .)
 
 function(generate_source output_file script_parameter)
   add_custom_command(OUTPUT ${output_file}
-    COMMAND ${PYTHON_EXECUTABLE} datasrc/compile.py ${script_parameter}
+    COMMAND ${Python3_EXECUTABLE} datasrc/compile.py ${script_parameter}
       > "${PROJECT_BINARY_DIR}/${output_file}"
     DEPENDS
       datasrc/compile.py
@@ -509,7 +509,7 @@ endfunction()
 
 function(generate_source7 output_file script_parameter)
   add_custom_command(OUTPUT ${output_file}
-    COMMAND ${PYTHON_EXECUTABLE} -m datasrc.seven.compile ${script_parameter}
+    COMMAND ${Python3_EXECUTABLE} -m datasrc.seven.compile ${script_parameter}
       > "${PROJECT_BINARY_DIR}/${output_file}"
     DEPENDS
       datasrc/seven/compile.py
@@ -522,7 +522,7 @@ endfunction()
 
 function(generate_maps output_file script_parameter)
   add_custom_command(OUTPUT ${output_file}
-    COMMAND ${PYTHON_EXECUTABLE} datasrc/crosscompile.py ${script_parameter}
+    COMMAND ${Python3_EXECUTABLE} datasrc/crosscompile.py ${script_parameter}
       > "${PROJECT_BINARY_DIR}/${output_file}"
     DEPENDS
       datasrc/crosscompile.py
@@ -553,7 +553,7 @@ if(NOT PROJECT_GIT_DIR_ERROR)
   )
 endif()
 add_custom_command(OUTPUT ${PROJECT_BINARY_DIR}/src/game/generated/git_revision.cpp
-  COMMAND ${PYTHON_EXECUTABLE}
+  COMMAND ${Python3_EXECUTABLE}
     scripts/git_revision.py
     > ${PROJECT_BINARY_DIR}/src/game/generated/git_revision.cpp
   WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
@@ -577,7 +577,7 @@ generate_maps("src/game/generated/protocolglue.h" "map_header")
 generate_maps("src/game/generated/protocolglue.cpp" "map_source")
 
 add_custom_command(OUTPUT "src/game/generated/wordlist.h"
-  COMMAND ${PYTHON_EXECUTABLE} scripts/wordlist.py > ${PROJECT_BINARY_DIR}/src/game/generated/wordlist.h
+  COMMAND ${Python3_EXECUTABLE} scripts/wordlist.py > ${PROJECT_BINARY_DIR}/src/game/generated/wordlist.h
   WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
   DEPENDS
     scripts/wordlist.py
@@ -1068,7 +1068,7 @@ endforeach()
 add_custom_target(dev-update-json-files)
 add_custom_command(
   TARGET dev-update-json-files
-  COMMAND ${PYTHON_EXECUTABLE} scripts/translation-python3.py
+  COMMAND ${Python3_EXECUTABLE} scripts/translation-python3.py
   WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
 )
 
