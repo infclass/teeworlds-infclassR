@@ -1,6 +1,6 @@
 # DDNet-based CMakeLists for InfclassR
 
-cmake_minimum_required(VERSION 3.15)
+cmake_minimum_required(VERSION 3.15...3.29)
 project(InfclassR
     VERSION 1.5.0
 )
