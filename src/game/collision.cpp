@@ -778,7 +778,7 @@ int CCollision::GetZoneValueAt(int ZoneHandle, float x, float y, ZoneData *pData
 	return Index;
 }
 
-bool CCollision::AreConnected(vec2 Pos1, vec2 Pos2, float Radius)
+bool CCollision::AreConnected(vec2 Pos1, vec2 Pos2, float Radius) const
 {
 	if(distance(Pos1, Pos2) > Radius)
 		return false;

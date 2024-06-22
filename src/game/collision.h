@@ -80,7 +80,7 @@ public:
 	int GetZoneValueAt(int ZoneHandle, vec2 Pos, ZoneData *pData = nullptr) { return GetZoneValueAt(ZoneHandle, Pos.x, Pos.y, pData); }
 	
 /* INFECTION MODIFICATION START ***************************************/
-	bool AreConnected(vec2 Pos1, vec2 Pos2, float Radius);
+	bool AreConnected(vec2 Pos1, vec2 Pos2, float Radius) const;
 /* INFECTION MODIFICATION END *****************************************/
 
 	int GetPureMapIndex(float x, float y) const;
