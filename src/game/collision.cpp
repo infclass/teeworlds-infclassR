@@ -262,6 +262,16 @@ int CCollision::IntersectLine(vec2 Pos0, vec2 Pos1, vec2 *pOutCollision, vec2 *p
 	return 0;
 }
 
+int CCollision::IntersectLineWeapon(vec2 Pos0, vec2 Pos1, vec2 *pOutCollision, vec2 *pOutBeforeCollision, int *pTeleNr) const
+{
+	return IntersectLine(Pos0, Pos1, pOutCollision, pOutBeforeCollision);
+}
+
+int CCollision::IntersectLineHook(vec2 Pos0, vec2 Pos1, vec2 *pOutCollision, vec2 *pOutBeforeCollision, int *pTeleNr) const
+{
+	return IntersectLine(Pos0, Pos1, pOutCollision, pOutBeforeCollision);
+}
+
 // TODO: OPT: rewrite this smarter!
 void CCollision::MovePoint(vec2 *pInoutPos, vec2 *pInoutVel, float Elasticity, int *pBounces) const
 {

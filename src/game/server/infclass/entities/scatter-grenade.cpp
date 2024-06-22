@@ -66,7 +66,7 @@ void CScatterGrenade::Tick()
 	}
 	
 	vec2 LastPos;
-	int Collide = GameServer()->Collision()->IntersectLine(PrevPos, CurPos, NULL, &LastPos);
+	int Collide = GameServer()->Collision()->IntersectLineWeapon(PrevPos, CurPos, NULL, &LastPos);
 	if(Collide)
 	{
 		
@@ -78,10 +78,10 @@ void CScatterGrenade::Tick()
 		vec2 CollisionPos;
 		CollisionPos.x = LastPos.x;
 		CollisionPos.y = CurPos.y;
-		int CollideY = GameServer()->Collision()->IntersectLine(PrevPos, CollisionPos, NULL, NULL);
+		int CollideY = GameServer()->Collision()->IntersectLineWeapon(PrevPos, CollisionPos, NULL, NULL);
 		CollisionPos.x = CurPos.x;
 		CollisionPos.y = LastPos.y;
-		int CollideX = GameServer()->Collision()->IntersectLine(PrevPos, CollisionPos, NULL, NULL);
+		int CollideX = GameServer()->Collision()->IntersectLineWeapon(PrevPos, CollisionPos, NULL, NULL);
 		
 		m_Pos = LastPos;
 		m_ActualPos = m_Pos;

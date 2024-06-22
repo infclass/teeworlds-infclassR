@@ -59,7 +59,7 @@ void CBouncingBullet::Tick()
 	m_LifeSpan--;
 
 	vec2 NewPos;
-	int Collide = GameServer()->Collision()->IntersectLine(PrevPos, CurPos, nullptr, &NewPos);
+	int Collide = GameServer()->Collision()->IntersectLineWeapon(PrevPos, CurPos, nullptr, &NewPos);
 
 	const float ProjectileRadius = 6.0f;
 	CInfClassCharacter *pTargetChr = CInfClassCharacter::GetInstance(GameServer()->m_World.IntersectCharacter(PrevPos, NewPos, ProjectileRadius, NewPos));
@@ -82,10 +82,10 @@ void CBouncingBullet::Tick()
 		vec2 CollisionPos;
 		CollisionPos.x = NewPos.x;
 		CollisionPos.y = CurPos.y;
-		int CollideY = GameServer()->Collision()->IntersectLine(PrevPos, CollisionPos, NULL, NULL);
+		int CollideY = GameServer()->Collision()->IntersectLineWeapon(PrevPos, CollisionPos, NULL, NULL);
 		CollisionPos.x = CurPos.x;
 		CollisionPos.y = NewPos.y;
-		int CollideX = GameServer()->Collision()->IntersectLine(PrevPos, CollisionPos, NULL, NULL);
+		int CollideX = GameServer()->Collision()->IntersectLineWeapon(PrevPos, CollisionPos, NULL, NULL);
 
 		m_Pos = NewPos;
 		m_ActualPos = m_Pos;

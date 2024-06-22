@@ -554,7 +554,7 @@ void CInfClassInfected::OnHammerFired(WeaponFireContext *pFireContext)
 
 			CInfClassCharacter *pTarget = GameController()->GetCharacter(TargetCID);
 
-			if(GameServer()->Collision()->IntersectLine(ProjStartPos, pTarget->GetPos()))
+			if(GameServer()->Collision()->IntersectLineWeapon(ProjStartPos, pTarget->GetPos()))
 				continue;
 
 			vec2 Dir;
@@ -784,7 +784,7 @@ CSlugSlime *CInfClassInfected::PlaceSlime(vec2 PlaceToPos, float MinDistance)
 	if(m_pCharacter->IsInLove())
 		return nullptr;
 
-	if(!GameServer()->Collision()->IntersectLine(GetPos(), PlaceToPos, 0x0, &PlaceToPos))
+	if(!GameServer()->Collision()->IntersectLineWeapon(GetPos(), PlaceToPos, 0x0, &PlaceToPos))
 	{
 		return nullptr;
 	}

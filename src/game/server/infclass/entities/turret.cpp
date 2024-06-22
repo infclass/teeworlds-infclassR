@@ -138,7 +138,7 @@ void CTurret::AttackTargets()
 		// attack zombie
 		if(Len < (float)Config()->m_InfTurretRadarRange) // 800
 		{
-			if(GameServer()->Collision()->IntersectLine(m_Pos, pChr->m_Pos, nullptr, nullptr))
+			if(GameServer()->Collision()->IntersectLineWeapon(m_Pos, pChr->m_Pos, nullptr, nullptr))
 			{
 				continue;
 			}

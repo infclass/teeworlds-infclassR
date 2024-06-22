@@ -38,7 +38,7 @@ void CScientistLaser::DoBounce()
 
 	vec2 To = m_Pos + m_Dir * m_Energy;
 
-	if(GameServer()->Collision()->IntersectLine(m_Pos, To, 0x0, &To))
+	if(GameServer()->Collision()->IntersectLineWeapon(m_Pos, To, 0x0, &To))
 	{
 		if(!HitCharacter(m_Pos, To))
 		{
