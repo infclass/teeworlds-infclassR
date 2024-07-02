@@ -107,3 +107,5 @@ inline bool IsInfectedClass(EPlayerClass C)
 }
 
 int toNetValue(EPlayerClass C);
+
+const char *toString(EPlayerClass PlayerClass);

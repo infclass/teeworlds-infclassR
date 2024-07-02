@@ -60,3 +60,62 @@ int toNetValue(EPlayerClass C)
 		return Value + HumanClassOffset;
 	}
 }
+
+const char *toString(EPlayerClass PlayerClass)
+{
+	switch (PlayerClass)
+	{
+	case EPlayerClass::None:
+		return "none";
+
+	case EPlayerClass::Mercenary:
+		return "mercenary";
+	case EPlayerClass::Medic:
+		return "medic";
+	case EPlayerClass::Hero:
+		return "hero";
+	case EPlayerClass::Engineer:
+		return "engineer";
+	case EPlayerClass::Soldier:
+		return "soldier";
+	case EPlayerClass::Ninja:
+		return "ninja";
+	case EPlayerClass::Sniper:
+		return "sniper";
+	case EPlayerClass::Scientist:
+		return "scientist";
+	case EPlayerClass::Biologist:
+		return "biologist";
+	case EPlayerClass::Looper:
+		return "looper";
+
+	case EPlayerClass::Smoker:
+		return "smoker";
+	case EPlayerClass::Boomer:
+		return "boomer";
+	case EPlayerClass::Hunter:
+		return "hunter";
+	case EPlayerClass::Bat:
+		return "bat";
+	case EPlayerClass::Ghost:
+		return "ghost";
+	case EPlayerClass::Spider:
+		return "spider";
+	case EPlayerClass::Ghoul:
+		return "ghoul";
+	case EPlayerClass::Slug:
+		return "slug";
+	case EPlayerClass::Voodoo:
+		return "voodoo";
+	case EPlayerClass::Witch:
+		return "witch";
+	case EPlayerClass::Undead:
+		return "undead";
+
+	case EPlayerClass::Invalid:
+	case EPlayerClass::Count:
+		break;
+	}
+
+	return "unknown";
+}
