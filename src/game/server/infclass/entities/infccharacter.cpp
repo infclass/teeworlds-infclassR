@@ -1747,8 +1747,8 @@ void CInfClassCharacter::HandleMapMenuClicked()
 		pPlayer->SetClass(NewClass);
 
 		char aBuf[256];
-		str_format(aBuf, sizeof(aBuf), "choose_class player='%s' class='%d' random='%d'",
-			Server()->ClientName(GetCID()), static_cast<int>(NewClass), Random);
+		str_format(aBuf, sizeof(aBuf), "choose_class player='%s' class='%s' random='%d'",
+			Server()->ClientName(GetCID()), toString(NewClass), Random);
 		GameServer()->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "game", aBuf);
 
 		if(Random)

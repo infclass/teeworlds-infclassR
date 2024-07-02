@@ -5045,8 +5045,8 @@ EPlayerClass CInfClassGameController::ChooseInfectedClass(const CInfClassPlayer 
 
 	int Seconds = (Server()->Tick()-m_RoundStartTick)/((float)Server()->TickSpeed());
 	char aBuf[256];
-	str_format(aBuf, sizeof(aBuf), "infected victim='%s' duration='%d' class='%d'", 
-		Server()->ClientName(pPlayer->GetCID()), Seconds, Result);
+	str_format(aBuf, sizeof(aBuf), "infected victim='%s' duration='%d' class='%s'",
+		Server()->ClientName(pPlayer->GetCID()), Seconds, toString(Class));
 	Console()->Print(IConsole::OUTPUT_LEVEL_DEBUG, "game", aBuf);
 
 	return Class;
