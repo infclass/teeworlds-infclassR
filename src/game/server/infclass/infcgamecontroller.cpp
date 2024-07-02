@@ -54,6 +54,17 @@ const char *toString(ERoundType RoundType)
 
 template ERoundType fromString<ERoundType>(const char *pString);
 
+static const char *gs_aCharacterSpawnTypes[] = {
+	"map",
+	"witch",
+	"invalid",
+};
+
+const char *toString(SpawnContext::SPAWN_TYPE SpawnType)
+{
+	return toStringImpl(SpawnType, gs_aCharacterSpawnTypes);
+}
+
 class CHintMessage
 {
 public:

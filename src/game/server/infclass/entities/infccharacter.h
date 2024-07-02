@@ -68,11 +68,15 @@ struct SpawnContext
 	{
 		MapSpawn,
 		WitchSpawn,
+		Count,
+		Invalid = Count
 	};
 
 	vec2 SpawnPos = vec2(0, 0);
 	SPAWN_TYPE SpawnType = MapSpawn;
 };
+
+const char *toString(SpawnContext::SPAWN_TYPE SpawnType);
 
 using ClientsArray = icArray<int, MAX_CLIENTS>;
 using EntityFilter = bool (*)(const CEntity *);
