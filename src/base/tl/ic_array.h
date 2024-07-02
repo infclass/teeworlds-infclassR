@@ -29,7 +29,7 @@ public:
 
 	void erase(const T *pItem);
 
-	int Size() const;
+	constexpr int Size() const;
 
 	void Resize(int NewSize);
 
@@ -88,7 +88,7 @@ void icArray<T, StackCapacity>::erase(const T *pItem)
 }
 
 template<class T, int StackCapacity>
-int icArray<T, StackCapacity>::Size() const
+constexpr int icArray<T, StackCapacity>::Size() const
 {
 	return m_Size;
 }
