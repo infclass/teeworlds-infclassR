@@ -93,7 +93,7 @@ void CPlayer::Reset()
 	m_ClientNameLocked = false;
 	m_aOriginalName[0] = 0;
 
-	m_class = PLAYERCLASS_NONE;
+	m_class = EPlayerClass::None;
 	SetLanguage(Server()->GetClientLanguage(m_ClientID));
 
 	m_PrevTuningParams = *m_pGameServer->Tuning();
@@ -447,19 +447,19 @@ bool CPlayer::IsInGame() const
 }
 
 /* INFECTION MODIFICATION START ***************************************/
-PLAYERCLASS CPlayer::GetClass() const
+EPlayerClass CPlayer::GetClass() const
 {
-	return static_cast<PLAYERCLASS>(m_class);
+	return static_cast<EPlayerClass>(m_class);
 }
 
 bool CPlayer::IsInfected() const
 {
-	return (m_class > END_HUMANCLASS);
+	return IsInfectedClass(m_class);
 }
 
 bool CPlayer::IsHuman() const
 {
-	return !(m_class > END_HUMANCLASS);
+	return IsHumanClass(m_class);
 }
 
 bool CPlayer::IsSpectator() const

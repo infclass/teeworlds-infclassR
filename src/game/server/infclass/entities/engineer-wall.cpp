@@ -158,7 +158,7 @@ void CEngineerWall::OnHitInfected(CInfClassCharacter *pCharacter)
 		int LifeSpanReducer = ((Server()->TickSpeed()*Config()->m_InfBarrierTimeReduce)/100);
 		m_WallFlashTicks = 10;
 
-		if(pCharacter->GetPlayerClass() == PLAYERCLASS_GHOUL)
+		if(pCharacter->GetPlayerClass() == EPlayerClass::Ghoul)
 		{
 			float Factor = pInfected->GetGhoulPercent();
 			LifeSpanReducer += Server()->TickSpeed() * 5.0f * Factor;

@@ -2,7 +2,7 @@
 
 #include <game/infclass/classes.h>
 
-int CRoundStatistics::CPlayerStats::OnScoreEvent(int EventType, int Class)
+int CRoundStatistics::CPlayerStats::OnScoreEvent(int EventType, EPlayerClass Class)
 {
 	int Points = 0;
 	switch(EventType)
@@ -58,68 +58,73 @@ int CRoundStatistics::CPlayerStats::OnScoreEvent(int EventType, int Class)
 	
 	switch(Class)
 	{
-		case PLAYERCLASS_ENGINEER:
+		case EPlayerClass::Engineer:
 			m_EngineerScore += Points;
 			break;
-		case PLAYERCLASS_SOLDIER:
+		case EPlayerClass::Soldier:
 			m_SoldierScore += Points;
 			break;
-		case PLAYERCLASS_SCIENTIST:
+		case EPlayerClass::Scientist:
 			m_ScientistScore += Points;
 			break;
-		case PLAYERCLASS_BIOLOGIST:
+		case EPlayerClass::Biologist:
 			m_BiologistScore += Points;
 			break;
-		case PLAYERCLASS_LOOPER:
+		case EPlayerClass::Looper:
 			m_LooperScore += Points;
 			break;
-		case PLAYERCLASS_MEDIC:
+		case EPlayerClass::Medic:
 			m_MedicScore += Points;
 			break;
-		case PLAYERCLASS_HERO:
+		case EPlayerClass::Hero:
 			m_HeroScore += Points;
 			break;
-		case PLAYERCLASS_NINJA:
+		case EPlayerClass::Ninja:
 			m_NinjaScore += Points;
 			break;
-		case PLAYERCLASS_MERCENARY:
+		case EPlayerClass::Mercenary:
 			m_MercenaryScore += Points;
 			break;
-		case PLAYERCLASS_SNIPER:
+		case EPlayerClass::Sniper:
 			m_SniperScore += Points;
 			break;
-		case PLAYERCLASS_SMOKER:
+		case EPlayerClass::Smoker:
 			m_SmokerScore += Points;
 			break;
-		case PLAYERCLASS_HUNTER:
+		case EPlayerClass::Hunter:
 			m_HunterScore += Points;
 			break;
-		case PLAYERCLASS_BAT:
+		case EPlayerClass::Bat:
 			m_BatScore += Points;
 			break;
-		case PLAYERCLASS_BOOMER:
+		case EPlayerClass::Boomer:
 			m_BoomerScore += Points;
 			break;
-		case PLAYERCLASS_GHOST:
+		case EPlayerClass::Ghost:
 			m_GhostScore += Points;
 			break;
-		case PLAYERCLASS_SPIDER:
+		case EPlayerClass::Spider:
 			m_SpiderScore += Points;
 			break;
-		case PLAYERCLASS_GHOUL:
+		case EPlayerClass::Ghoul:
 			m_GhoulScore += Points;
 			break;
-		case PLAYERCLASS_SLUG:
+		case EPlayerClass::Slug:
 			m_SlugScore += Points;
 			break;
-		case PLAYERCLASS_VOODOO:
+		case EPlayerClass::Voodoo:
 			m_VoodooScore += Points;
 			break;
-		case PLAYERCLASS_UNDEAD:
+		case EPlayerClass::Undead:
 			m_UndeadScore += Points;
 			break;
-		case PLAYERCLASS_WITCH:
+		case EPlayerClass::Witch:
 			m_WitchScore += Points;
+			break;
+
+		case EPlayerClass::Invalid:
+		case EPlayerClass::None:
+		case EPlayerClass::Count:
 			break;
 	}
 
@@ -132,7 +137,7 @@ void CRoundStatistics::ResetPlayer(int ClientID)
 		m_aPlayers[ClientID].Reset();
 }
 
-void CRoundStatistics::OnScoreEvent(int ClientID, int EventType, int Class, const char* Name, IConsole* console)
+void CRoundStatistics::OnScoreEvent(int ClientID, int EventType, EPlayerClass Class, const char* Name, IConsole* console)
 {
 	if(ClientID >= 0 && ClientID < MAX_CLIENTS) {
 		int Score = m_aPlayers[ClientID].OnScoreEvent(EventType, Class);

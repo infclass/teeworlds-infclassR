@@ -124,7 +124,7 @@ public:
 
 	void SetJumpsLimit(int Limit);
 
-	PLAYERCLASS GetPlayerClass() const;
+	EPlayerClass GetPlayerClass() const;
 
 	int GetDropLevel() const { return m_DropLevel; }
 	void SetDropLevel(int Level);

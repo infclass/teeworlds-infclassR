@@ -1083,14 +1083,14 @@ int CMapConverter::Finalize()
 				{
 					int ClassMask = 0;
 
-					PLAYERCLASS PlayerClass = CInfClassGameController::MenuClassToPlayerClass(i);
+					EPlayerClass PlayerClass = CInfClassGameController::MenuClassToPlayerClass(i);
 					if(CInfClassGameController::IsDefenderClass(PlayerClass))
 						ClassMask = MASK_DEFENDER;
 					else if(CInfClassGameController::IsSupportClass(PlayerClass))
 						ClassMask = MASK_SUPPORT;
-					else if(PlayerClass == PLAYERCLASS_MEDIC)
+					else if(PlayerClass == EPlayerClass::Medic)
 						ClassMask = MASK_MEDIC;
-					else if(PlayerClass == PLAYERCLASS_HERO)
+					else if(PlayerClass == EPlayerClass::Hero)
 						ClassMask = MASK_HERO;
 					else
 						ClassMask = MASK_DEFENDER; // For some reason the random class is also defender

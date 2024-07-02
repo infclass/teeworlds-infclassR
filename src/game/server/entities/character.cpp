@@ -330,11 +330,11 @@ void CCharacter::Tick()
 	CCharacterCore::CParams CoreTickParams(&m_pPlayer->m_NextTuningParams);
 	//~ CCharacterCore::CParams CoreTickParams(&GameWorld()->m_Core.m_Tuning);
 
-	if(PrivateGetPlayerClass() == PLAYERCLASS_SPIDER)
+	if(PrivateGetPlayerClass() == EPlayerClass::Spider)
 	{
 		CoreTickParams.m_HookGrabTime = g_Config.m_InfSpiderHookTime*SERVER_TICK_SPEED;
 	}
-	if(PrivateGetPlayerClass() == PLAYERCLASS_BAT)
+	if(PrivateGetPlayerClass() == EPlayerClass::Bat)
 	{
 		CoreTickParams.m_HookGrabTime = g_Config.m_InfBatHookTime*SERVER_TICK_SPEED;
 	}
@@ -648,10 +648,10 @@ vec2 CCharacter::GetDirection() const
 	return normalize(vec2(m_LatestInput.m_TargetX, m_LatestInput.m_TargetY));
 }
 
-int CCharacter::PrivateGetPlayerClass() const
+EPlayerClass CCharacter::PrivateGetPlayerClass() const
 {
 	if(!m_pPlayer)
-		return PLAYERCLASS_NONE;
+		return EPlayerClass::None;
 	else
 		return m_pPlayer->GetClass();
 }

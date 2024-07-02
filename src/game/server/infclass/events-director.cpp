@@ -63,8 +63,7 @@ void EventsDirector::SetupSkin(const CSkinContext &Context, CWeakSkinInfo *pOutp
 		// The skins added in PR: https://github.com/ddnet/ddnet/pull/1218
 		bool ClientHasSantaSkins = DDNetVersion >= 11031;
 
-		const bool IsHumanSkin = Context.PlayerClass < END_HUMANCLASS;
-		const bool Customize = IsHumanSkin || (Context.PlayerClass == PLAYERCLASS_WITCH);
+		const bool Customize = IsHumanClass(Context.PlayerClass) || (Context.PlayerClass == EPlayerClass::Witch);
 
 		if(ClientHasSantaSkins && Customize)
 		{

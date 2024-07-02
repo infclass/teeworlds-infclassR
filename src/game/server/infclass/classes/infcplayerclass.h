@@ -77,7 +77,7 @@ public:
 
 	// Temp stuff
 	void UpdateSkin();
-	int GetPlayerClass() const;
+	EPlayerClass GetPlayerClass() const;
 	virtual void OnPlayerClassChanged();
 
 	virtual void PrepareToDie(const DeathContext &Context, bool *pRefusedToDie);

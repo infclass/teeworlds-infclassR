@@ -46,13 +46,13 @@ void CInfClassInfected::SetupSkinContext(CSkinContext *pOutput, bool ForSameTeam
 	pOutput->PlayerClass = GetPlayerClass();
 	switch(GetPlayerClass())
 	{
-	case PLAYERCLASS_SPIDER:
+	case EPlayerClass::Spider:
 		pOutput->ExtraData1 = ForSameTeam ? m_HookOnTheLimit : 0;
 		break;
-	case PLAYERCLASS_GHOUL:
+	case EPlayerClass::Ghoul:
 		pOutput->ExtraData1 = GetGhoulPercent() * 100;
 		break;
-	case PLAYERCLASS_VOODOO:
+	case EPlayerClass::Voodoo:
 		pOutput->ExtraData1 = m_VoodooAboutToDie;
 		break;
 	default:
@@ -70,25 +70,25 @@ bool CInfClassInfected::SetupSkin(const CSkinContext &Context, CWeakSkinInfo *pO
 {
 	switch(Context.PlayerClass)
 	{
-	case PLAYERCLASS_SMOKER:
+	case EPlayerClass::Smoker:
 		pOutput->UseCustomColor = 1;
 		pOutput->pSkinName = "cammostripes";
 		pOutput->ColorBody = 3866368;
 		pOutput->ColorFeet = 65414;
 		break;
-	case PLAYERCLASS_BOOMER:
+	case EPlayerClass::Boomer:
 		pOutput->pSkinName = "saddo";
 		pOutput->UseCustomColor = 1;
 		pOutput->ColorBody = 3866368;
 		pOutput->ColorFeet = 65414;
 		break;
-	case PLAYERCLASS_HUNTER:
+	case EPlayerClass::Hunter:
 		pOutput->pSkinName = "warpaint";
 		pOutput->UseCustomColor = 1;
 		pOutput->ColorBody = 3866368;
 		pOutput->ColorFeet = 65414;
 		break;
-	case PLAYERCLASS_BAT:
+	case EPlayerClass::Bat:
 		pOutput->pSkinName = "limekitty";
 		pOutput->UseCustomColor = 1;
 		pOutput->ColorBody = 3866368;
@@ -99,13 +99,13 @@ bool CInfClassInfected::SetupSkin(const CSkinContext &Context, CWeakSkinInfo *pO
 			pOutput->ColorFeet = 16776744;
 		}
 		break;
-	case PLAYERCLASS_GHOST:
+	case EPlayerClass::Ghost:
 		pOutput->pSkinName = "twintri";
 		pOutput->UseCustomColor = 1;
 		pOutput->ColorBody = 3866368;
 		pOutput->ColorFeet = 65414;
 		break;
-	case PLAYERCLASS_SPIDER:
+	case EPlayerClass::Spider:
 		pOutput->pSkinName = "pinky";
 		pOutput->UseCustomColor = 1;
 		pOutput->ColorBody = 3866368;
@@ -118,7 +118,7 @@ bool CInfClassInfected::SetupSkin(const CSkinContext &Context, CWeakSkinInfo *pO
 			pOutput->ColorFeet = 65414;
 		}
 		break;
-	case PLAYERCLASS_GHOUL:
+	case EPlayerClass::Ghoul:
 		pOutput->pSkinName = "cammo";
 		pOutput->UseCustomColor = 1;
 		{
@@ -128,13 +128,13 @@ bool CInfClassInfected::SetupSkin(const CSkinContext &Context, CWeakSkinInfo *pO
 		}
 		pOutput->ColorFeet = 65414;
 		break;
-	case PLAYERCLASS_SLUG:
+	case EPlayerClass::Slug:
 		pOutput->pSkinName = "coala";
 		pOutput->UseCustomColor = 1;
 		pOutput->ColorBody = 3866368;
 		pOutput->ColorFeet = 65414;
 		break;
-	case PLAYERCLASS_VOODOO:
+	case EPlayerClass::Voodoo:
 		pOutput->pSkinName = "bluestripe";
 		pOutput->UseCustomColor = 1;
 		if(!Context.ExtraData1)
@@ -147,13 +147,13 @@ bool CInfClassInfected::SetupSkin(const CSkinContext &Context, CWeakSkinInfo *pO
 		}
 		pOutput->ColorFeet = 65414;
 		break;
-	case PLAYERCLASS_UNDEAD:
+	case EPlayerClass::Undead:
 		pOutput->pSkinName = "redstripe";
 		pOutput->UseCustomColor = 1;
 		pOutput->ColorBody = 3014400;
 		pOutput->ColorFeet = 13168;
 		break;
-	case PLAYERCLASS_WITCH:
+	case EPlayerClass::Witch:
 		pOutput->pSkinName = "redbopp";
 		pOutput->UseCustomColor = 1;
 		pOutput->ColorBody = 16776744;
@@ -204,9 +204,9 @@ int CInfClassInfected::GetJumps() const
 {
 	switch(GetPlayerClass())
 	{
-	case PLAYERCLASS_HUNTER:
+	case EPlayerClass::Hunter:
 		return 3;
-	case PLAYERCLASS_BAT:
+	case EPlayerClass::Bat:
 		return Config()->m_InfBatAirjumpLimit;
 	default:
 		return 2;
@@ -224,7 +224,7 @@ void CInfClassInfected::OnPlayerSnap(int SnappingClient, int InfClassVersion)
 	CNetObj_InfClassClassInfo *pClassInfo = Server()->SnapNewItem<CNetObj_InfClassClassInfo>(GetCID());
 	if(!pClassInfo)
 		return;
-	pClassInfo->m_Class = GetPlayerClass();
+	pClassInfo->m_Class = toNetValue(GetPlayerClass());
 	pClassInfo->m_Flags = 0;
 	pClassInfo->m_Data1 = -1;
 
@@ -240,10 +240,10 @@ void CInfClassInfected::OnPlayerSnap(int SnappingClient, int InfClassVersion)
 
 bool CInfClassInfected::CanDie() const
 {
-	if ((GetPlayerClass() == PLAYERCLASS_UNDEAD) && m_pCharacter->IsFrozen()) {
+	if ((GetPlayerClass() == EPlayerClass::Undead) && m_pCharacter->IsFrozen()) {
 		return false;
 	}
-	if ((GetPlayerClass() == PLAYERCLASS_VOODOO) && m_VoodooAboutToDie) {
+	if ((GetPlayerClass() == EPlayerClass::Voodoo) && m_VoodooAboutToDie) {
 		return false;
 	}
 
@@ -261,10 +261,10 @@ void CInfClassInfected::OnCharacterPreCoreTick()
 
 	switch(GetPlayerClass())
 	{
-	case PLAYERCLASS_GHOST:
+	case EPlayerClass::Ghost:
 		GhostPreCoreTick();
 		break;
-	case PLAYERCLASS_SPIDER:
+	case EPlayerClass::Spider:
 		SpiderPreCoreTick();
 		break;
 	default:
@@ -276,7 +276,7 @@ void CInfClassInfected::OnCharacterTick()
 {
 	CInfClassPlayerClass::OnCharacterTick();
 
-	if(GetPlayerClass() == PLAYERCLASS_VOODOO && m_VoodooAboutToDie)
+	if(GetPlayerClass() == EPlayerClass::Voodoo && m_VoodooAboutToDie)
 	{
 		// Delayed Death
 		if (m_VoodooTimeAlive > 0)
@@ -292,7 +292,7 @@ void CInfClassInfected::OnCharacterTick()
 			NULL
 		);
 	}
-	if(GetPlayerClass() == PLAYERCLASS_SPIDER)
+	if(GetPlayerClass() == EPlayerClass::Spider)
 	{
 		const bool HookIsOnTheLimit = m_pCharacter->WebHookLength() > Config()->m_InfSpiderWebHookLength - 48.0f;
 		SetHookOnLimit(HookIsOnTheLimit);
@@ -319,7 +319,7 @@ void CInfClassInfected::OnCharacterPostCoreTick()
 			float Rate = 1.0f;
 			int Damage = 1;
 
-			if(GetPlayerClass() == PLAYERCLASS_SMOKER)
+			if(GetPlayerClass() == EPlayerClass::Smoker)
 			{
 				Rate = 0.5f;
 				Damage = g_Config.m_InfSmokerHookDamage;
@@ -359,7 +359,7 @@ void CInfClassInfected::OnCharacterSnap(int SnappingClient)
 {
 	const vec2 Pos = m_pCharacter->GetPos();
 
-	if(GetPlayerClass() == PLAYERCLASS_WITCH)
+	if(GetPlayerClass() == EPlayerClass::Witch)
 	{
 		CNetObj_Flag *pFlag = Server()->SnapNewItem<CNetObj_Flag>(m_pCharacter->GetFlagID());
 		if(!pFlag)
@@ -374,7 +374,7 @@ void CInfClassInfected::OnCharacterSnap(int SnappingClient)
 	{
 		switch(GetPlayerClass())
 		{
-		case PLAYERCLASS_WITCH:
+		case EPlayerClass::Witch:
 		{
 			if(m_pCharacter->GetActiveWeapon() == WEAPON_HAMMER)
 			{
@@ -422,7 +422,7 @@ void CInfClassInfected::OnCharacterSpawned(const SpawnContext &Context)
 
 	if(Context.SpawnType == SpawnContext::MapSpawn)
 	{
-		if(GetPlayerClass() == PLAYERCLASS_GHOST)
+		if(GetPlayerClass() == EPlayerClass::Ghost)
 		{
 			m_pCharacter->MakeInvisible();
 		}
@@ -433,13 +433,13 @@ void CInfClassInfected::OnCharacterDeath(EDamageType DamageType)
 {
 	CInfClassPlayerClass::OnCharacterDeath(DamageType);
 
-	if(GetPlayerClass() == PLAYERCLASS_GHOUL)
+	if(GetPlayerClass() == EPlayerClass::Ghoul)
 	{
 		IncreaseGhoulLevel(-20);
 		UpdateSkin();
 	}
 
-	if(GetPlayerClass() == PLAYERCLASS_BOOMER)
+	if(GetPlayerClass() == EPlayerClass::Boomer)
 	{
 		bool CanExplode = true;
 
@@ -470,16 +470,16 @@ void CInfClassInfected::OnCharacterDamage(SDamageContext *pContext)
 
 	switch(GetPlayerClass())
 	{
-	case PLAYERCLASS_HUNTER:
+	case EPlayerClass::Hunter:
 		if(pContext->DamageType == EDamageType::MEDIC_SHOTGUN)
 		{
 			pContext->Force = vec2(0, 0);
 		}
 		break;
-	case PLAYERCLASS_GHOST:
+	case EPlayerClass::Ghost:
 		m_pCharacter->MakeVisible();
 		break;
-	case PLAYERCLASS_GHOUL:
+	case EPlayerClass::Ghoul:
 	{
 		int DamageAccepted = 0;
 		for(int i = 0; i < pContext->Damage; i++)
@@ -499,7 +499,7 @@ void CInfClassInfected::OnCharacterDamage(SDamageContext *pContext)
 
 void CInfClassInfected::OnHammerFired(WeaponFireContext *pFireContext)
 {
-	if(GetPlayerClass() == PLAYERCLASS_BOOMER)
+	if(GetPlayerClass() == EPlayerClass::Boomer)
 	{
 		if(!m_pCharacter->IsFrozen() && !m_pCharacter->IsInLove())
 		{
@@ -513,7 +513,7 @@ void CInfClassInfected::OnHammerFired(WeaponFireContext *pFireContext)
 	bool AutoFire = false;
 	bool FullAuto = false;
 
-	if(GetPlayerClass() == PLAYERCLASS_SLUG)
+	if(GetPlayerClass() == EPlayerClass::Slug)
 		FullAuto = true;
 
 	if(m_pCharacter->CountFireInput().m_Presses)
@@ -535,7 +535,7 @@ void CInfClassInfected::OnHammerFired(WeaponFireContext *pFireContext)
 
 		ShowAttackAnimation = true;
 
-		if(GetPlayerClass() == PLAYERCLASS_GHOST)
+		if(GetPlayerClass() == EPlayerClass::Ghost)
 		{
 			m_pCharacter->MakeVisible();
 			m_LastSeenTick = Server()->Tick();
@@ -604,7 +604,7 @@ void CInfClassInfected::OnHammerFired(WeaponFireContext *pFireContext)
 				int Damage = g_pData->m_Weapons.m_Hammer.m_pBase->m_Damage;
 				EDamageType DamageType = EDamageType::INFECTION_HAMMER;
 
-				if(GetPlayerClass() == PLAYERCLASS_BAT)
+				if(GetPlayerClass() == EPlayerClass::Bat)
 				{
 					Damage = Config()->m_InfBatDamage;
 					DamageType = EDamageType::BITE;
@@ -633,7 +633,7 @@ void CInfClassInfected::OnHammerFired(WeaponFireContext *pFireContext)
 	{
 		m_pCharacter->SetReloadDuration(0.33f);
 	}
-	else if(GetPlayerClass() == PLAYERCLASS_SLUG)
+	else if(GetPlayerClass() == EPlayerClass::Slug)
 	{
 		PlaceSlugSlime(pFireContext);
 	}
@@ -662,7 +662,7 @@ void CInfClassInfected::GiveClassAttributes()
 
 void CInfClassInfected::BroadcastWeaponState() const
 {
-	if(GetPlayerClass() == PLAYERCLASS_SPIDER)
+	if(GetPlayerClass() == EPlayerClass::Spider)
 	{
 		if(m_pCharacter->m_HookMode > 0)
 		{
@@ -670,7 +670,7 @@ void CInfClassInfected::BroadcastWeaponState() const
 				BROADCAST_DURATION_REALTIME, _C("Spider", "Web mode enabled"), NULL);
 		}
 	}
-	else if(GetPlayerClass() == PLAYERCLASS_GHOUL)
+	else if(GetPlayerClass() == EPlayerClass::Ghoul)
 	{
 		if(m_pPlayer->GetGhoulLevel())
 		{
@@ -897,7 +897,7 @@ bool CInfClassInfected::HasDrainingHook() const
 {
 	switch(GetPlayerClass())
 	{
-	case PLAYERCLASS_SMOKER:
+	case EPlayerClass::Smoker:
 		return true;
 	default:
 		return false;
@@ -1008,7 +1008,7 @@ void CInfClassInfected::OnSlimeEffect(int Owner, int Damage, float DamageInterva
 
 void CInfClassInfected::OnFloatingPointCollected(int Points)
 {
-	if(GetPlayerClass() != PLAYERCLASS_GHOUL)
+	if(GetPlayerClass() != EPlayerClass::Ghoul)
 		return;
 
 	m_pCharacter->Heal(4);
@@ -1037,7 +1037,7 @@ int CInfClassInfected::GetGhoulLevel() const
 
 void CInfClassInfected::PrepareToDie(const DeathContext &Context, bool *pRefusedToDie)
 {
-	if(GetPlayerClass() == PLAYERCLASS_UNDEAD)
+	if(GetPlayerClass() == EPlayerClass::Undead)
 	{
 		m_pCharacter->Freeze(10.0, Context.Killer, FREEZEREASON_UNDEAD);
 		m_pCharacter->SetHealthArmor(0, 0);
@@ -1046,7 +1046,7 @@ void CInfClassInfected::PrepareToDie(const DeathContext &Context, bool *pRefused
 	}
 
 	// Start counting down, delay killer message for later
-	if(GetPlayerClass() == PLAYERCLASS_VOODOO)
+	if(GetPlayerClass() == EPlayerClass::Voodoo)
 	{
 		if(m_VoodooAboutToDie)
 		{
@@ -1062,7 +1062,7 @@ void CInfClassInfected::PrepareToDie(const DeathContext &Context, bool *pRefused
 	}
 
 	// Start counting down, delay killer message for later
-	if(GetPlayerClass() == PLAYERCLASS_VOODOO)
+	if(GetPlayerClass() == EPlayerClass::Voodoo)
 	{
 		m_VoodooAboutToDie = true;
 		m_VoodooDeathContext = Context;

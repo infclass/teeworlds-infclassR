@@ -173,12 +173,12 @@ public:
 
 /* INFECTION MODIFICATION START ***************************************/
 protected:
-	PLAYERCLASS m_class;
+	EPlayerClass m_class;
 	int m_DefaultScoreMode;
 	char m_aLanguage[16];
 
 public:
-	PLAYERCLASS GetClass() const;
+	EPlayerClass GetClass() const;
 	bool IsInfected() const;
 	bool IsHuman() const;
 	bool IsSpectator() const;

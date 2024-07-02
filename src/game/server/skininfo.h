@@ -1,10 +1,12 @@
 #ifndef GAME_SERVER_SKININFO_H
 #define GAME_SERVER_SKININFO_H
 
+enum class EPlayerClass;
+
 class CSkinContext
 {
 public:
-	int PlayerClass = 0;
+	EPlayerClass PlayerClass{};
 	int ExtraData1 = 0;
 	bool Highlight = 0;
 };

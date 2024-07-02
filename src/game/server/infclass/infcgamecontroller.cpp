@@ -143,8 +143,8 @@ struct InfclassPlayerPersistantData : public CGameContext::CPersistentClientData
 {
 	EPlayerScoreMode m_ScoreMode = EPlayerScoreMode::Class;
 	bool m_AntiPing = false;
-	PLAYERCLASS m_PreferredClass = PLAYERCLASS_INVALID;
-	PLAYERCLASS m_PreviouslyPickedClass = PLAYERCLASS_INVALID;
+	EPlayerClass m_PreferredClass = EPlayerClass::Invalid;
+	EPlayerClass m_PreviouslyPickedClass = EPlayerClass::Invalid;
 	int m_LastInfectionTime = 0;
 };
 
@@ -365,7 +365,7 @@ void CInfClassGameController::OnReset()
 	}
 }
 
-void CInfClassGameController::DoPlayerInfection(CInfClassPlayer *pPlayer, CInfClassPlayer *pInfectiousPlayer, PLAYERCLASS PreviousClass)
+void CInfClassGameController::DoPlayerInfection(CInfClassPlayer *pPlayer, CInfClassPlayer *pInfectiousPlayer, EPlayerClass PreviousClass)
 {
 	if(GetRoundType() == ERoundType::Survival)
 	{
@@ -373,7 +373,7 @@ void CInfClassGameController::DoPlayerInfection(CInfClassPlayer *pPlayer, CInfCl
 		return;
 	}
 
-	PLAYERCLASS c = ChooseInfectedClass(pPlayer);
+	EPlayerClass c = ChooseInfectedClass(pPlayer);
 	pPlayer->SetClass(c);
 
 	FallInLoveIfInfectedEarly(pPlayer->GetCharacter());
@@ -539,7 +539,7 @@ void CInfClassGameController::HandleCharacterTiles(CInfClassCharacter *pCharacte
 	{
 		pCharacter->Die(pCharacter->GetCID(), EDamageType::DEATH_TILE);
 	}
-	else if(pCharacter->GetPlayerClass() != PLAYERCLASS_UNDEAD && Indices.Contains(ZONE_DAMAGE_DEATH_NOUNDEAD))
+	else if(pCharacter->GetPlayerClass() != EPlayerClass::Undead && Indices.Contains(ZONE_DAMAGE_DEATH_NOUNDEAD))
 	{
 		pCharacter->Die(pCharacter->GetCID(), EDamageType::DEATH_TILE);
 	}
@@ -948,7 +948,7 @@ void CInfClassGameController::StartSurvivalGame()
 			if(pCharacter)
 			{
 				pPlayer->KillCharacter();
-				pPlayer->SetClass(PLAYERCLASS_NONE);
+				pPlayer->SetClass(EPlayerClass::None);
 			}
 		}
 	}
@@ -1038,55 +1038,55 @@ int CInfClassGameController::GetInfectionStartTick() const
 	return InfectionTick;
 }
 
-bool CInfClassGameController::IsDefenderClass(PLAYERCLASS PlayerClass)
+bool CInfClassGameController::IsDefenderClass(EPlayerClass PlayerClass)
 {
 	switch (PlayerClass)
 	{
-		case PLAYERCLASS_ENGINEER:
-		case PLAYERCLASS_SOLDIER:
-		case PLAYERCLASS_SCIENTIST:
-		case PLAYERCLASS_BIOLOGIST:
-		case PLAYERCLASS_LOOPER:
+		case EPlayerClass::Engineer:
+		case EPlayerClass::Soldier:
+		case EPlayerClass::Scientist:
+		case EPlayerClass::Biologist:
+		case EPlayerClass::Looper:
 			return true;
 		default:
 			return false;
 	}
 }
 
-bool CInfClassGameController::IsSupportClass(PLAYERCLASS PlayerClass)
+bool CInfClassGameController::IsSupportClass(EPlayerClass PlayerClass)
 {
 	switch (PlayerClass)
 	{
-		case PLAYERCLASS_NINJA:
-		case PLAYERCLASS_MERCENARY:
-		case PLAYERCLASS_SNIPER:
+		case EPlayerClass::Ninja:
+		case EPlayerClass::Mercenary:
+		case EPlayerClass::Sniper:
 			return true;
 		default:
 			return false;
 	}
 }
 
-PLAYERCLASS CInfClassGameController::GetClassByName(const char *pClassName, bool *pOk)
+EPlayerClass CInfClassGameController::GetClassByName(const char *pClassName, bool *pOk)
 {
 	struct ExtraName
 	{
-		ExtraName(const char *pN, PLAYERCLASS Class) :
+		ExtraName(const char *pN, EPlayerClass Class) :
 			pName(pN), PlayerClass(Class)
 		{
 		}
 
 		const char *pName = nullptr;
-		PLAYERCLASS PlayerClass = PLAYERCLASS_INVALID;
+		EPlayerClass PlayerClass = EPlayerClass::Invalid;
 	};
 
 	static const ExtraName extraNames[] = {
-		ExtraName("bio", PLAYERCLASS_BIOLOGIST),
-		ExtraName("bios", PLAYERCLASS_BIOLOGIST),
-		ExtraName("engi", PLAYERCLASS_ENGINEER),
-		ExtraName("merc", PLAYERCLASS_MERCENARY),
-		ExtraName("mercs", PLAYERCLASS_MERCENARY),
-		ExtraName("sci", PLAYERCLASS_SCIENTIST),
-		ExtraName("random", PLAYERCLASS_RANDOM),
+		ExtraName("bio", EPlayerClass::Biologist),
+		ExtraName("bios", EPlayerClass::Biologist),
+		ExtraName("engi", EPlayerClass::Engineer),
+		ExtraName("merc", EPlayerClass::Mercenary),
+		ExtraName("mercs", EPlayerClass::Mercenary),
+		ExtraName("sci", EPlayerClass::Scientist),
+		ExtraName("random", EPlayerClass::Random),
 	};
 	if(pOk)
 	{
@@ -1100,12 +1100,12 @@ PLAYERCLASS CInfClassGameController::GetClassByName(const char *pClassName, bool
 		}
 	}
 
-	for(PLAYERCLASS PlayerClass : AllPlayerClasses())
+	for(EPlayerClass PlayerClass : AllPlayerClasses)
 	{
 		const char *pSingularName = CInfClassGameController::GetClassName(PlayerClass);
 		const char *pPluralName = CInfClassGameController::GetClassPluralName(PlayerClass);
 		if((str_comp(pClassName, pSingularName) == 0) || (str_comp(pClassName, pPluralName) == 0)) {
-			return static_cast<PLAYERCLASS>(PlayerClass);
+			return static_cast<EPlayerClass>(PlayerClass);
 		}
 	}
 
@@ -1113,58 +1113,58 @@ PLAYERCLASS CInfClassGameController::GetClassByName(const char *pClassName, bool
 	{
 		*pOk = false;
 	}
-	return PLAYERCLASS_INVALID;
+	return EPlayerClass::Invalid;
 }
 
-const char *CInfClassGameController::GetClassName(PLAYERCLASS PlayerClass)
+const char *CInfClassGameController::GetClassName(EPlayerClass PlayerClass)
 {
 	switch (PlayerClass)
 	{
-		case PLAYERCLASS_NONE:
+		case EPlayerClass::None:
 			return "none";
 
-		case PLAYERCLASS_MERCENARY:
+		case EPlayerClass::Mercenary:
 			return "mercenary";
-		case PLAYERCLASS_MEDIC:
+		case EPlayerClass::Medic:
 			return "medic";
-		case PLAYERCLASS_HERO:
+		case EPlayerClass::Hero:
 			return "hero";
-		case PLAYERCLASS_ENGINEER:
+		case EPlayerClass::Engineer:
 			return "engineer";
-		case PLAYERCLASS_SOLDIER:
+		case EPlayerClass::Soldier:
 			return "soldier";
-		case PLAYERCLASS_NINJA:
+		case EPlayerClass::Ninja:
 			return "ninja";
-		case PLAYERCLASS_SNIPER:
+		case EPlayerClass::Sniper:
 			return "sniper";
-		case PLAYERCLASS_SCIENTIST:
+		case EPlayerClass::Scientist:
 			return "scientist";
-		case PLAYERCLASS_BIOLOGIST:
+		case EPlayerClass::Biologist:
 			return "biologist";
-		case PLAYERCLASS_LOOPER:
+		case EPlayerClass::Looper:
 			return "looper";
 
-		case PLAYERCLASS_SMOKER:
+		case EPlayerClass::Smoker:
 			return "smoker";
-		case PLAYERCLASS_BOOMER:
+		case EPlayerClass::Boomer:
 			return "boomer";
-		case PLAYERCLASS_HUNTER:
+		case EPlayerClass::Hunter:
 			return "hunter";
-		case PLAYERCLASS_BAT:
+		case EPlayerClass::Bat:
 			return "bat";
-		case PLAYERCLASS_GHOST:
+		case EPlayerClass::Ghost:
 			return "ghost";
-		case PLAYERCLASS_SPIDER:
+		case EPlayerClass::Spider:
 			return "spider";
-		case PLAYERCLASS_GHOUL:
+		case EPlayerClass::Ghoul:
 			return "ghoul";
-		case PLAYERCLASS_SLUG:
+		case EPlayerClass::Slug:
 			return "slug";
-		case PLAYERCLASS_VOODOO:
+		case EPlayerClass::Voodoo:
 			return "voodoo";
-		case PLAYERCLASS_WITCH:
+		case EPlayerClass::Witch:
 			return "witch";
-		case PLAYERCLASS_UNDEAD:
+		case EPlayerClass::Undead:
 			return "undead";
 
 		default:
@@ -1172,52 +1172,52 @@ const char *CInfClassGameController::GetClassName(PLAYERCLASS PlayerClass)
 	}
 }
 
-const char *CInfClassGameController::GetClassPluralName(PLAYERCLASS PlayerClass)
+const char *CInfClassGameController::GetClassPluralName(EPlayerClass PlayerClass)
 {
 	switch (PlayerClass)
 	{
-		case PLAYERCLASS_MERCENARY:
+		case EPlayerClass::Mercenary:
 			return "mercenaries";
-		case PLAYERCLASS_MEDIC:
+		case EPlayerClass::Medic:
 			return "medics";
-		case PLAYERCLASS_HERO:
+		case EPlayerClass::Hero:
 			return "heroes";
-		case PLAYERCLASS_ENGINEER:
+		case EPlayerClass::Engineer:
 			return "engineers";
-		case PLAYERCLASS_SOLDIER:
+		case EPlayerClass::Soldier:
 			return "soldiers";
-		case PLAYERCLASS_NINJA:
+		case EPlayerClass::Ninja:
 			return "ninjas";
-		case PLAYERCLASS_SNIPER:
+		case EPlayerClass::Sniper:
 			return "snipers";
-		case PLAYERCLASS_SCIENTIST:
+		case EPlayerClass::Scientist:
 			return "scientists";
-		case PLAYERCLASS_BIOLOGIST:
+		case EPlayerClass::Biologist:
 			return "biologists";
-		case PLAYERCLASS_LOOPER:
+		case EPlayerClass::Looper:
 			return "loopers";
 
-		case PLAYERCLASS_SMOKER:
+		case EPlayerClass::Smoker:
 			return "smokers";
-		case PLAYERCLASS_BOOMER:
+		case EPlayerClass::Boomer:
 			return "boomers";
-		case PLAYERCLASS_HUNTER:
+		case EPlayerClass::Hunter:
 			return "hunters";
-		case PLAYERCLASS_BAT:
+		case EPlayerClass::Bat:
 			return "bats";
-		case PLAYERCLASS_GHOST:
+		case EPlayerClass::Ghost:
 			return "ghosts";
-		case PLAYERCLASS_SPIDER:
+		case EPlayerClass::Spider:
 			return "spiders";
-		case PLAYERCLASS_GHOUL:
+		case EPlayerClass::Ghoul:
 			return "ghouls";
-		case PLAYERCLASS_SLUG:
+		case EPlayerClass::Slug:
 			return "slugs";
-		case PLAYERCLASS_VOODOO:
+		case EPlayerClass::Voodoo:
 			return "voodoos";
-		case PLAYERCLASS_WITCH:
+		case EPlayerClass::Witch:
 			return "witches";
-		case PLAYERCLASS_UNDEAD:
+		case EPlayerClass::Undead:
 			return "undeads";
 
 		default:
@@ -1225,95 +1225,95 @@ const char *CInfClassGameController::GetClassPluralName(PLAYERCLASS PlayerClass)
 	}
 }
 
-const char *CInfClassGameController::GetClassDisplayName(PLAYERCLASS PlayerClass, const char *pDefaultText)
+const char *CInfClassGameController::GetClassDisplayName(EPlayerClass PlayerClass, const char *pDefaultText)
 {
 	switch (PlayerClass)
 	{
-		case PLAYERCLASS_MERCENARY:
+		case EPlayerClass::Mercenary:
 			return _("Mercenary");
-		case PLAYERCLASS_MEDIC:
+		case EPlayerClass::Medic:
 			return _("Medic");
-		case PLAYERCLASS_HERO:
+		case EPlayerClass::Hero:
 			return _("Hero");
-		case PLAYERCLASS_ENGINEER:
+		case EPlayerClass::Engineer:
 			return _("Engineer");
-		case PLAYERCLASS_SOLDIER:
+		case EPlayerClass::Soldier:
 			return _("Soldier");
-		case PLAYERCLASS_NINJA:
+		case EPlayerClass::Ninja:
 			return _("Ninja");
-		case PLAYERCLASS_SNIPER:
+		case EPlayerClass::Sniper:
 			return _("Sniper");
-		case PLAYERCLASS_SCIENTIST:
+		case EPlayerClass::Scientist:
 			return _("Scientist");
-		case PLAYERCLASS_BIOLOGIST:
+		case EPlayerClass::Biologist:
 			return _("Biologist");
-		case PLAYERCLASS_LOOPER:
+		case EPlayerClass::Looper:
 			return _("Looper");
 
-		case PLAYERCLASS_SMOKER:
+		case EPlayerClass::Smoker:
 			return _("Smoker");
-		case PLAYERCLASS_BOOMER:
+		case EPlayerClass::Boomer:
 			return _("Boomer");
-		case PLAYERCLASS_HUNTER:
+		case EPlayerClass::Hunter:
 			return _("Hunter");
-		case PLAYERCLASS_BAT:
+		case EPlayerClass::Bat:
 			return _("Bat");
-		case PLAYERCLASS_GHOST:
+		case EPlayerClass::Ghost:
 			return _("Ghost");
-		case PLAYERCLASS_SPIDER:
+		case EPlayerClass::Spider:
 			return _("Spider");
-		case PLAYERCLASS_GHOUL:
+		case EPlayerClass::Ghoul:
 			return _("Ghoul");
-		case PLAYERCLASS_SLUG:
+		case EPlayerClass::Slug:
 			return _("Slug");
-		case PLAYERCLASS_VOODOO:
+		case EPlayerClass::Voodoo:
 			return _("Voodoo");
-		case PLAYERCLASS_WITCH:
+		case EPlayerClass::Witch:
 			return _("Witch");
-		case PLAYERCLASS_UNDEAD:
+		case EPlayerClass::Undead:
 			return _("Undead");
 
-		case PLAYERCLASS_NONE:
+		case EPlayerClass::None:
 		default:
 			return pDefaultText ? pDefaultText : _("Unknown class");
 		}
 }
 
-const char *CInfClassGameController::GetClassDisplayNameForKilledBy(PLAYERCLASS PlayerClass, const char *pDefaultText)
+const char *CInfClassGameController::GetClassDisplayNameForKilledBy(EPlayerClass PlayerClass, const char *pDefaultText)
 {
 	switch(PlayerClass)
 	{
 		// Only the infected classes are used for now; do not add others to keep the translations smaller
-	case PLAYERCLASS_SMOKER:
+	case EPlayerClass::Smoker:
 		return _C("For 'Killed by <>'", "a Smoker");
-	case PLAYERCLASS_BOOMER:
+	case EPlayerClass::Boomer:
 		return _C("For 'Killed by <>'", "a Boomer");
-	case PLAYERCLASS_HUNTER:
+	case EPlayerClass::Hunter:
 		return _C("For 'Killed by <>'", "a Hunter");
-	case PLAYERCLASS_BAT:
+	case EPlayerClass::Bat:
 		return _C("For 'Killed by <>'", "a Bat");
-	case PLAYERCLASS_GHOST:
+	case EPlayerClass::Ghost:
 		return _C("For 'Killed by <>'", "a Ghost");
-	case PLAYERCLASS_SPIDER:
+	case EPlayerClass::Spider:
 		return _C("For 'Killed by <>'", "a Spider");
-	case PLAYERCLASS_GHOUL:
+	case EPlayerClass::Ghoul:
 		return _C("For 'Killed by <>'", "a Ghoul");
-	case PLAYERCLASS_SLUG:
+	case EPlayerClass::Slug:
 		return _C("For 'Killed by <>'", "a Slug");
-	case PLAYERCLASS_VOODOO:
+	case EPlayerClass::Voodoo:
 		return _C("For 'Killed by <>'", "a Voodoo");
-	case PLAYERCLASS_WITCH:
+	case EPlayerClass::Witch:
 		return _C("For 'Killed by <>'", "a Witch");
-	case PLAYERCLASS_UNDEAD:
+	case EPlayerClass::Undead:
 		return _C("For 'Killed by <>'", "an Undead");
 
-	case PLAYERCLASS_NONE:
+	case EPlayerClass::None:
 	default:
 		return pDefaultText ? pDefaultText : _C("For 'Killed by <>'", "someone unknown");
 	}
 }
 
-const char *CInfClassGameController::GetClanForClass(PLAYERCLASS PlayerClass, const char *pDefaultText)
+const char *CInfClassGameController::GetClanForClass(EPlayerClass PlayerClass, const char *pDefaultText)
 {
 	switch (PlayerClass)
 	{
@@ -1322,52 +1322,52 @@ const char *CInfClassGameController::GetClanForClass(PLAYERCLASS PlayerClass, co
 	}
 }
 
-const char *CInfClassGameController::GetClassPluralDisplayName(PLAYERCLASS PlayerClass)
+const char *CInfClassGameController::GetClassPluralDisplayName(EPlayerClass PlayerClass)
 {
 	switch (PlayerClass)
 	{
-		case PLAYERCLASS_MERCENARY:
+		case EPlayerClass::Mercenary:
 			return _("Mercenaries");
-		case PLAYERCLASS_MEDIC:
+		case EPlayerClass::Medic:
 			return _("Medics");
-		case PLAYERCLASS_HERO:
+		case EPlayerClass::Hero:
 			return _("Heroes");
-		case PLAYERCLASS_ENGINEER:
+		case EPlayerClass::Engineer:
 			return _("Engineers");
-		case PLAYERCLASS_SOLDIER:
+		case EPlayerClass::Soldier:
 			return _("Soldiers");
-		case PLAYERCLASS_NINJA:
+		case EPlayerClass::Ninja:
 			return _("Ninjas");
-		case PLAYERCLASS_SNIPER:
+		case EPlayerClass::Sniper:
 			return _("Snipers");
-		case PLAYERCLASS_SCIENTIST:
+		case EPlayerClass::Scientist:
 			return _("Scientists");
-		case PLAYERCLASS_BIOLOGIST:
+		case EPlayerClass::Biologist:
 			return _("Biologists");
-		case PLAYERCLASS_LOOPER:
+		case EPlayerClass::Looper:
 			return _("Loopers");
 
-		case PLAYERCLASS_SMOKER:
+		case EPlayerClass::Smoker:
 			return _("Smokers");
-		case PLAYERCLASS_BOOMER:
+		case EPlayerClass::Boomer:
 			return _("Boomers");
-		case PLAYERCLASS_HUNTER:
+		case EPlayerClass::Hunter:
 			return _("Hunters");
-		case PLAYERCLASS_BAT:
+		case EPlayerClass::Bat:
 			return _("Bats");
-		case PLAYERCLASS_GHOST:
+		case EPlayerClass::Ghost:
 			return _("Ghosts");
-		case PLAYERCLASS_SPIDER:
+		case EPlayerClass::Spider:
 			return _("Spiders");
-		case PLAYERCLASS_GHOUL:
+		case EPlayerClass::Ghoul:
 			return _("Ghouls");
-		case PLAYERCLASS_SLUG:
+		case EPlayerClass::Slug:
 			return _("Slugs");
-		case PLAYERCLASS_VOODOO:
+		case EPlayerClass::Voodoo:
 			return _("Voodoos");
-		case PLAYERCLASS_WITCH:
+		case EPlayerClass::Witch:
 			return _("Witches");
-		case PLAYERCLASS_UNDEAD:
+		case EPlayerClass::Undead:
 			return _("Undeads");
 
 		default:
@@ -1375,43 +1375,43 @@ const char *CInfClassGameController::GetClassPluralDisplayName(PLAYERCLASS Playe
 	}
 }
 
-PLAYERCLASS CInfClassGameController::MenuClassToPlayerClass(int MenuClass)
+EPlayerClass CInfClassGameController::MenuClassToPlayerClass(int MenuClass)
 {
-	PLAYERCLASS PlayerClass = PLAYERCLASS_INVALID;
+	EPlayerClass PlayerClass = EPlayerClass::Invalid;
 	switch(MenuClass)
 	{
 		case CMapConverter::MENUCLASS_MEDIC:
-			PlayerClass = PLAYERCLASS_MEDIC;
+			PlayerClass = EPlayerClass::Medic;
 			break;
 		case CMapConverter::MENUCLASS_HERO:
-			PlayerClass = PLAYERCLASS_HERO;
+			PlayerClass = EPlayerClass::Hero;
 			break;
 		case CMapConverter::MENUCLASS_NINJA:
-			PlayerClass = PLAYERCLASS_NINJA;
+			PlayerClass = EPlayerClass::Ninja;
 			break;
 		case CMapConverter::MENUCLASS_MERCENARY:
-			PlayerClass = PLAYERCLASS_MERCENARY;
+			PlayerClass = EPlayerClass::Mercenary;
 			break;
 		case CMapConverter::MENUCLASS_SNIPER:
-			PlayerClass = PLAYERCLASS_SNIPER;
+			PlayerClass = EPlayerClass::Sniper;
 			break;
 		case CMapConverter::MENUCLASS_RANDOM:
-			PlayerClass = PLAYERCLASS_NONE;
+			PlayerClass = EPlayerClass::None;
 			break;
 		case CMapConverter::MENUCLASS_ENGINEER:
-			PlayerClass = PLAYERCLASS_ENGINEER;
+			PlayerClass = EPlayerClass::Engineer;
 			break;
 		case CMapConverter::MENUCLASS_SOLDIER:
-			PlayerClass = PLAYERCLASS_SOLDIER;
+			PlayerClass = EPlayerClass::Soldier;
 			break;
 		case CMapConverter::MENUCLASS_SCIENTIST:
-			PlayerClass = PLAYERCLASS_SCIENTIST;
+			PlayerClass = EPlayerClass::Scientist;
 			break;
 		case CMapConverter::MENUCLASS_BIOLOGIST:
-			PlayerClass = PLAYERCLASS_BIOLOGIST;
+			PlayerClass = EPlayerClass::Biologist;
 			break;
 		case CMapConverter::MENUCLASS_LOOPER:
-			PlayerClass = PLAYERCLASS_LOOPER;
+			PlayerClass = EPlayerClass::Looper;
 			break;
 	}
 
@@ -1638,13 +1638,13 @@ void CInfClassGameController::ConAlwaysRandom(IConsole::IResult *pResult, void *
 	int ClientID = pResult->GetClientID();
 
 	bool Random = pResult->GetInteger(0) > 0;
-	pSelf->SetPreferredClass(ClientID, Random ? PLAYERCLASS_RANDOM : PLAYERCLASS_INVALID);
+	pSelf->SetPreferredClass(ClientID, Random ? EPlayerClass::Random : EPlayerClass::Invalid);
 }
 
 void CInfClassGameController::SetPreferredClass(int ClientID, const char *pClassName)
 {
 	bool Ok = false;
-	PLAYERCLASS PlayerClass = GetClassByName(pClassName, &Ok);
+	EPlayerClass PlayerClass = GetClassByName(pClassName, &Ok);
 
 	if(!Ok)
 	{
@@ -1655,7 +1655,7 @@ void CInfClassGameController::SetPreferredClass(int ClientID, const char *pClass
 	SetPreferredClass(ClientID, PlayerClass);
 }
 
-void CInfClassGameController::SetPreferredClass(int ClientID, PLAYERCLASS Class)
+void CInfClassGameController::SetPreferredClass(int ClientID, EPlayerClass Class)
 {
 	if(!IsHumanClass(Class))
 	{
@@ -1672,12 +1672,12 @@ void CInfClassGameController::SetPreferredClass(int ClientID, PLAYERCLASS Class)
 
 	switch(Class)
 	{
-	case PLAYERCLASS_RANDOM:
+	case EPlayerClass::Random:
 		GameServer()->SendChatTarget_Localization(ClientID, CHATCATEGORY_PLAYER,
 			_("A random class will be automatically attributed to you when round starts"),
 			nullptr);
 		break;
-	case PLAYERCLASS_INVALID:
+	case EPlayerClass::Invalid:
 		GameServer()->SendChatTarget_Localization(ClientID, CHATCATEGORY_PLAYER,
 			_("The class selector will be displayed when round starts"),
 			nullptr);
@@ -1730,7 +1730,7 @@ void CInfClassGameController::ConUserSetClass(IConsole::IResult *pResult)
 		return;
 
 	bool Ok = false;
-	PLAYERCLASS PlayerClass = GetClassByName(pClassName, &Ok);
+	EPlayerClass PlayerClass = GetClassByName(pClassName, &Ok);
 	if(Ok)
 	{
 		pPlayer->SetClass(PlayerClass);
@@ -1763,7 +1763,7 @@ void CInfClassGameController::ConSetClass(IConsole::IResult *pResult)
 		return;
 
 	bool Ok = false;
-	PLAYERCLASS PlayerClass = GetClassByName(pClassName, &Ok);
+	EPlayerClass PlayerClass = GetClassByName(pClassName, &Ok);
 	if(Ok)
 	{
 		pPlayer->SetClass(PlayerClass);
@@ -1786,17 +1786,17 @@ FunRoundConfiguration CInfClassGameController::ParseFunRoundConfigArguments(ICon
 	{
 		const char *pArgument = pResult->GetString(argN);
 		bool Ok = true;
-		const PLAYERCLASS PlayerClass = CInfClassGameController::GetClassByName(pArgument, &Ok);
+		const EPlayerClass PlayerClass = CInfClassGameController::GetClassByName(pArgument, &Ok);
 		if(!Ok)
 		{
 			// Ignore other words (there can be "undeads vs heroes", ignore "vs" in such case)
 			continue;
 		}
-		if((PlayerClass > START_HUMANCLASS) && (PlayerClass < END_HUMANCLASS))
+		if(IsHumanClass(PlayerClass))
 		{
 			FunRoundConfig.HumanClass = PlayerClass;
 		}
-		if((PlayerClass > START_INFECTEDCLASS) && (PlayerClass < END_INFECTEDCLASS))
+		if(IsInfectedClass(PlayerClass))
 		{
 			FunRoundConfig.InfectedClass = PlayerClass;
 		}
@@ -1910,7 +1910,7 @@ void CInfClassGameController::ConAddFunRound(IConsole::IResult *pResult, void *p
 	CInfClassGameController *pSelf = (CInfClassGameController *)pUserData;
 	FunRoundConfiguration FunRoundConfig = ParseFunRoundConfigArguments(pResult);
 
-	if((FunRoundConfig.HumanClass == PLAYERCLASS_INVALID) || (FunRoundConfig.InfectedClass == PLAYERCLASS_INVALID))
+	if((FunRoundConfig.HumanClass == EPlayerClass::Invalid) || (FunRoundConfig.InfectedClass == EPlayerClass::Invalid))
 	{
 		pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "server", "invalid special fun round configuration");
 		return;
@@ -2262,13 +2262,13 @@ void CInfClassGameController::ChatWitch(IConsole::IResult *pResult)
 		}
 	}
 
-	int MaxWitches = GetClassPlayerLimit(PLAYERCLASS_WITCH);
+	int MaxWitches = GetClassPlayerLimit(EPlayerClass::Witch);
 	if(Winter)
 	{
 		// Santa is a new Witch; allow only one Santa at time.
 		MaxWitches = 1;
 	}
-	if(GetInfectedCount(PLAYERCLASS_WITCH) >= MaxWitches)
+	if(GetInfectedCount(EPlayerClass::Witch) >= MaxWitches)
 	{
 		if(Winter)
 		{
@@ -2515,7 +2515,7 @@ void CInfClassGameController::UpdateNinjaTargets()
 		if(GetCharacter(i) && GetCharacter(i)->IsInfected())
 		{
 			InfectedCount++;
-			if(GetPlayer(i)->GetClass() == PLAYERCLASS_UNDEAD)
+			if(GetPlayer(i)->GetClass() == EPlayerClass::Undead)
 				continue;
 
 			if(GetCharacter(i)->GetInfZoneTick() * Server()->TickSpeed() < 1000 * Config()->m_InfNinjaTargetAfkTime) // Make sure zombie is not camping in InfZone
@@ -2627,7 +2627,7 @@ void CInfClassGameController::StartInfectionGameplay(int PlayersToInfect)
 	while(Iter.Next())
 	{
 		CInfClassPlayer *pPlayer = Iter.Player();
-		if(pPlayer->GetClass() == PLAYERCLASS_NONE)
+		if(pPlayer->GetClass() == EPlayerClass::None)
 		{
 			pPlayer->SetClass(ChooseHumanClass(pPlayer));
 			pPlayer->SetRandomClassChoosen();
@@ -3015,7 +3015,7 @@ void CInfClassGameController::OnKillOrInfection(int Victim, const DeathContext &
 	const CInfClassCharacter *pVictimCharacter = pVictim->GetCharacter();
 	if(pKiller && pKiller != pVictim)
 	{
-		const PLAYERCLASS KillerClass = pKiller->GetClass();
+		const EPlayerClass KillerClass = pKiller->GetClass();
 		icArray<const char *, 20> PossibleMessages;
 		switch(Context.DamageType)
 		{
@@ -3061,16 +3061,16 @@ void CInfClassGameController::OnKillOrInfection(int Victim, const DeathContext &
 
 		switch(KillerClass)
 		{
-		case PLAYERCLASS_SMOKER:
+		case EPlayerClass::Smoker:
 			if(Context.DamageType == EDamageType::DRYING_HOOK)
 			{
 				PossibleMessages.Add(("{str:PlayerName} was drained by {str:Killer}."));
 			}
 			break;
-		case PLAYERCLASS_GHOST:
+		case EPlayerClass::Ghost:
 			PossibleMessages.Add(("{str:PlayerName} was surprised by {str:Killer}."));
 			break;
-		case PLAYERCLASS_BAT:
+		case EPlayerClass::Bat:
 			PossibleMessages.Add(("{str:PlayerName} was bitten by {str:Killer}."));
 			break;
 		default:
@@ -3175,7 +3175,7 @@ int CInfClassGameController::GetClientIdForNewWitch() const
 		CInfClassPlayer *pPlayer = GetPlayer(ClientID);
 		if(!pPlayer || !pPlayer->IsInGame())
 			continue;
-		if(pPlayer->GetClass() == PLAYERCLASS_WITCH)
+		if(pPlayer->GetClass() == EPlayerClass::Witch)
 			continue;
 		if(!pPlayer->IsInfected())
 			continue;
@@ -3196,7 +3196,7 @@ int CInfClassGameController::GetClientIdForNewWitch() const
 			CInfClassPlayer *pPlayer = GetPlayer(ClientID);
 			if(!pPlayer || !pPlayer->IsInGame())
 				continue;
-			if(pPlayer->GetClass() == PLAYERCLASS_WITCH)
+			if(pPlayer->GetClass() == EPlayerClass::Witch)
 				continue;
 			if(!pPlayer->IsInfected())
 				continue;
@@ -3224,7 +3224,7 @@ int CInfClassGameController::GetClientIdForNewWitch() const
 	Console()->Print(IConsole::OUTPUT_LEVEL_DEBUG, "witch", aBuf);
 	/* /debug */
 	CInfClassPlayer *pPlayer = GetPlayer(Candidates[id]);
-	pPlayer->SetClass(PLAYERCLASS_WITCH);
+	pPlayer->SetClass(EPlayerClass::Witch);
 	return Candidates[id];
 }
 
@@ -3324,7 +3324,7 @@ void CInfClassGameController::Tick()
 					//To avoid cheating, we assign to him the same class again.
 					if(pSession->m_RoundId == m_RoundId)
 					{
-						const PLAYERCLASS ClassFromSession = static_cast<PLAYERCLASS>(pSession->m_Class);
+						const EPlayerClass ClassFromSession = static_cast<EPlayerClass>(pSession->m_Class);
 						if(IsInfectedClass(ClassFromSession) == IsInfectionStarted())
 						{
 							Iter.Player()->SetClass(ClassFromSession);
@@ -3335,7 +3335,7 @@ void CInfClassGameController::Tick()
 					Server()->SetClientMemory(Iter.ClientID(), CLIENTMEMORY_SESSION_PROCESSED, true);
 				}
 				
-				pSession->m_Class = Iter.Player()->GetClass();
+				pSession->m_Class = static_cast<int>(Iter.Player()->GetClass());
 				pSession->m_RoundId = GameServer()->m_pController->GetRoundId();
 				pSession->m_LastInfectionTime = Iter.Player()->GetInfectionTimestamp();
 			}
@@ -3421,7 +3421,7 @@ void CInfClassGameController::RoundTickAfterInitialInfection()
 	while(Iter.Next())
 	{
 		CInfClassPlayer *pPlayer = Iter.Player();
-		if(pPlayer->GetClass() == PLAYERCLASS_NONE)
+		if(pPlayer->GetClass() == EPlayerClass::None)
 		{
 			pPlayer->KillCharacter(); // Infect the player
 			pPlayer->StartInfection();
@@ -3441,7 +3441,7 @@ void CInfClassGameController::PreparePlayerToJoin(CInfClassPlayer *pPlayer)
 	{
 		if (!pPlayer->IsInfected())
 		{
-			PLAYERCLASS c = ChooseInfectedClass(pPlayer);
+			EPlayerClass c = ChooseInfectedClass(pPlayer);
 			pPlayer->SetClass(c);
 		}
 	}
@@ -4247,24 +4247,24 @@ void CInfClassGameController::SnapMapMenu(int SnappingClient, CNetObj_GameInfo *
 		{
 			switch(Iter.Player()->GetClass())
 			{
-			case PLAYERCLASS_NINJA:
-			case PLAYERCLASS_MERCENARY:
-			case PLAYERCLASS_SNIPER:
+			case EPlayerClass::Ninja:
+			case EPlayerClass::Mercenary:
+			case EPlayerClass::Sniper:
 				Support++;
 				break;
-			case PLAYERCLASS_ENGINEER:
-			case PLAYERCLASS_SOLDIER:
-			case PLAYERCLASS_SCIENTIST:
-			case PLAYERCLASS_BIOLOGIST:
+			case EPlayerClass::Engineer:
+			case EPlayerClass::Soldier:
+			case EPlayerClass::Scientist:
+			case EPlayerClass::Biologist:
 				Defender++;
 				break;
-			case PLAYERCLASS_MEDIC:
+			case EPlayerClass::Medic:
 				Medic++;
 				break;
-			case PLAYERCLASS_HERO:
+			case EPlayerClass::Hero:
 				Hero++;
 				break;
-			case PLAYERCLASS_LOOPER:
+			case EPlayerClass::Looper:
 				Defender++;
 				break;
 			default:
@@ -4355,18 +4355,18 @@ void CInfClassGameController::RewardTheKillers(CInfClassCharacter *pVictim, cons
 
 	if(pVictim->IsInfected())
 	{
-		PLAYERCLASS VictimClass = static_cast<PLAYERCLASS>(pVictim->GetPlayerClass());
+		EPlayerClass VictimClass = static_cast<EPlayerClass>(pVictim->GetPlayerClass());
 		int ScoreEvent = SCOREEVENT_KILL_INFECTED;
 		bool ClassSpecialProcessingEnabled = (GetRoundType() != ERoundType::Fun) || (GetPlayerClassProbability(VictimClass) == 0);
 		if(ClassSpecialProcessingEnabled)
 		{
 			switch(VictimClass)
 			{
-			case PLAYERCLASS_WITCH:
+			case EPlayerClass::Witch:
 				ScoreEvent = SCOREEVENT_KILL_WITCH;
 				GameServer()->SendChatTarget_Localization(pKiller->GetCID(), CHATCATEGORY_SCORE, _("You have killed a witch, +5 points"), NULL);
 				break;
-			case PLAYERCLASS_UNDEAD:
+			case EPlayerClass::Undead:
 				ScoreEvent = SCOREEVENT_KILL_UNDEAD;
 				GameServer()->SendChatTarget_Localization(pKiller->GetCID(), CHATCATEGORY_SCORE, _("You have killed an undead! +5 points"), NULL);
 				break;
@@ -4434,7 +4434,7 @@ void CInfClassGameController::OnCharacterDeath(CInfClassCharacter *pVictim, cons
 		//Find the nearest ghoul
 		for(TEntityPtr<CInfClassCharacter> p = GameWorld()->FindFirst<CInfClassCharacter>(); p; ++p)
 		{
-			if(p->GetPlayerClass() != PLAYERCLASS_GHOUL || p.data() == pVictim)
+			if(p->GetPlayerClass() != EPlayerClass::Ghoul || p.data() == pVictim)
 				continue;
 			if(p->GetClass() && p->GetClass()->GetGhoulPercent() >= 1.0f)
 				continue;
@@ -4475,7 +4475,7 @@ void CInfClassGameController::OnCharacterDeath(CInfClassCharacter *pVictim, cons
 	INFECTION_TYPE InfectionType = INFECTION_TYPE::REGULAR;
 	bool ClassSpecialProcessingEnabled = true;
 
-	PLAYERCLASS VictimClass = static_cast<PLAYERCLASS>(pVictim->GetPlayerClass());
+	EPlayerClass VictimClass = static_cast<EPlayerClass>(pVictim->GetPlayerClass());
 	if(DamageType == EDamageType::GAME)
 	{
 		ClassSpecialProcessingEnabled = false;
@@ -4489,12 +4489,12 @@ void CInfClassGameController::OnCharacterDeath(CInfClassCharacter *pVictim, cons
 	{
 		switch(VictimClass)
 		{
-			case PLAYERCLASS_WITCH:
+			case EPlayerClass::Witch:
 				GameServer()->SendBroadcast_Localization(-1, BROADCAST_PRIORITY_GAMEANNOUNCE, BROADCAST_DURATION_GAMEANNOUNCE, _("The witch is dead"), NULL);
 				GameServer()->CreateSoundGlobal(SOUND_CTF_RETURN);
 				InfectionType = INFECTION_TYPE::RESTORE_INF_CLASS;
 				break;
-			case PLAYERCLASS_UNDEAD:
+			case EPlayerClass::Undead:
 				GameServer()->SendBroadcast_Localization(-1, BROADCAST_PRIORITY_GAMEANNOUNCE, BROADCAST_DURATION_GAMEANNOUNCE, _("The undead is finally dead"), NULL);
 				GameServer()->CreateSoundGlobal(SOUND_CTF_RETURN);
 				InfectionType = INFECTION_TYPE::RESTORE_INF_CLASS;
@@ -4506,7 +4506,7 @@ void CInfClassGameController::OnCharacterDeath(CInfClassCharacter *pVictim, cons
 	else
 	{
 		// Still send the traditional 'whoosh' sound
-		if(VictimClass == PLAYERCLASS_WITCH)
+		if(VictimClass == EPlayerClass::Witch)
 		{
 			GameServer()->CreateSoundGlobal(SOUND_CTF_RETURN);
 		}
@@ -4589,7 +4589,7 @@ void CInfClassGameController::OnCharacterSpawned(CInfClassCharacter *pCharacter,
 		}
 	}
 
-	if((GetRoundType() == ERoundType::Fun) && !IsInfectionStarted() && pCharacter->GetPlayerClass() == PLAYERCLASS_NONE)
+	if((GetRoundType() == ERoundType::Fun) && !IsInfectionStarted() && pCharacter->GetPlayerClass() == EPlayerClass::None)
 	{
 		if(pPlayer)
 		{
@@ -4611,12 +4611,12 @@ void CInfClassGameController::OnClassChooserRequested(CInfClassCharacter *pChara
 		return;
 	}
 
-	const int PreferredClass = pPlayer->GetPreferredClass();
-	if(!IsClassChooserEnabled() || (PreferredClass != PLAYERCLASS_INVALID))
+	const EPlayerClass PreferredClass = pPlayer->GetPreferredClass();
+	if(!IsClassChooserEnabled() || (PreferredClass != EPlayerClass::Invalid))
 	{
 		pPlayer->SetClass(ChooseHumanClass(pPlayer));
 
-		if(PreferredClass == PLAYERCLASS_RANDOM)
+		if(PreferredClass == EPlayerClass::Random)
 		{
 			pPlayer->SetRandomClassChoosen();
 
@@ -4903,7 +4903,7 @@ bool CInfClassGameController::TryRespawn(CInfClassPlayer *pPlayer, SpawnContext 
 		{
 			if(Iter.Player()->GetCID() == pPlayer->GetCID())
 				continue;
-			if(Iter.Player()->GetClass() != PLAYERCLASS_WITCH)
+			if(Iter.Player()->GetClass() != EPlayerClass::Witch)
 				continue;
 
 			CInfClassCharacter *pCharacter = Iter.Player()->GetCharacter();
@@ -4947,36 +4947,33 @@ bool CInfClassGameController::TryRespawn(CInfClassPlayer *pPlayer, SpawnContext 
 	return false;
 }
 
-PLAYERCLASS CInfClassGameController::ChooseHumanClass(const CInfClassPlayer *pPlayer) const
+EPlayerClass CInfClassGameController::ChooseHumanClass(const CInfClassPlayer *pPlayer) const
 {
 	//Get information about existing humans
 	int nbSupport = 0;
 	int nbDefender = 0;
-	std::map<int, int> nbClass;
-	for (int PlayerClass = START_HUMANCLASS + 1; PlayerClass < END_HUMANCLASS; ++PlayerClass)
-		nbClass[PlayerClass] = 0;
+	icArray<int, NB_PLAYERCLASS> nbClass;
+	nbClass.Resize(NB_PLAYERCLASS);
 
 	CInfClassPlayerIterator<PLAYERITER_INGAME> Iter(GameServer()->m_apPlayers);
 	while(Iter.Next())
 	{
-		const PLAYERCLASS AnotherPlayerClass = Iter.Player()->GetClass();
-		if ((AnotherPlayerClass < START_HUMANCLASS + 1) || (AnotherPlayerClass > END_HUMANCLASS - 1))
-			continue;
+		const EPlayerClass AnotherPlayerClass = Iter.Player()->GetClass();
+		const int Index = static_cast<int>(AnotherPlayerClass);
 		if (IsDefenderClass(AnotherPlayerClass))
 			nbDefender++;
 		if (IsSupportClass(AnotherPlayerClass))
 			nbSupport++;
-		nbClass[AnotherPlayerClass]++;
+		nbClass[Index]++;
 	}
 
-	double Probability[NB_HUMANCLASS];
-
-	auto GetClassProbabilityRef = [&Probability](int PlayerClass) -> double & {
-		return Probability[PlayerClass - START_HUMANCLASS - 1];
+	double Probability[NB_PLAYERCLASS]{};
+	auto GetClassProbabilityRef = [&Probability](EPlayerClass PlayerClass) -> double & {
+		return Probability[static_cast<int>(PlayerClass)];
 	};
 
 	int AvailableClasses = 0;
-	for(PLAYERCLASS PlayerClass : AllHumanClasses())
+	for(EPlayerClass PlayerClass : AllHumanClasses)
 	{
 		double &ClassProbability = GetClassProbabilityRef(PlayerClass);
 		ClassProbability = GetPlayerClassEnabled(PlayerClass) ? 1.0f : 0.0f;
@@ -4995,10 +4992,10 @@ PLAYERCLASS CInfClassGameController::ChooseHumanClass(const CInfClassPlayer *pPl
 		}
 	}
 
-	PLAYERCLASS PreferredClass = pPlayer->GetPreferredClass();
-	if(PreferredClass != PLAYERCLASS_INVALID)
+	EPlayerClass PreferredClass = pPlayer->GetPreferredClass();
+	if(PreferredClass != EPlayerClass::Invalid)
 	{
-		if(PreferredClass != PLAYERCLASS_RANDOM)
+		if(PreferredClass != EPlayerClass::Random)
 		{
 			if(GetClassProbabilityRef(PreferredClass) > 0)
 			{
@@ -5013,24 +5010,24 @@ PLAYERCLASS CInfClassGameController::ChooseHumanClass(const CInfClassPlayer *pPl
 		if(AvailableClasses > 1)
 		{
 			// if normal round is being played
-			PLAYERCLASS PrevClass = pPlayer->GetPreviouslyPickedClass();
-			if(PrevClass != PLAYERCLASS_INVALID)
+			EPlayerClass PrevClass = pPlayer->GetPreviouslyPickedClass();
+			if(PrevClass != EPlayerClass::Invalid)
 			{
 				GetClassProbabilityRef(PrevClass) = 0.0f;
 			}
 		}
 	}
 
-	int Result = START_HUMANCLASS + 1 + random_distribution(Probability, Probability + NB_HUMANCLASS);
-	return static_cast<PLAYERCLASS>(Result);
+	int Result = random_distribution(Probability, Probability + NB_PLAYERCLASS);
+	return static_cast<EPlayerClass>(Result);
 }
 
-PLAYERCLASS CInfClassGameController::ChooseInfectedClass(const CInfClassPlayer *pPlayer) const
+EPlayerClass CInfClassGameController::ChooseInfectedClass(const CInfClassPlayer *pPlayer) const
 {
 	// if(pPlayer->InfectionType() == INFECTION_TYPE::RESTORE_INF_CLASS)
 	{
-		PLAYERCLASS PrevClass = pPlayer->GetPreviousInfectedClass();
-		if(PrevClass != PLAYERCLASS_INVALID)
+		EPlayerClass PrevClass = pPlayer->GetPreviousInfectedClass();
+		if(PrevClass != EPlayerClass::Invalid)
 		{
 			return PrevClass;
 		}
@@ -5038,26 +5035,31 @@ PLAYERCLASS CInfClassGameController::ChooseInfectedClass(const CInfClassPlayer *
 
 	//Get information about existing infected
 	int nbInfected = 0;
-	std::map<int, int> nbClass;
-	for (int PlayerClass = START_INFECTEDCLASS + 1; PlayerClass < END_INFECTEDCLASS; ++PlayerClass)
-		nbClass[PlayerClass] = 0;
+	icArray<int, NB_PLAYERCLASS> nbClass;
+	nbClass.Resize(NB_PLAYERCLASS);
 
 	CInfClassPlayerIterator<PLAYERITER_INGAME> Iter(GameServer()->m_apPlayers);
 	int PlayersCount = 0;
 	while(Iter.Next())
 	{
 		++PlayersCount;
-		const int AnotherPlayerClass = Iter.Player()->GetClass();
-		if(Iter.Player()->IsInfected()) nbInfected++;
-		nbClass[AnotherPlayerClass]++;
+		const EPlayerClass AnotherPlayerClass = Iter.Player()->GetClass();
+		const int Index = static_cast<int>(AnotherPlayerClass);
+		if(Iter.Player()->IsInfected())
+			nbInfected++;
+		nbClass[Index]++;
 	}
 
 	int InitiallyInfected = GetMinimumInfectedForPlayers(PlayersCount);
-	
-	double Probability[NB_INFECTEDCLASS];
-	for(PLAYERCLASS PlayerClass : AllInfectedClasses())
+
+	double Probability[NB_PLAYERCLASS]{};
+	auto GetClassProbabilityRef = [&Probability](EPlayerClass PlayerClass) -> double & {
+		return Probability[static_cast<int>(PlayerClass)];
+	};
+
+	for(EPlayerClass PlayerClass : AllInfectedClasses)
 	{
-		double &ClassProbability = Probability[PlayerClass - START_INFECTEDCLASS - 1];
+		double &ClassProbability = GetClassProbabilityRef(PlayerClass);
 		ClassProbability = GetPlayerClassProbability(PlayerClass);
 		if(GetRoundType() == ERoundType::Fun)
 		{
@@ -5067,7 +5069,7 @@ PLAYERCLASS CInfClassGameController::ChooseInfectedClass(const CInfClassPlayer *
 
 		switch(PlayerClass)
 		{
-			case PLAYERCLASS_BAT:
+			case EPlayerClass::Bat:
 				if(nbInfected <= InitiallyInfected)
 				{
 					// We can't just set the proba to 0, because it would break a config
@@ -5075,32 +5077,33 @@ PLAYERCLASS CInfClassGameController::ChooseInfectedClass(const CInfClassPlayer *
 					ClassProbability = ClassProbability / 10000.0;
 				}
 				break;
-			case PLAYERCLASS_GHOUL:
+			case EPlayerClass::Ghoul:
 				if(nbInfected < Config()->m_InfGhoulThreshold)
 					ClassProbability = 0;
 				break;
-			case PLAYERCLASS_WITCH:
-			case PLAYERCLASS_UNDEAD:
-				if((nbInfected <= 2) || nbClass[PlayerClass] > 0)
+			case EPlayerClass::Witch:
+			case EPlayerClass::Undead:
+				if((nbInfected <= 2) || nbClass[static_cast<int>(PlayerClass)] > 0)
 					ClassProbability = 0;
 				break;
 			default:
 				break;
 		}
 	}
-	
-	int Class = START_INFECTEDCLASS + 1 + random_distribution(Probability, Probability + NB_INFECTEDCLASS);
+
+	int Result = random_distribution(Probability, Probability + NB_PLAYERCLASS);
+	EPlayerClass Class = static_cast<EPlayerClass>(Result);
 
 	int Seconds = (Server()->Tick()-m_RoundStartTick)/((float)Server()->TickSpeed());
 	char aBuf[256];
 	str_format(aBuf, sizeof(aBuf), "infected victim='%s' duration='%d' class='%d'", 
-		Server()->ClientName(pPlayer->GetCID()), Seconds, Class);
+		Server()->ClientName(pPlayer->GetCID()), Seconds, Result);
 	Console()->Print(IConsole::OUTPUT_LEVEL_DEBUG, "game", aBuf);
 
-	return static_cast<PLAYERCLASS>(Class);
+	return Class;
 }
 
-bool CInfClassGameController::GetPlayerClassEnabled(PLAYERCLASS PlayerClass) const
+bool CInfClassGameController::GetPlayerClassEnabled(EPlayerClass PlayerClass) const
 {
 	if(GetRoundType() == ERoundType::Fun)
 	{
@@ -5110,8 +5113,8 @@ bool CInfClassGameController::GetPlayerClassEnabled(PLAYERCLASS PlayerClass) con
 	{
 		switch(PlayerClass)
 		{
-		case PLAYERCLASS_ENGINEER:
-		case PLAYERCLASS_SOLDIER:
+		case EPlayerClass::Engineer:
+		case EPlayerClass::Soldier:
 			return false;
 		default:
 			break;
@@ -5120,25 +5123,25 @@ bool CInfClassGameController::GetPlayerClassEnabled(PLAYERCLASS PlayerClass) con
 
 	switch(PlayerClass)
 	{
-	case PLAYERCLASS_ENGINEER:
+	case EPlayerClass::Engineer:
 		return Config()->m_InfEnableEngineer;
-	case PLAYERCLASS_SOLDIER:
+	case EPlayerClass::Soldier:
 		return Config()->m_InfEnableSoldier;
-	case PLAYERCLASS_SCIENTIST:
+	case EPlayerClass::Scientist:
 		return Config()->m_InfEnableScientist;
-	case PLAYERCLASS_BIOLOGIST:
+	case EPlayerClass::Biologist:
 		return Config()->m_InfEnableBiologist;
-	case PLAYERCLASS_MEDIC:
+	case EPlayerClass::Medic:
 		return Config()->m_InfEnableMedic;
-	case PLAYERCLASS_HERO:
+	case EPlayerClass::Hero:
 		return Config()->m_InfEnableHero;
-	case PLAYERCLASS_NINJA:
+	case EPlayerClass::Ninja:
 		return Config()->m_InfEnableNinja;
-	case PLAYERCLASS_MERCENARY:
+	case EPlayerClass::Mercenary:
 		return Config()->m_InfEnableMercenary;
-	case PLAYERCLASS_SNIPER:
+	case EPlayerClass::Sniper:
 		return Config()->m_InfEnableSniper;
-	case PLAYERCLASS_LOOPER:
+	case EPlayerClass::Looper:
 		return Config()->m_InfEnableLooper;
 	default:
 		break;
@@ -5147,39 +5150,39 @@ bool CInfClassGameController::GetPlayerClassEnabled(PLAYERCLASS PlayerClass) con
 	return false;
 }
 
-bool CInfClassGameController::SetPlayerClassEnabled(PLAYERCLASS PlayerClass, bool Enabled)
+bool CInfClassGameController::SetPlayerClassEnabled(EPlayerClass PlayerClass, bool Enabled)
 {
 	const int Value = Enabled ? 1 : 0;
 	switch(PlayerClass)
 	{
-	case PLAYERCLASS_MERCENARY:
+	case EPlayerClass::Mercenary:
 		Config()->m_InfEnableMercenary = Value;
 		break;
-	case PLAYERCLASS_MEDIC:
+	case EPlayerClass::Medic:
 		Config()->m_InfEnableMedic = Value;
 		break;
-	case PLAYERCLASS_HERO:
+	case EPlayerClass::Hero:
 		Config()->m_InfEnableHero = Value;
 		break;
-	case PLAYERCLASS_ENGINEER:
+	case EPlayerClass::Engineer:
 		Config()->m_InfEnableEngineer = Value;
 		break;
-	case PLAYERCLASS_SOLDIER:
+	case EPlayerClass::Soldier:
 		Config()->m_InfEnableSoldier = Value;
 		break;
-	case PLAYERCLASS_NINJA:
+	case EPlayerClass::Ninja:
 		Config()->m_InfEnableNinja = Value;
 		break;
-	case PLAYERCLASS_SNIPER:
+	case EPlayerClass::Sniper:
 		Config()->m_InfEnableSniper = Value;
 		break;
-	case PLAYERCLASS_SCIENTIST:
+	case EPlayerClass::Scientist:
 		Config()->m_InfEnableScientist = Value;
 		break;
-	case PLAYERCLASS_BIOLOGIST:
+	case EPlayerClass::Biologist:
 		Config()->m_InfEnableBiologist = Value;
 		break;
-	case PLAYERCLASS_LOOPER:
+	case EPlayerClass::Looper:
 		Config()->m_InfEnableLooper = Value;
 		break;
 	default:
@@ -5190,41 +5193,41 @@ bool CInfClassGameController::SetPlayerClassEnabled(PLAYERCLASS PlayerClass, boo
 	return true;
 }
 
-bool CInfClassGameController::SetPlayerClassProbability(int PlayerClass, int Probability)
+bool CInfClassGameController::SetPlayerClassProbability(EPlayerClass PlayerClass, int Probability)
 {
 	switch (PlayerClass)
 	{
-	case PLAYERCLASS_SMOKER:
+	case EPlayerClass::Smoker:
 		Config()->m_InfProbaSmoker = Probability;
 		break;
-	case PLAYERCLASS_BOOMER:
+	case EPlayerClass::Boomer:
 		Config()->m_InfProbaBoomer = Probability;
 		break;
-	case PLAYERCLASS_HUNTER:
+	case EPlayerClass::Hunter:
 		Config()->m_InfProbaHunter = Probability;
 		break;
-	case PLAYERCLASS_BAT:
+	case EPlayerClass::Bat:
 		Config()->m_InfProbaBat = Probability;
 		break;
-	case PLAYERCLASS_GHOST:
+	case EPlayerClass::Ghost:
 		Config()->m_InfProbaGhost = Probability;
 		break;
-	case PLAYERCLASS_SPIDER:
+	case EPlayerClass::Spider:
 		Config()->m_InfProbaSpider = Probability;
 		break;
-	case PLAYERCLASS_GHOUL:
+	case EPlayerClass::Ghoul:
 		Config()->m_InfProbaGhoul = Probability;
 		break;
-	case PLAYERCLASS_SLUG:
+	case EPlayerClass::Slug:
 		Config()->m_InfProbaSlug = Probability;
 		break;
-	case PLAYERCLASS_VOODOO:
+	case EPlayerClass::Voodoo:
 		Config()->m_InfProbaVoodoo = Probability;
 		break;
-	case PLAYERCLASS_WITCH:
+	case EPlayerClass::Witch:
 		Config()->m_InfProbaWitch = Probability;
 		break;
-	case PLAYERCLASS_UNDEAD:
+	case EPlayerClass::Undead:
 		Config()->m_InfProbaUndead = Probability;
 		break;
 	default:
@@ -5235,33 +5238,33 @@ bool CInfClassGameController::SetPlayerClassProbability(int PlayerClass, int Pro
 	return true;
 }
 
-int CInfClassGameController::GetMinPlayersForClass(PLAYERCLASS PlayerClass) const
+int CInfClassGameController::GetMinPlayersForClass(EPlayerClass PlayerClass) const
 {
 	switch(PlayerClass)
 	{
-	case PLAYERCLASS_ENGINEER:
+	case EPlayerClass::Engineer:
 		return Config()->m_InfMinPlayersForEngineer;
 	default:
 		return 0;
 	}
 }
 
-int CInfClassGameController::GetClassPlayerLimit(PLAYERCLASS PlayerClass) const
+int CInfClassGameController::GetClassPlayerLimit(EPlayerClass PlayerClass) const
 {
 	switch(PlayerClass)
 	{
-	case PLAYERCLASS_MEDIC:
+	case EPlayerClass::Medic:
 		return Config()->m_InfMedicLimit;
-	case PLAYERCLASS_HERO:
+	case EPlayerClass::Hero:
 		return Config()->m_InfHeroLimit;
-	case PLAYERCLASS_WITCH:
+	case EPlayerClass::Witch:
 		return Config()->m_InfWitchLimit;
 	default:
 		return Config()->m_SvMaxClients;
 	}
 }
 
-int CInfClassGameController::GetPlayerClassProbability(PLAYERCLASS PlayerClass) const
+int CInfClassGameController::GetPlayerClassProbability(EPlayerClass PlayerClass) const
 {
 	if(GetRoundType() == ERoundType::Fun)
 	{
@@ -5270,27 +5273,27 @@ int CInfClassGameController::GetPlayerClassProbability(PLAYERCLASS PlayerClass) 
 
 	switch(PlayerClass)
 	{
-	case PLAYERCLASS_SMOKER:
+	case EPlayerClass::Smoker:
 		return Config()->m_InfProbaSmoker;
-	case PLAYERCLASS_BOOMER:
+	case EPlayerClass::Boomer:
 		return Config()->m_InfProbaBoomer;
-	case PLAYERCLASS_HUNTER:
+	case EPlayerClass::Hunter:
 		return Config()->m_InfProbaHunter;
-	case PLAYERCLASS_BAT:
+	case EPlayerClass::Bat:
 		return Config()->m_InfProbaBat;
-	case PLAYERCLASS_GHOST:
+	case EPlayerClass::Ghost:
 		return Config()->m_InfProbaGhost;
-	case PLAYERCLASS_SPIDER:
+	case EPlayerClass::Spider:
 		return Config()->m_InfProbaSpider;
-	case PLAYERCLASS_GHOUL:
+	case EPlayerClass::Ghoul:
 		return Config()->m_InfProbaGhoul;
-	case PLAYERCLASS_SLUG:
+	case EPlayerClass::Slug:
 		return Config()->m_InfProbaSlug;
-	case PLAYERCLASS_VOODOO:
+	case EPlayerClass::Voodoo:
 		return Config()->m_InfProbaVoodoo;
-	case PLAYERCLASS_WITCH:
+	case EPlayerClass::Witch:
 		return Config()->m_InfProbaWitch;
-	case PLAYERCLASS_UNDEAD:
+	case EPlayerClass::Undead:
 		return Config()->m_InfProbaUndead;
 	default:
 		break;
@@ -5300,7 +5303,7 @@ int CInfClassGameController::GetPlayerClassProbability(PLAYERCLASS PlayerClass) 
 	return 0;
 }
 
-int CInfClassGameController::GetInfectedCount(PLAYERCLASS InfectedPlayerClass) const
+int CInfClassGameController::GetInfectedCount(EPlayerClass InfectedPlayerClass) const
 {
 	int Count = 0;
 	for(int i = 0; i < MAX_CLIENTS; i++)
@@ -5312,7 +5315,7 @@ int CInfClassGameController::GetInfectedCount(PLAYERCLASS InfectedPlayerClass) c
 		if(!pPlayer->IsInfected())
 			continue;
 
-		if(InfectedPlayerClass != PLAYERCLASS_INVALID)
+		if(InfectedPlayerClass != EPlayerClass::Invalid)
 		{
 			if(pPlayer->GetClass() != InfectedPlayerClass)
 				continue;
@@ -5352,7 +5355,7 @@ void CInfClassGameController::QueueRoundType(ERoundType RoundType)
 	m_QueuedRoundType = RoundType;
 }
 
-CLASS_AVAILABILITY CInfClassGameController::GetPlayerClassAvailability(PLAYERCLASS PlayerClass, const CInfClassPlayer *pForPlayer) const
+CLASS_AVAILABILITY CInfClassGameController::GetPlayerClassAvailability(EPlayerClass PlayerClass, const CInfClassPlayer *pForPlayer) const
 {
 	if(!GetPlayerClassEnabled(PlayerClass))
 		return CLASS_AVAILABILITY::DISABLED;
@@ -5364,21 +5367,19 @@ CLASS_AVAILABILITY CInfClassGameController::GetPlayerClassAvailability(PLAYERCLA
 
 	int nbSupport = 0;
 	int nbDefender = 0;
-	std::map<int, int> nbClass;
-	for(PLAYERCLASS PlayerClass : AllHumanClasses())
-		nbClass[PlayerClass] = 0;
+	icArray<int, NB_PLAYERCLASS> nbClass;
+	nbClass.Resize(NB_PLAYERCLASS);
 
 	CInfClassPlayerIterator<PLAYERITER_INGAME> Iter(GameServer()->m_apPlayers);
 	while(Iter.Next())
 	{
-		const PLAYERCLASS AnotherPlayerClass = Iter.Player()->GetClass();
-		if ((AnotherPlayerClass < START_HUMANCLASS + 1) || (AnotherPlayerClass > END_HUMANCLASS - 1))
-			continue;
+		const EPlayerClass AnotherPlayerClass = Iter.Player()->GetClass();
+		const int Index = static_cast<int>(AnotherPlayerClass);
 		if (IsDefenderClass(AnotherPlayerClass))
 			nbDefender++;
 		if (IsSupportClass(AnotherPlayerClass))
 			nbSupport++;
-		nbClass[AnotherPlayerClass]++;
+		nbClass[Index]++;
 	}
 
 	if(IsDefenderClass(PlayerClass) && (nbDefender >= Config()->m_InfDefenderLimit))
@@ -5390,16 +5391,16 @@ CLASS_AVAILABILITY CInfClassGameController::GetPlayerClassAvailability(PLAYERCLA
 	int ClassLimit = GetClassPlayerLimit(PlayerClass);
 	if(GetRoundType() == ERoundType::Survival)
 	{
-		static constexpr PLAYERCLASS EarlyClasses[] = {
-			PLAYERCLASS_MEDIC,
-			PLAYERCLASS_MERCENARY,
-			PLAYERCLASS_SNIPER,
+		static constexpr EPlayerClass EarlyClasses[] = {
+			EPlayerClass::Medic,
+			EPlayerClass::Mercenary,
+			EPlayerClass::Sniper,
 		};
 
-		icArray<PLAYERCLASS, NB_HUMANCLASS> EnabledEarlyClasses;
+		icArray<EPlayerClass, NB_HUMANCLASS> EnabledEarlyClasses;
 
 		int EnabledHumansClasses = 0;
-		for(PLAYERCLASS HumanClass : AllHumanClasses())
+		for(EPlayerClass HumanClass : AllHumanClasses)
 		{
 			if(GetPlayerClassEnabled(HumanClass))
 			{
@@ -5430,10 +5431,10 @@ CLASS_AVAILABILITY CInfClassGameController::GetPlayerClassAvailability(PLAYERCLA
 		}
 	}
 
-	if(nbClass[PlayerClass] >= ClassLimit)
+	if(nbClass[static_cast<int>(PlayerClass)] >= ClassLimit)
 		return CLASS_AVAILABILITY::LIMIT_EXCEEDED;
 
-	if(PlayerClass == PLAYERCLASS_HERO)
+	if(PlayerClass == EPlayerClass::Hero)
 	{
 		if (m_HeroFlagPositions.size() == 0)
 		{

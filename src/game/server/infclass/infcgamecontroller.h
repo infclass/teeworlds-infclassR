@@ -52,14 +52,14 @@ static const char *toString(ERoundType RoundType);
 struct FunRoundConfiguration
 {
 	FunRoundConfiguration() = default;
-	FunRoundConfiguration(PLAYERCLASS Infected, PLAYERCLASS Human) :
+	FunRoundConfiguration(EPlayerClass Infected, EPlayerClass Human) :
 		InfectedClass(Infected),
 		HumanClass(Human)
 	{
 	}
 
-	PLAYERCLASS InfectedClass = PLAYERCLASS_INVALID;
-	PLAYERCLASS HumanClass = PLAYERCLASS_INVALID;
+	EPlayerClass InfectedClass = EPlayerClass::Invalid;
+	EPlayerClass HumanClass = EPlayerClass::Invalid;
 };
 
 class CInfClassGameController : public IGameController
@@ -116,25 +116,25 @@ public:
 	void EndRound(ROUND_END_REASON Reason);
 	void DoTeamChange(class CPlayer *pPlayer, int Team, bool DoChatMsg = true) override;
 	bool TryRespawn(CInfClassPlayer *pPlayer, SpawnContext *pContext);
-	PLAYERCLASS ChooseHumanClass(const CInfClassPlayer *pPlayer) const;
-	PLAYERCLASS ChooseInfectedClass(const CInfClassPlayer *pPlayer) const;
+	EPlayerClass ChooseHumanClass(const CInfClassPlayer *pPlayer) const;
+	EPlayerClass ChooseInfectedClass(const CInfClassPlayer *pPlayer) const;
 
-	bool GetPlayerClassEnabled(PLAYERCLASS PlayerClass) const;
-	bool SetPlayerClassEnabled(PLAYERCLASS PlayerClass, bool Enabled);
-	bool SetPlayerClassProbability(int PlayerClass, int Probability);
+	bool GetPlayerClassEnabled(EPlayerClass PlayerClass) const;
+	bool SetPlayerClassEnabled(EPlayerClass PlayerClass, bool Enabled);
+	bool SetPlayerClassProbability(EPlayerClass PlayerClass, int Probability);
 
-	int GetMinPlayersForClass(PLAYERCLASS PlayerClass) const;
-	int GetClassPlayerLimit(PLAYERCLASS PlayerClass) const;
-	int GetPlayerClassProbability(PLAYERCLASS PlayerClass) const;
+	int GetMinPlayersForClass(EPlayerClass PlayerClass) const;
+	int GetClassPlayerLimit(EPlayerClass PlayerClass) const;
+	int GetPlayerClassProbability(EPlayerClass PlayerClass) const;
 
-	int GetInfectedCount(PLAYERCLASS InfectedPlayerClass = PLAYERCLASS_INVALID) const;
+	int GetInfectedCount(EPlayerClass InfectedPlayerClass = EPlayerClass::Invalid) const;
 	int GetMinPlayers() const;
 
 	ERoundType GetDefaultRoundType() const;
 	ERoundType GetRoundType() const;
 	void QueueRoundType(ERoundType RoundType);
 
-	CLASS_AVAILABILITY GetPlayerClassAvailability(PLAYERCLASS PlayerClass, const CInfClassPlayer *pForPlayer = nullptr) const;
+	CLASS_AVAILABILITY GetPlayerClassAvailability(EPlayerClass PlayerClass, const CInfClassPlayer *pForPlayer = nullptr) const;
 	bool CanVote() override;
 
 	void OnPlayerVoteCommand(int ClientID, int Vote) override;
@@ -145,7 +145,7 @@ public:
 
 	void OnReset() override;
 
-	void DoPlayerInfection(CInfClassPlayer *pPlayer, CInfClassPlayer *pInfectiousPlayer, PLAYERCLASS PreviousClass);
+	void DoPlayerInfection(CInfClassPlayer *pPlayer, CInfClassPlayer *pInfectiousPlayer, EPlayerClass PreviousClass);
 
 	void OnHeroFlagCollected(int ClientID);
 	float GetHeroFlagCooldown() const;
@@ -190,16 +190,16 @@ public:
 	int GetInfectionTick() const;
 	int GetInfectionStartTick() const;
 
-	static bool IsDefenderClass(PLAYERCLASS PlayerClass);
-	static bool IsSupportClass(PLAYERCLASS PlayerClass);
-	static PLAYERCLASS GetClassByName(const char *pClassName, bool *pOk = nullptr);
-	static const char *GetClassName(PLAYERCLASS PlayerClass);
-	static const char *GetClassPluralName(PLAYERCLASS PlayerClass);
-	static const char *GetClassDisplayName(PLAYERCLASS PlayerClass, const char *pDefaultText = nullptr);
-	static const char *GetClassDisplayNameForKilledBy(PLAYERCLASS PlayerClass, const char *pDefaultText = nullptr);
-	static const char *GetClanForClass(PLAYERCLASS PlayerClass, const char *pDefaultText = nullptr);
-	static const char *GetClassPluralDisplayName(PLAYERCLASS PlayerClass);
-	static PLAYERCLASS MenuClassToPlayerClass(int MenuClass);
+	static bool IsDefenderClass(EPlayerClass PlayerClass);
+	static bool IsSupportClass(EPlayerClass PlayerClass);
+	static EPlayerClass GetClassByName(const char *pClassName, bool *pOk = nullptr);
+	static const char *GetClassName(EPlayerClass PlayerClass);
+	static const char *GetClassPluralName(EPlayerClass PlayerClass);
+	static const char *GetClassDisplayName(EPlayerClass PlayerClass, const char *pDefaultText = nullptr);
+	static const char *GetClassDisplayNameForKilledBy(EPlayerClass PlayerClass, const char *pDefaultText = nullptr);
+	static const char *GetClanForClass(EPlayerClass PlayerClass, const char *pDefaultText = nullptr);
+	static const char *GetClassPluralDisplayName(EPlayerClass PlayerClass);
+	static EPlayerClass MenuClassToPlayerClass(int MenuClass);
 	static int DamageTypeToWeapon(EDamageType DamageType, TAKEDAMAGEMODE *pMode = nullptr);
 
 	int GetPlayerTeam(int ClientID) const override;
@@ -213,7 +213,7 @@ public:
 	static void ConPreferClass(IConsole::IResult *pResult, void *pUserData);
 	static void ConAlwaysRandom(IConsole::IResult *pResult, void *pUserData);
 	void SetPreferredClass(int ClientID, const char *pClassName);
-	void SetPreferredClass(int ClientID, PLAYERCLASS Class);
+	void SetPreferredClass(int ClientID, EPlayerClass Class);
 	static void ConAntiPing(IConsole::IResult *pResult, void *pUserData);
 
 	static void ConUserSetClass(IConsole::IResult *pResult, void *pUserData);

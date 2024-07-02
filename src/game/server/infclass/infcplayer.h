@@ -65,9 +65,9 @@ public:
 	void SetInfectionTimestamp(int Timestamp);
 	int GetInfectionTimestamp() const;
 
-	PLAYERCLASS GetPreferredClass() const { return m_PreferredClass; }
-	void SetPreferredClass(PLAYERCLASS Class);
-	void SetPreviouslyPickedClass(PLAYERCLASS Class);
+	EPlayerClass GetPreferredClass() const { return m_PreferredClass; }
+	void SetPreferredClass(EPlayerClass Class);
+	void SetPreviouslyPickedClass(EPlayerClass Class);
 
 	void HandleInfection();
 	void KillCharacter(int Weapon = WEAPON_GAME) override;
@@ -78,7 +78,7 @@ public:
 	const CInfClassPlayerClass *GetCharacterClass() const { return m_pInfcPlayerClass; }
 	void SetCharacterClass(CInfClassPlayerClass *pClass);
 
-	void SetClass(PLAYERCLASS NewClass);
+	void SetClass(EPlayerClass NewClass);
 	void UpdateSkin();
 
 	INFECTION_TYPE InfectionType() const { return m_InfectionType; }
@@ -112,9 +112,9 @@ public:
 	void SetRandomClassChoosen();
 	bool RandomClassChoosen() const;
 
-	PLAYERCLASS GetPreviousInfectedClass() const;
-	PLAYERCLASS GetPreviousHumanClass() const;
-	PLAYERCLASS GetPreviouslyPickedClass() const;
+	EPlayerClass GetPreviousInfectedClass() const;
+	EPlayerClass GetPreviousHumanClass() const;
+	EPlayerClass GetPreviouslyPickedClass() const;
 
 	void AddSavedPosition(const vec2 Position);
 	bool LoadSavedPosition(vec2 *pOutput) const;
@@ -162,7 +162,7 @@ protected:
 
 	bool m_aKnownClasses[NB_PLAYERCLASS]{};
 
-	PLAYERCLASS m_PreferredClass;
+	EPlayerClass m_PreferredClass;
 	bool m_AntiPing = false;
 
 	int m_MaxHP = 0;
@@ -192,8 +192,8 @@ protected:
 	int m_GhoulLevel = 0;
 	int m_GhoulLevelTick = 0;
 
-	PLAYERCLASS m_PickedClass = PLAYERCLASS_INVALID;
-	icArray<PLAYERCLASS, 5> m_PreviousClasses;
+	EPlayerClass m_PickedClass = EPlayerClass::Invalid;
+	icArray<EPlayerClass, 5> m_PreviousClasses;
 	icArray<vec2, 1> m_SavedPositions;
 };
 

@@ -84,51 +84,51 @@ bool CInfClassHuman::SetupSkin(const CSkinContext &Context, CWeakSkinInfo *pOutp
 {
 	switch(Context.PlayerClass)
 	{
-	case PLAYERCLASS_ENGINEER:
+	case EPlayerClass::Engineer:
 		pOutput->UseCustomColor = 0;
 		pOutput->pSkinName = "limekitty";
 		break;
-	case PLAYERCLASS_SOLDIER:
+	case EPlayerClass::Soldier:
 		pOutput->pSkinName = "brownbear";
 		pOutput->UseCustomColor = 0;
 		break;
-	case PLAYERCLASS_SNIPER:
+	case EPlayerClass::Sniper:
 		pOutput->pSkinName = "warpaint";
 		pOutput->UseCustomColor = 0;
 		break;
-	case PLAYERCLASS_MERCENARY:
+	case EPlayerClass::Mercenary:
 		pOutput->pSkinName = "bluestripe";
 		pOutput->UseCustomColor = 0;
 		break;
-	case PLAYERCLASS_SCIENTIST:
+	case EPlayerClass::Scientist:
 		pOutput->pSkinName = "toptri";
 		pOutput->UseCustomColor = 0;
 		break;
-	case PLAYERCLASS_BIOLOGIST:
+	case EPlayerClass::Biologist:
 		pOutput->pSkinName = "twintri";
 		pOutput->UseCustomColor = 0;
 		break;
-	case PLAYERCLASS_LOOPER:
+	case EPlayerClass::Looper:
 		pOutput->pSkinName = "bluekitty";
 		pOutput->UseCustomColor = 1;
 		pOutput->ColorBody = 255;
 		pOutput->ColorFeet = 0;
 		break;
-	case PLAYERCLASS_MEDIC:
+	case EPlayerClass::Medic:
 		pOutput->pSkinName = "twinbop";
 		pOutput->UseCustomColor = 0;
 		break;
-	case PLAYERCLASS_HERO:
+	case EPlayerClass::Hero:
 		pOutput->pSkinName = "redstripe";
 		pOutput->UseCustomColor = 0;
 		break;
-	case PLAYERCLASS_NINJA:
+	case EPlayerClass::Ninja:
 		pOutput->pSkinName = "default";
 		pOutput->UseCustomColor = 1;
 		pOutput->ColorBody = 255;
 		pOutput->ColorFeet = 0;
 		break;
-	case PLAYERCLASS_NONE:
+	case EPlayerClass::None:
 		pOutput->pSkinName = "default";
 		pOutput->UseCustomColor = 0;
 		break;
@@ -174,8 +174,8 @@ int CInfClassHuman::GetJumps() const
 {
 	switch(GetPlayerClass())
 	{
-	case PLAYERCLASS_SNIPER:
-	case PLAYERCLASS_LOOPER:
+	case EPlayerClass::Sniper:
+	case EPlayerClass::Looper:
 		return 3;
 	default:
 		return 2;
@@ -209,7 +209,7 @@ void CInfClassHuman::GiveGift(EGiftType GiftType)
 
 bool CInfClassHuman::CanBeHit() const
 {
-	if(GetPlayerClass() == PLAYERCLASS_NINJA)
+	if(GetPlayerClass() == EPlayerClass::Ninja)
 	{
 		// Do not hit slashing ninjas
 		if(m_pCharacter->m_DartLifeSpan >= 0)
@@ -243,7 +243,7 @@ void CInfClassHuman::CheckSuperWeaponAccess()
 	int Kills = m_KillsProgression;
 
 	// Only scientists can receive white holes
-	if(GetPlayerClass() == PLAYERCLASS_SCIENTIST)
+	if(GetPlayerClass() == EPlayerClass::Scientist)
 	{
 		if(!GameController()->WhiteHoleEnabled() || m_pCharacter->HasSuperWeaponIndicator())
 		{
@@ -277,7 +277,7 @@ void CInfClassHuman::OnPlayerSnap(int SnappingClient, int InfClassVersion)
 	CNetObj_InfClassClassInfo *pClassInfo = Server()->SnapNewItem<CNetObj_InfClassClassInfo>(GetCID());
 	if(!pClassInfo)
 		return;
-	pClassInfo->m_Class = GetPlayerClass();
+	pClassInfo->m_Class = toNetValue(GetPlayerClass());
 	pClassInfo->m_Flags = 0;
 	pClassInfo->m_Data1 = -1;
 
@@ -285,7 +285,7 @@ void CInfClassHuman::OnPlayerSnap(int SnappingClient, int InfClassVersion)
 	{
 		switch(GetPlayerClass())
 		{
-		case PLAYERCLASS_HERO:
+		case EPlayerClass::Hero:
 			if(m_pHeroFlag && m_pHeroFlag->IsAvailable())
 			{
 				pClassInfo->m_Data1 = m_pHeroFlag->GetSpawnTick();
@@ -295,7 +295,7 @@ void CInfClassHuman::OnPlayerSnap(int SnappingClient, int InfClassVersion)
 				pClassInfo->m_Data1 = -1;
 			}
 			break;
-		case PLAYERCLASS_ENGINEER:
+		case EPlayerClass::Engineer:
 			for(TEntityPtr<CEngineerWall> pWall = GameWorld()->FindFirst<CEngineerWall>(); pWall; ++pWall)
 			{
 				if(pWall->GetOwner() != GetCID())
@@ -307,13 +307,13 @@ void CInfClassHuman::OnPlayerSnap(int SnappingClient, int InfClassVersion)
 				break;
 			}
 			break;
-		case PLAYERCLASS_SCIENTIST:
+		case EPlayerClass::Scientist:
 			if(m_pCharacter && m_pCharacter->IsAlive())
 			{
 				pClassInfo->m_Data1 = f2fx(m_KillsProgression);
 			}
 			break;
-		case PLAYERCLASS_LOOPER:
+		case EPlayerClass::Looper:
 			for(TEntityPtr<CLooperWall> pWall = GameWorld()->FindFirst<CLooperWall>(); pWall; ++pWall)
 			{
 				if(pWall->GetOwner() != GetCID())
@@ -343,7 +343,7 @@ void CInfClassHuman::OnCharacterPreCoreTick()
 
 	switch (GetPlayerClass())
 	{
-		case PLAYERCLASS_SNIPER:
+		case EPlayerClass::Sniper:
 		{
 			if(m_pCharacter->PositionIsLocked())
 			{
@@ -376,7 +376,7 @@ void CInfClassHuman::OnCharacterPreCoreTick()
 			}
 		}
 			break;
-		case PLAYERCLASS_NINJA:
+		case EPlayerClass::Ninja:
 		{
 			if(m_pCharacter->IsGrounded() && m_pCharacter->m_DartLifeSpan <= 0)
 			{
@@ -395,7 +395,7 @@ void CInfClassHuman::OnCharacterTick()
 
 	switch(GetPlayerClass())
 	{
-	case PLAYERCLASS_NINJA:
+	case EPlayerClass::Ninja:
 	{
 		if(Server()->Tick() > m_NinjaTargetTick)
 		{
@@ -419,6 +419,8 @@ void CInfClassHuman::OnCharacterTick()
 		}
 		break;
 	}
+	default:
+		break;
 	}
 
 	if(m_pCharacter->IsAlive() && GameController()->IsInfectionStarted())
@@ -473,7 +475,7 @@ void CInfClassHuman::OnCharacterPostCoreTick()
 
 	switch(GetPlayerClass())
 	{
-	case PLAYERCLASS_SNIPER:
+	case EPlayerClass::Sniper:
 		if(m_pCharacter->PositionIsLocked())
 		{
 			m_pCharacter->ResetVelocity();
@@ -489,10 +491,10 @@ void CInfClassHuman::OnCharacterSnap(int SnappingClient)
 {
 	switch(GetPlayerClass())
 	{
-	case PLAYERCLASS_HERO:
+	case EPlayerClass::Hero:
 		SnapHero(SnappingClient);
 		break;
-	case PLAYERCLASS_SCIENTIST:
+	case EPlayerClass::Scientist:
 		SnapScientist(SnappingClient);
 		break;
 	default:
@@ -506,10 +508,10 @@ void CInfClassHuman::OnCharacterSnap(int SnappingClient)
 		{
 			switch(pDestClient->GetClass())
 			{
-			case PLAYERCLASS_MEDIC:
+			case EPlayerClass::Medic:
 				if(m_pCharacter->GetArmor() < 10)
 				{
-					if(GetPlayerClass() == PLAYERCLASS_HERO)
+					if(GetPlayerClass() == EPlayerClass::Hero)
 					{
 						if(pDestClient->GetCharacter()->GetActiveWeapon() != WEAPON_GRENADE)
 						{
@@ -532,7 +534,7 @@ void CInfClassHuman::OnCharacterSnap(int SnappingClient)
 					pP->m_Subtype = 0;
 					break;
 				}
-			case PLAYERCLASS_BIOLOGIST:
+			case EPlayerClass::Biologist:
 				if(m_pCharacter->IsPoisoned())
 				{
 					CNetObj_Pickup *pP = Server()->SnapNewItem<CNetObj_Pickup>(m_pCharacter->GetHeartID());
@@ -565,7 +567,7 @@ void CInfClassHuman::OnCharacterDamage(SDamageContext *pContext)
 {
 	switch(GetPlayerClass())
 	{
-	case PLAYERCLASS_HERO:
+	case EPlayerClass::Hero:
 		if(pContext->Mode == TAKEDAMAGEMODE::INFECTION)
 		{
 			pContext->Mode = TAKEDAMAGEMODE::NOINFECTION;
@@ -600,14 +602,14 @@ void CInfClassHuman::OnKilledCharacter(CInfClassCharacter *pVictim, const DeathC
 
 	switch(GetPlayerClass())
 	{
-	case PLAYERCLASS_MERCENARY:
+	case EPlayerClass::Mercenary:
 		if(!Assisted)
 		{
 			const int Bonus = GameController()->GetRoundType() == ERoundType::Survival ? 1 : 3;
 			m_pCharacter->AddAmmo(WEAPON_LASER, Bonus);
 		}
 		break;
-	case PLAYERCLASS_NINJA:
+	case EPlayerClass::Ninja:
 		if(pVictim->GetCID() == m_NinjaTargetCID)
 		{
 			OnNinjaTargetKiller(Assisted);
@@ -620,13 +622,13 @@ void CInfClassHuman::OnKilledCharacter(CInfClassCharacter *pVictim, const DeathC
 			}
 		}
 		break;
-	case PLAYERCLASS_MEDIC:
+	case EPlayerClass::Medic:
 		if(!Assisted)
 		{
 			m_pCharacter->AddAmmo(WEAPON_GRENADE, 1);
 		}
 		break;
-	case PLAYERCLASS_SCIENTIST:
+	case EPlayerClass::Scientist:
 		CheckSuperWeaponAccess();
 		break;
 	default:
@@ -636,9 +638,9 @@ void CInfClassHuman::OnKilledCharacter(CInfClassCharacter *pVictim, const DeathC
 
 void CInfClassHuman::OnHumanHammerHitHuman(CInfClassCharacter *pTarget)
 {
-	if(GetPlayerClass() == PLAYERCLASS_MEDIC)
+	if(GetPlayerClass() == EPlayerClass::Medic)
 	{
-		if(pTarget->GetPlayerClass() != PLAYERCLASS_HERO)
+		if(pTarget->GetPlayerClass() != EPlayerClass::Hero)
 		{
 			const int HadArmor = pTarget->GetArmor();
 			if(HadArmor < 10)
@@ -655,7 +657,7 @@ void CInfClassHuman::OnHumanHammerHitHuman(CInfClassCharacter *pTarget)
 			}
 		}
 	}
-	if(GetPlayerClass() == PLAYERCLASS_BIOLOGIST)
+	if(GetPlayerClass() == EPlayerClass::Biologist)
 	{
 		if(pTarget->IsPoisoned())
 		{
@@ -684,7 +686,7 @@ void CInfClassHuman::OnHookAttachedPlayer()
 
 void CInfClassHuman::HandleNinja()
 {
-	if(GetPlayerClass() != PLAYERCLASS_NINJA)
+	if(GetPlayerClass() != EPlayerClass::Ninja)
 		return;
 	if(m_pCharacter->GetInfWeaponID(m_pCharacter->GetActiveWeapon()) != INFWEAPON::NINJA_HAMMER)
 		return;
@@ -759,7 +761,7 @@ void CInfClassHuman::OnHammerFired(WeaponFireContext *pFireContext)
 {
 	switch(GetPlayerClass())
 	{
-	case PLAYERCLASS_MERCENARY:
+	case EPlayerClass::Mercenary:
 		if(GameController()->MercBombsEnabled())
 		{
 			FireMercenaryBomb(pFireContext);
@@ -769,7 +771,7 @@ void CInfClassHuman::OnHammerFired(WeaponFireContext *pFireContext)
 		{
 			break;
 		}
-	case PLAYERCLASS_SNIPER:
+	case EPlayerClass::Sniper:
 		if(m_pCharacter->PositionIsLocked())
 		{
 			m_pCharacter->UnlockPosition();
@@ -779,22 +781,22 @@ void CInfClassHuman::OnHammerFired(WeaponFireContext *pFireContext)
 			m_pCharacter->LockPosition();
 		}
 		return;
-	case PLAYERCLASS_HERO:
+	case EPlayerClass::Hero:
 		PlaceTurret(pFireContext);
 		return;
-	case PLAYERCLASS_ENGINEER:
+	case EPlayerClass::Engineer:
 		PlaceEngineerWall(pFireContext);
 		return;
-	case PLAYERCLASS_SOLDIER:
+	case EPlayerClass::Soldier:
 		FireSoldierBomb(pFireContext);
 		return;
-	case PLAYERCLASS_NINJA:
+	case EPlayerClass::Ninja:
 		ActivateNinja(pFireContext);
 		return;
-	case PLAYERCLASS_SCIENTIST:
+	case EPlayerClass::Scientist:
 		PlaceScientistMine(pFireContext);
 		return;
-	case PLAYERCLASS_LOOPER:
+	case EPlayerClass::Looper:
 		PlaceLooperWall(pFireContext);
 		return;
 	default:
@@ -865,7 +867,7 @@ void CInfClassHuman::OnGunFired(WeaponFireContext *pFireContext)
 
 	EDamageType DamageType = EDamageType::GUN;
 	
-	if(GetPlayerClass() == PLAYERCLASS_MERCENARY)
+	if(GetPlayerClass() == EPlayerClass::Mercenary)
 		DamageType = EDamageType::MERCENARY_GUN;
 
 	{
@@ -877,7 +879,7 @@ void CInfClassHuman::OnGunFired(WeaponFireContext *pFireContext)
 			1, 0, 0, -1, DamageType);
 	}
 
-	if(GetPlayerClass() == PLAYERCLASS_MERCENARY)
+	if(GetPlayerClass() == EPlayerClass::Mercenary)
 	{
 		float MaxSpeed = GameServer()->Tuning()->m_GroundControlSpeed * 1.7f;
 		vec2 Recoil = Direction * (-MaxSpeed / 5.0f);
@@ -906,10 +908,10 @@ void CInfClassHuman::OnShotgunFired(WeaponFireContext *pFireContext)
 
 	switch(GetPlayerClass())
 	{
-	case PLAYERCLASS_BIOLOGIST:
+	case EPlayerClass::Biologist:
 		ShotSpread = 1;
 		break;
-	case PLAYERCLASS_MEDIC:
+	case EPlayerClass::Medic:
 		Force = 10.0f;
 		DamageType = EDamageType::MEDIC_SHOTGUN;
 		break;
@@ -928,7 +930,7 @@ void CInfClassHuman::OnShotgunFired(WeaponFireContext *pFireContext)
 
 		float LifeTime = GameServer()->Tuning()->m_ShotgunLifetime + 0.1f * static_cast<float>(pFireContext->AmmoAvailable)/10.0f;
 
-		if(GetPlayerClass() == PLAYERCLASS_BIOLOGIST)
+		if(GetPlayerClass() == EPlayerClass::Biologist)
 		{
 			CBouncingBullet *pProj = new CBouncingBullet(GameServer(),
 				GetCID(),
@@ -952,7 +954,7 @@ void CInfClassHuman::OnShotgunFired(WeaponFireContext *pFireContext)
 
 void CInfClassHuman::OnGrenadeFired(WeaponFireContext *pFireContext)
 {
-	if(GetPlayerClass() == PLAYERCLASS_MERCENARY)
+	if(GetPlayerClass() == EPlayerClass::Mercenary)
 	{
 		// Does not need the ammo in some cases
 		OnMercGrenadeFired(pFireContext);
@@ -964,10 +966,10 @@ void CInfClassHuman::OnGrenadeFired(WeaponFireContext *pFireContext)
 
 	switch(GetPlayerClass())
 	{
-	case PLAYERCLASS_SCIENTIST:
+	case EPlayerClass::Scientist:
 		OnPortalGunFired(pFireContext);
 		break;
-	case PLAYERCLASS_MEDIC:
+	case EPlayerClass::Medic:
 		OnMedicGrenadeFired(pFireContext);
 		break;
 	default:
@@ -981,7 +983,7 @@ void CInfClassHuman::OnGrenadeFired(WeaponFireContext *pFireContext)
 			(int)(Server()->TickSpeed() * GameServer()->Tuning()->m_GrenadeLifetime),
 			1, true, 0, SOUND_GRENADE_EXPLODE, EDamageType::GRENADE);
 
-		if(GetPlayerClass() == PLAYERCLASS_NINJA)
+		if(GetPlayerClass() == EPlayerClass::Ninja)
 		{
 			pProj->FlashGrenade();
 			pProj->SetFlashRadius(8);
@@ -1007,30 +1009,30 @@ void CInfClassHuman::OnLaserFired(WeaponFireContext *pFireContext)
 
 	switch(GetPlayerClass())
 	{
-	case PLAYERCLASS_NINJA:
+	case EPlayerClass::Ninja:
 		OnBlindingLaserFired(pFireContext);
 		break;
-	case PLAYERCLASS_BIOLOGIST:
+	case EPlayerClass::Biologist:
 		OnBiologistLaserFired(pFireContext);
 		break;
-	case PLAYERCLASS_SCIENTIST:
+	case EPlayerClass::Scientist:
 		StartEnergy *= 0.6f;
 		new CScientistLaser(GameServer(), GetPos(), Direction, StartEnergy, GetCID(), Damage);
 		break;
-	case PLAYERCLASS_MERCENARY:
+	case EPlayerClass::Mercenary:
 		OnMercLaserFired(pFireContext);
 		break;
-	case PLAYERCLASS_MEDIC:
+	case EPlayerClass::Medic:
 		new CMedicLaser(GameServer(), GetPos(), Direction, StartEnergy, GetCID());
 		break;
 
-	case PLAYERCLASS_LOOPER:
+	case EPlayerClass::Looper:
 		StartEnergy *= 0.7f;
 		Damage = 5;
 		DamageType = EDamageType::LOOPER_LASER;
 		new CInfClassLaser(GameServer(), GetPos(), Direction, StartEnergy, GetCID(), Damage, DamageType);
 		break;
-	case PLAYERCLASS_SNIPER:
+	case EPlayerClass::Sniper:
 		Damage = m_pCharacter->PositionIsLocked() ? 30 : random_int(10, 13);
 		DamageType = EDamageType::SNIPER_RIFLE;
 		new CInfClassLaser(GameServer(), GetPos(), Direction, StartEnergy, GetCID(), Damage, DamageType);
@@ -1067,19 +1069,19 @@ void CInfClassHuman::GiveClassAttributes()
 
 	switch(GetPlayerClass())
 	{
-	case PLAYERCLASS_ENGINEER:
+	case EPlayerClass::Engineer:
 		m_pCharacter->GiveWeapon(WEAPON_HAMMER, -1);
 		m_pCharacter->GiveWeapon(WEAPON_GUN, -1);
 		m_pCharacter->GiveWeapon(WEAPON_LASER, -1);
 		m_pCharacter->SetActiveWeapon(WEAPON_LASER);
 		break;
-	case PLAYERCLASS_SOLDIER:
+	case EPlayerClass::Soldier:
 		m_pCharacter->GiveWeapon(WEAPON_HAMMER, -1);
 		m_pCharacter->GiveWeapon(WEAPON_GUN, -1);
 		m_pCharacter->GiveWeapon(WEAPON_GRENADE, -1);
 		m_pCharacter->SetActiveWeapon(WEAPON_GRENADE);
 		break;
-	case PLAYERCLASS_MERCENARY:
+	case EPlayerClass::Mercenary:
 		m_pCharacter->GiveWeapon(WEAPON_HAMMER, -1);
 		m_pCharacter->GiveWeapon(WEAPON_GRENADE, -1);
 		m_pCharacter->GiveWeapon(WEAPON_GUN, -1);
@@ -1087,33 +1089,33 @@ void CInfClassHuman::GiveClassAttributes()
 			m_pCharacter->GiveWeapon(WEAPON_LASER, -1);
 		m_pCharacter->SetActiveWeapon(WEAPON_GUN);
 		break;
-	case PLAYERCLASS_SNIPER:
+	case EPlayerClass::Sniper:
 		m_pCharacter->GiveWeapon(WEAPON_HAMMER, -1);
 		m_pCharacter->GiveWeapon(WEAPON_GUN, -1);
 		m_pCharacter->GiveWeapon(WEAPON_LASER, -1);
 		m_pCharacter->SetActiveWeapon(WEAPON_LASER);
 		break;
-	case PLAYERCLASS_SCIENTIST:
+	case EPlayerClass::Scientist:
 		m_pCharacter->GiveWeapon(WEAPON_HAMMER, -1);
 		m_pCharacter->GiveWeapon(WEAPON_GUN, -1);
 		m_pCharacter->GiveWeapon(WEAPON_LASER, -1);
 		m_pCharacter->GiveWeapon(WEAPON_GRENADE, -1);
 		m_pCharacter->SetActiveWeapon(WEAPON_LASER);
 		break;
-	case PLAYERCLASS_BIOLOGIST:
+	case EPlayerClass::Biologist:
 		m_pCharacter->GiveWeapon(WEAPON_HAMMER, -1);
 		m_pCharacter->GiveWeapon(WEAPON_GUN, -1);
 		m_pCharacter->GiveWeapon(WEAPON_LASER, -1);
 		m_pCharacter->GiveWeapon(WEAPON_SHOTGUN, -1);
 		m_pCharacter->SetActiveWeapon(WEAPON_SHOTGUN);
 		break;
-	case PLAYERCLASS_LOOPER:
+	case EPlayerClass::Looper:
 		m_pCharacter->GiveWeapon(WEAPON_HAMMER, -1);
 		m_pCharacter->GiveWeapon(WEAPON_LASER, -1);
 		m_pCharacter->GiveWeapon(WEAPON_GRENADE, -1);
 		m_pCharacter->SetActiveWeapon(WEAPON_LASER);
 		break;
-	case PLAYERCLASS_MEDIC:
+	case EPlayerClass::Medic:
 		m_pCharacter->GiveWeapon(WEAPON_HAMMER, -1);
 		m_pCharacter->GiveWeapon(WEAPON_GUN, -1);
 		m_pCharacter->GiveWeapon(WEAPON_SHOTGUN, -1);
@@ -1121,7 +1123,7 @@ void CInfClassHuman::GiveClassAttributes()
 		m_pCharacter->GiveWeapon(WEAPON_LASER, -1);
 		m_pCharacter->SetActiveWeapon(WEAPON_SHOTGUN);
 		break;
-	case PLAYERCLASS_HERO:
+	case EPlayerClass::Hero:
 		if(GameController()->AreTurretsEnabled())
 			m_pCharacter->GiveWeapon(WEAPON_HAMMER, -1);
 		m_pCharacter->GiveWeapon(WEAPON_GUN, -1);
@@ -1130,7 +1132,7 @@ void CInfClassHuman::GiveClassAttributes()
 		m_pCharacter->GiveWeapon(WEAPON_GRENADE, -1);
 		m_pCharacter->SetActiveWeapon(WEAPON_GRENADE);
 		break;
-	case PLAYERCLASS_NINJA:
+	case EPlayerClass::Ninja:
 		m_pCharacter->GiveWeapon(WEAPON_HAMMER, -1);
 		m_pCharacter->GiveWeapon(WEAPON_GUN, -1);
 		m_pCharacter->GiveWeapon(WEAPON_GRENADE, -1);
@@ -1148,13 +1150,15 @@ void CInfClassHuman::GiveClassAttributes()
 			m_NinjaAmmoBuff = 2;
 		}
 		break;
-	case PLAYERCLASS_NONE:
+	case EPlayerClass::None:
 		m_pCharacter->GiveWeapon(WEAPON_HAMMER, -1);
 		m_pCharacter->SetActiveWeapon(WEAPON_HAMMER);
 		break;
+	default:
+		break;
 	}
 
-	if(GetPlayerClass() == PLAYERCLASS_SNIPER)
+	if(GetPlayerClass() == EPlayerClass::Sniper)
 	{
 		m_PositionLockTicksRemaining = Server()->TickSpeed() * s_SniperPositionLockTimeLimit;
 	}
@@ -1163,7 +1167,7 @@ void CInfClassHuman::GiveClassAttributes()
 		m_PositionLockTicksRemaining = 0;
 	}
 
-	if(GetPlayerClass() == PLAYERCLASS_HERO)
+	if(GetPlayerClass() == EPlayerClass::Hero)
 	{
 		if(!m_pHeroFlag)
 			m_pHeroFlag = new CHeroFlag(GameServer(), m_pPlayer->GetCID());
@@ -1201,7 +1205,7 @@ void CInfClassHuman::BroadcastWeaponState() const
 	const int CurrentTick = Server()->Tick();
 	int ClientVersion = Server()->GetClientInfclassVersion(GetCID());
 
-	if(GetPlayerClass() == PLAYERCLASS_ENGINEER)
+	if(GetPlayerClass() == EPlayerClass::Engineer)
 	{
 		if(ClientVersion >= VERSION_INFC_160)
 			return;
@@ -1228,7 +1232,7 @@ void CInfClassHuman::BroadcastWeaponState() const
 			);
 		}
 	}
-	else if(GetPlayerClass() == PLAYERCLASS_MEDIC)
+	else if(GetPlayerClass() == EPlayerClass::Medic)
 	{
 		if(m_pCharacter->GetActiveWeapon() == WEAPON_LASER)
 		{
@@ -1255,7 +1259,7 @@ void CInfClassHuman::BroadcastWeaponState() const
 			}
 		}
 	}
-	else if(GetPlayerClass() == PLAYERCLASS_LOOPER)
+	else if(GetPlayerClass() == EPlayerClass::Looper)
 	{
 		if(ClientVersion >= VERSION_INFC_160)
 			return;
@@ -1283,7 +1287,7 @@ void CInfClassHuman::BroadcastWeaponState() const
 			);
 		}
 	}
-	else if(GetPlayerClass() == PLAYERCLASS_SOLDIER)
+	else if(GetPlayerClass() == EPlayerClass::Soldier)
 	{
 		int NumBombs = 0;
 		for(CSoldierBomb *pBomb = (CSoldierBomb*) GameWorld()->FindFirst(CGameWorld::ENTTYPE_SOLDIER_BOMB); pBomb; pBomb = (CSoldierBomb*) pBomb->TypeNext())
@@ -1303,7 +1307,7 @@ void CInfClassHuman::BroadcastWeaponState() const
 			);
 		}
 	}
-	else if(GetPlayerClass() == PLAYERCLASS_SCIENTIST)
+	else if(GetPlayerClass() == EPlayerClass::Scientist)
 	{
 		int NumMines = 0;
 		for(CScientistMine *pMine = (CScientistMine*) GameWorld()->FindFirst(CGameWorld::ENTTYPE_SCIENTIST_MINE); pMine; pMine = (CScientistMine*) pMine->TypeNext())
@@ -1368,7 +1372,7 @@ void CInfClassHuman::BroadcastWeaponState() const
 				BROADCAST_PRIORITY_WEAPONSTATE, BROADCAST_DURATION_REALTIME);
 		}
 	}
-	else if(GetPlayerClass() == PLAYERCLASS_BIOLOGIST)
+	else if(GetPlayerClass() == EPlayerClass::Biologist)
 	{
 		int NumMines = 0;
 		for(CBiologistMine *pMine = (CBiologistMine*) GameWorld()->FindFirst(CGameWorld::ENTTYPE_BIOLOGIST_MINE); pMine; pMine = (CBiologistMine*) pMine->TypeNext())
@@ -1386,7 +1390,7 @@ void CInfClassHuman::BroadcastWeaponState() const
 			);
 		}
 	}
-	else if(GetPlayerClass() == PLAYERCLASS_NINJA)
+	else if(GetPlayerClass() == EPlayerClass::Ninja)
 	{
 		int TargetID = m_NinjaTargetCID;
 		int CoolDown = m_NinjaTargetTick - Server()->Tick();
@@ -1413,7 +1417,7 @@ void CInfClassHuman::BroadcastWeaponState() const
 			);
 		}
 	}
-	else if(GetPlayerClass() == PLAYERCLASS_SNIPER)
+	else if(GetPlayerClass() == EPlayerClass::Sniper)
 	{
 		if(m_pCharacter->PositionIsLocked())
 		{
@@ -1426,7 +1430,7 @@ void CInfClassHuman::BroadcastWeaponState() const
 			);
 		}
 	}
-	else if(GetPlayerClass() == PLAYERCLASS_MERCENARY)
+	else if(GetPlayerClass() == EPlayerClass::Mercenary)
 	{
 		CMercenaryBomb *pCurrentBomb = nullptr;
 		for(CMercenaryBomb *pBomb = (CMercenaryBomb*) GameWorld()->FindFirst(CGameWorld::ENTTYPE_MERCENARY_BOMB); pBomb; pBomb = (CMercenaryBomb*) pBomb->TypeNext())
@@ -1492,7 +1496,7 @@ void CInfClassHuman::BroadcastWeaponState() const
 			}
 		}
 	}
-	else if(GetPlayerClass() == PLAYERCLASS_HERO)
+	else if(GetPlayerClass() == EPlayerClass::Hero)
 	{
 		//Search for flag
 		int CoolDown = m_pHeroFlag ? m_pHeroFlag->GetSpawnTick() - CurrentTick : 0;
@@ -2101,7 +2105,7 @@ bool CInfClassHuman::FindPortalPosition(vec2 *pPosition)
 
 void CInfClassHuman::OnSlimeEffect(int Owner, int Damage, float DamageInterval)
 {
-	if(GetPlayerClass() == PLAYERCLASS_BIOLOGIST)
+	if(GetPlayerClass() == EPlayerClass::Biologist)
 	{
 		// Note: actually probably the character 'll stay in the slime for
 		// more than 1 tick and it 'll result in 2 damage dealt

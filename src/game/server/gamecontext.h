@@ -330,7 +330,7 @@ private:
 	static void ConStats(IConsole::IResult *pResult, void *pUserData);
 #endif
 	void ChatHelp(int ClientID, const char *pHelpPage);
-	bool WriteClassHelpPage(dynamic_string *pOutput, const char *pLanguage, PLAYERCLASS PlayerClass);
+	bool WriteClassHelpPage(dynamic_string *pOutput, const char *pLanguage, EPlayerClass PlayerClass);
 	static void ConLanguage(IConsole::IResult *pResult, void *pUserData);
 	static void ConCmdList(IConsole::IResult *pResult, void *pUserData);
 	static void ConChangeLog(IConsole::IResult *pResult, void *pUserData);

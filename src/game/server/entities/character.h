@@ -8,6 +8,7 @@
 #include <game/gamecore.h>
 
 class CGameTeams;
+enum class EPlayerClass;
 
 enum
 {
@@ -166,7 +167,7 @@ public:
 	bool SameTeam(int ClientID);
 
 protected:
-	int PrivateGetPlayerClass() const;
+	EPlayerClass PrivateGetPlayerClass() const;
 
 	// info for dead reckoning
 	int m_ReckoningTick; // tick that we are performing dead reckoning From

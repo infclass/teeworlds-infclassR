@@ -74,7 +74,7 @@ void CHeroFlag::Tick()
 	if(!pOwner)
 		return;
 
-	if(pOwner->GetPlayerClass() != PLAYERCLASS_HERO)
+	if(pOwner->GetPlayerClass() != EPlayerClass::Hero)
 	{
 		// Makes no sense
 		return;
@@ -119,7 +119,7 @@ void CHeroFlag::Snap(int SnappingClient)
 	if(!pOwner)
 		return;
 
-	if(pOwner->GetPlayerClass() != PLAYERCLASS_HERO)
+	if(pOwner->GetPlayerClass() != EPlayerClass::Hero)
 		return;
 
 	int SnappingClientVersion = GameServer()->GetClientVersion(SnappingClient);

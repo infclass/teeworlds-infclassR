@@ -3509,7 +3509,7 @@ void CGameContext::PrivateMessage(const char* pStr, int ClientID, bool TeamChat)
 	vec2 CheckDistancePos = vec2(0.0f, 0.0f);
 	
 	int CheckTeam = -1;
-	int CheckClass = -1;
+	EPlayerClass CheckClass = EPlayerClass::Invalid;
 #ifdef CONF_SQL
 	int CheckLevel = SQL_USERLEVEL_NORMAL;
 #endif
@@ -3557,102 +3557,102 @@ void CGameContext::PrivateMessage(const char* pStr, int ClientID, bool TeamChat)
 #endif
 			else if(str_comp(aNameFound, "!engineer") == 0 && m_apPlayers[ClientID] && m_apPlayers[ClientID]->GetCharacter())
 			{
-				CheckClass = PLAYERCLASS_ENGINEER;
+				CheckClass = EPlayerClass::Engineer;
 				str_copy(aChatTitle, "engineer", sizeof(aChatTitle));
 			}
 			else if(str_comp(aNameFound, "!soldier ") == 0 && m_apPlayers[ClientID] && m_apPlayers[ClientID]->GetCharacter())
 			{
-				CheckClass = PLAYERCLASS_SOLDIER;
+				CheckClass = EPlayerClass::Soldier;
 				str_copy(aChatTitle, "soldier", sizeof(aChatTitle));
 			}
 			else if(str_comp(aNameFound, "!scientist") == 0 && m_apPlayers[ClientID] && m_apPlayers[ClientID]->GetCharacter())
 			{
-				CheckClass = PLAYERCLASS_SCIENTIST;
+				CheckClass = EPlayerClass::Scientist;
 				str_copy(aChatTitle, "scientist", sizeof(aChatTitle));
 			}
 			else if(str_comp(aNameFound, "!biologist") == 0 && m_apPlayers[ClientID] && m_apPlayers[ClientID]->GetCharacter())
 			{
-				CheckClass = PLAYERCLASS_BIOLOGIST;
+				CheckClass = EPlayerClass::Biologist;
 				str_copy(aChatTitle, "biologist", sizeof(aChatTitle));
 			}
 			else if(str_comp(aNameFound, "!looper") == 0 && m_apPlayers[ClientID] && m_apPlayers[ClientID]->GetCharacter())
 			{
-				CheckClass = PLAYERCLASS_LOOPER;
+				CheckClass = EPlayerClass::Looper;
 				str_copy(aChatTitle, "looper", sizeof(aChatTitle));
 			}
 			else if(str_comp(aNameFound, "!medic") == 0 && m_apPlayers[ClientID] && m_apPlayers[ClientID]->GetCharacter())
 			{
-				CheckClass = PLAYERCLASS_MEDIC;
+				CheckClass = EPlayerClass::Medic;
 				str_copy(aChatTitle, "medic", sizeof(aChatTitle));
 			}
 			else if(str_comp(aNameFound, "!hero") == 0 && m_apPlayers[ClientID] && m_apPlayers[ClientID]->GetCharacter())
 			{
-				CheckClass = PLAYERCLASS_HERO;
+				CheckClass = EPlayerClass::Hero;
 				str_copy(aChatTitle, "hero", sizeof(aChatTitle));
 			}
 			else if(str_comp(aNameFound, "!ninja") == 0 && m_apPlayers[ClientID] && m_apPlayers[ClientID]->GetCharacter())
 			{
-				CheckClass = PLAYERCLASS_NINJA;
+				CheckClass = EPlayerClass::Ninja;
 				str_copy(aChatTitle, "ninja", sizeof(aChatTitle));
 			}
 			else if(str_comp(aNameFound, "!mercenary") == 0 && m_apPlayers[ClientID] && m_apPlayers[ClientID]->GetCharacter())
 			{
-				CheckClass = PLAYERCLASS_MERCENARY;
+				CheckClass = EPlayerClass::Mercenary;
 				str_copy(aChatTitle, "mercenary", sizeof(aChatTitle));
 			}
 			else if(str_comp(aNameFound, "!sniper") == 0 && m_apPlayers[ClientID] && m_apPlayers[ClientID]->GetCharacter())
 			{
-				CheckClass = PLAYERCLASS_SNIPER;
+				CheckClass = EPlayerClass::Sniper;
 				str_copy(aChatTitle, "sniper", sizeof(aChatTitle));
 			}
 			else if(str_comp(aNameFound, "!smoker") == 0 && m_apPlayers[ClientID] && m_apPlayers[ClientID]->GetCharacter())
 			{
-				CheckClass = PLAYERCLASS_SMOKER;
+				CheckClass = EPlayerClass::Smoker;
 				str_copy(aChatTitle, "smoker", sizeof(aChatTitle));
 			}
 			else if(str_comp(aNameFound, "!hunter") == 0 && m_apPlayers[ClientID] && m_apPlayers[ClientID]->GetCharacter())
 			{
-				CheckClass = PLAYERCLASS_HUNTER;
+				CheckClass = EPlayerClass::Hunter;
 				str_copy(aChatTitle, "hunter", sizeof(aChatTitle));
 			}
 			else if(str_comp(aNameFound, "!bat") == 0 && m_apPlayers[ClientID] && m_apPlayers[ClientID]->GetCharacter())
 			{
-				CheckClass = PLAYERCLASS_BAT;
+				CheckClass = EPlayerClass::Bat;
 				str_copy(aChatTitle, "bat", sizeof(aChatTitle));
 			}
 			else if(str_comp(aNameFound, "!boomer") == 0 && m_apPlayers[ClientID] && m_apPlayers[ClientID]->GetCharacter())
 			{
-				CheckClass = PLAYERCLASS_BOOMER;
+				CheckClass = EPlayerClass::Boomer;
 				str_copy(aChatTitle, "boomer", sizeof(aChatTitle));
 			}
 			else if(str_comp(aNameFound, "!spider") == 0 && m_apPlayers[ClientID] && m_apPlayers[ClientID]->GetCharacter())
 			{
-				CheckClass = PLAYERCLASS_SPIDER;
+				CheckClass = EPlayerClass::Spider;
 				str_copy(aChatTitle, "spider", sizeof(aChatTitle));
 			}
 			else if(str_comp(aNameFound, "!ghost") == 0 && m_apPlayers[ClientID] && m_apPlayers[ClientID]->GetCharacter())
 			{
-				CheckClass = PLAYERCLASS_GHOST;
+				CheckClass = EPlayerClass::Ghost;
 				str_copy(aChatTitle, "ghost", sizeof(aChatTitle));
 			}
 			else if(str_comp(aNameFound, "!ghoul") == 0 && m_apPlayers[ClientID] && m_apPlayers[ClientID]->GetCharacter())
 			{
-				CheckClass = PLAYERCLASS_GHOUL;
+				CheckClass = EPlayerClass::Ghoul;
 				str_copy(aChatTitle, "ghoul", sizeof(aChatTitle));
 			}
 			else if(str_comp(aNameFound, "!slug") == 0 && m_apPlayers[ClientID] && m_apPlayers[ClientID]->GetCharacter())
 			{
-				CheckClass = PLAYERCLASS_SLUG;
+				CheckClass = EPlayerClass::Slug;
 				str_copy(aChatTitle, "slug", sizeof(aChatTitle));
 			}
 			else if(str_comp(aNameFound, "!undead") == 0 && m_apPlayers[ClientID] && m_apPlayers[ClientID]->GetCharacter())
 			{
-				CheckClass = PLAYERCLASS_UNDEAD;
+				CheckClass = EPlayerClass::Undead;
 				str_copy(aChatTitle, "undead", sizeof(aChatTitle));
 			}
 			else if(str_comp(aNameFound, "!witch") == 0 && m_apPlayers[ClientID] && m_apPlayers[ClientID]->GetCharacter())
 			{
-				CheckClass = PLAYERCLASS_WITCH;
+				CheckClass = EPlayerClass::Witch;
 				str_copy(aChatTitle, "witch", sizeof(aChatTitle));
 			}
 			else
@@ -3721,7 +3721,7 @@ void CGameContext::PrivateMessage(const char* pStr, int ClientID, bool TeamChat)
 					continue;
 #endif
 				
-				if(CheckClass >= 0 && !(m_apPlayers[i]->GetClass() == CheckClass))
+				if((CheckClass != EPlayerClass::Invalid) && !(m_apPlayers[i]->GetClass() == CheckClass))
 					continue;
 				
 				if(CheckDistance && !(m_apPlayers[i]->GetCharacter() && distance(m_apPlayers[i]->GetCharacter()->m_Pos, CheckDistancePos) < 1000.0f))
@@ -4132,7 +4132,7 @@ void CGameContext::ChatHelp(int ClientID, const char *pHelpPage)
 	else
 	{
 		bool Ok = true;
-		PLAYERCLASS PlayerClass = CInfClassGameController::GetClassByName(pHelpPage, &Ok);
+		EPlayerClass PlayerClass = CInfClassGameController::GetClassByName(pHelpPage, &Ok);
 		if(Ok)
 		{
 			WriteClassHelpPage(&Buffer, pLanguage, PlayerClass);
@@ -4158,7 +4158,7 @@ void CGameContext::ChatHelp(int ClientID, const char *pHelpPage)
 	}
 }
 
-bool CGameContext::WriteClassHelpPage(dynamic_string *pOutput, const char *pLanguage, PLAYERCLASS PlayerClass)
+bool CGameContext::WriteClassHelpPage(dynamic_string *pOutput, const char *pLanguage, EPlayerClass PlayerClass)
 {
 	dynamic_string &Buffer = *pOutput;
 
@@ -4205,18 +4205,12 @@ bool CGameContext::WriteClassHelpPage(dynamic_string *pOutput, const char *pLang
 
 	switch(PlayerClass)
 	{
-	case PLAYERCLASS_INVALID:
-	case PLAYERCLASS_NONE:
-	case START_INFECTEDCLASS:
-	case END_INFECTEDCLASS:
-	// case NB_INFECTEDCLASS:
-	case START_HUMANCLASS:
-	case END_HUMANCLASS:
-	// case NB_HUMANCLASS:
+	case EPlayerClass::Invalid:
+	case EPlayerClass::None:
+	case EPlayerClass::Count:
 		return false;
-		break;
 
-	case PLAYERCLASS_MERCENARY:
+	case EPlayerClass::Mercenary:
 		AddLine(_C("Mercenary", "The Mercenary can fly in the air using their machine gun."));
 		AddLine(_C("Mercenary", "They can also create a powerful bomb with their hammer that can"
 								" be charged by hitting it or with a laser rifle."));
@@ -4226,14 +4220,14 @@ bool CGameContext::WriteClassHelpPage(dynamic_string *pOutput, const char *pLang
 						   "Mercenary can also throw poison grenades that deal {int:NumDamagePoints} damage points and prevent the infected from healing."),
 					   "NumDamagePoints", &g_Config.m_InfPoisonDamage);
 		break;
-	case PLAYERCLASS_MEDIC:
+	case EPlayerClass::Medic:
 		AddLine(_C("Medic", "The Medic can protect humans with the hammer by giving them armor."));
 		AddLine(_C("Medic", "Grenades with medicine give armor to everybody in their range,"
 							" including Heroes and the Medic themself."));
 		AddLine(_C("Medic", "Laser rifle revives the infected, but at the cost of 17 hp and armor."));
 		AddLine(_C("Medic", "Medic also has a powerful shotgun that can knock back the infected."));
 		break;
-	case PLAYERCLASS_HERO:
+	case EPlayerClass::Hero:
 		AddLine(_C("Hero", "The Hero has all standard weapons."));
 		AddLine(_C("Hero", "The Hero has to find a flag only visible to them. Stand still to be pointed towards it."));
 		ConLine(_C("Hero", "The flag gifts a health point, {int:NumArmorGift} armor and full ammo to all humans."),
@@ -4242,14 +4236,14 @@ bool CGameContext::WriteClassHelpPage(dynamic_string *pOutput, const char *pLang
 		ConLine(_C("Hero", "The gift to all humans is only applied when the flag is surrounded by hearts and armor."));
 		ConLine(_C("Hero", "The Hero cannot be healed by a Medic, but it can withstand a hit from an infected."));
 		break;
-	case PLAYERCLASS_ENGINEER:
+	case EPlayerClass::Engineer:
 		AddLine(_C("Engineer", "The Engineer can build walls with the hammer to block the infected."));
 		AddLine(_C("Engineer", "When an infected touches the wall, it dies."));
 		AddLine(_C("Engineer", "The lifespan of a wall is {sec:LifeSpan}, and walls are limited to"
 							   " one per player at the same time."),
 				"LifeSpan", &g_Config.m_InfBarrierLifeSpan);
 		break;
-	case PLAYERCLASS_SOLDIER:
+	case EPlayerClass::Soldier:
 		AddLine(_C("Soldier", "The Soldier creates floating bombs with the hammer."));
 		AddLine_Plural(g_Config.m_InfSoldierBombs,
 					   _CP("Soldier",
@@ -4259,7 +4253,7 @@ bool CGameContext::WriteClassHelpPage(dynamic_string *pOutput, const char *pLang
 
 		AddLine(_("Use the hammer to place the bomb and explode it multiple times."));
 		break;
-	case PLAYERCLASS_NINJA:
+	case EPlayerClass::Ninja:
 		AddLine(_C("Ninja", "The Ninja can throw flash grenades that can freeze the infected for"
 							" three seconds."));
 		AddLine_Plural(
@@ -4274,14 +4268,14 @@ bool CGameContext::WriteClassHelpPage(dynamic_string *pOutput, const char *pLang
 		AddLine(_("Ninja gets special targets. For killing a target, extra points and abilities"
 				  " are awarded."));
 		break;
-	case PLAYERCLASS_SNIPER:
+	case EPlayerClass::Sniper:
 		AddLine(_C("Sniper", "The Sniper can lock the position in mid-air for 15 seconds with the"
 							 " hammer."));
 		AddLine(_C("Sniper", "The locked position increases the Sniper's rifle damage from usual"
 							 " 10-13 to 30 damage points."));
 		AddLine(_C("Sniper", "They can also jump two times in the air."));
 		break;
-	case PLAYERCLASS_SCIENTIST:
+	case EPlayerClass::Scientist:
 		AddLine(_C("Scientist", "The Scientist can pose floating mines with the hammer."));
 		AddLine_Plural(g_Config.m_InfMineLimit,
 					   _CP("Scientist",
@@ -4292,50 +4286,50 @@ bool CGameContext::WriteClassHelpPage(dynamic_string *pOutput, const char *pLang
 		AddLine(_C("Scientist", "A lucky Scientist devoted to killing can get a white hole that"
 								" sucks the infected in which can be placed with the laser rifle."));
 		break;
-	case PLAYERCLASS_BIOLOGIST:
+	case EPlayerClass::Biologist:
 		AddLine(_C("Biologist", "The Biologist has a shotgun with bouncing bullets and can create a"
 								" spring laser trap by shooting with the laser rifle."));
 		break;
-	case PLAYERCLASS_LOOPER:
+	case EPlayerClass::Looper:
 		AddLine(_C("Looper", "The Looper has a laser wall that slows down the infected and a"
 							 " low-range laser rifle with a high fire rate."));
 		AddLine(_C("Looper", "They can also jump two times in the air."));
 		break;
-	case PLAYERCLASS_SMOKER:
+	case EPlayerClass::Smoker:
 		AddLine(_C("Smoker", "Smoker has a powerful hook that hurts humans and sucks their blood,"
 							 " restoring the Smoker's health."));
 		AddLine(_C("Smoker", "It can also infect humans and heal the infected with the hammer."));
 		break;
-	case PLAYERCLASS_BOOMER:
+	case EPlayerClass::Boomer:
 		AddLine(_C("Boomer", "The Boomer explodes when it attacks."));
 		AddLine(_C("Boomer", "All humans affected by the explosion become infected."));
 		AddLine(_C("Boomer", "It can also inflict 1 damage point per second by hooking humans."));
 		break;
-	case PLAYERCLASS_HUNTER:
+	case EPlayerClass::Hunter:
 		AddLine(_C("Hunter", "The Hunter can jump two times in the air and has some resistance to"
 							 " knock-backs."));
 		AddLine(_C("Hunter", "It can infect humans and heal the infected with the hammer."));
 		AddLine(_C("Hunter", "It can also inflict 1 damage point per second by hooking humans."));
 		break;
-	case PLAYERCLASS_BAT:
+	case EPlayerClass::Bat:
 		AddLine(_C("Bat", "Bat can jump endlessly in the air but it cannot infect humans."));
 		AddLine(_C("Bat", "Instead, it can hammer humans to steal their health and heal itself."));
 		AddLine(_C("Bat", "The hammer is also useful for healing the infected."));
 		AddLine(_C("Bat", "It can also inflict 1 damage point per second by hooking humans."));
 		break;
-	case PLAYERCLASS_GHOST:
+	case EPlayerClass::Ghost:
 		AddLine(_C("Ghost", "The Ghost is invisible until a human comes nearby, it takes damage,"
 							" or it uses the hammer."));
 		AddLine(_C("Ghost", "It can infect humans and heal the infected with the hammer."));
 		AddLine(_C("Ghost", "It can also inflict 1 damage point per second by hooking humans."));
 		break;
-	case PLAYERCLASS_SPIDER:
+	case EPlayerClass::Spider:
 		AddLine(_C("Spider", "The Spider has a web hook that automatically grabs any human touching it."));
 		AddLine(_C("Spider", "The web hook mode can be toggled by switching the weapon."));
 		AddLine(_C("Spider", "In both modes the hook inflicts 1 damage point per second and can"
 							 " grab a human for longer."));
 		break;
-	case PLAYERCLASS_GHOUL:
+	case EPlayerClass::Ghoul:
 		AddLine(_C("Ghoul", "The Ghoul can devour anything that has died nearby, which makes it"
 							" stronger, faster and more resistant."));
 		AddLine(_C("Ghoul", "It digests the fodder over time, going back to the normal state."
@@ -4343,26 +4337,26 @@ bool CGameContext::WriteClassHelpPage(dynamic_string *pOutput, const char *pLang
 		AddLine(_C("Ghoul", "Ghoul can infect humans and heal the infected with the hammer."));
 		AddLine(_C("Ghoul", "It can also inflict 1 damage point per second by hooking humans."));
 		break;
-	case PLAYERCLASS_SLUG:
+	case EPlayerClass::Slug:
 		AddLine(_C("Slug", "The Slug can make the ground and walls toxic by spreading slime with the hammer."));
 		AddLine(_C("Slug", "The slime heals the infected and deals damage to humans."));
 		AddLine(_C("Slug", "Slug can infect humans and heal the infected with the hammer."));
 		AddLine(_C("Slug", "It can also inflict 1 damage point per second by hooking humans."));
 		break;
-	case PLAYERCLASS_VOODOO:
+	case EPlayerClass::Voodoo:
 		AddLine(_C("Voodoo", "The Voodoo does not die immediately when killed but instead enters"
 							 " Spirit mode for a short time."));
 		AddLine(_C("Voodoo", "While in Spirit mode it cannot be killed. When the time is up it finally dies."));
 		AddLine(_C("Voodoo", "Voodoo can infect humans and heal the infected with the hammer."));
 		AddLine(_C("Voodoo", "It can also inflict 1 damage point per second by hooking humans."));
 		break;
-	case PLAYERCLASS_WITCH:
+	case EPlayerClass::Witch:
 		AddLine(_C("Witch", "The Witch can provide a spawn point for the infected."));
 		AddLine(_C("Witch", "If the Witch dies, it disappears and is replaced by another class."));
 		AddLine(_C("Witch", "Witch can infect humans and heal the infected with the hammer."));
 		AddLine(_C("Witch", "It can also inflict 1 damage point per second by hooking humans."));
 		break;
-	case PLAYERCLASS_UNDEAD:
+	case EPlayerClass::Undead:
 		AddLine(_C("Undead", "The Undead cannot die. Instead of dying, it gets frozen for 10 seconds."));
 		AddLine(_C("Undead", "If an infected heals it, the freeze effect disappears."));
 		AddLine(_C("Undead", "Undead can infect humans and heal the infected with the hammer."));

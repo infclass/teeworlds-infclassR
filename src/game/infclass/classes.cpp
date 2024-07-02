@@ -1,46 +1,62 @@
 #include "classes.h"
 
-#include "base/tl/ic_array.h"
-
-const icArray<PLAYERCLASS, NB_PLAYERCLASS> &AllPlayerClasses()
+namespace
 {
-	static icArray<PLAYERCLASS, NB_PLAYERCLASS> Classes;
-	if(Classes.IsEmpty())
-	{
-		for(int i = START_HUMANCLASS + 1; i < END_HUMANCLASS; ++i)
-		{
-			Classes.Add(static_cast<PLAYERCLASS>(i));
-		}
-		for(int i = START_INFECTEDCLASS + 1; i < END_INFECTEDCLASS; ++i)
-		{
-			Classes.Add(static_cast<PLAYERCLASS>(i));
-		}
-	}
-	return Classes;
+
+enum PLAYERCLASS
+{
+	PLAYERCLASS_INVALID = -1,
+	PLAYERCLASS_NONE = 0,
+
+	START_HUMANCLASS,
+	PLAYERCLASS_MERCENARY,
+	PLAYERCLASS_MEDIC,
+	PLAYERCLASS_HERO,
+	PLAYERCLASS_ENGINEER,
+	PLAYERCLASS_SOLDIER,
+	PLAYERCLASS_NINJA,
+	PLAYERCLASS_SNIPER,
+	PLAYERCLASS_SCIENTIST,
+	PLAYERCLASS_BIOLOGIST,
+	PLAYERCLASS_LOOPER,
+	END_HUMANCLASS,
+
+	START_INFECTEDCLASS,
+	PLAYERCLASS_SMOKER,
+	PLAYERCLASS_BOOMER,
+	PLAYERCLASS_HUNTER,
+	PLAYERCLASS_BAT,
+	PLAYERCLASS_GHOST,
+	PLAYERCLASS_SPIDER,
+	PLAYERCLASS_GHOUL,
+	PLAYERCLASS_SLUG,
+	PLAYERCLASS_VOODOO,
+	PLAYERCLASS_WITCH,
+	PLAYERCLASS_UNDEAD,
+	PLAYERCLASS_TANK,
+	END_INFECTEDCLASS,
+
+	NB_PLAYERCLASS,
+	NB_HUMANCLASS = END_HUMANCLASS - START_HUMANCLASS - 1,
+	NB_INFECTEDCLASS = END_INFECTEDCLASS - START_INFECTEDCLASS - 1,
+};
+
 }
 
-const icArray<PLAYERCLASS, NB_HUMANCLASS> &AllHumanClasses()
+int toNetValue(EPlayerClass C)
 {
-	static icArray<PLAYERCLASS, NB_HUMANCLASS> Classes;
-	if(Classes.IsEmpty())
-	{
-		for(int i = START_HUMANCLASS + 1; i < END_HUMANCLASS; ++i)
-		{
-			Classes.Add(static_cast<PLAYERCLASS>(i));
-		}
-	}
-	return Classes;
-}
+	if (C == EPlayerClass::None)
+		return PLAYERCLASS_NONE;
 
-const icArray<PLAYERCLASS, NB_INFECTEDCLASS> &AllInfectedClasses()
-{
-	static icArray<PLAYERCLASS, NB_INFECTEDCLASS> Classes;
-	if(Classes.IsEmpty())
+	int Value = static_cast<int>(C);
+	if (IsInfectedClass(C))
 	{
-		for(int i = START_INFECTEDCLASS + 1; i < END_INFECTEDCLASS; ++i)
-		{
-			Classes.Add(static_cast<PLAYERCLASS>(i));
-		}
+		constexpr int InfectedClassOffset = PLAYERCLASS_SMOKER - static_cast<int>(EPlayerClass::Smoker);
+		return Value + InfectedClassOffset;
 	}
-	return Classes;
+	else
+	{
+		constexpr int HumanClassOffset = PLAYERCLASS_MERCENARY - static_cast<int>(EPlayerClass::Mercenary);
+		return Value + HumanClassOffset;
+	}
 }

@@ -18,14 +18,14 @@ CInfClassPlayer::CInfClassPlayer(CInfClassGameController *pGameController, int C
 	: CPlayer(pGameController->GameServer(), ClientID, Team)
 	, m_pGameController(pGameController)
 {
-	m_class = PLAYERCLASS_INVALID;
-	m_PreferredClass = PLAYERCLASS_INVALID;
+	m_class = EPlayerClass::Invalid;
+	m_PreferredClass = EPlayerClass::Invalid;
 
 	m_InfectionTick = -1;
 	m_HookProtection = false;
 	m_HookProtectionAutomatic = true;
 
-	SetClass(PLAYERCLASS_NONE);
+	SetClass(EPlayerClass::None);
 }
 
 CInfClassPlayer::~CInfClassPlayer()
@@ -90,7 +90,7 @@ void CInfClassPlayer::Tick()
 	if(m_MapMenu > 0)
 		m_MapMenuTick++;
 
-	if(GetClass() == PLAYERCLASS_GHOUL)
+	if(GetClass() == EPlayerClass::Ghoul)
 	{
 		if(m_GhoulLevel > 0)
 		{
@@ -168,7 +168,7 @@ void CInfClassPlayer::Snap(int SnappingClient)
 		if(!pInfClassPlayer)
 			return;
 
-		pInfClassPlayer->m_Class = m_class;
+		pInfClassPlayer->m_Class = toNetValue(m_class);
 		pInfClassPlayer->m_Flags = 0;
 		if(IsInfected())
 		{
@@ -233,7 +233,7 @@ void CInfClassPlayer::HandleInfection()
 		return;
 	}
 
-	const PLAYERCLASS PreviousClass = GetClass();
+	const EPlayerClass PreviousClass = GetClass();
 	CInfClassPlayer *pInfectiousPlayer = GameController()->GetPlayer(m_InfectiousPlayerCID);
 
 	m_InfectionType = INFECTION_TYPE::NO;
@@ -248,9 +248,9 @@ void CInfClassPlayer::KillCharacter(int Weapon)
 		return;
 
 	// Character actually died / removed from the world
-	const icArray<int, 2> EphemeralClasses = {
-		PLAYERCLASS_UNDEAD,
-		PLAYERCLASS_WITCH,
+	constexpr icArray<EPlayerClass, 2> EphemeralClasses = {
+		EPlayerClass::Undead,
+		EPlayerClass::Witch,
 	};
 
 	if((Weapon == WEAPON_SELF) && (IsHuman() || EphemeralClasses.Contains(GetClass())))
@@ -335,12 +335,12 @@ int CInfClassPlayer::GetInfectionTimestamp() const
 	return m_GameInfectionTimestamp;
 }
 
-void CInfClassPlayer::SetPreferredClass(PLAYERCLASS Class)
+void CInfClassPlayer::SetPreferredClass(EPlayerClass Class)
 {
 	m_PreferredClass = Class;
 }
 
-void CInfClassPlayer::SetPreviouslyPickedClass(PLAYERCLASS Class)
+void CInfClassPlayer::SetPreviouslyPickedClass(EPlayerClass Class)
 {
 	m_PickedClass = Class;
 }
@@ -366,14 +366,14 @@ void CInfClassPlayer::SetCharacterClass(CInfClassPlayerClass *pClass)
 	m_pInfcPlayerClass = pClass;
 }
 
-void CInfClassPlayer::SetClass(PLAYERCLASS NewClass)
+void CInfClassPlayer::SetClass(EPlayerClass NewClass)
 {
 	if(m_class == NewClass)
 		return;
 
-	if(m_class != PLAYERCLASS_INVALID)
+	if(m_class != EPlayerClass::Invalid)
 	{
-		if(IsHumanClass(NewClass) && (NewClass != PLAYERCLASS_NONE))
+		if(IsHumanClass(NewClass) && (NewClass != EPlayerClass::None))
 		{
 			SetPreviouslyPickedClass(NewClass);
 		}
@@ -576,35 +576,35 @@ bool CInfClassPlayer::RandomClassChoosen() const
 	return m_RandomClassRoundId == GameController()->GetRoundId();
 }
 
-PLAYERCLASS CInfClassPlayer::GetPreviousInfectedClass() const
+EPlayerClass CInfClassPlayer::GetPreviousInfectedClass() const
 {
 	for (int i = m_PreviousClasses.Size() - 1; i > 0; --i)
 	{
-		PLAYERCLASS Class = m_PreviousClasses.At(i);
+		EPlayerClass Class = m_PreviousClasses.At(i);
 		if(IsInfectedClass(Class))
 		{
 			return Class;
 		}
 	}
 
-	return PLAYERCLASS_INVALID;
+	return EPlayerClass::Invalid;
 }
 
-PLAYERCLASS CInfClassPlayer::GetPreviousHumanClass() const
+EPlayerClass CInfClassPlayer::GetPreviousHumanClass() const
 {
 	for(int i = m_PreviousClasses.Size() - 1; i > 0; --i)
 	{
-		PLAYERCLASS Class = m_PreviousClasses.At(i);
+		EPlayerClass Class = m_PreviousClasses.At(i);
 		if(IsHumanClass(Class))
 		{
 			return Class;
 		}
 	}
 
-	return PLAYERCLASS_INVALID;
+	return EPlayerClass::Invalid;
 }
 
-PLAYERCLASS CInfClassPlayer::GetPreviouslyPickedClass() const
+EPlayerClass CInfClassPlayer::GetPreviouslyPickedClass() const
 {
 	return m_PickedClass;
 }
@@ -626,7 +626,7 @@ bool CInfClassPlayer::LoadSavedPosition(vec2 *pOutput) const
 
 void CInfClassPlayer::ResetRoundData()
 {
-	SetClass(PLAYERCLASS_NONE);
+	SetClass(EPlayerClass::None);
 	m_PreviousClasses.Clear();
 
 	m_HumanTime = 0;
@@ -762,8 +762,8 @@ bool CInfClassPlayer::IsForcedToSpectate() const
 
 void CInfClassPlayer::SendClassIntro()
 {
-	const PLAYERCLASS Class = GetClass();
-	if(!IsBot() && (Class != PLAYERCLASS_NONE))
+	const EPlayerClass Class = GetClass();
+	if(!IsBot() && (Class != EPlayerClass::None) && (Class != EPlayerClass::Invalid))
 	{
 		const char *pClassName = CInfClassGameController::GetClassDisplayName(Class);
 		const char *pTranslated = Server()->Localization()->Localize(GetLanguage(), pClassName);
@@ -775,11 +775,12 @@ void CInfClassPlayer::SendClassIntro()
 			GameServer()->SendBroadcast_Localization(GetCID(), BROADCAST_PRIORITY_GAMEANNOUNCE, BROADCAST_DURATION_GAMEANNOUNCE,
 				_("You are an infected: {str:ClassName}"), "ClassName", pTranslated, NULL);
 
-		if(!m_aKnownClasses[Class])
+		int Index = static_cast<int>(Class);
+		if(!m_aKnownClasses[Index])
 		{
 			const char *className = CInfClassGameController::GetClassName(Class);
 			GameServer()->SendChatTarget_Localization(GetCID(), CHATCATEGORY_DEFAULT, _("Type “/help {str:ClassName}” for more information about your class"), "ClassName", className, NULL);
-																																														   m_aKnownClasses[Class] = true;
+			m_aKnownClasses[Index] = true;
 		}
 	}
 }

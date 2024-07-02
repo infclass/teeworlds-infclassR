@@ -218,7 +218,7 @@ void CLooperWall::OnHitInfected(CInfClassCharacter *pCharacter)
 	{
 		if(!pCharacter->IsInSlowMotion())
 		{
-			if(pCharacter->GetPlayerClass() == PLAYERCLASS_GHOUL)
+			if(pCharacter->GetPlayerClass() == EPlayerClass::Ghoul)
 			{
 				float Factor = pCharacter->GetClass()->GetGhoulPercent();
 				Reduction += 5.0f * Factor;

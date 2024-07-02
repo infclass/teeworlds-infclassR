@@ -103,7 +103,7 @@ void CInfClassCharacter::OnCharacterSpawned(const SpawnContext &Context)
 
 	ClassSpawnAttributes();
 
-	if(GetPlayerClass() == PLAYERCLASS_NONE)
+	if(GetPlayerClass() == EPlayerClass::None)
 	{
 		OpenClassChooser();
 	}
@@ -275,7 +275,7 @@ void CInfClassCharacter::TickDeferred()
 	if(Events & COREEVENT_HOOK_ATTACH_PLAYER)
 		GameServer()->CreateSound(GetPos(), SOUND_HOOK_ATTACH_PLAYER, CmaskAll());
 
-	if(GetPlayerClass() != PLAYERCLASS_GHOST || !m_IsInvisible)
+	if(GetPlayerClass() != EPlayerClass::Ghost || !m_IsInvisible)
 	{
 		if(Events & COREEVENT_GROUND_JUMP)
 			GameServer()->CreateSound(GetPos(), SOUND_PLAYER_JUMP, MaskEsceptSelf);
@@ -338,13 +338,13 @@ void CInfClassCharacter::Snap(int SnappingClient)
 
 	pDDNetCharacter->m_Flags = 0;
 
-	if(GetPlayerClass() == PLAYERCLASS_MERCENARY)
+	if(GetPlayerClass() == EPlayerClass::Mercenary)
 		pDDNetCharacter->m_Flags |= CHARACTERFLAG_JETPACK;
 
-	if(GetPlayerClass() == PLAYERCLASS_SCIENTIST)
+	if(GetPlayerClass() == EPlayerClass::Scientist)
 		pDDNetCharacter->m_Flags |= CHARACTERFLAG_TELEGUN_GRENADE;
 
-	if(GetPlayerClass() != PLAYERCLASS_BOOMER)
+	if(GetPlayerClass() != EPlayerClass::Boomer)
 	{
 		if(m_aWeapons[WEAPON_HAMMER].m_Got)
 			pDDNetCharacter->m_Flags |= CHARACTERFLAG_WEAPON_HAMMER;
@@ -442,7 +442,7 @@ void CInfClassCharacter::HandleWeaponSwitch()
 	int Next = CountInput(m_LatestPrevInput.m_NextWeapon, m_LatestInput.m_NextWeapon).m_Presses;
 	int Prev = CountInput(m_LatestPrevInput.m_PrevWeapon, m_LatestInput.m_PrevWeapon).m_Presses;
 
-	if(GetPlayerClass() == PLAYERCLASS_SPIDER)
+	if(GetPlayerClass() == EPlayerClass::Spider)
 	{
 		int WantedHookMode = m_HookMode;
 
@@ -485,7 +485,7 @@ void CInfClassCharacter::FireWeapon()
 	if(m_ReloadTimer != 0)
 		return;
 
-	if((GetPlayerClass() == PLAYERCLASS_NONE) || !GetClass())
+	if((GetPlayerClass() == EPlayerClass::None) || !GetClass())
 		return;
 
 	DoWeaponSwitch();
@@ -495,7 +495,7 @@ void CInfClassCharacter::FireWeapon()
 	if(m_ActiveWeapon == WEAPON_GUN || m_ActiveWeapon == WEAPON_GRENADE || m_ActiveWeapon == WEAPON_SHOTGUN || m_ActiveWeapon == WEAPON_LASER)
 		FullAuto = true;
 
-	if(GetPlayerClass() == PLAYERCLASS_SLUG && m_ActiveWeapon == WEAPON_HAMMER)
+	if(GetPlayerClass() == EPlayerClass::Slug && m_ActiveWeapon == WEAPON_HAMMER)
 		FullAuto = true;
 
 	// check if we gonna fire
@@ -630,7 +630,7 @@ bool CInfClassCharacter::TakeDamage(const vec2 &Force, float FloatDmg, int From,
 	GetClass()->OnCharacterDamage(&DamageContext);
 
 	const bool DmgFromHuman = pKillerPlayer && pKillerPlayer->IsHuman();
-	if(DmgFromHuman && (GetPlayerClass() == PLAYERCLASS_SOLDIER) && (Weapon == WEAPON_HAMMER))
+	if(DmgFromHuman && (GetPlayerClass() == EPlayerClass::Soldier) && (Weapon == WEAPON_HAMMER))
 	{
 		// Soldier is immune to any traps force
 		DamageContext.Force = vec2(0, 0);
@@ -863,10 +863,10 @@ void CInfClassCharacter::SetJumpsLimit(int Limit)
 	m_Core.m_Jumps = Limit;
 }
 
-PLAYERCLASS CInfClassCharacter::GetPlayerClass() const
+EPlayerClass CInfClassCharacter::GetPlayerClass() const
 {
 	if(!m_pPlayer)
-		return PLAYERCLASS_NONE;
+		return EPlayerClass::None;
 	else
 		return m_pPlayer->GetClass();
 }
@@ -1533,7 +1533,7 @@ INFWEAPON CInfClassCharacter::GetInfWeaponID(int WID) const
 	{
 		switch(GetPlayerClass())
 		{
-		case PLAYERCLASS_NINJA:
+		case EPlayerClass::Ninja:
 			return INFWEAPON::NINJA_HAMMER;
 		default:
 			return INFWEAPON::HAMMER;
@@ -1543,7 +1543,7 @@ INFWEAPON CInfClassCharacter::GetInfWeaponID(int WID) const
 	{
 		switch(GetPlayerClass())
 		{
-		case PLAYERCLASS_MERCENARY:
+		case EPlayerClass::Mercenary:
 			return INFWEAPON::MERCENARY_GUN;
 		default:
 			return INFWEAPON::GUN;
@@ -1554,11 +1554,11 @@ INFWEAPON CInfClassCharacter::GetInfWeaponID(int WID) const
 	{
 		switch(GetPlayerClass())
 		{
-		case PLAYERCLASS_MEDIC:
+		case EPlayerClass::Medic:
 			return INFWEAPON::MEDIC_SHOTGUN;
-		case PLAYERCLASS_HERO:
+		case EPlayerClass::Hero:
 			return INFWEAPON::HERO_SHOTGUN;
-		case PLAYERCLASS_BIOLOGIST:
+		case EPlayerClass::Biologist:
 			return INFWEAPON::BIOLOGIST_SHOTGUN;
 		default:
 			return INFWEAPON::SHOTGUN;
@@ -1568,19 +1568,19 @@ INFWEAPON CInfClassCharacter::GetInfWeaponID(int WID) const
 	{
 		switch(GetPlayerClass())
 		{
-		case PLAYERCLASS_MERCENARY:
+		case EPlayerClass::Mercenary:
 			return INFWEAPON::MERCENARY_GRENADE;
-		case PLAYERCLASS_MEDIC:
+		case EPlayerClass::Medic:
 			return INFWEAPON::MEDIC_GRENADE;
-		case PLAYERCLASS_SOLDIER:
+		case EPlayerClass::Soldier:
 			return INFWEAPON::SOLDIER_GRENADE;
-		case PLAYERCLASS_NINJA:
+		case EPlayerClass::Ninja:
 			return INFWEAPON::NINJA_GRENADE;
-		case PLAYERCLASS_SCIENTIST:
+		case EPlayerClass::Scientist:
 			return INFWEAPON::SCIENTIST_GRENADE;
-		case PLAYERCLASS_HERO:
+		case EPlayerClass::Hero:
 			return INFWEAPON::HERO_GRENADE;
-		case PLAYERCLASS_LOOPER:
+		case EPlayerClass::Looper:
 			return INFWEAPON::LOOPER_GRENADE;
 		default:
 			return INFWEAPON::GRENADE;
@@ -1590,23 +1590,23 @@ INFWEAPON CInfClassCharacter::GetInfWeaponID(int WID) const
 	{
 		switch(GetPlayerClass())
 		{
-		case PLAYERCLASS_ENGINEER:
+		case EPlayerClass::Engineer:
 			return INFWEAPON::ENGINEER_LASER;
-		case PLAYERCLASS_NINJA:
+		case EPlayerClass::Ninja:
 			return INFWEAPON::BLINDING_LASER;
-		case PLAYERCLASS_LOOPER:
+		case EPlayerClass::Looper:
 			return INFWEAPON::LOOPER_LASER;
-		case PLAYERCLASS_SCIENTIST:
+		case EPlayerClass::Scientist:
 			return INFWEAPON::SCIENTIST_LASER;
-		case PLAYERCLASS_SNIPER:
+		case EPlayerClass::Sniper:
 			return INFWEAPON::SNIPER_LASER;
-		case PLAYERCLASS_HERO:
+		case EPlayerClass::Hero:
 			return INFWEAPON::HERO_LASER;
-		case PLAYERCLASS_BIOLOGIST:
+		case EPlayerClass::Biologist:
 			return INFWEAPON::BIOLOGIST_LASER;
-		case PLAYERCLASS_MEDIC:
+		case EPlayerClass::Medic:
 			return INFWEAPON::MEDIC_LASER;
-		case PLAYERCLASS_MERCENARY:
+		case EPlayerClass::Mercenary:
 			return INFWEAPON::MERCENARY_LASER;
 		default:
 			return INFWEAPON::LASER;
@@ -1640,7 +1640,7 @@ void CInfClassCharacter::OpenClassChooser()
 void CInfClassCharacter::HandleMapMenu()
 {
 	CInfClassPlayer *pPlayer = GetPlayer();
-	if(GetPlayerClass() != PLAYERCLASS_NONE)
+	if(GetPlayerClass() != EPlayerClass::None)
 	{
 		SetAntiFire();
 		pPlayer->CloseMapMenu();
@@ -1669,7 +1669,7 @@ void CInfClassCharacter::HandleMapMenu()
 	}
 	else
 	{
-		PLAYERCLASS NewClass = CInfClassGameController::MenuClassToPlayerClass(HoveredMenuItem);
+		EPlayerClass NewClass = CInfClassGameController::MenuClassToPlayerClass(HoveredMenuItem);
 		CLASS_AVAILABILITY Availability = GameController()->GetPlayerClassAvailability(NewClass, pPlayer);
 
 		switch(Availability)
@@ -1728,14 +1728,14 @@ void CInfClassCharacter::HandleMapMenuClicked()
 
 	CInfClassPlayer *pPlayer = GetPlayer();
 	int MenuClass = pPlayer->m_MapMenuItem;
-	PLAYERCLASS NewClass = CInfClassGameController::MenuClassToPlayerClass(MenuClass);
-	if(NewClass == PLAYERCLASS_RANDOM)
+	EPlayerClass NewClass = CInfClassGameController::MenuClassToPlayerClass(MenuClass);
+	if(NewClass == EPlayerClass::Random)
 	{
 		NewClass = GameController()->ChooseHumanClass(pPlayer);
 		Random = true;
 		pPlayer->SetRandomClassChoosen();
 	}
-	if(NewClass == PLAYERCLASS_INVALID)
+	if(NewClass == EPlayerClass::Invalid)
 	{
 		return;
 	}
@@ -1748,7 +1748,7 @@ void CInfClassCharacter::HandleMapMenuClicked()
 
 		char aBuf[256];
 		str_format(aBuf, sizeof(aBuf), "choose_class player='%s' class='%d' random='%d'",
-			Server()->ClientName(GetCID()), NewClass, Random);
+			Server()->ClientName(GetCID()), static_cast<int>(NewClass), Random);
 		GameServer()->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "game", aBuf);
 
 		if(Random)
@@ -2023,7 +2023,7 @@ void CInfClassCharacter::SetClass(CInfClassPlayerClass *pClass)
 	m_QueuedWeapon = -1;
 	m_TakenDamageDetails.Clear();
 
-	if(GetPlayerClass() == PLAYERCLASS_NONE)
+	if(GetPlayerClass() == EPlayerClass::None)
 	{
 		OpenClassChooser();
 	}
@@ -2402,13 +2402,13 @@ void CInfClassCharacter::SnapCharacter(int SnappingClient, int ID)
 		Weapon = WEAPON_NINJA;
 	}
 
-	if(PrivateGetPlayerClass() == PLAYERCLASS_SPIDER)
+	if(PrivateGetPlayerClass() == EPlayerClass::Spider)
 	{
 		pCharacter->m_HookTick -= (g_Config.m_InfSpiderHookTime - 1) * SERVER_TICK_SPEED - SERVER_TICK_SPEED / 5;
 		if(pCharacter->m_HookTick < 0)
 			pCharacter->m_HookTick = 0;
 	}
-	if(PrivateGetPlayerClass() == PLAYERCLASS_BAT)
+	if(PrivateGetPlayerClass() == EPlayerClass::Bat)
 	{
 		pCharacter->m_HookTick -= (g_Config.m_InfBatHookTime - 1) * SERVER_TICK_SPEED - SERVER_TICK_SPEED / 5;
 		if(pCharacter->m_HookTick < 0)
@@ -2476,9 +2476,8 @@ void CInfClassCharacter::ClassSpawnAttributes()
 	int Armor = m_Armor;
 	m_IsInvisible = false;
 
-	const PLAYERCLASS PlayerClass = GetPlayerClass();
-	const bool isHuman = PlayerClass < END_HUMANCLASS; // PLAYERCLASS_NONE is also a human (not infected) class
-	if(!isHuman)
+	const EPlayerClass PlayerClass = GetPlayerClass();
+	if(!IsHumanClass(PlayerClass))
 	{
 		Armor = 0;
 	}
@@ -2640,7 +2639,7 @@ void CInfClassCharacter::UpdateTuningParam()
 		pTuningParams->m_PlayerHooking = 0;
 	}
 	
-	if(GetPlayerClass() == PLAYERCLASS_GHOUL)
+	if(GetPlayerClass() == EPlayerClass::Ghoul)
 	{
 		float Factor = GetClass()->GetGhoulPercent() * 0.7;
 		pTuningParams->m_GroundControlSpeed = pTuningParams->m_GroundControlSpeed * (1.0f + 0.35f * Factor);

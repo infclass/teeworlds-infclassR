@@ -4,6 +4,8 @@
 #include <engine/console.h>
 #include <engine/shared/protocol.h>
 
+enum class EPlayerClass;
+
 enum
 {
 	SCOREEVENT_HUMAN_SURVIVE=0,
@@ -60,7 +62,7 @@ public:
 		CPlayerStats() = default;
 
 		void Reset() { *this = CPlayerStats{}; }
-		int OnScoreEvent(int EventType, int Class);
+		int OnScoreEvent(int EventType, EPlayerClass Class);
 	};
 
 public:
@@ -73,7 +75,7 @@ public:
 	CRoundStatistics() = default;
 	void Reset() { *this = CRoundStatistics{}; }
 	void ResetPlayer(int ClientID);
-	void OnScoreEvent(int ClientID, int EventType, int Class, const char* Name, IConsole* console);
+	void OnScoreEvent(int ClientID, int EventType, EPlayerClass Class, const char* Name, IConsole* console);
 	void SetPlayerAsWinner(int ClientID);
 	
 	CRoundStatistics::CPlayerStats* PlayerStatistics(int ClientID);
