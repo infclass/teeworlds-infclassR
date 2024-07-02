@@ -1616,7 +1616,7 @@ void CInfClassHuman::SnapHero(int SnappingClient)
 
 	const int CurrentTick = Server()->Tick();
 
-	if(m_pHeroFlag && Config()->m_InfHeroFlagIndicator)
+	if(m_pHeroFlag && m_pHeroFlag->IsAvailable() && Config()->m_InfHeroFlagIndicator)
 	{
 		const float FlagIndicatorTime = GameController()->GetRoundType() == ERoundType::Survival ? 1 : Config()->m_InfHeroFlagIndicatorTime;
 		int TickLimit = m_pPlayer->m_LastActionMoveTick + FlagIndicatorTime * Server()->TickSpeed();
