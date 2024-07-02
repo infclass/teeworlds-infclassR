@@ -3866,7 +3866,7 @@ EPlayerScoreMode CInfClassGameController::GetPlayerScoreMode(int SnappingClient)
 	return EPlayerScoreMode::Class;
 }
 
-float CInfClassGameController::GetTimeLimit() const
+float CInfClassGameController::GetTimeLimitMinutes() const
 {
 	if(Config()->m_InfTrainingMode)
 		return 0;
@@ -4114,8 +4114,8 @@ void CInfClassGameController::Snap(int SnappingClient)
 
 	pGameInfoObj->m_ScoreLimit = Config()->m_SvScorelimit;
 
-	int WholeMinutes = GetTimeLimit();
-	float FractionalPart = GetTimeLimit() - WholeMinutes;
+	int WholeMinutes = GetTimeLimitMinutes();
+	float FractionalPart = GetTimeLimitMinutes() - WholeMinutes;
 
 	pGameInfoObj->m_TimeLimit = WholeMinutes + (FractionalPart ? 1 : 0);
 	if(FractionalPart)
@@ -4131,7 +4131,7 @@ void CInfClassGameController::Snap(int SnappingClient)
 	CNetObj_InfClassGameInfo *pInfclassGameInfoObj = Server()->SnapNewItem<CNetObj_InfClassGameInfo>(0);
 	pInfclassGameInfoObj->m_Version = 2;
 	pInfclassGameInfoObj->m_Flags = 0;
-	pInfclassGameInfoObj->m_TimeLimitInSeconds = GetTimeLimit() * 60;
+	pInfclassGameInfoObj->m_TimeLimitInSeconds = GetTimeLimitMinutes() * 60;
 	pInfclassGameInfoObj->m_HeroGiftTick = m_HeroGiftTick;
 
 	int InfClassVersion = Server()->GetClientInfclassVersion(SnappingClient);
@@ -4708,7 +4708,7 @@ void CInfClassGameController::DoWincheck()
 	bool HumanVictoryConditionsMet = false;
 	bool TimeIsOver = false;
 	const int Seconds = (Server()->Tick() - m_RoundStartTick) / ((float)Server()->TickSpeed());
-	if(GetTimeLimit() > 0 && Seconds >= GetTimeLimit() * 60)
+	if(GetTimeLimitMinutes() > 0 && Seconds >= GetTimeLimitMinutes() * 60)
 	{
 		TimeIsOver = true;
 	}

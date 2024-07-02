@@ -164,7 +164,7 @@ public:
 	int GetGhoulStomackSize() const;
 	EPlayerScoreMode GetPlayerScoreMode(int SnappingClient) const;
 
-	float GetTimeLimit() const;
+	float GetTimeLimitMinutes() const;
 	float GetInfectionDelay() const;
 
 	bool IsSpawnable(vec2 Pos, EZoneTele TeleZoneIndex);
