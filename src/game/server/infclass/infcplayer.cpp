@@ -661,6 +661,21 @@ void CInfClassPlayer::SetMaxHP(int MaxHP)
 	}
 }
 
+void CInfClassPlayer::ApplyMaxHP()
+{
+	if(!GetCharacter())
+		return;
+
+	if(!m_MaxHP)
+		return;
+
+	int HP = clamp<int>(m_MaxHP, 0, 10);
+	int Armor = m_MaxHP - HP;
+
+	GetCharacter()->SetMaxArmor(Armor);
+	GetCharacter()->SetHealthArmor(HP, Armor);
+}
+
 void CInfClassPlayer::OnCharacterSpawned(const SpawnContext &Context)
 {
 	CInfClassCharacter *pCharacter = GetCharacter();
@@ -669,6 +684,7 @@ void CInfClassPlayer::OnCharacterSpawned(const SpawnContext &Context)
 	pCharacter->OnCharacterSpawned(Context);
 
 	ResetTheTargetToFollow();
+	ApplyMaxHP();
 }
 
 const char *CInfClassPlayer::GetClan(int SnappingClient) const

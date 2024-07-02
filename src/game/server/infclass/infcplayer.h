@@ -131,6 +131,7 @@ public:
 
 	int GetMaxHP() const { return m_MaxHP; }
 	void SetMaxHP(int MaxHP);
+	void ApplyMaxHP();
 
 	int GetKills() const { return m_Kills; }
 
