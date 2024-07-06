@@ -166,7 +166,7 @@ MACRO_CONFIG_INT(InfTurretDmgHealthLaser, inf_turret_dmg_health_laser, 3, 0, 10,
 MACRO_CONFIG_INT(InfTurretAmmunition, inf_turret_ammunition, 3, 0, 10, CFGFLAG_SERVER, "number of projectiles per multi-shot (not per zombie)")
 MACRO_CONFIG_INT(InfTurretMaxPerPlayer, inf_turret_max_per_player, 3, 0, 10, CFGFLAG_SERVER, "maximal number of turrets per player")
 
-MACRO_CONFIG_INT(InfBlindnessDuration, inf_blindness_duration, 2500, 0, 10000, CFGFLAG_SERVER, "The duration of blindness (in ms)")
+MACRO_CONFIG_FLOAT(InfBlindnessDuration, inf_blindness_duration, 2.5, 0, 100, CFGFLAG_SERVER, "The duration of blindness in seconds")
 
 //SuperWeapons
 MACRO_CONFIG_INT(InfMinPlayersForWhiteHole, inf_min_players_for_white_hole, 8, 0, 30, CFGFLAG_SERVER, "Minimal number of players that are needed to enable white hole")
