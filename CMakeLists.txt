@@ -672,6 +672,8 @@ set_glob(ENGINE_SHARED GLOB src/engine/shared
   engine.cpp
   filecollection.cpp
   filecollection.h
+  fixed_point_number.cpp
+  fixed_point_number.h
   global_uuid_manager.cpp
   http.cpp
   http.h

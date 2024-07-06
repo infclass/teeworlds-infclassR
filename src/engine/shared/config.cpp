@@ -32,12 +32,14 @@ void CConfigManager::Init()
 void CConfigManager::Reset()
 {
 #define MACRO_CONFIG_INT(Name, ScriptName, def, min, max, flags, desc) g_Config.m_##Name = def;
+#define MACRO_CONFIG_FLOAT(Name, ScriptName, def, min, max, flags, desc) g_Config.m_##Name = def;
 #define MACRO_CONFIG_COL(Name, ScriptName, def, flags, desc) MACRO_CONFIG_INT(Name, ScriptName, def, 0, 0, flags, desc)
 #define MACRO_CONFIG_STR(Name, ScriptName, len, def, flags, desc) str_copy(g_Config.m_##Name, def, len);
 
 #include "config_variables.h"
 
 #undef MACRO_CONFIG_INT
+#undef MACRO_CONFIG_FLOAT
 #undef MACRO_CONFIG_COL
 #undef MACRO_CONFIG_STR
 }
@@ -50,6 +52,7 @@ void CConfigManager::Reset(const char *pScriptName)
 		g_Config.m_##Name = def; \
 		return; \
 	};
+#define MACRO_CONFIG_FLOAT(Name, ScriptName, def, min, max, flags, desc) MACRO_CONFIG_INT(Name, ScriptName, def, min, max, flags, desc)
 #define MACRO_CONFIG_COL(Name, ScriptName, def, flags, desc) MACRO_CONFIG_INT(Name, ScriptName, def, 0, 0, flags, desc)
 #define MACRO_CONFIG_STR(Name, ScriptName, len, def, flags, desc) \
 	if(str_comp(pScriptName, #ScriptName) == 0) \
@@ -61,6 +64,7 @@ void CConfigManager::Reset(const char *pScriptName)
 #include "config_variables.h"
 
 #undef MACRO_CONFIG_INT
+#undef MACRO_CONFIG_FLOAT
 #undef MACRO_CONFIG_COL
 #undef MACRO_CONFIG_STR
 }
@@ -90,6 +94,12 @@ bool CConfigManager::Save()
 		str_format(aLineBuf, sizeof(aLineBuf), "%s %i", #ScriptName, g_Config.m_##Name); \
 		WriteLine(aLineBuf); \
 	}
+#define MACRO_CONFIG_FLOAT(Name, ScriptName, def, min, max, flags, desc) \
+	if((flags)&CFGFLAG_SAVE && g_Config.m_##Name != def) \
+	{ \
+		str_format(aLineBuf, sizeof(aLineBuf), "%s %s", #ScriptName, g_Config.m_##Name.AsStr()); \
+		WriteLine(aLineBuf); \
+	}
 #define MACRO_CONFIG_COL(Name, ScriptName, def, flags, desc) \
 	if((flags)&CFGFLAG_SAVE && g_Config.m_##Name != def) \
 	{ \
@@ -107,6 +117,7 @@ bool CConfigManager::Save()
 #include "config_variables.h"
 
 #undef MACRO_CONFIG_INT
+#undef MACRO_CONFIG_FLOAT
 #undef MACRO_CONFIG_COL
 #undef MACRO_CONFIG_STR
 
