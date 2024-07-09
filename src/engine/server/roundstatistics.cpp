@@ -1,5 +1,7 @@
 #include "roundstatistics.h"
 
+#include <base/system.h>
+
 #include <game/infclass/classes.h>
 
 int CRoundStatistics::CPlayerStats::OnScoreEvent(int EventType, EPlayerClass Class)

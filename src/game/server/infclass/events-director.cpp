@@ -1,5 +1,7 @@
 #include "events-director.h"
 
+#include <base/system.h>
+
 #include <engine/shared/config.h>
 
 #include <game/infclass/classes.h>

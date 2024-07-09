@@ -650,16 +650,12 @@ void CGameContext::ReloadChangelog()
 		return;
 	}
 
-	IOHANDLE File = Storage()->OpenFile(pChangelogFilename, IOFLAG_READ, IStorage::TYPE_ALL);
-	if(!File)
+	CLineReader LineReader;
+	if (!LineReader.OpenFile(m_pStorage->OpenFile(pChangelogFilename, IOFLAG_READ, IStorage::TYPE_ALL)))
 	{
 		dbg_msg("ChangeLog", "unable to open '%s'", pChangelogFilename);
 		return;
 	}
-
-	CLineReader LineReader;
-	LineReader.Init(File);
-	char *pLine = nullptr;
 	const int MaxLinesPerPage = Config()->m_SvChangeLogMaxLinesPerPage;
 	int AddedLines = 0;
 
@@ -668,7 +664,7 @@ void CGameContext::ReloadChangelog()
 		'-',
 	};
 
-	while((pLine = LineReader.Get()))
+	while(const char *pLine = LineReader.Get())
 	{
 		if(pLine[0] == 0)
 			continue;
@@ -707,7 +703,6 @@ void CGameContext::ReloadChangelog()
 		m_aChangeLogEntries.Add(pLine);
 		++AddedLines;
 	}
-	io_close(File);
 }
 
 bool CGameContext::MapExists(const char *pMapName) const

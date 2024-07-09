@@ -4,7 +4,9 @@
 #define ENGINE_SHARED_CONFIG_H
 
 #include <base/detect.h>
+
 #include <engine/config.h>
+#include <engine/storage.h>
 
 #define CONFIG_FILE "settings_ddnet.cfg"
 #define AUTOEXEC_FILE "autoexec.cfg"

@@ -1,9 +1,12 @@
 /* (c) Magnus Auvinen. See licence.txt in the root of the distribution for more information. */
 /* If you are missing that file, acquire a complete release at teeworlds.com.                */
-#include <engine/config.h>
-#include <engine/shared/config.h>
+
+#include <base/system.h>
+
 #include <engine/shared/protocol.h>
 #include <engine/storage.h>
+
+#include "config.h"
 
 CConfig g_Config;
 
