@@ -1,6 +1,6 @@
 # Changelog
 
-## InfclassR v1.5.1 - 2024-xx-xx
+## InfclassR v1.5.1 - 2024-07-13
 
 General:
 - Implemented tracking of taxi passengers kills caused by the driver hooked to death tiles
