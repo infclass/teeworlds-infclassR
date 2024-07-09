@@ -795,7 +795,7 @@ if(CRYPTO_FOUND)
   target_link_libraries(engine-shared PUBLIC
     OpenSSL::Crypto
   )
-  target_compile_definitions(engine-shared PRIVATE CONF_OPENSSL)
+  target_compile_definitions(engine-shared PUBLIC CONF_OPENSSL)
 else()
   target_link_libraries(engine-shared PUBLIC
     md5
