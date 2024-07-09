@@ -15,6 +15,7 @@
 #include <engine/server/roundstatistics.h>
 #include <engine/shared/demo.h>
 #include <engine/shared/econ.h>
+#include <engine/shared/http.h>
 #include <engine/shared/netban.h>
 #include <engine/shared/network.h>
 #include <engine/shared/snapshot.h>
@@ -232,6 +233,7 @@ public:
 	CNetServer m_NetServer;
 	CEcon m_Econ;
 	CServerBan m_ServerBan;
+	CHttp m_Http;
 
 	IEngineMap *m_pMap;
 

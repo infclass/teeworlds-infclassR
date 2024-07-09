@@ -643,6 +643,7 @@ set_glob(ENGINE_INTERFACE GLOB src/engine
   demo.h
   engine.h
   graphics.h
+  http.h
   kernel.h
   map.h
   masterserver.h

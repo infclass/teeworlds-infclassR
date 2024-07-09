@@ -2986,8 +2986,14 @@ int CServer::Run()
 	if(Port == 0)
 		dbg_msg("server", "using port %d", BindAddr.port);
 
+	if(!m_Http.Init(std::chrono::seconds{2}))
+	{
+		log_error("server", "Failed to initialize the HTTP client.");
+		return -1;
+	}
+
 	IEngine *pEngine = Kernel()->RequestInterface<IEngine>();
-	m_pRegister = CreateRegister(&g_Config, m_pConsole, pEngine, this->Port(), m_NetServer.GetGlobalToken());
+	m_pRegister = CreateRegister(&g_Config, m_pConsole, pEngine, &m_Http, this->Port(), m_NetServer.GetGlobalToken());
 
 	m_NetServer.SetCallbacks(NewClientCallback, NewClientNoAuthCallback, ClientRejoinCallback, DelClientCallback, this);
 
@@ -3947,7 +3953,7 @@ void CServer::RegisterCommands()
 	m_pMap = Kernel()->RequestInterface<IEngineMap>();
 	m_pStorage = Kernel()->RequestInterface<IStorage>();
 
-	HttpInit(m_pStorage);
+	Kernel()->RegisterInterface(static_cast<IHttp *>(&m_Http), false);
 
 	// register console commands
 	Console()->Register("kick", "i[id] ?r[reason]", CFGFLAG_SERVER, ConKick, this, "Kick player with specified id for any reason");
