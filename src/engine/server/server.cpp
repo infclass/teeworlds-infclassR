@@ -3982,6 +3982,16 @@ void CServer::RegisterCommands()
 	Console()->Chain("sv_max_clients_per_ip", ConchainMaxclientsperipUpdate, this);
 	Console()->Chain("mod_command", ConchainModCommandUpdate, this);
 
+	Console()->Chain("sv_map", ConchainMapUpdate, this);
+	Console()->Chain("sv_sixup", ConchainSixupUpdate, this);
+
+	Console()->Chain("loglevel", ConchainLoglevel, this);
+	Console()->Chain("stdout_output_level", ConchainStdoutOutputLevel, this);
+
+#if defined(CONF_FAMILY_UNIX)
+	Console()->Chain("sv_conn_logging_server", ConchainConnLoggingServerChange, this);
+#endif
+
 	Console()->Register("mute", "s[clientid] ?i[minutes] ?r[reason]", CFGFLAG_SERVER, ConMute, this, "Mute player with specified id for x minutes for any reason");
 	Console()->Register("unmute", "s[clientid]", CFGFLAG_SERVER, ConUnmute, this, "Unmute player with specified id");
 	Console()->Register("whisper", "s[id] r[txt]", CFGFLAG_SERVER, ConWhisper, this, "Analogous to 'Say' but sent to a single client only");
