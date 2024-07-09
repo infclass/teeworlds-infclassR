@@ -1090,6 +1090,8 @@ set_property(TARGET Server
     PROPERTY OUTPUT_NAME ${SERVER_EXECUTABLE}
 )
 
+list(APPEND TARGETS_OWN Server)
+
 if(GEOLOCATION)
   add_library(GeoLite2PP STATIC
     ${CMAKE_CURRENT_SOURCE_DIR}/src/infclassr/GeoLite2PP/GeoLite2PP.cpp
