@@ -95,6 +95,7 @@ if(USE_CONAN)
       icu/72.1
       zlib/1.2.13
       sqlite3/3.41.2
+      libcurl/7.88.1
     GENERATORS cmake_find_package
   )
 
