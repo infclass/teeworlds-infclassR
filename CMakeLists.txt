@@ -65,7 +65,12 @@ if(NOT(CMAKE_BUILD_TYPE))
   set(CMAKE_BUILD_TYPE Release)
 endif()
 
-set(DBG $<OR:$<CONFIG:Debug>,$<CONFIG:RelWithDebInfo>>)
+if(CMAKE_BUILD_TYPE STREQUAL "Release")
+  set(DBG FALSE)
+else()
+  set(DBG TRUE)
+endif()
+
 if(MSVC)
    # Use static CRT
   if(DBG)
