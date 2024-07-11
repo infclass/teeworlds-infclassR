@@ -62,11 +62,6 @@
 #endif
 
 #elif defined(CONF_FAMILY_WINDOWS)
-#define WIN32_LEAN_AND_MEAN
-#undef _WIN32_WINNT
-// 0x0501 (Windows XP) is required for mingw to get getaddrinfo to work
-// 0x0600 (Windows Vista) is required to use RegGetValueW and RegDeleteTreeW
-#define _WIN32_WINNT 0x0600
 #include <windows.h>
 #include <winsock2.h>
 #include <ws2tcpip.h>
@@ -184,7 +179,7 @@ bool dbg_assert_has_failed()
 	return dbg_assert_failing.load(std::memory_order_acquire);
 }
 
-void dbg_assert_imp(const char *filename, int line, int test, const char *msg)
+void dbg_assert_imp(const char *filename, int line, bool test, const char *msg)
 {
 	if(!test)
 	{
@@ -256,9 +251,9 @@ bool mem_has_null(const void *block, size_t size)
 	return false;
 }
 
-IOHANDLE io_open_impl(const char *filename, int flags)
+IOHANDLE io_open(const char *filename, int flags)
 {
-	dbg_assert(flags == (IOFLAG_READ | IOFLAG_SKIP_BOM) || flags == IOFLAG_READ || flags == IOFLAG_WRITE || flags == IOFLAG_APPEND, "flags must be read, read+skipbom, write or append");
+	dbg_assert(flags == IOFLAG_READ || flags == IOFLAG_WRITE || flags == IOFLAG_APPEND, "flags must be read, write or append");
 #if defined(CONF_FAMILY_WINDOWS)
 	const std::wstring wide_filename = windows_utf8_to_wide(filename);
 	DWORD desired_access;
@@ -273,7 +268,7 @@ IOHANDLE io_open_impl(const char *filename, int flags)
 	else if(flags == IOFLAG_WRITE)
 	{
 		desired_access = FILE_WRITE_DATA;
-		creation_disposition = OPEN_ALWAYS;
+		creation_disposition = CREATE_ALWAYS;
 		open_mode = "wb";
 	}
 	else if(flags == IOFLAG_APPEND)
@@ -316,21 +311,6 @@ IOHANDLE io_open_impl(const char *filename, int flags)
 	}
 	return fopen(filename, open_mode);
 #endif
-}
-
-IOHANDLE io_open(const char *filename, int flags)
-{
-	IOHANDLE result = io_open_impl(filename, flags);
-	unsigned char buf[3];
-	if((flags & IOFLAG_SKIP_BOM) == 0 || !result)
-	{
-		return result;
-	}
-	if(io_read(result, buf, sizeof(buf)) != 3 || buf[0] != 0xef || buf[1] != 0xbb || buf[2] != 0xbf)
-	{
-		io_seek(result, 0, IOSEEK_START);
-	}
-	return result;
 }
 
 unsigned io_read(IOHANDLE io, void *buffer, unsigned size)
@@ -807,22 +787,20 @@ void *thread_init(void (*threadfunc)(void *), void *u, const char *name)
 	data->u = u;
 #if defined(CONF_FAMILY_UNIX)
 	{
-		pthread_t id;
 		pthread_attr_t attr;
-		pthread_attr_init(&attr);
-#if defined(CONF_PLATFORM_MACOS)
-		pthread_attr_set_qos_class_np(&attr, QOS_CLASS_USER_INTERACTIVE, 0);
+		dbg_assert(pthread_attr_init(&attr) == 0, "pthread_attr_init failure");
+#if defined(CONF_PLATFORM_MACOS) && defined(__MAC_10_10) && __MAC_OS_X_VERSION_MIN_REQUIRED >= __MAC_10_10
+		dbg_assert(pthread_attr_set_qos_class_np(&attr, QOS_CLASS_USER_INTERACTIVE, 0) == 0, "pthread_attr_set_qos_class_np failure");
 #endif
-		int result = pthread_create(&id, &attr, thread_run, data);
-		if(result != 0)
-		{
-			dbg_msg("thread", "creating %s thread failed: %d", name, result);
-			return 0;
-		}
+		pthread_t id;
+		dbg_assert(pthread_create(&id, &attr, thread_run, data) == 0, "pthread_create failure");
 		return (void *)id;
 	}
 #elif defined(CONF_FAMILY_WINDOWS)
-	return CreateThread(NULL, 0, thread_run, data, 0, NULL);
+	HANDLE thread = CreateThread(nullptr, 0, thread_run, data, 0, nullptr);
+	dbg_assert(thread != nullptr, "CreateThread failure");
+	// TODO: Set thread name using SetThreadDescription (would require minimum Windows 10 version 1607)
+	return thread;
 #else
 #error not implemented
 #endif
@@ -831,12 +809,10 @@ void *thread_init(void (*threadfunc)(void *), void *u, const char *name)
 void thread_wait(void *thread)
 {
 #if defined(CONF_FAMILY_UNIX)
-	int result = pthread_join((pthread_t)thread, NULL);
-	if(result != 0)
-		dbg_msg("thread", "!! %d", result);
+	dbg_assert(pthread_join((pthread_t)thread, nullptr) == 0, "pthread_join failure");
 #elif defined(CONF_FAMILY_WINDOWS)
-	WaitForSingleObject((HANDLE)thread, INFINITE);
-	CloseHandle(thread);
+	dbg_assert(WaitForSingleObject((HANDLE)thread, INFINITE) == WAIT_OBJECT_0, "WaitForSingleObject failure");
+	dbg_assert(CloseHandle(thread), "CloseHandle failure");
 #else
 #error not implemented
 #endif
@@ -845,9 +821,7 @@ void thread_wait(void *thread)
 void thread_yield()
 {
 #if defined(CONF_FAMILY_UNIX)
-	int result = sched_yield();
-	if(result != 0)
-		dbg_msg("thread", "yield failed: %d", errno);
+	dbg_assert(sched_yield() == 0, "sched_yield failure");
 #elif defined(CONF_FAMILY_WINDOWS)
 	Sleep(0);
 #else
@@ -858,76 +832,87 @@ void thread_yield()
 void thread_detach(void *thread)
 {
 #if defined(CONF_FAMILY_UNIX)
-	int result = pthread_detach((pthread_t)(thread));
-	if(result != 0)
-		dbg_msg("thread", "detach failed: %d", result);
+	dbg_assert(pthread_detach((pthread_t)thread) == 0, "pthread_detach failure");
 #elif defined(CONF_FAMILY_WINDOWS)
-	CloseHandle(thread);
+	dbg_assert(CloseHandle(thread), "CloseHandle failure");
 #else
 #error not implemented
 #endif
 }
 
-void *thread_init_and_detach(void (*threadfunc)(void *), void *u, const char *name)
+void thread_init_and_detach(void (*threadfunc)(void *), void *u, const char *name)
 {
 	void *thread = thread_init(threadfunc, u, name);
-	if(thread)
-		thread_detach(thread);
-	return thread;
+	thread_detach(thread);
 }
 
 #if defined(CONF_FAMILY_WINDOWS)
 void sphore_init(SEMAPHORE *sem)
 {
-	*sem = CreateSemaphore(0, 0, 10000, 0);
+	*sem = CreateSemaphoreW(nullptr, 0, std::numeric_limits<LONG>::max(), nullptr);
+	dbg_assert(*sem != nullptr, "CreateSemaphoreW failure");
 }
-void sphore_wait(SEMAPHORE *sem) { WaitForSingleObject((HANDLE)*sem, INFINITE); }
-void sphore_signal(SEMAPHORE *sem) { ReleaseSemaphore((HANDLE)*sem, 1, NULL); }
-void sphore_destroy(SEMAPHORE *sem) { CloseHandle((HANDLE)*sem); }
+void sphore_wait(SEMAPHORE *sem)
+{
+	dbg_assert(WaitForSingleObject((HANDLE)*sem, INFINITE) == WAIT_OBJECT_0, "WaitForSingleObject failure");
+}
+void sphore_signal(SEMAPHORE *sem)
+{
+	dbg_assert(ReleaseSemaphore((HANDLE)*sem, 1, nullptr), "ReleaseSemaphore failure");
+}
+void sphore_destroy(SEMAPHORE *sem)
+{
+	dbg_assert(CloseHandle((HANDLE)*sem), "CloseHandle failure");
+}
 #elif defined(CONF_PLATFORM_MACOS)
 void sphore_init(SEMAPHORE *sem)
 {
-	char aBuf[64];
+	char aBuf[32];
 	str_format(aBuf, sizeof(aBuf), "%p", (void *)sem);
 	*sem = sem_open(aBuf, O_CREAT | O_EXCL, S_IRWXU | S_IRWXG, 0);
-	if(*sem == SEM_FAILED)
-		dbg_msg("sphore", "init failed: %d", errno);
+	dbg_assert(*sem != SEM_FAILED, "sem_open failure");
 }
-void sphore_wait(SEMAPHORE *sem) { sem_wait(*sem); }
-void sphore_signal(SEMAPHORE *sem) { sem_post(*sem); }
+void sphore_wait(SEMAPHORE *sem)
+{
+	while(true)
+	{
+		if(sem_wait(*sem) == 0)
+			break;
+		dbg_assert(errno == EINTR, "sem_wait failure");
+	}
+}
+void sphore_signal(SEMAPHORE *sem)
+{
+	dbg_assert(sem_post(*sem) == 0, "sem_post failure");
+}
 void sphore_destroy(SEMAPHORE *sem)
 {
-	char aBuf[64];
-	sem_close(*sem);
+	dbg_assert(sem_close(*sem) == 0, "sem_close failure");
+	char aBuf[32];
 	str_format(aBuf, sizeof(aBuf), "%p", (void *)sem);
-	sem_unlink(aBuf);
+	dbg_assert(sem_unlink(aBuf) == 0, "sem_unlink failure");
 }
 #elif defined(CONF_FAMILY_UNIX)
 void sphore_init(SEMAPHORE *sem)
 {
-	if(sem_init(sem, 0, 0) != 0)
-		dbg_msg("sphore", "init failed: %d", errno);
+	dbg_assert(sem_init(sem, 0, 0) == 0, "sem_init failure");
 }
-
 void sphore_wait(SEMAPHORE *sem)
 {
-	do
+	while(true)
 	{
-		errno = 0;
-		if(sem_wait(sem) != 0)
-			dbg_msg("sphore", "wait failed: %d", errno);
-	} while(errno == EINTR);
+		if(sem_wait(sem) == 0)
+			break;
+		dbg_assert(errno == EINTR, "sem_wait failure");
+	}
 }
-
 void sphore_signal(SEMAPHORE *sem)
 {
-	if(sem_post(sem) != 0)
-		dbg_msg("sphore", "post failed: %d", errno);
+	dbg_assert(sem_post(sem) == 0, "sem_post failure");
 }
 void sphore_destroy(SEMAPHORE *sem)
 {
-	if(sem_destroy(sem) != 0)
-		dbg_msg("sphore", "destroy failed: %d", errno);
+	dbg_assert(sem_destroy(sem) == 0, "sem_destroy failure");
 }
 #endif
 
@@ -1237,7 +1222,7 @@ static int parse_int(int *out, const char **str)
 {
 	int i = 0;
 	*out = 0;
-	if(**str < '0' || **str > '9')
+	if(!str_isnum(**str))
 		return -1;
 
 	i = **str - '0';
@@ -1245,7 +1230,7 @@ static int parse_int(int *out, const char **str)
 
 	while(true)
 	{
-		if(**str < '0' || **str > '9')
+		if(!str_isnum(**str))
 		{
 			*out = i;
 			return 0;
@@ -1290,19 +1275,15 @@ static int parse_uint16(unsigned short *out, const char **str)
 
 int net_addr_from_url(NETADDR *addr, const char *string, char *host_buf, size_t host_buf_size)
 {
-	char host[128];
-	int length;
-	int start = 0;
-	int end;
-	int failure;
 	const char *str = str_startswith(string, "tw-0.6+udp://");
 	if(!str)
 		return 1;
 
 	mem_zero(addr, sizeof(*addr));
 
-	length = str_length(str);
-	end = length;
+	int length = str_length(str);
+	int start = 0;
+	int end = length;
 	for(int i = 0; i < length; i++)
 	{
 		if(str[i] == '@')
@@ -1320,14 +1301,13 @@ int net_addr_from_url(NETADDR *addr, const char *string, char *host_buf, size_t 
 			break;
 		}
 	}
+
+	char host[128];
 	str_truncate(host, sizeof(host), str + start, end - start);
 	if(host_buf)
 		str_copy(host_buf, host, host_buf_size);
 
-	if((failure = net_addr_from_str(addr, host)))
-		return failure;
-
-	return failure;
+	return net_addr_from_str(addr, host);
 }
 
 int net_addr_from_str(NETADDR *addr, const char *string)
@@ -1555,14 +1535,17 @@ NETSOCKET net_udp_create(NETADDR bindaddr)
 
 			/* set broadcast */
 			if(setsockopt(socket, SOL_SOCKET, SO_BROADCAST, (const char *)&broadcast, sizeof(broadcast)) != 0)
-				dbg_msg("socket", "Setting BROADCAST on ipv4 failed: %d", errno);
+			{
+				dbg_msg("socket", "Setting BROADCAST on ipv4 failed: %d", net_errno());
+			}
 
 			{
 				/* set DSCP/TOS */
 				int iptos = 0x10 /* IPTOS_LOWDELAY */;
-				//int iptos = 46; /* High Priority */
 				if(setsockopt(socket, IPPROTO_IP, IP_TOS, (char *)&iptos, sizeof(iptos)) != 0)
-					dbg_msg("socket", "Setting TOS on ipv4 failed: %d", errno);
+				{
+					dbg_msg("socket", "Setting TOS on ipv4 failed: %d", net_errno());
+				}
 			}
 		}
 	}
@@ -1600,15 +1583,21 @@ NETSOCKET net_udp_create(NETADDR bindaddr)
 
 			/* set broadcast */
 			if(setsockopt(socket, SOL_SOCKET, SO_BROADCAST, (const char *)&broadcast, sizeof(broadcast)) != 0)
-				dbg_msg("socket", "Setting BROADCAST on ipv6 failed: %d", errno);
+			{
+				dbg_msg("socket", "Setting BROADCAST on ipv6 failed: %d", net_errno());
+			}
 
+			// TODO: setting IP_TOS on ipv6 with setsockopt is not supported on Windows, see https://github.com/ddnet/ddnet/issues/7605
+#if !defined(CONF_FAMILY_WINDOWS)
 			{
 				/* set DSCP/TOS */
 				int iptos = 0x10 /* IPTOS_LOWDELAY */;
-				//int iptos = 46; /* High Priority */
 				if(setsockopt(socket, IPPROTO_IP, IP_TOS, (char *)&iptos, sizeof(iptos)) != 0)
-					dbg_msg("socket", "Setting TOS on ipv6 failed: %d", errno);
+				{
+					dbg_msg("socket", "Setting TOS on ipv6 failed: %d", net_errno());
+				}
 			}
+#endif
 		}
 	}
 
@@ -1842,7 +1831,7 @@ NETSOCKET net_tcp_create(NETADDR bindaddr)
 	NETSOCKET sock = (NETSOCKET_INTERNAL *)malloc(sizeof(*sock));
 	*sock = invalid_socket;
 	NETADDR tmpbindaddr = bindaddr;
-	int socket = -1;
+	int socket4 = -1;
 
 	if(bindaddr.type & NETTYPE_IPV4)
 	{
@@ -1851,14 +1840,15 @@ NETSOCKET net_tcp_create(NETADDR bindaddr)
 		/* bind, we should check for error */
 		tmpbindaddr.type = NETTYPE_IPV4;
 		netaddr_to_sockaddr_in(&tmpbindaddr, &addr);
-		socket = priv_net_create_socket(AF_INET, SOCK_STREAM, (struct sockaddr *)&addr, sizeof(addr));
-		if(socket >= 0)
+		socket4 = priv_net_create_socket(AF_INET, SOCK_STREAM, (struct sockaddr *)&addr, sizeof(addr));
+		if(socket4 >= 0)
 		{
 			sock->type |= NETTYPE_IPV4;
-			sock->ipv4sock = socket;
+			sock->ipv4sock = socket4;
 		}
 	}
 
+	int socket6 = -1;
 	if(bindaddr.type & NETTYPE_IPV6)
 	{
 		struct sockaddr_in6 addr;
@@ -1866,15 +1856,15 @@ NETSOCKET net_tcp_create(NETADDR bindaddr)
 		/* bind, we should check for error */
 		tmpbindaddr.type = NETTYPE_IPV6;
 		netaddr_to_sockaddr_in6(&tmpbindaddr, &addr);
-		socket = priv_net_create_socket(AF_INET6, SOCK_STREAM, (struct sockaddr *)&addr, sizeof(addr));
-		if(socket >= 0)
+		socket6 = priv_net_create_socket(AF_INET6, SOCK_STREAM, (struct sockaddr *)&addr, sizeof(addr));
+		if(socket6 >= 0)
 		{
 			sock->type |= NETTYPE_IPV6;
-			sock->ipv6sock = socket;
+			sock->ipv6sock = socket6;
 		}
 	}
 
-	if(socket < 0)
+	if(socket4 < 0 && socket6 < 0)
 	{
 		free(sock);
 		sock = nullptr;
@@ -1982,6 +1972,8 @@ int net_tcp_connect(NETSOCKET sock, const NETADDR *a)
 	{
 		struct sockaddr_in addr;
 		netaddr_to_sockaddr_in(a, &addr);
+		if(sock->ipv4sock < 0)
+			return -2;
 		return connect(sock->ipv4sock, (struct sockaddr *)&addr, sizeof(addr));
 	}
 
@@ -1989,6 +1981,8 @@ int net_tcp_connect(NETSOCKET sock, const NETADDR *a)
 	{
 		struct sockaddr_in6 addr;
 		netaddr_to_sockaddr_in6(a, &addr);
+		if(sock->ipv6sock < 0)
+			return -2;
 		return connect(sock->ipv6sock, (struct sockaddr *)&addr, sizeof(addr));
 	}
 
@@ -2115,8 +2109,13 @@ void fs_listdir(const char *dir, FS_LISTDIR_CALLBACK cb, int type, void *user)
 
 	do
 	{
-		const std::string current_entry = windows_wide_to_utf8(finddata.cFileName);
-		if(cb(current_entry.c_str(), (finddata.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) != 0, type, user))
+		const std::optional<std::string> current_entry = windows_wide_to_utf8(finddata.cFileName);
+		if(!current_entry.has_value())
+		{
+			log_error("filesystem", "ERROR: file/folder name containing invalid UTF-16 found in folder '%s'", dir);
+			continue;
+		}
+		if(cb(current_entry.value().c_str(), (finddata.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) != 0, type, user))
 			break;
 	} while(FindNextFileW(handle, &finddata));
 
@@ -2162,10 +2161,15 @@ void fs_listdir_fileinfo(const char *dir, FS_LISTDIR_CALLBACK_FILEINFO cb, int t
 
 	do
 	{
-		const std::string current_entry = windows_wide_to_utf8(finddata.cFileName);
+		const std::optional<std::string> current_entry = windows_wide_to_utf8(finddata.cFileName);
+		if(!current_entry.has_value())
+		{
+			log_error("filesystem", "ERROR: file/folder name containing invalid UTF-16 found in folder '%s'", dir);
+			continue;
+		}
 
 		CFsFileInfo info;
-		info.m_pName = current_entry.c_str();
+		info.m_pName = current_entry.value().c_str();
 		info.m_TimeCreated = filetime_to_unixtime(&finddata.ftCreationTime);
 		info.m_TimeModified = filetime_to_unixtime(&finddata.ftLastWriteTime);
 
@@ -2279,17 +2283,20 @@ int fs_storage_path(const char *appname, char *path, int max)
 
 int fs_makedir_rec_for(const char *path)
 {
-	char buffer[1024 * 2];
-	char *p;
+	char buffer[IO_MAX_PATH_LENGTH];
 	str_copy(buffer, path);
-	for(p = buffer + 1; *p != '\0'; p++)
+	for(int index = 1; buffer[index] != '\0'; ++index)
 	{
-		if(*p == '/' && *(p + 1) != '\0')
+		// Do not try to create folder for drive letters on Windows,
+		// as this is not necessary and may fail for system drives.
+		if((buffer[index] == '/' || buffer[index] == '\\') && buffer[index + 1] != '\0' && buffer[index - 1] != ':')
 		{
-			*p = '\0';
+			buffer[index] = '\0';
 			if(fs_makedir(buffer) < 0)
+			{
 				return -1;
-			*p = '/';
+			}
+			buffer[index] = '/';
 		}
 	}
 	return 0;
@@ -2372,17 +2379,12 @@ int fs_is_relative_path(const char *path)
 
 int fs_chdir(const char *path)
 {
-	if(fs_is_dir(path))
-	{
 #if defined(CONF_FAMILY_WINDOWS)
-		const std::wstring wide_path = windows_utf8_to_wide(path);
-		return SetCurrentDirectoryW(wide_path.c_str()) != 0 ? 0 : 1;
+	const std::wstring wide_path = windows_utf8_to_wide(path);
+	return SetCurrentDirectoryW(wide_path.c_str()) != 0 ? 0 : 1;
 #else
-		return chdir(path) ? 1 : 0;
+	return chdir(path) ? 1 : 0;
 #endif
-	}
-	else
-		return 1;
 }
 
 char *fs_getcwd(char *buffer, int buffer_size)
@@ -2390,15 +2392,7 @@ char *fs_getcwd(char *buffer, int buffer_size)
 #if defined(CONF_FAMILY_WINDOWS)
 	const DWORD size_needed = GetCurrentDirectoryW(0, nullptr);
 	std::wstring wide_current_dir(size_needed, L'0');
-	DWORD result = GetCurrentDirectoryW(size_needed, wide_current_dir.data());
-	if(result == 0)
-	{
-		const DWORD LastError = GetLastError();
-		const std::string ErrorMsg = windows_format_system_message(LastError);
-		dbg_msg("filesystem", "GetCurrentDirectoryW failed: %ld %s", LastError, ErrorMsg.c_str());
-		buffer[0] = '\0';
-		return nullptr;
-	}
+	dbg_assert(GetCurrentDirectoryW(size_needed, wide_current_dir.data()) == size_needed - 1, "GetCurrentDirectoryW failure");
 	const std::optional<std::string> current_dir = windows_wide_to_utf8(wide_current_dir.c_str());
 	if(!current_dir.has_value())
 	{
@@ -2596,18 +2590,29 @@ int net_socket_read_wait(NETSOCKET sock, int time)
 	return 0;
 }
 
-int time_timestamp()
+int64_t time_timestamp()
 {
 	return time(0);
+}
+
+static struct tm *time_localtime_threadlocal(time_t *time_data)
+{
+#if defined(CONF_FAMILY_WINDOWS)
+	// The result of localtime is thread-local on Windows
+	// https://learn.microsoft.com/en-us/cpp/c-runtime-library/reference/localtime-localtime32-localtime64
+	return localtime(time_data);
+#else
+	// Thread-local buffer for the result of localtime_r
+	thread_local struct tm time_info_buf;
+	return localtime_r(time_data, &time_info_buf);
+#endif
 }
 
 int time_houroftheday()
 {
 	time_t time_data;
-	struct tm *time_info;
-
 	time(&time_data);
-	time_info = localtime(&time_data);
+	struct tm *time_info = time_localtime_threadlocal(&time_data);
 	return time_info->tm_hour;
 }
 
@@ -2634,7 +2639,7 @@ static bool time_iseasterday(time_t time_data, struct tm *time_info)
 	for(int day_offset = -1; day_offset <= 2; day_offset++)
 	{
 		time_data = time_data + day_offset * 60 * 60 * 24;
-		time_info = localtime(&time_data);
+		time_info = time_localtime_threadlocal(&time_data);
 		if(time_info->tm_mon == month - 1 && time_info->tm_mday == day)
 			return true;
 	}
@@ -2645,7 +2650,7 @@ ETimeSeason time_season()
 {
 	time_t time_data;
 	time(&time_data);
-	struct tm *time_info = localtime(&time_data);
+	struct tm *time_info = time_localtime_threadlocal(&time_data);
 
 	if((time_info->tm_mon == 11 && time_info->tm_mday == 31) || (time_info->tm_mon == 0 && time_info->tm_mday == 1))
 	{
@@ -2922,7 +2927,7 @@ int str_comp_filenames(const char *a, const char *b)
 
 	for(; *a && *b; ++a, ++b)
 	{
-		if(*a >= '0' && *a <= '9' && *b >= '0' && *b <= '9')
+		if(str_isnum(*a) && str_isnum(*b))
 		{
 			result = 0;
 			do
@@ -2931,11 +2936,11 @@ int str_comp_filenames(const char *a, const char *b)
 					result = *a - *b;
 				++a;
 				++b;
-			} while(*a >= '0' && *a <= '9' && *b >= '0' && *b <= '9');
+			} while(str_isnum(*a) && str_isnum(*b));
 
-			if(*a >= '0' && *a <= '9')
+			if(str_isnum(*a))
 				return 1;
-			else if(*b >= '0' && *b <= '9')
+			else if(str_isnum(*b))
 				return -1;
 			else if(result || *a == '\0' || *b == '\0')
 				return result;
@@ -3414,8 +3419,7 @@ int str_base64_decode(void *dst_raw, int dst_size, const char *data)
 #endif
 void str_timestamp_ex(time_t time_data, char *buffer, int buffer_size, const char *format)
 {
-	struct tm *time_info;
-	time_info = localtime(&time_data);
+	struct tm *time_info = time_localtime_threadlocal(&time_data);
 	strftime(buffer, buffer_size, format, time_info);
 	buffer[buffer_size - 1] = 0; /* assure null termination */
 }
@@ -3555,11 +3559,16 @@ char str_uppercase(char c)
 	return c;
 }
 
+bool str_isnum(char c)
+{
+	return c >= '0' && c <= '9';
+}
+
 int str_isallnum(const char *str)
 {
 	while(*str)
 	{
-		if(!(*str >= '0' && *str <= '9'))
+		if(!str_isnum(*str))
 			return 0;
 		str++;
 	}
@@ -3570,7 +3579,7 @@ int str_isallnum_hex(const char *str)
 {
 	while(*str)
 	{
-		if(!(*str >= '0' && *str <= '9') && !(*str >= 'a' && *str <= 'f') && !(*str >= 'A' && *str <= 'F'))
+		if(!str_isnum(*str) && !(*str >= 'a' && *str <= 'f') && !(*str >= 'A' && *str <= 'F'))
 			return 0;
 		str++;
 	}
@@ -3580,6 +3589,18 @@ int str_isallnum_hex(const char *str)
 int str_toint(const char *str)
 {
 	return str_toint_base(str, 10);
+}
+
+bool str_toint(const char *str, int *out)
+{
+	// returns true if conversion was successful
+	char *end;
+	int value = strtol(str, &end, 10);
+	if(*end != '\0')
+		return false;
+	if(out != nullptr)
+		*out = value;
+	return true;
 }
 
 int str_toint_base(const char *str, int base)
@@ -3600,6 +3621,18 @@ int64_t str_toint64_base(const char *str, int base)
 float str_tofloat(const char *str)
 {
 	return strtod(str, nullptr);
+}
+
+bool str_tofloat(const char *str, float *out)
+{
+	// returns true if conversion was successful
+	char *end;
+	float value = strtod(str, &end);
+	if(*end != '\0')
+		return false;
+	if(out != nullptr)
+		*out = value;
+	return true;
 }
 
 void str_from_int(int value, char *buffer, size_t buffer_size)
@@ -4074,7 +4107,7 @@ void cmdline_free(int argc, const char **argv)
 #endif
 }
 
-PROCESS shell_execute(const char *file)
+PROCESS shell_execute(const char *file, EShellExecuteWindowState window_state)
 {
 #if defined(CONF_FAMILY_WINDOWS)
 	const std::wstring wide_file = windows_utf8_to_wide(file);
@@ -4084,7 +4117,18 @@ PROCESS shell_execute(const char *file)
 	info.cbSize = sizeof(SHELLEXECUTEINFOW);
 	info.lpVerb = L"open";
 	info.lpFile = wide_file.c_str();
-	info.nShow = SW_SHOWMINNOACTIVE;
+	switch(window_state)
+	{
+	case EShellExecuteWindowState::FOREGROUND:
+		info.nShow = SW_SHOW;
+		break;
+	case EShellExecuteWindowState::BACKGROUND:
+		info.nShow = SW_SHOWMINNOACTIVE;
+		break;
+	default:
+		dbg_assert(false, "window_state invalid");
+		dbg_break();
+	}
 	info.fMask = SEE_MASK_NOCLOSEPROCESS;
 	// Save and restore the FPU control word because ShellExecute might change it
 	fenv_t floating_point_environment;
@@ -4145,6 +4189,7 @@ bool is_process_alive(PROCESS process)
 #endif
 }
 
+#if !defined(CONF_PLATFORM_ANDROID)
 int open_link(const char *link)
 {
 #if defined(CONF_FAMILY_WINDOWS)
@@ -4206,6 +4251,7 @@ int open_file(const char *path)
 	return open_link(buf);
 #endif
 }
+#endif // !defined(CONF_PLATFORM_ANDROID)
 
 struct SECURE_RANDOM_DATA
 {
@@ -4503,7 +4549,7 @@ void os_locale_str(char *locale, size_t length)
 		{
 			locale[i] = '-';
 		}
-		else if(locale[i] != '-' && !(locale[i] >= 'a' && locale[i] <= 'z') && !(locale[i] >= 'A' && locale[i] <= 'Z') && !(locale[i] >= '0' && locale[i] <= '9'))
+		else if(locale[i] != '-' && !(locale[i] >= 'a' && locale[i] <= 'z') && !(locale[i] >= 'A' && locale[i] <= 'Z') && !(str_isnum(locale[i])))
 		{
 			locale[i] = '\0';
 			break;
