@@ -943,6 +943,7 @@ set_glob(GAME_SERVER GLOB_RECURSE src/game/server
   gameworld.h
   player.cpp
   player.h
+  skininfo.h
   teams.cpp
   teams.h
   teeinfo.cpp
