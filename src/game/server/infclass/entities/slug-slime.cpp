@@ -17,7 +17,7 @@ CSlugSlime::CSlugSlime(CGameContext *pGameContext, vec2 Pos, int Owner) :
 	m_EndTick = m_StartTick;
 
 	m_Damage = Config()->m_InfSlimePoisonDamage;
-	m_DamageInterval = 1.25f;
+	m_DamageInterval = Config()->m_InfSlimePoisonInterval;
 
 	GameWorld()->InsertEntity(this);
 }
