@@ -22,13 +22,13 @@ jobs:
             LDFLAGS: /WX
 
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
 
     - name: Install Conan
       id: conan
       uses: turtlebrowser/get-conan@main
       with:
-        version: 1.59.0
+        version: 1.60.1
 
     - name: Build in release mode
       env: ${{ matrix.env }}
@@ -46,7 +46,7 @@ jobs:
         mv ${{ matrix.package-file }} artifacts
 
     - name: Upload Artifacts
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: InfclassR-${{ matrix.os }}
         path: release/artifacts
