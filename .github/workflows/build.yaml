@@ -1,8 +1,9 @@
 name: Build with conan
 
 on:
-  # push:
-  pull_request:
+  push:
+    paths-ignore:
+    - "data/maps/**"
 
 jobs:
   build-cmake:
@@ -10,10 +11,10 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [windows-latest]
+        os: [windows-2019]
         include:
-        - os: windows-latest
-          cmake-args: -G "Visual Studio 17 2022" -A x64 -DUSE_CONAN=ON
+        - os: windows-2019
+          cmake-args: -G "Visual Studio 16 2019" -A x64 -DUSE_CONAN=ON
           package-file: "*-win64.zip"
           fancy: false
           env:
