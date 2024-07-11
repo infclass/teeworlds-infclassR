@@ -96,6 +96,11 @@ if(USE_CONAN)
       zlib/1.2.13
       sqlite3/3.41.2
       libcurl/7.88.1
+    OPTIONS
+      libcurl:with_ssl=False
+      libcurl:with_smb=False
+      libcurl:with_pop3=False
+      libcurl:with_smtp=False
     GENERATORS cmake_find_package
   )
 
