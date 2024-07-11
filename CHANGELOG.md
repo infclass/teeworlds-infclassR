@@ -1,6 +1,24 @@
 # Changelog
 
-## InfclassR v1.5.0 - 2023-xx-xx
+## InfclassR v1.5.1 - 2024-07-11
+
+General:
+- Implemented tracking of taxi passengers kills caused by the driver hooked to death tiles
+- Soldier Bomb explosion now prevented for 140ms after the bomb placed (workaround for 'double click' issue)
+
+Balance:
+- Slime poisoning damage reduces from 5 to 3
+- Slime poisoning interval increased from 1.0 to 1.5 sec
+
+Maps:
+- Updated `infc_warehouse`: the hidden path is now visible
+
+Maintenance:
+- Added logging of vote start/stop
+- Fixed server messages logging
+- Fixed server registration for OpenSSL-enabled builds
+
+## InfclassR v1.5.0 - 2024-03-22
 
 General:
 - Added 'timeout code' support
