@@ -1,8 +1,9 @@
 #ifndef ENGINE_SHARED_FIXED_POINT_NUMBER_H
 #define ENGINE_SHARED_FIXED_POINT_NUMBER_H
 
+#include <base/math.h>
+
 #include <cstdint>
-#include <cmath>
 
 class CFixedPointNumber
 {
@@ -21,12 +22,12 @@ protected:
 
 inline constexpr CFixedPointNumber::CFixedPointNumber(float Value)
 {
-	m_Value = std::round(Value * 1000);
+	m_Value = round_to_int(Value * 1000);
 }
 
 inline constexpr CFixedPointNumber &CFixedPointNumber::operator=(float Value)
 {
-	m_Value = std::round(Value * 1000);
+	m_Value = round_to_int(Value * 1000);
 	return *this;
 }
 
