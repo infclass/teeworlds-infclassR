@@ -1,7 +1,7 @@
 name: Build with scripts
 
 on:
-  push:
+  pull_request:
     paths-ignore:
     - "data/maps/**"
 
