@@ -82,11 +82,14 @@ if(MSVC)
 endif()
 
 if(USE_CONAN)
-  list(PREPEND CMAKE_MODULE_PATH "${CMAKE_BINARY_DIR}")
+  set(CONAN_DEPS_DIR "${CMAKE_BINARY_DIR}/conan-deps")
+  list(PREPEND CMAKE_MODULE_PATH
+    "${CMAKE_CURRENT_LIST_DIR}/cmake/conan-modules"
+    "${CONAN_DEPS_DIR}"
+    "${CMAKE_BINARY_DIR}"
+  )
   list(PREPEND CMAKE_PREFIX_PATH "${CMAKE_BINARY_DIR}")
-endif()
 
-if(USE_CONAN)
   include(cmake/conan.cmake)
 
   conan_cmake_configure(
@@ -106,10 +109,13 @@ if(USE_CONAN)
 
   conan_cmake_autodetect(settings)
 
-  conan_cmake_install(PATH_OR_REFERENCE .
-                      BUILD missing
-                      REMOTE conancenter
-                      SETTINGS ${settings})
+  conan_cmake_install(
+    PATH_OR_REFERENCE .
+    BUILD missing
+    REMOTE conancenter
+    SETTINGS ${settings}
+    INSTALL_FOLDER "${CONAN_DEPS_DIR}"
+  )
 endif()
 
 configure_file(src/game/version.h.in ${PROJECT_BINARY_DIR}/src/game/version.h @ONLY)
