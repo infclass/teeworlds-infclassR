@@ -3082,6 +3082,12 @@ int CServer::Run()
 						if(m_aClients[ClientId].m_State <= CClient::STATE_AUTH)
 							continue;
 
+						if(m_aClients[ClientId].m_IsBot)
+						{
+							DelBot(ClientId);
+							continue;
+						}
+
 						SendMap(ClientId);
 						bool HasPersistentData = m_aClients[ClientId].m_HasPersistentData;
 /* INFECTION MODIFICATION START ***************************************/
