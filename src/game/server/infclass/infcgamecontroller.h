@@ -185,6 +185,7 @@ public:
 	void StartSurvivalGame();
 	void EndSurvivalGame();
 
+	int GetRoundStartTick() const { return m_RoundStartTick; }
 	int GetRoundTick() const;
 	int GetInfectionTick() const;
 	int GetInfectionStartTick() const;
