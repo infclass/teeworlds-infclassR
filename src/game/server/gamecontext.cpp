@@ -706,6 +706,19 @@ void CGameContext::ReloadChangelog()
 	}
 }
 
+bool CGameContext::IsPaused() const
+{
+	return m_World.m_Paused;
+}
+
+void CGameContext::SetPaused(bool Paused)
+{
+	if(m_pController->IsGameOver())
+		return;
+
+	m_World.m_Paused = Paused;
+}
+
 bool CGameContext::MapExists(const char *pMapName) const
 {
 	char aMapFilename[128];
@@ -2861,11 +2874,7 @@ void CGameContext::ConTuneDump(IConsole::IResult *pResult, void *pUserData)
 void CGameContext::ConPause(IConsole::IResult *pResult, void *pUserData)
 {
 	CGameContext *pSelf = (CGameContext *)pUserData;
-
-	if(pSelf->m_pController->IsGameOver())
-		return;
-
-	pSelf->m_World.m_Paused ^= 1;
+	pSelf->SetPaused(!pSelf->IsPaused());
 }
 
 void CGameContext::ConChangeMap(IConsole::IResult *pResult, void *pUserData)

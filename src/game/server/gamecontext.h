@@ -383,6 +383,9 @@ public:
 	void InitChangelog();
 	void ReloadChangelog();
 
+	bool IsPaused() const;
+	void SetPaused(bool Paused);
+
 	bool MapExists(const char *pMapName) const;
 	
 private:
