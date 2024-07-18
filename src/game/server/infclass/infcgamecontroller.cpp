@@ -3758,6 +3758,9 @@ bool CInfClassGameController::AreTurretsEnabled() const
 
 int CInfClassGameController::InfTurretDuration() const
 {
+	if(GetRoundType() == ERoundType::Survival)
+		return 20;
+
 	return Config()->m_InfTurretDuration;
 }
 
