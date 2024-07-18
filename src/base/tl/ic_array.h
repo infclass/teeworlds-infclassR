@@ -12,8 +12,6 @@ public:
 	constexpr icArray(std::initializer_list<T> list);
 	icArray(T (&Array)[StackCapacity]);
 
-	icArray &operator=(const icArray &Array) = default;
-
 	const T &At(std::size_t Index) const { return m_Data[Index]; }
 	T operator[](std::size_t Index) const { return m_Data[Index]; }
 	T &operator[](std::size_t Index) { return m_Data[Index]; }
