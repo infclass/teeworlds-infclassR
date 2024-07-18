@@ -155,6 +155,7 @@ public:
 	void OnTeamChangeRequested(int ClientId, int Team) override;
 	bool CanJoinTeam(int Team, int ClientId) override;
 	bool AreTurretsEnabled() const;
+	int InfTurretDuration() const;
 	bool MercBombsEnabled() const;
 	bool WhiteHoleEnabled() const;
 	float GetWhiteHoleLifeSpan() const;

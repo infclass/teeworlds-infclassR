@@ -30,7 +30,7 @@ CTurret::CTurret(CGameContext *pGameContext, vec2 Pos, int Owner, vec2 Direction
 	m_Radius = 15.0f;
 	m_foundTarget = false;
 	m_ammunition = Config()->m_InfTurretAmmunition;
-	m_EndTick = m_StartTick + Server()->TickSpeed() * Config()->m_InfTurretDuration;
+	m_EndTick = m_StartTick + Server()->TickSpeed() * GameController()->InfTurretDuration();
 	m_WarmUpCounter = Server()->TickSpeed() * Config()->m_InfTurretWarmUpDuration;
 	m_Type = Type;
 	for(int &Id : m_Ids)

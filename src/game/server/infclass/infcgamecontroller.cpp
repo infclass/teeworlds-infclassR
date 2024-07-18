@@ -3756,6 +3756,11 @@ bool CInfClassGameController::AreTurretsEnabled() const
 	return Server()->GetActivePlayerCount() >= static_cast<uint32_t>(Config()->m_InfMinPlayersForTurrets);
 }
 
+int CInfClassGameController::InfTurretDuration() const
+{
+	return Config()->m_InfTurretDuration;
+}
+
 bool CInfClassGameController::MercBombsEnabled() const
 {
 	return GetRoundType() != ERoundType::Fun;
