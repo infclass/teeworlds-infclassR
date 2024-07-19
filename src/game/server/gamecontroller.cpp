@@ -304,6 +304,9 @@ void IGameController::OnPlayerDisconnect(CPlayer *pPlayer, EClientDropType Type,
 {
 	pPlayer->OnDisconnect();
 
+	if(pPlayer->IsBot())
+		return;
+
 	int ClientId = pPlayer->GetCid();
 	if(Server()->ClientIngame(ClientId))
 	{
