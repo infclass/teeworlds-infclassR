@@ -3124,32 +3124,36 @@ void CGameContext::ConRemoveVote(IConsole::IResult *pResult, void *pUserData)
 {
 	CGameContext *pSelf = (CGameContext *)pUserData;
 	const char *pDescription = pResult->GetString(0);
+	pSelf->RemoveVote(pDescription);
+}
 
+void CGameContext::RemoveVote(const char *pVoteOption)
+{
 	// check for valid option
-	CVoteOptionServer *pOption = pSelf->m_pVoteOptionFirst;
+	CVoteOptionServer *pOption = m_pVoteOptionFirst;
 	while(pOption)
 	{
-		if(str_comp_nocase(pDescription, pOption->m_aDescription) == 0)
+		if(str_comp_nocase(pVoteOption, pOption->m_aDescription) == 0)
 			break;
-		if(str_comp_nocase(pDescription, pOption->m_aCommand) == 0)
+		if(str_comp_nocase(pVoteOption, pOption->m_aCommand) == 0)
 			break;
 		pOption = pOption->m_pNext;
 	}
 	if(!pOption)
 	{
 		char aBuf[256];
-		str_format(aBuf, sizeof(aBuf), "option '%s' does not exist", pDescription);
-		pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "server", aBuf);
+		str_format(aBuf, sizeof(aBuf), "option '%s' does not exist", pVoteOption);
+		Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "server", aBuf);
 		return;
 	}
 
 	// start reloading vote option list
 	// clear vote options
 	CNetMsg_Sv_VoteClearOptions VoteClearOptionsMsg;
-	pSelf->Server()->SendPackMsg(&VoteClearOptionsMsg, MSGFLAG_VITAL, -1);
+	Server()->SendPackMsg(&VoteClearOptionsMsg, MSGFLAG_VITAL, -1);
 
 	// reset sending of vote options
-	for(auto &pPlayer : pSelf->m_apPlayers)
+	for(auto &pPlayer : m_apPlayers)
 	{
 		if(pPlayer)
 			pPlayer->m_SendVoteIndex = 0;
@@ -3157,13 +3161,13 @@ void CGameContext::ConRemoveVote(IConsole::IResult *pResult, void *pUserData)
 
 	// TODO: improve this
 	// remove the option
-	--pSelf->m_NumVoteOptions;
+	--m_NumVoteOptions;
 
 	CHeap *pVoteOptionHeap = new CHeap();
 	CVoteOptionServer *pVoteOptionFirst = 0;
 	CVoteOptionServer *pVoteOptionLast = 0;
-	int NumVoteOptions = pSelf->m_NumVoteOptions;
-	for(CVoteOptionServer *pSrc = pSelf->m_pVoteOptionFirst; pSrc; pSrc = pSrc->m_pNext)
+	int NumVoteOptions = m_NumVoteOptions;
+	for(CVoteOptionServer *pSrc = m_pVoteOptionFirst; pSrc; pSrc = pSrc->m_pNext)
 	{
 		if(pSrc == pOption)
 			continue;
@@ -3184,11 +3188,11 @@ void CGameContext::ConRemoveVote(IConsole::IResult *pResult, void *pUserData)
 	}
 
 	// clean up
-	delete pSelf->m_pVoteOptionHeap;
-	pSelf->m_pVoteOptionHeap = pVoteOptionHeap;
-	pSelf->m_pVoteOptionFirst = pVoteOptionFirst;
-	pSelf->m_pVoteOptionLast = pVoteOptionLast;
-	pSelf->m_NumVoteOptions = NumVoteOptions;
+	delete m_pVoteOptionHeap;
+	m_pVoteOptionHeap = pVoteOptionHeap;
+	m_pVoteOptionFirst = pVoteOptionFirst;
+	m_pVoteOptionLast = pVoteOptionLast;
+	m_NumVoteOptions = NumVoteOptions;
 }
 
 void CGameContext::ConForceVote(IConsole::IResult *pResult, void *pUserData)

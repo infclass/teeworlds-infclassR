@@ -119,7 +119,6 @@ class CGameContext : public IGameServer
 	CGameContext(int Resetting);
 	void Construct(int Resetting);
 	void Destruct(int Resetting);
-	void AddVote(const char *pDescription, const char *pCommand);
 	static int MapScan(const char *pName, int IsDir, int DirType, void *pUserData);
 
 public:
@@ -162,6 +161,8 @@ public:
 	class CCharacter *GetPlayerChar(int ClientId);
 
 	// voting
+	void AddVote(const char *pDescription, const char *pCommand);
+	void RemoveVote(const char *pVote);
 	void StartVote(const char *pDesc, const char *pCommand, const char *pReason);
 	void EndVote();
 	void SendVoteSet(int ClientId);
