@@ -224,7 +224,7 @@ public:
 	bool LineIsValid(const char *pStr) override;
 	void ExecuteLine(const char *pStr, int ClientId = -1, bool InterpretSemicolons = true) override;
 	void ExecuteLineFlag(const char *pStr, int FlagMask, int ClientId = -1, bool InterpretSemicolons = true) override;
-	void ExecuteFile(const char *pFilename, int ClientId = -1, bool LogFailure = false, int StorageType = IStorage::TYPE_ALL) override;
+	bool ExecuteFile(const char *pFilename, int ClientId = -1, bool LogFailure = false, int StorageType = IStorage::TYPE_ALL) override;
 
 	virtual int RegisterPrintCallback(int OutputLevel, FPrintCallback pfnPrintCallback, void *pUserData) override;
 	virtual void SetPrintOutputLevel(int Index, int OutputLevel) override;

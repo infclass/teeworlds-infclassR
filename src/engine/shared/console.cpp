@@ -609,15 +609,15 @@ void CConsole::ExecuteLineFlag(const char *pStr, int FlagMask, int ClientId, boo
 	m_FlagMask = Temp;
 }
 
-void CConsole::ExecuteFile(const char *pFilename, int ClientId, bool LogFailure, int StorageType)
+bool CConsole::ExecuteFile(const char *pFilename, int ClientId, bool LogFailure, int StorageType)
 {
 	// make sure that this isn't being executed already
 	for(CExecFile *pCur = m_pFirstExec; pCur; pCur = pCur->m_pPrev)
 		if(str_comp(pFilename, pCur->m_pFilename) == 0)
-			return;
+			return false;
 
 	if(!m_pStorage)
-		return;
+		return false;
 
 	// push this one to the stack
 	CExecFile ThisFile;
@@ -649,6 +649,7 @@ void CConsole::ExecuteFile(const char *pFilename, int ClientId, bool LogFailure,
 	}
 
 	m_pFirstExec = pPrev;
+	return Success;
 }
 
 void CConsole::Con_Echo(IResult *pResult, void *pUserData)
