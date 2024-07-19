@@ -7,13 +7,13 @@
 #include <game/server/infclass/entities/infccharacter.h>
 #include <game/server/infclass/infcgamecontroller.h>
 
-static int FilterOwnerID = -1;
+static int FilterOwnerId = -1;
 static icArray<const CEntity *, 10> aFilterEntities;
 
 static bool OwnerFilter(const CEntity *pEntity)
 {
 	const CInfCEntity *pInfEntity = static_cast<const CInfCEntity *>(pEntity);
-	return pInfEntity->GetOwner() == FilterOwnerID;
+	return pInfEntity->GetOwner() == FilterOwnerId;
 }
 
 static bool ExceptEntitiesFilter(const CEntity *pEntity)
@@ -49,7 +49,7 @@ CInfClassPlayerClass *CInfCEntity::GetOwnerClass()
 
 EntityFilter CInfCEntity::GetOwnerFilterFunction(int Owner)
 {
-	FilterOwnerID = Owner;
+	FilterOwnerId = Owner;
 	return OwnerFilter;
 }
 

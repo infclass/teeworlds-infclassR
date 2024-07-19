@@ -120,7 +120,7 @@ void CIcPickup::Tick()
 		{
 			char aBuf[256];
 			str_format(aBuf, sizeof(aBuf), "pickup player='%d:%s' item=%d",
-				pChr->GetCID(), Server()->ClientName(pChr->GetCID()), static_cast<int>(m_Type));
+				pChr->GetCid(), Server()->ClientName(pChr->GetCid()), static_cast<int>(m_Type));
 			GameServer()->Console()->Print(IConsole::OUTPUT_LEVEL_DEBUG, "game", aBuf);
 			if(m_SpawnInterval >= 0)
 			{
@@ -155,7 +155,7 @@ void CIcPickup::Snap(int SnappingClient)
 	{
 		if(pSnappingPlayer && pSnappingPlayer->GetTeam() == TEAM_SPECTATORS)
 		{
-			DoSnap = pSnappingPlayer->m_SpectatorID < 0 || pSnappingPlayer->m_SpectatorID == m_Owner;
+			DoSnap = pSnappingPlayer->m_SpectatorId < 0 || pSnappingPlayer->m_SpectatorId == m_Owner;
 		}
 	}
 
@@ -182,7 +182,7 @@ void CIcPickup::Snap(int SnappingClient)
 		return;
 
 	int SnappingClientVersion = GameServer()->GetClientVersion(SnappingClient);
-	GameServer()->SnapPickup(CSnapContext(SnappingClientVersion), GetID(), m_Pos, NetworkType, Subtype);
+	GameServer()->SnapPickup(CSnapContext(SnappingClientVersion), GetId(), m_Pos, NetworkType, Subtype);
 }
 
 void CIcPickup::Spawn(float Delay)

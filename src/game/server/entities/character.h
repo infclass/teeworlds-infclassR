@@ -40,7 +40,7 @@ public:
 	void Snap(int SnappingClient) override;
 
 	bool CanSnapCharacter(int SnappingClient);
-	bool IsSnappingCharacterInView(int SnappingClientID);
+	bool IsSnappingCharacterInView(int SnappingClientId);
 
 	bool IsGrounded() const;
 
@@ -163,8 +163,8 @@ public:
 	void SetTeams(CGameTeams *pTeams);
 
 	int Team();
-	bool CanCollide(int ClientID);
-	bool SameTeam(int ClientID);
+	bool CanCollide(int ClientId);
+	bool SameTeam(int ClientId);
 
 protected:
 	EPlayerClass PrivateGetPlayerClass() const;
@@ -176,7 +176,7 @@ protected:
 
 	// DDRace
 
-	virtual void SnapCharacter(int SnappingClient, int ID);
+	virtual void SnapCharacter(int SnappingClient, int Id);
 
 	/* INFECTION MODIFICATION START ***************************************/
 protected:

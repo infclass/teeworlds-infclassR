@@ -17,7 +17,7 @@ public:
 	void Snap(int SnappingClient) override;
 	int GetEndTick() const { return m_EndTick; }
 
-	bool Replenish(int PlayerID, int EndTick);
+	bool Replenish(int PlayerId, int EndTick);
 	void SetDamage(int Damage, float Interval);
 
 private:

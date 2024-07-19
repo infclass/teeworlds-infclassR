@@ -45,7 +45,7 @@ private:
 	int m_ammunition;
 	bool m_foundTarget;
 
-	int m_IDs[8];
+	int m_Ids[8];
 };
 
 #endif

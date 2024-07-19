@@ -127,7 +127,7 @@ public:
 	IServer *Server() const;
 	CInfClassPlayer *GetPlayer();
 	const CInfClassPlayer *GetPlayer() const;
-	int GetCID() const;
+	int GetCid() const;
 	vec2 GetPos() const;
 	vec2 GetDirection() const;
 	vec2 GetProjectileStartPos(float Offset) const;

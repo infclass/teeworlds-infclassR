@@ -65,7 +65,7 @@ public:
 	const char* GetPrefix() { return m_aPrefix; }
 	const char* GetUser() { return m_aUser; }
 	const char* GetPass() { return m_aPass; }
-	const char* GetIP() { return m_aIp; }
+	const char* GetIp() { return m_aIp; }
 	int GetPort() { return m_Port; }
 
 	void Lock() { lock_wait(m_SqlLock); }

@@ -463,7 +463,7 @@ void CMapConverter::CreateCircle(array<CQuad>* pQuads, vec2 CenterPos, float Siz
 	}
 }
 
-void CMapConverter::AddImageQuad(const char* pName, int ImageID, int GridX, int GridY, int X, int Y, int Width, int Height, vec2 Pos, vec2 Size, vec4 Color, int Env)
+void CMapConverter::AddImageQuad(const char* pName, int ImageId, int GridX, int GridY, int X, int Y, int Width, int Height, vec2 Pos, vec2 Size, vec4 Color, int Env)
 {
 	array<CQuad> aQuads;
 	CQuad Quad;
@@ -487,7 +487,7 @@ void CMapConverter::AddImageQuad(const char* pName, int ImageID, int GridX, int 
 	Item.m_Version = 2;
 	Item.m_Layer.m_Flags = 0;
 	Item.m_Layer.m_Type = LAYERTYPE_QUADS;
-	Item.m_Image = ImageID;
+	Item.m_Image = ImageId;
 	Item.m_NumQuads = aQuads.size();
 	StrToInts(Item.m_aName, sizeof(Item.m_aName)/sizeof(int), pName);
 	Item.m_Data = m_DataFile.AddDataSwapped(aQuads.size()*sizeof(CQuad), aQuads.base_ptr());
@@ -495,7 +495,7 @@ void CMapConverter::AddImageQuad(const char* pName, int ImageID, int GridX, int 
 	m_DataFile.AddItem(MAPITEMTYPE_LAYER, m_NumLayers++, sizeof(Item), &Item);
 }
 
-void CMapConverter::AddTeeLayer(const char* pName, int ImageID, vec2 Pos, float Size, int Env, bool Black, const CWeakSkinInfo &SkinInfo)
+void CMapConverter::AddTeeLayer(const char* pName, int ImageId, vec2 Pos, float Size, int Env, bool Black, const CWeakSkinInfo &SkinInfo)
 {
 	array<CQuad> aQuads;
 	CQuad Quad;
@@ -592,7 +592,7 @@ void CMapConverter::AddTeeLayer(const char* pName, int ImageID, vec2 Pos, float 
 	Item.m_Version = Item.m_Layer.m_Version = 2;
 	Item.m_Layer.m_Flags = 0;
 	Item.m_Layer.m_Type = LAYERTYPE_QUADS;
-	Item.m_Image = ImageID;
+	Item.m_Image = ImageId;
 	Item.m_NumQuads = aQuads.size();
 	StrToInts(Item.m_aName, sizeof(Item.m_aName)/sizeof(int), pName);
 	Item.m_Data = m_DataFile.AddDataSwapped(aQuads.size()*sizeof(CQuad), aQuads.base_ptr());
@@ -961,7 +961,7 @@ int CMapConverter::AddEmbeddedImage(const char *pImageName, int Width, int Heigh
 
 int CMapConverter::Finalize()
 {
-	int ClassImageID[NUM_MENUCLASS];
+	int ClassImageId[NUM_MENUCLASS];
 
 	int DDNetVersion = 14000;
 	int InfClassVersion = 0;
@@ -991,12 +991,12 @@ int CMapConverter::Finalize()
 		char SkinPath[96];
 		str_format(SkinPath, sizeof(SkinPath), "../skins/%s", ClassTeeInfo.pSkinName);
 
-		int ImageID = 0;
+		int ImageId = 0;
 		if(ClassTeeInfo.UseCustomColor)
 		{
 			bool GrayScale = true;
-			ImageID = AddEmbeddedImage(SkinPath, 256, 128, GrayScale);
-			if(ImageID < 0)
+			ImageId = AddEmbeddedImage(SkinPath, 256, 128, GrayScale);
+			if(ImageId < 0)
 			{
 				dbg_msg("MapConverter", "Unable to access a player class skin file. Make sure "
 					"that the game data (including 'data/skins') is correctly installed.");
@@ -1005,10 +1005,10 @@ int CMapConverter::Finalize()
 		}
 		else
 		{
-			ImageID = AddExternalImage(SkinPath, 256, 128);
+			ImageId = AddExternalImage(SkinPath, 256, 128);
 		}
 
-		ClassImageID[ClassIndex] = ImageID;
+		ClassImageId[ClassIndex] = ImageId;
 	}
 
 	//Menu
@@ -1221,7 +1221,7 @@ int CMapConverter::Finalize()
 						vec2 Pos = m_MenuPosition+rotate(vec2(MenuRadius, 0.0f), MenuAngleStart+MenuAngleStep*i);
 						if(i == MENUCLASS_RANDOM)
 						{
-							AddTeeLayer("Random", ClassImageID[i], Pos, 64.0f, m_NumEnvs-1, true, SkinInfo);
+							AddTeeLayer("Random", ClassImageId[i], Pos, 64.0f, m_NumEnvs-1, true, SkinInfo);
 						}
 						else
 						{
@@ -1231,7 +1231,7 @@ int CMapConverter::Finalize()
 							CInfClassHuman::SetupSkin(SkinContext, &SkinInfo, DDNetVersion, InfClassVersion);
 							EventsDirector::SetupSkin(SkinContext, &SkinInfo, DDNetVersion, InfClassVersion);
 							bool Black = false;
-							AddTeeLayer(pClassName, ClassImageID[i], Pos, 64.0f, m_NumEnvs-1, Black, SkinInfo);
+							AddTeeLayer(pClassName, ClassImageId[i], Pos, 64.0f, m_NumEnvs-1, Black, SkinInfo);
 						}
 					}
 				}

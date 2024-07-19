@@ -41,11 +41,11 @@ public:
 	void UnloadData(int Index);
 	int NumData() const;
 
-	void *GetItem(int Index, int *pType = nullptr, int *pID = nullptr);
+	void *GetItem(int Index, int *pType = nullptr, int *pId = nullptr);
 	int GetItemSize(int Index) const;
 	void GetType(int Type, int *pStart, int *pNum);
-	int FindItemIndex(int Type, int ID);
-	void *FindItem(int Type, int ID);
+	int FindItemIndex(int Type, int Id);
+	void *FindItem(int Type, int Id);
 	int NumItems() const;
 
 	SHA256_DIGEST Sha256() const;
@@ -66,7 +66,7 @@ class CDataFileWriter
 	struct CItemInfo
 	{
 		int m_Type;
-		int m_ID;
+		int m_Id;
 		int m_Size;
 		int m_Next;
 		int m_Prev;
@@ -109,7 +109,7 @@ public:
 	bool Open(class IStorage *pStorage, const char *pFilename, int StorageType = IStorage::TYPE_SAVE);
 	int AddData(int Size, void *pData, int CompressionLevel = Z_DEFAULT_COMPRESSION);
 	int AddDataSwapped(int Size, void *pData);
-	int AddItem(int Type, int ID, int Size, void *pData);
+	int AddItem(int Type, int Id, int Size, void *pData);
 	int Finish();
 };
 

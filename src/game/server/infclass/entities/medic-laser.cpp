@@ -67,17 +67,17 @@ bool CMedicLaser::OnCharacterHit(CInfClassCharacter *pHit)
 		pInfected->CancelSlowMotion();
 		pInfected->SetHealthArmor(1, 0);
 		const float ReviverHelperDuration = 45;
-		pInfected->AddHelper(pMedic->GetCID(), ReviverHelperDuration);
+		pInfected->AddHelper(pMedic->GetCid(), ReviverHelperDuration);
 		pMedic->TakeDamage(vec2(0.f, 0.f), Config()->m_InfRevivalDamage * 2, m_Owner, EDamageType::MEDIC_REVIVAL);
 
 		GameServer()->SendChatTarget_Localization(-1, CHATCATEGORY_HUMANS,
 			_("Medic {str:MedicName} revived {str:RevivedName}"),
-			"MedicName", Server()->ClientName(pMedic->GetCID()),
-			"RevivedName", Server()->ClientName(pInfected->GetCID()),
+			"MedicName", Server()->ClientName(pMedic->GetCid()),
+			"RevivedName", Server()->ClientName(pInfected->GetCid()),
 			nullptr
 		);
-		int ClientID = pMedic->GetCID();
-		Server()->RoundStatistics()->OnScoreEvent(ClientID, SCOREEVENT_MEDIC_REVIVE, pMedic->GetPlayerClass(), Server()->ClientName(ClientID), GameServer()->Console());
+		int ClientId = pMedic->GetCid();
+		Server()->RoundStatistics()->OnScoreEvent(ClientId, SCOREEVENT_MEDIC_REVIVE, pMedic->GetPlayerClass(), Server()->ClientName(ClientId), GameServer()->Console());
 	}
 	return true;
 }

@@ -4,12 +4,12 @@
 #include <game/server/entities/character.h>
 #include <game/server/player.h>
 
-bool CheckClientID(int ClientID);
+bool CheckClientId(int ClientId);
 
 void CGameContext::ConKillPlayer(IConsole::IResult *pResult, void *pUserData)
 {
 	CGameContext *pSelf = (CGameContext *)pUserData;
-	if(!CheckClientID(pResult->m_ClientID))
+	if(!CheckClientId(pResult->m_ClientId))
 		return;
 	int Victim = pResult->GetVictim();
 
@@ -19,7 +19,7 @@ void CGameContext::ConKillPlayer(IConsole::IResult *pResult, void *pUserData)
 		char aBuf[512];
 		str_format(aBuf, sizeof(aBuf), "%s was killed by %s",
 			pSelf->Server()->ClientName(Victim),
-			pSelf->Server()->ClientName(pResult->m_ClientID));
+			pSelf->Server()->ClientName(pResult->m_ClientId));
 		pSelf->SendChat(-1, CGameContext::CHAT_ALL, aBuf);
 	}
 }

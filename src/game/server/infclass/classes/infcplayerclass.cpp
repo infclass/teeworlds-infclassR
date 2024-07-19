@@ -79,11 +79,11 @@ const CInfClassPlayer *CInfClassPlayerClass::GetPlayer() const
 	return m_pPlayer;
 }
 
-int CInfClassPlayerClass::GetCID() const
+int CInfClassPlayerClass::GetCid() const
 {
 	const CInfClassPlayer *pPlayer = GetPlayer();
 	if(pPlayer)
-		return pPlayer->GetCID();
+		return pPlayer->GetCid();
 
 	return -1;
 }
@@ -170,7 +170,7 @@ int CInfClassPlayerClass::GetDefaultEmote() const
 
 void CInfClassPlayerClass::GetAmmoRegenParams(int Weapon, WeaponRegenParams *pParams)
 {
-	INFWEAPON InfWID = m_pCharacter->GetInfWeaponID(Weapon);
+	INFWEAPON InfWID = m_pCharacter->GetInfWeaponId(Weapon);
 	pParams->RegenInterval = Server()->GetAmmoRegenTime(InfWID);
 	pParams->MaxAmmo = Server()->GetMaxAmmo(InfWID);
 }
@@ -241,7 +241,7 @@ void CInfClassPlayerClass::OnPlayerClassChanged()
 
 	if(m_pCharacter)
 	{
-		GameServer()->CreatePlayerSpawn(GetPos(), GameController()->GetMaskForPlayerWorldEvent(GetCID()));
+		GameServer()->CreatePlayerSpawn(GetPos(), GameController()->GetMaskForPlayerWorldEvent(GetCid()));
 	}
 }
 

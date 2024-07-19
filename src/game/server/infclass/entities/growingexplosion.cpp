@@ -21,7 +21,7 @@ CGrowingExplosion::CGrowingExplosion(CGameContext *pGameContext, vec2 Pos, vec2 
 	CInfCEntity(pGameContext, CGameWorld::ENTTYPE_GROWINGEXPLOSION, Pos, Owner)
 {
 	m_DamageType = DamageType;
-	m_TriggeredByCID = Owner;
+	m_TriggeredByCid = Owner;
 	CInfClassGameController::DamageTypeToWeapon(DamageType, &m_TakeDamageMode);
 
 	switch(DamageType)
@@ -265,7 +265,7 @@ void CGrowingExplosion::Tick()
 		if(tileX < 0 || tileX >= m_GrowingMap_Length || tileY < 0 || tileY >= m_GrowingMap_Length)
 			continue;
 		
-		if(m_Hit[p->GetCID()])
+		if(m_Hit[p->GetCid()])
 			continue;
 		
 		int k = tileY*m_GrowingMap_Length+tileX;
@@ -282,7 +282,7 @@ void CGrowingExplosion::Tick()
 						continue;
 					}
 					p->GiveArmor(1, GetOwner());
-					m_Hit[p->GetCID()] = true;
+					m_Hit[p->GetCid()] = true;
 					break;
 				case GROWING_EXPLOSION_EFFECT::BOOM_INFECTED:
 				{
@@ -306,8 +306,8 @@ void CGrowingExplosion::Tick()
 				{
 				case GROWING_EXPLOSION_EFFECT::FREEZE_INFECTED:
 					p->Freeze(3.0f, m_Owner, FREEZEREASON_FLASH);
-					GameServer()->SendEmoticon(p->GetCID(), EMOTICON_QUESTION);
-					m_Hit[p->GetCID()] = true;
+					GameServer()->SendEmoticon(p->GetCid(), EMOTICON_QUESTION);
+					m_Hit[p->GetCid()] = true;
 					break;
 				case GROWING_EXPLOSION_EFFECT::POISON_INFECTED:
 				{
@@ -318,22 +318,22 @@ void CGrowingExplosion::Tick()
 					p->Poison(Damage, m_Owner, EDamageType::MERCENARY_GRENADE, DamageIntervalSeconds);
 					p->GetClass()->DisableHealing(Config()->m_InfPoisonDuration / 1000.0f, m_Owner, EDamageType::MERCENARY_GRENADE);
 				}
-					GameServer()->SendEmoticon(p->GetCID(), EMOTICON_DROP);
-					m_Hit[p->GetCID()] = true;
+					GameServer()->SendEmoticon(p->GetCid(), EMOTICON_DROP);
+					m_Hit[p->GetCid()] = true;
 					break;
 				case GROWING_EXPLOSION_EFFECT::HEAL_HUMANS:
 					// empty
 					break;
 				case GROWING_EXPLOSION_EFFECT::BOOM_INFECTED:
 				{
-					m_Hit[p->GetCID()] = true;
+					m_Hit[p->GetCid()] = true;
 					break;
 				}
 				case GROWING_EXPLOSION_EFFECT::LOVE_INFECTED:
 				{
 					p->LoveEffect(5);
-					GameServer()->SendEmoticon(p->GetCID(), EMOTICON_HEARTS);
-					m_Hit[p->GetCID()] = true;
+					GameServer()->SendEmoticon(p->GetCid(), EMOTICON_HEARTS);
+					m_Hit[p->GetCid()] = true;
 					break;
 				}
 				case GROWING_EXPLOSION_EFFECT::ELECTRIC_INFECTED:
@@ -343,7 +343,7 @@ void CGrowingExplosion::Tick()
 					{
 						p->TakeDamage(normalize(p->m_Pos - m_SeedPos) * 4.0f, Damage, m_Owner, m_DamageType);
 					}
-					m_Hit[p->GetCID()] = true;
+					m_Hit[p->GetCid()] = true;
 					break;
 				}
 				default:
@@ -398,7 +398,7 @@ int CGrowingExplosion::GetActualDamage()
 
 void CGrowingExplosion::SetTriggeredBy(int CID)
 {
-	 m_TriggeredByCID = CID;
+	 m_TriggeredByCid = CID;
 }
 
 void CGrowingExplosion::ProcessMercenaryBombHit(CInfClassCharacter *pCharacter)
@@ -414,12 +414,12 @@ void CGrowingExplosion::ProcessMercenaryBombHit(CInfClassCharacter *pCharacter)
 	if(m_DamageType == EDamageType::WHITE_HOLE)
 		AffectOwner = false;
 
-	if(!AffectOwner && (pCharacter->GetCID() == GetOwner()))
+	if(!AffectOwner && (pCharacter->GetCid() == GetOwner()))
 		return;
 
 	if(!Config()->m_InfShockwaveAffectHumans)
 	{
-		if(pCharacter->GetCID() == GetOwner())
+		if(pCharacter->GetCid() == GetOwner())
 		{
 			//owner selfharm
 		}
@@ -439,19 +439,19 @@ void CGrowingExplosion::ProcessMercenaryBombHit(CInfClassCharacter *pCharacter)
 
 	l = 1-clamp(Ratio, 0.0f, 1.0f);
 	float Dmg = Config()->m_InfMercBombMaxDamage * l * Power;
-	int DamageFromCID = GetOwner();
+	int DamageFromCid = GetOwner();
 	const vec2 Force = ForceDir * Dmg * 2;
 
-	if(pCharacter->GetCID() == GetOwner())
+	if(pCharacter->GetCid() == GetOwner())
 	{
 		Dmg *= 0.5f;
-		DamageFromCID = m_TriggeredByCID;
+		DamageFromCid = m_TriggeredByCid;
 	}
 
 	if(Dmg)
 	{
-		pCharacter->TakeDamage(Force, Dmg, DamageFromCID, m_DamageType);
+		pCharacter->TakeDamage(Force, Dmg, DamageFromCid, m_DamageType);
 	}
 
-	m_Hit[pCharacter->GetCID()] = true;
+	m_Hit[pCharacter->GetCid()] = true;
 }

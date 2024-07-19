@@ -33,9 +33,9 @@ CTurret::CTurret(CGameContext *pGameContext, vec2 Pos, int Owner, vec2 Direction
 	m_EndTick = m_StartTick + Server()->TickSpeed() * Config()->m_InfTurretDuration;
 	m_WarmUpCounter = Server()->TickSpeed() * Config()->m_InfTurretWarmUpDuration;
 	m_Type = Type;
-	for(int &ID : m_IDs)
+	for(int &Id : m_Ids)
 	{
-		ID = Server()->SnapNewID();
+		Id = Server()->SnapNewId();
 	}
 	Reload();
 
@@ -44,9 +44,9 @@ CTurret::CTurret(CGameContext *pGameContext, vec2 Pos, int Owner, vec2 Direction
 
 CTurret::~CTurret()
 {
-	for(int SnapId : m_IDs)
+	for(int SnapId : m_Ids)
 	{
-		Server()->SnapFreeID(SnapId);
+		Server()->SnapFreeId(SnapId);
 	}
 }
 
@@ -154,7 +154,7 @@ void CTurret::AttackTargets()
 				break;
 			case PLASMA:
 			{
-				CPlasma *pPlasma = new CPlasma(GameServer(), m_Pos, m_Owner, pChr->GetCID(), Direction, 0, 1);
+				CPlasma *pPlasma = new CPlasma(GameServer(), m_Pos, m_Owner, pChr->GetCid(), Direction, 0, 1);
 				pPlasma->SetDamageType(EDamageType::TURRET_PLASMA);
 			}
 				m_ammunition--;
@@ -212,14 +212,14 @@ void CTurret::Snap(int SnappingClient)
 
 	float time = (Server()->Tick() - m_StartTick) / (float)Server()->TickSpeed();
 	float angle = fmodf(time * pi / 2, 2.0f * pi);
-	GameServer()->SnapLaserObject(Context, GetID(), m_Pos, m_Pos, Server()->Tick(), GetOwner());
+	GameServer()->SnapLaserObject(Context, GetId(), m_Pos, m_Pos, Server()->Tick(), GetOwner());
 
-	int Dots = AntiPing ? 2 : std::size(m_IDs);
+	int Dots = AntiPing ? 2 : std::size(m_Ids);
 	for(int i = 0; i < Dots; i++)
 	{
 		float shiftedAngle = angle + 2.0 * pi * i / static_cast<float>(Dots);
 		vec2 Direction = vec2(cos(shiftedAngle), sin(shiftedAngle));
-		GameController()->SendHammerDot(m_Pos + Direction * m_Radius, m_IDs[i]);
+		GameController()->SendHammerDot(m_Pos + Direction * m_Radius, m_Ids[i]);
 	}
 }
 
@@ -227,16 +227,16 @@ void CTurret::Die(CInfClassCharacter *pKiller)
 {
 	pKiller->TakeDamage(vec2(0.f, 0.f), Config()->m_InfTurretSelfDestructDmg, m_Owner, EDamageType::TURRET_DESTRUCTION);
 	GameServer()->CreateSound(m_Pos, SOUND_LASER_FIRE);
-	int ClientID = pKiller->GetCID();
-	GameServer()->SendChatTarget_Localization(ClientID, CHATCATEGORY_SCORE, _("You destroyed {str:PlayerName}'s turret!"),
+	int ClientId = pKiller->GetCid();
+	GameServer()->SendChatTarget_Localization(ClientId, CHATCATEGORY_SCORE, _("You destroyed {str:PlayerName}'s turret!"),
 		"PlayerName", Server()->ClientName(m_Owner),
 		nullptr);
 	GameServer()->SendChatTarget_Localization(m_Owner, CHATCATEGORY_SCORE, _("{str:PlayerName} has destroyed your turret!"),
-		"PlayerName", Server()->ClientName(ClientID),
+		"PlayerName", Server()->ClientName(ClientId),
 		nullptr);
 
 	// increase score
-	Server()->RoundStatistics()->OnScoreEvent(ClientID, SCOREEVENT_DESTROY_TURRET, pKiller->GetPlayerClass(), Server()->ClientName(ClientID), GameServer()->Console());
-	GameServer()->SendScoreSound(pKiller->GetCID());
+	Server()->RoundStatistics()->OnScoreEvent(ClientId, SCOREEVENT_DESTROY_TURRET, pKiller->GetPlayerClass(), Server()->ClientName(ClientId), GameServer()->Console());
+	GameServer()->SendScoreSound(pKiller->GetCid());
 	Reset();
 }

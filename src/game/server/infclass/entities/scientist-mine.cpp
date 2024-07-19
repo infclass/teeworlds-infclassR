@@ -23,7 +23,7 @@ CScientistMine::CScientistMine(CGameContext *pGameContext, vec2 Pos, int Owner) 
 	
 	for(int i=0; i<NUM_IDS; i++)
 	{
-		m_IDs[i] = Server()->SnapNewID();
+		m_Ids[i] = Server()->SnapNewId();
 	}
 }
 
@@ -31,7 +31,7 @@ CScientistMine::~CScientistMine()
 {
 	for(int i=0; i<NUM_IDS; i++)
 	{
-		Server()->SnapFreeID(m_IDs[i]);
+		Server()->SnapFreeId(m_Ids[i]);
 	}
 }
 
@@ -95,7 +95,7 @@ void CScientistMine::Snap(int SnappingClient)
 	{
 		vec2 PartPosStart = m_Pos + direction(AngleStep * i) * Radius;
 		vec2 PartPosEnd = m_Pos + direction(AngleStep * (i + 1)) * Radius;
-		GameServer()->SnapLaserObject(Context, m_IDs[i], PartPosStart, PartPosEnd, Server()->Tick(), GetOwner());
+		GameServer()->SnapLaserObject(Context, m_Ids[i], PartPosStart, PartPosEnd, Server()->Tick(), GetOwner());
 	}
 
 	if(!AntiPing)
@@ -104,7 +104,7 @@ void CScientistMine::Snap(int SnappingClient)
 		{
 			float RandomRadius = random_float() * (Radius - 4.0f);
 			vec2 ParticlePos = m_Pos + random_direction() * RandomRadius;
-			GameController()->SendHammerDot(ParticlePos, m_IDs[CScientistMine::NUM_SIDE + i]);
+			GameController()->SendHammerDot(ParticlePos, m_Ids[CScientistMine::NUM_SIDE + i]);
 		}
 	}
 }
@@ -125,7 +125,7 @@ void CScientistMine::Tick()
 		if(Len < p->GetProximityRadius() + GetProximityRadius())
 		{
 			MustExplode = true;
-			DetonatedBy = p->GetCID();
+			DetonatedBy = p->GetCid();
 			if(DetonatedBy < 0)
 			{
 				DetonatedBy = m_Owner;

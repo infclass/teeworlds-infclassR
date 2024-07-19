@@ -74,19 +74,19 @@ public:
 public:
 	CRoundStatistics() = default;
 	void Reset() { *this = CRoundStatistics{}; }
-	void ResetPlayer(int ClientID);
-	void OnScoreEvent(int ClientID, int EventType, EPlayerClass Class, const char* Name, IConsole* console);
-	void SetPlayerAsWinner(int ClientID);
+	void ResetPlayer(int ClientId);
+	void OnScoreEvent(int ClientId, int EventType, EPlayerClass Class, const char* Name, IConsole* console);
+	void SetPlayerAsWinner(int ClientId);
 	
-	CRoundStatistics::CPlayerStats* PlayerStatistics(int ClientID);
-	int PlayerScore(int ClientID);
+	CRoundStatistics::CPlayerStats* PlayerStatistics(int ClientId);
+	int PlayerScore(int ClientId);
 	
 	int NumWinners() const;
 	
-	void UpdatePlayer(int ClientID, bool IsSpectator);
+	void UpdatePlayer(int ClientId, bool IsSpectator);
 	void UpdateNumberOfPlayers(int Num);
 	
-	bool IsValidePlayer(int ClientID);
+	bool IsValidePlayer(int ClientId);
 };
 
 #endif

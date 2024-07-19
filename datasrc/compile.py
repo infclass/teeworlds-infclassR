@@ -4,9 +4,12 @@ import network
 
 from datatypes import EmitDefinition, EmitTypeDeclaration
 
-def create_enum_table(names, num):
+def create_enum_table(names, num, start = 0):
 	lines = []
 	lines += ["enum", "{"]
+	if len(names) > 0 and start != 0:
+		lines += [f"\t{names[0]} = {start},"]
+		names = names[1:]
 	for name in names:
 		lines += [f"\t{name},"]
 	lines += [f"\t{num}", "};"]
@@ -48,7 +51,7 @@ def gen_network_header():
 	print(network.RawHeader)
 
 	for e in network.Enums:
-		for line in create_enum_table([f"{e.name}_{v}" for v in e.values], f'NUM_{e.name}S'): # pylint: disable=no-member
+		for line in create_enum_table([f"{e.name}_{v}" for v in e.values], f'NUM_{e.name}S', e.start): # pylint: disable=no-member
 			print(line)
 		print("")
 
@@ -126,6 +129,7 @@ def gen_network_source():
 	print("""\
 #include "protocol.h"
 
+#include <base/system.h>
 #include <engine/shared/packer.h>
 #include <engine/shared/protocol.h>
 #include <engine/shared/uuid_manager.h>
@@ -262,10 +266,7 @@ void *CNetObjHandler::SecureUnpackObj(int Type, CUnpacker *pUnpacker)
 	"""]
 
 	for item in network.Objects:
-		base_item = None
-		if item.base:
-			base_item = next(i for i in network.Objects if i.name == item.base)
-		for line in item.emit_uncompressed_unpack_and_validate(base_item):
+		for line in item.emit_uncompressed_unpack_and_validate(network.Objects):
 			lines += ["\t" + line]
 		lines += ['\t']
 
@@ -365,7 +366,7 @@ void RegisterGameUuids(CUuidManager *pManager)
 		print(line)
 
 
-def gen_common_content_header():
+def gen_common_content_types_header():
 	# print some includes
 	print('#include <engine/graphics.h>')
 
@@ -380,6 +381,11 @@ def gen_common_content_header():
 		for name in order:
 			EmitTypeDeclaration(content.__dict__[name])
 
+
+def gen_common_content_header():
+	# print some includes
+	print('#include "data_types.h"')
+
 	# the container pointer
 	print('extern CDataContainer *g_pData;')
 
@@ -391,6 +397,14 @@ def gen_common_content_header():
 def gen_common_content_source():
 	EmitDefinition(content.container, "datacontainer")
 	print('CDataContainer *g_pData = &datacontainer;')
+
+
+def gen_content_types_header():
+	print("#ifndef CONTENT_TYPES_HEADER")
+	print("#define CONTENT_TYPES_HEADER")
+	gen_common_content_types_header()
+	print("#endif")
+
 
 def gen_client_content_header():
 	print("#ifndef CLIENT_CONTENT_HEADER")
@@ -423,6 +437,7 @@ def main():
 	FUNCTION_MAP = {
 						'network_header': gen_network_header,
 						'network_source': gen_network_source,
+						'content_types_header': gen_content_types_header,
 						'client_content_header': gen_client_content_header,
 						'client_content_source': gen_client_content_source,
 						'server_content_header': gen_server_content_header,

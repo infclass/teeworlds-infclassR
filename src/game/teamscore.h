@@ -8,7 +8,7 @@ enum
 {
 	TEAM_FLOCK = 0,
 	TEAM_SUPER = MAX_CLIENTS,
-	NUM_TEAMS = TEAM_SUPER + 1,
+	NUM_DDRACE_TEAMS = TEAM_SUPER + 1,
 	VANILLA_TEAM_SUPER = VANILLA_MAX_CLIENTS
 };
 
@@ -35,22 +35,22 @@ public:
 
 	CTeamsCore();
 
-	bool SameTeam(int ClientID1, int ClientID2) const;
+	bool SameTeam(int ClientId1, int ClientId2) const;
 
-	bool CanKeepHook(int ClientID1, int ClientID2) const;
-	bool CanCollide(int ClientID1, int ClientID2) const;
-	bool CanHook(int HookerID, int TargetID) const;
+	bool CanKeepHook(int ClientId1, int ClientId2) const;
+	bool CanCollide(int ClientId1, int ClientId2) const;
+	bool CanHook(int HookerId, int TargetId) const;
 
-	int Team(int ClientID) const;
-	void Team(int ClientID, int Team);
+	int Team(int ClientId) const;
+	void Team(int ClientId, int Team);
 
 	void Reset();
 
-	void SetSolo(int ClientID, bool Value);
-	bool GetSolo(int ClientID) const;
+	void SetSolo(int ClientId, bool Value);
+	bool GetSolo(int ClientId) const;
 
-	void SetInfected(int ClientID, bool Value);
-	void SetProtected(int ClientID, bool Value);
+	void SetInfected(int ClientId, bool Value);
+	void SetProtected(int ClientId, bool Value);
 };
 
 #endif

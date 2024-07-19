@@ -30,7 +30,7 @@ public:
 	float GetLoad() const { return m_Load; }
 
 private:
-	int m_IDs[NUM_IDS];
+	int m_Ids[NUM_IDS];
 
 	int m_LoadingTick;
 	float m_Load;

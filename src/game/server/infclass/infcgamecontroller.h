@@ -77,17 +77,17 @@ public:
 	void OnGameRestart() override;
 	void Snap(int SnappingClient) override;
 
-	CPlayer *CreatePlayer(int ClientID, bool IsSpectator, void *pData) override;
+	CPlayer *CreatePlayer(int ClientId, bool IsSpectator, void *pData) override;
 	int PersistentClientDataSize() const override;
-	bool GetClientPersistentData(int ClientID, void *pData) const override;
+	bool GetClientPersistentData(int ClientId, void *pData) const override;
 
 	bool OnEntity(const char* pName, vec2 Pivot, vec2 P0, vec2 P1, vec2 P2, vec2 P3, int PosEnv) override;
 	void HandleCharacterTiles(CInfClassCharacter *pCharacter);
 	void HandleLastHookers();
 
 	bool CanSeeDetails(int Who, int Whom) const;
-	int64_t GetBlindCharactersMask(int ExcludeCID) const;
-	int64_t GetMaskForPlayerWorldEvent(int Asker, int ExceptID = -1);
+	int64_t GetBlindCharactersMask(int ExcludeCid) const;
+	int64_t GetMaskForPlayerWorldEvent(int Asker, int ExceptId = -1);
 
 	bool HumanWallAllowedInPos(const vec2 &Pos) const;
 	int GetZoneValueAt(int ZoneHandle, const vec2 &Pos, ZoneData *pData = nullptr) const;
@@ -101,8 +101,8 @@ public:
 	void CreateExplosionDisk(vec2 Pos, float InnerRadius, float DamageRadius, int Damage, float Force, int Owner, EDamageType DamageType);
 	void CreateExplosionDiskGfx(vec2 Pos, float InnerRadius, float DamageRadius, int Owner);
 
-	void SendHammerDot(const vec2 &Pos, int SnapID);
-	void SendServerParams(int ClientID) const;
+	void SendHammerDot(const vec2 &Pos, int SnapId);
+	void SendServerParams(int ClientId) const;
 
 	int OnCharacterDeath(class CCharacter *pVictim, class CPlayer *pKiller, int Weapon) override;
 	void OnCharacterDeath(CInfClassCharacter *pVictim, const DeathContext &Context);
@@ -137,7 +137,7 @@ public:
 	CLASS_AVAILABILITY GetPlayerClassAvailability(EPlayerClass PlayerClass, const CInfClassPlayer *pForPlayer = nullptr) const;
 	bool CanVote() override;
 
-	void OnPlayerVoteCommand(int ClientID, int Vote) override;
+	void OnPlayerVoteCommand(int ClientId, int Vote) override;
 	void OnPlayerClassChanged(CInfClassPlayer *pPlayer);
 
 	void OnPlayerConnect(CPlayer *pPlayer) override;
@@ -147,13 +147,13 @@ public:
 
 	void DoPlayerInfection(CInfClassPlayer *pPlayer, CInfClassPlayer *pInfectiousPlayer, EPlayerClass PreviousClass);
 
-	void OnHeroFlagCollected(int ClientID);
+	void OnHeroFlagCollected(int ClientId);
 	float GetHeroFlagCooldown() const;
 
 	bool IsInfectionStarted() const;
 	bool MapRotationEnabled() const override;
-	void OnTeamChangeRequested(int ClientID, int Team) override;
-	bool CanJoinTeam(int Team, int ClientID) override;
+	void OnTeamChangeRequested(int ClientId, int Team) override;
+	bool CanJoinTeam(int Team, int ClientId) override;
 	bool AreTurretsEnabled() const;
 	bool MercBombsEnabled() const;
 	bool WhiteHoleEnabled() const;
@@ -202,8 +202,8 @@ public:
 	static EPlayerClass MenuClassToPlayerClass(int MenuClass);
 	static int DamageTypeToWeapon(EDamageType DamageType, TAKEDAMAGEMODE *pMode = nullptr);
 
-	int GetPlayerTeam(int ClientID) const override;
-	void SetPlayerInfected(int ClientID, bool Infected);
+	int GetPlayerTeam(int ClientId) const override;
+	void SetPlayerInfected(int ClientId, bool Infected);
 
 	void RegisterChatCommands(class IConsole *pConsole) override;
 
@@ -212,8 +212,8 @@ public:
 	static void ConLockClientName(IConsole::IResult *pResult, void *pUserData);
 	static void ConPreferClass(IConsole::IResult *pResult, void *pUserData);
 	static void ConAlwaysRandom(IConsole::IResult *pResult, void *pUserData);
-	void SetPreferredClass(int ClientID, const char *pClassName);
-	void SetPreferredClass(int ClientID, EPlayerClass Class);
+	void SetPreferredClass(int ClientId, const char *pClassName);
+	void SetPreferredClass(int ClientId, EPlayerClass Class);
 	static void ConAntiPing(IConsole::IResult *pResult, void *pUserData);
 
 	static void ConUserSetClass(IConsole::IResult *pResult, void *pUserData);
@@ -264,9 +264,9 @@ public:
 	using IGameController::GameServer;
 	CGameWorld *GameWorld();
 	IConsole *Console() const;
-	CInfClassPlayer *GetPlayer(int ClientID) const;
-	CInfClassCharacter *GetCharacter(int ClientID) const;
-	int GetPlayerOwnCursorID(int ClientID) const;
+	CInfClassPlayer *GetPlayer(int ClientId) const;
+	CInfClassCharacter *GetCharacter(int ClientId) const;
+	int GetPlayerOwnCursorId(int ClientId) const;
 
 	void SortCharactersByDistance(ClientsArray *pCharacterIds, const vec2 &Center, const float MaxDistance = 0);
 	void SortCharactersByDistance(const ClientsArray &Input, ClientsArray *pOutput, const vec2 &Center, const float MaxDistance = 0);
@@ -315,14 +315,14 @@ private:
 	int GetMinimumInfectedForPlayers(int PlayersNumber) const;
 
 	int GetClientIdForNewWitch() const;
-	bool IsSafeWitchCandidate(int ClientID) const;
+	bool IsSafeWitchCandidate(int ClientId) const;
 	ClientsArray m_WitchCallers;
 
 	struct PlayerScore
 	{
 		char aPlayerName[MAX_NAME_LENGTH];
 		int Kills;
-		int ClientID;
+		int ClientId;
 	};
 
 	struct
@@ -338,8 +338,8 @@ private:
 
 	bool m_AllowSurvivalAutostart = false;
 
-	PlayerScore *GetSurvivalPlayerScore(int ClientID);
-	PlayerScore *EnsureSurvivalPlayerScore(int ClientID);
+	PlayerScore *GetSurvivalPlayerScore(int ClientId);
+	PlayerScore *EnsureSurvivalPlayerScore(int ClientId);
 
 private:
 	int m_ZoneHandle_icDamage;
@@ -359,7 +359,7 @@ private:
 	int m_HeroGiftTick = 0;
 
 	ClientsArray m_NinjaTargets;
-	int m_PlayerOwnCursorID = -1;
+	int m_PlayerOwnCursorId = -1;
 
 	ERoundType m_RoundType = ERoundType::Normal;
 	ERoundType m_QueuedRoundType = ERoundType::Normal;

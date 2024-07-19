@@ -25,17 +25,17 @@ CLooperWall::CLooperWall(CGameContext *pGameContext, vec2 Pos1, int Owner) :
 {
 	m_InfClassObjectType = INFCLASS_OBJECT_TYPE_LOOPER_WALL;
 
-	for(int &ID : m_IDs)
+	for(int &Id : m_Ids)
 	{
-		ID = Server()->SnapNewID();
+		Id = Server()->SnapNewId();
 	}
-	for(int &ID : m_EndPointIDs)
+	for(int &Id : m_EndPointIds)
 	{
-		ID = Server()->SnapNewID();
+		Id = Server()->SnapNewId();
 	}
-	for(int &ID : m_ParticleIDs)
+	for(int &Id : m_ParticleIds)
 	{
-		ID = Server()->SnapNewID();
+		Id = Server()->SnapNewId();
 	}
 
 	GameWorld()->InsertEntity(this);
@@ -43,17 +43,17 @@ CLooperWall::CLooperWall(CGameContext *pGameContext, vec2 Pos1, int Owner) :
 
 CLooperWall::~CLooperWall()
 {
-	for(int ID : m_ParticleIDs)
+	for(int Id : m_ParticleIds)
 	{
-		Server()->SnapFreeID(ID);
+		Server()->SnapFreeId(Id);
 	}
-	for(int ID : m_EndPointIDs)
+	for(int Id : m_EndPointIds)
 	{
-		Server()->SnapFreeID(ID);
+		Server()->SnapFreeId(Id);
 	}
-	for(int ID : m_IDs)
+	for(int Id : m_Ids)
 	{
-		Server()->SnapFreeID(ID);
+		Server()->SnapFreeId(Id);
 	}
 }
 
@@ -165,7 +165,7 @@ void CLooperWall::Snap(int SnappingClient)
 			// draws the first two dots + the lasers
 			vec2 Pos = m_Pos;
 			Pos.x += g_Thickness * 0.5 - g_Thickness * i;
-			GameServer()->SnapLaserObject(Context, m_IDs[i], Pos, Pos, m_SnapStartTick);
+			GameServer()->SnapLaserObject(Context, m_Ids[i], Pos, Pos, m_SnapStartTick);
 		}
 		return;
 	}
@@ -184,12 +184,12 @@ void CLooperWall::Snap(int SnappingClient)
 		}
 
 		// draws the first two dots + the lasers
-		GameServer()->SnapLaserObject(Context, m_IDs[i], m_Pos + dirVecT, m_Pos2 + dirVecT, m_SnapStartTick);
+		GameServer()->SnapLaserObject(Context, m_Ids[i], m_Pos + dirVecT, m_Pos2 + dirVecT, m_SnapStartTick);
 
 		// draws one dot at the end of each laser
 		if(!AntiPing)
 		{
-			GameServer()->SnapLaserObject(Context, m_EndPointIDs[i], m_Pos2 + dirVecT, m_Pos2 + dirVecT, Server()->Tick());
+			GameServer()->SnapLaserObject(Context, m_EndPointIds[i], m_Pos2 + dirVecT, m_Pos2 + dirVecT, Server()->Tick());
 		}
 	}
 
@@ -205,7 +205,7 @@ void CLooperWall::Snap(int SnappingClient)
 		{
 			float fRandom1 = random_float();
 			float fRandom2 = random_float();
-			GameController()->SendHammerDot(startPos + dirVec * fRandom1 + dirVecT * fRandom2, m_ParticleIDs[i]);
+			GameController()->SendHammerDot(startPos + dirVec * fRandom1 + dirVecT * fRandom2, m_ParticleIds[i]);
 		}
 	}
 }
@@ -231,7 +231,7 @@ void CLooperWall::OnHitInfected(CInfClassCharacter *pCharacter)
 	const float AddedDuration = pCharacter->SlowMotionEffect(FullEffectDuration, GetOwner());
 	if(AddedDuration > 1.0f)
 	{
-		GameServer()->SendEmoticon(pCharacter->GetCID(), EMOTICON_EXCLAMATION);
+		GameServer()->SendEmoticon(pCharacter->GetCid(), EMOTICON_EXCLAMATION);
 	}
 
 	int LifeSpanReducer = Server()->TickSpeed() * Reduction * AddedDuration / FullEffectDuration;

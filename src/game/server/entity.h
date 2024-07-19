@@ -28,11 +28,11 @@ class CEntity
 	CCollision *m_pCCollision;
 protected:
 	bool m_MarkedForDestroy;
-	int m_ID;
+	int m_Id;
 	int m_ObjType;
 public:
 
-	int GetID() const { return m_ID; }
+	int GetId() const { return m_Id; }
 
 	/* Constructor */
 	CEntity(CGameWorld *pGameWorld, int Objtype, const vec2 &Pos = vec2(0,0), int ProximityRadius = 0);

@@ -27,7 +27,7 @@ private:
 	void PrepareSnapData();
 
 	int m_EndTick{};
-	int m_EndPointID{};
+	int m_EndPointId{};
 	int m_WallFlashTicks{};
 	int m_SnapStartTick{};
 };

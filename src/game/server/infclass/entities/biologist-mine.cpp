@@ -21,7 +21,7 @@ CBiologistMine::CBiologistMine(CGameContext *pGameContext, vec2 Pos, vec2 EndPos
 	
 	for(int i=0; i<NUM_IDS; i++)
 	{
-		m_IDs[i] = Server()->SnapNewID();
+		m_Ids[i] = Server()->SnapNewId();
 	}
 }
 
@@ -29,7 +29,7 @@ CBiologistMine::~CBiologistMine()
 {
 	for(int i=0; i<NUM_IDS; i++)
 	{
-		Server()->SnapFreeID(m_IDs[i]);
+		Server()->SnapFreeId(m_Ids[i]);
 	}
 }
 
@@ -66,10 +66,10 @@ void CBiologistMine::Snap(int SnappingClient)
 	for(int i = 0; i < m_Vertices; i++)
 	{
 		vec2 VertexPos = m_Pos + direction(AngleStep * i) * Radius;
-		GameServer()->SnapLaserObject(Context, m_IDs[i], VertexPos, m_Pos, Server()->Tick() - 4, GetOwner());
+		GameServer()->SnapLaserObject(Context, m_Ids[i], VertexPos, m_Pos, Server()->Tick() - 4, GetOwner());
 	}
 
-	GameServer()->SnapLaserObject(Context, m_IDs[m_Vertices], m_EndPos, m_Pos, Server()->Tick() - 4, GetOwner());
+	GameServer()->SnapLaserObject(Context, m_Ids[m_Vertices], m_EndPos, m_Pos, Server()->Tick() - 4, GetOwner());
 }
 
 void CBiologistMine::Tick()

@@ -34,7 +34,7 @@ private:
 	int m_ParticleStopTickTime; // when X time is left stop creating particles - close animation
 
 	int m_NumParticles; // will be set with a config var
-	int *m_IDs;
+	int *m_Ids;
 	vec2 *m_ParticlePos;
 	vec2 *m_ParticleVec;
 

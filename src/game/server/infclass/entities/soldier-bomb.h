@@ -25,7 +25,7 @@ private:
 
 	int m_StartTick;
 	float m_Angle = 0;
-	array<int> m_IDBomb;
+	array<int> m_IdBomb;
 	int m_nbBomb;
 	int m_ChargedBomb;
 };

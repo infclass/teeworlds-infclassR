@@ -23,15 +23,15 @@ int main(int argc, const char **argv)
 	// add all items
 	for(int Index = 0; Index < Reader.NumItems(); Index++)
 	{
-		int Type, ID;
-		void *pPtr = Reader.GetItem(Index, &Type, &ID);
+		int Type, Id;
+		void *pPtr = Reader.GetItem(Index, &Type, &Id);
 
 		// filter ITEMTYPE_EX items, they will be automatically added again
 		if(Type == ITEMTYPE_EX)
 			continue;
 
 		int Size = Reader.GetItemSize(Index);
-		Writer.AddItem(Type, ID, Size, pPtr);
+		Writer.AddItem(Type, Id, Size, pPtr);
 	}
 
 	// add all data

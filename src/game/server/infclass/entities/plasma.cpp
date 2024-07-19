@@ -94,5 +94,5 @@ void CPlasma::Snap(int SnappingClient)
 
 	int SnappingClientVersion = GameServer()->GetClientVersion(SnappingClient);
 	CSnapContext Context(SnappingClientVersion);
-	GameServer()->SnapLaserObject(Context, GetID(), m_Pos, m_Pos, m_StartTick, GetOwner());
+	GameServer()->SnapLaserObject(Context, GetId(), m_Pos, m_Pos, m_StartTick, GetOwner());
 }

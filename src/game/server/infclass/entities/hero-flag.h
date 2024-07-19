@@ -30,7 +30,7 @@ public:
 
 private:
 	int m_SpawnTick = 0;
-	int m_IDs[ms_SHIELD_COUNT];
+	int m_Ids[ms_SHIELD_COUNT];
 	bool m_HasSpawnPosition = false;
 };
 

@@ -55,7 +55,7 @@ public:
 	static bool SetMapMinMaxPlayers(const char *pMapName, int MinPlayers, int MaxPlayers);
 
 	virtual int PersistentClientDataSize() const = 0;
-	virtual bool GetClientPersistentData(int ClientID, void *pData) const = 0;
+	virtual bool GetClientPersistentData(int ClientId, void *pData) const = 0;
 
 protected:
 	bool LoadMapConfig(const char *pMapName, CMapInfo *pInfo);
@@ -161,7 +161,7 @@ public:
 	/*
 
 	*/
-	virtual bool CanBeMovedOnBalance(int ClientID);
+	virtual bool CanBeMovedOnBalance(int ClientId);
 
 	virtual void DoTeamBalance();
 
@@ -172,11 +172,11 @@ public:
 	virtual void Snap(int SnappingClient);
 	
 	virtual bool CanVote();
-	virtual void OnPlayerVoteCommand(int ClientID, int Vote) = 0;
+	virtual void OnPlayerVoteCommand(int ClientId, int Vote) = 0;
 
 	void OnStartRound();
 
-	virtual CPlayer *CreatePlayer(int ClientID, bool IsSpectator, void *pData) = 0;
+	virtual CPlayer *CreatePlayer(int ClientId, bool IsSpectator, void *pData) = 0;
 
 	//
 /* INFECTION MODIFICATION START ***************************************/
@@ -187,11 +187,11 @@ public:
 	/*
 
 	*/
-	virtual int GetPlayerTeam(int ClientID) const = 0;
+	virtual int GetPlayerTeam(int ClientId) const = 0;
 	virtual const char *GetTeamName(int Team);
-	virtual int GetAutoTeam(int NotThisID);
-	virtual void OnTeamChangeRequested(int ClientID, int Team) = 0;
-	virtual bool CanJoinTeam(int Team, int NotThisID);
+	virtual int GetAutoTeam(int NotThisId);
+	virtual void OnTeamChangeRequested(int ClientId, int Team) = 0;
+	virtual bool CanJoinTeam(int Team, int NotThisId);
 	bool CanChangeTeam(CPlayer *pPplayer, int JoinTeam);
 	int ClampTeam(int Team);
 

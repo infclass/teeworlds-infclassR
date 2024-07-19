@@ -135,7 +135,7 @@ void CProjectile::Snap(int SnappingClient)
 	if(NetworkClipped(SnappingClient, GetPos(Ct)))
 		return;
 
-	CNetObj_Projectile *pProj = Server()->SnapNewItem<CNetObj_Projectile>(GetID());
+	CNetObj_Projectile *pProj = Server()->SnapNewItem<CNetObj_Projectile>(GetId());
 	if(pProj)
 		FillInfo(pProj);
 }

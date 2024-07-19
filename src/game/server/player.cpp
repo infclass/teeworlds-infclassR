@@ -13,10 +13,10 @@ MACRO_ALLOC_POOL_ID_IMPL(CPlayer, MAX_CLIENTS)
 
 IServer *CPlayer::Server() const { return m_pGameServer->Server(); }
 
-CPlayer::CPlayer(CGameContext *pGameServer, int ClientID, int Team)
+CPlayer::CPlayer(CGameContext *pGameServer, int ClientId, int Team)
 {
 	m_pGameServer = pGameServer;
-	m_ClientID = ClientID;
+	m_ClientId = ClientId;
 	m_Team = GameServer()->m_pController->ClampTeam(Team);
 	Reset();
 }
@@ -33,17 +33,17 @@ void CPlayer::Reset()
 	m_DieTick = Server()->Tick();
 	m_ScoreStartTick = Server()->Tick();
 	m_pCharacter = 0;
-	m_SpectatorID = SPEC_FREEVIEW;
+	m_SpectatorId = SPEC_FREEVIEW;
 	m_LastActionTick = Server()->Tick();
 	m_LastActionMoveTick = Server()->Tick();
 	m_TeamChangeTick = Server()->Tick();
 
-	int *idMap = Server()->GetIdMap(m_ClientID);
+	int *idMap = Server()->GetIdMap(m_ClientId);
 	for(int i = 1; i < VANILLA_MAX_CLIENTS; i++)
 	{
 		idMap[i] = -1;
 	}
-	idMap[0] = m_ClientID;
+	idMap[0] = m_ClientId;
 
 	// DDRace
 
@@ -94,7 +94,7 @@ void CPlayer::Reset()
 	m_aOriginalName[0] = 0;
 
 	m_class = EPlayerClass::None;
-	SetLanguage(Server()->GetClientLanguage(m_ClientID));
+	SetLanguage(Server()->GetClientLanguage(m_ClientId));
 
 	m_PrevTuningParams = *m_pGameServer->Tuning();
 	m_NextTuningParams = m_PrevTuningParams;
@@ -112,15 +112,15 @@ void CPlayer::HandleAutoRespawn()
 void CPlayer::Tick()
 {
 #ifdef CONF_DEBUG
-	if(!g_Config.m_DbgDummies || m_ClientID < MAX_CLIENTS-g_Config.m_DbgDummies)
+	if(!g_Config.m_DbgDummies || m_ClientId < MAX_CLIENTS-g_Config.m_DbgDummies)
 #endif
-	if(!Server()->ClientIngame(m_ClientID))
+	if(!Server()->ClientIngame(m_ClientId))
 		return;
 
 	// do latency stuff
 	{
 		IServer::CClientInfo Info;
-		if(Server()->GetClientInfo(m_ClientID, &Info))
+		if(Server()->GetClientInfo(m_ClientId, &Info))
 		{
 			m_Latency.m_Accum += Info.m_Latency;
 			m_Latency.m_AccumMax = maximum(m_Latency.m_AccumMax, Info.m_Latency);
@@ -146,7 +146,7 @@ void CPlayer::Tick()
 
 	if(!GameServer()->m_World.m_Paused)
 	{
-		if(!m_pCharacter && m_Team == TEAM_SPECTATORS && m_SpectatorID == SPEC_FREEVIEW)
+		if(!m_pCharacter && m_Team == TEAM_SPECTATORS && m_SpectatorId == SPEC_FREEVIEW)
 			m_ViewPos -= vec2(clamp(m_ViewPos.x-m_LatestActivity.m_TargetX, -500.0f, 500.0f), clamp(m_ViewPos.y-m_LatestActivity.m_TargetY, -400.0f, 400.0f));
 
 		HandleAutoRespawn();
@@ -182,7 +182,7 @@ void CPlayer::HandleTuningParams()
 	{
 		if(m_IsReady)
 		{
-			GameServer()->SendTuningParams(GetCID(), m_NextTuningParams);
+			GameServer()->SendTuningParams(GetCid(), m_NextTuningParams);
 		}
 		
 		m_PrevTuningParams = m_NextTuningParams;
@@ -194,18 +194,18 @@ void CPlayer::HandleTuningParams()
 void CPlayer::Snap(int SnappingClient)
 {
 #ifdef CONF_DEBUG
-	if(!g_Config.m_DbgDummies || m_ClientID < MAX_CLIENTS-g_Config.m_DbgDummies)
+	if(!g_Config.m_DbgDummies || m_ClientId < MAX_CLIENTS-g_Config.m_DbgDummies)
 #endif
-	if(!Server()->ClientIngame(m_ClientID))
+	if(!Server()->ClientIngame(m_ClientId))
 		return;
 
-	int id = m_ClientID;
+	int id = m_ClientId;
 	if(SnappingClient != SERVER_DEMO_CLIENT && !Server()->Translate(id, SnappingClient))
 		return;
 
 	SnapClientInfo(SnappingClient, id);
 
-	int Latency = SnappingClient == SERVER_DEMO_CLIENT ? m_Latency.m_Min : GameServer()->m_apPlayers[SnappingClient]->m_aCurLatency[m_ClientID];
+	int Latency = SnappingClient == SERVER_DEMO_CLIENT ? m_Latency.m_Min : GameServer()->m_apPlayers[SnappingClient]->m_aCurLatency[m_ClientId];
 	int PlayerInfoScore = GetScore(SnappingClient);
 
 	CNetObj_PlayerInfo *pPlayerInfo = Server()->SnapNewItem<CNetObj_PlayerInfo>(id);
@@ -214,22 +214,22 @@ void CPlayer::Snap(int SnappingClient)
 
 	pPlayerInfo->m_Latency = Latency;
 	pPlayerInfo->m_Local = 0;
-	pPlayerInfo->m_ClientID = id;
+	pPlayerInfo->m_ClientId = id;
 /* INFECTION MODIFICATION START ***************************************/
 	pPlayerInfo->m_Score = PlayerInfoScore;
 /* INFECTION MODIFICATION END *****************************************/
 	pPlayerInfo->m_Team = m_Team;
 
-	if(m_ClientID == SnappingClient)
+	if(m_ClientId == SnappingClient)
 		pPlayerInfo->m_Local = 1;
 
-	if(m_ClientID == SnappingClient && m_Team == TEAM_SPECTATORS)
+	if(m_ClientId == SnappingClient && m_Team == TEAM_SPECTATORS)
 	{
-		CNetObj_SpectatorInfo *pSpectatorInfo = Server()->SnapNewItem<CNetObj_SpectatorInfo>(m_ClientID);
+		CNetObj_SpectatorInfo *pSpectatorInfo = Server()->SnapNewItem<CNetObj_SpectatorInfo>(m_ClientId);
 		if(!pSpectatorInfo)
 			return;
 
-		pSpectatorInfo->m_SpectatorID = m_SpectatorID;
+		pSpectatorInfo->m_SpectatorId = m_SpectatorId;
 		pSpectatorInfo->m_X = m_ViewPos.x;
 		pSpectatorInfo->m_Y = m_ViewPos.y;
 	}
@@ -243,7 +243,7 @@ void CPlayer::SnapClientInfo(int SnappingClient, int SnappingClientMappedId)
 
 	StrToInts(&pClientInfo->m_Name0, 4, GetName(SnappingClient));
 	StrToInts(&pClientInfo->m_Clan0, 3, GetClan(SnappingClient));
-	pClientInfo->m_Country = Server()->ClientCountry(m_ClientID);
+	pClientInfo->m_Country = Server()->ClientCountry(m_ClientId);
 	StrToInts(&pClientInfo->m_Skin0, 6, m_TeeInfos.m_aSkinName);
 	pClientInfo->m_UseCustomColor = m_TeeInfos.m_UseCustomColor;
 	pClientInfo->m_ColorBody = m_TeeInfos.m_ColorBody;
@@ -320,7 +320,7 @@ void CPlayer::OnPredictedEarlyInput(CNetObj_PlayerInput *pNewInput)
 
 int CPlayer::GetClientVersion() const
 {
-	return m_pGameServer->GetClientVersion(m_ClientID);
+	return m_pGameServer->GetClientVersion(m_ClientId);
 }
 
 int CPlayer::GetScore(int SnappingClient) const
@@ -339,7 +339,7 @@ void CPlayer::KillCharacter(int Weapon)
 {
 	if(m_pCharacter)
 	{
-		m_pCharacter->Die(m_ClientID, Weapon);
+		m_pCharacter->Die(m_ClientId, Weapon);
 		delete m_pCharacter;
 		m_pCharacter = 0;
 	}
@@ -363,7 +363,7 @@ void CPlayer::SetTeam(int Team, bool DoChatMsg)
 	m_Team = Team;
 	m_LastActionTick = Server()->Tick();
 	m_LastActionMoveTick = Server()->Tick();
-	m_SpectatorID = SPEC_FREEVIEW;
+	m_SpectatorId = SPEC_FREEVIEW;
 	// we got to wait 0.5 secs before respawning
 	m_RespawnTick = Server()->Tick()+Server()->TickSpeed()/2;
 
@@ -372,8 +372,8 @@ void CPlayer::SetTeam(int Team, bool DoChatMsg)
 		// update spectator modes
 		for(int i = 0; i < MAX_CLIENTS; ++i)
 		{
-			if(GameServer()->m_apPlayers[i] && GameServer()->m_apPlayers[i]->m_SpectatorID == m_ClientID)
-				GameServer()->m_apPlayers[i]->m_SpectatorID = SPEC_FREEVIEW;
+			if(GameServer()->m_apPlayers[i] && GameServer()->m_apPlayers[i]->m_SpectatorId == m_ClientId)
+				GameServer()->m_apPlayers[i]->m_SpectatorId = SPEC_FREEVIEW;
 		}
 	}
 }
@@ -424,7 +424,7 @@ int CPlayer::ForcePause(int Time)
 	if(g_Config.m_SvPauseMessages)
 	{
 		char aBuf[128];
-		str_format(aBuf, sizeof(aBuf), "'%s' was force-paused for %ds", Server()->ClientName(m_ClientID), Time);
+		str_format(aBuf, sizeof(aBuf), "'%s' was force-paused for %ds", Server()->ClientName(m_ClientId), Time);
 		GameServer()->SendChat(-1, CGameContext::CHAT_ALL, aBuf);
 	}
 
@@ -469,12 +469,12 @@ bool CPlayer::IsSpectator() const
 
 const char *CPlayer::GetName(int SnappingClient) const
 {
-	return Server()->ClientName(m_ClientID);
+	return Server()->ClientName(m_ClientId);
 }
 
 const char *CPlayer::GetClan(int SnappingClient) const
 {
-	return Server()->ClientClan(m_ClientID);
+	return Server()->ClientClan(m_ClientId);
 }
 
 const char *CPlayer::GetLanguage() const

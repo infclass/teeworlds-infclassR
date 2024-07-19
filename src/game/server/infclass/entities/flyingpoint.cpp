@@ -45,5 +45,5 @@ void CFlyingPoint::Tick()
 
 void CFlyingPoint::Snap(int SnappingClient)
 {
-	GameController()->SendHammerDot(GetPos(), m_ID);
+	GameController()->SendHammerDot(GetPos(), m_Id);
 }

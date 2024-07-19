@@ -76,12 +76,12 @@ void CSlugSlime::Snap(int SnappingClient)
 	}
 }
 
-bool CSlugSlime::Replenish(int PlayerID, int EndTick)
+bool CSlugSlime::Replenish(int PlayerId, int EndTick)
 {
 	if(m_EndTick > EndTick)
 		return false;
 
-	m_Owner = PlayerID;
+	m_Owner = PlayerId;
 	m_EndTick = EndTick;
 	return true;
 }

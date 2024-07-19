@@ -27,7 +27,7 @@ public:
 	void Explode();
 
 private:
-	int m_IDs[NUM_IDS];
+	int m_Ids[NUM_IDS];
 	int m_Vertices = 0;
 	int m_Lasers = 0;
 	int m_PerLaserDamage = 0;

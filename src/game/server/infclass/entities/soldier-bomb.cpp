@@ -23,17 +23,17 @@ CSoldierBomb::CSoldierBomb(CGameContext *pGameContext, vec2 Pos, int Owner) :
 	m_nbBomb = Config()->m_InfSoldierBombs;
 	m_ChargedBomb = Config()->m_InfSoldierBombs;
 
-	m_IDBomb.set_size(Config()->m_InfSoldierBombs);
-	for(int i = 0; i < m_IDBomb.size(); i++)
+	m_IdBomb.set_size(Config()->m_InfSoldierBombs);
+	for(int i = 0; i < m_IdBomb.size(); i++)
 	{
-		m_IDBomb[i] = Server()->SnapNewID();
+		m_IdBomb[i] = Server()->SnapNewId();
 	}
 }
 
 CSoldierBomb::~CSoldierBomb()
 {
-	for(int i = 0; i < m_IDBomb.size(); i++)
-		Server()->SnapFreeID(m_IDBomb[i]);
+	for(int i = 0; i < m_IdBomb.size(); i++)
+		Server()->SnapFreeId(m_IdBomb[i]);
 }
 
 void CSoldierBomb::Explode()
@@ -122,9 +122,9 @@ void CSoldierBomb::Snap(int SnappingClient)
 
 	for(int i = 0; i < m_nbBomb; i++)
 	{
-		float shiftedAngle = m_Angle + 2.0 * pi * static_cast<float>(i) / static_cast<float>(m_IDBomb.size());
+		float shiftedAngle = m_Angle + 2.0 * pi * static_cast<float>(i) / static_cast<float>(m_IdBomb.size());
 
-		CNetObj_Projectile *pProj = Server()->SnapNewItem<CNetObj_Projectile>(m_IDBomb[i]);
+		CNetObj_Projectile *pProj = Server()->SnapNewItem<CNetObj_Projectile>(m_IdBomb[i]);
 		pProj->m_X = m_Pos.x + SoldierBombRadius * std::cos(shiftedAngle);
 		pProj->m_Y = m_Pos.y + SoldierBombRadius * std::sin(shiftedAngle);
 		pProj->m_VelX = 0;

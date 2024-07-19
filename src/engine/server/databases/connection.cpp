@@ -20,7 +20,7 @@ void IDbConnection::FormatCreateRace(char *aBuf, unsigned int BufferSize, bool B
 		"  cp19 FLOAT DEFAULT 0, cp20 FLOAT DEFAULT 0, cp21 FLOAT DEFAULT 0, "
 		"  cp22 FLOAT DEFAULT 0, cp23 FLOAT DEFAULT 0, cp24 FLOAT DEFAULT 0, "
 		"  cp25 FLOAT DEFAULT 0, "
-		"  GameID VARCHAR(64), "
+		"  GameId VARCHAR(64), "
 		"  DDNet7 BOOL DEFAULT FALSE, "
 		"  PRIMARY KEY (Map, Name, Time, Timestamp, Server)"
 		")",
@@ -37,9 +37,9 @@ void IDbConnection::FormatCreateTeamrace(char *aBuf, unsigned int BufferSize, co
 		"  Timestamp TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, "
 		"  Time FLOAT DEFAULT 0, "
 		"  ID %s NOT NULL, " // VARBINARY(16) for MySQL and BLOB for SQLite
-		"  GameID VARCHAR(64), "
+		"  GameId VARCHAR(64), "
 		"  DDNet7 BOOL DEFAULT FALSE, "
-		"  PRIMARY KEY (ID, Name)"
+		"  PRIMARY KEY (Id, Name)"
 		")",
 		GetPrefix(), Backup ? "_backup" : "",
 		BinaryCollate(), MAX_NAME_LENGTH, BinaryCollate(), pIdType);
@@ -70,7 +70,7 @@ void IDbConnection::FormatCreateSaves(char *aBuf, unsigned int BufferSize, bool 
 		"  Timestamp TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, "
 		"  Server CHAR(4), "
 		"  DDNet7 BOOL DEFAULT FALSE, "
-		"  SaveID VARCHAR(36) DEFAULT NULL, "
+		"  SaveId VARCHAR(36) DEFAULT NULL, "
 		"  PRIMARY KEY (Map, Code)"
 		")",
 		GetPrefix(), Backup ? "_backup" : "",

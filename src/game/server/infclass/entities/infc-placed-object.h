@@ -20,7 +20,7 @@ protected:
 
 protected:
 	vec2 m_Pos2;
-	int m_InfClassObjectID = -1;
+	int m_InfClassObjectId = -1;
 	int m_InfClassObjectType = -1;
 	int m_InfClassObjectFlags = 0;
 };

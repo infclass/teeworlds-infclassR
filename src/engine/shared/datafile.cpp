@@ -50,13 +50,13 @@ struct CDatafileItemType
 
 struct CDatafileItem
 {
-	int m_TypeAndID;
+	int m_TypeAndId;
 	int m_Size;
 };
 
 struct CDatafileHeader
 {
-	char m_aID[4];
+	char m_aId[4];
 	int m_Version;
 	int m_Size;
 	int m_Swaplen;
@@ -134,11 +134,11 @@ bool CDataFileReader::Open(class IStorage *pStorage, const char *pFilename, int 
 		dbg_msg("datafile", "couldn't load header");
 		return false;
 	}
-	if(Header.m_aID[0] != 'A' || Header.m_aID[1] != 'T' || Header.m_aID[2] != 'A' || Header.m_aID[3] != 'D')
+	if(Header.m_aId[0] != 'A' || Header.m_aId[1] != 'T' || Header.m_aId[2] != 'A' || Header.m_aId[3] != 'D')
 	{
-		if(Header.m_aID[0] != 'D' || Header.m_aID[1] != 'A' || Header.m_aID[2] != 'T' || Header.m_aID[3] != 'A')
+		if(Header.m_aId[0] != 'D' || Header.m_aId[1] != 'A' || Header.m_aId[2] != 'T' || Header.m_aId[3] != 'A')
 		{
-			dbg_msg("datafile", "wrong signature. %x %x %x %x", Header.m_aID[0], Header.m_aID[1], Header.m_aID[2], Header.m_aID[3]);
+			dbg_msg("datafile", "wrong signature. %x %x %x %x", Header.m_aId[0], Header.m_aId[1], Header.m_aId[2], Header.m_aId[3]);
 			return false;
 		}
 	}
@@ -396,23 +396,23 @@ int CDataFileReader::GetInternalItemType(int ExternalType)
 		{
 			continue;
 		}
-		int ID;
-		if(Uuid == ((const CItemEx *)GetItem(i, nullptr, &ID))->ToUuid())
+		int Id;
+		if(Uuid == ((const CItemEx *)GetItem(i, nullptr, &Id))->ToUuid())
 		{
-			return ID;
+			return Id;
 		}
 	}
 	return -1;
 }
 
-void *CDataFileReader::GetItem(int Index, int *pType, int *pID)
+void *CDataFileReader::GetItem(int Index, int *pType, int *pId)
 {
 	if(!m_pDataFile)
 	{
 		if(pType)
 			*pType = 0;
-		if(pID)
-			*pID = 0;
+		if(pId)
+			*pId = 0;
 		return nullptr;
 	}
 
@@ -420,11 +420,11 @@ void *CDataFileReader::GetItem(int Index, int *pType, int *pID)
 	if(pType)
 	{
 		// remove sign extension
-		*pType = GetExternalItemType((pItem->m_TypeAndID >> 16) & 0xffff);
+		*pType = GetExternalItemType((pItem->m_TypeAndId >> 16) & 0xffff);
 	}
-	if(pID)
+	if(pId)
 	{
-		*pID = pItem->m_TypeAndID & 0xffff;
+		*pId = pItem->m_TypeAndId & 0xffff;
 	}
 	return (void *)(pItem + 1);
 }
@@ -449,7 +449,7 @@ void CDataFileReader::GetType(int Type, int *pStart, int *pNum)
 	}
 }
 
-int CDataFileReader::FindItemIndex(int Type, int ID)
+int CDataFileReader::FindItemIndex(int Type, int Id)
 {
 	if(!m_pDataFile)
 	{
@@ -460,9 +460,9 @@ int CDataFileReader::FindItemIndex(int Type, int ID)
 	GetType(Type, &Start, &Num);
 	for(int i = 0; i < Num; i++)
 	{
-		int ItemID;
-		GetItem(Start + i, nullptr, &ItemID);
-		if(ID == ItemID)
+		int ItemId;
+		GetItem(Start + i, nullptr, &ItemId);
+		if(Id == ItemId)
 		{
 			return Start + i;
 		}
@@ -470,9 +470,9 @@ int CDataFileReader::FindItemIndex(int Type, int ID)
 	return -1;
 }
 
-void *CDataFileReader::FindItem(int Type, int ID)
+void *CDataFileReader::FindItem(int Type, int Id)
 {
-	int Index = FindItemIndex(Type, ID);
+	int Index = FindItemIndex(Type, Id);
 	if(Index < 0)
 	{
 		return nullptr;
@@ -592,7 +592,7 @@ int CDataFileWriter::GetExtendedItemTypeIndex(int Type)
 	return Index;
 }
 
-int CDataFileWriter::AddItem(int Type, int ID, int Size, void *pData)
+int CDataFileWriter::AddItem(int Type, int Id, int Size, void *pData)
 {
 	dbg_assert((Type >= 0 && Type < MAX_ITEM_TYPES) || Type >= OFFSET_UUID, "incorrect type");
 	dbg_assert(m_NumItems < 1024, "too many items");
@@ -604,7 +604,7 @@ int CDataFileWriter::AddItem(int Type, int ID, int Size, void *pData)
 	}
 
 	m_pItems[m_NumItems].m_Type = Type;
-	m_pItems[m_NumItems].m_ID = ID;
+	m_pItems[m_NumItems].m_Id = Id;
 	m_pItems[m_NumItems].m_Size = Size;
 
 	// copy data
@@ -707,10 +707,10 @@ int CDataFileWriter::Finish()
 	// construct Header
 	{
 		CDatafileHeader Header;
-		Header.m_aID[0] = 'D';
-		Header.m_aID[1] = 'A';
-		Header.m_aID[2] = 'T';
-		Header.m_aID[3] = 'A';
+		Header.m_aId[0] = 'D';
+		Header.m_aId[1] = 'A';
+		Header.m_aId[2] = 'T';
+		Header.m_aId[3] = 'A';
 		Header.m_Version = 4;
 		Header.m_Size = FileSize - 16;
 		Header.m_Swaplen = SwapSize - 16;
@@ -808,10 +808,10 @@ int CDataFileWriter::Finish()
 			while(k != -1)
 			{
 				CDatafileItem Item;
-				Item.m_TypeAndID = (i << 16) | m_pItems[k].m_ID;
+				Item.m_TypeAndId = (i << 16) | m_pItems[k].m_Id;
 				Item.m_Size = m_pItems[k].m_Size;
 				if(DEBUG)
-					dbg_msg("datafile", "writing item type=%x idx=%d id=%d size=%d", i, k, m_pItems[k].m_ID, m_pItems[k].m_Size);
+					dbg_msg("datafile", "writing item type=%x idx=%d id=%d size=%d", i, k, m_pItems[k].m_Id, m_pItems[k].m_Size);
 
 #if defined(CONF_ARCH_ENDIAN_BIG)
 				swap_endian(&Item, sizeof(int), sizeof(Item) / sizeof(int));

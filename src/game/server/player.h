@@ -26,7 +26,7 @@ class CPlayer
 	MACRO_ALLOC_POOL_ID()
 
 public:
-	CPlayer(CGameContext *pGameServer, int ClientID, int Team);
+	CPlayer(CGameContext *pGameServer, int ClientId, int Team);
 	virtual ~CPlayer();
 
 	void Reset();
@@ -35,7 +35,7 @@ public:
 	void Respawn();
 	void SetTeam(int Team, bool DoChatMsg=true);
 	int GetTeam() const { return m_Team; };
-	int GetCID() const { return m_ClientID; };
+	int GetCid() const { return m_ClientId; };
 	int GetClientVersion() const;
 	virtual bool IsBot() const { return false; }
 
@@ -65,7 +65,7 @@ public:
 	int m_aCurLatency[MAX_CLIENTS];
 
 	// used for spectator mode
-	int m_SpectatorID;
+	int m_SpectatorId;
 
 	bool m_IsReady;
 	bool m_IsInGame;
@@ -126,7 +126,7 @@ protected:
 
 	//
 	bool m_Spawning;
-	int m_ClientID;
+	int m_ClientId;
 	int m_Team;
 
 	int m_Paused;

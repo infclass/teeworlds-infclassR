@@ -24,7 +24,7 @@ CEngineerWall::CEngineerWall(CGameContext *pGameContext, vec2 Pos1, int Owner)
 	: CPlacedObject(pGameContext, EntityId, Pos1, Owner)
 {
 	m_InfClassObjectType = INFCLASS_OBJECT_TYPE_LASER_WALL;
-	m_EndPointID = Server()->SnapNewID();
+	m_EndPointId = Server()->SnapNewId();
 	m_Pos2 = Pos1;
 
 	GameWorld()->InsertEntity(this);
@@ -32,7 +32,7 @@ CEngineerWall::CEngineerWall(CGameContext *pGameContext, vec2 Pos1, int Owner)
 
 CEngineerWall::~CEngineerWall()
 {
-	Server()->SnapFreeID(m_EndPointID);
+	Server()->SnapFreeId(m_EndPointId);
 }
 
 void CEngineerWall::SetEndPosition(vec2 EndPosition)
@@ -134,11 +134,11 @@ void CEngineerWall::Snap(int SnappingClient)
 	int SnappingClientVersion = GameServer()->GetClientVersion(SnappingClient);
 	CSnapContext Context(SnappingClientVersion);
 
-	GameServer()->SnapLaserObject(Context, GetID(), m_Pos, m_Pos2, m_SnapStartTick, m_Owner);
+	GameServer()->SnapLaserObject(Context, GetId(), m_Pos, m_Pos2, m_SnapStartTick, m_Owner);
 
 	if(HasSecondPosition())
 	{
-		GameServer()->SnapLaserObject(Context, m_EndPointID, m_Pos2, m_Pos2, Server()->Tick(), m_Owner);
+		GameServer()->SnapLaserObject(Context, m_EndPointId, m_Pos2, m_Pos2, Server()->Tick(), m_Owner);
 	}
 }
 

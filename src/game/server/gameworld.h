@@ -196,7 +196,7 @@ public:
 	*/
 	void Tick();
 
-	void ReleaseHooked(int ClientID);
+	void ReleaseHooked(int ClientId);
 };
 
 #endif

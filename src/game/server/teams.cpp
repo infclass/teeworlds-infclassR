@@ -13,34 +13,34 @@ void CGameTeams::Reset()
 	m_Core.Reset();
 }
 
-const char *CGameTeams::SetCharacterTeam(int ClientID, int Team)
+const char *CGameTeams::SetCharacterTeam(int ClientId, int Team)
 {
-	if(ClientID < 0 || ClientID >= MAX_CLIENTS)
+	if(ClientId < 0 || ClientId >= MAX_CLIENTS)
 		return "Invalid client ID";
 	if(Team < 0 || Team >= MAX_CLIENTS + 1)
 		return "Invalid team number";
-	if(m_Core.Team(ClientID) == Team)
+	if(m_Core.Team(ClientId) == Team)
 		return "You are in this team already";
-	if(!Character(ClientID))
+	if(!Character(ClientId))
 		return "Your character is not valid";
 
-	SetForceCharacterTeam(ClientID, Team);
+	SetForceCharacterTeam(ClientId, Team);
 	return nullptr;
 }
 
-int64_t CGameTeams::TeamMask(int Team, int ExceptID, int Asker)
+int64_t CGameTeams::TeamMask(int Team, int ExceptId, int Asker)
 {
 	if(Team == TEAM_SUPER)
 	{
-		if(ExceptID == -1)
+		if(ExceptId == -1)
 			return 0xffffffffffffffff;
-		return 0xffffffffffffffff & ~(1 << ExceptID);
+		return 0xffffffffffffffff & ~(1 << ExceptId);
 	}
 
 	int64_t Mask = 0;
 	for(int i = 0; i < MAX_CLIENTS; ++i)
 	{
-		if(i == ExceptID)
+		if(i == ExceptId)
 			continue; // Explicitly excluded
 		if(!GetPlayer(i))
 			continue; // Player doesn't exist
@@ -67,24 +67,24 @@ int64_t CGameTeams::TeamMask(int Team, int ExceptID, int Asker)
 				}
 			} // See everything of yourself
 		}
-		else if(GetPlayer(i)->m_SpectatorID != SPEC_FREEVIEW)
+		else if(GetPlayer(i)->m_SpectatorId != SPEC_FREEVIEW)
 		{ // Spectating specific player
-			if(GetPlayer(i)->m_SpectatorID != Asker)
+			if(GetPlayer(i)->m_SpectatorId != Asker)
 			{ // Actions of other players
-				if(!Character(GetPlayer(i)->m_SpectatorID))
+				if(!Character(GetPlayer(i)->m_SpectatorId))
 					continue; // Player is currently dead
 				if(GetPlayer(i)->m_ShowOthers == SHOW_OTHERS_ONLY_TEAM)
 				{
-					if(m_Core.Team(GetPlayer(i)->m_SpectatorID) != Team && m_Core.Team(GetPlayer(i)->m_SpectatorID) != TEAM_SUPER)
+					if(m_Core.Team(GetPlayer(i)->m_SpectatorId) != Team && m_Core.Team(GetPlayer(i)->m_SpectatorId) != TEAM_SUPER)
 						continue; // In different teams
 				}
 				else if(GetPlayer(i)->m_ShowOthers == SHOW_OTHERS_OFF)
 				{
 					if(m_Core.GetSolo(Asker))
 						continue; // When in solo part don't show others
-					if(m_Core.GetSolo(GetPlayer(i)->m_SpectatorID))
+					if(m_Core.GetSolo(GetPlayer(i)->m_SpectatorId))
 						continue; // When in solo part don't show others
-					if(m_Core.Team(GetPlayer(i)->m_SpectatorID) != Team && m_Core.Team(GetPlayer(i)->m_SpectatorID) != TEAM_SUPER)
+					if(m_Core.Team(GetPlayer(i)->m_SpectatorId) != Team && m_Core.Team(GetPlayer(i)->m_SpectatorId) != TEAM_SUPER)
 						continue; // In different teams
 				}
 			} // See everything of player you're spectating
@@ -117,7 +117,7 @@ int CGameTeams::Count(int Team) const
 	return Count;
 }
 
-void CGameTeams::SetForceCharacterTeam(int ClientID, int Team)
+void CGameTeams::SetForceCharacterTeam(int ClientId, int Team)
 {
-	m_Core.Team(ClientID, Team);
+	m_Core.Team(ClientId, Team);
 }

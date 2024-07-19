@@ -28,9 +28,9 @@ private:
 
 	int m_EndTick{};
 
-	int m_IDs[2]{};
-	int m_EndPointIDs[2]{};
-	int m_ParticleIDs[NUM_PARTICLES]{};
+	int m_Ids[2]{};
+	int m_EndPointIds[2]{};
+	int m_ParticleIds[NUM_PARTICLES]{};
 	int m_SnapStartTick{};
 };
 

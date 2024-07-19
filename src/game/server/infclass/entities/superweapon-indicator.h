@@ -20,7 +20,7 @@ private:
 	int m_StartTick;
 	int m_warmUpCounter;
 	bool m_IsWarmingUp;
-	array<int> m_IDs;
+	array<int> m_Ids;
 	CCharacter *m_OwnerChar;
 	
 public:

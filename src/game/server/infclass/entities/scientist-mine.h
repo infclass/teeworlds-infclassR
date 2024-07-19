@@ -28,7 +28,7 @@ public:
 	void Explode(int DetonatedBy);
 
 private:
-	int m_IDs[NUM_IDS];
+	int m_Ids[NUM_IDS];
 	
 public:
 	int m_StartTick;

@@ -41,14 +41,14 @@ static bool InfectedEntitiesFilter(const CEntity *pEntity)
 CInfClassCharacter::CInfClassCharacter(CInfClassGameController *pGameController) :
 	CCharacter(pGameController->GameWorld()), m_pGameController(pGameController)
 {
-	m_FlagID = Server()->SnapNewID();
-	m_HeartID = Server()->SnapNewID();
-	m_CursorID = Server()->SnapNewID();
+	m_FlagId = Server()->SnapNewId();
+	m_HeartId = Server()->SnapNewId();
+	m_CursorId = Server()->SnapNewId();
 }
 
 CInfClassCharacter::~CInfClassCharacter()
 {
-	FreeChildSnapIDs();
+	FreeChildSnapIds();
 	ResetClassObject();
 }
 
@@ -139,7 +139,7 @@ void CInfClassCharacter::OnCharacterInInfectionZone()
 		DeathContext Context;
 
 		SDamageContext DamageContext;
-		DamageContext.Killer = GetCID();
+		DamageContext.Killer = GetCid();
 		DamageContext.DamageType = EDamageType::INFECTION_TILE;
 		DamageContext.Mode = TAKEDAMAGEMODE::INFECTION;
 
@@ -223,7 +223,7 @@ void CInfClassCharacter::Tick()
 	{
 		--m_BlindnessTicks;
 		int EffectSec = 1 + (m_BlindnessTicks / Server()->TickSpeed());
-		GameServer()->SendBroadcast_Localization(m_pPlayer->GetCID(), BROADCAST_PRIORITY_EFFECTSTATE, BROADCAST_DURATION_REALTIME,
+		GameServer()->SendBroadcast_Localization(m_pPlayer->GetCid(), BROADCAST_PRIORITY_EFFECTSTATE, BROADCAST_DURATION_REALTIME,
 			_("You are blinded: {sec:EffectDuration}"),
 			"EffectDuration", &EffectSec,
 			nullptr);
@@ -262,7 +262,7 @@ void CInfClassCharacter::TickDeferred()
 
 	if(Events & COREEVENT_AIR_JUMP)
 	{
-		const int64_t MaskOnlyBlind = GameController()->GetBlindCharactersMask(GetCID());
+		const int64_t MaskOnlyBlind = GameController()->GetBlindCharactersMask(GetCid());
 		if(MaskOnlyBlind)
 		{
 			GameServer()->CreateSound(GetPos(), SOUND_PLAYER_AIRJUMP, MaskOnlyBlind);
@@ -270,7 +270,7 @@ void CInfClassCharacter::TickDeferred()
 	}
 
 	// Ghost events
-	int64_t MaskEsceptSelf = CmaskAllExceptOne(m_pPlayer->GetCID());
+	int64_t MaskEsceptSelf = CmaskAllExceptOne(m_pPlayer->GetCid());
 
 	if(Events & COREEVENT_HOOK_ATTACH_PLAYER)
 		GameServer()->CreateSound(GetPos(), SOUND_HOOK_ATTACH_PLAYER, CmaskAll());
@@ -306,9 +306,9 @@ void CInfClassCharacter::TickPaused()
 
 void CInfClassCharacter::Snap(int SnappingClient)
 {
-	int ID = GetCID();
+	int Id = GetCid();
 
-	if(!Server()->Translate(ID, SnappingClient))
+	if(!Server()->Translate(Id, SnappingClient))
 		return;
 
 	if(!CanSnapCharacter(SnappingClient))
@@ -330,9 +330,9 @@ void CInfClassCharacter::Snap(int SnappingClient)
 		m_pClass->OnCharacterSnap(SnappingClient);
 	}
 
-	SnapCharacter(SnappingClient, ID);
+	SnapCharacter(SnappingClient, Id);
 
-	CNetObj_DDNetCharacter *pDDNetCharacter = Server()->SnapNewItem<CNetObj_DDNetCharacter>(ID);
+	CNetObj_DDNetCharacter *pDDNetCharacter = Server()->SnapNewItem<CNetObj_DDNetCharacter>(Id);
 	if(!pDDNetCharacter)
 		return;
 
@@ -401,13 +401,13 @@ void CInfClassCharacter::SpecialSnapForClient(int SnappingClient, bool *pDoSnap)
 {
 	CInfClassPlayer *pDestClient = GameController()->GetPlayer(SnappingClient);
 	CInfClassCharacter *pDestCharacter = GameController()->GetCharacter(SnappingClient);
-	if((GetCID() != SnappingClient) && pDestCharacter && pDestCharacter->IsBlind())
+	if((GetCid() != SnappingClient) && pDestCharacter && pDestCharacter->IsBlind())
 	{
 		*pDoSnap = false;
 		return;
 	}
 
-	if(IsInvisible() && !GameController()->CanSeeDetails(SnappingClient, GetCID()))
+	if(IsInvisible() && !GameController()->CanSeeDetails(SnappingClient, GetCid()))
 	{
 		*pDoSnap = false;
 		return;
@@ -502,8 +502,8 @@ void CInfClassCharacter::FireWeapon()
 	bool WillFire = false;
 	if(CountInput(m_LatestPrevInput.m_Fire, m_LatestInput.m_Fire).m_Presses)
 		WillFire = true;
-	else if(FullAuto && (m_LatestInput.m_Fire&1) && (m_aWeapons[m_ActiveWeapon].m_Ammo || (GetInfWeaponID(m_ActiveWeapon) == INFWEAPON::MERCENARY_GRENADE)
-																					   || (GetInfWeaponID(m_ActiveWeapon) == INFWEAPON::MEDIC_GRENADE)))
+	else if(FullAuto && (m_LatestInput.m_Fire&1) && (m_aWeapons[m_ActiveWeapon].m_Ammo || (GetInfWeaponId(m_ActiveWeapon) == INFWEAPON::MERCENARY_GRENADE)
+																					   || (GetInfWeaponId(m_ActiveWeapon) == INFWEAPON::MEDIC_GRENADE)))
 	{
 		WillFire = true;
 	}
@@ -522,7 +522,7 @@ void CInfClassCharacter::FireWeapon()
 		return;
 	}
 
-	const INFWEAPON InfWeaponID = GetInfWeaponID(m_ActiveWeapon);
+	const INFWEAPON InfWeaponId = GetInfWeaponId(m_ActiveWeapon);
 
 	WeaponFireContext FireContext;
 	FireContext.Weapon = m_ActiveWeapon;
@@ -530,7 +530,7 @@ void CInfClassCharacter::FireWeapon()
 	FireContext.AmmoConsumed = 1;
 	FireContext.AmmoAvailable = m_aWeapons[m_ActiveWeapon].m_Ammo;
 	FireContext.NoAmmo = FireContext.AmmoAvailable == 0;
-	FireContext.ReloadInterval = Server()->GetFireDelay(InfWeaponID) / 1000.0f;
+	FireContext.ReloadInterval = Server()->GetFireDelay(InfWeaponId) / 1000.0f;
 
 	GetClass()->OnWeaponFired(&FireContext);
 
@@ -636,7 +636,7 @@ bool CInfClassCharacter::TakeDamage(const vec2 &Force, float FloatDmg, int From,
 		DamageContext.Force = vec2(0, 0);
 	}
 
-	if((From >= 0) && (From != GetCID()) && (DamageContext.Force.x || DamageContext.Force.y))
+	if((From >= 0) && (From != GetCid()) && (DamageContext.Force.x || DamageContext.Force.y))
 	{
 		const float CurrentSpeed = length(m_Core.m_Vel);
 		const float AddedForce = length(DamageContext.Force);
@@ -653,7 +653,7 @@ bool CInfClassCharacter::TakeDamage(const vec2 &Force, float FloatDmg, int From,
 		Dmg = 0;
 	}
 
-	if(From != GetCID() && pKillerPlayer)
+	if(From != GetCid() && pKillerPlayer)
 	{
 		if(IsInfected())
 		{
@@ -675,7 +675,7 @@ bool CInfClassCharacter::TakeDamage(const vec2 &Force, float FloatDmg, int From,
 /* INFECTION MODIFICATION END *****************************************/
 
 	// m_pPlayer only inflicts half damage on self
-	if(From == GetCID())
+	if(From == GetCid())
 	{
 		if(Mode == TAKEDAMAGEMODE::ALLOW_SELFHARM)
 			Dmg = Dmg ? maximum(1, Dmg / 2) : 0;
@@ -737,7 +737,7 @@ bool CInfClassCharacter::TakeDamage(const vec2 &Force, float FloatDmg, int From,
 		}
 		SetHealthArmor(Health, Armor);
 
-		if(From >= 0 && From != GetCID())
+		if(From >= 0 && From != GetCid())
 			GameServer()->SendHitSound(From);
 	}
 /* INFECTION MODIFICATION END *****************************************/
@@ -762,13 +762,13 @@ bool CInfClassCharacter::TakeDamage(const vec2 &Force, float FloatDmg, int From,
 		char aBuf[256];
 		str_format(aBuf, sizeof(aBuf), "kill killer='%s' victim='%s' weapon=%d",
 			Server()->ClientName(From),
-			Server()->ClientName(GetCID()), Weapon);
+			Server()->ClientName(GetCid()), Weapon);
 		GameServer()->Console()->Print(IConsole::OUTPUT_LEVEL_DEBUG, "game", aBuf);
 
 		DeathContext Context;
 		GetDeathContext(DamageContext, &Context);
 
-		GameController()->SendKillMessage(GetCID(), Context);
+		GameController()->SendKillMessage(GetCid(), Context);
 	}
 /* INFECTION MODIFICATION END *****************************************/
 
@@ -782,7 +782,7 @@ bool CInfClassCharacter::TakeDamage(const vec2 &Force, float FloatDmg, int From,
 	return true;
 }
 
-bool CInfClassCharacter::Heal(int HitPoints, int FromCID)
+bool CInfClassCharacter::Heal(int HitPoints, int FromCid)
 {
 	if(GetClass() && GetClass()->IsHealingDisabled())
 	{
@@ -796,19 +796,19 @@ bool CInfClassCharacter::Heal(int HitPoints, int FromCID)
 	{
 		SetEmote(EMOTE_HAPPY, Server()->Tick() + Server()->TickSpeed());
 		int Sound = HadFullHealth ? SOUND_PICKUP_ARMOR : SOUND_PICKUP_HEALTH;
-		GameContext()->CreateSound(GetPos(), Sound, CmaskOne(GetCID()));
+		GameContext()->CreateSound(GetPos(), Sound, CmaskOne(GetCid()));
 
-		if(FromCID >= 0)
+		if(FromCid >= 0)
 		{
 			const float HealerHelperDuration = 20;
-			AddHelper(FromCID, HealerHelperDuration);
+			AddHelper(FromCid, HealerHelperDuration);
 		}
 	}
 
 	return Healed;
 }
 
-bool CInfClassCharacter::GiveHealth(int HitPoints, int FromCID)
+bool CInfClassCharacter::GiveHealth(int HitPoints, int FromCid)
 {
 	if(GetClass() && GetClass()->IsHealingDisabled())
 	{
@@ -821,19 +821,19 @@ bool CInfClassCharacter::GiveHealth(int HitPoints, int FromCID)
 	{
 		SetEmote(EMOTE_HAPPY, Server()->Tick() + Server()->TickSpeed());
 		int Sound = SOUND_PICKUP_HEALTH;
-		GameContext()->CreateSound(GetPos(), Sound, CmaskOne(GetCID()));
+		GameContext()->CreateSound(GetPos(), Sound, CmaskOne(GetCid()));
 
-		if(FromCID >= 0)
+		if(FromCid >= 0)
 		{
 			const float HealerHelperDuration = 20;
-			AddHelper(FromCID, HealerHelperDuration);
+			AddHelper(FromCid, HealerHelperDuration);
 		}
 	}
 
 	return Healed;
 }
 
-bool CInfClassCharacter::GiveArmor(int HitPoints, int FromCID)
+bool CInfClassCharacter::GiveArmor(int HitPoints, int FromCid)
 {
 	if(GetClass() && GetClass()->IsHealingDisabled())
 	{
@@ -846,12 +846,12 @@ bool CInfClassCharacter::GiveArmor(int HitPoints, int FromCID)
 	{
 		SetEmote(EMOTE_HAPPY, Server()->Tick() + Server()->TickSpeed());
 		int Sound = SOUND_PICKUP_ARMOR;
-		GameContext()->CreateSound(GetPos(), Sound, CmaskOne(GetCID()));
+		GameContext()->CreateSound(GetPos(), Sound, CmaskOne(GetCid()));
 
-		if(FromCID >= 0)
+		if(FromCid >= 0)
 		{
 			const float HealerHelperDuration = 20;
-			AddHelper(FromCID, HealerHelperDuration);
+			AddHelper(FromCid, HealerHelperDuration);
 		}
 	}
 
@@ -939,7 +939,7 @@ void CInfClassCharacter::PrepareToDie(const DeathContext &Context, bool *pRefuse
 		break;
 	}
 
-	if(Context.Killer == GetCID())
+	if(Context.Killer == GetCid())
 	{
 		return;
 	}
@@ -977,7 +977,7 @@ bool CInfClassCharacter::IsInSlowMotion() const
 	return m_SlowMotionTick > 0;
 }
 
-float CInfClassCharacter::SlowMotionEffect(float Duration, int FromCID)
+float CInfClassCharacter::SlowMotionEffect(float Duration, int FromCid)
 {
 	if(Duration == 0)
 		return 0.0f;
@@ -997,7 +997,7 @@ float CInfClassCharacter::SlowMotionEffect(float Duration, int FromCID)
 	}
 
 	m_SlowMotionTick = NewSlowTick;
-	m_SlowEffectApplicant = FromCID;
+	m_SlowEffectApplicant = FromCid;
 
 	return AddedDuration;
 }
@@ -1041,12 +1041,12 @@ void CInfClassCharacter::ResetHookInput()
 	m_Input.m_Hook = 0;
 }
 
-void CInfClassCharacter::AddHelper(int HelperCID, float Time)
+void CInfClassCharacter::AddHelper(int HelperCid, float Time)
 {
-	if(HelperCID == GetCID())
+	if(HelperCid == GetCid())
 		return;
 
-	if(HelperCID < 0)
+	if(HelperCid < 0)
 		return;
 
 	int HelpTicks = Server()->TickSpeed() * Time;
@@ -1057,14 +1057,14 @@ void CInfClassCharacter::AddHelper(int HelperCID, float Time)
 		return;
 	}
 
-	m_LastHelper.m_CID = HelperCID;
+	m_LastHelper.m_Cid = HelperCid;
 	m_LastHelper.m_Tick = HelpTicks;
-	dbg_msg("tracking", "%d added as a helper of %d for %d", HelperCID, GetCID(), m_LastHelper.m_Tick);
+	dbg_msg("tracking", "%d added as a helper of %d for %d", HelperCid, GetCid(), m_LastHelper.m_Tick);
 }
 
 void CInfClassCharacter::ResetHelpers()
 {
-	m_LastHelper.m_CID = -1;
+	m_LastHelper.m_Cid = -1;
 	m_LastHelper.m_Tick = 0;
 }
 
@@ -1139,7 +1139,7 @@ void CInfClassCharacter::GetDeathContext(const SDamageContext &DamageContext, De
 
 		if(Enforcer.m_DamageType == EDamageType::WHITE_HOLE)
 		{
-			AddUnique(Enforcer.m_CID, &MustBeKillerOrAssistant);
+			AddUnique(Enforcer.m_Cid, &MustBeKillerOrAssistant);
 			break;
 		}
 	}
@@ -1205,7 +1205,7 @@ void CInfClassCharacter::GetDeathContext(const SDamageContext &DamageContext, De
 		AddUnique(m_LastBlinder, &Assistants);
 	}
 
-	if(GivenKiller != GetCID())
+	if(GivenKiller != GetCid())
 	{
 		AddUnique(GivenKiller, &Killers);
 	}
@@ -1269,7 +1269,7 @@ void CInfClassCharacter::GetDeathContext(const SDamageContext &DamageContext, De
 		{
 			if(info.m_Tick > m_LastHookerTick)
 			{
-				AddUnique(info.m_CID, &Enforcers);
+				AddUnique(info.m_Cid, &Enforcers);
 			}
 		}
 
@@ -1282,16 +1282,16 @@ void CInfClassCharacter::GetDeathContext(const SDamageContext &DamageContext, De
 	int Killer = Killers.IsEmpty() ? GivenKiller : Killers.First();
 	int Assistant = -1;
 
-	if((Killer >= 0) && (GetCID() != Killer))
+	if((Killer >= 0) && (GetCid() != Killer))
 	{
 		const CInfClassCharacter *pKiller = GameController()->GetCharacter(Killer);
 		if(pKiller && pKiller->m_LastHelper.m_Tick > 0)
 		{
 			// Check if the helper is in game
-			const CInfClassCharacter *pKillerHelper = GameController()->GetCharacter(pKiller->m_LastHelper.m_CID);
+			const CInfClassCharacter *pKillerHelper = GameController()->GetCharacter(pKiller->m_LastHelper.m_Cid);
 			if(pKillerHelper)
 			{
-				AddUnique(pKiller->m_LastHelper.m_CID, &Assistants);
+				AddUnique(pKiller->m_LastHelper.m_Cid, &Assistants);
 			}
 		}
 	}
@@ -1340,7 +1340,7 @@ void CInfClassCharacter::UpdateLastHookers(const ClientsArray &Hookers, int Hook
 	m_LastHookerTick = HookerTick;
 }
 
-void CInfClassCharacter::UpdateLastEnforcer(int ClientID, float Force, EDamageType DamageType, int Tick)
+void CInfClassCharacter::UpdateLastEnforcer(int ClientId, float Force, EDamageType DamageType, int Tick)
 {
 	if(Force < 3)
 		return;
@@ -1352,7 +1352,7 @@ void CInfClassCharacter::UpdateLastEnforcer(int ClientID, float Force, EDamageTy
 
 	if(!m_EnforcersInfo.IsEmpty())
 	{
-		if(m_EnforcersInfo.Last().m_CID == ClientID)
+		if(m_EnforcersInfo.Last().m_Cid == ClientId)
 		{
 			m_EnforcersInfo.Last().m_Tick = Tick;
 			return;
@@ -1360,38 +1360,38 @@ void CInfClassCharacter::UpdateLastEnforcer(int ClientID, float Force, EDamageTy
 	}
 
 	EnforcerInfo Info;
-	Info.m_CID = ClientID;
+	Info.m_Cid = ClientId;
 	Info.m_DamageType = DamageType;
 	Info.m_Tick = Tick;
 
 	m_EnforcersInfo.Add(Info);
 }
 
-void CInfClassCharacter::RemoveReferencesToCID(int ClientID)
+void CInfClassCharacter::RemoveReferencesToCid(int ClientId)
 {
 	for(int i = 0; i < m_EnforcersInfo.Size(); ++i)
 	{
-		if(m_EnforcersInfo.At(i).m_CID == ClientID)
+		if(m_EnforcersInfo.At(i).m_Cid == ClientId)
 		{
 			m_EnforcersInfo.RemoveAt(i);
 		}
 	}
 
-	if(m_LastFreezer == ClientID)
+	if(m_LastFreezer == ClientId)
 	{
 		m_LastFreezer = -1;
 	}
 
-	if(m_LastHelper.m_CID == ClientID)
+	if(m_LastHelper.m_Cid == ClientId)
 	{
-		m_LastHelper.m_CID = -1;
+		m_LastHelper.m_Cid = -1;
 	}
 
-	m_LastHookers.RemoveOne(ClientID);
+	m_LastHookers.RemoveOne(ClientId);
 
 	for(int i = m_TakenDamageDetails.Size() - 1; i >= 0; --i)
 	{
-		if(m_TakenDamageDetails.At(i).From == ClientID)
+		if(m_TakenDamageDetails.At(i).From == ClientId)
 		{
 			m_TakenDamageDetails.RemoveAt(i);
 		}
@@ -1519,12 +1519,12 @@ void CInfClassCharacter::SetSuperWeaponIndicatorEnabled(bool Enabled)
 	// create an indicator object
 	if(Enabled)
 	{
-		new CSuperWeaponIndicator(GameServer(), GetPos(), GetCID());
+		new CSuperWeaponIndicator(GameServer(), GetPos(), GetCid());
 	}
 	m_HasIndicator = Enabled;
 }
 
-INFWEAPON CInfClassCharacter::GetInfWeaponID(int WID) const
+INFWEAPON CInfClassCharacter::GetInfWeaponId(int WID) const
 {
 	if(WID < 0)
 		WID = m_ActiveWeapon;
@@ -1651,7 +1651,7 @@ void CInfClassCharacter::HandleMapMenu()
 	if(length(CursorPos) < 100.0f)
 	{
 		pPlayer->m_MapMenuItem = -1;
-		GameServer()->SendBroadcast_Localization(GetCID(),
+		GameServer()->SendBroadcast_Localization(GetCid(),
 			BROADCAST_PRIORITY_INTERFACE, BROADCAST_DURATION_REALTIME,
 			_("Choose your class"), NULL);
 
@@ -1663,7 +1663,7 @@ void CInfClassCharacter::HandleMapMenu()
 	int HoveredMenuItem = ((int)((Angle + AngleStep / 2.0f) / AngleStep)) % CMapConverter::NUM_MENUCLASS;
 	if(HoveredMenuItem == CMapConverter::MENUCLASS_RANDOM)
 	{
-		GameServer()->SendBroadcast_Localization(GetCID(),
+		GameServer()->SendBroadcast_Localization(GetCid(),
 			BROADCAST_PRIORITY_INTERFACE, BROADCAST_DURATION_REALTIME, _("Random choice"), nullptr);
 		pPlayer->m_MapMenuItem = HoveredMenuItem;
 	}
@@ -1677,20 +1677,20 @@ void CInfClassCharacter::HandleMapMenu()
 		case CLASS_AVAILABILITY::AVAILABLE:
 		{
 			const char *pClassName = CInfClassGameController::GetClassDisplayName(NewClass);
-			GameServer()->SendBroadcast_Localization(GetCID(),
+			GameServer()->SendBroadcast_Localization(GetCid(),
 				BROADCAST_PRIORITY_INTERFACE, BROADCAST_DURATION_REALTIME,
 				pClassName, nullptr);
 		}
 		break;
 		case CLASS_AVAILABILITY::DISABLED:
-			GameServer()->SendBroadcast_Localization(GetCID(),
+			GameServer()->SendBroadcast_Localization(GetCid(),
 				BROADCAST_PRIORITY_INTERFACE, BROADCAST_DURATION_REALTIME,
 				_("The class is disabled"), nullptr);
 			break;
 		case CLASS_AVAILABILITY::NEED_MORE_PLAYERS:
 		{
 			int MinPlayers = GameController()->GetMinPlayersForClass(NewClass);
-			GameServer()->SendBroadcast_Localization_P(GetCID(),
+			GameServer()->SendBroadcast_Localization_P(GetCid(),
 				BROADCAST_PRIORITY_INTERFACE, BROADCAST_DURATION_REALTIME,
 				MinPlayers,
 				_P("Need at least {int:MinPlayers} player",
@@ -1700,7 +1700,7 @@ void CInfClassCharacter::HandleMapMenu()
 		}
 		break;
 		case CLASS_AVAILABILITY::LIMIT_EXCEEDED:
-			GameServer()->SendBroadcast_Localization(GetCID(),
+			GameServer()->SendBroadcast_Localization(GetCid(),
 				BROADCAST_PRIORITY_INTERFACE, BROADCAST_DURATION_REALTIME,
 				_("The class limit exceeded"), nullptr);
 			break;
@@ -1748,7 +1748,7 @@ void CInfClassCharacter::HandleMapMenuClicked()
 
 		char aBuf[256];
 		str_format(aBuf, sizeof(aBuf), "choose_class player='%s' class='%s' random='%d'",
-			Server()->ClientName(GetCID()), toString(NewClass), Random);
+			Server()->ClientName(GetCid()), toString(NewClass), Random);
 		GameServer()->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "game", aBuf);
 
 		if(Random)
@@ -1842,7 +1842,7 @@ void CInfClassCharacter::HandleIndirectKillerCleanup()
 		{
 			if(Server()->Tick() > info.m_Tick + Server()->TickSpeed() * LastEnforcerTimeoutInSeconds)
 			{
-				info.m_CID = -1;
+				info.m_Cid = -1;
 				info.m_Tick = -1;
 			}
 		}
@@ -1878,7 +1878,7 @@ void CInfClassCharacter::Die(int Killer, int Weapon)
 		DamageType = EDamageType::GAME;
 		break;
 	default:
-		dbg_msg("infclass", "Invalid Die() event: victim=%d, killer=%d, weapon=%d", GetCID(), Killer, Weapon);
+		dbg_msg("infclass", "Invalid Die() event: victim=%d, killer=%d, weapon=%d", GetCid(), Killer, Weapon);
 	}
 
 	Die(Killer, DamageType);
@@ -1886,7 +1886,7 @@ void CInfClassCharacter::Die(int Killer, int Weapon)
 
 void CInfClassCharacter::Die(int Killer, EDamageType DamageType)
 {
-	dbg_msg("server", "CInfClassCharacter::Die: victim: %d, killer: %d, DT: %d", GetCID(), Killer, static_cast<int>(DamageType));
+	dbg_msg("server", "CInfClassCharacter::Die: victim: %d, killer: %d, DT: %d", GetCid(), Killer, static_cast<int>(DamageType));
 
 	SDamageContext DamageContext;
 	DamageContext.Killer = Killer;
@@ -1933,8 +1933,8 @@ void CInfClassCharacter::Die(const DeathContext &Context)
 
 	m_Alive = false;
 	GameWorld()->RemoveEntity(this);
-	GameWorld()->m_Core.m_apCharacters[GetCID()] = 0;
-	GameServer()->CreateDeath(GetPos(), GetCID());
+	GameWorld()->m_Core.m_apCharacters[GetCid()] = 0;
+	GameServer()->CreateDeath(GetPos(), GetCid());
 }
 
 void CInfClassCharacter::GiveWeapon(int Weapon, int Ammo)
@@ -1990,11 +1990,11 @@ int CInfClassCharacter::GetAmmo(int Weapon) const
 	return m_aWeapons[Weapon].m_Ammo;
 }
 
-int CInfClassCharacter::GetCID() const
+int CInfClassCharacter::GetCid() const
 {
 	if(m_pPlayer)
 	{
-		return m_pPlayer->GetCID();
+		return m_pPlayer->GetCid();
 	}
 
 	return -1;
@@ -2059,17 +2059,17 @@ int CInfClassCharacter::GetHookedPlayer() const
 	return m_Core.HookedPlayer();
 }
 
-void CInfClassCharacter::SetHookedPlayer(int ClientID)
+void CInfClassCharacter::SetHookedPlayer(int ClientId)
 {
-	m_Core.SetHookedPlayer(ClientID);
+	m_Core.SetHookedPlayer(ClientId);
 
-	if(ClientID >= 0)
+	if(ClientId >= 0)
 	{
 		m_Core.m_HookTick = 0;
 		m_Core.m_TriggeredEvents |= COREEVENT_HOOK_ATTACH_PLAYER;
 		m_Core.m_HookState = HOOK_GRABBED;
 
-		const CInfClassCharacter *pCharacter = GameController()->GetCharacter(ClientID);
+		const CInfClassCharacter *pCharacter = GameController()->GetCharacter(ClientId);
 		const CCharacterCore *pCharCore = pCharacter ? &pCharacter->m_Core : nullptr;
 		if(pCharCore)
 		{
@@ -2157,7 +2157,7 @@ void CInfClassCharacter::Unfreeze()
 
 	if(m_pPlayer)
 	{
-		GameServer()->ClearBroadcast(m_pPlayer->GetCID(), BROADCAST_PRIORITY_EFFECTSTATE);
+		GameServer()->ClearBroadcast(m_pPlayer->GetCid(), BROADCAST_PRIORITY_EFFECTSTATE);
 	}
 	GameServer()->CreatePlayerSpawn(GetPos());
 
@@ -2168,7 +2168,7 @@ void CInfClassCharacter::Unfreeze()
 	}
 }
 
-void CInfClassCharacter::TryUnfreeze(int UnfreezerCID)
+void CInfClassCharacter::TryUnfreeze(int UnfreezerCid)
 {
 	if(!IsFrozen())
 		return;
@@ -2180,10 +2180,10 @@ void CInfClassCharacter::TryUnfreeze(int UnfreezerCID)
 
 	Unfreeze();
 
-	if(UnfreezerCID >= 0)
+	if(UnfreezerCid >= 0)
 	{
 		const float UnfreezerHelperDuration = 10;
-		AddHelper(UnfreezerCID, UnfreezerHelperDuration);
+		AddHelper(UnfreezerCid, UnfreezerHelperDuration);
 	}
 }
 
@@ -2197,12 +2197,12 @@ void CInfClassCharacter::ResetBlinding()
 	m_BlindnessTicks = 0;
 }
 
-void CInfClassCharacter::MakeBlind(int ClientID, float Duration)
+void CInfClassCharacter::MakeBlind(int ClientId, float Duration)
 {
 	m_BlindnessTicks = Server()->TickSpeed() * Duration;
-	m_LastBlinder = ClientID;
+	m_LastBlinder = ClientId;
 
-	GameServer()->SendEmoticon(GetCID(), EMOTICON_QUESTION);
+	GameServer()->SendEmoticon(GetCid(), EMOTICON_QUESTION);
 }
 
 float CInfClassCharacter::WebHookLength() const
@@ -2259,7 +2259,7 @@ void CInfClassCharacter::PreCoreTick()
 		else
 		{
 			int FreezeSec = 1 + (m_FrozenTime / Server()->TickSpeed());
-			GameServer()->SendBroadcast_Localization(m_pPlayer->GetCID(), BROADCAST_PRIORITY_EFFECTSTATE, BROADCAST_DURATION_REALTIME, _("You are frozen: {sec:EffectDuration}"), "EffectDuration", &FreezeSec, NULL);
+			GameServer()->SendBroadcast_Localization(m_pPlayer->GetCid(), BROADCAST_PRIORITY_EFFECTSTATE, BROADCAST_DURATION_REALTIME, _("You are frozen: {sec:EffectDuration}"), "EffectDuration", &FreezeSec, NULL);
 		}
 	}
 
@@ -2270,7 +2270,7 @@ void CInfClassCharacter::PreCoreTick()
 		if(m_SlowMotionTick > 0)
 		{
 			int SloMoSec = 1 + (m_SlowMotionTick / Server()->TickSpeed());
-			GameServer()->SendBroadcast_Localization(m_pPlayer->GetCID(), BROADCAST_PRIORITY_EFFECTSTATE, BROADCAST_DURATION_REALTIME, _("You are slowed: {sec:EffectDuration}"), "EffectDuration", &SloMoSec, NULL);
+			GameServer()->SendBroadcast_Localization(m_pPlayer->GetCid(), BROADCAST_PRIORITY_EFFECTSTATE, BROADCAST_DURATION_REALTIME, _("You are slowed: {sec:EffectDuration}"), "EffectDuration", &SloMoSec, NULL);
 		}
 	}
 
@@ -2361,7 +2361,7 @@ void CInfClassCharacter::PostCoreTick()
 	m_Input = m_InputBackup;
 }
 
-void CInfClassCharacter::SnapCharacter(int SnappingClient, int ID)
+void CInfClassCharacter::SnapCharacter(int SnappingClient, int Id)
 {
 	CCharacterCore *pCore;
 	int Tick, Weapon = m_ActiveWeapon;
@@ -2380,7 +2380,7 @@ void CInfClassCharacter::SnapCharacter(int SnappingClient, int ID)
 
 	int EmoteNormal = m_pPlayer->GetDefaultEmote();
 
-	CNetObj_Character *pCharacter = Server()->SnapNewItem<CNetObj_Character>(ID);
+	CNetObj_Character *pCharacter = Server()->SnapNewItem<CNetObj_Character>(Id);
 	if(!pCharacter)
 		return;
 	pCharacter->m_Tick = Tick;
@@ -2397,7 +2397,7 @@ void CInfClassCharacter::SnapCharacter(int SnappingClient, int ID)
 	pCharacter->m_Armor = 0;
 
 	/* INFECTION MODIFICATION START ***************************************/
-	if(GetInfWeaponID(m_ActiveWeapon) == INFWEAPON::NINJA_HAMMER)
+	if(GetInfWeaponId(m_ActiveWeapon) == INFWEAPON::NINJA_HAMMER)
 	{
 		Weapon = WEAPON_NINJA;
 	}
@@ -2421,20 +2421,20 @@ void CInfClassCharacter::SnapCharacter(int SnappingClient, int ID)
 
 	const CInfClassPlayer *pSnappingClient = GameController()->GetPlayer(SnappingClient);
 	int ClientVersion = Server()->GetClientInfclassVersion(SnappingClient);
-	int SnappingSpectatorID = -1;
+	int SnappingSpectatorId = -1;
 	if(pSnappingClient)
 	{
-		SnappingSpectatorID = pSnappingClient->m_SpectatorID;
-		int FollowingCID = pSnappingClient->TargetToFollow();
-		if(FollowingCID >= 0)
+		SnappingSpectatorId = pSnappingClient->m_SpectatorId;
+		int FollowingCid = pSnappingClient->TargetToFollow();
+		if(FollowingCid >= 0)
 		{
-			SnappingSpectatorID = FollowingCID;
+			SnappingSpectatorId = FollowingCid;
 		}
 	}
 
 	int NormalizedArmor = clamp<int>(std::ceil(m_Armor * 10.0f / m_MaxArmor), 0, 10);
-	if(GameController()->CanSeeDetails(SnappingClient, GetCID()) ||
-		(!g_Config.m_SvStrictSpectateMode && m_pPlayer->GetCID() == SnappingSpectatorID))
+	if(GameController()->CanSeeDetails(SnappingClient, GetCid()) ||
+		(!g_Config.m_SvStrictSpectateMode && m_pPlayer->GetCid() == SnappingSpectatorId))
 	{
 		pCharacter->m_Health = m_Health;
 		pCharacter->m_Armor = NormalizedArmor;
@@ -2456,7 +2456,7 @@ void CInfClassCharacter::SnapCharacter(int SnappingClient, int ID)
 	}
 
 	/* INFECTION MODIFICATION START ***************************************/
-	if(GetInfWeaponID(m_ActiveWeapon) == INFWEAPON::MERCENARY_GUN)
+	if(GetInfWeaponId(m_ActiveWeapon) == INFWEAPON::MERCENARY_GUN)
 	{
 		pCharacter->m_AmmoCount /= (Server()->GetMaxAmmo(INFWEAPON::MERCENARY_GUN) / 10);
 	}
@@ -2511,7 +2511,7 @@ void CInfClassCharacter::DestroyChildEntities()
 	for(const auto EntityType : InfCEntities) {
 		for(CInfCEntity *p = (CInfCEntity*) GameWorld()->FindFirst(EntityType); p; p = (CInfCEntity*) p->TypeNext())
 		{
-			if(p->GetOwner() != m_pPlayer->GetCID())
+			if(p->GetOwner() != m_pPlayer->GetCid())
 				continue;
 
 			GameServer()->m_World.DestroyEntity(p);
@@ -2521,22 +2521,22 @@ void CInfClassCharacter::DestroyChildEntities()
 	m_HookMode = 0;
 }
 
-void CInfClassCharacter::FreeChildSnapIDs()
+void CInfClassCharacter::FreeChildSnapIds()
 {
-	if(m_FlagID >= 0)
+	if(m_FlagId >= 0)
 	{
-		Server()->SnapFreeID(m_FlagID);
-		m_FlagID = -1;
+		Server()->SnapFreeId(m_FlagId);
+		m_FlagId = -1;
 	}
-	if(m_HeartID >= 0)
+	if(m_HeartId >= 0)
 	{
-		Server()->SnapFreeID(m_HeartID);
-		m_HeartID = -1;
+		Server()->SnapFreeId(m_HeartId);
+		m_HeartId = -1;
 	}
-	if(m_CursorID >= 0)
+	if(m_CursorId >= 0)
 	{
-		Server()->SnapFreeID(m_CursorID);
-		m_CursorID = -1;
+		Server()->SnapFreeId(m_CursorId);
+		m_CursorId = -1;
 	}
 }
 
@@ -2684,7 +2684,7 @@ void CInfClassCharacter::TeleToId(int TeleNumber, int TeleType)
 	if(TeleType == TILE_TELEINEVIL)
 	{
 		m_Core.m_Vel = vec2(0, 0);
-		GameWorld()->ReleaseHooked(GetPlayer()->GetCID());
+		GameWorld()->ReleaseHooked(GetPlayer()->GetCid());
 	}
 
 	ResetHook();

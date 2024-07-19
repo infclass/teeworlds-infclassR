@@ -14,9 +14,9 @@
 CHeroFlag::CHeroFlag(CGameContext *pGameContext, int Owner)
 	: CInfCEntity(pGameContext, CGameWorld::ENTTYPE_HERO_FLAG, vec2(), Owner, ms_PhysSize)
 {
-	for(int &ID : m_IDs)
+	for(int &Id : m_Ids)
 	{
-		ID = Server()->SnapNewID();
+		Id = Server()->SnapNewId();
 	}
 
 	FindPosition();
@@ -25,9 +25,9 @@ CHeroFlag::CHeroFlag(CGameContext *pGameContext, int Owner)
 
 CHeroFlag::~CHeroFlag()
 {
-	for(int ID : m_IDs)
+	for(int Id : m_Ids)
 	{
-		Server()->SnapFreeID(ID);
+		Server()->SnapFreeId(Id);
 	}
 }
 
@@ -89,9 +89,9 @@ void CHeroFlag::Tick()
 
 		if(Server()->GetActivePlayerCount() > 3)
 		{
-			int ClientID = pOwner->GetCID();
-			Server()->RoundStatistics()->OnScoreEvent(ClientID, SCOREEVENT_HERO_FLAG, pOwner->GetPlayerClass(), Server()->ClientName(ClientID), GameServer()->Console());
-			GameServer()->SendScoreSound(pOwner->GetCID());
+			int ClientId = pOwner->GetCid();
+			Server()->RoundStatistics()->OnScoreEvent(ClientId, SCOREEVENT_HERO_FLAG, pOwner->GetPlayerClass(), Server()->ClientName(ClientId), GameServer()->Console());
+			GameServer()->SendScoreSound(pOwner->GetCid());
 		}
 	}
 }
@@ -139,11 +139,11 @@ void CHeroFlag::Snap(int SnappingClient)
 			vec2 PosStart = DecorationsPivot + vec2(cos(AngleStart + AngleStep*i), sin(AngleStart + AngleStep*i)) * Radius;
 			int Type = i % 2 == 0 ? POWERUP_ARMOR : POWERUP_HEALTH;
 			int Subtype = 0;
-			GameServer()->SnapPickup(Context, m_IDs[i], PosStart, Type, Subtype);
+			GameServer()->SnapPickup(Context, m_Ids[i], PosStart, Type, Subtype);
 		}
 	}
 
-	CNetObj_Flag *pFlag = Server()->SnapNewItem<CNetObj_Flag>(m_ID);
+	CNetObj_Flag *pFlag = Server()->SnapNewItem<CNetObj_Flag>(m_Id);
 	if(!pFlag)
 		return;
 

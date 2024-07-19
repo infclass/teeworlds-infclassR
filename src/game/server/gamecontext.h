@@ -151,22 +151,22 @@ public:
 	bool m_aPlayerHasInput[MAX_CLIENTS];
 
 	// returns last input if available otherwise nulled PlayerInput object
-	// ClientID has to be valid
-	CNetObj_PlayerInput GetLastPlayerInput(int ClientID) const;
+	// ClientId has to be valid
+	CNetObj_PlayerInput GetLastPlayerInput(int ClientId) const;
 
 	IGameController *m_pController;
 	CGameWorld m_World;
 
 	// helper functions
-	CPlayer *GetPlayer(int ClientID) const;
-	class CCharacter *GetPlayerChar(int ClientID);
+	CPlayer *GetPlayer(int ClientId) const;
+	class CCharacter *GetPlayerChar(int ClientId);
 
 	// voting
 	void StartVote(const char *pDesc, const char *pCommand, const char *pReason);
 	void EndVote();
-	void SendVoteSet(int ClientID);
-	void SendVoteStatus(int ClientID, int Total, int Yes, int No);
-	void AbortVoteKickOnDisconnect(int ClientID);
+	void SendVoteSet(int ClientId);
+	void SendVoteStatus(int ClientId, int Total, int Yes, int No);
+	void AbortVoteKickOnDisconnect(int ClientId);
 	void RequestVotesUpdate();
 
 	bool HasActiveVote() const;
@@ -202,8 +202,8 @@ public:
 	void CreateSound(vec2 Pos, int Sound, int64_t Mask = -1);
 	void CreateSoundGlobal(int Sound, int Target = -1);
 
-	bool SnapLaserObject(const CSnapContext &Context, int SnapID, const vec2 &To, const vec2 &From, int StartTick, int Owner = -1, int LaserType = -1, int Subtype = -1, int SwitchNumber = -1);
-	bool SnapPickup(const CSnapContext &Context, int SnapID, const vec2 &Pos, int Type, int SubType, int SwitchNumber = 0);
+	bool SnapLaserObject(const CSnapContext &Context, int SnapId, const vec2 &To, const vec2 &From, int StartTick, int Owner = -1, int LaserType = -1, int Subtype = -1, int SwitchNumber = -1);
+	bool SnapPickup(const CSnapContext &Context, int SnapId, const vec2 &Pos, int Type, int SubType, int SwitchNumber = 0);
 
 	enum
 	{
@@ -216,21 +216,21 @@ public:
 	};
 
 	// network
-	void CallVote(int ClientID, const char *aDesc, const char *aCmd, const char *pReason, const char *aChatmsg);
+	void CallVote(int ClientId, const char *aDesc, const char *aCmd, const char *pReason, const char *aChatmsg);
 	void SendChatTarget(int To, const char *pText) override;
-	void SendChat(int ClientID, int Team, const char *pText, int SpamProtectionClientID = -1);
-	void SendEmoticon(int ClientID, int Emoticon);
-	void SendWeaponPickup(int ClientID, int Weapon);
-	void SendMotd(int ClientID);
+	void SendChat(int ClientId, int Team, const char *pText, int SpamProtectionClientId = -1);
+	void SendEmoticon(int ClientId, int Emoticon);
+	void SendWeaponPickup(int ClientId, int Weapon);
+	void SendMotd(int ClientId);
 	void SendKillMessage(int Killer, int Victim, int Weapon, int ModeSpecial);
 
 	//
 	void CheckPureTuning();
-	void SendTuningParams(int ClientID);
-	void SendTuningParams(int ClientID, const CTuningParams &params);
+	void SendTuningParams(int ClientId);
+	void SendTuningParams(int ClientId, const CTuningParams &params);
 
 	struct CVoteOptionServer *GetVoteOption(int Index);
-	void ProgressVoteOptions(int ClientID);
+	void ProgressVoteOptions(int ClientId);
 
 	// engine events
 	void OnInit() override;
@@ -240,37 +240,37 @@ public:
 
 	void OnTick() override;
 	void OnPreSnap() override;
-	void OnSnap(int ClientID) override;
+	void OnSnap(int ClientId) override;
 	void OnPostSnap() override;
 
-	void *PreProcessMsg(int *pMsgID, CUnpacker *pUnpacker, int ClientID);
+	void *PreProcessMsg(int *pMsgId, CUnpacker *pUnpacker, int ClientId);
 	void CensorMessage(char *pCensoredMessage, const char *pMessage, int Size);
-	void OnMessage(int MsgID, CUnpacker *pUnpacker, int ClientID) override;
-	void OnSayNetMessage(const CNetMsg_Cl_Say *pMsg, int ClientID, const CUnpacker *pUnpacker);
-	void OnCallVoteNetMessage(const CNetMsg_Cl_CallVote *pMsg, int ClientID);
-	void OnVoteNetMessage(const CNetMsg_Cl_Vote *pMsg, int ClientID);
-	void OnSetTeamNetMessage(const CNetMsg_Cl_SetTeam *pMsg, int ClientID);
-	void OnIsDDNetLegacyNetMessage(const CNetMsg_Cl_IsDDNetLegacy *pMsg, int ClientID, CUnpacker *pUnpacker);
-	void OnSetSpectatorModeNetMessage(const CNetMsg_Cl_SetSpectatorMode *pMsg, int ClientID);
-	void OnChangeInfoNetMessage(const CNetMsg_Cl_ChangeInfo *pMsg, int ClientID);
-	void OnEmoticonNetMessage(const CNetMsg_Cl_Emoticon *pMsg, int ClientID);
-	void OnKillNetMessage(const CNetMsg_Cl_Kill *pMsg, int ClientID);
-	void OnStartInfoNetMessage(const CNetMsg_Cl_StartInfo *pMsg, int ClientID);
+	void OnMessage(int MsgId, CUnpacker *pUnpacker, int ClientId) override;
+	void OnSayNetMessage(const CNetMsg_Cl_Say *pMsg, int ClientId, const CUnpacker *pUnpacker);
+	void OnCallVoteNetMessage(const CNetMsg_Cl_CallVote *pMsg, int ClientId);
+	void OnVoteNetMessage(const CNetMsg_Cl_Vote *pMsg, int ClientId);
+	void OnSetTeamNetMessage(const CNetMsg_Cl_SetTeam *pMsg, int ClientId);
+	void OnIsDDNetLegacyNetMessage(const CNetMsg_Cl_IsDDNetLegacy *pMsg, int ClientId, CUnpacker *pUnpacker);
+	void OnSetSpectatorModeNetMessage(const CNetMsg_Cl_SetSpectatorMode *pMsg, int ClientId);
+	void OnChangeInfoNetMessage(const CNetMsg_Cl_ChangeInfo *pMsg, int ClientId);
+	void OnEmoticonNetMessage(const CNetMsg_Cl_Emoticon *pMsg, int ClientId);
+	void OnKillNetMessage(const CNetMsg_Cl_Kill *pMsg, int ClientId);
+	void OnStartInfoNetMessage(const CNetMsg_Cl_StartInfo *pMsg, int ClientId);
 
-	bool OnClientDataPersist(int ClientID, void *pData) override;
-	void OnClientConnected(int ClientID, void *pData) override;
-	void OnClientEnter(int ClientID) override;
-	void OnClientDrop(int ClientID, EClientDropType Type, const char *pReason) override;
-	void OnClientPrepareInput(int ClientID, void *pInput) override;
-	void OnClientDirectInput(int ClientID, void *pInput) override;
-	void OnClientPredictedInput(int ClientID, void *pInput) override;
-	void OnClientPredictedEarlyInput(int ClientID, void *pInput) override;
+	bool OnClientDataPersist(int ClientId, void *pData) override;
+	void OnClientConnected(int ClientId, void *pData) override;
+	void OnClientEnter(int ClientId) override;
+	void OnClientDrop(int ClientId, EClientDropType Type, const char *pReason) override;
+	void OnClientPrepareInput(int ClientId, void *pInput) override;
+	void OnClientDirectInput(int ClientId, void *pInput) override;
+	void OnClientPredictedInput(int ClientId, void *pInput) override;
+	void OnClientPredictedEarlyInput(int ClientId, void *pInput) override;
 
-	void OnClientEngineJoin(int ClientID, bool Sixup) override;
-	void OnClientEngineDrop(int ClientID, const char *pReason) override;
+	void OnClientEngineJoin(int ClientId, bool Sixup) override;
+	void OnClientEngineDrop(int ClientId, const char *pReason) override;
 
-	bool IsClientReady(int ClientID) const override;
-	bool IsClientPlayer(int ClientID) const override;
+	bool IsClientReady(int ClientId) const override;
+	bool IsClientPlayer(int ClientId) const override;
 	int PersistentClientDataSize() const override;
 
 	CUuid GameUuid() const override;
@@ -280,24 +280,24 @@ public:
 
 	// DDRace
 	void OnPreTickTeehistorian() override;
-	bool OnClientDDNetVersionKnown(int ClientID);
+	bool OnClientDDNetVersionKnown(int ClientId);
 	void FillAntibot(CAntibotRoundData *pData) override;
-	bool ProcessSpamProtection(int ClientID, bool RespectChatInitialDelay = true);
+	bool ProcessSpamProtection(int ClientId, bool RespectChatInitialDelay = true);
 	// Describes the time when the first player joined the server.
 	int64_t m_NonEmptySince;
 	int64_t m_LastMapVote;
-	int GetClientVersion(int ClientID) const;
+	int GetClientVersion(int ClientId) const;
 	CClientMask ClientsMaskExcludeClientVersionAndHigher(int Version);
-	bool PlayerExists(int ClientID) const override { return m_apPlayers[ClientID]; }
+	bool PlayerExists(int ClientId) const override { return m_apPlayers[ClientId]; }
 	// Returns true if someone is actively moderating.
 	bool PlayerModerating() const;
-	void ForceVote(int EnforcerID, bool Success);
+	void ForceVote(int EnforcerId, bool Success);
 
 	// Checks if player can vote and notify them about the reason
-	bool RateLimitPlayerVote(int ClientID);
-	bool RateLimitPlayerMapVote(int ClientID);
+	bool RateLimitPlayerVote(int ClientId);
+	bool RateLimitPlayerMapVote(int ClientId);
 
-	void OnUpdatePlayerServerInfo(char *aBuf, int BufSize, int ID) override;
+	void OnUpdatePlayerServerInfo(char *aBuf, int BufSize, int Id) override;
 
 /* INFECTION MODIFICATION START ***************************************/
 private:
@@ -329,7 +329,7 @@ private:
 	static void ConGoal(IConsole::IResult *pResult, void *pUserData);
 	static void ConStats(IConsole::IResult *pResult, void *pUserData);
 #endif
-	void ChatHelp(int ClientID, const char *pHelpPage);
+	void ChatHelp(int ClientId, const char *pHelpPage);
 	bool WriteClassHelpPage(dynamic_string *pOutput, const char *pLanguage, EPlayerClass PlayerClass);
 	static void ConLanguage(IConsole::IResult *pResult, void *pUserData);
 	static void ConCmdList(IConsole::IResult *pResult, void *pUserData);
@@ -337,11 +337,11 @@ private:
 	void ConChangeLog(IConsole::IResult *pResult);
 	static void ConReloadChangeLog(IConsole::IResult *pResult, void *pUserData);
 
-	void PrivateMessage(const char* pStr, int ClientID, bool TeamChat);
-	void Whisper(int ClientID, char *pStr);
-	void WhisperID(int ClientID, int VictimID, const char *pMessage);
-	void Converse(int ClientID, const char *pStr);
-	void MutePlayer(const char* pStr, int ClientID);
+	void PrivateMessage(const char* pStr, int ClientId, bool TeamChat);
+	void Whisper(int ClientId, char *pStr);
+	void WhisperId(int ClientId, int VictimId, const char *pMessage);
+	void Converse(int ClientId, const char *pStr);
+	void MutePlayer(const char* pStr, int ClientId);
 
 	void InitGeolocation();
 
@@ -376,10 +376,10 @@ public:
 	void CreateLaserDotEvent(vec2 Pos0, vec2 Pos1, int LifeSpan);
 	void CreateHammerDotEvent(vec2 Pos, int LifeSpan);
 	void CreateLoveEvent(vec2 Pos);
-	void SendHitSound(int ClientID);
-	void SendScoreSound(int ClientID);
-	void AddBroadcast(int ClientID, const char* pText, int Priority, int LifeSpan);
-	void SetClientLanguage(int ClientID, const char *pLanguage);
+	void SendHitSound(int ClientId);
+	void SendScoreSound(int ClientId);
+	void AddBroadcast(int ClientId, const char* pText, int Priority, int LifeSpan);
+	void SetClientLanguage(int ClientId, const char *pLanguage);
 	void InitChangelog();
 	void ReloadChangelog();
 
@@ -388,7 +388,7 @@ public:
 private:
 	int m_VoteLanguageTick[MAX_CLIENTS];
 	char m_VoteLanguage[MAX_CLIENTS][16];
-	int m_VoteBanClientID;
+	int m_VoteBanClientId;
 	static bool m_ClientMuted[MAX_CLIENTS][MAX_CLIENTS]; // m_ClientMuted[i][j]: i muted j
 	static icArray<std::string, 256> m_aChangeLogEntries;
 	static icArray<int, 16> m_aChangeLogPageIndices;
@@ -417,7 +417,7 @@ private:
 		vec2 m_Pos0;
 		vec2 m_Pos1;
 		int m_LifeSpan;
-		int m_SnapID;
+		int m_SnapId;
 	};
 	array<LaserDotState> m_LaserDots;
 	
@@ -425,7 +425,7 @@ private:
 	{
 		vec2 m_Pos;
 		int m_LifeSpan;
-		int m_SnapID;
+		int m_SnapId;
 	};
 	array<HammerDotState> m_HammerDots;
 	
@@ -433,21 +433,21 @@ private:
 	{
 		vec2 m_Pos;
 		int m_LifeSpan;
-		int m_SnapID;
+		int m_SnapId;
 	};
 	array<LoveDotState> m_LoveDots;
 
 	int m_aHitSoundState[MAX_CLIENTS]; // 1 for hit, 2 for kill (no sounds must be sent)
 
 public:
-	void OnSetAuthed(int ClientID, int Level) override;
+	void OnSetAuthed(int ClientId, int Level) override;
 
 public:
 	bool IsVersionBanned(int Version);
 };
 
 inline int64_t CmaskAll() { return -1LL; }
-inline int64_t CmaskOne(int ClientID) { return 1LL<<ClientID; }
-inline int64_t CmaskAllExceptOne(int ClientID) { return CmaskAll()^CmaskOne(ClientID); }
-inline bool CmaskIsSet(int64_t Mask, int ClientID) { return (Mask&CmaskOne(ClientID)) != 0; }
+inline int64_t CmaskOne(int ClientId) { return 1LL<<ClientId; }
+inline int64_t CmaskAllExceptOne(int ClientId) { return CmaskAll()^CmaskOne(ClientId); }
+inline bool CmaskIsSet(int64_t Mask, int ClientId) { return (Mask&CmaskOne(ClientId)) != 0; }
 #endif

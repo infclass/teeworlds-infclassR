@@ -254,37 +254,37 @@ void CInfClassGameController::DoTeamBalance()
 void CInfClassGameController::OnPlayerConnect(CPlayer *pPlayer)
 {
 	IGameController::OnPlayerConnect(pPlayer);
-	int ClientID = pPlayer->GetCID();
+	int ClientId = pPlayer->GetCid();
 
-	pPlayer->SetOriginalName(Server()->ClientName(ClientID));
+	pPlayer->SetOriginalName(Server()->ClientName(ClientId));
 
-	Server()->RoundStatistics()->ResetPlayer(ClientID);
+	Server()->RoundStatistics()->ResetPlayer(ClientId);
 
-	SendServerParams(pPlayer->GetCID());
+	SendServerParams(pPlayer->GetCid());
 
-	if(!Server()->ClientPrevIngame(ClientID))
+	if(!Server()->ClientPrevIngame(ClientId))
 	{
-		GameServer()->SendChatTarget_Localization(-1, CHATCATEGORY_PLAYER, _("{str:PlayerName} entered and joined the game"), "PlayerName", Server()->ClientName(ClientID), nullptr);
+		GameServer()->SendChatTarget_Localization(-1, CHATCATEGORY_PLAYER, _("{str:PlayerName} entered and joined the game"), "PlayerName", Server()->ClientName(ClientId), nullptr);
 
-		GameServer()->SendChatTarget(ClientID, "InfectionClass Mod. Version: " GAME_VERSION);
-		GameServer()->SendChatTarget_Localization(ClientID, CHATCATEGORY_DEFAULT,
+		GameServer()->SendChatTarget(ClientId, "InfectionClass Mod. Version: " GAME_VERSION);
+		GameServer()->SendChatTarget_Localization(ClientId, CHATCATEGORY_DEFAULT,
 			_("See also: /help, /changelog, /about"), nullptr);
 
 		if(Config()->m_AboutContactsDiscord[0])
 		{
-			GameServer()->SendChatTarget_Localization(ClientID, CHATCATEGORY_DEFAULT,
+			GameServer()->SendChatTarget_Localization(ClientId, CHATCATEGORY_DEFAULT,
 				_("Join our Discord server: {str:Url}"), "Url",
 				Config()->m_AboutContactsDiscord, nullptr);
 		}
 		if(Config()->m_AboutContactsTelegram[0])
 		{
-			GameServer()->SendChatTarget_Localization(ClientID, CHATCATEGORY_DEFAULT,
+			GameServer()->SendChatTarget_Localization(ClientId, CHATCATEGORY_DEFAULT,
 				_("Join our Telegram: {str:Url}"), "Url",
 				Config()->m_AboutContactsTelegram, nullptr);
 		}
 		if(Config()->m_AboutContactsMatrix[0])
 		{
-			GameServer()->SendChatTarget_Localization(ClientID, CHATCATEGORY_DEFAULT,
+			GameServer()->SendChatTarget_Localization(ClientId, CHATCATEGORY_DEFAULT,
 				_("Join our Matrix room: {str:Url}"), "Url",
 				Config()->m_AboutContactsMatrix, nullptr);
 		}
@@ -293,7 +293,7 @@ void CInfClassGameController::OnPlayerConnect(CPlayer *pPlayer)
 
 void CInfClassGameController::OnPlayerDisconnect(CPlayer *pBasePlayer, EClientDropType Type, const char *pReason)
 {
-	Server()->RoundStatistics()->ResetPlayer(pBasePlayer->GetCID());
+	Server()->RoundStatistics()->ResetPlayer(pBasePlayer->GetCid());
 
 	for(CPlayer *pPlayer : GameServer()->m_apPlayers)
 	{
@@ -302,21 +302,21 @@ void CInfClassGameController::OnPlayerDisconnect(CPlayer *pBasePlayer, EClientDr
 			CInfClassCharacter *pCharacter = CInfClassCharacter::GetInstance(pPlayer->GetCharacter());
 			if(pCharacter)
 			{
-				pCharacter->RemoveReferencesToCID(pBasePlayer->GetCID());
+				pCharacter->RemoveReferencesToCid(pBasePlayer->GetCid());
 			}
 		}
 	}
 
 	CInfClassPlayer *pPlayer = CInfClassPlayer::GetInstance(pBasePlayer);
-	PlayerScore *pScore = GetSurvivalPlayerScore(pPlayer->GetCID());
+	PlayerScore *pScore = GetSurvivalPlayerScore(pPlayer->GetCid());
 	if(pScore)
 	{
-		str_copy(pScore->aPlayerName, Server()->ClientName(pPlayer->GetCID()));
-		pScore->ClientID = -1;
+		str_copy(pScore->aPlayerName, Server()->ClientName(pPlayer->GetCid()));
+		pScore->ClientId = -1;
 		pScore->Kills = pPlayer->GetKills();
 	}
-	m_SurvivalState.SurvivedPlayers.RemoveOne(pPlayer->GetCID());
-	m_SurvivalState.KilledPlayers.RemoveOne(pPlayer->GetCID());
+	m_SurvivalState.SurvivedPlayers.RemoveOne(pPlayer->GetCid());
+	m_SurvivalState.KilledPlayers.RemoveOne(pPlayer->GetCid());
 
 	static const auto aIgnoreReasons = []()
 	{
@@ -337,13 +337,13 @@ void CInfClassGameController::OnPlayerDisconnect(CPlayer *pBasePlayer, EClientDr
 		{
 			int NumHumans;
 			int NumInfected;
-			GetPlayerCounter(pPlayer->GetCID(), NumHumans, NumInfected);
+			GetPlayerCounter(pPlayer->GetCid(), NumHumans, NumInfected);
 			const int NumPlayers = NumHumans + NumInfected;
 			const int NumFirstInfected = GetMinimumInfectedForPlayers(NumPlayers);
 
 			if(NumInfected < NumFirstInfected)
 			{
-				Server()->Ban(pPlayer->GetCID(), 60 * Config()->m_InfLeaverBanTime, "Leaver");
+				Server()->Ban(pPlayer->GetCid(), 60 * Config()->m_InfLeaverBanTime, "Leaver");
 			}
 		}
 	}
@@ -383,23 +383,23 @@ void CInfClassGameController::DoPlayerInfection(CInfClassPlayer *pPlayer, CInfCl
 		if(pPlayer->GetCharacter() && pPlayer->GetCharacter()->IsAlive())
 		{
 			// Still send a kill message to notify other players about the infection
-			GameServer()->SendKillMessage(pPlayer->GetCID(), pPlayer->GetCID(), WEAPON_WORLD, 0);
+			GameServer()->SendKillMessage(pPlayer->GetCid(), pPlayer->GetCid(), WEAPON_WORLD, 0);
 			GameServer()->CreateSound(pPlayer->GetCharacter()->m_Pos, SOUND_PLAYER_DIE);
 		}
 
 		return;
 	}
 
-	const int InfectedByCID = pInfectiousPlayer->GetCID();
+	const int InfectedByCid = pInfectiousPlayer->GetCid();
 	if(!IsInfectedClass(PreviousClass) && (pPlayer != pInfectiousPlayer))
 	{
 		if(pInfectiousPlayer->IsHuman())
 		{
-			GameServer()->SendChatTarget_Localization(InfectedByCID, CHATCATEGORY_SCORE,
+			GameServer()->SendChatTarget_Localization(InfectedByCid, CHATCATEGORY_SCORE,
 				_("You have infected {str:VictimName}, shame on you!"),
-				"VictimName", Server()->ClientName(pPlayer->GetCID()),
+				"VictimName", Server()->ClientName(pPlayer->GetCid()),
 				nullptr);
-			GameServer()->SendEmoticon(pInfectiousPlayer->GetCID(), EMOTICON_SORRY);
+			GameServer()->SendEmoticon(pInfectiousPlayer->GetCid(), EMOTICON_SORRY);
 			CInfClassCharacter *pGuiltyCharacter = pInfectiousPlayer->GetCharacter();
 			if(pGuiltyCharacter)
 			{
@@ -410,17 +410,17 @@ void CInfClassGameController::DoPlayerInfection(CInfClassPlayer *pPlayer, CInfCl
 		}
 		else
 		{
-			GameServer()->SendChatTarget_Localization(pPlayer->GetCID(), CHATCATEGORY_INFECTED,
+			GameServer()->SendChatTarget_Localization(pPlayer->GetCid(), CHATCATEGORY_INFECTED,
 				_("You have been infected by {str:KillerName}"),
-				"KillerName", Server()->ClientName(pInfectiousPlayer->GetCID()),
+				"KillerName", Server()->ClientName(pInfectiousPlayer->GetCid()),
 				nullptr);
-			GameServer()->SendChatTarget_Localization(InfectedByCID, CHATCATEGORY_SCORE,
+			GameServer()->SendChatTarget_Localization(InfectedByCid, CHATCATEGORY_SCORE,
 				_("You have infected {str:VictimName}, +3 points"),
-				"VictimName", Server()->ClientName(pPlayer->GetCID()),
+				"VictimName", Server()->ClientName(pPlayer->GetCid()),
 				nullptr);
-			Server()->RoundStatistics()->OnScoreEvent(InfectedByCID, SCOREEVENT_INFECTION,
-				pInfectiousPlayer->GetClass(), Server()->ClientName(InfectedByCID), Console());
-			GameServer()->SendScoreSound(InfectedByCID);
+			Server()->RoundStatistics()->OnScoreEvent(InfectedByCid, SCOREEVENT_INFECTION,
+				pInfectiousPlayer->GetClass(), Server()->ClientName(InfectedByCid), Console());
+			GameServer()->SendScoreSound(InfectedByCid);
 		}
 	}
 
@@ -429,17 +429,17 @@ void CInfClassGameController::DoPlayerInfection(CInfClassPlayer *pPlayer, CInfCl
 	{
 		if(
 			pHook->GetPlayer() &&
-			pHook->GetHookedPlayer() == pPlayer->GetCID() &&
-			pHook->GetCID() != InfectedByCID
+			pHook->GetHookedPlayer() == pPlayer->GetCid() &&
+			pHook->GetCid() != InfectedByCid
 		)
 		{
-			Server()->RoundStatistics()->OnScoreEvent(pHook->GetCID(), SCOREEVENT_HELP_HOOK_INFECTION, pHook->GetPlayerClass(), Server()->ClientName(pHook->GetCID()), Console());
-			GameServer()->SendScoreSound(pHook->GetCID());
+			Server()->RoundStatistics()->OnScoreEvent(pHook->GetCid(), SCOREEVENT_HELP_HOOK_INFECTION, pHook->GetPlayerClass(), Server()->ClientName(pHook->GetCid()), Console());
+			GameServer()->SendScoreSound(pHook->GetCid());
 		}
 	}
 }
 
-void CInfClassGameController::OnHeroFlagCollected(int ClientID)
+void CInfClassGameController::OnHeroFlagCollected(int ClientId)
 {
 	GameServer()->SendBroadcast_Localization(-1, BROADCAST_PRIORITY_GAMEANNOUNCE, BROADCAST_DURATION_GAMEANNOUNCE, _("The Hero found the flag!"), NULL);
 	GameServer()->CreateSoundGlobal(SOUND_CTF_CAPTURE);
@@ -537,15 +537,15 @@ void CInfClassGameController::HandleCharacterTiles(CInfClassCharacter *pCharacte
 
 	if(Indices.Contains(ZONE_DAMAGE_DEATH))
 	{
-		pCharacter->Die(pCharacter->GetCID(), EDamageType::DEATH_TILE);
+		pCharacter->Die(pCharacter->GetCid(), EDamageType::DEATH_TILE);
 	}
 	else if(pCharacter->GetPlayerClass() != EPlayerClass::Undead && Indices.Contains(ZONE_DAMAGE_DEATH_NOUNDEAD))
 	{
-		pCharacter->Die(pCharacter->GetCID(), EDamageType::DEATH_TILE);
+		pCharacter->Die(pCharacter->GetCid(), EDamageType::DEATH_TILE);
 	}
 	else if(pCharacter->IsInfected() && Indices.Contains(ZONE_DAMAGE_DEATH_INFECTED))
 	{
-		pCharacter->Die(pCharacter->GetCID(), EDamageType::DEATH_TILE);
+		pCharacter->Die(pCharacter->GetCid(), EDamageType::DEATH_TILE);
 	}
 	else if(pCharacter->IsAlive() && Indices.Contains(ZONE_DAMAGE_INFECTION))
 	{
@@ -607,14 +607,14 @@ void CInfClassGameController::HandleLastHookers()
 		CharacterHookedBy[HookedPlayer].Add(i);
 	}
 
-	for(int TargetCID = 0; TargetCID < CharacterHookedBy.Size(); ++TargetCID)
+	for(int TargetCid = 0; TargetCid < CharacterHookedBy.Size(); ++TargetCid)
 	{
-		ClientsArray &HookedBy = CharacterHookedBy[TargetCID];
+		ClientsArray &HookedBy = CharacterHookedBy[TargetCid];
 		if(HookedBy.IsEmpty())
 		{
 			continue;
 		}
-		CInfClassCharacter *pHookedCharacter = GetCharacter(TargetCID);
+		CInfClassCharacter *pHookedCharacter = GetCharacter(TargetCid);
 		if(!pHookedCharacter)
 		{
 			continue;
@@ -647,13 +647,13 @@ bool CInfClassGameController::CanSeeDetails(int Who, int Whom) const
 	return pWho->IsHuman() == pWhom->IsHuman();
 }
 
-int64_t CInfClassGameController::GetBlindCharactersMask(int ExcludeCID) const
+int64_t CInfClassGameController::GetBlindCharactersMask(int ExcludeCid) const
 {
 	int64_t Mask = 0;
 
 	for(int i = 0; i < MAX_CLIENTS; ++i)
 	{
-		if(i == ExcludeCID)
+		if(i == ExcludeCid)
 			continue;
 
 		const CInfClassCharacter *pTarget = GetCharacter(i);
@@ -668,16 +668,16 @@ int64_t CInfClassGameController::GetBlindCharactersMask(int ExcludeCID) const
 	return Mask;
 }
 
-int64_t CInfClassGameController::GetMaskForPlayerWorldEvent(int Asker, int ExceptID)
+int64_t CInfClassGameController::GetMaskForPlayerWorldEvent(int Asker, int ExceptId)
 {
 	if(Asker == -1)
-		return CmaskAllExceptOne(ExceptID);
+		return CmaskAllExceptOne(ExceptId);
 
 	const CInfClassCharacter *pCharacter = GetCharacter(Asker);
 	if(!pCharacter || !pCharacter->IsInvisible())
-		return CmaskAllExceptOne(ExceptID);
+		return CmaskAllExceptOne(ExceptId);
 
-	return m_Teams.TeamMask(GetPlayerTeam(Asker), ExceptID, Asker);
+	return m_Teams.TeamMask(GetPlayerTeam(Asker), ExceptId, Asker);
 }
 
 bool CInfClassGameController::HumanWallAllowedInPos(const vec2 &Pos) const
@@ -783,14 +783,14 @@ void CInfClassGameController::CreateExplosion(const vec2 &Pos, int Owner, EDamag
 		int Num = GameWorld()->FindEntities(Pos, Radius, (CEntity**)apEnts, MAX_CLIENTS, CGameWorld::ENTTYPE_CHARACTER);
 		for(int i = 0; i < Num; i++)
 		{
-			if(apEnts[i]->GetCID() == Owner)
+			if(apEnts[i]->GetCid() == Owner)
 			{
 				if(!AffectOwner)
 					continue;
 			}
 			if(!Config()->m_InfShockwaveAffectHumans)
 			{
-				if(apEnts[i]->GetCID() == Owner)
+				if(apEnts[i]->GetCid() == Owner)
 				{
 					//owner selfharm
 				}
@@ -859,9 +859,9 @@ void CInfClassGameController::CreateExplosionDiskGfx(vec2 Pos, float InnerRadius
 	}
 }
 
-void CInfClassGameController::SendHammerDot(const vec2 &Pos, int SnapID)
+void CInfClassGameController::SendHammerDot(const vec2 &Pos, int SnapId)
 {
-	CNetObj_Projectile *pObj = Server()->SnapNewItem<CNetObj_Projectile>(SnapID);
+	CNetObj_Projectile *pObj = Server()->SnapNewItem<CNetObj_Projectile>(SnapId);
 	if(!pObj)
 		return;;
 
@@ -873,7 +873,7 @@ void CInfClassGameController::SendHammerDot(const vec2 &Pos, int SnapID)
 	pObj->m_StartTick = Server()->Tick();
 }
 
-void CInfClassGameController::SendServerParams(int ClientID) const
+void CInfClassGameController::SendServerParams(int ClientId) const
 {
 	CNetMsg_InfClass_ServerParams Msg{};
 	Msg.m_Version = 1;
@@ -883,7 +883,7 @@ void CInfClassGameController::SendServerParams(int ClientID) const
 	}
 	Msg.m_SoldierBombs = Config()->m_InfSoldierBombs;
 
-	if(ClientID == -1)
+	if(ClientId == -1)
 	{
 		Server()->SendPackMsg(&Msg, MSGFLAG_VITAL | MSGFLAG_NOSEND, SERVER_DEMO_CLIENT);
 
@@ -902,10 +902,10 @@ void CInfClassGameController::SendServerParams(int ClientID) const
 	}
 	else
 	{
-		int InfclassVersion = Server()->GetClientInfclassVersion(ClientID);
+		int InfclassVersion = Server()->GetClientInfclassVersion(ClientId);
 		if(InfclassVersion >= VERSION_INFC_180)
 		{
-			Server()->SendPackMsg(&Msg, MSGFLAG_VITAL | MSGFLAG_NORECORD, ClientID);
+			Server()->SendPackMsg(&Msg, MSGFLAG_VITAL | MSGFLAG_NORECORD, ClientId);
 		}
 	}
 }
@@ -959,12 +959,12 @@ void CInfClassGameController::EndSurvivalGame()
 	// Sync the scores
 	for(PlayerScore &Score : m_SurvivalState.Scores)
 	{
-		if(Score.ClientID < 0)
+		if(Score.ClientId < 0)
 			continue;
 
-		CInfClassPlayer *pPlayer = GetPlayer(Score.ClientID);
+		CInfClassPlayer *pPlayer = GetPlayer(Score.ClientId);
 		Score.Kills = pPlayer->GetKills();
-		str_copy(Score.aPlayerName, Server()->ClientName(pPlayer->GetCID()));
+		str_copy(Score.aPlayerName, Server()->ClientName(pPlayer->GetCid()));
 	}
 
 	const auto Sorter = [](const PlayerScore &s1, const PlayerScore &s2) -> bool {
@@ -1456,29 +1456,29 @@ int CInfClassGameController::DamageTypeToWeapon(EDamageType DamageType, TAKEDAMA
 	return Weapon;
 }
 
-int CInfClassGameController::GetPlayerTeam(int ClientID) const
+int CInfClassGameController::GetPlayerTeam(int ClientId) const
 {
-	return m_Teams.m_Core.Team(ClientID);
+	return m_Teams.m_Core.Team(ClientId);
 }
 
-void CInfClassGameController::SetPlayerInfected(int ClientID, bool Infected)
+void CInfClassGameController::SetPlayerInfected(int ClientId, bool Infected)
 {
-	return m_Teams.m_Core.SetInfected(ClientID, Infected);
+	return m_Teams.m_Core.SetInfected(ClientId, Infected);
 }
 
 void CInfClassGameController::RegisterChatCommands(IConsole *pConsole)
 {
-	pConsole->Register("restore_client_name", "i[clientid]", CFGFLAG_SERVER, ConRestoreClientName, this, "Set the name of a player");
-	pConsole->Register("set_client_name", "i[clientid] r[name]", CFGFLAG_SERVER, ConSetClientName, this, "Set the name of a player (and also lock it)");
-	pConsole->Register("lock_client_name", "i[clientid] i[lock]", CFGFLAG_SERVER, ConLockClientName, this, "Set the name of a player");
+	pConsole->Register("restore_client_name", "i[ClientId]", CFGFLAG_SERVER, ConRestoreClientName, this, "Set the name of a player");
+	pConsole->Register("set_client_name", "i[ClientId] r[name]", CFGFLAG_SERVER, ConSetClientName, this, "Set the name of a player (and also lock it)");
+	pConsole->Register("lock_client_name", "i[ClientId] i[lock]", CFGFLAG_SERVER, ConLockClientName, this, "Set the name of a player");
 
-	pConsole->Register("set_health_armor", "i[clientid] i[health] i[armor]", CFGFLAG_SERVER, ConSetHealthArmor, this, "Set the player health/armor");
-	pConsole->Register("set_invincible", "i[clientid] i[level]", CFGFLAG_SERVER, ConSetInvincible, this, "Set the player invincibility level (1 inv to damage, 2 inv to inf, 3 inv to death tiles");
-	pConsole->Register("set_hook_protection", "i[clientid] i[protection]", CFGFLAG_SERVER, ConSetHookProtection, this, "Enable the player hook protection (0 disabled, 1 enabled)");
-	pConsole->Register("give_upgrade", "i[clientid]", CFGFLAG_SERVER, ConGiveUpgrade, this, "Give an upgrade to the player");
-	pConsole->Register("inf_set_drop", "i[clientid] ?i[level]", CFGFLAG_SERVER, ConSetDrop, this, "Make the character drop an upgrade on killed or died");
+	pConsole->Register("set_health_armor", "i[ClientId] i[health] i[armor]", CFGFLAG_SERVER, ConSetHealthArmor, this, "Set the player health/armor");
+	pConsole->Register("set_invincible", "i[ClientId] i[level]", CFGFLAG_SERVER, ConSetInvincible, this, "Set the player invincibility level (1 inv to damage, 2 inv to inf, 3 inv to death tiles");
+	pConsole->Register("set_hook_protection", "i[ClientId] i[protection]", CFGFLAG_SERVER, ConSetHookProtection, this, "Enable the player hook protection (0 disabled, 1 enabled)");
+	pConsole->Register("give_upgrade", "i[ClientId]", CFGFLAG_SERVER, ConGiveUpgrade, this, "Give an upgrade to the player");
+	pConsole->Register("inf_set_drop", "i[ClientId] ?i[level]", CFGFLAG_SERVER, ConSetDrop, this, "Make the character drop an upgrade on killed or died");
 
-	pConsole->Register("inf_set_class", "i[clientid] s[classname]", CFGFLAG_SERVER, ConSetClass, this, "Set the class of a player");
+	pConsole->Register("inf_set_class", "i[ClientId] s[classname]", CFGFLAG_SERVER, ConSetClass, this, "Set the class of a player");
 	pConsole->Register("queue_round", "s[type]", CFGFLAG_SERVER, ConQueueSpecialRound, this, "Start a special round");
 	pConsole->Register("start_round", "?s[type]", CFGFLAG_SERVER, ConStartRound, this, "Start a special round");
 
@@ -1517,23 +1517,23 @@ void CInfClassGameController::ConRestoreClientName(IConsole::IResult *pResult, v
 {
 	CInfClassGameController *pSelf = (CInfClassGameController *)pUserData;
 
-	int PlayerID = pResult->GetInteger(0);
+	int PlayerId = pResult->GetInteger(0);
 
-	CInfClassPlayer *pPlayer = pSelf->GetPlayer(PlayerID);
+	CInfClassPlayer *pPlayer = pSelf->GetPlayer(PlayerId);
 	if(!pPlayer)
 	{
 		return;
 	}
 
 	pPlayer->m_ClientNameLocked = true;
-	pSelf->Server()->SetClientName(PlayerID, pPlayer->GetOriginalName());
+	pSelf->Server()->SetClientName(PlayerId, pPlayer->GetOriginalName());
 }
 
 void CInfClassGameController::ConSetClientName(IConsole::IResult *pResult, void *pUserData)
 {
 	CInfClassGameController *pSelf = (CInfClassGameController *)pUserData;
 
-	int PlayerID = pResult->GetInteger(0);
+	int PlayerId = pResult->GetInteger(0);
 	const char *pNewName = pResult->GetString(1);
 
 	if(pResult->NumArguments() != 2)
@@ -1541,21 +1541,21 @@ void CInfClassGameController::ConSetClientName(IConsole::IResult *pResult, void 
 		return;
 	}
 
-	CInfClassPlayer *pPlayer = pSelf->GetPlayer(PlayerID);
+	CInfClassPlayer *pPlayer = pSelf->GetPlayer(PlayerId);
 	if(!pPlayer)
 	{
 		return;
 	}
 
 	pPlayer->m_ClientNameLocked = true;
-	pSelf->Server()->SetClientName(PlayerID, pNewName);
+	pSelf->Server()->SetClientName(PlayerId, pNewName);
 }
 
 void CInfClassGameController::ConLockClientName(IConsole::IResult *pResult, void *pUserData)
 {
 	CInfClassGameController *pSelf = (CInfClassGameController *)pUserData;
 
-	int PlayerID = pResult->GetInteger(0);
+	int PlayerId = pResult->GetInteger(0);
 	int Lock = pResult->GetInteger(1);
 
 	if(pResult->NumArguments() != 2)
@@ -1563,7 +1563,7 @@ void CInfClassGameController::ConLockClientName(IConsole::IResult *pResult, void
 		return;
 	}
 
-	CInfClassPlayer *pPlayer = pSelf->GetPlayer(PlayerID);
+	CInfClassPlayer *pPlayer = pSelf->GetPlayer(PlayerId);
 	if(!pPlayer)
 	{
 		return;
@@ -1575,43 +1575,43 @@ void CInfClassGameController::ConLockClientName(IConsole::IResult *pResult, void
 void CInfClassGameController::ConPreferClass(IConsole::IResult *pResult, void *pUserData)
 {
 	CInfClassGameController *pSelf = (CInfClassGameController *)pUserData;
-	int ClientID = pResult->GetClientID();
+	int ClientId = pResult->GetClientId();
 
 	const char *pClassName = pResult->GetString(0);
-	pSelf->SetPreferredClass(ClientID, pClassName);
+	pSelf->SetPreferredClass(ClientId, pClassName);
 }
 
 void CInfClassGameController::ConAlwaysRandom(IConsole::IResult *pResult, void *pUserData)
 {
 	CInfClassGameController *pSelf = (CInfClassGameController *)pUserData;
-	int ClientID = pResult->GetClientID();
+	int ClientId = pResult->GetClientId();
 
 	bool Random = pResult->GetInteger(0) > 0;
-	pSelf->SetPreferredClass(ClientID, Random ? EPlayerClass::Random : EPlayerClass::Invalid);
+	pSelf->SetPreferredClass(ClientId, Random ? EPlayerClass::Random : EPlayerClass::Invalid);
 }
 
-void CInfClassGameController::SetPreferredClass(int ClientID, const char *pClassName)
+void CInfClassGameController::SetPreferredClass(int ClientId, const char *pClassName)
 {
 	bool Ok = false;
 	EPlayerClass PlayerClass = GetClassByName(pClassName, &Ok);
 
 	if(!Ok)
 	{
-		GameServer()->SendChatTarget_Localization(ClientID, CHATCATEGORY_DEFAULT,
+		GameServer()->SendChatTarget_Localization(ClientId, CHATCATEGORY_DEFAULT,
 			_("Unable to set preferred class: Invalid class name"), nullptr);
 		return;
 	}
-	SetPreferredClass(ClientID, PlayerClass);
+	SetPreferredClass(ClientId, PlayerClass);
 }
 
-void CInfClassGameController::SetPreferredClass(int ClientID, EPlayerClass Class)
+void CInfClassGameController::SetPreferredClass(int ClientId, EPlayerClass Class)
 {
 	if(!IsHumanClass(Class))
 	{
 		return;
 	}
 
-	CInfClassPlayer *pPlayer = GetPlayer(ClientID);
+	CInfClassPlayer *pPlayer = GetPlayer(ClientId);
 	if(!pPlayer)
 	{
 		return;
@@ -1622,12 +1622,12 @@ void CInfClassGameController::SetPreferredClass(int ClientID, EPlayerClass Class
 	switch(Class)
 	{
 	case EPlayerClass::Random:
-		GameServer()->SendChatTarget_Localization(ClientID, CHATCATEGORY_PLAYER,
+		GameServer()->SendChatTarget_Localization(ClientId, CHATCATEGORY_PLAYER,
 			_("A random class will be automatically attributed to you when round starts"),
 			nullptr);
 		break;
 	case EPlayerClass::Invalid:
-		GameServer()->SendChatTarget_Localization(ClientID, CHATCATEGORY_PLAYER,
+		GameServer()->SendChatTarget_Localization(ClientId, CHATCATEGORY_PLAYER,
 			_("The class selector will be displayed when round starts"),
 			nullptr);
 		break;
@@ -1635,7 +1635,7 @@ void CInfClassGameController::SetPreferredClass(int ClientID, EPlayerClass Class
 	{
 		const char *pClassDisplayName = GetClassDisplayName(Class);
 		const char *pTranslated = Server()->Localization()->Localize(pPlayer->GetLanguage(), pClassDisplayName);
-		GameServer()->SendChatTarget_Localization(ClientID, CHATCATEGORY_PLAYER,
+		GameServer()->SendChatTarget_Localization(ClientId, CHATCATEGORY_PLAYER,
 			_("Class {str:ClassName} will be automatically attributed to you when round starts"),
 			"ClassName", pTranslated,
 			nullptr);
@@ -1647,12 +1647,12 @@ void CInfClassGameController::SetPreferredClass(int ClientID, EPlayerClass Class
 void CInfClassGameController::ConAntiPing(IConsole::IResult *pResult, void *pUserData)
 {
 	CInfClassGameController *pSelf = (CInfClassGameController *)pUserData;
-	int ClientID = pResult->GetClientID();
+	int ClientId = pResult->GetClientId();
 
 	int Arg = pResult->GetInteger(0);
-	dbg_msg("server", "set_antiping ClientID=%d antiping=%d", ClientID, Arg);
+	dbg_msg("server", "set_antiping ClientId=%d antiping=%d", ClientId, Arg);
 
-	CInfClassPlayer *pPlayer = pSelf->GetPlayer(ClientID);
+	CInfClassPlayer *pPlayer = pSelf->GetPlayer(ClientId);
 	pPlayer->SetAntiPingEnabled(Arg > 0);
 }
 
@@ -1664,16 +1664,16 @@ void CInfClassGameController::ConUserSetClass(IConsole::IResult *pResult, void *
 
 void CInfClassGameController::ConUserSetClass(IConsole::IResult *pResult)
 {
-	int ClientID = pResult->GetClientID();
+	int ClientId = pResult->GetClientId();
 	if(!Config()->m_InfTrainingMode)
 	{
-		GameServer()->SendChatTarget_Localization(ClientID, CHATCATEGORY_DEFAULT, _("The command is not available (enabled only in training mode)"), nullptr);
+		GameServer()->SendChatTarget_Localization(ClientId, CHATCATEGORY_DEFAULT, _("The command is not available (enabled only in training mode)"), nullptr);
 		return;
 	}
 
 	const char *pClassName = pResult->GetString(0);
 
-	CInfClassPlayer *pPlayer = GetPlayer(ClientID);
+	CInfClassPlayer *pPlayer = GetPlayer(ClientId);
 
 	if(!pPlayer)
 		return;
@@ -1685,7 +1685,7 @@ void CInfClassGameController::ConUserSetClass(IConsole::IResult *pResult)
 		pPlayer->SetClass(PlayerClass);
 		const char *pClassDisplayName = GetClassDisplayName(PlayerClass);
 		GameServer()->SendChatTarget_Localization(-1, CHATCATEGORY_PLAYER, _("{str:PlayerName} changed the class to {str:ClassName}"),
-									"PlayerName", Server()->ClientName(ClientID),
+									"PlayerName", Server()->ClientName(ClientId),
 									"ClassName", pClassDisplayName,
 									nullptr);
 
@@ -1703,10 +1703,10 @@ void CInfClassGameController::ConSetClass(IConsole::IResult *pResult, void *pUse
 
 void CInfClassGameController::ConSetClass(IConsole::IResult *pResult)
 {
-	int PlayerID = pResult->GetInteger(0);
+	int PlayerId = pResult->GetInteger(0);
 	const char *pClassName = pResult->GetString(1);
 
-	CInfClassPlayer *pPlayer = GetPlayer(PlayerID);
+	CInfClassPlayer *pPlayer = GetPlayer(PlayerId);
 
 	if(!pPlayer)
 		return;
@@ -1718,7 +1718,7 @@ void CInfClassGameController::ConSetClass(IConsole::IResult *pResult)
 		pPlayer->SetClass(PlayerClass);
 		char aBuf[256];
 		const char *pClassDisplayName = GetClassDisplayName(PlayerClass);
-		str_format(aBuf, sizeof(aBuf), "The admin change the class of %s to %s", GameServer()->Server()->ClientName(PlayerID), pClassDisplayName);
+		str_format(aBuf, sizeof(aBuf), "The admin change the class of %s to %s", GameServer()->Server()->ClientName(PlayerId), pClassDisplayName);
 		GameServer()->SendChat(-1, CGameContext::CHAT_ALL, aBuf);
 
 		return;
@@ -1789,9 +1789,9 @@ void CInfClassGameController::ConStartFunRound(IConsole::IResult *pResult, void 
 	CInfClassGameController *pSelf = (CInfClassGameController *)pUserData;
 	if(pSelf->m_FunRoundConfigurations.empty())
 	{
-		int ClientID = pResult->GetClientID();
+		int ClientId = pResult->GetClientId();
 		const char *pErrorMessage = "Unable to start fun round: rounds configuration is empty";
-		if(ClientID >= 0)
+		if(ClientId >= 0)
 		{
 			pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "server", pErrorMessage);
 		}
@@ -1812,9 +1812,9 @@ void CInfClassGameController::ConQueueFunRound(IConsole::IResult *pResult, void 
 
 	if(pSelf->m_FunRoundConfigurations.empty())
 	{
-		int ClientID = pResult->GetClientID();
+		int ClientId = pResult->GetClientId();
 		const char *pErrorMessage = "Unable to start a fun round: rounds configuration is empty";
-		if(ClientID >= 0)
+		if(ClientId >= 0)
 		{
 			pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "server", pErrorMessage);
 		}
@@ -1987,34 +1987,34 @@ void CInfClassGameController::ConSavePosition(IConsole::IResult *pResult, void *
 
 void CInfClassGameController::ConSavePosition(IConsole::IResult *pResult)
 {
-	int ClientID = pResult->GetClientID();
+	int ClientId = pResult->GetClientId();
 	if(!Config()->m_InfTrainingMode)
 	{
-		GameServer()->SendChatTarget_Localization(ClientID, CHATCATEGORY_DEFAULT, _("The command is not available (enabled only in training mode)"), nullptr);
+		GameServer()->SendChatTarget_Localization(ClientId, CHATCATEGORY_DEFAULT, _("The command is not available (enabled only in training mode)"), nullptr);
 		return;
 	}
 
-	CInfClassCharacter *pCharacter = GetCharacter(ClientID);
+	CInfClassCharacter *pCharacter = GetCharacter(ClientId);
 	if(!pCharacter)
 	{
-		GameServer()->SendChatTarget_Localization(ClientID, CHATCATEGORY_DEFAULT, _("Unable to save the position: you have no character to save its position"), nullptr);
+		GameServer()->SendChatTarget_Localization(ClientId, CHATCATEGORY_DEFAULT, _("Unable to save the position: you have no character to save its position"), nullptr);
 		return;
 	}
 
 	if(!pCharacter->IsAlive())
 	{
-		GameServer()->SendChatTarget_Localization(ClientID, CHATCATEGORY_DEFAULT, _("Unable to save the position: the character state is not valid"), nullptr);
+		GameServer()->SendChatTarget_Localization(ClientId, CHATCATEGORY_DEFAULT, _("Unable to save the position: the character state is not valid"), nullptr);
 		return;
 	}
 
 	if(!pCharacter->IsGrounded())
 	{
-		GameServer()->SendChatTarget_Localization(ClientID, CHATCATEGORY_DEFAULT, _("Unable to save the position: the character does not stand on the ground"), nullptr);
+		GameServer()->SendChatTarget_Localization(ClientId, CHATCATEGORY_DEFAULT, _("Unable to save the position: the character does not stand on the ground"), nullptr);
 		return;
 	}
 
 	vec2 Position = pCharacter->GetPos();
-	CInfClassPlayer *pPlayer = GetPlayer(ClientID);
+	CInfClassPlayer *pPlayer = GetPlayer(ClientId);
 	if(!pPlayer)
 	{
 		// What...
@@ -2032,28 +2032,28 @@ void CInfClassGameController::ConLoadPosition(IConsole::IResult *pResult, void *
 
 void CInfClassGameController::ConLoadPosition(IConsole::IResult *pResult)
 {
-	int ClientID = pResult->GetClientID();
+	int ClientId = pResult->GetClientId();
 	if(!Config()->m_InfTrainingMode)
 	{
-		GameServer()->SendChatTarget_Localization(ClientID, CHATCATEGORY_DEFAULT, _("The command is not available (enabled only in training mode)"), nullptr);
+		GameServer()->SendChatTarget_Localization(ClientId, CHATCATEGORY_DEFAULT, _("The command is not available (enabled only in training mode)"), nullptr);
 		return;
 	}
 
-	CInfClassCharacter *pCharacter = GetCharacter(ClientID);
+	CInfClassCharacter *pCharacter = GetCharacter(ClientId);
 	if(!pCharacter)
 	{
-		GameServer()->SendChatTarget_Localization(ClientID, CHATCATEGORY_DEFAULT, _("Unable to load the position: you have no character to load its position"), nullptr);
+		GameServer()->SendChatTarget_Localization(ClientId, CHATCATEGORY_DEFAULT, _("Unable to load the position: you have no character to load its position"), nullptr);
 		return;
 	}
 
 	if(!pCharacter->IsAlive())
 	{
-		GameServer()->SendChatTarget_Localization(ClientID, CHATCATEGORY_DEFAULT, _("Unable to load the position: the character state is not valid"), nullptr);
+		GameServer()->SendChatTarget_Localization(ClientId, CHATCATEGORY_DEFAULT, _("Unable to load the position: the character state is not valid"), nullptr);
 		return;
 	}
 
 	vec2 Position;
-	CInfClassPlayer *pPlayer = GetPlayer(ClientID);
+	CInfClassPlayer *pPlayer = GetPlayer(ClientId);
 	if(!pPlayer)
 	{
 		// What...
@@ -2065,7 +2065,7 @@ void CInfClassGameController::ConLoadPosition(IConsole::IResult *pResult)
 	pCharacter->m_Pos = Position;
 	pCharacter->SetPosition(Position);
 	pCharacter->ResetVelocity();
-	GameWorld()->ReleaseHooked(ClientID);
+	GameWorld()->ReleaseHooked(ClientId);
 	pCharacter->ResetHook();
 }
 
@@ -2077,11 +2077,11 @@ void CInfClassGameController::ConSetHealthArmor(IConsole::IResult *pResult, void
 
 void CInfClassGameController::ConSetHealthArmor(IConsole::IResult *pResult)
 {
-	int ClientID = pResult->GetInteger(0);
+	int ClientId = pResult->GetInteger(0);
 	int Health = pResult->GetInteger(1);
 	int Armor = pResult->GetInteger(2);
 
-	CInfClassCharacter *pCharacter = GetCharacter(ClientID);
+	CInfClassCharacter *pCharacter = GetCharacter(ClientId);
 	if(!pCharacter)
 	{
 		return;
@@ -2098,10 +2098,10 @@ void CInfClassGameController::ConSetInvincible(IConsole::IResult *pResult, void 
 
 void CInfClassGameController::ConSetInvincible(IConsole::IResult *pResult)
 {
-	int ClientID = pResult->GetInteger(0);
+	int ClientId = pResult->GetInteger(0);
 	int Invincible = pResult->GetInteger(1);
 
-	CInfClassCharacter *pCharacter = GetCharacter(ClientID);
+	CInfClassCharacter *pCharacter = GetCharacter(ClientId);
 	if(!pCharacter)
 	{
 		return;
@@ -2118,10 +2118,10 @@ void CInfClassGameController::ConSetHookProtection(IConsole::IResult *pResult, v
 
 void CInfClassGameController::ConSetHookProtection(IConsole::IResult *pResult)
 {
-	int ClientID = pResult->GetInteger(0);
+	int ClientId = pResult->GetInteger(0);
 	int Protection = pResult->GetInteger(1);
 
-	CInfClassPlayer *pPlayer = GetPlayer(ClientID);
+	CInfClassPlayer *pPlayer = GetPlayer(ClientId);
 	if(!pPlayer)
 	{
 		return;
@@ -2139,9 +2139,9 @@ void CInfClassGameController::ConGiveUpgrade(IConsole::IResult *pResult, void *p
 
 void CInfClassGameController::ConGiveUpgrade(IConsole::IResult *pResult)
 {
-	int ClientID = pResult->GetInteger(0);
+	int ClientId = pResult->GetInteger(0);
 
-	CInfClassPlayer *pPlayer = GetPlayer(ClientID);
+	CInfClassPlayer *pPlayer = GetPlayer(ClientId);
 	if(!pPlayer || !pPlayer->GetCharacterClass())
 	{
 		return;
@@ -2158,8 +2158,8 @@ void CInfClassGameController::ConSetDrop(IConsole::IResult *pResult, void *pUser
 
 void CInfClassGameController::ConSetDrop(IConsole::IResult *pResult)
 {
-	const int ClientID = pResult->GetInteger(0);
-	CInfClassCharacter *pCharacter = GetCharacter(ClientID);
+	const int ClientId = pResult->GetInteger(0);
+	CInfClassCharacter *pCharacter = GetCharacter(ClientId);
 	if(!pCharacter || !pCharacter->IsAlive())
 	{
 		return;
@@ -2183,7 +2183,7 @@ void CInfClassGameController::ChatWitch(IConsole::IResult *pResult, void *pUserD
 
 void CInfClassGameController::ChatWitch(IConsole::IResult *pResult)
 {
-	int ClientID = pResult->GetClientID();
+	int ClientId = pResult->GetClientId();
 	const int REQUIRED_CALLERS_COUNT = 5;
 	const int MIN_ZOMBIES = 2;
 
@@ -2206,7 +2206,7 @@ void CInfClassGameController::ChatWitch(IConsole::IResult *pResult)
 				pMessage = _("The Santa is not available in this round");
 			}
 
-			GameServer()->SendChatTarget_Localization(ClientID, CHATCATEGORY_DEFAULT, pMessage, nullptr);
+			GameServer()->SendChatTarget_Localization(ClientId, CHATCATEGORY_DEFAULT, pMessage, nullptr);
 			return;
 		}
 	}
@@ -2221,11 +2221,11 @@ void CInfClassGameController::ChatWitch(IConsole::IResult *pResult)
 	{
 		if(Winter)
 		{
-			GameServer()->SendChatTarget_Localization(ClientID, CHATCATEGORY_DEFAULT, _("The Santa is already here"), nullptr);
+			GameServer()->SendChatTarget_Localization(ClientId, CHATCATEGORY_DEFAULT, _("The Santa is already here"), nullptr);
 			return;
 		}
 
-		GameServer()->SendChatTarget_Localization(ClientID, CHATCATEGORY_DEFAULT, _("All witches are already here"), nullptr);
+		GameServer()->SendChatTarget_Localization(ClientId, CHATCATEGORY_DEFAULT, _("All witches are already here"), nullptr);
 		return;
 	}
 
@@ -2237,22 +2237,22 @@ void CInfClassGameController::ChatWitch(IConsole::IResult *pResult)
 	{
 		if(Winter)
 		{
-			GameServer()->SendChatTarget_Localization(ClientID, CHATCATEGORY_DEFAULT, _("Too few players to call the Santa"), nullptr);
+			GameServer()->SendChatTarget_Localization(ClientId, CHATCATEGORY_DEFAULT, _("Too few players to call the Santa"), nullptr);
 			return;
 		}
 
-		GameServer()->SendChatTarget_Localization(ClientID, CHATCATEGORY_DEFAULT, _("Too few players to call a witch"), nullptr);
+		GameServer()->SendChatTarget_Localization(ClientId, CHATCATEGORY_DEFAULT, _("Too few players to call a witch"), nullptr);
 		return;
 	}
 	if(Infected < MIN_ZOMBIES)
 	{
 		if(Winter)
 		{
-			GameServer()->SendChatTarget_Localization(ClientID, CHATCATEGORY_DEFAULT, _("Too few infected to call the Santa"), nullptr);
+			GameServer()->SendChatTarget_Localization(ClientId, CHATCATEGORY_DEFAULT, _("Too few infected to call the Santa"), nullptr);
 			return;
 		}
 
-		GameServer()->SendChatTarget_Localization(ClientID, CHATCATEGORY_DEFAULT, _("Too few infected to call a witch"), nullptr);
+		GameServer()->SendChatTarget_Localization(ClientId, CHATCATEGORY_DEFAULT, _("Too few infected to call a witch"), nullptr);
 		return;
 	}
 
@@ -2261,19 +2261,19 @@ void CInfClassGameController::ChatWitch(IConsole::IResult *pResult)
 	// a new one without a message to the caller.
 	if(m_WitchCallers.Size() < REQUIRED_CALLERS_COUNT)
 	{
-		if(m_WitchCallers.Contains(ClientID))
+		if(m_WitchCallers.Contains(ClientId))
 		{
 			if(Winter)
 			{
-				GameServer()->SendChatTarget_Localization(ClientID, CHATCATEGORY_DEFAULT, _("You have called the Santa once again"), nullptr);
+				GameServer()->SendChatTarget_Localization(ClientId, CHATCATEGORY_DEFAULT, _("You have called the Santa once again"), nullptr);
 				return;
 			}
 
-			GameServer()->SendChatTarget_Localization(ClientID, CHATCATEGORY_DEFAULT, _("You can't call witch twice"), nullptr);
+			GameServer()->SendChatTarget_Localization(ClientId, CHATCATEGORY_DEFAULT, _("You can't call witch twice"), nullptr);
 			return;
 		}
 
-		m_WitchCallers.Add(ClientID);
+		m_WitchCallers.Add(ClientId);
 
 		int PrintableRequiredCallers = REQUIRED_CALLERS_COUNT;
 		int PrintableCallers = m_WitchCallers.Size();
@@ -2283,7 +2283,7 @@ void CInfClassGameController::ChatWitch(IConsole::IResult *pResult)
 			{
 				GameServer()->SendChatTarget_Localization(-1, CHATCATEGORY_DEFAULT,
 					_("{str:PlayerName} is calling for Santa! (1/{int:RequiredCallers}) To call the Santa write: /santa"),
-					"PlayerName", Server()->ClientName(ClientID),
+					"PlayerName", Server()->ClientName(ClientId),
 					"RequiredCallers", &PrintableRequiredCallers,
 					nullptr);
 				return;
@@ -2291,7 +2291,7 @@ void CInfClassGameController::ChatWitch(IConsole::IResult *pResult)
 
 			GameServer()->SendChatTarget_Localization(-1, CHATCATEGORY_DEFAULT,
 				_("{str:PlayerName} is calling for Witch! (1/{int:RequiredCallers}) To call witch write: /witch"),
-				"PlayerName", Server()->ClientName(ClientID),
+				"PlayerName", Server()->ClientName(ClientId),
 				"RequiredCallers", &PrintableRequiredCallers,
 				nullptr);
 		}
@@ -2323,12 +2323,12 @@ void CInfClassGameController::ChatWitch(IConsole::IResult *pResult)
 		{
 			if(Winter)
 			{
-				GameServer()->SendChatTarget_Localization(ClientID, CHATCATEGORY_DEFAULT,
+				GameServer()->SendChatTarget_Localization(ClientId, CHATCATEGORY_DEFAULT,
 					_("The Santa is already here"),
 					nullptr);
 				return;
 			}
-			GameServer()->SendChatTarget_Localization(ClientID, CHATCATEGORY_DEFAULT,
+			GameServer()->SendChatTarget_Localization(ClientId, CHATCATEGORY_DEFAULT,
 				_("All witches are already here"),
 				nullptr);
 		}
@@ -2358,23 +2358,23 @@ IConsole *CInfClassGameController::Console() const
 	return GameServer()->Console();
 }
 
-CInfClassPlayer *CInfClassGameController::GetPlayer(int ClientID) const
+CInfClassPlayer *CInfClassGameController::GetPlayer(int ClientId) const
 {
-	if(ClientID < 0 || ClientID >= MAX_CLIENTS)
+	if(ClientId < 0 || ClientId >= MAX_CLIENTS)
 		return nullptr;
 
-	return CInfClassPlayer::GetInstance(GameServer()->m_apPlayers[ClientID]);
+	return CInfClassPlayer::GetInstance(GameServer()->m_apPlayers[ClientId]);
 }
 
-CInfClassCharacter *CInfClassGameController::GetCharacter(int ClientID) const
+CInfClassCharacter *CInfClassGameController::GetCharacter(int ClientId) const
 {
-	CInfClassPlayer *pPlayer = GetPlayer(ClientID);
+	CInfClassPlayer *pPlayer = GetPlayer(ClientId);
 	return pPlayer ? pPlayer->GetCharacter() : nullptr;
 }
 
-int CInfClassGameController::GetPlayerOwnCursorID(int ClientID) const
+int CInfClassGameController::GetPlayerOwnCursorId(int ClientId) const
 {
-	return m_PlayerOwnCursorID;
+	return m_PlayerOwnCursorId;
 }
 
 void CInfClassGameController::SortCharactersByDistance(ClientsArray *pCharacterIds, const vec2 &Center, const float MaxDistance)
@@ -2388,12 +2388,12 @@ void CInfClassGameController::SortCharactersByDistance(const ClientsArray &Input
 	{
 		DistanceItem() = default;
 		DistanceItem(int C, float D)
-			: ClientID(C)
+			: ClientId(C)
 			, Distance(D)
 		{
 		}
 
-		int ClientID;
+		int ClientId;
 		float Distance;
 
 		bool operator<(const DistanceItem &AnotherDistanceItem) const
@@ -2406,8 +2406,8 @@ void CInfClassGameController::SortCharactersByDistance(const ClientsArray &Input
 
 	for(int i = 0; i < Input.Size(); ++i)
 	{
-		int ClientID = Input.At(i);
-		const CCharacter *pChar = GetCharacter(ClientID);
+		int ClientId = Input.At(i);
+		const CCharacter *pChar = GetCharacter(ClientId);
 		if(!pChar)
 			continue;
 
@@ -2416,7 +2416,7 @@ void CInfClassGameController::SortCharactersByDistance(const ClientsArray &Input
 		if(MaxDistance && (Distance > MaxDistance))
 			continue;
 
-		Distances.Add(DistanceItem(ClientID, Distance));
+		Distances.Add(DistanceItem(ClientId, Distance));
 
 		std::sort(Distances.begin(), Distances.end());
 	}
@@ -2424,27 +2424,27 @@ void CInfClassGameController::SortCharactersByDistance(const ClientsArray &Input
 	pOutput->Clear();
 	for(const DistanceItem &DistanceItem : Distances)
 	{
-		pOutput->Add(DistanceItem.ClientID);
+		pOutput->Add(DistanceItem.ClientId);
 	}
 }
 
 void CInfClassGameController::GetSortedTargetsInRange(const vec2 &Center, const float Radius, const ClientsArray &SkipList, ClientsArray *pOutput)
 {
-	ClientsArray PossibleCIDs;
+	ClientsArray PossibleCids;
 
-	for(int ClientID = 0; ClientID < MAX_CLIENTS; ++ClientID)
+	for(int ClientId = 0; ClientId < MAX_CLIENTS; ++ClientId)
 	{
-		const CCharacter *pChar = GetCharacter(ClientID);
+		const CCharacter *pChar = GetCharacter(ClientId);
 		if(!pChar)
 			continue;
 
-		if(SkipList.Contains(ClientID))
+		if(SkipList.Contains(ClientId))
 			continue;
 
-		PossibleCIDs.Add(ClientID);
+		PossibleCids.Add(ClientId);
 	}
 
-	SortCharactersByDistance(PossibleCIDs, pOutput, Center, Radius);
+	SortCharactersByDistance(PossibleCids, pOutput, Center, Radius);
 }
 
 void CInfClassGameController::UpdateNinjaTargets()
@@ -2482,12 +2482,12 @@ void CInfClassGameController::UpdateNinjaTargets()
 
 void CInfClassGameController::ReservePlayerOwnSnapItems()
 {
-	m_PlayerOwnCursorID = Server()->SnapNewID();
+	m_PlayerOwnCursorId = Server()->SnapNewId();
 }
 
 void CInfClassGameController::FreePlayerOwnSnapItems()
 {
-	Server()->SnapFreeID(m_PlayerOwnCursorID);
+	Server()->SnapFreeId(m_PlayerOwnCursorId);
 }
 
 void CInfClassGameController::SendHintMessage()
@@ -2526,7 +2526,7 @@ void CInfClassGameController::SendHintMessage()
 		// for demo record
 		CNetMsg_Sv_Chat Msg;
 		Msg.m_Team = 0;
-		Msg.m_ClientID = -1;
+		Msg.m_ClientId = -1;
 
 		PrepareBufferForLanguage("en");
 		Msg.m_pMessage = Buffer.buffer();
@@ -2752,17 +2752,17 @@ void CInfClassGameController::DoTeamChange(CPlayer *pBasePlayer, int Team, bool 
 	int OldTeam = pPlayer->GetTeam();
 	IGameController::DoTeamChange(pPlayer, Team, false);
 
-	int ClientID = pPlayer->GetCID();
+	int ClientId = pPlayer->GetCid();
 
 	if(DoChatMsg)
 	{
 		if(Team == TEAM_SPECTATORS)
 		{
-			GameServer()->SendChatTarget_Localization(-1, CHATCATEGORY_PLAYER, _("{str:PlayerName} joined the spectators"), "PlayerName", Server()->ClientName(ClientID), NULL);
+			GameServer()->SendChatTarget_Localization(-1, CHATCATEGORY_PLAYER, _("{str:PlayerName} joined the spectators"), "PlayerName", Server()->ClientName(ClientId), NULL);
 		}
 		else
 		{
-			GameServer()->SendChatTarget_Localization(-1, CHATCATEGORY_PLAYER, _("{str:PlayerName} joined the game"), "PlayerName", Server()->ClientName(ClientID), NULL);
+			GameServer()->SendChatTarget_Localization(-1, CHATCATEGORY_PLAYER, _("{str:PlayerName} joined the game"), "PlayerName", Server()->ClientName(ClientId), NULL);
 		}
 	}
 
@@ -2781,7 +2781,7 @@ void CInfClassGameController::GetPlayerCounter(int ClientException, int& NumHuma
 	CInfClassPlayerIterator<PLAYERITER_INGAME> Iter(GameServer()->m_apPlayers);
 	while(Iter.Next())
 	{
-		if(Iter.ClientID() == ClientException) continue;
+		if(Iter.ClientId() == ClientException) continue;
 		
 		if(Iter.Player()->IsInfected()) NumInfected++;
 		else NumHumans++;
@@ -2887,7 +2887,7 @@ void CInfClassGameController::SendKillMessage(int Victim, const DeathContext &Co
 	InfClassMsg.m_InfDamageType = DamageTypeInt;
 	InfClassMsg.m_Weapon = VanillaWeapon;
 
-	CMsgPacker InfCPacker(InfClassMsg.ms_MsgID, false);
+	CMsgPacker InfCPacker(InfClassMsg.ms_MsgId, false);
 	InfClassMsg.Pack(&InfCPacker);
 
 	CNetMsg_Sv_KillMsg VanillaMsg;
@@ -2896,7 +2896,7 @@ void CInfClassGameController::SendKillMessage(int Victim, const DeathContext &Co
 	VanillaMsg.m_Weapon = VanillaWeapon;
 	VanillaMsg.m_ModeSpecial = InfClassModeSpecialSkip;
 
-	CMsgPacker VanillaPacker(VanillaMsg.ms_MsgID, false);
+	CMsgPacker VanillaPacker(VanillaMsg.ms_MsgId, false);
 	VanillaMsg.Pack(&VanillaPacker);
 
 	for(int i = 0; i < MAX_CLIENTS; i++)
@@ -2985,9 +2985,9 @@ void CInfClassGameController::OnKillOrInfection(int Victim, const DeathContext &
 				const float StretchingDistance = 12 * TileSizeF;
 				const float StretchingDistance2 = StretchingDistance * StretchingDistance;
 				int Stretchers = 0;
-				for(const auto &AttachedPlayerID : pVictimCharacter->Core()->m_AttachedPlayers)
+				for(const auto &AttachedPlayerId : pVictimCharacter->Core()->m_AttachedPlayers)
 				{
-					const CCharacter *pOtherPlayer = GameServer()->GetPlayerChar(AttachedPlayerID);
+					const CCharacter *pOtherPlayer = GameServer()->GetPlayerChar(AttachedPlayerId);
 					if(pOtherPlayer && distance_squared(pOtherPlayer->GetPos(), pVictimCharacter->GetPos()) > StretchingDistance2)
 					{
 						Stretchers++;
@@ -3119,9 +3119,9 @@ int CInfClassGameController::GetClientIdForNewWitch() const
 	ClientsArray SuitableInfected;
 	ClientsArray SafeInfected;
 
-	for(int ClientID : m_WitchCallers)
+	for(int ClientId : m_WitchCallers)
 	{
-		CInfClassPlayer *pPlayer = GetPlayer(ClientID);
+		CInfClassPlayer *pPlayer = GetPlayer(ClientId);
 		if(!pPlayer || !pPlayer->IsInGame())
 			continue;
 		if(pPlayer->GetClass() == EPlayerClass::Witch)
@@ -3129,20 +3129,20 @@ int CInfClassGameController::GetClientIdForNewWitch() const
 		if(!pPlayer->IsInfected())
 			continue;
 
-		SuitableInfected.Add(ClientID);
+		SuitableInfected.Add(ClientId);
 
-		if(!IsSafeWitchCandidate(ClientID))
+		if(!IsSafeWitchCandidate(ClientId))
 			continue;
 
-		SafeInfected.Add(ClientID);
+		SafeInfected.Add(ClientId);
 	}
 
 	if(SuitableInfected.IsEmpty())
 	{
 		// fallback
-		for(int ClientID = 0; ClientID < MAX_CLIENTS; ClientID++)
+		for(int ClientId = 0; ClientId < MAX_CLIENTS; ClientId++)
 		{
-			CInfClassPlayer *pPlayer = GetPlayer(ClientID);
+			CInfClassPlayer *pPlayer = GetPlayer(ClientId);
 			if(!pPlayer || !pPlayer->IsInGame())
 				continue;
 			if(pPlayer->GetClass() == EPlayerClass::Witch)
@@ -3150,12 +3150,12 @@ int CInfClassGameController::GetClientIdForNewWitch() const
 			if(!pPlayer->IsInfected())
 				continue;
 
-			SuitableInfected.Add(ClientID);
+			SuitableInfected.Add(ClientId);
 
-			if(!IsSafeWitchCandidate(ClientID))
+			if(!IsSafeWitchCandidate(ClientId))
 				continue;
 
-			SafeInfected.Add(ClientID);
+			SafeInfected.Add(ClientId);
 		}
 	}
 
@@ -3177,19 +3177,19 @@ int CInfClassGameController::GetClientIdForNewWitch() const
 	return Candidates[id];
 }
 
-bool CInfClassGameController::IsSafeWitchCandidate(int ClientID) const
+bool CInfClassGameController::IsSafeWitchCandidate(int ClientId) const
 {
 	constexpr double MaxInactiveSeconds = 5;
 	constexpr double SafeRadius = 1000;
 
-	const CInfClassPlayer *pPlayer = GetPlayer(ClientID);
+	const CInfClassPlayer *pPlayer = GetPlayer(ClientId);
 	if(!pPlayer)
 		return false;
 
 	if(Server()->Tick() > pPlayer->m_LastActionTick + MaxInactiveSeconds * Server()->TickSpeed())
 		return false;
 
-	const CInfClassCharacter *pCharacter = GetCharacter(ClientID);
+	const CInfClassCharacter *pCharacter = GetCharacter(ClientId);
 	if(pCharacter && pCharacter->IsAlive())
 	{
 		icArray<CInfClassCharacter *, MAX_CLIENTS> aCharsNearby;
@@ -3214,26 +3214,26 @@ bool CInfClassGameController::IsSafeWitchCandidate(int ClientID) const
 	return true;
 }
 
-CInfClassGameController::PlayerScore *CInfClassGameController::GetSurvivalPlayerScore(int ClientID)
+CInfClassGameController::PlayerScore *CInfClassGameController::GetSurvivalPlayerScore(int ClientId)
 {
 	for(PlayerScore &Score : m_SurvivalState.Scores)
 	{
-		if(Score.ClientID == ClientID)
+		if(Score.ClientId == ClientId)
 			return &Score;
 	}
 
 	return nullptr;
 }
 
-CInfClassGameController::PlayerScore *CInfClassGameController::EnsureSurvivalPlayerScore(int ClientID)
+CInfClassGameController::PlayerScore *CInfClassGameController::EnsureSurvivalPlayerScore(int ClientId)
 {
-	PlayerScore *pScore = GetSurvivalPlayerScore(ClientID);
+	PlayerScore *pScore = GetSurvivalPlayerScore(ClientId);
 	if(pScore)
 		return pScore;
 
 	m_SurvivalState.Scores.Add({});
 	PlayerScore &Score = m_SurvivalState.Scores.Last();
-	Score.ClientID = ClientID;
+	Score.ClientId = ClientId;
 	Score.aPlayerName[0] = '\0';
 	Score.Kills = 0;
 
@@ -3263,10 +3263,10 @@ void CInfClassGameController::Tick()
 		while(Iter.Next())
 		{
 			//Update session
-			IServer::CClientSession* pSession = Server()->GetClientSession(Iter.ClientID());
+			IServer::CClientSession* pSession = Server()->GetClientSession(Iter.ClientId());
 			if(pSession)
 			{
-				if(!Server()->GetClientMemory(Iter.ClientID(), CLIENTMEMORY_SESSION_PROCESSED))
+				if(!Server()->GetClientMemory(Iter.ClientId(), CLIENTMEMORY_SESSION_PROCESSED))
 				{
 					//The client already participated to this round,
 					//and he exit the game as infected.
@@ -3281,7 +3281,7 @@ void CInfClassGameController::Tick()
 						}
 					}
 
-					Server()->SetClientMemory(Iter.ClientID(), CLIENTMEMORY_SESSION_PROCESSED, true);
+					Server()->SetClientMemory(Iter.ClientId(), CLIENTMEMORY_SESSION_PROCESSED, true);
 				}
 				
 				pSession->m_Class = static_cast<int>(Iter.Player()->GetClass());
@@ -3404,11 +3404,11 @@ void CInfClassGameController::SetPlayerPickedTimestamp(CInfClassPlayer *pPlayer,
 	if(PrevInfectionTimestamp && Timestamp > PrevInfectionTimestamp)
 	{
 		int PrevInfectionSeconds = Timestamp - PrevInfectionTimestamp;
-		dbg_msg("server", "SetPlayerPickedTimestamp: Pick cid=%d (previously picked %d seconds ago)", pPlayer->GetCID(), PrevInfectionSeconds);
+		dbg_msg("server", "SetPlayerPickedTimestamp: Pick cid=%d (previously picked %d seconds ago)", pPlayer->GetCid(), PrevInfectionSeconds);
 	}
 	else
 	{
-		dbg_msg("server", "SetPlayerPickedTimestamp: Pick cid=%d (was not picked before)", pPlayer->GetCID());
+		dbg_msg("server", "SetPlayerPickedTimestamp: Pick cid=%d (was not picked before)", pPlayer->GetCid());
 	}
 }
 
@@ -3456,7 +3456,7 @@ int CInfClassGameController::InfectHumans(int NumHumansToInfect)
 
 		GameServer()->SendChatTarget_Localization(-1, CHATCATEGORY_INFECTION,
 			_("{str:VictimName} has been infected"),
-				"VictimName", Server()->ClientName(pPlayer->GetCID()),
+				"VictimName", Server()->ClientName(pPlayer->GetCid()),
 				nullptr);
 
 		SetPlayerPickedTimestamp(pPlayer, Timestamp);
@@ -3558,12 +3558,12 @@ void CInfClassGameController::AnnounceTheWinner(int NumHumans)
 			if(Iter.Player()->IsHuman())
 			{
 				//TAG_SCORE
-				Server()->RoundStatistics()->OnScoreEvent(Iter.ClientID(), SCOREEVENT_HUMAN_SURVIVE, Iter.Player()->GetClass(), Server()->ClientName(Iter.ClientID()), Console());
-				Server()->RoundStatistics()->SetPlayerAsWinner(Iter.ClientID());
-				GameServer()->SendScoreSound(Iter.ClientID());
+				Server()->RoundStatistics()->OnScoreEvent(Iter.ClientId(), SCOREEVENT_HUMAN_SURVIVE, Iter.Player()->GetClass(), Server()->ClientName(Iter.ClientId()), Console());
+				Server()->RoundStatistics()->SetPlayerAsWinner(Iter.ClientId());
+				GameServer()->SendScoreSound(Iter.ClientId());
 
-				GameServer()->SendChatTarget_Localization(Iter.ClientID(), CHATCATEGORY_SCORE, _("You have survived, +5 points"), NULL);
-				str_format(aBuf, sizeof(aBuf), "survived player='%s'", Server()->ClientName(Iter.ClientID()));
+				GameServer()->SendChatTarget_Localization(Iter.ClientId(), CHATCATEGORY_SCORE, _("You have survived, +5 points"), NULL);
+				str_format(aBuf, sizeof(aBuf), "survived player='%s'", Server()->ClientName(Iter.ClientId()));
 				Console()->Print(IConsole::OUTPUT_LEVEL_DEBUG, "game", aBuf);
 			}
 		}
@@ -3631,9 +3631,9 @@ void CInfClassGameController::MaybeDropPickup(const CInfClassCharacter *pVictim)
 		}
 	}
 
-	for(int ClientID = 0; ClientID < MAX_CLIENTS; ++ClientID)
+	for(int ClientId = 0; ClientId < MAX_CLIENTS; ++ClientId)
 	{
-		const CInfClassCharacter *pCharacter = GetCharacter(ClientID);
+		const CInfClassCharacter *pCharacter = GetCharacter(ClientId);
 		if(!pCharacter)
 			continue;
 
@@ -3654,10 +3654,10 @@ void CInfClassGameController::MaybeDropPickup(const CInfClassCharacter *pVictim)
 		if(!Upgrade.IsValid())
 			continue;
 
-		if(HasSpawnedPickups.Contains(ClientID))
+		if(HasSpawnedPickups.Contains(ClientId))
 			continue;
 
-		CIcPickup *p = new CIcPickup(GameServer(), EICPickupType::ClassUpgrade, Pos, ClientID);
+		CIcPickup *p = new CIcPickup(GameServer(), EICPickupType::ClassUpgrade, Pos, ClientId);
 		p->SetUpgrade(Upgrade);
 		p->Spawn();
 	}
@@ -3676,11 +3676,11 @@ bool CInfClassGameController::MapRotationEnabled() const
 	return true;
 }
 
-void CInfClassGameController::OnTeamChangeRequested(int ClientID, int Team)
+void CInfClassGameController::OnTeamChangeRequested(int ClientId, int Team)
 {
-	CPlayer *pPlayer = GetPlayer(ClientID);
+	CPlayer *pPlayer = GetPlayer(ClientId);
 	// Switch team on given client and kill/respawn him
-	if(CanJoinTeam(Team, ClientID))
+	if(CanJoinTeam(Team, ClientId))
 	{
 		if(CanChangeTeam(pPlayer, Team))
 		{
@@ -3691,29 +3691,29 @@ void CInfClassGameController::OnTeamChangeRequested(int ClientID, int Team)
 			pPlayer->m_TeamChangeTick = Server()->Tick();
 		}
 		else
-			GameServer()->SendBroadcast(ClientID, "Teams must be balanced, please join other team", BROADCAST_PRIORITY_GAMEANNOUNCE, BROADCAST_DURATION_GAMEANNOUNCE);
+			GameServer()->SendBroadcast(ClientId, "Teams must be balanced, please join other team", BROADCAST_PRIORITY_GAMEANNOUNCE, BROADCAST_DURATION_GAMEANNOUNCE);
 	}
 }
 
-bool CInfClassGameController::CanJoinTeam(int Team, int ClientID)
+bool CInfClassGameController::CanJoinTeam(int Team, int ClientId)
 {
 	if(Team != TEAM_SPECTATORS)
 	{
 		if(GetRoundType() == ERoundType::Survival && IsInfectionStarted())
 		{
-			GameServer()->SendBroadcast_Localization(ClientID,
+			GameServer()->SendBroadcast_Localization(ClientId,
 				BROADCAST_PRIORITY_GAMEANNOUNCE, BROADCAST_DURATION_GAMEANNOUNCE,
 				_("You have to wait until the survival is over"));
 			return false;
 		}
 
-		return IGameController::CanJoinTeam(Team, ClientID);
+		return IGameController::CanJoinTeam(Team, ClientId);
 	}
 
 	if (IsGameOver())
 		return true;
 
-	CInfClassPlayer *pPlayer = GetPlayer(ClientID);
+	CInfClassPlayer *pPlayer = GetPlayer(ClientId);
 
 	if(!pPlayer) // Invalid call
 		return false;
@@ -3723,12 +3723,12 @@ bool CInfClassGameController::CanJoinTeam(int Team, int ClientID)
 
 	int NumHumans;
 	int NumInfected;
-	GetPlayerCounter(ClientID, NumHumans, NumInfected);
+	GetPlayerCounter(ClientId, NumHumans, NumInfected);
 	const int NumPlayers = NumHumans + NumInfected;
 	const int NumMinInfected = GetMinimumInfectedForPlayers(NumPlayers);
 	if(NumInfected >= NumMinInfected)
 	{
-		// Let the ClientID join the specs if we'll not have to infect
+		// Let the ClientId join the specs if we'll not have to infect
 		// someone after the join.
 		return true;
 	}
@@ -4123,17 +4123,17 @@ void CInfClassGameController::Snap(int SnappingClient)
 	pGameDataObj->m_FlagCarrierBlue = FLAG_ATSTAND;
 }
 
-CPlayer *CInfClassGameController::CreatePlayer(int ClientID, bool IsSpectator, void *pData)
+CPlayer *CInfClassGameController::CreatePlayer(int ClientId, bool IsSpectator, void *pData)
 {
 	CInfClassPlayer *pPlayer = nullptr;
 	if(IsSpectator)
 	{
-		pPlayer = new(ClientID) CInfClassPlayer(this, ClientID, TEAM_SPECTATORS);
+		pPlayer = new(ClientId) CInfClassPlayer(this, ClientId, TEAM_SPECTATORS);
 	}
 	else
 	{
-		const int StartTeam = Config()->m_SvTournamentMode ? TEAM_SPECTATORS : GetAutoTeam(ClientID);
-		pPlayer = new(ClientID) CInfClassPlayer(this, ClientID, StartTeam);
+		const int StartTeam = Config()->m_SvTournamentMode ? TEAM_SPECTATORS : GetAutoTeam(ClientId);
+		pPlayer = new(ClientId) CInfClassPlayer(this, ClientId, StartTeam);
 	}
 
 	if(pData)
@@ -4156,9 +4156,9 @@ int CInfClassGameController::PersistentClientDataSize() const
 	return sizeof(InfclassPlayerPersistantData);
 }
 
-bool CInfClassGameController::GetClientPersistentData(int ClientID, void *pData) const
+bool CInfClassGameController::GetClientPersistentData(int ClientId, void *pData) const
 {
-	const CInfClassPlayer *pPlayer = GetPlayer(ClientID);
+	const CInfClassPlayer *pPlayer = GetPlayer(ClientId);
 	if(!pPlayer)
 		return false;
 
@@ -4283,7 +4283,7 @@ void CInfClassGameController::RewardTheKillers(CInfClassCharacter *pVictim, cons
 	{
 		if(pKiller->IsHuman())
 		{
-			Server()->RoundStatistics()->OnScoreEvent(pKiller->GetCID(), SCOREEVENT_HUMAN_SUICIDE, pKiller->GetClass(), Server()->ClientName(pKiller->GetCID()), Console());
+			Server()->RoundStatistics()->OnScoreEvent(pKiller->GetCid(), SCOREEVENT_HUMAN_SUICIDE, pKiller->GetClass(), Server()->ClientName(pKiller->GetCid()), Console());
 		}
 	}
 	else
@@ -4313,19 +4313,19 @@ void CInfClassGameController::RewardTheKillers(CInfClassCharacter *pVictim, cons
 			{
 			case EPlayerClass::Witch:
 				ScoreEvent = SCOREEVENT_KILL_WITCH;
-				GameServer()->SendChatTarget_Localization(pKiller->GetCID(), CHATCATEGORY_SCORE, _("You have killed a witch, +5 points"), NULL);
+				GameServer()->SendChatTarget_Localization(pKiller->GetCid(), CHATCATEGORY_SCORE, _("You have killed a witch, +5 points"), NULL);
 				break;
 			case EPlayerClass::Undead:
 				ScoreEvent = SCOREEVENT_KILL_UNDEAD;
-				GameServer()->SendChatTarget_Localization(pKiller->GetCID(), CHATCATEGORY_SCORE, _("You have killed an undead! +5 points"), NULL);
+				GameServer()->SendChatTarget_Localization(pKiller->GetCid(), CHATCATEGORY_SCORE, _("You have killed an undead! +5 points"), NULL);
 				break;
 			default:
 				break;
 			}
 		}
 
-		Server()->RoundStatistics()->OnScoreEvent(pKiller->GetCID(), ScoreEvent, pKiller->GetClass(), Server()->ClientName(pKiller->GetCID()), Console());
-		GameServer()->SendScoreSound(pKiller->GetCID());
+		Server()->RoundStatistics()->OnScoreEvent(pKiller->GetCid(), ScoreEvent, pKiller->GetClass(), Server()->ClientName(pKiller->GetCid()), Console());
+		GameServer()->SendScoreSound(pKiller->GetCid());
 	}
 
 	pKiller->GetCharacterClass()->OnKilledCharacter(pVictim, Context);
@@ -4359,7 +4359,7 @@ void CInfClassGameController::OnCharacterDeath(CInfClassCharacter *pVictim, cons
 	const int Assistant = Context.Assistant;
 	const char *pDamageTypeStr = toString(DamageType);
 
-	dbg_msg("server", "OnCharacterDeath: victim=%d damage_type=%s killer=%d assistant=%d", pVictim->GetCID(), pDamageTypeStr, Killer, Assistant);
+	dbg_msg("server", "OnCharacterDeath: victim=%d damage_type=%s killer=%d assistant=%d", pVictim->GetCid(), pDamageTypeStr, Killer, Assistant);
 
 	RewardTheKillers(pVictim, Context);
 
@@ -4369,14 +4369,14 @@ void CInfClassGameController::OnCharacterDeath(CInfClassCharacter *pVictim, cons
 		EDamageType::KILL_COMMAND, // Self kill
 		EDamageType::GAME_FINAL_EXPLOSION,
 	};
-	if(!BadReasonsToDie.Contains(DamageType) && (Killer != pVictim->GetCID()))
+	if(!BadReasonsToDie.Contains(DamageType) && (Killer != pVictim->GetCid()))
 	{
 		if(pVictim->IsHuman())
 		{
 			const CInfClassPlayer *pKiller = GetPlayer(Context.Killer);
 			if(pKiller && pKiller->IsInfected() && pKiller->GetCharacter())
 			{
-				pVictim->GetPlayer()->SetFollowTarget(pKiller->GetCID(), 5.0);
+				pVictim->GetPlayer()->SetFollowTarget(pKiller->GetCid(), 5.0);
 			}
 		}
 
@@ -4393,7 +4393,7 @@ void CInfClassGameController::OnCharacterDeath(CInfClassCharacter *pVictim, cons
 			if(p && Len < 800.0f)
 			{
 				int Points = (pVictim->IsInfected() ? 8 : 14);
-				new CFlyingPoint(GameServer(), pVictim->m_Pos, p->GetCID(), Points, pVictim->Velocity());
+				new CFlyingPoint(GameServer(), pVictim->m_Pos, p->GetCid(), Points, pVictim->Velocity());
 			}
 		}
 	}
@@ -4410,11 +4410,11 @@ void CInfClassGameController::OnCharacterDeath(CInfClassCharacter *pVictim, cons
 	char aBuf[256];
 	str_format(aBuf, sizeof(aBuf), "kill killer='%s' victim='%s' weapon=%d",
 		Server()->ClientName(Killer),
-		Server()->ClientName(pVictim->GetCID()), Weapon);
+		Server()->ClientName(pVictim->GetCid()), Weapon);
 	Console()->Print(IConsole::OUTPUT_LEVEL_DEBUG, "game", aBuf);
 
 	// It is important to SendKillMessage before GetClass()->OnCharacterDeath() to keep the correct kill order
-	SendKillMessage(pVictim->GetCID(), Context);
+	SendKillMessage(pVictim->GetCid(), Context);
 
 	if(pVictim->GetClass())
 	{
@@ -4477,7 +4477,7 @@ void CInfClassGameController::OnCharacterDeath(CInfClassCharacter *pVictim, cons
 		SelfKill = true;
 		break;
 	default:
-		SelfKill = Killer == pVictim->GetCID();
+		SelfKill = Killer == pVictim->GetCid();
 		break;
 	}
 
@@ -4692,11 +4692,11 @@ void CInfClassGameController::DoWincheck()
 		{
 			if(p->IsInfected())
 			{
-				GameServer()->SendEmoticon(p->GetCID(), EMOTICON_GHOST);
+				GameServer()->SendEmoticon(p->GetCid(), EMOTICON_GHOST);
 			}
 			else
 			{
-				GameServer()->SendEmoticon(p->GetCID(), EMOTICON_EYES);
+				GameServer()->SendEmoticon(p->GetCid(), EMOTICON_EYES);
 			}
 		}
 		m_ExplosionStarted = true;
@@ -4759,7 +4759,7 @@ void CInfClassGameController::DoWincheck()
 
 			if(m_GrowingMap[tileY*m_MapWidth+tileX] & 2 && p->GetPlayer())
 			{
-				p->Die(p->GetCID(), EDamageType::GAME_FINAL_EXPLOSION);
+				p->Die(p->GetCid(), EDamageType::GAME_FINAL_EXPLOSION);
 			}
 		}
 		if(!NewExplosion)
@@ -4839,7 +4839,7 @@ bool CInfClassGameController::TryRespawn(CInfClassPlayer *pPlayer, SpawnContext 
 
 		if(!pPlayer->IsBot())
 		{
-			GameServer()->SendBroadcast(pPlayer->GetCID(), "You are dead and have to wait for others",
+			GameServer()->SendBroadcast(pPlayer->GetCid(), "You are dead and have to wait for others",
 				BROADCAST_PRIORITY_GAMEANNOUNCE, BROADCAST_DURATION_REALTIME);
 			return false;
 		}
@@ -4850,7 +4850,7 @@ bool CInfClassGameController::TryRespawn(CInfClassPlayer *pPlayer, SpawnContext 
 		CInfClassPlayerIterator<PLAYERITER_INGAME> Iter(GameServer()->m_apPlayers);
 		while(Iter.Next())
 		{
-			if(Iter.Player()->GetCID() == pPlayer->GetCID())
+			if(Iter.Player()->GetCid() == pPlayer->GetCid())
 				continue;
 			if(Iter.Player()->GetClass() != EPlayerClass::Witch)
 				continue;
@@ -5046,7 +5046,7 @@ EPlayerClass CInfClassGameController::ChooseInfectedClass(const CInfClassPlayer 
 	int Seconds = (Server()->Tick()-m_RoundStartTick)/((float)Server()->TickSpeed());
 	char aBuf[256];
 	str_format(aBuf, sizeof(aBuf), "infected victim='%s' duration='%d' class='%s'",
-		Server()->ClientName(pPlayer->GetCID()), Seconds, toString(Class));
+		Server()->ClientName(pPlayer->GetCid()), Seconds, toString(Class));
 	Console()->Print(IConsole::OUTPUT_LEVEL_DEBUG, "game", aBuf);
 
 	return Class;
@@ -5399,9 +5399,9 @@ bool CInfClassGameController::CanVote()
 	return !m_InfectedStarted;
 }
 
-void CInfClassGameController::OnPlayerVoteCommand(int ClientID, int Vote)
+void CInfClassGameController::OnPlayerVoteCommand(int ClientId, int Vote)
 {
-	CInfClassPlayer *pPlayer = GetPlayer(ClientID);
+	CInfClassPlayer *pPlayer = GetPlayer(ClientId);
 	if(!pPlayer)
 	{
 		return;
@@ -5446,6 +5446,6 @@ void CInfClassGameController::OnPlayerVoteCommand(int ClientID, int Vote)
 
 void CInfClassGameController::OnPlayerClassChanged(CInfClassPlayer *pPlayer)
 {
-	SetPlayerInfected(pPlayer->GetCID(), pPlayer->IsInfected());
+	SetPlayerInfected(pPlayer->GetCid(), pPlayer->IsInfected());
 	Server()->ExpireServerInfo();
 }

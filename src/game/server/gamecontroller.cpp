@@ -258,7 +258,7 @@ void IGameController::DoActivityCheck()
 					? _C("Inactive kick broadcast message", "Warning: {sec:RemainingTime} until a move to spec for inactivity")
 					: _C("Inactive kick broadcast message", "Warning: {sec:RemainingTime} until a kick for inactivity");
 				int Seconds = (KickingTick - Server()->Tick()) / Server()->TickSpeed() + 1;
-				GameServer()->SendBroadcast_Localization(pPlayer->GetCID(),
+				GameServer()->SendBroadcast_Localization(pPlayer->GetCid(),
 					BROADCAST_PRIORITY_INTERFACE,
 					BROADCAST_DURATION_REALTIME,
 					pText,
@@ -289,13 +289,13 @@ double IGameController::GetTime()
 
 void IGameController::OnPlayerConnect(CPlayer *pPlayer)
 {
-	int ClientID = pPlayer->GetCID();
+	int ClientId = pPlayer->GetCid();
 	pPlayer->Respawn();
 
-	if(!Server()->ClientPrevIngame(ClientID))
+	if(!Server()->ClientPrevIngame(ClientId))
 	{
 		char aBuf[128];
-		str_format(aBuf, sizeof(aBuf), "team_join player='%d:%s' team=%d", ClientID, Server()->ClientName(ClientID), pPlayer->GetTeam());
+		str_format(aBuf, sizeof(aBuf), "team_join player='%d:%s' team=%d", ClientId, Server()->ClientName(ClientId), pPlayer->GetTeam());
 		GameServer()->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "game", aBuf);
 	}
 }
@@ -304,38 +304,38 @@ void IGameController::OnPlayerDisconnect(CPlayer *pPlayer, EClientDropType Type,
 {
 	pPlayer->OnDisconnect();
 
-	int ClientID = pPlayer->GetCID();
-	if(Server()->ClientIngame(ClientID))
+	int ClientId = pPlayer->GetCid();
+	if(Server()->ClientIngame(ClientId))
 	{
 		char aBuf[128];
-		str_format(aBuf, sizeof(aBuf), "leave player='%d:%s'", ClientID, Server()->ClientName(ClientID));
+		str_format(aBuf, sizeof(aBuf), "leave player='%d:%s'", ClientId, Server()->ClientName(ClientId));
 		GameServer()->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "server", aBuf);
 
 		if(Type == EClientDropType::Ban)
 		{
 			GameServer()->SendChatTarget_Localization(-1, CHATCATEGORY_PLAYER, _("{str:PlayerName} has been banned ({str:Reason})"),
-				"PlayerName", Server()->ClientName(ClientID),
+				"PlayerName", Server()->ClientName(ClientId),
 				"Reason", pReason,
 				NULL);
 		}
 		else if(Type == EClientDropType::Kick)
 		{
 			GameServer()->SendChatTarget_Localization(-1, CHATCATEGORY_PLAYER, _("{str:PlayerName} has been kicked ({str:Reason})"),
-				"PlayerName", Server()->ClientName(ClientID),
+				"PlayerName", Server()->ClientName(ClientId),
 				"Reason", pReason,
 				NULL);
 		}
 		else if(pReason && *pReason)
 		{
 			GameServer()->SendChatTarget_Localization(-1, CHATCATEGORY_PLAYER, _("{str:PlayerName} has left the game ({str:Reason})"),
-				"PlayerName", Server()->ClientName(ClientID),
+				"PlayerName", Server()->ClientName(ClientId),
 				"Reason", pReason,
 				NULL);
 		}
 		else
 		{
 			GameServer()->SendChatTarget_Localization(-1, CHATCATEGORY_PLAYER, _("{str:PlayerName} has left the game"),
-				"PlayerName", Server()->ClientName(ClientID),
+				"PlayerName", Server()->ClientName(ClientId),
 				NULL);
 		}
 	}
@@ -381,17 +381,17 @@ void IGameController::DoTeamChange(CPlayer *pPlayer, int Team, bool DoChatMsg)
 		return;
 
 	pPlayer->SetTeam(Team);
-	int ClientID = pPlayer->GetCID();
+	int ClientId = pPlayer->GetCid();
 
 	char aBuf[128];
 	DoChatMsg = false;
 	if(DoChatMsg)
 	{
-		str_format(aBuf, sizeof(aBuf), "'%s' joined the %s", Server()->ClientName(ClientID), GameServer()->m_pController->GetTeamName(Team));
+		str_format(aBuf, sizeof(aBuf), "'%s' joined the %s", Server()->ClientName(ClientId), GameServer()->m_pController->GetTeamName(Team));
 		GameServer()->SendChat(-1, CGameContext::CHAT_ALL, aBuf);
 	}
 
-	str_format(aBuf, sizeof(aBuf), "team_join player='%d:%s' m_Team=%d", ClientID, Server()->ClientName(ClientID), Team);
+	str_format(aBuf, sizeof(aBuf), "team_join player='%d:%s' m_Team=%d", ClientId, Server()->ClientName(ClientId), Team);
 	GameServer()->Console()->Print(IConsole::OUTPUT_LEVEL_DEBUG, "game", aBuf);
 
 	// OnPlayerInfoChange(pPlayer);
@@ -1093,7 +1093,7 @@ bool IGameController::IsForceBalanced()
 	return false;
 }
 
-bool IGameController::CanBeMovedOnBalance(int ClientID)
+bool IGameController::CanBeMovedOnBalance(int ClientId)
 {
 	return true;
 }
@@ -1152,7 +1152,7 @@ void IGameController::Snap(int SnappingClient)
 {
 }
 
-int IGameController::GetAutoTeam(int NotThisID)
+int IGameController::GetAutoTeam(int NotThisId)
 {
 	// this will force the auto balancer to work overtime as well
 #ifdef CONF_DEBUG
@@ -1163,7 +1163,7 @@ int IGameController::GetAutoTeam(int NotThisID)
 	int aNumplayers[2] = {0, 0};
 	for(int i = 0; i < MAX_CLIENTS; i++)
 	{
-		if(GameServer()->m_apPlayers[i] && i != NotThisID)
+		if(GameServer()->m_apPlayers[i] && i != NotThisId)
 		{
 			if(GameServer()->m_apPlayers[i]->GetTeam() >= TEAM_RED && GameServer()->m_apPlayers[i]->GetTeam() <= TEAM_BLUE)
 				aNumplayers[GameServer()->m_apPlayers[i]->GetTeam()]++;
@@ -1172,20 +1172,20 @@ int IGameController::GetAutoTeam(int NotThisID)
 
 	int Team = 0;
 
-	if(CanJoinTeam(Team, NotThisID))
+	if(CanJoinTeam(Team, NotThisId))
 		return Team;
 	return -1;
 }
 
-bool IGameController::CanJoinTeam(int Team, int NotThisID)
+bool IGameController::CanJoinTeam(int Team, int NotThisId)
 {
-	if(Team == TEAM_SPECTATORS || (GameServer()->m_apPlayers[NotThisID] && GameServer()->m_apPlayers[NotThisID]->GetTeam() != TEAM_SPECTATORS))
+	if(Team == TEAM_SPECTATORS || (GameServer()->m_apPlayers[NotThisId] && GameServer()->m_apPlayers[NotThisId]->GetTeam() != TEAM_SPECTATORS))
 		return true;
 
 	int aNumplayers[2] = {0, 0};
 	for(int i = 0; i < MAX_CLIENTS; i++)
 	{
-		if(GameServer()->m_apPlayers[i] && i != NotThisID)
+		if(GameServer()->m_apPlayers[i] && i != NotThisId)
 		{
 			if(GameServer()->m_apPlayers[i]->GetTeam() >= TEAM_RED && GameServer()->m_apPlayers[i]->GetTeam() <= TEAM_BLUE)
 				aNumplayers[GameServer()->m_apPlayers[i]->GetTeam()]++;
@@ -1197,7 +1197,7 @@ bool IGameController::CanJoinTeam(int Team, int NotThisID)
 	{
 		char aBuf[128];
 		str_format(aBuf, sizeof(aBuf), "Only %d active players are allowed", Server()->MaxClients() - g_Config.m_SvSpectatorSlots);
-		GameServer()->SendBroadcast(NotThisID, aBuf, BROADCAST_PRIORITY_GAMEANNOUNCE, BROADCAST_DURATION_GAMEANNOUNCE);
+		GameServer()->SendBroadcast(NotThisId, aBuf, BROADCAST_PRIORITY_GAMEANNOUNCE, BROADCAST_DURATION_GAMEANNOUNCE);
 	}
 
 	return NumbersAreOk;

@@ -60,7 +60,7 @@ bool CInfClassLaser::OnCharacterHit(CInfClassCharacter *pHit)
 	{
 		const float EffectDurationInSeconds = Config()->m_InfSlowMotionGunDuration * 0.1f;
 		pHit->SlowMotionEffect(EffectDurationInSeconds, GetOwner());
-		GameServer()->SendEmoticon(pHit->GetCID(), EMOTICON_EXCLAMATION);
+		GameServer()->SendEmoticon(pHit->GetCid(), EMOTICON_EXCLAMATION);
 	}
 
 	return true;
@@ -131,7 +131,7 @@ void CInfClassLaser::Snap(int SnappingClient)
 
 	int SnappingClientVersion = GameServer()->GetClientVersion(SnappingClient);
 	CSnapContext Context(SnappingClientVersion);
-	GameServer()->SnapLaserObject(Context, GetID(), m_Pos, m_From, m_EvalTick, GetOwner());
+	GameServer()->SnapLaserObject(Context, GetId(), m_Pos, m_From, m_EvalTick, GetOwner());
 }
 
 void CInfClassLaser::SetExplosive(bool Explosive)

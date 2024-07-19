@@ -47,7 +47,7 @@ public:
 	public:
 		int m_Value;
 		char m_aValue[128];
-		IResult() { m_NumArgs = 0; m_ClientID = -1; }
+		IResult() { m_NumArgs = 0; m_ClientId = -1; }
 		virtual ~IResult() {}
 
 		virtual int GetInteger(unsigned Index) = 0;
@@ -55,14 +55,14 @@ public:
 		virtual const char *GetString(unsigned Index) = 0;
 		virtual ColorHSLA GetColor(unsigned Index, bool Light) = 0;
 		
-		int GetClientID() { return m_ClientID; }
+		int GetClientId() { return m_ClientId; }
 		
-		void SetClientID(int ClientID) { m_ClientID = ClientID; }
+		void SetClientId(int ClientId) { m_ClientId = ClientId; }
 
 		virtual void RemoveArgument(unsigned Index) = 0;
 
 		int NumArguments() const { return m_NumArgs; }
-		int m_ClientID;
+		int m_ClientId;
 
 		// DDRace
 
@@ -86,7 +86,7 @@ public:
 		int GetAccessLevel() const { return m_AccessLevel; }
 	};
 
-	typedef void (*FTeeHistorianCommandCallback)(int ClientID, int FlagMask, const char *pCmd, IResult *pResult, void *pUser);
+	typedef void (*FTeeHistorianCommandCallback)(int ClientId, int FlagMask, const char *pCmd, IResult *pResult, void *pUser);
 	typedef void (*FPrintCallback)(const char *pStr, void *pUser, ColorRGBA PrintColor);
 	typedef void (*FPossibleCallback)(int Index, const char *pCmd, void *pUser);
 	typedef void (*FCommandCallback)(IResult *pResult, void *pUserData);
@@ -110,10 +110,10 @@ public:
 	virtual void StoreCommands(bool Store) = 0;
 
 	virtual bool LineIsValid(const char *pStr) = 0;
-	virtual void ExecuteLine(const char *pStr, int ClientID = -1, bool InterpretSemicolons = true) = 0;
-	virtual void ExecuteLineFlag(const char *pStr, int FlasgMask, int ClientID = -1, bool InterpretSemicolons = true) = 0;
-	virtual void ExecuteLineStroked(int Stroke, const char *pStr, int ClientID = -1, bool InterpretSemicolons = true) = 0;
-	virtual void ExecuteFile(const char *pFilename, int ClientID = -1, bool LogFailure = false, int StorageType = IStorage::TYPE_ALL) = 0;
+	virtual void ExecuteLine(const char *pStr, int ClientId = -1, bool InterpretSemicolons = true) = 0;
+	virtual void ExecuteLineFlag(const char *pStr, int FlasgMask, int ClientId = -1, bool InterpretSemicolons = true) = 0;
+	virtual void ExecuteLineStroked(int Stroke, const char *pStr, int ClientId = -1, bool InterpretSemicolons = true) = 0;
+	virtual void ExecuteFile(const char *pFilename, int ClientId = -1, bool LogFailure = false, int StorageType = IStorage::TYPE_ALL) = 0;
 
 	virtual int RegisterPrintCallback(int OutputLevel, FPrintCallback pfnPrintCallback, void *pUserData) = 0;
 	virtual void SetPrintOutputLevel(int Index, int OutputLevel) = 0;

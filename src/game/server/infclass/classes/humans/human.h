@@ -111,7 +111,7 @@ protected:
 	bool FindPortalPosition(vec2 *pPosition);
 
 private:
-	icArray<int, 2> m_BarrierHintIDs;
+	icArray<int, 2> m_BarrierHintIds;
 
 	int m_BonusTick = 0;
 	int m_ResetKillsTick = 0;
@@ -124,7 +124,7 @@ private:
 	int m_PositionLockTicksRemaining = 0;
 	vec2 m_PositionLockPosition{};
 	int m_NinjaTargetTick = 0;
-	int m_NinjaTargetCID = -1;
+	int m_NinjaTargetCid = -1;
 	int m_NinjaVelocityBuff = 0;
 	int m_NinjaExtraDamage = 0;
 	int m_NinjaAmmoBuff = 0;

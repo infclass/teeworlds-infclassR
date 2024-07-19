@@ -59,8 +59,8 @@ bool CCharacter::Spawn(CPlayer *pPlayer, vec2 Pos)
 	m_Core.Reset();
 	m_Core.Init(&GameServer()->m_World.m_Core, GameServer()->Collision());
 	m_Core.m_Pos = GetPos();
-	m_Core.m_Id = m_pPlayer->GetCID();
-	GameServer()->m_World.m_Core.m_apCharacters[m_pPlayer->GetCID()] = &m_Core;
+	m_Core.m_Id = m_pPlayer->GetCid();
+	GameServer()->m_World.m_Core.m_apCharacters[m_pPlayer->GetCid()] = &m_Core;
 
 	m_ReckoningTick = 0;
 	m_SendCore = CCharacterCore();
@@ -81,7 +81,7 @@ bool CCharacter::Spawn(CPlayer *pPlayer, vec2 Pos)
 void CCharacter::Destroy()
 {	
 	if(m_pPlayer)
-		GameServer()->m_World.m_Core.m_apCharacters[m_pPlayer->GetCID()] = 0;
+		GameServer()->m_World.m_Core.m_apCharacters[m_pPlayer->GetCid()] = 0;
 	m_Alive = false;
 }
 
@@ -321,7 +321,7 @@ void CCharacter::Tick()
 {
 	PreTick();
 
-	m_Core.m_Id = GetPlayer()->GetCID();
+	m_Core.m_Id = GetPlayer()->GetCid();
 /* INFECTION MODIFICATION START ***************************************/
 	PreCoreTick();
 
@@ -363,7 +363,7 @@ void CCharacter::TickDeferred()
 		CCharacterCore::CParams CoreTickParams(&GameWorld()->m_Core.m_Tuning);
 		CWorldCore TempWorld;
 		m_ReckoningCore.Init(&TempWorld, GameServer()->Collision(), &Teams()->m_Core);
-		m_ReckoningCore.m_Id = m_pPlayer->GetCID();
+		m_ReckoningCore.m_Id = m_pPlayer->GetCid();
 		m_ReckoningCore.Tick(false, &CoreTickParams);
 		m_ReckoningCore.Move(&CoreTickParams);
 		m_ReckoningCore.Quantize();
@@ -376,7 +376,7 @@ void CCharacter::TickDeferred()
 	vec2 StartVel = m_Core.m_Vel;
 	bool StuckBefore = GameServer()->Collision()->TestBox(m_Core.m_Pos, vec2(28.0f, 28.0f));
 
-	m_Core.m_Id = m_pPlayer->GetCID();
+	m_Core.m_Id = m_pPlayer->GetCid();
 	m_Core.Move(&CoreTickParams);
 	bool StuckAfterMove = GameServer()->Collision()->TestBox(m_Core.m_Pos, vec2(28.0f, 28.0f));
 	m_Core.Quantize();
@@ -510,7 +510,7 @@ void CCharacter::Die(int Killer, int Weapon)
 }
 
 //TODO: Move the emote stuff to a function
-void CCharacter::SnapCharacter(int SnappingClient, int ID)
+void CCharacter::SnapCharacter(int SnappingClient, int Id)
 {
 }
 
@@ -522,21 +522,21 @@ bool CCharacter::CanSnapCharacter(int SnappingClient)
 	return true;
 }
 
-bool CCharacter::IsSnappingCharacterInView(int SnappingClientID)
+bool CCharacter::IsSnappingCharacterInView(int SnappingClientId)
 {
-	int ID = m_pPlayer->GetCID();
+	int Id = m_pPlayer->GetCid();
 
 	// A player may not be clipped away if his hook or a hook attached to him is in the field of view
-	bool PlayerAndHookNotInView = NetworkClippedLine(SnappingClientID, m_Pos, m_Core.m_HookPos);
+	bool PlayerAndHookNotInView = NetworkClippedLine(SnappingClientId, m_Pos, m_Core.m_HookPos);
 	bool AttachedHookInView = false;
 	if(PlayerAndHookNotInView)
 	{
-		for(const auto &AttachedPlayerID : m_Core.m_AttachedPlayers)
+		for(const auto &AttachedPlayerId : m_Core.m_AttachedPlayers)
 		{
-			const CCharacter *pOtherPlayer = GameServer()->GetPlayerChar(AttachedPlayerID);
-			if(pOtherPlayer && pOtherPlayer->m_Core.HookedPlayer() == ID)
+			const CCharacter *pOtherPlayer = GameServer()->GetPlayerChar(AttachedPlayerId);
+			if(pOtherPlayer && pOtherPlayer->m_Core.HookedPlayer() == Id)
 			{
-				if(!NetworkClippedLine(SnappingClientID, m_Pos, pOtherPlayer->m_Pos))
+				if(!NetworkClippedLine(SnappingClientId, m_Pos, pOtherPlayer->m_Pos))
 				{
 					AttachedHookInView = true;
 					break;
@@ -555,18 +555,18 @@ void CCharacter::Snap(int SnappingClient)
 {
 }
 
-bool CCharacter::CanCollide(int ClientID)
+bool CCharacter::CanCollide(int ClientId)
 {
-	return Teams()->m_Core.CanCollide(GetPlayer()->GetCID(), ClientID);
+	return Teams()->m_Core.CanCollide(GetPlayer()->GetCid(), ClientId);
 }
-bool CCharacter::SameTeam(int ClientID)
+bool CCharacter::SameTeam(int ClientId)
 {
-	return Teams()->m_Core.SameTeam(GetPlayer()->GetCID(), ClientID);
+	return Teams()->m_Core.SameTeam(GetPlayer()->GetCid(), ClientId);
 }
 
 int CCharacter::Team()
 {
-	return Teams()->m_Core.Team(m_pPlayer->GetCID());
+	return Teams()->m_Core.Team(m_pPlayer->GetCid());
 }
 
 void CCharacter::HandleSkippableTiles(int Index)
@@ -574,7 +574,7 @@ void CCharacter::HandleSkippableTiles(int Index)
 #if 0
 	if(GameLayerClipped(m_Pos))
 	{
-		Die(m_pPlayer->GetCID(), WEAPON_WORLD);
+		Die(m_pPlayer->GetCid(), WEAPON_WORLD);
 		return;
 	}
 #endif
@@ -736,7 +736,7 @@ void CCharacter::SetTeams(CGameTeams *pTeams)
 
 void CCharacter::DDRaceInit()
 {
-	m_Core.m_Id = GetPlayer()->GetCID();
+	m_Core.m_Id = GetPlayer()->GetCid();
 	m_PrevPos = m_Pos;
 }
 

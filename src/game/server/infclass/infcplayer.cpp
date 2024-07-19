@@ -14,8 +14,8 @@
 
 MACRO_ALLOC_POOL_ID_IMPL(CInfClassPlayer, MAX_CLIENTS)
 
-CInfClassPlayer::CInfClassPlayer(CInfClassGameController *pGameController, int ClientID, int Team)
-	: CPlayer(pGameController->GameServer(), ClientID, Team)
+CInfClassPlayer::CInfClassPlayer(CInfClassGameController *pGameController, int ClientId, int Team)
+	: CPlayer(pGameController->GameServer(), ClientId, Team)
 	, m_pGameController(pGameController)
 {
 	m_class = EPlayerClass::Invalid;
@@ -45,13 +45,13 @@ void CInfClassPlayer::TryRespawn()
 		return;
 
 	m_Spawning = false;
-	CInfClassCharacter *pCharacter = new(m_ClientID) CInfClassCharacter(GameController());
+	CInfClassCharacter *pCharacter = new(m_ClientId) CInfClassCharacter(GameController());
 
 	m_pCharacter = pCharacter;
 	m_pCharacter->Spawn(this, Context.SpawnPos);
 	OnCharacterSpawned(Context);
 
-	GameServer()->CreatePlayerSpawn(Context.SpawnPos, GameController()->GetMaskForPlayerWorldEvent(m_ClientID));
+	GameServer()->CreatePlayerSpawn(Context.SpawnPos, GameController()->GetMaskForPlayerWorldEvent(m_ClientId));
 }
 
 int CInfClassPlayer::GetScore(int SnappingClient) const
@@ -66,7 +66,7 @@ int CInfClassPlayer::GetScore(int SnappingClient) const
 			return m_Kills;
 		}
 
-		return Server()->RoundStatistics()->PlayerScore(m_ClientID);
+		return Server()->RoundStatistics()->PlayerScore(m_ClientId);
 	}
 
 	return CPlayer::GetScore(SnappingClient);
@@ -74,7 +74,7 @@ int CInfClassPlayer::GetScore(int SnappingClient) const
 
 void CInfClassPlayer::Tick()
 {
-	if(!Server()->ClientIngame(m_ClientID))
+	if(!Server()->ClientIngame(m_ClientId))
 		return;
 
 	HandleInfection();
@@ -146,12 +146,12 @@ void CInfClassPlayer::PostTick()
 
 void CInfClassPlayer::Snap(int SnappingClient)
 {
-	if(!Server()->ClientIngame(m_ClientID))
+	if(!Server()->ClientIngame(m_ClientId))
 		return;
 
 	CPlayer::Snap(SnappingClient);
 
-	CNetObj_DDNetPlayer *pDDNetPlayer = Server()->SnapNewItem<CNetObj_DDNetPlayer>(m_ClientID);
+	CNetObj_DDNetPlayer *pDDNetPlayer = Server()->SnapNewItem<CNetObj_DDNetPlayer>(m_ClientId);
 	if(!pDDNetPlayer)
 		return;
 
@@ -164,7 +164,7 @@ void CInfClassPlayer::Snap(int SnappingClient)
 
 	if(InfClassVersion)
 	{
-		CNetObj_InfClassPlayer *pInfClassPlayer = Server()->SnapNewItem<CNetObj_InfClassPlayer>(m_ClientID);
+		CNetObj_InfClassPlayer *pInfClassPlayer = Server()->SnapNewItem<CNetObj_InfClassPlayer>(m_ClientId);
 		if(!pInfClassPlayer)
 			return;
 
@@ -190,13 +190,13 @@ void CInfClassPlayer::Snap(int SnappingClient)
 		GetCharacterClass()->OnPlayerSnap(SnappingClient, InfClassVersion);
 	}
 
-	if(!IsSpectator() && (m_FollowTargetTicks > 0) && (SnappingClient == m_ClientID))
+	if(!IsSpectator() && (m_FollowTargetTicks > 0) && (SnappingClient == m_ClientId))
 	{
-		CNetObj_SpectatorInfo *pSpectatorInfo = Server()->SnapNewItem<CNetObj_SpectatorInfo>(m_ClientID);
+		CNetObj_SpectatorInfo *pSpectatorInfo = Server()->SnapNewItem<CNetObj_SpectatorInfo>(m_ClientId);
 		if(!pSpectatorInfo)
 			return;
 
-		pSpectatorInfo->m_SpectatorID = TargetToFollow();
+		pSpectatorInfo->m_SpectatorId = TargetToFollow();
 		pSpectatorInfo->m_X = m_ViewPos.x;
 		pSpectatorInfo->m_Y = m_ViewPos.y;
 	}
@@ -208,9 +208,9 @@ void CInfClassPlayer::SnapClientInfo(int SnappingClient, int SnappingClientMappe
 	if(!pClientInfo)
 		return;
 
-	StrToInts(&pClientInfo->m_Name0, 4, Server()->ClientName(m_ClientID));
+	StrToInts(&pClientInfo->m_Name0, 4, Server()->ClientName(m_ClientId));
 	StrToInts(&pClientInfo->m_Clan0, 3, GetClan(SnappingClient));
-	pClientInfo->m_Country = Server()->ClientCountry(m_ClientID);
+	pClientInfo->m_Country = Server()->ClientCountry(m_ClientId);
 
 	const CWeakSkinInfo SkinInfo = GetSkinInfo(SnappingClient);
 
@@ -234,10 +234,10 @@ void CInfClassPlayer::HandleInfection()
 	}
 
 	const EPlayerClass PreviousClass = GetClass();
-	CInfClassPlayer *pInfectiousPlayer = GameController()->GetPlayer(m_InfectiousPlayerCID);
+	CInfClassPlayer *pInfectiousPlayer = GameController()->GetPlayer(m_InfectiousPlayerCid);
 
 	m_InfectionType = INFECTION_TYPE::NO;
-	m_InfectiousPlayerCID = -1;
+	m_InfectiousPlayerCid = -1;
 
 	GameController()->DoPlayerInfection(this, pInfectiousPlayer, PreviousClass);
 }
@@ -258,7 +258,7 @@ void CInfClassPlayer::KillCharacter(int Weapon)
 		static const float SelfKillConfirmationTime = 3;
 		if(Server()->Tick() > m_SelfKillAttemptTick + Server()->TickSpeed() * SelfKillConfirmationTime)
 		{
-			GameServer()->SendChatTarget_Localization(GetCID(), CHATCATEGORY_PLAYER,
+			GameServer()->SendChatTarget_Localization(GetCid(), CHATCATEGORY_PLAYER,
 				_("Self kill attempt prevented. Trigger self kill again to confirm."));
 			m_SelfKillAttemptTick = Server()->Tick();
 			// Reset last kill tick:
@@ -406,12 +406,12 @@ void CInfClassPlayer::SetClass(EPlayerClass NewClass)
 	{
 		if(IsInfected())
 		{
-			SetCharacterClass(new(m_ClientID) CInfClassInfected(this));
+			SetCharacterClass(new(m_ClientId) CInfClassInfected(this));
 			m_InfectionTick = Server()->Tick();
 		}
 		else
 		{
-			SetCharacterClass(new(m_ClientID) CInfClassHuman(this));
+			SetCharacterClass(new(m_ClientId) CInfClassHuman(this));
 			m_InfectionTick = -1;
 		}
 	}
@@ -459,7 +459,7 @@ void CInfClassPlayer::UpdateSkin()
 	m_TeeInfos.ToSixup();
 }
 
-void CInfClassPlayer::StartInfection(int InfectiousPlayerCID, INFECTION_TYPE InfectionType)
+void CInfClassPlayer::StartInfection(int InfectiousPlayerCid, INFECTION_TYPE InfectionType)
 {
 	dbg_assert(InfectionType != INFECTION_TYPE::NO, "Invalid infection");
 
@@ -467,8 +467,8 @@ void CInfClassPlayer::StartInfection(int InfectiousPlayerCID, INFECTION_TYPE Inf
 		return;
 
 	m_InfectionType = InfectionType;
-	m_InfectiousPlayerCID = InfectiousPlayerCID;
-	m_InfectionCause = InfectiousPlayerCID >= 0 ? INFECTION_CAUSE::PLAYER : INFECTION_CAUSE::GAME;
+	m_InfectiousPlayerCid = InfectiousPlayerCid;
+	m_InfectionCause = InfectiousPlayerCid >= 0 ? INFECTION_CAUSE::PLAYER : INFECTION_CAUSE::GAME;
 }
 
 bool CInfClassPlayer::IsInfectionStarted() const
@@ -502,9 +502,9 @@ void CInfClassPlayer::SetHookProtection(bool Value, bool Automatic)
 		if(!m_HookProtectionAutomatic || !Automatic)
 		{
 			if(m_HookProtection)
-				GameServer()->SendChatTarget_Localization(GetCID(), CHATCATEGORY_DEFAULT, _("Hook protection enabled"), NULL);
+				GameServer()->SendChatTarget_Localization(GetCid(), CHATCATEGORY_DEFAULT, _("Hook protection enabled"), NULL);
 			else
-				GameServer()->SendChatTarget_Localization(GetCID(), CHATCATEGORY_DEFAULT, _("Hook protection disabled"), NULL);
+				GameServer()->SendChatTarget_Localization(GetCid(), CHATCATEGORY_DEFAULT, _("Hook protection disabled"), NULL);
 		}
 	}
 
@@ -526,9 +526,9 @@ void CInfClassPlayer::ResetTheTargetToFollow()
 	SetFollowTarget(-1, 0);
 }
 
-void CInfClassPlayer::SetFollowTarget(int ClientID, float Duration)
+void CInfClassPlayer::SetFollowTarget(int ClientId, float Duration)
 {
-	m_FollowTargetId = ClientID;
+	m_FollowTargetId = ClientId;
 	if(m_FollowTargetId < 0)
 	{
 		m_FollowTargetTicks = 0;
@@ -544,15 +544,15 @@ int CInfClassPlayer::TargetToFollow() const
 	return m_FollowTargetTicks > 0 ? m_FollowTargetId : -1;
 }
 
-int CInfClassPlayer::GetSpectatingCID() const
+int CInfClassPlayer::GetSpectatingCid() const
 {
-	int TargetCID = TargetToFollow();
-	if (TargetCID < 0)
+	int TargetCid = TargetToFollow();
+	if (TargetCid < 0)
 	{
-		TargetCID = m_SpectatorID;
+		TargetCid = m_SpectatorId;
 	}
 
-	return TargetCID;
+	return TargetCid;
 }
 
 float CInfClassPlayer::GetGhoulPercent() const
@@ -691,7 +691,7 @@ const char *CInfClassPlayer::GetClan(int SnappingClient) const
 {
 	if(GetTeam() == TEAM_SPECTATORS)
 	{
-		return Server()->ClientClan(m_ClientID);
+		return Server()->ClientClan(m_ClientId);
 	}
 
 	EPlayerScoreMode SnapScoreMode = GameController()->GetPlayerScoreMode(SnappingClient);
@@ -700,7 +700,7 @@ const char *CInfClassPlayer::GetClan(int SnappingClient) const
 	if(SnapScoreMode == EPlayerScoreMode::Class)
 	{
 		const char *ClassName = CInfClassGameController::GetClanForClass(GetClass(), "?????");
-		str_format(aBuf, sizeof(aBuf), "%s%s", Server()->IsClientLogged(GetCID()) ? "@" : " ", ClassName);
+		str_format(aBuf, sizeof(aBuf), "%s%s", Server()->IsClientLogged(GetCid()) ? "@" : " ", ClassName);
 	}
 	else if(SnapScoreMode == EPlayerScoreMode::Time)
 	{
@@ -712,7 +712,7 @@ const char *CInfClassPlayer::GetClan(int SnappingClient) const
 	}
 	else if(SnapScoreMode == EPlayerScoreMode::Clan)
 	{
-		return Server()->ClientClan(m_ClientID);
+		return Server()->ClientClan(m_ClientId);
 	}
 
 	// This is not thread-safe but we don't have threads.
@@ -736,10 +736,10 @@ void CInfClassPlayer::HandleAutoRespawn()
 
 void CInfClassPlayer::UpdateSpectatorPos()
 {
-	if(m_Team != TEAM_SPECTATORS || m_SpectatorID == SPEC_FREEVIEW)
+	if(m_Team != TEAM_SPECTATORS || m_SpectatorId == SPEC_FREEVIEW)
 		return;
 
-	const CInfClassPlayer *pTarget = GameController()->GetPlayer(m_SpectatorID);
+	const CInfClassPlayer *pTarget = GameController()->GetPlayer(m_SpectatorId);
 	if(!pTarget)
 		return;
 
@@ -750,7 +750,7 @@ void CInfClassPlayer::UpdateSpectatorPos()
 			return;
 	}
 
-	m_ViewPos = GameServer()->m_apPlayers[m_SpectatorID]->m_ViewPos;
+	m_ViewPos = GameServer()->m_apPlayers[m_SpectatorId]->m_ViewPos;
 }
 
 bool CInfClassPlayer::IsForcedToSpectate() const
@@ -785,17 +785,17 @@ void CInfClassPlayer::SendClassIntro()
 		const char *pTranslated = Server()->Localization()->Localize(GetLanguage(), pClassName);
 
 		if(IsHuman())
-			GameServer()->SendBroadcast_Localization(GetCID(), BROADCAST_PRIORITY_GAMEANNOUNCE, BROADCAST_DURATION_GAMEANNOUNCE,
+			GameServer()->SendBroadcast_Localization(GetCid(), BROADCAST_PRIORITY_GAMEANNOUNCE, BROADCAST_DURATION_GAMEANNOUNCE,
 				_("You are a human: {str:ClassName}"), "ClassName", pTranslated, NULL);
 		else
-			GameServer()->SendBroadcast_Localization(GetCID(), BROADCAST_PRIORITY_GAMEANNOUNCE, BROADCAST_DURATION_GAMEANNOUNCE,
+			GameServer()->SendBroadcast_Localization(GetCid(), BROADCAST_PRIORITY_GAMEANNOUNCE, BROADCAST_DURATION_GAMEANNOUNCE,
 				_("You are an infected: {str:ClassName}"), "ClassName", pTranslated, NULL);
 
 		int Index = static_cast<int>(Class);
 		if(!m_aKnownClasses[Index])
 		{
 			const char *className = CInfClassGameController::GetClassName(Class);
-			GameServer()->SendChatTarget_Localization(GetCID(), CHATCATEGORY_DEFAULT, _("Type “/help {str:ClassName}” for more information about your class"), "ClassName", className, NULL);
+			GameServer()->SendChatTarget_Localization(GetCid(), CHATCATEGORY_DEFAULT, _("Type “/help {str:ClassName}” for more information about your class"), "ClassName", className, NULL);
 			m_aKnownClasses[Index] = true;
 		}
 	}

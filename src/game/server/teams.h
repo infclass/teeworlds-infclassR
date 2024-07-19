@@ -15,13 +15,13 @@ public:
 	CGameTeams(CGameContext *pGameContext);
 
 	// helper methods
-	CCharacter *Character(int ClientID)
+	CCharacter *Character(int ClientId)
 	{
-		return GameServer()->GetPlayerChar(ClientID);
+		return GameServer()->GetPlayerChar(ClientId);
 	}
-	CPlayer *GetPlayer(int ClientID)
+	CPlayer *GetPlayer(int ClientId)
 	{
-		return GameServer()->m_apPlayers[ClientID];
+		return GameServer()->m_apPlayers[ClientId];
 	}
 
 	class CGameContext *GameServer()
@@ -34,14 +34,14 @@ public:
 	}
 
 	// returns nullptr if successful, error string if failed
-	const char *SetCharacterTeam(int ClientID, int Team);
+	const char *SetCharacterTeam(int ClientId, int Team);
 
-	int64_t TeamMask(int Team, int ExceptID = -1, int Asker = -1);
+	int64_t TeamMask(int Team, int ExceptId = -1, int Asker = -1);
 
 	int Count(int Team) const;
 
 	// need to be very careful using this method. SERIOUSLY...
-	void SetForceCharacterTeam(int ClientID, int Team);
+	void SetForceCharacterTeam(int ClientId, int Team);
 
 	void Reset();
 };

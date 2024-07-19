@@ -19,17 +19,17 @@ CSuperWeaponIndicator::CSuperWeaponIndicator(CGameContext *pGameContext, vec2 Po
 	m_warmUpCounter = Server()->TickSpeed()*3;
 	m_IsWarmingUp = true;
 	
-	m_IDs.set_size(3);
-	for(int i=0; i<m_IDs.size(); i++)
+	m_Ids.set_size(3);
+	for(int i=0; i<m_Ids.size(); i++)
 	{
-		m_IDs[i] = Server()->SnapNewID();
+		m_Ids[i] = Server()->SnapNewId();
 	}
 }
 
 CSuperWeaponIndicator::~CSuperWeaponIndicator()
 {
-	for(int i=0; i<m_IDs.size(); i++)
-		Server()->SnapFreeID(m_IDs[i]);
+	for(int i=0; i<m_Ids.size(); i++)
+		Server()->SnapFreeId(m_Ids[i]);
 }
 
 void CSuperWeaponIndicator::Snap(int SnappingClient)
@@ -46,12 +46,12 @@ void CSuperWeaponIndicator::Snap(int SnappingClient)
 	float time = (Server()->Tick()-m_StartTick)/(float)Server()->TickSpeed();
 	float angle = fmodf(time*pi/2, 2.0f*pi);
 	
-	for(int i=0; i<m_IDs.size(); i++)
+	for(int i=0; i<m_Ids.size(); i++)
 	{	
-		float shiftedAngle = angle + 2.0*pi*static_cast<float>(i)/static_cast<float>(m_IDs.size());
+		float shiftedAngle = angle + 2.0*pi*static_cast<float>(i)/static_cast<float>(m_Ids.size());
 		vec2 ParticlePos = m_Pos + vec2(cos(shiftedAngle), sin(shiftedAngle)) * m_Radius;
 
-		GameController()->SendHammerDot(ParticlePos, m_IDs[i]);
+		GameController()->SendHammerDot(ParticlePos, m_Ids[i]);
 	}
 }
 

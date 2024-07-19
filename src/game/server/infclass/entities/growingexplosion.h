@@ -47,7 +47,7 @@ private:
 	int m_GrowingMap_Size;
 	int m_VisualizedTiles{};
 	EDamageType m_DamageType;
-	int m_TriggeredByCID;
+	int m_TriggeredByCid;
 	TAKEDAMAGEMODE m_TakeDamageMode;
 	
 	vec2 m_SeedPos;

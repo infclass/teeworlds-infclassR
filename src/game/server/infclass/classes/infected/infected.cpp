@@ -221,14 +221,14 @@ void CInfClassInfected::OnPlayerSnap(int SnappingClient, int InfClassVersion)
 		return;
 	}
 
-	CNetObj_InfClassClassInfo *pClassInfo = Server()->SnapNewItem<CNetObj_InfClassClassInfo>(GetCID());
+	CNetObj_InfClassClassInfo *pClassInfo = Server()->SnapNewItem<CNetObj_InfClassClassInfo>(GetCid());
 	if(!pClassInfo)
 		return;
 	pClassInfo->m_Class = toNetValue(GetPlayerClass());
 	pClassInfo->m_Flags = 0;
 	pClassInfo->m_Data1 = -1;
 
-	if(GameController()->CanSeeDetails(SnappingClient, GetCID()))
+	if(GameController()->CanSeeDetails(SnappingClient, GetCid()))
 	{
 		if(m_pCharacter)
 		{
@@ -286,7 +286,7 @@ void CInfClassInfected::OnCharacterTick()
 
 		// Display time left to live
 		int Time = m_VoodooTimeAlive/Server()->TickSpeed();
-		GameServer()->SendBroadcast_Localization(GetCID(), BROADCAST_PRIORITY_WEAPONSTATE, BROADCAST_DURATION_REALTIME,
+		GameServer()->SendBroadcast_Localization(GetCid(), BROADCAST_PRIORITY_WEAPONSTATE, BROADCAST_DURATION_REALTIME,
 			_C("Voodoo", "Staying alive for: {int:RemainingTime}"),
 			"RemainingTime", &Time,
 			NULL
@@ -328,7 +328,7 @@ void CInfClassInfected::OnCharacterPostCoreTick()
 			if(m_HookDmgTick + Server()->TickSpeed() * Rate < Server()->Tick())
 			{
 				m_HookDmgTick = Server()->Tick();
-				pVictimChar->TakeDamage(vec2(0.0f, 0.0f), Damage, GetCID(), EDamageType::DRYING_HOOK);
+				pVictimChar->TakeDamage(vec2(0.0f, 0.0f), Damage, GetCid(), EDamageType::DRYING_HOOK);
 				if(HasDrainingHook())
 				{
 					m_pCharacter->Heal(Damage);
@@ -347,7 +347,7 @@ void CInfClassInfected::OnCharacterTickDeferred()
 		{
 			if(m_pCharacter->GetHealthArmorSum() < Config()->m_InfSlimeMaxHeal)
 			{
-				m_pCharacter->Heal(1, GetCID());
+				m_pCharacter->Heal(1, GetCid());
 			}
 			m_SlimeLastHealTick = Tick;
 		}
@@ -361,7 +361,7 @@ void CInfClassInfected::OnCharacterSnap(int SnappingClient)
 
 	if(GetPlayerClass() == EPlayerClass::Witch)
 	{
-		CNetObj_Flag *pFlag = Server()->SnapNewItem<CNetObj_Flag>(m_pCharacter->GetFlagID());
+		CNetObj_Flag *pFlag = Server()->SnapNewItem<CNetObj_Flag>(m_pCharacter->GetFlagId());
 		if(!pFlag)
 			return;
 
@@ -370,7 +370,7 @@ void CInfClassInfected::OnCharacterSnap(int SnappingClient)
 		pFlag->m_Team = TEAM_RED;
 	}
 
-	if(SnappingClient == m_pPlayer->GetCID())
+	if(SnappingClient == m_pPlayer->GetCid())
 	{
 		switch(GetPlayerClass())
 		{
@@ -381,8 +381,8 @@ void CInfClassInfected::OnCharacterSnap(int SnappingClient)
 				vec2 SpawnPos;
 				if(FindWitchSpawnPosition(SpawnPos))
 				{
-					const int CursorID = GameController()->GetPlayerOwnCursorID(GetCID());
-					GameController()->SendHammerDot(SpawnPos, CursorID);
+					const int CursorId = GameController()->GetPlayerOwnCursorId(GetCid());
+					GameController()->SendHammerDot(SpawnPos, CursorId);
 				}
 			}
 			break;
@@ -398,7 +398,7 @@ void CInfClassInfected::OnCharacterSnap(int SnappingClient)
 		{
 			if(m_pCharacter->GetHealthArmorSum() < 10)
 			{
-				CNetObj_Pickup *pP = Server()->SnapNewItem<CNetObj_Pickup>(m_pCharacter->GetHeartID());
+				CNetObj_Pickup *pP = Server()->SnapNewItem<CNetObj_Pickup>(m_pCharacter->GetHeartId());
 				if(!pP)
 					return;
 
@@ -504,7 +504,7 @@ void CInfClassInfected::OnHammerFired(WeaponFireContext *pFireContext)
 		if(!m_pCharacter->IsFrozen() && !m_pCharacter->IsInLove())
 		{
 			pFireContext->FireAccepted = false;
-			m_pCharacter->Die(GetCID(), EDamageType::BOOMER_EXPLOSION);
+			m_pCharacter->Die(GetCid(), EDamageType::BOOMER_EXPLOSION);
 		}
 
 		return;
@@ -543,16 +543,16 @@ void CInfClassInfected::OnHammerFired(WeaponFireContext *pFireContext)
 
 		// Lookup for humans
 		ClientsArray Targets;
-		GameController()->GetSortedTargetsInRange(ProjStartPos, GetHammerRange(), ClientsArray({GetCID()}), &Targets);
+		GameController()->GetSortedTargetsInRange(ProjStartPos, GetHammerRange(), ClientsArray({GetCid()}), &Targets);
 
-		for(const int TargetCID : Targets)
+		for(const int TargetCid : Targets)
 		{
 			if (m_pCharacter->IsInLove())
 			{
 				break;
 			}
 
-			CInfClassCharacter *pTarget = GameController()->GetCharacter(TargetCID);
+			CInfClassCharacter *pTarget = GameController()->GetCharacter(TargetCid);
 
 			if(GameServer()->Collision()->IntersectLineWeapon(ProjStartPos, pTarget->GetPos()))
 				continue;
@@ -569,13 +569,13 @@ void CInfClassInfected::OnHammerFired(WeaponFireContext *pFireContext)
 			{
 				if(pTarget->IsFrozen())
 				{
-					pTarget->TryUnfreeze(GetCID());
+					pTarget->TryUnfreeze(GetCid());
 				}
 				else
 				{
 					if(GameController()->GetRoundType() != ERoundType::Survival)
 					{
-						if(pTarget->Heal(4, GetCID()))
+						if(pTarget->Heal(4, GetCid()))
 						{
 							m_pCharacter->Heal(1);
 						}
@@ -588,7 +588,7 @@ void CInfClassInfected::OnHammerFired(WeaponFireContext *pFireContext)
 						if(-Force.y > 6.f)
 						{
 							const float HammerFlyHelperDuration = 20;
-							pTarget->AddHelper(GetCID(), HammerFlyHelperDuration);
+							pTarget->AddHelper(GetCid(), HammerFlyHelperDuration);
 						}
 					}
 				}
@@ -615,7 +615,7 @@ void CInfClassInfected::OnHammerFired(WeaponFireContext *pFireContext)
 					}
 				}
 
-				pTarget->TakeDamage(Force, Damage, GetCID(), DamageType);
+				pTarget->TakeDamage(Force, Damage, GetCid(), DamageType);
 			}
 			Hits++;
 
@@ -666,7 +666,7 @@ void CInfClassInfected::BroadcastWeaponState() const
 	{
 		if(m_pCharacter->m_HookMode > 0)
 		{
-			GameServer()->SendBroadcast_Localization(GetCID(), BROADCAST_PRIORITY_WEAPONSTATE,
+			GameServer()->SendBroadcast_Localization(GetCid(), BROADCAST_PRIORITY_WEAPONSTATE,
 				BROADCAST_DURATION_REALTIME, _C("Spider", "Web mode enabled"), NULL);
 		}
 	}
@@ -675,7 +675,7 @@ void CInfClassInfected::BroadcastWeaponState() const
 		if(m_pPlayer->GetGhoulLevel())
 		{
 			float FodderInStomach = GetGhoulPercent();
-			GameServer()->SendBroadcast_Localization(GetCID(), BROADCAST_PRIORITY_WEAPONSTATE,
+			GameServer()->SendBroadcast_Localization(GetCid(), BROADCAST_PRIORITY_WEAPONSTATE,
 				BROADCAST_DURATION_REALTIME,
 				_C("Ghoul", "Stomach filled by {percent:FodderInStomach}"),
 				"FodderInStomach", &FodderInStomach,
@@ -717,13 +717,13 @@ void CInfClassInfected::DoBoomerExplosion()
 				ForceDir = normalize(Diff);
 
 			float DamageToDeal = 1 + ((Damage - 1) * NormalizedLength);
-			pTarget->TakeDamage(ForceDir * Force * NormalizedLength, DamageToDeal, GetCID(), EDamageType::BOOMER_EXPLOSION);
+			pTarget->TakeDamage(ForceDir * Force * NormalizedLength, DamageToDeal, GetCid(), EDamageType::BOOMER_EXPLOSION);
 			if(pTarget->IsInfected())
 			{
-				pTarget->TryUnfreeze(GetCID());
+				pTarget->TryUnfreeze(GetCid());
 				if(!pTarget->IsFrozen())
 				{
-					pTarget->Heal(4 + DamageToDeal, GetCID());
+					pTarget->Heal(4 + DamageToDeal, GetCid());
 				}
 			}
 
@@ -731,7 +731,7 @@ void CInfClassInfected::DoBoomerExplosion()
 			if(pTarget->IsInfected() || (pTargetPlayer && pTargetPlayer->IsInfectionStarted()))
 			{
 				const float BoomerHelperDuration = 30;
-				pTarget->AddHelper(GetCID(), BoomerHelperDuration);
+				pTarget->AddHelper(GetCid(), BoomerHelperDuration);
 
 				if(Length < ClosestCharacterDistance)
 				{
@@ -752,11 +752,11 @@ void CInfClassInfected::DoBoomerExplosion()
 	}
 
 	GameServer()->CreateSound(GetPos(), SOUND_GRENADE_EXPLODE);
-	GameController()->CreateExplosionDiskGfx(GetPos(), InnerRadius, DamageRadius, m_pPlayer->GetCID());
+	GameController()->CreateExplosionDiskGfx(GetPos(), InnerRadius, DamageRadius, m_pPlayer->GetCid());
 
 	if(pBestBFTarget)
 	{
-		m_pPlayer->SetFollowTarget(pBestBFTarget->GetCID(), 5.0);
+		m_pPlayer->SetFollowTarget(pBestBFTarget->GetCid(), 5.0);
 		m_pPlayer->m_DieTick = Server()->Tick() + Server()->TickSpeed() * 10;
 	}
 }
@@ -772,7 +772,7 @@ void CInfClassInfected::PlaceSlugSlime(WeaponFireContext *pFireContext)
 		int MaxLifeSpan = Server()->TickSpeed() * Config()->m_InfSlimeDuration;
 		int NewEndTick = Server()->Tick() + MaxLifeSpan;
 
-		if(pSlime->Replenish(GetCID(), NewEndTick))
+		if(pSlime->Replenish(GetCid(), NewEndTick))
 		{
 			pFireContext->FireAccepted = true;
 		}
@@ -808,7 +808,7 @@ CSlugSlime *CInfClassInfected::PlaceSlime(vec2 PlaceToPos, float MinDistance)
 		return nullptr;
 	}
 
-	CSlugSlime *pNewSlime = new CSlugSlime(GameServer(), PlaceToPos, GetCID());
+	CSlugSlime *pNewSlime = new CSlugSlime(GameServer(), PlaceToPos, GetCid());
 	return pNewSlime;
 }
 
@@ -883,7 +883,7 @@ void CInfClassInfected::SpiderPreCoreTick()
 			float Len = distance(p->GetPos(), IntersectPos);
 			if(Len < p->GetProximityRadius())
 			{
-				m_pCharacter->SetHookedPlayer(p->GetCID());
+				m_pCharacter->SetHookedPlayer(p->GetCid());
 				// Note: typical Teeworlds clients restore m_HookMode = 1
 				// via "Direct weapon selection" / m_LatestInput.m_WantedWeapon
 				m_pCharacter->m_HookMode = 0;

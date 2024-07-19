@@ -27,7 +27,7 @@ struct DeathContext;
 
 struct CHelperInfo
 {
-	int m_CID = -1;
+	int m_Cid = -1;
 	int m_Tick = 0;
 };
 
@@ -41,7 +41,7 @@ struct CDamagePoint
 
 struct EnforcerInfo
 {
-	int m_CID;
+	int m_Cid;
 	int m_Tick;
 	EDamageType m_DamageType;
 };
@@ -115,9 +115,9 @@ public:
 
 	bool TakeDamage(const vec2 &Force, float Dmg, int From, EDamageType DamageType, float *pDamagePointsLeft = nullptr);
 
-	bool Heal(int HitPoints, int FromCID = -1);
-	bool GiveHealth(int HitPoints, int FromCID = -1);
-	bool GiveArmor(int HitPoints, int FromCID = -1);
+	bool Heal(int HitPoints, int FromCid = -1);
+	bool GiveHealth(int HitPoints, int FromCid = -1);
+	bool GiveArmor(int HitPoints, int FromCid = -1);
 
 	int GetHealth() const { return m_Health; }
 	int GetArmor() const { return m_Armor; }
@@ -151,7 +151,7 @@ public:
 	void AddAmmo(int Weapon, int Ammo);
 	int GetAmmo(int Weapon) const;
 
-	int GetCID() const;
+	int GetCid() const;
 
 	CInfClassPlayer *GetPlayer();
 
@@ -171,7 +171,7 @@ public:
 
 	vec2 GetHookPos() const;
 	int GetHookedPlayer() const;
-	void SetHookedPlayer(int ClientID);
+	void SetHookedPlayer(int ClientId);
 
 	vec2 Velocity() const;
 	float Speed() const;
@@ -192,14 +192,14 @@ public:
 	void Freeze(float Time, int Player, FREEZEREASON Reason);
 	bool IsFrozen() const;
 	void Unfreeze();
-	void TryUnfreeze(int UnfreezerCID = -1);
+	void TryUnfreeze(int UnfreezerCid = -1);
 	FREEZEREASON GetFreezeReason() const { return m_FreezeReason; }
 	int GetFreezer() const;
 
 	bool IsBlind() const { return m_BlindnessTicks > 0; }
 
 	void ResetBlinding();
-	void MakeBlind(int ClientID, float Duration);
+	void MakeBlind(int ClientId, float Duration);
 
 	float WebHookLength() const;
 
@@ -213,7 +213,7 @@ public:
 	void UnlockPosition();
 
 	bool IsInSlowMotion() const;
-	float SlowMotionEffect(float Duration, int FromCID);
+	float SlowMotionEffect(float Duration, int FromCid);
 	void CancelSlowMotion();
 
 	bool IsPoisoned() const;
@@ -223,20 +223,20 @@ public:
 	void ResetMovementsInput();
 	void ResetHookInput();
 
-	int GetCursorID() const { return m_CursorID; }
-	int GetFlagID() const { return m_FlagID; }
-	int GetHeartID() const { return m_HeartID; }
+	int GetCursorId() const { return m_CursorId; }
+	int GetFlagId() const { return m_FlagId; }
+	int GetHeartId() const { return m_HeartId; }
 
-	void AddHelper(int HelperCID, float Time);
+	void AddHelper(int HelperCid, float Time);
 	void ResetHelpers();
 
 	void GetDeathContext(const SDamageContext &DamageContext, DeathContext *pContext) const;
 
 	void UpdateLastHookers(const ClientsArray &Hookers, int HookerTick);
 
-	void UpdateLastEnforcer(int ClientID, float Force, EDamageType DamageType, int Tick);
+	void UpdateLastEnforcer(int ClientId, float Force, EDamageType DamageType, int Tick);
 
-	void RemoveReferencesToCID(int ClientID);
+	void RemoveReferencesToCid(int ClientId);
 
 	void SaturateVelocity(vec2 Force, float MaxSpeed);
 	bool IsPassenger() const;
@@ -252,7 +252,7 @@ public:
 	bool HasSuperWeaponIndicator() const;
 	void SetSuperWeaponIndicatorEnabled(bool Enabled);
 
-	INFWEAPON GetInfWeaponID(int WID = -1) const;
+	INFWEAPON GetInfWeaponId(int WID = -1) const;
 
 	using CCharacter::GameWorld;
 	using CCharacter::Server;
@@ -263,12 +263,12 @@ protected:
 	void PreCoreTick() override;
 	void PostCoreTick() override;
 
-	void SnapCharacter(int SnappingClient, int ID) override;
+	void SnapCharacter(int SnappingClient, int Id) override;
 
 	void ClassSpawnAttributes();
 	void DestroyChildEntities();
 
-	void FreeChildSnapIDs();
+	void FreeChildSnapIds();
 
 	void UpdateTuningParam();
 	void TeleToId(int TeleNumber, int TeleType);
@@ -285,9 +285,9 @@ protected:
 
 	CNetObj_PlayerInput m_InputBackup;
 
-	int m_FlagID;
-	int m_HeartID;
-	int m_CursorID;
+	int m_FlagId;
+	int m_HeartId;
+	int m_CursorId;
 	int m_DropLevel = 0;
 
 	CHelperInfo m_LastHelper;

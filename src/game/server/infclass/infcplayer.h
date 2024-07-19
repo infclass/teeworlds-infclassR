@@ -41,7 +41,7 @@ class CInfClassPlayer : public CPlayer
 	MACRO_ALLOC_POOL_ID()
 
 public:
-	CInfClassPlayer(CInfClassGameController *pGameController, int ClientID, int Team);
+	CInfClassPlayer(CInfClassGameController *pGameController, int ClientId, int Team);
 	~CInfClassPlayer() override;
 
 	static CInfClassPlayer *GetInstance(CPlayer *pPlayer);
@@ -83,7 +83,7 @@ public:
 
 	INFECTION_TYPE InfectionType() const { return m_InfectionType; }
 	INFECTION_CAUSE InfectionCause() const { return m_InfectionCause; }
-	void StartInfection(int InfectiousPlayerCID = -1, INFECTION_TYPE InfectionType = INFECTION_TYPE::REGULAR);
+	void StartInfection(int InfectiousPlayerCid = -1, INFECTION_TYPE InfectionType = INFECTION_TYPE::REGULAR);
 	bool IsInfectionStarted() const;
 
 	int MapMenu() const { return (m_Team != TEAM_SPECTATORS) ? m_MapMenu : 0; }
@@ -100,10 +100,10 @@ public:
 	int DieTick() const { return m_DieTick; }
 
 	void ResetTheTargetToFollow();
-	void SetFollowTarget(int ClientID, float Duration);
+	void SetFollowTarget(int ClientId, float Duration);
 	int TargetToFollow() const;
 
-	int GetSpectatingCID() const;
+	int GetSpectatingCid() const;
 
 	float GetGhoulPercent() const;
 	void IncreaseGhoulLevel(int Diff);
@@ -178,7 +178,7 @@ protected:
 
 	INFECTION_TYPE m_InfectionType = INFECTION_TYPE::NO;
 	INFECTION_CAUSE m_InfectionCause = INFECTION_CAUSE::GAME;
-	int m_InfectiousPlayerCID = -1;
+	int m_InfectiousPlayerCid = -1;
 
 	int m_SelfKillAttemptTick = -1;
 
@@ -227,7 +227,7 @@ public:
 
 	bool Next()
 	{
-		for(m_ClientID = m_ClientID + 1; m_ClientID < MAX_CLIENTS; m_ClientID++)
+		for(m_ClientId = m_ClientId + 1; m_ClientId < MAX_CLIENTS; m_ClientId++)
 		{
 			CPlayer *pPlayer = Player();
 
@@ -246,13 +246,13 @@ public:
 		return false;
 	}
 
-	void Reset() { m_ClientID = -1; }
-	CInfClassPlayer *Player() { return static_cast<CInfClassPlayer *>(m_ppPlayers[m_ClientID]); }
-	int ClientID() { return m_ClientID; }
+	void Reset() { m_ClientId = -1; }
+	CInfClassPlayer *Player() { return static_cast<CInfClassPlayer *>(m_ppPlayers[m_ClientId]); }
+	int ClientId() { return m_ClientId; }
 
 private:
 	CPlayer **m_ppPlayers;
-	int m_ClientID;
+	int m_ClientId;
 };
 
 #endif // GAME_SERVER_INFCLASS_PLAYER_H

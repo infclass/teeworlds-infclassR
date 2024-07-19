@@ -22,9 +22,9 @@ CMercenaryBomb::CMercenaryBomb(CGameContext *pGameContext, vec2 Pos, int Owner)
 	m_LoadingTick = Server()->TickSpeed();
 	m_Load = 0;
 
-	for(int &ID : m_IDs)
+	for(int &Id : m_Ids)
 	{
-		ID = Server()->SnapNewID();
+		Id = Server()->SnapNewId();
 	}
 
 	GameServer()->CreateSound(GetPos(), SOUND_PICKUP_ARMOR);
@@ -32,9 +32,9 @@ CMercenaryBomb::CMercenaryBomb(CGameContext *pGameContext, vec2 Pos, int Owner)
 
 CMercenaryBomb::~CMercenaryBomb()
 {
-	for(int SnapId : m_IDs)
+	for(int SnapId : m_Ids)
 	{
-		Server()->SnapFreeID(SnapId);
+		Server()->SnapFreeId(SnapId);
 	}
 }
 
@@ -74,7 +74,7 @@ void CMercenaryBomb::Tick()
 
 	if(pTriggerCharacter)
 	{
-		Explode(pTriggerCharacter->GetCID());
+		Explode(pTriggerCharacter->GetCid());
 	}
 }
 
@@ -116,7 +116,7 @@ void CMercenaryBomb::Snap(int SnappingClient)
 	{
 		vec2 PosStart = m_Pos + vec2(R * cos(AngleStart + AngleStep*i), R * sin(AngleStart + AngleStep*i));
 
-		CNetObj_Pickup *pP = Server()->SnapNewItem<CNetObj_Pickup>(m_IDs[i]);
+		CNetObj_Pickup *pP = Server()->SnapNewItem<CNetObj_Pickup>(m_Ids[i]);
 		if(!pP)
 			return;
 
@@ -133,7 +133,7 @@ void CMercenaryBomb::Snap(int SnappingClient)
 		for(int i = 0; i < CMercenaryBomb::NUM_SIDE; i++)
 		{
 			vec2 PosStart = m_Pos + vec2(R * cos(AngleStart + AngleStep * i), R * sin(AngleStart + AngleStep * i));
-			GameController()->SendHammerDot(PosStart, m_IDs[CMercenaryBomb::NUM_SIDE+i]);
+			GameController()->SendHammerDot(PosStart, m_Ids[CMercenaryBomb::NUM_SIDE+i]);
 		}
 	}
 }

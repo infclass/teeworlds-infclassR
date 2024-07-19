@@ -133,16 +133,16 @@ int CRoundStatistics::CPlayerStats::OnScoreEvent(int EventType, EPlayerClass Cla
 	return Points;
 }
 
-void CRoundStatistics::ResetPlayer(int ClientID)
+void CRoundStatistics::ResetPlayer(int ClientId)
 {
-	if(ClientID >= 0 && ClientID < MAX_CLIENTS)
-		m_aPlayers[ClientID].Reset();
+	if(ClientId >= 0 && ClientId < MAX_CLIENTS)
+		m_aPlayers[ClientId].Reset();
 }
 
-void CRoundStatistics::OnScoreEvent(int ClientID, int EventType, EPlayerClass Class, const char* Name, IConsole* console)
+void CRoundStatistics::OnScoreEvent(int ClientId, int EventType, EPlayerClass Class, const char* Name, IConsole* console)
 {
-	if(ClientID >= 0 && ClientID < MAX_CLIENTS) {
-		int Score = m_aPlayers[ClientID].OnScoreEvent(EventType, Class);
+	if(ClientId >= 0 && ClientId < MAX_CLIENTS) {
+		int Score = m_aPlayers[ClientId].OnScoreEvent(EventType, Class);
 
 		char aBuf[256];
 		str_format(aBuf, sizeof(aBuf), "score player='%s' amount='%d'",
@@ -153,24 +153,24 @@ void CRoundStatistics::OnScoreEvent(int ClientID, int EventType, EPlayerClass Cl
 	
 }
 
-void CRoundStatistics::SetPlayerAsWinner(int ClientID)
+void CRoundStatistics::SetPlayerAsWinner(int ClientId)
 {
-	if(ClientID >= 0 && ClientID < MAX_CLIENTS)
-		m_aPlayers[ClientID].m_Won = true;
+	if(ClientId >= 0 && ClientId < MAX_CLIENTS)
+		m_aPlayers[ClientId].m_Won = true;
 }
 
-CRoundStatistics::CPlayerStats* CRoundStatistics::PlayerStatistics(int ClientID)
+CRoundStatistics::CPlayerStats* CRoundStatistics::PlayerStatistics(int ClientId)
 {
-	if(ClientID >= 0 && ClientID < MAX_CLIENTS)
-		return &m_aPlayers[ClientID];
+	if(ClientId >= 0 && ClientId < MAX_CLIENTS)
+		return &m_aPlayers[ClientId];
 	else return 0;
 }
 
 
-int CRoundStatistics::PlayerScore(int ClientID)
+int CRoundStatistics::PlayerScore(int ClientId)
 {
-	if(ClientID >= 0 && ClientID < MAX_CLIENTS)
-		return m_aPlayers[ClientID].m_Score/10;
+	if(ClientId >= 0 && ClientId < MAX_CLIENTS)
+		return m_aPlayers[ClientId].m_Score/10;
 	else return 0;
 }
 	
@@ -185,10 +185,10 @@ int CRoundStatistics::NumWinners() const
 	return NumWinner;
 }
 
-void CRoundStatistics::UpdatePlayer(int ClientID, bool IsSpectator)
+void CRoundStatistics::UpdatePlayer(int ClientId, bool IsSpectator)
 {
-	if(ClientID >= 0 && ClientID < MAX_CLIENTS)
-		m_aPlayers[ClientID].m_WasSpectator = IsSpectator || m_aPlayers[ClientID].m_WasSpectator;
+	if(ClientId >= 0 && ClientId < MAX_CLIENTS)
+		m_aPlayers[ClientId].m_WasSpectator = IsSpectator || m_aPlayers[ClientId].m_WasSpectator;
 }
 	
 void CRoundStatistics::UpdateNumberOfPlayers(int Num)
@@ -203,9 +203,9 @@ void CRoundStatistics::UpdateNumberOfPlayers(int Num)
 		m_PlayedTicks++;
 }
 	
-bool CRoundStatistics::IsValidePlayer(int ClientID)
+bool CRoundStatistics::IsValidePlayer(int ClientId)
 {
-	if(ClientID >= 0 && ClientID < MAX_CLIENTS)
+	if(ClientId >= 0 && ClientId < MAX_CLIENTS)
 		return true;
 	else
 		return false;

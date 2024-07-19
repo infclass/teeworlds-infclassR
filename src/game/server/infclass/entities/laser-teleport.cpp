@@ -33,5 +33,5 @@ void CLaserTeleport::Snap(int SnappingClient)
 
 	int SnappingClientVersion = GameServer()->GetClientVersion(SnappingClient);
 	CSnapContext Context(SnappingClientVersion);
-	GameServer()->SnapLaserObject(Context, GetID(), m_EndPos, m_StartPos, Server()->Tick(), GetOwner());
+	GameServer()->SnapLaserObject(Context, GetId(), m_EndPos, m_StartPos, Server()->Tick(), GetOwner());
 }
