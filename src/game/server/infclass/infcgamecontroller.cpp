@@ -1755,12 +1755,17 @@ void CInfClassGameController::ConQueueSpecialRound(IConsole::IResult *pResult, v
 {
 	CInfClassGameController *pSelf = (CInfClassGameController *)pUserData;
 	const char *pRoundTypeName = pResult->GetString(0);
+	pSelf->ConQueueRound(pRoundTypeName);
+}
+
+void CInfClassGameController::ConQueueRound(const char *pRoundTypeName)
+{
 	ERoundType Type = fromString<ERoundType>(pRoundTypeName);
 	if(Type == ERoundType::Invalid)
 	{
 		return;
 	}
-	pSelf->QueueRoundType(Type);
+	QueueRoundType(Type);
 }
 
 void CInfClassGameController::ConStartRound(IConsole::IResult *pResult, void *pUserData)
