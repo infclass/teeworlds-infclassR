@@ -107,6 +107,7 @@ void CGameContext::Construct(int Resetting)
 	m_pVoteOptionLast = 0;
 	m_NumVoteOptions = 0;
 	m_LastMapVote = 0;
+	m_VoteBanClientID = -1;
 
 	if(Resetting == NO_RESET)
 	{
@@ -2557,7 +2558,7 @@ void CGameContext::OnStartInfoNetMessage(const CNetMsg_Cl_StartInfo *pMsg, int C
 	if(!Server()->GetClientMemory(ClientID, CLIENTMEMORY_LANGUAGESELECTION))
 	{
 #ifdef CONF_GEOLOCATION
-		char aAddrStr[NETADDR_MAXSTRSIZE];
+		char aAddrStr[NETADDR_MAXSTRSIZE]{};
 		Server()->GetClientAddr(ClientID, aAddrStr, sizeof(aAddrStr));
 		std::string ip(aAddrStr);
 

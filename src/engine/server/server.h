@@ -197,9 +197,9 @@ public:
 		char m_aLanguage[16];
 		int m_WaitingTime;
 
-		bool m_Memory[NUM_CLIENTMEMORIES];
-		IServer::CClientSession m_Session;
-		IServer::CClientAccusation m_Accusation;
+		bool m_Memory[NUM_CLIENTMEMORIES]{};
+		IServer::CClientSession m_Session{};
+		IServer::CClientAccusation m_Accusation{};
 		
 		//Login
 		int m_LogInstance;
