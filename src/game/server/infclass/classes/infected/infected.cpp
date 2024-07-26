@@ -653,8 +653,13 @@ void CInfClassInfected::GiveClassAttributes()
 		return;
 	}
 
-	m_pCharacter->GiveWeapon(WEAPON_HAMMER, -1);
-	m_pCharacter->SetActiveWeapon(WEAPON_HAMMER);
+	switch(GetPlayerClass())
+	{
+	default:
+		m_pCharacter->GiveWeapon(WEAPON_HAMMER, -1);
+		m_pCharacter->SetActiveWeapon(WEAPON_HAMMER);
+		break;
+	}
 
 	m_VoodooAboutToDie = false;
 	m_VoodooTimeAlive = Server()->TickSpeed()*Config()->m_InfVoodooAliveTime;
