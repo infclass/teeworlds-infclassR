@@ -23,7 +23,7 @@ bool Geolocation::Initialize(const char *pPathToDB)
 		Instance = new Geolocation(pPathToDB);
 		return true;
 	}
-	catch (std::system_error e)
+	catch(const std::system_error &e)
 	{
 		std::cout << "Geolocation::Initialize() failed: " << e.what() << std::endl;
 		return false;
@@ -45,10 +45,10 @@ int Geolocation::get_country_iso_numeric_code(std::string& ip) {
 	try {
 		GeoLite2PP::MStr map_str = Instance->db->get_all_fields(ip);
 		return Instance->get_iso_numeric_code(map_str);
-	} catch (std::invalid_argument) {
+	} catch (const std::invalid_argument &) {
 		std::cout << "This ip is not valid! " << ip << std::endl;
 		return -1;
-	} catch (std::length_error) {
+	} catch (const std::length_error &) {
 		std::cout << "This ip was not found in database: " << ip << std::endl;
 		return -1;
 	} catch (...) {
