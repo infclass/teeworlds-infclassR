@@ -34,8 +34,6 @@
 
 #include <array>
 #include <algorithm>
-#include <iostream>
-#include <map>
 
 const int InfClassModeSpecialSkip = 0x100;
 
@@ -2749,7 +2747,6 @@ void CInfClassGameController::DoTeamChange(CPlayer *pBasePlayer, int Team, bool 
 	if(Team == pPlayer->GetTeam())
 		return;
 
-	int OldTeam = pPlayer->GetTeam();
 	IGameController::DoTeamChange(pPlayer, Team, false);
 
 	int ClientId = pPlayer->GetCid();
@@ -3807,7 +3804,6 @@ EPlayerScoreMode CInfClassGameController::GetPlayerScoreMode(int SnappingClient)
 		// game over.. wait for restart
 		if(Server()->Tick() <= m_GameOverTick + Server()->TickSpeed() * Config()->m_InfShowScoreTime)
 		{
-			EPlayerScoreMode ScoreMode = EPlayerScoreMode::Class;
 			if((Server()->Tick() - m_GameOverTick) > Server()->TickSpeed() * (Config()->m_InfShowScoreTime / 2.0f))
 			{
 				return EPlayerScoreMode::Time;
@@ -4898,24 +4894,6 @@ bool CInfClassGameController::TryRespawn(CInfClassPlayer *pPlayer, SpawnContext 
 
 EPlayerClass CInfClassGameController::ChooseHumanClass(const CInfClassPlayer *pPlayer) const
 {
-	//Get information about existing humans
-	int nbSupport = 0;
-	int nbDefender = 0;
-	icArray<int, NB_PLAYERCLASS> nbClass;
-	nbClass.Resize(NB_PLAYERCLASS);
-
-	CInfClassPlayerIterator<PLAYERITER_INGAME> Iter(GameServer()->m_apPlayers);
-	while(Iter.Next())
-	{
-		const EPlayerClass AnotherPlayerClass = Iter.Player()->GetClass();
-		const int Index = static_cast<int>(AnotherPlayerClass);
-		if (IsDefenderClass(AnotherPlayerClass))
-			nbDefender++;
-		if (IsSupportClass(AnotherPlayerClass))
-			nbSupport++;
-		nbClass[Index]++;
-	}
-
 	double Probability[NB_PLAYERCLASS]{};
 	auto GetClassProbabilityRef = [&Probability](EPlayerClass PlayerClass) -> double & {
 		return Probability[static_cast<int>(PlayerClass)];
