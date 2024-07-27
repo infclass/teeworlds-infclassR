@@ -3,6 +3,7 @@
 
 #include <cstddef>
 #include <initializer_list>
+#include <optional>
 
 template <class T, int StackCapacity>
 class icArray
@@ -27,15 +28,15 @@ public:
 
 	void erase(const T *pItem);
 
-	constexpr int Size() const;
+	constexpr std::size_t Size() const;
 
-	void Resize(int NewSize);
+	void Resize(std::size_t NewSize);
 
-	int Capacity() const;
+	constexpr std::size_t Capacity() const;
 
 	bool IsEmpty() const;
 
-	int IndexOf(const T &Item) const;
+	std::optional<std::size_t> IndexOf(const T &Item) const;
 
 	constexpr bool Contains(const T &Item) const;
 
@@ -57,7 +58,7 @@ public:
 
 protected:
 	T m_Data[StackCapacity] = {};
-	int m_Size = 0;
+	std::size_t m_Size = 0;
 };
 
 template<class T, int StackCapacity>
@@ -86,19 +87,19 @@ void icArray<T, StackCapacity>::erase(const T *pItem)
 }
 
 template<class T, int StackCapacity>
-constexpr int icArray<T, StackCapacity>::Size() const
+constexpr std::size_t icArray<T, StackCapacity>::Size() const
 {
 	return m_Size;
 }
 
 template<class T, int StackCapacity>
-void icArray<T, StackCapacity>::Resize(int NewSize)
+void icArray<T, StackCapacity>::Resize(std::size_t NewSize)
 {
 	m_Size = NewSize;
 }
 
 template<class T, int StackCapacity>
-int icArray<T, StackCapacity>::Capacity() const
+constexpr std::size_t icArray<T, StackCapacity>::Capacity() const
 {
 	return StackCapacity;
 }
@@ -110,14 +111,14 @@ bool icArray<T, StackCapacity>::IsEmpty() const
 }
 
 template<class T, int StackCapacity>
-int icArray<T, StackCapacity>::IndexOf(const T &Item) const
+std::optional<std::size_t> icArray<T, StackCapacity>::IndexOf(const T &Item) const
 {
-	for(int i = 0; i < Size(); ++i)
+	for(std::size_t i = 0; i < Size(); ++i)
 	{
 		if(m_Data[i] == Item)
 			return i;
 	}
-	return -1;
+	return {};
 }
 
 template<class T, int StackCapacity>
@@ -142,11 +143,11 @@ void icArray<T, StackCapacity>::RemoveLast()
 template<class T, int StackCapacity>
 bool icArray<T, StackCapacity>::RemoveOne(const T &Item)
 {
-	int Index = IndexOf(Item);
-	if(Index < 0)
+	auto OptIndex = IndexOf(Item);
+	if(!OptIndex.has_value())
 		return false;
 
-	RemoveAt(Index);
+	RemoveAt(OptIndex.value());
 	return true;
 }
 
