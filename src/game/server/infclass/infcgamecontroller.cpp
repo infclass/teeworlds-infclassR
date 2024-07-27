@@ -2418,9 +2418,9 @@ void CInfClassGameController::SortCharactersByDistance(const ClientsArray &Input
 			continue;
 
 		Distances.Add(DistanceItem(ClientId, Distance));
-
-		std::sort(Distances.begin(), Distances.end());
 	}
+
+	std::sort(Distances.begin(), Distances.end());
 
 	pOutput->Clear();
 	for(const DistanceItem &DistanceItem : Distances)
