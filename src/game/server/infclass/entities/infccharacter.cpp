@@ -1389,13 +1389,7 @@ void CInfClassCharacter::RemoveReferencesToCid(int ClientId)
 
 	m_LastHookers.RemoveOne(ClientId);
 
-	for(int i = m_TakenDamageDetails.Size() - 1; i >= 0; --i)
-	{
-		if(m_TakenDamageDetails.At(i).From == ClientId)
-		{
-			m_TakenDamageDetails.RemoveAt(i);
-		}
-	}
+	std::erase_if(m_TakenDamageDetails, [ClientId](const CDamagePoint &DP) { return DP.From == ClientId; });
 }
 
 void CInfClassCharacter::SaturateVelocity(vec2 Force, float MaxSpeed)
