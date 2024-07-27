@@ -69,7 +69,7 @@ enum
 /* INFECTION MODIFICATION START ***************************************/
 bool CGameContext::m_ClientMuted[MAX_CLIENTS][MAX_CLIENTS];
 icArray<std::string, 256> CGameContext::m_aChangeLogEntries;
-icArray<int, 16> CGameContext::m_aChangeLogPageIndices;
+icArray<uint32_t, 16> CGameContext::m_aChangeLogPageIndices;
 
 /* INFECTION MODIFICATION END *****************************************/
 
@@ -657,8 +657,8 @@ void CGameContext::ReloadChangelog()
 		dbg_msg("ChangeLog", "unable to open '%s'", pChangelogFilename);
 		return;
 	}
-	const int MaxLinesPerPage = Config()->m_SvChangeLogMaxLinesPerPage;
-	int AddedLines = 0;
+	const uint32_t MaxLinesPerPage = Config()->m_SvChangeLogMaxLinesPerPage;
+	uint32_t AddedLines = 0;
 
 	icArray<char, 8> SamePageItemStartChars = {
 		' ',
@@ -678,7 +678,7 @@ void CGameContext::ReloadChangelog()
 		{
 			if(m_aChangeLogPageIndices.Size() == m_aChangeLogPageIndices.Capacity())
 			{
-				dbg_msg("ChangeLog", "ChangeLog truncated: only %d pages allowed", m_aChangeLogPageIndices.Capacity());
+				dbg_msg("ChangeLog", "ChangeLog truncated: only %zu pages allowed", m_aChangeLogPageIndices.Capacity());
 				break;
 			}
 			if(ThisLineIsPartOfPrevious && !m_aChangeLogEntries.IsEmpty())
@@ -698,7 +698,7 @@ void CGameContext::ReloadChangelog()
 
 		if(m_aChangeLogEntries.Size() == m_aChangeLogEntries.Capacity())
 		{
-			dbg_msg("ChangeLog", "ChangeLog truncated: only %d lines allowed", m_aChangeLogEntries.Capacity());
+			dbg_msg("ChangeLog", "ChangeLog truncated: only %zu lines allowed", m_aChangeLogEntries.Capacity());
 			break;
 		}
 		m_aChangeLogEntries.Add(pLine);
@@ -4509,11 +4509,11 @@ void CGameContext::ConChangeLog(IConsole::IResult *pResult)
 		return;
 	}
 
-	int PageIndex = PageNumber - 1;
-	int From = m_aChangeLogPageIndices.At(PageIndex);
-	int To = (PageIndex + 1) < m_aChangeLogPageIndices.Size() ? m_aChangeLogPageIndices.At(PageIndex + 1) : m_aChangeLogEntries.Size();
+	uint32_t PageIndex = PageNumber - 1;
+	uint32_t From = m_aChangeLogPageIndices.At(PageIndex);
+	uint32_t To = (PageIndex + 1) < m_aChangeLogPageIndices.Size() ? m_aChangeLogPageIndices.At(PageIndex + 1) : m_aChangeLogEntries.Size();
 
-	for(int i = From; i < To; ++i)
+	for(uint32_t i = From; i < To; ++i)
 	{
 		const std::string &Text = m_aChangeLogEntries.At(i);
 		SendChatTarget(ClientId, Text.c_str());

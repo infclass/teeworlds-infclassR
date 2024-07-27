@@ -123,8 +123,8 @@ public:
 	bool SetPlayerClassEnabled(EPlayerClass PlayerClass, bool Enabled);
 	bool SetPlayerClassProbability(EPlayerClass PlayerClass, int Probability);
 
-	int GetMinPlayersForClass(EPlayerClass PlayerClass) const;
-	int GetClassPlayerLimit(EPlayerClass PlayerClass) const;
+	uint32_t GetMinPlayersForClass(EPlayerClass PlayerClass) const;
+	uint32_t GetClassPlayerLimit(EPlayerClass PlayerClass) const;
 	int GetPlayerClassProbability(EPlayerClass PlayerClass) const;
 
 	int GetInfectedCount(EPlayerClass InfectedPlayerClass = EPlayerClass::Invalid) const;
@@ -284,8 +284,8 @@ protected:
 	void PreparePlayerToJoin(CInfClassPlayer *pPlayer);
 	void SetPlayerPickedTimestamp(CInfClassPlayer *pPlayer, int Timestamp) const;
 
-	int InfectHumans(int NumHumansToInfect);
-	void ForcePlayersBalance(int PlayersToBalance);
+	uint32_t InfectHumans(uint32_t NumHumansToInfect);
+	void ForcePlayersBalance(uint32_t PlayersToBalance);
 	void UpdateBalanceFactors();
 
 	void MaybeSendStatistics();
@@ -327,8 +327,8 @@ private:
 
 	struct
 	{
-		int Wave = 0;
-		int Kills = 0;
+		uint32_t Wave = 0;
+		uint32_t Kills = 0;
 		icArray<PlayerScore, MAX_CLIENTS> Scores;
 		icArray<int, MAX_CLIENTS> SurvivedPlayers;
 		icArray<int, MAX_CLIENTS> KilledPlayers;

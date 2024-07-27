@@ -5597,9 +5597,9 @@ IServer::CClientSession* CServer::GetClientSession(int ClientId)
 }
 
 // returns how many players are currently playing and not spectating
-int CServer::GetActivePlayerCount()
+uint32_t CServer::GetActivePlayerCount()
 {
-	int PlayerCount = 0;
+	uint32_t PlayerCount = 0;
 	for(int i=0; i<MAX_CLIENTS; i++)
 	{
 		if(m_aClients[i].m_State == CClient::STATE_INGAME)

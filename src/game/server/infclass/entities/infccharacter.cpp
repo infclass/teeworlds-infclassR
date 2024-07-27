@@ -1369,7 +1369,7 @@ void CInfClassCharacter::UpdateLastEnforcer(int ClientId, float Force, EDamageTy
 
 void CInfClassCharacter::RemoveReferencesToCid(int ClientId)
 {
-	for(int i = 0; i < m_EnforcersInfo.Size(); ++i)
+	for(std::size_t i = 0; i < m_EnforcersInfo.Size(); ++i)
 	{
 		if(m_EnforcersInfo.At(i).m_Cid == ClientId)
 		{

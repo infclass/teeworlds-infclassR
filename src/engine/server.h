@@ -442,7 +442,7 @@ public:
 	virtual int GetTimeShiftUnit() const = 0; //In ms
 
 	virtual const char *GetPreviousMapName() const = 0;
-	virtual int GetActivePlayerCount() = 0;
+	virtual uint32_t GetActivePlayerCount() = 0;
 /* INFECTION MODIFICATION END *****************************************/
 
 };

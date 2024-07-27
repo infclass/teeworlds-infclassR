@@ -391,7 +391,7 @@ private:
 	int m_VoteBanClientId;
 	static bool m_ClientMuted[MAX_CLIENTS][MAX_CLIENTS]; // m_ClientMuted[i][j]: i muted j
 	static icArray<std::string, 256> m_aChangeLogEntries;
-	static icArray<int, 16> m_aChangeLogPageIndices;
+	static icArray<uint32_t, 16> m_aChangeLogPageIndices;
 	
 	class CBroadcastState
 	{

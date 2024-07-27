@@ -585,8 +585,7 @@ void CInfClassGameController::HandleCharacterTiles(CInfClassCharacter *pCharacte
 void CInfClassGameController::HandleLastHookers()
 {
 	const int CurrentTick = Server()->Tick();
-	icArray<ClientsArray, MAX_CLIENTS> CharacterHookedBy;
-	CharacterHookedBy.Resize(MAX_CLIENTS);
+	ClientsArray CharacterHookedBy[MAX_CLIENTS]{};
 
 	for(int i = 0; i < MAX_CLIENTS; ++i)
 	{
@@ -605,7 +604,7 @@ void CInfClassGameController::HandleLastHookers()
 		CharacterHookedBy[HookedPlayer].Add(i);
 	}
 
-	for(int TargetCid = 0; TargetCid < CharacterHookedBy.Size(); ++TargetCid)
+	for(int TargetCid = 0; TargetCid < MAX_CLIENTS; ++TargetCid)
 	{
 		ClientsArray &HookedBy = CharacterHookedBy[TargetCid];
 		if(HookedBy.IsEmpty())
@@ -2402,9 +2401,8 @@ void CInfClassGameController::SortCharactersByDistance(const ClientsArray &Input
 
 	icArray<DistanceItem, MAX_CLIENTS> Distances;
 
-	for(int i = 0; i < Input.Size(); ++i)
+	for(int ClientId : Input)
 	{
-		int ClientId = Input.At(i);
 		const CCharacter *pChar = GetCharacter(ClientId);
 		if(!pChar)
 			continue;
@@ -3409,7 +3407,7 @@ void CInfClassGameController::SetPlayerPickedTimestamp(CInfClassPlayer *pPlayer,
 	}
 }
 
-int CInfClassGameController::InfectHumans(int NumHumansToInfect)
+uint32_t CInfClassGameController::InfectHumans(uint32_t NumHumansToInfect)
 {
 	if(NumHumansToInfect == 0)
 		return 0;
@@ -3443,7 +3441,7 @@ int CInfClassGameController::InfectHumans(int NumHumansToInfect)
 
 	int Timestamp = time_timestamp();
 
-	int NewInfected = 0;
+	uint32_t NewInfected = 0;
 	for(CInfClassPlayer *pPlayer : Humans)
 	{
 		pPlayer->KillCharacter(); // Infect the player
@@ -3466,7 +3464,7 @@ int CInfClassGameController::InfectHumans(int NumHumansToInfect)
 	return NewInfected;
 }
 
-void CInfClassGameController::ForcePlayersBalance(int PlayersToBalance)
+void CInfClassGameController::ForcePlayersBalance(uint32_t PlayersToBalance)
 {
 	// Force balance
 	InfectHumans(PlayersToBalance);
@@ -3741,7 +3739,7 @@ bool CInfClassGameController::AreTurretsEnabled() const
 	if(GetRoundType() == ERoundType::Survival)
 		return true;
 
-	return Server()->GetActivePlayerCount() >= Config()->m_InfMinPlayersForTurrets;
+	return Server()->GetActivePlayerCount() >= static_cast<uint32_t>(Config()->m_InfMinPlayersForTurrets);
 }
 
 bool CInfClassGameController::MercBombsEnabled() const
@@ -3757,7 +3755,7 @@ bool CInfClassGameController::WhiteHoleEnabled() const
 	if(GetRoundType() == ERoundType::Fast)
 		return false;
 
-	if(Server()->GetActivePlayerCount() < Config()->m_InfMinPlayersForWhiteHole)
+	if(Server()->GetActivePlayerCount() < static_cast<uint32_t>(Config()->m_InfMinPlayersForWhiteHole))
 		return false;
 
 	return Config()->m_InfWhiteHoleProbability > 0;
@@ -5165,7 +5163,7 @@ bool CInfClassGameController::SetPlayerClassProbability(EPlayerClass PlayerClass
 	return true;
 }
 
-int CInfClassGameController::GetMinPlayersForClass(EPlayerClass PlayerClass) const
+uint32_t CInfClassGameController::GetMinPlayersForClass(EPlayerClass PlayerClass) const
 {
 	switch(PlayerClass)
 	{
@@ -5176,7 +5174,7 @@ int CInfClassGameController::GetMinPlayersForClass(EPlayerClass PlayerClass) con
 	}
 }
 
-int CInfClassGameController::GetClassPlayerLimit(EPlayerClass PlayerClass) const
+uint32_t CInfClassGameController::GetClassPlayerLimit(EPlayerClass PlayerClass) const
 {
 	switch(PlayerClass)
 	{
@@ -5287,8 +5285,8 @@ CLASS_AVAILABILITY CInfClassGameController::GetPlayerClassAvailability(EPlayerCl
 	if(!GetPlayerClassEnabled(PlayerClass))
 		return CLASS_AVAILABILITY::DISABLED;
 
-	int ActivePlayerCount = Server()->GetActivePlayerCount();
-	int MinPlayersForClass = GetMinPlayersForClass(PlayerClass);
+	uint32_t ActivePlayerCount = Server()->GetActivePlayerCount();
+	uint32_t MinPlayersForClass = GetMinPlayersForClass(PlayerClass);
 	if (ActivePlayerCount < MinPlayersForClass)
 		return CLASS_AVAILABILITY::NEED_MORE_PLAYERS;
 
@@ -5326,7 +5324,7 @@ CLASS_AVAILABILITY CInfClassGameController::GetPlayerClassAvailability(EPlayerCl
 
 		icArray<EPlayerClass, NB_HUMANCLASS> EnabledEarlyClasses;
 
-		int EnabledHumansClasses = 0;
+		uint32_t EnabledHumansClasses = 0;
 		for(EPlayerClass HumanClass : AllHumanClasses)
 		{
 			if(GetPlayerClassEnabled(HumanClass))
@@ -5347,7 +5345,7 @@ CLASS_AVAILABILITY CInfClassGameController::GetPlayerClassAvailability(EPlayerCl
 		}
 
 		ClassLimit = std::ceil(ActivePlayerCount / static_cast<float>(EnabledHumansClasses));
-		int ExtraPlayers = ActivePlayerCount % EnabledHumansClasses;
+		uint32_t ExtraPlayers = ActivePlayerCount % EnabledHumansClasses;
 		if((ClassLimit > 1) && ExtraPlayers)
 		{
 			if (ExtraPlayers <= EnabledEarlyClasses.Size())

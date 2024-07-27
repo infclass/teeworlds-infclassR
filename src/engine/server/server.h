@@ -599,7 +599,7 @@ public:
 	void ResetMapVotes() override;
 	IServer::CMapVote* GetMapVote() override;
 
-	int GetActivePlayerCount() override;
+	uint32_t GetActivePlayerCount() override;
 	
 	int GetTimeShiftUnit() const override { return m_TimeShiftUnit; } //In ms
 
