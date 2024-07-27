@@ -2,7 +2,7 @@
 
 #include <base/tl/ic_array.h>
 
-TEST(ICArrayReverse, BaseTest)
+TEST(ICArray, BaseTest)
 {
 	icArray<int, 10> Array1;
 	EXPECT_EQ(Array1.Size(), 0);
@@ -29,7 +29,7 @@ TEST(ICArrayReverse, BaseTest)
 	EXPECT_EQ(Array1.At(1), 1);
 	EXPECT_EQ(Array1.At(2), 3);
 
-	int Index = 0;
+	std::size_t Index = 0;
 	for(int Value : Array1)
 	{
 		EXPECT_EQ(Value, Array1.At(Index));
@@ -46,6 +46,52 @@ TEST(ICArrayReverse, BaseTest)
 		EXPECT_EQ(Value, Array2.At(Index));
 		Index++;
 	}
+}
+
+TEST(ICArray, ReverseItTest)
+{
+	icArray<int, 10> Array1;
+
+	for (int i = 0; i < 5; ++i)
+	{
+		Array1.Add(i);
+		EXPECT_EQ(Array1.Size(), static_cast<std::size_t>(i + 1));
+	}
+
+	std::size_t Index = 0;
+	for(int Value : Array1)
+	{
+		EXPECT_EQ(Value, Array1.At(Index));
+		Index++;
+	}
+
+	EXPECT_EQ(Index, Array1.Size());
+
+	Index -= 1;
+	EXPECT_EQ(Index, 4); // Sanity check
+	for (auto it = Array1.rbegin(); it != Array1.rend(); ++it) {
+		EXPECT_EQ(*it, Array1.At(Index));
+		Index--;
+	}
+}
+
+TEST(ICArray, EraseIf)
+{
+	icArray<int, 10> Array1;
+
+	for (int i = 0; i < 5; ++i)
+	{
+		Array1.Add(i);
+		EXPECT_EQ(Array1.Size(), static_cast<std::size_t>(i + 1));
+	}
+
+	std::size_t RemovedCount = std::erase_if(Array1, [](int Value) { return Value % 2;});
+	EXPECT_EQ(RemovedCount, 2);
+	EXPECT_EQ(Array1.Size(), 3);
+
+	EXPECT_EQ(Array1.At(0), 0);
+	EXPECT_EQ(Array1.At(1), 2);
+	EXPECT_EQ(Array1.At(2), 4);
 }
 
 int main(int argc, char *argv[])

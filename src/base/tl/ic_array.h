@@ -3,6 +3,7 @@
 
 #include <cstddef>
 #include <initializer_list>
+#include <iterator>
 #include <optional>
 
 template <class T, int StackCapacity>
@@ -53,13 +54,37 @@ public:
 	T *begin() { return &m_Data[0]; }
 	T *end() { return &m_Data[m_Size]; }
 
+	auto rbegin() { return std::reverse_iterator(end()); }
+	auto rend() { return std::reverse_iterator(begin()); }
+
 	const T *begin() const { return &m_Data[0]; }
 	const T *end() const { return &m_Data[m_Size]; }
+
+	using size_type = std::size_t;
 
 protected:
 	T m_Data[StackCapacity] = {};
 	std::size_t m_Size = 0;
 };
+
+namespace std
+{
+
+template<class T, int StackCapacity, typename Predicate>
+inline typename icArray<T, StackCapacity>::size_type
+erase_if(icArray<T, StackCapacity> &container, Predicate predicate)
+{
+	const auto HadSize = container.Size();
+
+	for (auto it = container.rbegin(); it != container.rend(); ++it) {
+		if(predicate(*it))
+			container.erase(&*it);
+	}
+
+	return HadSize - container.Size();
+}
+
+} // namespace std
 
 template<class T, int StackCapacity>
 inline constexpr icArray<T, StackCapacity>::icArray(std::initializer_list<T> list)
