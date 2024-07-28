@@ -3337,12 +3337,14 @@ void CInfClassGameController::Tick()
 		m_RoundStartTick = Server()->Tick();
 	}
 
-	UpdateNinjaTargets();
-	HandleLastHookers();
-
 	if(GameWorld()->m_Paused)
 	{
 		m_HeroGiftTick++;
+	}
+	else
+	{
+		UpdateNinjaTargets();
+		HandleLastHookers();
 	}
 
 	if(m_SuggestMoreRounds && !GameServer()->HasActiveVote())
