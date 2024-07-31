@@ -1120,109 +1120,116 @@ const char *CInfClassGameController::GetClassName(EPlayerClass PlayerClass)
 
 const char *CInfClassGameController::GetClassPluralName(EPlayerClass PlayerClass)
 {
-	switch (PlayerClass)
+	switch(PlayerClass)
 	{
-		case EPlayerClass::Mercenary:
-			return "mercenaries";
-		case EPlayerClass::Medic:
-			return "medics";
-		case EPlayerClass::Hero:
-			return "heroes";
-		case EPlayerClass::Engineer:
-			return "engineers";
-		case EPlayerClass::Soldier:
-			return "soldiers";
-		case EPlayerClass::Ninja:
-			return "ninjas";
-		case EPlayerClass::Sniper:
-			return "snipers";
-		case EPlayerClass::Scientist:
-			return "scientists";
-		case EPlayerClass::Biologist:
-			return "biologists";
-		case EPlayerClass::Looper:
-			return "loopers";
+	case EPlayerClass::Mercenary:
+		return "mercenaries";
+	case EPlayerClass::Medic:
+		return "medics";
+	case EPlayerClass::Hero:
+		return "heroes";
+	case EPlayerClass::Engineer:
+		return "engineers";
+	case EPlayerClass::Soldier:
+		return "soldiers";
+	case EPlayerClass::Ninja:
+		return "ninjas";
+	case EPlayerClass::Sniper:
+		return "snipers";
+	case EPlayerClass::Scientist:
+		return "scientists";
+	case EPlayerClass::Biologist:
+		return "biologists";
+	case EPlayerClass::Looper:
+		return "loopers";
 
-		case EPlayerClass::Smoker:
-			return "smokers";
-		case EPlayerClass::Boomer:
-			return "boomers";
-		case EPlayerClass::Hunter:
-			return "hunters";
-		case EPlayerClass::Bat:
-			return "bats";
-		case EPlayerClass::Ghost:
-			return "ghosts";
-		case EPlayerClass::Spider:
-			return "spiders";
-		case EPlayerClass::Ghoul:
-			return "ghouls";
-		case EPlayerClass::Slug:
-			return "slugs";
-		case EPlayerClass::Voodoo:
-			return "voodoos";
-		case EPlayerClass::Witch:
-			return "witches";
-		case EPlayerClass::Undead:
-			return "undeads";
+	case EPlayerClass::Smoker:
+		return "smokers";
+	case EPlayerClass::Boomer:
+		return "boomers";
+	case EPlayerClass::Hunter:
+		return "hunters";
+	case EPlayerClass::Bat:
+		return "bats";
+	case EPlayerClass::Ghost:
+		return "ghosts";
+	case EPlayerClass::Spider:
+		return "spiders";
+	case EPlayerClass::Ghoul:
+		return "ghouls";
+	case EPlayerClass::Slug:
+		return "slugs";
+	case EPlayerClass::Voodoo:
+		return "voodoos";
+	case EPlayerClass::Witch:
+		return "witches";
+	case EPlayerClass::Undead:
+		return "undeads";
 
-		default:
-			return "unknown";
+	case EPlayerClass::Invalid:
+	case EPlayerClass::None:
+	case EPlayerClass::Count:
+		break;
 	}
+
+	return "unknown";
 }
 
 const char *CInfClassGameController::GetClassDisplayName(EPlayerClass PlayerClass, const char *pDefaultText)
 {
-	switch (PlayerClass)
+	switch(PlayerClass)
 	{
-		case EPlayerClass::Mercenary:
-			return _("Mercenary");
-		case EPlayerClass::Medic:
-			return _("Medic");
-		case EPlayerClass::Hero:
-			return _("Hero");
-		case EPlayerClass::Engineer:
-			return _("Engineer");
-		case EPlayerClass::Soldier:
-			return _("Soldier");
-		case EPlayerClass::Ninja:
-			return _("Ninja");
-		case EPlayerClass::Sniper:
-			return _("Sniper");
-		case EPlayerClass::Scientist:
-			return _("Scientist");
-		case EPlayerClass::Biologist:
-			return _("Biologist");
-		case EPlayerClass::Looper:
-			return _("Looper");
+	case EPlayerClass::Mercenary:
+		return _("Mercenary");
+	case EPlayerClass::Medic:
+		return _("Medic");
+	case EPlayerClass::Hero:
+		return _("Hero");
+	case EPlayerClass::Engineer:
+		return _("Engineer");
+	case EPlayerClass::Soldier:
+		return _("Soldier");
+	case EPlayerClass::Ninja:
+		return _("Ninja");
+	case EPlayerClass::Sniper:
+		return _("Sniper");
+	case EPlayerClass::Scientist:
+		return _("Scientist");
+	case EPlayerClass::Biologist:
+		return _("Biologist");
+	case EPlayerClass::Looper:
+		return _("Looper");
 
-		case EPlayerClass::Smoker:
-			return _("Smoker");
-		case EPlayerClass::Boomer:
-			return _("Boomer");
-		case EPlayerClass::Hunter:
-			return _("Hunter");
-		case EPlayerClass::Bat:
-			return _("Bat");
-		case EPlayerClass::Ghost:
-			return _("Ghost");
-		case EPlayerClass::Spider:
-			return _("Spider");
-		case EPlayerClass::Ghoul:
-			return _("Ghoul");
-		case EPlayerClass::Slug:
-			return _("Slug");
-		case EPlayerClass::Voodoo:
-			return _("Voodoo");
-		case EPlayerClass::Witch:
-			return _("Witch");
-		case EPlayerClass::Undead:
-			return _("Undead");
+	case EPlayerClass::Smoker:
+		return _("Smoker");
+	case EPlayerClass::Boomer:
+		return _("Boomer");
+	case EPlayerClass::Hunter:
+		return _("Hunter");
+	case EPlayerClass::Bat:
+		return _("Bat");
+	case EPlayerClass::Ghost:
+		return _("Ghost");
+	case EPlayerClass::Spider:
+		return _("Spider");
+	case EPlayerClass::Ghoul:
+		return _("Ghoul");
+	case EPlayerClass::Slug:
+		return _("Slug");
+	case EPlayerClass::Voodoo:
+		return _("Voodoo");
+	case EPlayerClass::Witch:
+		return _("Witch");
+	case EPlayerClass::Undead:
+		return _("Undead");
 
-		case EPlayerClass::None:
-		default:
-			return pDefaultText ? pDefaultText : _("Unknown class");
-		}
+	case EPlayerClass::Invalid:
+	case EPlayerClass::None:
+	case EPlayerClass::Count:
+		break;
+	}
+
+	return pDefaultText ? pDefaultText : "Unknown";
 }
 
 const char *CInfClassGameController::GetClassDisplayNameForKilledBy(EPlayerClass PlayerClass, const char *pDefaultText)
@@ -1253,10 +1260,11 @@ const char *CInfClassGameController::GetClassDisplayNameForKilledBy(EPlayerClass
 	case EPlayerClass::Undead:
 		return _C("For 'Killed by <>'", "an Undead");
 
-	case EPlayerClass::None:
 	default:
-		return pDefaultText ? pDefaultText : _C("For 'Killed by <>'", "someone unknown");
+		break;
 	}
+
+	return pDefaultText ? pDefaultText : "Unknown";
 }
 
 const char *CInfClassGameController::GetClanForClass(EPlayerClass PlayerClass, const char *pDefaultText)
@@ -1270,55 +1278,58 @@ const char *CInfClassGameController::GetClanForClass(EPlayerClass PlayerClass, c
 
 const char *CInfClassGameController::GetClassPluralDisplayName(EPlayerClass PlayerClass)
 {
-	switch (PlayerClass)
+	switch(PlayerClass)
 	{
-		case EPlayerClass::Mercenary:
-			return _("Mercenaries");
-		case EPlayerClass::Medic:
-			return _("Medics");
-		case EPlayerClass::Hero:
-			return _("Heroes");
-		case EPlayerClass::Engineer:
-			return _("Engineers");
-		case EPlayerClass::Soldier:
-			return _("Soldiers");
-		case EPlayerClass::Ninja:
-			return _("Ninjas");
-		case EPlayerClass::Sniper:
-			return _("Snipers");
-		case EPlayerClass::Scientist:
-			return _("Scientists");
-		case EPlayerClass::Biologist:
-			return _("Biologists");
-		case EPlayerClass::Looper:
-			return _("Loopers");
+	case EPlayerClass::Mercenary:
+		return _("Mercenaries");
+	case EPlayerClass::Medic:
+		return _("Medics");
+	case EPlayerClass::Hero:
+		return _("Heroes");
+	case EPlayerClass::Engineer:
+		return _("Engineers");
+	case EPlayerClass::Soldier:
+		return _("Soldiers");
+	case EPlayerClass::Ninja:
+		return _("Ninjas");
+	case EPlayerClass::Sniper:
+		return _("Snipers");
+	case EPlayerClass::Scientist:
+		return _("Scientists");
+	case EPlayerClass::Biologist:
+		return _("Biologists");
+	case EPlayerClass::Looper:
+		return _("Loopers");
 
-		case EPlayerClass::Smoker:
-			return _("Smokers");
-		case EPlayerClass::Boomer:
-			return _("Boomers");
-		case EPlayerClass::Hunter:
-			return _("Hunters");
-		case EPlayerClass::Bat:
-			return _("Bats");
-		case EPlayerClass::Ghost:
-			return _("Ghosts");
-		case EPlayerClass::Spider:
-			return _("Spiders");
-		case EPlayerClass::Ghoul:
-			return _("Ghouls");
-		case EPlayerClass::Slug:
-			return _("Slugs");
-		case EPlayerClass::Voodoo:
-			return _("Voodoos");
-		case EPlayerClass::Witch:
-			return _("Witches");
-		case EPlayerClass::Undead:
-			return _("Undeads");
+	case EPlayerClass::Smoker:
+		return _("Smokers");
+	case EPlayerClass::Boomer:
+		return _("Boomers");
+	case EPlayerClass::Hunter:
+		return _("Hunters");
+	case EPlayerClass::Bat:
+		return _("Bats");
+	case EPlayerClass::Ghost:
+		return _("Ghosts");
+	case EPlayerClass::Spider:
+		return _("Spiders");
+	case EPlayerClass::Ghoul:
+		return _("Ghouls");
+	case EPlayerClass::Slug:
+		return _("Slugs");
+	case EPlayerClass::Voodoo:
+		return _("Voodoos");
+	case EPlayerClass::Witch:
+		return _("Witches");
+	case EPlayerClass::Undead:
+		return _("Undeads");
 
-		default:
-			return _("Unknowns");
+	case EPlayerClass::Invalid:
+	case EPlayerClass::None:
+	case EPlayerClass::Count:
+		break;
 	}
+	return _("Unknown");
 }
 
 EPlayerClass CInfClassGameController::MenuClassToPlayerClass(int MenuClass)
@@ -3085,6 +3096,11 @@ void CInfClassGameController::OnKillOrInfection(int Victim, const DeathContext &
 		m_LastUsedKillMessage = pMessage;
 
 		const char *pKillerText = GetClassDisplayNameForKilledBy(KillerClass);
+		dbg_assert(pKillerText, "Killer class has no display name");
+		if(!pKillerText)
+		{
+			return;
+		}
 		GameServer()->SendChatTarget_Localization(-1, CHATCATEGORY_PLAYER,
 			pMessage,
 			"PlayerName", GameServer()->Server()->ClientName(Victim),
