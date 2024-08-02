@@ -1238,27 +1238,27 @@ const char *CInfClassGameController::GetClassDisplayNameForKilledBy(EPlayerClass
 	{
 		// Only the infected classes are used for now; do not add others to keep the translations smaller
 	case EPlayerClass::Smoker:
-		return _C("For 'Killed by <>'", "a Smoker");
+		return _C_NOOP("For 'Killed by <>'", "a Smoker");
 	case EPlayerClass::Boomer:
-		return _C("For 'Killed by <>'", "a Boomer");
+		return _C_NOOP("For 'Killed by <>'", "a Boomer");
 	case EPlayerClass::Hunter:
-		return _C("For 'Killed by <>'", "a Hunter");
+		return _C_NOOP("For 'Killed by <>'", "a Hunter");
 	case EPlayerClass::Bat:
-		return _C("For 'Killed by <>'", "a Bat");
+		return _C_NOOP("For 'Killed by <>'", "a Bat");
 	case EPlayerClass::Ghost:
-		return _C("For 'Killed by <>'", "a Ghost");
+		return _C_NOOP("For 'Killed by <>'", "a Ghost");
 	case EPlayerClass::Spider:
-		return _C("For 'Killed by <>'", "a Spider");
+		return _C_NOOP("For 'Killed by <>'", "a Spider");
 	case EPlayerClass::Ghoul:
-		return _C("For 'Killed by <>'", "a Ghoul");
+		return _C_NOOP("For 'Killed by <>'", "a Ghoul");
 	case EPlayerClass::Slug:
-		return _C("For 'Killed by <>'", "a Slug");
+		return _C_NOOP("For 'Killed by <>'", "a Slug");
 	case EPlayerClass::Voodoo:
-		return _C("For 'Killed by <>'", "a Voodoo");
+		return _C_NOOP("For 'Killed by <>'", "a Voodoo");
 	case EPlayerClass::Witch:
-		return _C("For 'Killed by <>'", "a Witch");
+		return _C_NOOP("For 'Killed by <>'", "a Witch");
 	case EPlayerClass::Undead:
-		return _C("For 'Killed by <>'", "an Undead");
+		return _C_NOOP("For 'Killed by <>'", "an Undead");
 
 	default:
 		break;
@@ -3062,11 +3062,11 @@ void CInfClassGameController::OnKillOrInfection(int Victim, const DeathContext &
 		}
 
 		const char *apPlayerKilledByMessages[] = {
-			_("{str:PlayerName} was destroyed by {str:Killer}."),
-			_("{str:PlayerName} was slain by {str:Killer}."),
-			_("{str:PlayerName} was decapitated by {str:Killer}."),
-			_("{str:PlayerName} was chopped up by {str:Killer}."),
-			_("{str:PlayerName} was removed from this world by {str:Killer}."),
+			"{str:PlayerName} was destroyed by {str:Killer}.",
+			"{str:PlayerName} was slain by {str:Killer}.",
+			"{str:PlayerName} was decapitated by {str:Killer}.",
+			"{str:PlayerName} was chopped up by {str:Killer}.",
+			"{str:PlayerName} was removed from this world by {str:Killer}.",
 		};
 
 		if(PossibleMessages.IsEmpty())
@@ -3121,7 +3121,7 @@ void CInfClassGameController::OnKillOrInfection(int Victim, const DeathContext &
 		}
 
 		const char *apPlayerDeathMessages[] = {
-			_("{str:PlayerName} didn't survive in this round."),
+			"{str:PlayerName} didn't survive in this round.",
 		};
 
 		if(PossibleMessages.IsEmpty())
