@@ -102,7 +102,8 @@ static const CHintMessage gs_aHintMessages[] = {
 	_("Sniper deals double as much damage in locked position."),
 	_("Scientist can use Taxi to teleport his teammates into safety."),
 	{
-		_("Scientist can get a white hole after {int:Kills} kills."),
+		_P("Scientist can get a white hole after {int:Kills} kill.",
+			"Scientist can get a white hole after {int:Kills} kills."),
 		"Kills",
 		&g_Config.m_InfWhiteHoleMinimalKills,
 	},
