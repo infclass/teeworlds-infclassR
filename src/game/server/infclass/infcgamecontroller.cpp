@@ -2993,6 +2993,10 @@ void CInfClassGameController::OnKillOrInfection(int Victim, const DeathContext &
 		icArray<const char *, 20> PossibleMessages;
 		switch(Context.DamageType)
 		{
+		case EDamageType::MERCENARY_BOMB:
+			PossibleMessages.Add(("{str:PlayerName} got to know their bomb too closely."));
+			PossibleMessages.Add(("{str:PlayerName} rode the blast wave for the last time."));
+			break;
 		case EDamageType::BOOMER_EXPLOSION:
 			PossibleMessages.Add(("{str:PlayerName} was exploded by {str:Killer}."));
 			PossibleMessages.Add(("{str:PlayerName} was eliminated by {str:Killer}."));
@@ -3025,6 +3029,7 @@ void CInfClassGameController::OnKillOrInfection(int Victim, const DeathContext &
 				{
 					PossibleMessages.Clear();
 					PossibleMessages.Add(("{str:PlayerName} did a stretching exercise."));
+					PossibleMessages.Add(("{str:PlayerName} was torn apart."));
 				}
 				break;
 			}
@@ -3059,6 +3064,7 @@ void CInfClassGameController::OnKillOrInfection(int Victim, const DeathContext &
 		else if(pVictimCharacter->GetLastNoAmmoSoundTick() + Server()->TickSpeed() * 0.6 < Tick)
 		{
 			PossibleMessages.Add("{str:PlayerName} had no ammo to kill them all.");
+			PossibleMessages.Add("{str:PlayerName} forgot to reload timely.");
 		}
 
 		const char *apPlayerKilledByMessages[] = {
@@ -3118,6 +3124,7 @@ void CInfClassGameController::OnKillOrInfection(int Victim, const DeathContext &
 		if(BadTiles.Contains(Context.DamageType))
 		{
 			PossibleMessages.Add(("{str:PlayerName} made a wrong step."));
+			PossibleMessages.Add(("{str:PlayerName} went where they shouldn't."));
 		}
 
 		const char *apPlayerDeathMessages[] = {
