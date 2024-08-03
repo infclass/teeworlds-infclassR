@@ -107,6 +107,7 @@ class CGameContext : public IGameServer
 	static void ConSay(IConsole::IResult *pResult, void *pUserData);
 	static void ConSetTeam(IConsole::IResult *pResult, void *pUserData);
 	static void ConSetTeamAll(IConsole::IResult *pResult, void *pUserData);
+	static void ConInsertVote(IConsole::IResult *pResult, void *pUserData);
 	static void ConAddVote(IConsole::IResult *pResult, void *pUserData);
 	static void ConRemoveVote(IConsole::IResult *pResult, void *pUserData);
 	static void ConForceVote(IConsole::IResult *pResult, void *pUserData);
@@ -162,6 +163,7 @@ public:
 
 	// voting
 	void AddVote(const char *pDescription, const char *pCommand);
+	bool InsertVote(int Position, const char *pDescription, const char *pCommand);
 	void RemoveVote(const char *pVote);
 	void ClearVotes();
 	void StartVote(const char *pDesc, const char *pCommand, const char *pReason);

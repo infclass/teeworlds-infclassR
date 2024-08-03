@@ -3051,6 +3051,16 @@ void CGameContext::ConSetTeamAll(IConsole::IResult *pResult, void *pUserData)
 			pSelf->m_pController->DoTeamChange(pPlayer, Team, false);
 }
 
+void CGameContext::ConInsertVote(IConsole::IResult *pResult, void *pUserData)
+{
+	CGameContext *pSelf = (CGameContext *)pUserData;
+	int Index = pResult->GetInteger(0);
+	const char *pDescription = pResult->GetString(1);
+	const char *pCommand = pResult->GetString(2);
+
+	pSelf->InsertVote(Index, pDescription, pCommand);
+}
+
 void CGameContext::ConAddVote(IConsole::IResult *pResult, void *pUserData)
 {
 	CGameContext *pSelf = (CGameContext *)pUserData;
@@ -3060,12 +3070,15 @@ void CGameContext::ConAddVote(IConsole::IResult *pResult, void *pUserData)
 	pSelf->AddVote(pDescription, pCommand);
 }
 
-void CGameContext::AddVote(const char *pDescription, const char *pCommand)
+bool CGameContext::InsertVote(int Position, const char *pDescription, const char *pCommand)
 {
+	if((Position < 0) || (Position > m_NumVoteOptions))
+		Position = m_NumVoteOptions;
+
 	if(m_NumVoteOptions == MAX_VOTE_OPTIONS)
 	{
 		Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "server", "maximum number of vote options reached");
-		return;
+		return false;
 	}
 
 	// check for valid option
@@ -3074,7 +3087,7 @@ void CGameContext::AddVote(const char *pDescription, const char *pCommand)
 		char aBuf[256];
 		str_format(aBuf, sizeof(aBuf), "skipped invalid command '%s'", pCommand);
 		Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "server", aBuf);
-		return;
+		return false;
 	}
 	while(*pDescription == ' ')
 		pDescription++;
@@ -3083,7 +3096,7 @@ void CGameContext::AddVote(const char *pDescription, const char *pCommand)
 		char aBuf[256];
 		str_format(aBuf, sizeof(aBuf), "skipped invalid option '%s'", pDescription);
 		Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "server", aBuf);
-		return;
+		return false;
 	}
 
 	// check for duplicate entry
@@ -3095,29 +3108,83 @@ void CGameContext::AddVote(const char *pDescription, const char *pCommand)
 			char aBuf[256];
 			str_format(aBuf, sizeof(aBuf), "option '%s' already exists", pDescription);
 			Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "server", aBuf);
-			return;
+			return false;
 		}
 		pOption = pOption->m_pNext;
 	}
 
 	// add the option
-	++m_NumVoteOptions;
 	int Len = str_length(pCommand);
 
 	pOption = (CVoteOptionServer *)m_pVoteOptionHeap->Allocate(sizeof(CVoteOptionServer) + Len, alignof(CVoteOptionServer));
-	pOption->m_pNext = 0;
-	pOption->m_pPrev = m_pVoteOptionLast;
-	if(pOption->m_pPrev)
-		pOption->m_pPrev->m_pNext = pOption;
-	m_pVoteOptionLast = pOption;
+	if(Position == m_NumVoteOptions)
+	{
+		// Append
+		pOption->m_pNext = 0;
+		pOption->m_pPrev = m_pVoteOptionLast;
+		if(pOption->m_pPrev)
+			pOption->m_pPrev->m_pNext = pOption;
+		m_pVoteOptionLast = pOption;
+	}
+	else
+	{
+		// Insert
+		pOption->m_pPrev = nullptr;
+		pOption->m_pNext = m_pVoteOptionFirst;
+		if(Position == 0)
+		{
+			m_pVoteOptionFirst = pOption;
+		}
+		else
+		{
+			int CurrentPos = 1;
+			CVoteOptionServer *pPrevOption = m_pVoteOptionFirst;
+			while (CurrentPos < Position)
+			{
+				pPrevOption = pPrevOption->m_pNext;
+				++CurrentPos;
+			}
+
+			pOption->m_pPrev = pPrevOption;
+			pOption->m_pNext = pPrevOption->m_pNext;
+
+			pOption->m_pPrev->m_pNext = pOption;
+			pOption->m_pNext->m_pPrev = pOption;
+		}
+	}
+
 	if(!m_pVoteOptionFirst)
 		m_pVoteOptionFirst = pOption;
 
 	str_copy(pOption->m_aDescription, pDescription, sizeof(pOption->m_aDescription));
 	mem_copy(pOption->m_aCommand, pCommand, Len + 1);
+	++m_NumVoteOptions;
+
 	char aBuf[256];
 	str_format(aBuf, sizeof(aBuf), "added option '%s' '%s'", pOption->m_aDescription, pOption->m_aCommand);
 	Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "server", aBuf);
+
+	if(pOption->m_pNext)
+	{
+		// Inserted
+
+		CNetMsg_Sv_VoteClearOptions VoteClearOptionsMsg;
+		Server()->SendPackMsg(&VoteClearOptionsMsg, MSGFLAG_VITAL, -1);
+
+		// reset sending of vote options
+		for(auto &pPlayer : m_apPlayers)
+		{
+			if(pPlayer)
+				pPlayer->m_SendVoteIndex = 0;
+		}
+	}
+
+	return true;
+}
+
+void CGameContext::AddVote(const char *pDescription, const char *pCommand)
+{
+	InsertVote(m_NumVoteOptions, pDescription, pCommand);
 }
 
 void CGameContext::ConRemoveVote(IConsole::IResult *pResult, void *pUserData)
@@ -4589,6 +4656,7 @@ void CGameContext::OnConsoleInit()
 	Console()->Register("set_team", "i[id] i[team-id] ?i[delay in minutes]", CFGFLAG_SERVER, ConSetTeam, this, "Set team of player to team");
 	Console()->Register("set_team_all", "i[team-id]", CFGFLAG_SERVER, ConSetTeamAll, this, "Set team of all players to team");
 
+	Console()->Register("insert_vote", "i[position] s[name] r[command]", CFGFLAG_SERVER, ConInsertVote, this, "Insert a voting option");
 	Console()->Register("add_vote", "s[name] r[command]", CFGFLAG_SERVER, ConAddVote, this, "Add a voting option");
 	Console()->Register("remove_vote", "r[name]", CFGFLAG_SERVER, ConRemoveVote, this, "remove a voting option");
 	Console()->Register("force_vote", "s[name] s[command] ?r[reason]", CFGFLAG_SERVER, ConForceVote, this, "Force a voting option");
