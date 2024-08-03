@@ -3195,6 +3195,24 @@ void CGameContext::RemoveVote(const char *pVoteOption)
 	m_NumVoteOptions = NumVoteOptions;
 }
 
+void CGameContext::ClearVotes()
+{
+	Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "server", "cleared votes");
+	CNetMsg_Sv_VoteClearOptions VoteClearOptionsMsg;
+	Server()->SendPackMsg(&VoteClearOptionsMsg, MSGFLAG_VITAL, -1);
+	m_pVoteOptionHeap->Reset();
+	m_pVoteOptionFirst = 0;
+	m_pVoteOptionLast = 0;
+	m_NumVoteOptions = 0;
+
+	// reset sending of vote options
+	for(auto &pPlayer : m_apPlayers)
+	{
+		if(pPlayer)
+			pPlayer->m_SendVoteIndex = 0;
+	}
+}
+
 void CGameContext::ConForceVote(IConsole::IResult *pResult, void *pUserData)
 {
 	CGameContext *pSelf = (CGameContext *)pUserData;
@@ -3267,21 +3285,7 @@ void CGameContext::ConForceVote(IConsole::IResult *pResult, void *pUserData)
 void CGameContext::ConClearVotes(IConsole::IResult *pResult, void *pUserData)
 {
 	CGameContext *pSelf = (CGameContext *)pUserData;
-
-	pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "server", "cleared votes");
-	CNetMsg_Sv_VoteClearOptions VoteClearOptionsMsg;
-	pSelf->Server()->SendPackMsg(&VoteClearOptionsMsg, MSGFLAG_VITAL, -1);
-	pSelf->m_pVoteOptionHeap->Reset();
-	pSelf->m_pVoteOptionFirst = 0;
-	pSelf->m_pVoteOptionLast = 0;
-	pSelf->m_NumVoteOptions = 0;
-
-	// reset sending of vote options
-	for(auto &pPlayer : pSelf->m_apPlayers)
-	{
-		if(pPlayer)
-			pPlayer->m_SendVoteIndex = 0;
-	}
+	pSelf->ClearVotes();
 }
 
 struct CMapNameItem

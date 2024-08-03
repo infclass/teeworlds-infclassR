@@ -163,6 +163,7 @@ public:
 	// voting
 	void AddVote(const char *pDescription, const char *pCommand);
 	void RemoveVote(const char *pVote);
+	void ClearVotes();
 	void StartVote(const char *pDesc, const char *pCommand, const char *pReason);
 	void EndVote();
 	void SendVoteSet(int ClientId);
