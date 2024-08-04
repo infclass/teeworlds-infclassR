@@ -214,6 +214,8 @@ public:
 	void LockPosition();
 	void UnlockPosition();
 
+	void CancelLoveEffect();
+
 	bool IsInSlowMotion() const;
 	float SlowMotionEffect(float Duration, int FromCid);
 	void CancelSlowMotion();

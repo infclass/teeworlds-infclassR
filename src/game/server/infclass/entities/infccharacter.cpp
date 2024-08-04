@@ -972,6 +972,11 @@ void CInfClassCharacter::UnlockPosition()
 	m_PositionLocked = false;
 }
 
+void CInfClassCharacter::CancelLoveEffect()
+{
+	m_LoveTick = -1;
+}
+
 bool CInfClassCharacter::IsInSlowMotion() const
 {
 	return m_SlowMotionTick > 0;
