@@ -186,6 +186,7 @@ public:
 	int GetInAirTick() const { return m_InAirTick; }
 
 	bool IsInvisible() const;
+	bool HasGrantedInvisibility() const;
 	bool IsInvincible() const; // Invincible here means "ignores all damage"
 	void SetInvincible(int Invincible);
 	bool HasHallucination() const;
@@ -206,6 +207,7 @@ public:
 	void GiveRandomClassSelectionBonus();
 	void MakeVisible();
 	void MakeInvisible();
+	void GrantInvisibility(float Duration);
 	void GrantSpawnProtection(float Duration);
 
 	bool PositionIsLocked() const;
@@ -323,6 +325,7 @@ protected:
 	EDamageType m_PoisonDamageType;
 
 	bool m_IsInvisible = false;
+	int m_GrantedInvisibilityUntilTick = 0;
 	int m_Invincible = 0;
 
 	int m_HealTick = 0;

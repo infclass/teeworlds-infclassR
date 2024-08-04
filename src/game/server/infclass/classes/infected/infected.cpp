@@ -858,7 +858,7 @@ void CInfClassInfected::GhostPreCoreTick()
 	}
 	else
 	{
-		bool HumanFound = HasHumansNearby();
+		bool HumanFound = !m_pCharacter->HasGrantedInvisibility() && HasHumansNearby();
 		if(HumanFound)
 		{
 			m_pCharacter->MakeVisible();

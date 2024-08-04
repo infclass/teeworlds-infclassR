@@ -2109,6 +2109,11 @@ bool CInfClassCharacter::IsInvisible() const
 	return m_IsInvisible;
 }
 
+bool CInfClassCharacter::HasGrantedInvisibility() const
+{
+	return Server()->Tick() < m_GrantedInvisibilityUntilTick;
+}
+
 bool CInfClassCharacter::IsInvincible() const
 {
 	return m_Invincible || (m_ProtectionTick > 0);
@@ -2227,6 +2232,15 @@ void CInfClassCharacter::MakeVisible()
 void CInfClassCharacter::MakeInvisible()
 {
 	m_IsInvisible = true;
+}
+
+void CInfClassCharacter::GrantInvisibility(float Duration)
+{
+	m_GrantedInvisibilityUntilTick = Server()->Tick() + Server()->TickSpeed() * Duration;
+	if(Duration > 0)
+	{
+		MakeInvisible();
+	}
 }
 
 void CInfClassCharacter::GrantSpawnProtection(float Duration)
