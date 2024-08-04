@@ -4608,10 +4608,7 @@ void CInfClassGameController::OnCharacterSpawned(CInfClassCharacter *pCharacter,
 
 	if((GetRoundType() == ERoundType::Fun) && !IsInfectionStarted() && pCharacter->GetPlayerClass() == EPlayerClass::None)
 	{
-		if(pPlayer)
-		{
-			pPlayer->SetClass(ChooseHumanClass(pPlayer));
-		}
+		pPlayer->SetClass(ChooseHumanClass(pPlayer));
 	}
 }
 
