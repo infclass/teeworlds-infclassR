@@ -532,8 +532,8 @@ void CInfClassHuman::OnCharacterSnap(int SnappingClient)
 					else
 						pP->m_Type = POWERUP_ARMOR;
 					pP->m_Subtype = 0;
-					break;
 				}
+				break;
 			case EPlayerClass::Biologist:
 				if(m_pCharacter->IsPoisoned())
 				{
