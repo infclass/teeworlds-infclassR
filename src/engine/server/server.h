@@ -510,14 +510,14 @@ public:
 	const char *GetClientLanguage(int ClientId) override;
 	void SetClientLanguage(int ClientId, const char *pLanguage) override;
 
-	int GetFireDelay(INFWEAPON WID) override;
-	void SetFireDelay(INFWEAPON WID, int Time) override;
+	int GetFireDelay(EInfclassWeapon WID) override;
+	void SetFireDelay(EInfclassWeapon WID, int Time) override;
 
-	int GetAmmoRegenTime(INFWEAPON WID) override;
-	void SetAmmoRegenTime(INFWEAPON WID, int Time) override;
+	int GetAmmoRegenTime(EInfclassWeapon WID) override;
+	void SetAmmoRegenTime(EInfclassWeapon WID, int Time) override;
 
-	int GetMaxAmmo(INFWEAPON WID) override;
-	void SetMaxAmmo(INFWEAPON WID, int n) override;
+	int GetMaxAmmo(EInfclassWeapon WID) override;
+	void SetMaxAmmo(EInfclassWeapon WID, int n) override;
 
 	int GetClientNbRound(int ClientId) override;
 

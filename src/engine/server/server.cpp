@@ -676,93 +676,93 @@ int CServer::Init()
 	m_aPreviousMap[0] = 0;
 	m_aCurrentMap[0] = 0;
 
-	SetFireDelay(INFWEAPON::NONE, 0);
-	SetFireDelay(INFWEAPON::HAMMER, 125);
-	SetFireDelay(INFWEAPON::GUN, 125);
-	SetFireDelay(INFWEAPON::SHOTGUN, 500);
-	SetFireDelay(INFWEAPON::GRENADE, 500);
-	SetFireDelay(INFWEAPON::LASER, 800);
-	SetFireDelay(INFWEAPON::NINJA, 800);
-	SetFireDelay(INFWEAPON::ENGINEER_LASER, GetFireDelay(INFWEAPON::LASER));
-	SetFireDelay(INFWEAPON::SOLDIER_GRENADE, GetFireDelay(INFWEAPON::GRENADE));
-	SetFireDelay(INFWEAPON::SCIENTIST_LASER, GetFireDelay(INFWEAPON::LASER));
-	SetFireDelay(INFWEAPON::SCIENTIST_GRENADE, GetFireDelay(INFWEAPON::GRENADE));
-	SetFireDelay(INFWEAPON::MEDIC_GRENADE, GetFireDelay(INFWEAPON::GRENADE));
-	SetFireDelay(INFWEAPON::MEDIC_LASER, GetFireDelay(INFWEAPON::LASER));
-	SetFireDelay(INFWEAPON::MEDIC_SHOTGUN, 250);
-	SetFireDelay(INFWEAPON::HERO_SHOTGUN, 250);
-	SetFireDelay(INFWEAPON::BIOLOGIST_SHOTGUN, 250);
-	SetFireDelay(INFWEAPON::BIOLOGIST_LASER, GetFireDelay(INFWEAPON::LASER));
-	SetFireDelay(INFWEAPON::LOOPER_LASER, 250);
-	SetFireDelay(INFWEAPON::LOOPER_GRENADE, GetFireDelay(INFWEAPON::GRENADE));
-	SetFireDelay(INFWEAPON::HERO_LASER, GetFireDelay(INFWEAPON::LASER));
-	SetFireDelay(INFWEAPON::HERO_GRENADE, GetFireDelay(INFWEAPON::GRENADE));
-	SetFireDelay(INFWEAPON::SNIPER_LASER, GetFireDelay(INFWEAPON::LASER));
-	SetFireDelay(INFWEAPON::NINJA_HAMMER, GetFireDelay(INFWEAPON::NINJA));
-	SetFireDelay(INFWEAPON::NINJA_GRENADE, GetFireDelay(INFWEAPON::GRENADE));
-	SetFireDelay(INFWEAPON::MERCENARY_GRENADE, GetFireDelay(INFWEAPON::GRENADE));
-	SetFireDelay(INFWEAPON::MERCENARY_GUN, 50);
-	SetFireDelay(INFWEAPON::MERCENARY_LASER, 200);
-	SetFireDelay(INFWEAPON::BLINDING_LASER, GetFireDelay(INFWEAPON::LASER));
+	SetFireDelay(EInfclassWeapon::NONE, 0);
+	SetFireDelay(EInfclassWeapon::HAMMER, 125);
+	SetFireDelay(EInfclassWeapon::GUN, 125);
+	SetFireDelay(EInfclassWeapon::SHOTGUN, 500);
+	SetFireDelay(EInfclassWeapon::GRENADE, 500);
+	SetFireDelay(EInfclassWeapon::LASER, 800);
+	SetFireDelay(EInfclassWeapon::NINJA, 800);
+	SetFireDelay(EInfclassWeapon::ENGINEER_LASER, GetFireDelay(EInfclassWeapon::LASER));
+	SetFireDelay(EInfclassWeapon::SOLDIER_GRENADE, GetFireDelay(EInfclassWeapon::GRENADE));
+	SetFireDelay(EInfclassWeapon::SCIENTIST_LASER, GetFireDelay(EInfclassWeapon::LASER));
+	SetFireDelay(EInfclassWeapon::SCIENTIST_GRENADE, GetFireDelay(EInfclassWeapon::GRENADE));
+	SetFireDelay(EInfclassWeapon::MEDIC_GRENADE, GetFireDelay(EInfclassWeapon::GRENADE));
+	SetFireDelay(EInfclassWeapon::MEDIC_LASER, GetFireDelay(EInfclassWeapon::LASER));
+	SetFireDelay(EInfclassWeapon::MEDIC_SHOTGUN, 250);
+	SetFireDelay(EInfclassWeapon::HERO_SHOTGUN, 250);
+	SetFireDelay(EInfclassWeapon::BIOLOGIST_SHOTGUN, 250);
+	SetFireDelay(EInfclassWeapon::BIOLOGIST_LASER, GetFireDelay(EInfclassWeapon::LASER));
+	SetFireDelay(EInfclassWeapon::LOOPER_LASER, 250);
+	SetFireDelay(EInfclassWeapon::LOOPER_GRENADE, GetFireDelay(EInfclassWeapon::GRENADE));
+	SetFireDelay(EInfclassWeapon::HERO_LASER, GetFireDelay(EInfclassWeapon::LASER));
+	SetFireDelay(EInfclassWeapon::HERO_GRENADE, GetFireDelay(EInfclassWeapon::GRENADE));
+	SetFireDelay(EInfclassWeapon::SNIPER_LASER, GetFireDelay(EInfclassWeapon::LASER));
+	SetFireDelay(EInfclassWeapon::NINJA_HAMMER, GetFireDelay(EInfclassWeapon::NINJA));
+	SetFireDelay(EInfclassWeapon::NINJA_GRENADE, GetFireDelay(EInfclassWeapon::GRENADE));
+	SetFireDelay(EInfclassWeapon::MERCENARY_GRENADE, GetFireDelay(EInfclassWeapon::GRENADE));
+	SetFireDelay(EInfclassWeapon::MERCENARY_GUN, 50);
+	SetFireDelay(EInfclassWeapon::MERCENARY_LASER, 200);
+	SetFireDelay(EInfclassWeapon::BLINDING_LASER, GetFireDelay(EInfclassWeapon::LASER));
 
-	SetAmmoRegenTime(INFWEAPON::NONE, 0);
-	SetAmmoRegenTime(INFWEAPON::HAMMER, 0);
-	SetAmmoRegenTime(INFWEAPON::GUN, 500);
-	SetAmmoRegenTime(INFWEAPON::SHOTGUN, 0);
-	SetAmmoRegenTime(INFWEAPON::GRENADE, 0);
-	SetAmmoRegenTime(INFWEAPON::LASER, 0);
-	SetAmmoRegenTime(INFWEAPON::NINJA, 0);
+	SetAmmoRegenTime(EInfclassWeapon::NONE, 0);
+	SetAmmoRegenTime(EInfclassWeapon::HAMMER, 0);
+	SetAmmoRegenTime(EInfclassWeapon::GUN, 500);
+	SetAmmoRegenTime(EInfclassWeapon::SHOTGUN, 0);
+	SetAmmoRegenTime(EInfclassWeapon::GRENADE, 0);
+	SetAmmoRegenTime(EInfclassWeapon::LASER, 0);
+	SetAmmoRegenTime(EInfclassWeapon::NINJA, 0);
 
-	SetAmmoRegenTime(INFWEAPON::ENGINEER_LASER, 6000);
-	SetAmmoRegenTime(INFWEAPON::SOLDIER_GRENADE, 7000);
-	SetAmmoRegenTime(INFWEAPON::SCIENTIST_LASER, 6000);
-	SetAmmoRegenTime(INFWEAPON::SCIENTIST_GRENADE, 10000);
-	SetAmmoRegenTime(INFWEAPON::MEDIC_GRENADE, 0);
-	SetAmmoRegenTime(INFWEAPON::MEDIC_LASER, 6000);
-	SetAmmoRegenTime(INFWEAPON::MEDIC_SHOTGUN, 750);
-	SetAmmoRegenTime(INFWEAPON::HERO_SHOTGUN, 750);
-	SetAmmoRegenTime(INFWEAPON::HERO_LASER, 3000);
-	SetAmmoRegenTime(INFWEAPON::HERO_GRENADE, 3000);
-	SetAmmoRegenTime(INFWEAPON::SNIPER_LASER, 2000);
-	SetAmmoRegenTime(INFWEAPON::MERCENARY_GRENADE, 5000);
-	SetAmmoRegenTime(INFWEAPON::MERCENARY_GUN, 125);
-	SetAmmoRegenTime(INFWEAPON::MERCENARY_LASER, 4000);
-	SetAmmoRegenTime(INFWEAPON::NINJA_HAMMER, 0);
-	SetAmmoRegenTime(INFWEAPON::NINJA_GRENADE, 15000);
-	SetAmmoRegenTime(INFWEAPON::BIOLOGIST_LASER, 175);
-	SetAmmoRegenTime(INFWEAPON::BIOLOGIST_SHOTGUN, 675);
-	SetAmmoRegenTime(INFWEAPON::LOOPER_LASER, 500);
-	SetAmmoRegenTime(INFWEAPON::LOOPER_GRENADE, 5000);
-	SetAmmoRegenTime(INFWEAPON::BLINDING_LASER, 10000);
+	SetAmmoRegenTime(EInfclassWeapon::ENGINEER_LASER, 6000);
+	SetAmmoRegenTime(EInfclassWeapon::SOLDIER_GRENADE, 7000);
+	SetAmmoRegenTime(EInfclassWeapon::SCIENTIST_LASER, 6000);
+	SetAmmoRegenTime(EInfclassWeapon::SCIENTIST_GRENADE, 10000);
+	SetAmmoRegenTime(EInfclassWeapon::MEDIC_GRENADE, 0);
+	SetAmmoRegenTime(EInfclassWeapon::MEDIC_LASER, 6000);
+	SetAmmoRegenTime(EInfclassWeapon::MEDIC_SHOTGUN, 750);
+	SetAmmoRegenTime(EInfclassWeapon::HERO_SHOTGUN, 750);
+	SetAmmoRegenTime(EInfclassWeapon::HERO_LASER, 3000);
+	SetAmmoRegenTime(EInfclassWeapon::HERO_GRENADE, 3000);
+	SetAmmoRegenTime(EInfclassWeapon::SNIPER_LASER, 2000);
+	SetAmmoRegenTime(EInfclassWeapon::MERCENARY_GRENADE, 5000);
+	SetAmmoRegenTime(EInfclassWeapon::MERCENARY_GUN, 125);
+	SetAmmoRegenTime(EInfclassWeapon::MERCENARY_LASER, 4000);
+	SetAmmoRegenTime(EInfclassWeapon::NINJA_HAMMER, 0);
+	SetAmmoRegenTime(EInfclassWeapon::NINJA_GRENADE, 15000);
+	SetAmmoRegenTime(EInfclassWeapon::BIOLOGIST_LASER, 175);
+	SetAmmoRegenTime(EInfclassWeapon::BIOLOGIST_SHOTGUN, 675);
+	SetAmmoRegenTime(EInfclassWeapon::LOOPER_LASER, 500);
+	SetAmmoRegenTime(EInfclassWeapon::LOOPER_GRENADE, 5000);
+	SetAmmoRegenTime(EInfclassWeapon::BLINDING_LASER, 10000);
 
-	SetMaxAmmo(INFWEAPON::NONE, -1);
-	SetMaxAmmo(INFWEAPON::HAMMER, -1);
-	SetMaxAmmo(INFWEAPON::GUN, 10);
-	SetMaxAmmo(INFWEAPON::SHOTGUN, 10);
-	SetMaxAmmo(INFWEAPON::GRENADE, 10);
-	SetMaxAmmo(INFWEAPON::LASER, 10);
-	SetMaxAmmo(INFWEAPON::NINJA, 10);
-	SetMaxAmmo(INFWEAPON::ENGINEER_LASER, 10);
-	SetMaxAmmo(INFWEAPON::SCIENTIST_LASER, 10);
-	SetMaxAmmo(INFWEAPON::SCIENTIST_GRENADE, 3);
-	SetMaxAmmo(INFWEAPON::SOLDIER_GRENADE, 10);
-	SetMaxAmmo(INFWEAPON::MEDIC_GRENADE, 10);
-	SetMaxAmmo(INFWEAPON::MEDIC_LASER, 1);
-	SetMaxAmmo(INFWEAPON::MEDIC_SHOTGUN, 10);
-	SetMaxAmmo(INFWEAPON::HERO_SHOTGUN, 10);
-	SetMaxAmmo(INFWEAPON::HERO_LASER, 10);
-	SetMaxAmmo(INFWEAPON::HERO_GRENADE, 10);
-	SetMaxAmmo(INFWEAPON::SNIPER_LASER, 10);
-	SetMaxAmmo(INFWEAPON::NINJA_HAMMER, -1);
-	SetMaxAmmo(INFWEAPON::NINJA_GRENADE, 5);
-	SetMaxAmmo(INFWEAPON::MERCENARY_GRENADE, 8);
-	SetMaxAmmo(INFWEAPON::MERCENARY_GUN, 40);
-	SetMaxAmmo(INFWEAPON::MERCENARY_LASER, 10);
-	SetMaxAmmo(INFWEAPON::BIOLOGIST_LASER, 10);
-	SetMaxAmmo(INFWEAPON::BIOLOGIST_SHOTGUN, 10);
-	SetMaxAmmo(INFWEAPON::LOOPER_LASER, 20);
-	SetMaxAmmo(INFWEAPON::LOOPER_GRENADE, 10);
-	SetMaxAmmo(INFWEAPON::BLINDING_LASER, 10);
+	SetMaxAmmo(EInfclassWeapon::NONE, -1);
+	SetMaxAmmo(EInfclassWeapon::HAMMER, -1);
+	SetMaxAmmo(EInfclassWeapon::GUN, 10);
+	SetMaxAmmo(EInfclassWeapon::SHOTGUN, 10);
+	SetMaxAmmo(EInfclassWeapon::GRENADE, 10);
+	SetMaxAmmo(EInfclassWeapon::LASER, 10);
+	SetMaxAmmo(EInfclassWeapon::NINJA, 10);
+	SetMaxAmmo(EInfclassWeapon::ENGINEER_LASER, 10);
+	SetMaxAmmo(EInfclassWeapon::SCIENTIST_LASER, 10);
+	SetMaxAmmo(EInfclassWeapon::SCIENTIST_GRENADE, 3);
+	SetMaxAmmo(EInfclassWeapon::SOLDIER_GRENADE, 10);
+	SetMaxAmmo(EInfclassWeapon::MEDIC_GRENADE, 10);
+	SetMaxAmmo(EInfclassWeapon::MEDIC_LASER, 1);
+	SetMaxAmmo(EInfclassWeapon::MEDIC_SHOTGUN, 10);
+	SetMaxAmmo(EInfclassWeapon::HERO_SHOTGUN, 10);
+	SetMaxAmmo(EInfclassWeapon::HERO_LASER, 10);
+	SetMaxAmmo(EInfclassWeapon::HERO_GRENADE, 10);
+	SetMaxAmmo(EInfclassWeapon::SNIPER_LASER, 10);
+	SetMaxAmmo(EInfclassWeapon::NINJA_HAMMER, -1);
+	SetMaxAmmo(EInfclassWeapon::NINJA_GRENADE, 5);
+	SetMaxAmmo(EInfclassWeapon::MERCENARY_GRENADE, 8);
+	SetMaxAmmo(EInfclassWeapon::MERCENARY_GUN, 40);
+	SetMaxAmmo(EInfclassWeapon::MERCENARY_LASER, 10);
+	SetMaxAmmo(EInfclassWeapon::BIOLOGIST_LASER, 10);
+	SetMaxAmmo(EInfclassWeapon::BIOLOGIST_SHOTGUN, 10);
+	SetMaxAmmo(EInfclassWeapon::LOOPER_LASER, 20);
+	SetMaxAmmo(EInfclassWeapon::LOOPER_GRENADE, 10);
+	SetMaxAmmo(EInfclassWeapon::BLINDING_LASER, 10);
 	/* INFECTION MODIFICATION END *****************************************/
 
 	return 0;
@@ -3800,7 +3800,7 @@ void CServer::ConSetWeaponFireDelay(IConsole::IResult *pResult, void *pUserData)
 		return;
 	}
 
-	pSelf->SetFireDelay(static_cast<INFWEAPON>(WeaponId), Interval);
+	pSelf->SetFireDelay(static_cast<EInfclassWeapon>(WeaponId), Interval);
 }
 
 void CServer::ConSetWeaponAmmoRegen(IConsole::IResult *pResult, void *pUserData)
@@ -3820,7 +3820,7 @@ void CServer::ConSetWeaponAmmoRegen(IConsole::IResult *pResult, void *pUserData)
 		return;
 	}
 
-	pSelf->SetAmmoRegenTime(static_cast<INFWEAPON>(WeaponId), Interval);
+	pSelf->SetAmmoRegenTime(static_cast<EInfclassWeapon>(WeaponId), Interval);
 
 	return;
 }
@@ -3842,7 +3842,7 @@ void CServer::ConSetWeaponMaxAmmo(IConsole::IResult *pResult, void *pUserData)
 		return;
 	}
 
-	pSelf->SetMaxAmmo(static_cast<INFWEAPON>(WeaponId), Interval);
+	pSelf->SetMaxAmmo(static_cast<EInfclassWeapon>(WeaponId), Interval);
 }
 
 void CServer::LogoutClient(int ClientId, const char *pReason)
@@ -4144,32 +4144,32 @@ void CServer::SetClientLanguage(int ClientId, const char* pLanguage)
 	str_copy(m_aClients[ClientId].m_aLanguage, pLanguage, sizeof(m_aClients[ClientId].m_aLanguage));
 }
 
-int CServer::GetFireDelay(INFWEAPON WID)
+int CServer::GetFireDelay(EInfclassWeapon WID)
 {
 	return m_InfFireDelay[static_cast<int>(WID)];
 }
 
-void CServer::SetFireDelay(INFWEAPON WID, int Time)
+void CServer::SetFireDelay(EInfclassWeapon WID, int Time)
 {
 	m_InfFireDelay[static_cast<int>(WID)] = Time;
 }
 
-int CServer::GetAmmoRegenTime(INFWEAPON WID)
+int CServer::GetAmmoRegenTime(EInfclassWeapon WID)
 {
 	return m_InfAmmoRegenTime[static_cast<int>(WID)];
 }
 
-void CServer::SetAmmoRegenTime(INFWEAPON WID, int Time)
+void CServer::SetAmmoRegenTime(EInfclassWeapon WID, int Time)
 {
 	m_InfAmmoRegenTime[static_cast<int>(WID)] = Time;
 }
 
-int CServer::GetMaxAmmo(INFWEAPON WID)
+int CServer::GetMaxAmmo(EInfclassWeapon WID)
 {
 	return m_InfMaxAmmo[static_cast<int>(WID)];
 }
 
-void CServer::SetMaxAmmo(INFWEAPON WID, int n)
+void CServer::SetMaxAmmo(EInfclassWeapon WID, int n)
 {
 	m_InfMaxAmmo[static_cast<int>(WID)] = n;
 }

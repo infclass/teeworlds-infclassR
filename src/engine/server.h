@@ -27,7 +27,7 @@ enum
 };
 
 /* INFECTION MODIFICATION START ***************************************/
-enum class INFWEAPON
+enum class EInfclassWeapon
 {
 	NONE,
 	HAMMER,
@@ -73,7 +73,7 @@ enum class INFWEAPON
 	Invalid = Count,
 };
 
-constexpr int NB_INFWEAPON = static_cast<int>(INFWEAPON::Count);
+constexpr int NB_INFWEAPON = static_cast<int>(EInfclassWeapon::Count);
 
 enum
 {
@@ -396,14 +396,14 @@ public:
 	virtual const char* GetClientLanguage(int ClientId) = 0;
 	virtual void SetClientLanguage(int ClientId, const char* pLanguage) = 0;
 
-	virtual int GetFireDelay(INFWEAPON WID) = 0;
-	virtual void SetFireDelay(INFWEAPON WID, int Time) = 0;
+	virtual int GetFireDelay(EInfclassWeapon WID) = 0;
+	virtual void SetFireDelay(EInfclassWeapon WID, int Time) = 0;
 
-	virtual int GetAmmoRegenTime(INFWEAPON WID) = 0;
-	virtual void SetAmmoRegenTime(INFWEAPON WID, int Time) = 0;
+	virtual int GetAmmoRegenTime(EInfclassWeapon WID) = 0;
+	virtual void SetAmmoRegenTime(EInfclassWeapon WID, int Time) = 0;
 
-	virtual int GetMaxAmmo(INFWEAPON WID) = 0;
-	virtual void SetMaxAmmo(INFWEAPON WID, int n) = 0;
+	virtual int GetMaxAmmo(EInfclassWeapon WID) = 0;
+	virtual void SetMaxAmmo(EInfclassWeapon WID, int n) = 0;
 
 	virtual bool IsClientLogged(int ClientId) = 0;
 #ifdef CONF_SQL

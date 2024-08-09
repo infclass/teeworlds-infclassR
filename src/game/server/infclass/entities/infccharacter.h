@@ -12,7 +12,7 @@ class CInfClassPlayerClass;
 class CWhiteHole;
 
 enum class EDamageType;
-enum class INFWEAPON;
+enum class EInfclassWeapon;
 enum class TAKEDAMAGEMODE;
 
 enum FREEZEREASON
@@ -256,7 +256,7 @@ public:
 	bool HasSuperWeaponIndicator() const;
 	void SetSuperWeaponIndicatorEnabled(bool Enabled);
 
-	INFWEAPON GetInfWeaponId(int WID = -1) const;
+	EInfclassWeapon GetInfWeaponId(int WID = -1) const;
 
 	using CCharacter::GameWorld;
 	using CCharacter::Server;

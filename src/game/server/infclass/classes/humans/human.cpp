@@ -142,7 +142,7 @@ bool CInfClassHuman::SetupSkin(const CSkinContext &Context, CWeakSkinInfo *pOutp
 
 void CInfClassHuman::GetAmmoRegenParams(int Weapon, WeaponRegenParams *pParams)
 {
-	INFWEAPON InfWID = m_pCharacter->GetInfWeaponId(Weapon);
+	EInfclassWeapon InfWID = m_pCharacter->GetInfWeaponId(Weapon);
 	pParams->MaxAmmo = Server()->GetMaxAmmo(InfWID);
 	pParams->RegenInterval = Server()->GetAmmoRegenTime(InfWID);
 
@@ -151,10 +151,10 @@ void CInfClassHuman::GetAmmoRegenParams(int Weapon, WeaponRegenParams *pParams)
 
 	switch(InfWID)
 	{
-	case INFWEAPON::NINJA_GRENADE:
+	case EInfclassWeapon::NINJA_GRENADE:
 		pParams->MaxAmmo = minimum(pParams->MaxAmmo + m_NinjaAmmoBuff, 10);
 		break;
-	case INFWEAPON::MERCENARY_GUN:
+	case EInfclassWeapon::MERCENARY_GUN:
 		if(m_pCharacter->GetInAirTick() > Server()->TickSpeed() * 4)
 		{
 			pParams->RegenInterval = 0;
@@ -688,7 +688,7 @@ void CInfClassHuman::HandleNinja()
 {
 	if(GetPlayerClass() != EPlayerClass::Ninja)
 		return;
-	if(m_pCharacter->GetInfWeaponId(m_pCharacter->GetActiveWeapon()) != INFWEAPON::NINJA_HAMMER)
+	if(m_pCharacter->GetInfWeaponId(m_pCharacter->GetActiveWeapon()) != EInfclassWeapon::NINJA_HAMMER)
 		return;
 
 	m_pCharacter->m_DartLifeSpan--;
