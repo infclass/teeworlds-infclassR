@@ -146,6 +146,7 @@ public:
 	void OnReset() override;
 
 	void DoPlayerInfection(CInfClassPlayer *pPlayer, CInfClassPlayer *pInfectiousPlayer, EPlayerClass PreviousClass);
+	void MaybeDropPickup(CInfClassCharacter *pVictim);
 
 	void OnHeroFlagCollected(int ClientId);
 	float GetHeroFlagCooldown() const;
@@ -302,7 +303,6 @@ protected:
 	void CancelTheRound(ROUND_CANCELATION_REASON Reason);
 	void AnnounceTheWinner(int NumHumans);
 	void BroadcastInfectionComing(int InfectionTick);
-	void MaybeDropPickup(const CInfClassCharacter *pVictim);
 
 private:
 	void UpdateNinjaTargets();

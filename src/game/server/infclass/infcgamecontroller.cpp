@@ -3632,12 +3632,13 @@ void CInfClassGameController::BroadcastInfectionComing(int InfectionTick)
 		nullptr);
 }
 
-void CInfClassGameController::MaybeDropPickup(const CInfClassCharacter *pVictim)
+void CInfClassGameController::MaybeDropPickup(CInfClassCharacter *pVictim)
 {
 	const int DropMaxLevel = pVictim->GetDropLevel();
 	if(DropMaxLevel <= 0)
 		return;
 
+	pVictim->SetDropLevel(0);
 	const vec2 Pos = pVictim->GetPos();
 	const int ZoneIndex = GetDamageZoneValueAt(Pos);
 
