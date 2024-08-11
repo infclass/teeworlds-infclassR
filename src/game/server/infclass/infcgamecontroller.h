@@ -38,6 +38,7 @@ enum class ERoundType
 	Count,
 	Invalid = Count,
 };
+const char *toString(ERoundType RoundType);
 
 enum class CLASS_AVAILABILITY
 {
@@ -46,8 +47,6 @@ enum class CLASS_AVAILABILITY
 	NEED_MORE_PLAYERS,
 	LIMIT_EXCEEDED,
 };
-
-static const char *toString(ERoundType RoundType);
 
 struct FunRoundConfiguration
 {
