@@ -61,6 +61,7 @@ bool CMedicLaser::OnCharacterHit(CInfClassCharacter *pHit)
 			PreviousClass = EPlayerClass::Medic;
 		}
 
+		GameController()->MaybeDropPickup(pInfected);
 		pInfected->GetPlayer()->SetClass(PreviousClass);
 		pInfected->Unfreeze();
 		pInfected->ResetBlinding();
