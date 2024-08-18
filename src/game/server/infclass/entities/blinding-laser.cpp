@@ -18,7 +18,7 @@ CBlindingLaser::CBlindingLaser(CGameContext *pGameContext, vec2 Pos, vec2 Direct
 
 bool CBlindingLaser::OnCharacterHit(CInfClassCharacter *pHit)
 {
-	pHit->MakeBlind(GetOwner(), Config()->m_InfBlindnessDuration);
+	pHit->MakeBlind(Config()->m_InfBlindnessDuration, GetOwner());
 	return true;
 }
 

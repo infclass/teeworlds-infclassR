@@ -200,7 +200,7 @@ public:
 	bool IsBlind() const { return m_BlindnessTicks > 0; }
 
 	void ResetBlinding();
-	void MakeBlind(int ClientId, float Duration);
+	void MakeBlind(float Duration, int ClientId);
 
 	float WebHookLength() const;
 

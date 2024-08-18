@@ -2201,7 +2201,7 @@ void CInfClassCharacter::ResetBlinding()
 	m_BlindnessTicks = 0;
 }
 
-void CInfClassCharacter::MakeBlind(int ClientId, float Duration)
+void CInfClassCharacter::MakeBlind(float Duration, int ClientId)
 {
 	m_BlindnessTicks = Server()->TickSpeed() * Duration;
 	m_LastBlinder = ClientId;
