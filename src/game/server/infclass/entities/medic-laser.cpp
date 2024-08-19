@@ -64,7 +64,7 @@ bool CMedicLaser::OnCharacterHit(CInfClassCharacter *pHit)
 		GameController()->MaybeDropPickup(pInfected);
 		pInfected->GetPlayer()->SetClass(PreviousClass);
 		pInfected->Unfreeze();
-		pInfected->ResetBlinding();
+		pInfected->ResetBlindness();
 		pInfected->CancelSlowMotion();
 		pInfected->SetHealthArmor(1, 0);
 		const float ReviverHelperDuration = 45;

@@ -115,9 +115,9 @@ public:
 
 	bool TakeDamage(const vec2 &Force, float Dmg, int From, EDamageType DamageType, float *pDamagePointsLeft = nullptr);
 
-	bool Heal(int HitPoints, int FromCid = -1);
-	bool GiveHealth(int HitPoints, int FromCid = -1);
-	bool GiveArmor(int HitPoints, int FromCid = -1);
+	bool Heal(int HitPoints, std::optional<int> FromCid = {});
+	bool GiveHealth(int HitPoints, std::optional<int> FromCid = {});
+	bool GiveArmor(int HitPoints, std::optional<int> FromCid = {});
 
 	int GetHealth() const { return m_Health; }
 	int GetArmor() const { return m_Armor; }
@@ -199,8 +199,8 @@ public:
 
 	bool IsBlind() const { return m_BlindnessTicks > 0; }
 
-	void ResetBlinding();
-	void MakeBlind(float Duration, int ClientId);
+	void ResetBlindness();
+	void MakeBlind(float Duration, std::optional<int> FromCid = {});
 
 	float WebHookLength() const;
 
@@ -217,7 +217,7 @@ public:
 	void CancelLoveEffect();
 
 	bool IsInSlowMotion() const;
-	float SlowMotionEffect(float Duration, int FromCid);
+	float SlowMotionEffect(float Duration, std::optional<int> FromCid = {});
 	void CancelSlowMotion();
 
 	bool IsPoisoned() const;
@@ -299,7 +299,7 @@ protected:
 	int m_LastHookerTick = -1;
 
 	int m_BlindnessTicks = 0;
-	int m_LastBlinder = -1;
+	std::optional<int> m_LastBlinder;
 
 	int m_ProtectionTick = 0;
 
@@ -318,7 +318,7 @@ protected:
 	FREEZEREASON m_FreezeReason;
 
 	int m_SlowMotionTick;
-	int m_SlowEffectApplicant;
+	std::optional<int> m_SlowEffectApplicant;
 
 	int m_Poison = 0;
 	float m_PoisonEffectInterval{};

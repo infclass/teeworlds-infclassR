@@ -782,7 +782,7 @@ bool CInfClassCharacter::TakeDamage(const vec2 &Force, float FloatDmg, int From,
 	return true;
 }
 
-bool CInfClassCharacter::Heal(int HitPoints, int FromCid)
+bool CInfClassCharacter::Heal(int HitPoints, std::optional<int> FromCid)
 {
 	if(GetClass() && GetClass()->IsHealingDisabled())
 	{
@@ -798,17 +798,17 @@ bool CInfClassCharacter::Heal(int HitPoints, int FromCid)
 		int Sound = HadFullHealth ? SOUND_PICKUP_ARMOR : SOUND_PICKUP_HEALTH;
 		GameContext()->CreateSound(GetPos(), Sound, CmaskOne(GetCid()));
 
-		if(FromCid >= 0)
+		if(FromCid.has_value())
 		{
 			const float HealerHelperDuration = 20;
-			AddHelper(FromCid, HealerHelperDuration);
+			AddHelper(FromCid.value(), HealerHelperDuration);
 		}
 	}
 
 	return Healed;
 }
 
-bool CInfClassCharacter::GiveHealth(int HitPoints, int FromCid)
+bool CInfClassCharacter::GiveHealth(int HitPoints, std::optional<int> FromCid)
 {
 	if(GetClass() && GetClass()->IsHealingDisabled())
 	{
@@ -823,17 +823,17 @@ bool CInfClassCharacter::GiveHealth(int HitPoints, int FromCid)
 		int Sound = SOUND_PICKUP_HEALTH;
 		GameContext()->CreateSound(GetPos(), Sound, CmaskOne(GetCid()));
 
-		if(FromCid >= 0)
+		if(FromCid.has_value())
 		{
 			const float HealerHelperDuration = 20;
-			AddHelper(FromCid, HealerHelperDuration);
+			AddHelper(FromCid.value(), HealerHelperDuration);
 		}
 	}
 
 	return Healed;
 }
 
-bool CInfClassCharacter::GiveArmor(int HitPoints, int FromCid)
+bool CInfClassCharacter::GiveArmor(int HitPoints, std::optional<int> FromCid)
 {
 	if(GetClass() && GetClass()->IsHealingDisabled())
 	{
@@ -848,10 +848,10 @@ bool CInfClassCharacter::GiveArmor(int HitPoints, int FromCid)
 		int Sound = SOUND_PICKUP_ARMOR;
 		GameContext()->CreateSound(GetPos(), Sound, CmaskOne(GetCid()));
 
-		if(FromCid >= 0)
+		if(FromCid.has_value())
 		{
 			const float HealerHelperDuration = 20;
-			AddHelper(FromCid, HealerHelperDuration);
+			AddHelper(FromCid.value(), HealerHelperDuration);
 		}
 	}
 
@@ -982,7 +982,7 @@ bool CInfClassCharacter::IsInSlowMotion() const
 	return m_SlowMotionTick > 0;
 }
 
-float CInfClassCharacter::SlowMotionEffect(float Duration, int FromCid)
+float CInfClassCharacter::SlowMotionEffect(float Duration, std::optional<int> FromCid)
 {
 	if(Duration == 0)
 		return 0.0f;
@@ -1198,16 +1198,16 @@ void CInfClassCharacter::GetDeathContext(const SDamageContext &DamageContext, De
 		}
 	}
 
-	if(IsInSlowMotion() && (m_SlowEffectApplicant >= 0))
+	if(IsInSlowMotion() && m_SlowEffectApplicant.has_value())
 	{
 		// The Looper should be the Assistant (if not the killer) - before any other player
-		AddUnique(m_SlowEffectApplicant, &Assistants);
+		AddUnique(m_SlowEffectApplicant.value(), &Assistants);
 	}
 
-	if(IsBlind())
+	if(IsBlind() && m_LastBlinder.has_value())
 	{
 		// The Blinder should be the Assistant (if not the killer) - before any other player
-		AddUnique(m_LastBlinder, &Assistants);
+		AddUnique(m_LastBlinder.value(), &Assistants);
 	}
 
 	if(GivenKiller != GetCid())
@@ -2196,15 +2196,15 @@ int CInfClassCharacter::GetFreezer() const
 	return IsFrozen() ? m_LastFreezer : -1;
 }
 
-void CInfClassCharacter::ResetBlinding()
+void CInfClassCharacter::ResetBlindness()
 {
 	m_BlindnessTicks = 0;
 }
 
-void CInfClassCharacter::MakeBlind(float Duration, int ClientId)
+void CInfClassCharacter::MakeBlind(float Duration, std::optional<int> FromCid)
 {
 	m_BlindnessTicks = Server()->TickSpeed() * Duration;
-	m_LastBlinder = ClientId;
+	m_LastBlinder = FromCid;
 
 	GameServer()->SendEmoticon(GetCid(), EMOTICON_QUESTION);
 }
