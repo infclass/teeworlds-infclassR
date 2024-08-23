@@ -1019,8 +1019,8 @@ void CInfClassHuman::OnLaserFired(WeaponFireContext *pFireContext)
 		CBlindingLaser::OnFired(m_pCharacter, pFireContext);
 		return;
 	case EPlayerClass::Biologist:
-		OnBiologistLaserFired(pFireContext);
-		break;
+		CBiologistMine::OnFired(m_pCharacter, pFireContext, Config()->m_InfBioMineLasers);
+		return;
 	case EPlayerClass::Scientist:
 		StartEnergy *= 0.6f;
 		new CScientistLaser(GameServer(), GetPos(), Direction, StartEnergy, GetCid(), Damage);
@@ -1989,38 +1989,6 @@ void CInfClassHuman::OnPortalGunFired(WeaponFireContext *pFireContext)
 	GameServer()->CreateDeath(PortalPos.value(), GetCid());
 	GameServer()->CreateSound(PortalPos.value(), SOUND_CTF_RETURN);
 	new CLaserTeleport(GameServer(), PortalPos.value(), OldPos);
-}
-
-void CInfClassHuman::OnBiologistLaserFired(WeaponFireContext *pFireContext)
-{
-	if(pFireContext->AmmoAvailable < 10)
-	{
-		pFireContext->FireAccepted = false;
-		pFireContext->NoAmmo = true;
-		return;
-	}
-
-	const float BioLaserMaxLength = 400.0f;
-	vec2 To = GetPos() + GetDirection() * BioLaserMaxLength;
-	bool CanFire = GameServer()->Collision()->IntersectLine(GetPos(), To, 0x0, &To);
-
-	if(!CanFire)
-	{
-		pFireContext->FireAccepted = false;
-		pFireContext->NoAmmo = true;
-		return;
-	}
-
-	for(TEntityPtr<CBiologistMine> pMine = GameWorld()->FindFirst<CBiologistMine>(); pMine; ++pMine)
-	{
-		if(pMine->GetOwner() != GetCid()) continue;
-			GameWorld()->DestroyEntity(pMine);
-	}
-
-	int Lasers = Config()->m_InfBioMineLasers;
-	int PerLaserDamage = 10;
-	new CBiologistMine(GameServer(), GetPos(), To, GetCid(), Lasers, PerLaserDamage);
-	pFireContext->AmmoConsumed = pFireContext->AmmoAvailable;
 }
 
 void CInfClassHuman::OnMercLaserFired(WeaponFireContext *pFireContext)

@@ -9,6 +9,41 @@
 
 int CBiologistMine::EntityId = CGameWorld::ENTTYPE_BIOLOGIST_MINE;
 
+void CBiologistMine::OnFired(CInfClassCharacter *pCharacter, WeaponFireContext *pFireContext, int Lasers)
+{
+	if(pFireContext->AmmoAvailable < 10)
+	{
+		pFireContext->FireAccepted = false;
+		pFireContext->NoAmmo = true;
+		return;
+	}
+
+	const int OwnerCid = pCharacter->GetCid();
+	const float BioLaserMaxLength = 400.0f;
+	const vec2 From = pCharacter->GetPos();
+	vec2 To = From + pCharacter->GetDirection() * BioLaserMaxLength;
+	bool CanFire = pCharacter->GameServer()->Collision()->IntersectLine(From, To, 0x0, &To);
+
+	if(!CanFire)
+	{
+		pFireContext->FireAccepted = false;
+		pFireContext->NoAmmo = true;
+		return;
+	}
+
+	for(TEntityPtr<CBiologistMine> pMine = pCharacter->GameWorld()->FindFirst<CBiologistMine>(); pMine; ++pMine)
+	{
+		if(pMine->GetOwner() != OwnerCid) continue;
+		pCharacter->GameWorld()->DestroyEntity(pMine);
+	}
+
+	int PerLaserDamage = 10;
+	new CBiologistMine(pCharacter->GameServer(), From, To, OwnerCid, Lasers, PerLaserDamage);
+	pFireContext->AmmoConsumed = pFireContext->AmmoAvailable;
+
+	pCharacter->GameServer()->CreateSound(From, SOUND_LASER_FIRE);
+}
+
 CBiologistMine::CBiologistMine(CGameContext *pGameContext, vec2 Pos, vec2 EndPos, int Owner, int Lasers, int Damage, int Vertices) :
 	CPlacedObject(pGameContext, EntityId, Pos, Owner),
 	m_Vertices(minimum<int>(Vertices, NUM_SIDE)),

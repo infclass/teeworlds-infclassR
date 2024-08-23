@@ -5,10 +5,14 @@
 
 #include "infc-placed-object.h"
 
+struct WeaponFireContext;
+
 class CBiologistMine : public CPlacedObject
 {
 public:
 	static int EntityId;
+
+	static void OnFired(CInfClassCharacter *pCharacter, WeaponFireContext *pFireContext, int Lasers);
 
 	enum
 	{
