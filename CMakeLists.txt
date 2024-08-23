@@ -2,9 +2,9 @@
 
 cmake_minimum_required(VERSION 3.15...3.29)
 project(InfclassR
-    VERSION 1.5.3
+    VERSION 1.6.0
 )
-set(VERSION_SUFFIX "")
+set(VERSION_SUFFIX "a1")
 
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
