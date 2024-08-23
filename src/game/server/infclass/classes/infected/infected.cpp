@@ -602,7 +602,7 @@ void CInfClassInfected::OnHammerFired(WeaponFireContext *pFireContext)
 	// if we Hit anything, we have to wait for the reload
 	if(Hits)
 	{
-		m_pCharacter->SetReloadDuration(0.33f);
+		pFireContext->ReloadInterval = 0.33f;
 	}
 	else if(GetPlayerClass() == EPlayerClass::Slug)
 	{

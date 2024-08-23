@@ -1836,7 +1836,7 @@ void CInfClassHuman::FireMercenaryBomb(WeaponFireContext *pFireContext)
 		new CMercenaryBomb(GameServer(), GetPos(), GetCid());
 	}
 
-	m_pCharacter->SetReloadDuration(0.25f);
+	pFireContext->ReloadInterval = 0.25f;
 }
 
 void CInfClassHuman::PlaceScientistMine(WeaponFireContext *pFireContext)
@@ -1888,8 +1888,7 @@ void CInfClassHuman::PlaceScientistMine(WeaponFireContext *pFireContext)
 		GameWorld()->DestroyEntity(pOlderMine);
 
 	new CScientistMine(GameServer(), ProjStartPos, GetCid());
-
-	m_pCharacter->SetReloadDuration(0.5f);
+	pFireContext->ReloadInterval = 0.5f;
 }
 
 void CInfClassHuman::PlaceTurret(WeaponFireContext *pFireContext)
@@ -1957,7 +1956,7 @@ void CInfClassHuman::OnMercGrenadeFired(WeaponFireContext *pFireContext)
 
 	GameServer()->CreateSound(GetPos(), SOUND_GRENADE_FIRE);
 
-	m_pCharacter->SetReloadDuration(0.25f);
+	pFireContext->ReloadInterval = 0.25f;
 }
 
 void CInfClassHuman::OnMedicGrenadeFired(WeaponFireContext *pFireContext)
