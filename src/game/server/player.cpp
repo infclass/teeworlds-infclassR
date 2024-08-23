@@ -382,6 +382,14 @@ void CPlayer::TryRespawn()
 {
 }
 
+void CPlayer::SetAfk(bool Afk)
+{
+	if(m_Afk != Afk)
+	{
+		m_Afk = Afk;
+	}
+}
+
 int CPlayer::GetDefaultEmote() const
 {
 	if(m_OverrideEmoteReset >= 0)

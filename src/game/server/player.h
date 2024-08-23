@@ -165,6 +165,7 @@ public:
 	vec2 m_ShowDistance;
 	bool m_SpecTeam;
 
+	void SetAfk(bool Afk);
 	bool IsAfk() const { return m_Afk; }
 
 	virtual int GetDefaultEmote() const;
