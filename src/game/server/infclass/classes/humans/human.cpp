@@ -1016,8 +1016,8 @@ void CInfClassHuman::OnLaserFired(WeaponFireContext *pFireContext)
 	switch(GetPlayerClass())
 	{
 	case EPlayerClass::Ninja:
-		OnBlindingLaserFired(pFireContext);
-		break;
+		CBlindingLaser::OnFired(m_pCharacter, pFireContext);
+		return;
 	case EPlayerClass::Biologist:
 		OnBiologistLaserFired(pFireContext);
 		break;
@@ -1989,11 +1989,6 @@ void CInfClassHuman::OnPortalGunFired(WeaponFireContext *pFireContext)
 	GameServer()->CreateDeath(PortalPos.value(), GetCid());
 	GameServer()->CreateSound(PortalPos.value(), SOUND_CTF_RETURN);
 	new CLaserTeleport(GameServer(), PortalPos.value(), OldPos);
-}
-
-void CInfClassHuman::OnBlindingLaserFired(WeaponFireContext *pFireContext)
-{
-	new CBlindingLaser(GameContext(), GetPos(), GetDirection(), GetCid());
 }
 
 void CInfClassHuman::OnBiologistLaserFired(WeaponFireContext *pFireContext)

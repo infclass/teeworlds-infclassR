@@ -7,6 +7,8 @@
 
 #include <game/infclass/damage_type.h>
 
+struct WeaponFireContext;
+
 class CInfClassLaser : public CInfCEntity
 {
 public:

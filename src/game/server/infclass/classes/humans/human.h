@@ -101,7 +101,6 @@ protected:
 	void OnMedicGrenadeFired(WeaponFireContext *pFireContext);
 	void OnPortalGunFired(WeaponFireContext *pFireContext);
 
-	void OnBlindingLaserFired(WeaponFireContext *pFireContext);
 	void OnBiologistLaserFired(WeaponFireContext *pFireContext);
 	void OnMercLaserFired(WeaponFireContext *pFireContext);
 
