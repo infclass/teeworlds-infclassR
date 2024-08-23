@@ -1534,6 +1534,8 @@ EInfclassWeapon CInfClassCharacter::GetInfWeaponId(int WID) const
 		{
 		case EPlayerClass::Ninja:
 			return EInfclassWeapon::NINJA_KATANA;
+		case EPlayerClass::Hero:
+			return EInfclassWeapon::TURRET_INSTALL_KIT;
 		default:
 			return EInfclassWeapon::HAMMER;
 		}
