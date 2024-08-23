@@ -7,9 +7,14 @@
 
 #include <base/tl/array.h>
 
+struct WeaponFireContext;
+
 class CSoldierBomb : public CPlacedObject
 {
 public:
+	static int EntityId;
+	static void OnFired(CInfClassCharacter *pCharacter, WeaponFireContext *pFireContext);
+
 	CSoldierBomb(CGameContext *pGameContext, vec2 Pos, int Owner);
 	~CSoldierBomb() override;
 

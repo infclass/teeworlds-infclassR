@@ -4,17 +4,37 @@
 
 #include <engine/shared/config.h>
 
-#include <game/server/entities/character.h>
-#include <game/server/gamecontext.h>
 #include <game/infclass/damage_type.h>
+#include <game/server/gamecontext.h>
+#include <game/server/infclass/entities/infccharacter.h>
 #include <game/server/infclass/infcgamecontroller.h>
 
 #include <cmath>
 
 constexpr float SoldierBombRadius = 60.0f;
 
+int CSoldierBomb::EntityId = CGameWorld::ENTTYPE_SOLDIER_BOMB;
+
+void CSoldierBomb::OnFired(CInfClassCharacter *pCharacter, WeaponFireContext *pFireContext)
+{
+	vec2 Pos = pCharacter->GetPos();
+	vec2 ProjStartPos = Pos + pCharacter->GetDirection() * pCharacter->GetProximityRadius() * 0.75f;
+
+	for(TEntityPtr<CSoldierBomb> pBomb = pCharacter->GameWorld()->FindFirst<CSoldierBomb>(); pBomb; ++pBomb)
+	{
+		if(pBomb->GetOwner() == pCharacter->GetCid())
+		{
+			pBomb->Explode();
+			return;
+		}
+	}
+
+	new CSoldierBomb(pCharacter->GameServer(), ProjStartPos, pCharacter->GetCid());
+	pCharacter->GameServer()->CreateSound(ProjStartPos, SOUND_GRENADE_FIRE);
+}
+
 CSoldierBomb::CSoldierBomb(CGameContext *pGameContext, vec2 Pos, int Owner) :
-	CPlacedObject(pGameContext, CGameWorld::ENTTYPE_SOLDIER_BOMB, Pos, Owner, SoldierBombRadius)
+	CPlacedObject(pGameContext, EntityId, Pos, Owner, SoldierBombRadius)
 {
 	m_InfClassObjectType = INFCLASS_OBJECT_TYPE_SOLDIER_BOMB;
 	GameWorld()->InsertEntity(this);

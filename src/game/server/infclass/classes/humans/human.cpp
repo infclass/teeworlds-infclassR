@@ -794,7 +794,7 @@ void CInfClassHuman::OnHammerFired(WeaponFireContext *pFireContext)
 		PlaceEngineerWall(pFireContext);
 		return;
 	case EPlayerClass::Soldier:
-		FireSoldierBomb(pFireContext);
+		CSoldierBomb::OnFired(m_pCharacter, pFireContext);
 		return;
 	case EPlayerClass::Ninja:
 		ActivateNinja(pFireContext);
@@ -1803,23 +1803,6 @@ void CInfClassHuman::PlaceLooperWall(WeaponFireContext *pFireContext)
 			GameWorld()->DestroyEntity(pExistingWall);
 		}
 	}
-}
-
-void CInfClassHuman::FireSoldierBomb(WeaponFireContext *pFireContext)
-{
-	vec2 ProjStartPos = GetPos() + GetDirection() * GetProximityRadius() * 0.75f;
-
-	for(CSoldierBomb *pBomb = (CSoldierBomb *)GameWorld()->FindFirst(CGameWorld::ENTTYPE_SOLDIER_BOMB); pBomb; pBomb = (CSoldierBomb *)pBomb->TypeNext())
-	{
-		if(pBomb->GetOwner() == GetCid())
-		{
-			pBomb->Explode();
-			return;
-		}
-	}
-
-	new CSoldierBomb(GameServer(), ProjStartPos, GetCid());
-	GameServer()->CreateSound(GetPos(), SOUND_GRENADE_FIRE);
 }
 
 void CInfClassHuman::FireMercenaryBomb(WeaponFireContext *pFireContext)
