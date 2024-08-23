@@ -24,7 +24,6 @@ public:
 	static bool SetupSkin(const CSkinContext &Context, CWeakSkinInfo *pOutput, int DDNetVersion, int InfClassVersion);
 
 	void ResetNormalEmote() override;
-	int GetDefaultEmote() const override;
 	int GetJumps() const override;
 
 	void OnPlayerSnap(int SnappingClient, int InfClassVersion) override;

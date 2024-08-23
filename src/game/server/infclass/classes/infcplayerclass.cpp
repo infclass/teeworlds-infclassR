@@ -170,7 +170,36 @@ void CInfClassPlayerClass::SetNormalEmote(int Emote)
 
 int CInfClassPlayerClass::GetDefaultEmote() const
 {
-	return m_NormalEmote;
+	int EmoteNormal = m_NormalEmote;
+
+	if(!m_pCharacter)
+		return EmoteNormal;
+
+	if(m_pCharacter->IsBlind())
+		EmoteNormal = EMOTE_BLINK;
+
+	if(m_pCharacter->IsInvisible())
+		EmoteNormal = EMOTE_BLINK;
+
+	if(m_pCharacter->IsInLove())
+		EmoteNormal = EMOTE_HAPPY;
+
+	if(m_pCharacter->IsInSlowMotion() || m_pCharacter->HasHallucination())
+		EmoteNormal = EMOTE_SURPRISE;
+
+	if(m_pCharacter->IsFrozen())
+	{
+		if(m_pCharacter->GetFreezeReason() == FREEZEREASON_UNDEAD)
+		{
+			EmoteNormal = EMOTE_PAIN;
+		}
+		else
+		{
+			EmoteNormal = EMOTE_BLINK;
+		}
+	}
+
+	return EmoteNormal;
 }
 
 void CInfClassPlayerClass::GetAmmoRegenParams(int Weapon, WeaponRegenParams *pParams)

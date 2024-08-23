@@ -63,7 +63,7 @@ public:
 
 	virtual void ResetNormalEmote();
 	void SetNormalEmote(int Emote);
-	virtual int GetDefaultEmote() const;
+	int GetDefaultEmote() const;
 	virtual void GetAmmoRegenParams(int Weapon, WeaponRegenParams *pParams);
 	virtual int GetJumps() const;
 

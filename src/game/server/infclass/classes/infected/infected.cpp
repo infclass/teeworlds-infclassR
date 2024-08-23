@@ -171,40 +171,6 @@ void CInfClassInfected::ResetNormalEmote()
 	SetNormalEmote(EMOTE_ANGRY);
 }
 
-int CInfClassInfected::GetDefaultEmote() const
-{
-	int EmoteNormal = m_NormalEmote;
-
-	if(!m_pCharacter)
-		return EmoteNormal;
-
-	if(m_pCharacter->IsBlind())
-		EmoteNormal = EMOTE_BLINK;
-
-	if(m_pCharacter->IsInvisible())
-		EmoteNormal = EMOTE_BLINK;
-
-	if(m_pCharacter->IsInLove())
-		EmoteNormal = EMOTE_HAPPY;
-
-	if(m_pCharacter->IsInSlowMotion() || m_pCharacter->HasHallucination())
-		EmoteNormal = EMOTE_SURPRISE;
-
-	if(m_pCharacter->IsFrozen())
-	{
-		if(m_pCharacter->GetFreezeReason() == FREEZEREASON_UNDEAD)
-		{
-			EmoteNormal = EMOTE_PAIN;
-		}
-		else
-		{
-			EmoteNormal = EMOTE_BLINK;
-		}
-	}
-
-	return EmoteNormal;
-}
-
 int CInfClassInfected::GetJumps() const
 {
 	switch(GetPlayerClass())
