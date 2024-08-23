@@ -61,6 +61,7 @@ public:
 	virtual SkinGetter GetSkinGetter() const = 0;
 	virtual void SetupSkinContext(CSkinContext *pOutput, bool ForSameTeam) const = 0;
 
+	virtual void ResetNormalEmote();
 	void SetNormalEmote(int Emote);
 	virtual int GetDefaultEmote() const;
 	virtual void GetAmmoRegenParams(int Weapon, WeaponRegenParams *pParams);

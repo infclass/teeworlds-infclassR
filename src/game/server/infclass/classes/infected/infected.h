@@ -23,6 +23,7 @@ public:
 	void SetupSkinContext(CSkinContext *pOutput, bool ForSameTeam) const override;
 	static bool SetupSkin(const CSkinContext &Context, CWeakSkinInfo *pOutput, int DDNetVersion, int InfClassVersion);
 
+	void ResetNormalEmote() override;
 	int GetDefaultEmote() const override;
 	int GetJumps() const override;
 

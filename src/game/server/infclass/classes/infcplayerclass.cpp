@@ -158,6 +158,11 @@ bool CInfClassPlayerClass::IsZombie() const
 	return !IsHuman();
 }
 
+void CInfClassPlayerClass::ResetNormalEmote()
+{
+	SetNormalEmote(EMOTE_NORMAL);
+}
+
 void CInfClassPlayerClass::SetNormalEmote(int Emote)
 {
 	m_NormalEmote = Emote;

@@ -166,6 +166,11 @@ bool CInfClassInfected::SetupSkin(const CSkinContext &Context, CWeakSkinInfo *pO
 	return true;
 }
 
+void CInfClassInfected::ResetNormalEmote()
+{
+	SetNormalEmote(EMOTE_ANGRY);
+}
+
 int CInfClassInfected::GetDefaultEmote() const
 {
 	int EmoteNormal = m_NormalEmote;
