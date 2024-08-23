@@ -1289,6 +1289,48 @@ void CInfClassHuman::BroadcastWeaponState() const
 
 		return;
 	}
+	case EInfclassWeapon::TURRET_INSTALL_KIT:
+	{
+		int Turrets = m_TurretCount;
+		if(!GameController()->AreTurretsEnabled())
+		{
+			GameServer()->SendBroadcast_Localization(GetCid(),
+				BROADCAST_PRIORITY_WEAPONSTATE, BROADCAST_DURATION_REALTIME,
+				_("The turrets are not allowed by the game rules (at least right now)."),
+				nullptr);
+		}
+		else if(Turrets > 0)
+		{
+			int MaxTurrets = Config()->m_InfTurretMaxPerPlayer;
+			if(MaxTurrets == 1)
+			{
+				GameServer()->SendBroadcast_Localization(GetCid(),
+					BROADCAST_PRIORITY_WEAPONSTATE, BROADCAST_DURATION_REALTIME,
+					_("You have a turret. Use the hammer to place it."),
+					nullptr
+					);
+			}
+			else
+			{
+				GameServer()->SendBroadcast_Localization_P(GetCid(),
+					BROADCAST_PRIORITY_WEAPONSTATE, BROADCAST_DURATION_REALTIME, Turrets,
+					_("You have {int:NumTurrets} of {int:MaxTurrets} turrets. Use the hammer to place one."),
+					"NumTurrets", &Turrets,
+					"MaxTurrets", &MaxTurrets,
+					nullptr
+					);
+			}
+		}
+		else
+		{
+			GameServer()->SendBroadcast_Localization(GetPlayer()->GetCid(),
+				BROADCAST_PRIORITY_WEAPONSTATE, BROADCAST_DURATION_REALTIME,
+				_("You don't have a turret to place"),
+				nullptr
+				);
+		}
+		return;
+	}
 	default:
 		break;
 	}
@@ -1518,48 +1560,7 @@ void CInfClassHuman::BroadcastWeaponState() const
 		//Search for flag
 		int CoolDown = m_pHeroFlag ? m_pHeroFlag->GetSpawnTick() - CurrentTick : 0;
 
-		if(m_pCharacter->GetActiveWeapon() == WEAPON_HAMMER)
-		{
-			int Turrets = m_TurretCount;
-			if(!GameController()->AreTurretsEnabled())
-			{
-				GameServer()->SendBroadcast_Localization(GetCid(),
-					BROADCAST_PRIORITY_WEAPONSTATE, BROADCAST_DURATION_REALTIME,
-					_("The turrets are not allowed by the game rules (at least right now)."),
-					nullptr);
-			}
-			else if(Turrets > 0)
-			{
-				int MaxTurrets = Config()->m_InfTurretMaxPerPlayer;
-				if(MaxTurrets == 1)
-				{
-					GameServer()->SendBroadcast_Localization(GetCid(),
-						BROADCAST_PRIORITY_WEAPONSTATE, BROADCAST_DURATION_REALTIME,
-						_("You have a turret. Use the hammer to place it."),
-						nullptr
-					);
-				}
-				else
-				{
-					GameServer()->SendBroadcast_Localization_P(GetCid(),
-						BROADCAST_PRIORITY_WEAPONSTATE, BROADCAST_DURATION_REALTIME, Turrets,
-						_("You have {int:NumTurrets} of {int:MaxTurrets} turrets. Use the hammer to place one."),
-						"NumTurrets", &Turrets,
-						"MaxTurrets", &MaxTurrets,
-						nullptr
-					);
-				}
-			}
-			else
-			{
-				GameServer()->SendBroadcast_Localization(GetPlayer()->GetCid(),
-					BROADCAST_PRIORITY_WEAPONSTATE, BROADCAST_DURATION_REALTIME,
-					_("You don't have a turret to place"),
-					nullptr
-				);
-			}
-		}
-		else if(CoolDown > 0 && (ClientVersion < VERSION_INFC_140)) // 140 introduces native timers for Hero
+		if(CoolDown > 0 && (ClientVersion < VERSION_INFC_140)) // 140 introduces native timers for Hero
 		{
 			int Seconds = 1 + CoolDown / Server()->TickSpeed();
 			GameServer()->SendBroadcast_Localization(GetPlayer()->GetCid(),
