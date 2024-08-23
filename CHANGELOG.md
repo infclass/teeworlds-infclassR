@@ -1,5 +1,16 @@
 # Changelog
 
+## InfclassR v1.5.2 - 2024-08-23
+
+Fixes:
+- Increased SnapID timeout to fix occasional objects teleportations on
+  ID reused before the clients actually removed them.
+- Fixed Medic snapping (could receive a Heart icon intended for Biologist)
+
+Maintenance:
+- Adjusted the default server rules
+- Fixed some compiler warnings
+
 ## InfclassR v1.5.1 - 2024-07-13
 
 General:
