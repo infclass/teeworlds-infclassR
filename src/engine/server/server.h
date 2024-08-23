@@ -445,10 +445,6 @@ public:
 	static void ConAddSqlServer(IConsole::IResult *pResult, void *pUserData);
 	static void ConDumpSqlServers(IConsole::IResult *pResult, void *pUserData);
 
-	static void ConSetWeaponFireDelay(class IConsole::IResult *pResult, void *pUserData);
-	static void ConSetWeaponAmmoRegen(class IConsole::IResult *pResult, void *pUserData);
-	static void ConSetWeaponMaxAmmo(class IConsole::IResult *pResult, void *pUserData);
-
 	void LogoutClient(int ClientId, const char *pReason);
 
 	void ConchainRconPasswordChangeGeneric(int Level, const char *pCurrent, IConsole::IResult *pResult);
@@ -510,15 +506,6 @@ public:
 	const char *GetClientLanguage(int ClientId) override;
 	void SetClientLanguage(int ClientId, const char *pLanguage) override;
 
-	int GetFireDelay(EInfclassWeapon WID) override;
-	void SetFireDelay(EInfclassWeapon WID, int Time) override;
-
-	int GetAmmoRegenTime(EInfclassWeapon WID) override;
-	void SetAmmoRegenTime(EInfclassWeapon WID, int Time) override;
-
-	int GetMaxAmmo(EInfclassWeapon WID) override;
-	void SetMaxAmmo(EInfclassWeapon WID, int n) override;
-
 	int GetClientNbRound(int ClientId) override;
 
 	bool IsClientLogged(int ClientId) override;
@@ -570,10 +557,6 @@ public:
 	int m_LastRegistrationRequestId = 0;
 
 	int m_TimeShiftUnit;
-
-	int m_InfAmmoRegenTime[NB_INFWEAPON];
-	int m_InfFireDelay[NB_INFWEAPON];
-	int m_InfMaxAmmo[NB_INFWEAPON];
 
 public:
 	void AddGameServerCmd(CGameServerCmd* pCmd);

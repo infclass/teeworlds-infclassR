@@ -205,8 +205,8 @@ int CInfClassPlayerClass::GetDefaultEmote() const
 void CInfClassPlayerClass::GetAmmoRegenParams(int Weapon, WeaponRegenParams *pParams)
 {
 	EInfclassWeapon InfWID = m_pCharacter->GetInfWeaponId(Weapon);
-	pParams->RegenInterval = Server()->GetAmmoRegenTime(InfWID);
-	pParams->MaxAmmo = Server()->GetMaxAmmo(InfWID);
+	pParams->RegenInterval = GameController()->GetAmmoRegenTime(InfWID);
+	pParams->MaxAmmo = GameController()->GetMaxAmmo(InfWID);
 }
 
 int CInfClassPlayerClass::GetJumps() const

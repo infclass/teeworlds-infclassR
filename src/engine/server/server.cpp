@@ -675,94 +675,6 @@ int CServer::Init()
 /* INFECTION MODIFICATION START ***************************************/
 	m_aPreviousMap[0] = 0;
 	m_aCurrentMap[0] = 0;
-
-	SetFireDelay(EInfclassWeapon::NONE, 0);
-	SetFireDelay(EInfclassWeapon::HAMMER, 125);
-	SetFireDelay(EInfclassWeapon::GUN, 125);
-	SetFireDelay(EInfclassWeapon::SHOTGUN, 500);
-	SetFireDelay(EInfclassWeapon::GRENADE, 500);
-	SetFireDelay(EInfclassWeapon::LASER, 800);
-	SetFireDelay(EInfclassWeapon::NINJA, 800);
-	SetFireDelay(EInfclassWeapon::ENGINEER_LASER, GetFireDelay(EInfclassWeapon::LASER));
-	SetFireDelay(EInfclassWeapon::SOLDIER_GRENADE, GetFireDelay(EInfclassWeapon::GRENADE));
-	SetFireDelay(EInfclassWeapon::EXPLOSIVE_LASER, GetFireDelay(EInfclassWeapon::LASER));
-	SetFireDelay(EInfclassWeapon::TELEPORT_GUN, GetFireDelay(EInfclassWeapon::GRENADE));
-	SetFireDelay(EInfclassWeapon::HEALING_GRENADE, GetFireDelay(EInfclassWeapon::GRENADE));
-	SetFireDelay(EInfclassWeapon::MEDIC_LASER, GetFireDelay(EInfclassWeapon::LASER));
-	SetFireDelay(EInfclassWeapon::MEDIC_SHOTGUN, 250);
-	SetFireDelay(EInfclassWeapon::HERO_SHOTGUN, 250);
-	SetFireDelay(EInfclassWeapon::RICOCHET_SHOTGUN, 250);
-	SetFireDelay(EInfclassWeapon::BIOLOGIST_MINE_LASER, GetFireDelay(EInfclassWeapon::LASER));
-	SetFireDelay(EInfclassWeapon::LOOPER_LASER, 250);
-	SetFireDelay(EInfclassWeapon::LOOPER_GRENADE, GetFireDelay(EInfclassWeapon::GRENADE));
-	SetFireDelay(EInfclassWeapon::HERO_LASER, GetFireDelay(EInfclassWeapon::LASER));
-	SetFireDelay(EInfclassWeapon::HERO_GRENADE, GetFireDelay(EInfclassWeapon::GRENADE));
-	SetFireDelay(EInfclassWeapon::SNIPER_RIFLE, GetFireDelay(EInfclassWeapon::LASER));
-	SetFireDelay(EInfclassWeapon::NINJA_KATANA, GetFireDelay(EInfclassWeapon::NINJA));
-	SetFireDelay(EInfclassWeapon::NINJA_GRENADE, GetFireDelay(EInfclassWeapon::GRENADE));
-	SetFireDelay(EInfclassWeapon::POISON_GRENADE, GetFireDelay(EInfclassWeapon::GRENADE));
-	SetFireDelay(EInfclassWeapon::MERCENARY_GUN, 50);
-	SetFireDelay(EInfclassWeapon::MERCENARY_UPGRADE_LASER, 200);
-	SetFireDelay(EInfclassWeapon::BLINDING_LASER, GetFireDelay(EInfclassWeapon::LASER));
-
-	SetAmmoRegenTime(EInfclassWeapon::NONE, 0);
-	SetAmmoRegenTime(EInfclassWeapon::HAMMER, 0);
-	SetAmmoRegenTime(EInfclassWeapon::GUN, 500);
-	SetAmmoRegenTime(EInfclassWeapon::SHOTGUN, 0);
-	SetAmmoRegenTime(EInfclassWeapon::GRENADE, 0);
-	SetAmmoRegenTime(EInfclassWeapon::LASER, 0);
-	SetAmmoRegenTime(EInfclassWeapon::NINJA, 0);
-
-	SetAmmoRegenTime(EInfclassWeapon::ENGINEER_LASER, 6000);
-	SetAmmoRegenTime(EInfclassWeapon::SOLDIER_GRENADE, 7000);
-	SetAmmoRegenTime(EInfclassWeapon::EXPLOSIVE_LASER, 6000);
-	SetAmmoRegenTime(EInfclassWeapon::TELEPORT_GUN, 10000);
-	SetAmmoRegenTime(EInfclassWeapon::HEALING_GRENADE, 0);
-	SetAmmoRegenTime(EInfclassWeapon::MEDIC_LASER, 6000);
-	SetAmmoRegenTime(EInfclassWeapon::MEDIC_SHOTGUN, 750);
-	SetAmmoRegenTime(EInfclassWeapon::HERO_SHOTGUN, 750);
-	SetAmmoRegenTime(EInfclassWeapon::HERO_LASER, 3000);
-	SetAmmoRegenTime(EInfclassWeapon::HERO_GRENADE, 3000);
-	SetAmmoRegenTime(EInfclassWeapon::SNIPER_RIFLE, 2000);
-	SetAmmoRegenTime(EInfclassWeapon::POISON_GRENADE, 5000);
-	SetAmmoRegenTime(EInfclassWeapon::MERCENARY_GUN, 125);
-	SetAmmoRegenTime(EInfclassWeapon::MERCENARY_UPGRADE_LASER, 4000);
-	SetAmmoRegenTime(EInfclassWeapon::NINJA_KATANA, 0);
-	SetAmmoRegenTime(EInfclassWeapon::NINJA_GRENADE, 15000);
-	SetAmmoRegenTime(EInfclassWeapon::BIOLOGIST_MINE_LASER, 175);
-	SetAmmoRegenTime(EInfclassWeapon::RICOCHET_SHOTGUN, 675);
-	SetAmmoRegenTime(EInfclassWeapon::LOOPER_LASER, 500);
-	SetAmmoRegenTime(EInfclassWeapon::LOOPER_GRENADE, 5000);
-	SetAmmoRegenTime(EInfclassWeapon::BLINDING_LASER, 10000);
-
-	SetMaxAmmo(EInfclassWeapon::NONE, -1);
-	SetMaxAmmo(EInfclassWeapon::HAMMER, -1);
-	SetMaxAmmo(EInfclassWeapon::GUN, 10);
-	SetMaxAmmo(EInfclassWeapon::SHOTGUN, 10);
-	SetMaxAmmo(EInfclassWeapon::GRENADE, 10);
-	SetMaxAmmo(EInfclassWeapon::LASER, 10);
-	SetMaxAmmo(EInfclassWeapon::NINJA, 10);
-	SetMaxAmmo(EInfclassWeapon::ENGINEER_LASER, 10);
-	SetMaxAmmo(EInfclassWeapon::EXPLOSIVE_LASER, 10);
-	SetMaxAmmo(EInfclassWeapon::TELEPORT_GUN, 3);
-	SetMaxAmmo(EInfclassWeapon::SOLDIER_GRENADE, 10);
-	SetMaxAmmo(EInfclassWeapon::HEALING_GRENADE, 10);
-	SetMaxAmmo(EInfclassWeapon::MEDIC_LASER, 1);
-	SetMaxAmmo(EInfclassWeapon::MEDIC_SHOTGUN, 10);
-	SetMaxAmmo(EInfclassWeapon::HERO_SHOTGUN, 10);
-	SetMaxAmmo(EInfclassWeapon::HERO_LASER, 10);
-	SetMaxAmmo(EInfclassWeapon::HERO_GRENADE, 10);
-	SetMaxAmmo(EInfclassWeapon::SNIPER_RIFLE, 10);
-	SetMaxAmmo(EInfclassWeapon::NINJA_KATANA, -1);
-	SetMaxAmmo(EInfclassWeapon::NINJA_GRENADE, 5);
-	SetMaxAmmo(EInfclassWeapon::POISON_GRENADE, 8);
-	SetMaxAmmo(EInfclassWeapon::MERCENARY_GUN, 40);
-	SetMaxAmmo(EInfclassWeapon::MERCENARY_UPGRADE_LASER, 10);
-	SetMaxAmmo(EInfclassWeapon::BIOLOGIST_MINE_LASER, 10);
-	SetMaxAmmo(EInfclassWeapon::RICOCHET_SHOTGUN, 10);
-	SetMaxAmmo(EInfclassWeapon::LOOPER_LASER, 20);
-	SetMaxAmmo(EInfclassWeapon::LOOPER_GRENADE, 10);
-	SetMaxAmmo(EInfclassWeapon::BLINDING_LASER, 10);
 	/* INFECTION MODIFICATION END *****************************************/
 
 	return 0;
@@ -3783,68 +3695,6 @@ void CServer::ConDumpSqlServers(IConsole::IResult *pResult, void *pUserData)
 	}
 }
 
-void CServer::ConSetWeaponFireDelay(IConsole::IResult *pResult, void *pUserData)
-{
-	CServer *pSelf = (CServer *)pUserData;
-	if(pResult->NumArguments() != 2)
-		return;
-
-	int WeaponId = pResult->GetInteger(0);
-	if((WeaponId < 0) || (WeaponId >= NB_INFWEAPON))
-	{
-		return;
-	}
-	int Interval = pResult->GetInteger(1);
-	if(Interval < 0)
-	{
-		return;
-	}
-
-	pSelf->SetFireDelay(static_cast<EInfclassWeapon>(WeaponId), Interval);
-}
-
-void CServer::ConSetWeaponAmmoRegen(IConsole::IResult *pResult, void *pUserData)
-{
-	CServer *pSelf = (CServer *)pUserData;
-	if(pResult->NumArguments() != 2)
-		return;
-
-	int WeaponId = pResult->GetInteger(0);
-	if((WeaponId < 0) || (WeaponId >= NB_INFWEAPON))
-	{
-		return;
-	}
-	int Interval = pResult->GetInteger(1);
-	if(Interval < 0)
-	{
-		return;
-	}
-
-	pSelf->SetAmmoRegenTime(static_cast<EInfclassWeapon>(WeaponId), Interval);
-
-	return;
-}
-
-void CServer::ConSetWeaponMaxAmmo(IConsole::IResult *pResult, void *pUserData)
-{
-	CServer *pSelf = (CServer *)pUserData;
-	if(pResult->NumArguments() != 2)
-		return;
-
-	int WeaponId = pResult->GetInteger(0);
-	if((WeaponId < 0) || (WeaponId >= NB_INFWEAPON))
-	{
-		return;
-	}
-	int Interval = pResult->GetInteger(1);
-	if(Interval < 0)
-	{
-		return;
-	}
-
-	pSelf->SetMaxAmmo(static_cast<EInfclassWeapon>(WeaponId), Interval);
-}
-
 void CServer::LogoutClient(int ClientId, const char *pReason)
 {
 	CMsgPacker Msg(NETMSG_RCON_AUTH_STATUS, true);
@@ -4016,15 +3866,6 @@ void CServer::RegisterCommands()
 	Console()->Register("unmute", "s[ClientId]", CFGFLAG_SERVER, ConUnmute, this, "Unmute player with specified id");
 	Console()->Register("whisper", "s[id] r[txt]", CFGFLAG_SERVER, ConWhisper, this, "Analogous to 'Say' but sent to a single client only");
 
-/* INFECTION MODIFICATION START ***************************************/
-	Console()->Register("inf_set_weapon_fire_delay", "i[weapon] i[msec]", CFGFLAG_SERVER, ConSetWeaponFireDelay, this,
-		"Set InfClass weapon fire delay");
-	Console()->Register("inf_set_weapon_ammo_regen", "i[weapon] i[msec]", CFGFLAG_SERVER, ConSetWeaponAmmoRegen, this,
-		"Set InfClass weapon ammo regen interval");
-	Console()->Register("inf_set_weapon_max_ammo", "i[weapon] i[ammo]", CFGFLAG_SERVER, ConSetWeaponMaxAmmo, this,
-		"Set InfClass weapon max ammo");
-	/* INFECTION MODIFICATION END *************CServer::~CServer()****************************/
-
 	// register console commands in sub parts
 	m_ServerBan.InitServerBan(Console(), Storage(), this);
 	m_NetSession.Init();
@@ -4142,36 +3983,6 @@ void CServer::SetClientLanguage(int ClientId, const char* pLanguage)
 
 	dbg_msg("lang", "set_language ClientId=%d lang=%s addr=%s", ClientId, pLanguage, aAddrStr);
 	str_copy(m_aClients[ClientId].m_aLanguage, pLanguage, sizeof(m_aClients[ClientId].m_aLanguage));
-}
-
-int CServer::GetFireDelay(EInfclassWeapon WID)
-{
-	return m_InfFireDelay[static_cast<int>(WID)];
-}
-
-void CServer::SetFireDelay(EInfclassWeapon WID, int Time)
-{
-	m_InfFireDelay[static_cast<int>(WID)] = Time;
-}
-
-int CServer::GetAmmoRegenTime(EInfclassWeapon WID)
-{
-	return m_InfAmmoRegenTime[static_cast<int>(WID)];
-}
-
-void CServer::SetAmmoRegenTime(EInfclassWeapon WID, int Time)
-{
-	m_InfAmmoRegenTime[static_cast<int>(WID)] = Time;
-}
-
-int CServer::GetMaxAmmo(EInfclassWeapon WID)
-{
-	return m_InfMaxAmmo[static_cast<int>(WID)];
-}
-
-void CServer::SetMaxAmmo(EInfclassWeapon WID, int n)
-{
-	m_InfMaxAmmo[static_cast<int>(WID)] = n;
 }
 
 int CServer::GetClientNbRound(int ClientId)

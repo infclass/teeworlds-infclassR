@@ -143,8 +143,8 @@ bool CInfClassHuman::SetupSkin(const CSkinContext &Context, CWeakSkinInfo *pOutp
 void CInfClassHuman::GetAmmoRegenParams(int Weapon, WeaponRegenParams *pParams)
 {
 	EInfclassWeapon InfWID = m_pCharacter->GetInfWeaponId(Weapon);
-	pParams->MaxAmmo = Server()->GetMaxAmmo(InfWID);
-	pParams->RegenInterval = Server()->GetAmmoRegenTime(InfWID);
+	pParams->MaxAmmo = GameController()->GetMaxAmmo(InfWID);
+	pParams->RegenInterval = GameController()->GetAmmoRegenTime(InfWID);
 
 	const float RegenIntervalModifier = m_WeaponRegenIntervalModifier[Weapon];
 	pParams->RegenInterval *= RegenIntervalModifier;

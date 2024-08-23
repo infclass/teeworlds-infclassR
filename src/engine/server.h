@@ -27,53 +27,6 @@ enum
 };
 
 /* INFECTION MODIFICATION START ***************************************/
-enum class EInfclassWeapon
-{
-	NONE,
-	HAMMER,
-	GUN,
-	SHOTGUN,
-	GRENADE,
-	LASER,
-	NINJA,
-
-	ENGINEER_LASER,
-
-	SNIPER_RIFLE,
-
-	SOLDIER_GRENADE,
-
-	TELEPORT_GUN,
-	EXPLOSIVE_LASER,
-
-	HEALING_GRENADE,
-	MEDIC_LASER,
-	MEDIC_SHOTGUN,
-
-	HERO_GRENADE,
-	HERO_LASER,
-	HERO_SHOTGUN,
-
-	RICOCHET_SHOTGUN,
-	BIOLOGIST_MINE_LASER,
-
-	LOOPER_LASER,
-	LOOPER_GRENADE,
-
-	NINJA_KATANA,
-	NINJA_GRENADE,
-
-	MERCENARY_GUN,
-	POISON_GRENADE,
-	MERCENARY_UPGRADE_LASER,
-
-	BLINDING_LASER,
-
-	Count,
-	Invalid = Count,
-};
-
-constexpr int NB_INFWEAPON = static_cast<int>(EInfclassWeapon::Count);
 
 enum
 {
@@ -395,15 +348,6 @@ public:
 	
 	virtual const char* GetClientLanguage(int ClientId) = 0;
 	virtual void SetClientLanguage(int ClientId, const char* pLanguage) = 0;
-
-	virtual int GetFireDelay(EInfclassWeapon WID) = 0;
-	virtual void SetFireDelay(EInfclassWeapon WID, int Time) = 0;
-
-	virtual int GetAmmoRegenTime(EInfclassWeapon WID) = 0;
-	virtual void SetAmmoRegenTime(EInfclassWeapon WID, int Time) = 0;
-
-	virtual int GetMaxAmmo(EInfclassWeapon WID) = 0;
-	virtual void SetMaxAmmo(EInfclassWeapon WID, int n) = 0;
 
 	virtual bool IsClientLogged(int ClientId) = 0;
 #ifdef CONF_SQL

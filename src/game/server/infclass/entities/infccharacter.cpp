@@ -530,7 +530,7 @@ void CInfClassCharacter::FireWeapon()
 	FireContext.AmmoConsumed = 1;
 	FireContext.AmmoAvailable = m_aWeapons[m_ActiveWeapon].m_Ammo;
 	FireContext.NoAmmo = FireContext.AmmoAvailable == 0;
-	FireContext.ReloadInterval = Server()->GetFireDelay(InfWeaponId) / 1000.0f;
+	FireContext.ReloadInterval = GameController()->GetFireDelay(InfWeaponId) / 1000.0f;
 
 	GetClass()->OnWeaponFired(&FireContext);
 
@@ -2471,7 +2471,7 @@ void CInfClassCharacter::SnapCharacter(int SnappingClient, int Id)
 	/* INFECTION MODIFICATION START ***************************************/
 	if(GetInfWeaponId(m_ActiveWeapon) == EInfclassWeapon::MERCENARY_GUN)
 	{
-		pCharacter->m_AmmoCount /= (Server()->GetMaxAmmo(EInfclassWeapon::MERCENARY_GUN) / 10);
+		pCharacter->m_AmmoCount /= (GameController()->GetMaxAmmo(EInfclassWeapon::MERCENARY_GUN) / 10);
 	}
 	/* INFECTION MODIFICATION END *****************************************/
 

@@ -4,6 +4,7 @@
 #define GAME_SERVER_INFCLASS_GAMECONTROLLER_H
 
 #include <game/infclass/classes.h>
+#include <game/infclass/weapons.h>
 #include <game/server/gamecontroller.h>
 #include <game/server/teams.h>
 
@@ -118,6 +119,17 @@ public:
 	EPlayerClass ChooseHumanClass(const CInfClassPlayer *pPlayer) const;
 	EPlayerClass ChooseInfectedClass(const CInfClassPlayer *pPlayer) const;
 
+	int GetFireDelay(EInfclassWeapon WID) const;
+	void SetFireDelay(EInfclassWeapon WID, int Time);
+
+	int GetAmmoRegenTime(EInfclassWeapon WID) const;
+	void SetAmmoRegenTime(EInfclassWeapon WID, int Time);
+
+	int GetMaxAmmo(EInfclassWeapon WID) const;
+	void SetMaxAmmo(EInfclassWeapon WID, int n);
+
+	void InitWeapons();
+
 	bool GetPlayerClassEnabled(EPlayerClass PlayerClass) const;
 	bool SetPlayerClassEnabled(EPlayerClass PlayerClass, bool Enabled);
 	bool SetPlayerClassProbability(EPlayerClass PlayerClass, int Probability);
@@ -214,6 +226,10 @@ public:
 	void SetPlayerInfected(int ClientId, bool Infected);
 
 	void RegisterChatCommands(class IConsole *pConsole) override;
+
+	static void ConSetWeaponFireDelay(class IConsole::IResult *pResult, void *pUserData);
+	static void ConSetWeaponAmmoRegen(class IConsole::IResult *pResult, void *pUserData);
+	static void ConSetWeaponMaxAmmo(class IConsole::IResult *pResult, void *pUserData);
 
 	static void ConSetClientName(IConsole::IResult *pResult, void *pUserData);
 	static void ConRestoreClientName(IConsole::IResult *pResult, void *pUserData);
@@ -387,6 +403,9 @@ private:
 	bool m_SuggestMoreRounds = false;
 	bool m_MoreRoundsSuggested = false;
 
+	int m_InfAmmoRegenTime[NB_INFWEAPON]{};
+	int m_InfFireDelay[NB_INFWEAPON]{};
+	int m_InfMaxAmmo[NB_INFWEAPON]{};
 	static int64_t m_LastTipTime;
 };
 
