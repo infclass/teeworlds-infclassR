@@ -225,7 +225,7 @@ enum class EZoneTele
 {
 	Null,
 	NoWitch,
-	NoScientist,
+	NoTeleport,
 };
 
 struct CPoint

@@ -99,13 +99,10 @@ protected:
 
 	void OnMercGrenadeFired(WeaponFireContext *pFireContext);
 	void OnMedicGrenadeFired(WeaponFireContext *pFireContext);
-	void OnPortalGunFired(WeaponFireContext *pFireContext);
 
 	void OnMercLaserFired(WeaponFireContext *pFireContext);
 
 	bool PositionLockAvailable() const;
-
-	std::optional<vec2> FindPortalPosition();
 
 private:
 	icArray<int, 2> m_BarrierHintIds;

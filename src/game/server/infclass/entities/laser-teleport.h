@@ -3,10 +3,16 @@
 
 #include "infcentity.h"
 
+struct WeaponFireContext;
+
 class CLaserTeleport : public CInfCEntity
 {
-
 public:
+	static int EntityId;
+
+	static void OnFired(CInfClassCharacter *pCharacter, WeaponFireContext *pFireContext, int SelfDamage);
+	static std::optional<vec2> FindPortalPosition(CInfClassCharacter *pCharacter);
+
 	CLaserTeleport(CGameContext *pGameContext, vec2 StartPos, vec2 EndPos);
 
 	virtual void Tick();
