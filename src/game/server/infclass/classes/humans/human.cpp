@@ -688,7 +688,7 @@ void CInfClassHuman::HandleNinja()
 {
 	if(GetPlayerClass() != EPlayerClass::Ninja)
 		return;
-	if(m_pCharacter->GetInfWeaponId(m_pCharacter->GetActiveWeapon()) != EInfclassWeapon::NINJA_HAMMER)
+	if(m_pCharacter->GetInfWeaponId(m_pCharacter->GetActiveWeapon()) != EInfclassWeapon::NINJA_KATANA)
 		return;
 
 	m_pCharacter->m_DartLifeSpan--;

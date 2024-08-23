@@ -502,8 +502,8 @@ void CInfClassCharacter::FireWeapon()
 	bool WillFire = false;
 	if(CountInput(m_LatestPrevInput.m_Fire, m_LatestInput.m_Fire).m_Presses)
 		WillFire = true;
-	else if(FullAuto && (m_LatestInput.m_Fire&1) && (m_aWeapons[m_ActiveWeapon].m_Ammo || (GetInfWeaponId(m_ActiveWeapon) == EInfclassWeapon::MERCENARY_GRENADE)
-																					   || (GetInfWeaponId(m_ActiveWeapon) == EInfclassWeapon::MEDIC_GRENADE)))
+	else if(FullAuto && (m_LatestInput.m_Fire&1) && (m_aWeapons[m_ActiveWeapon].m_Ammo || (GetInfWeaponId(m_ActiveWeapon) == EInfclassWeapon::POISON_GRENADE)
+																					   || (GetInfWeaponId(m_ActiveWeapon) == EInfclassWeapon::HEALING_GRENADE)))
 	{
 		WillFire = true;
 	}
@@ -1533,7 +1533,7 @@ EInfclassWeapon CInfClassCharacter::GetInfWeaponId(int WID) const
 		switch(GetPlayerClass())
 		{
 		case EPlayerClass::Ninja:
-			return EInfclassWeapon::NINJA_HAMMER;
+			return EInfclassWeapon::NINJA_KATANA;
 		default:
 			return EInfclassWeapon::HAMMER;
 		}
@@ -1558,7 +1558,7 @@ EInfclassWeapon CInfClassCharacter::GetInfWeaponId(int WID) const
 		case EPlayerClass::Hero:
 			return EInfclassWeapon::HERO_SHOTGUN;
 		case EPlayerClass::Biologist:
-			return EInfclassWeapon::BIOLOGIST_SHOTGUN;
+			return EInfclassWeapon::RICOCHET_SHOTGUN;
 		default:
 			return EInfclassWeapon::SHOTGUN;
 		}
@@ -1568,15 +1568,15 @@ EInfclassWeapon CInfClassCharacter::GetInfWeaponId(int WID) const
 		switch(GetPlayerClass())
 		{
 		case EPlayerClass::Mercenary:
-			return EInfclassWeapon::MERCENARY_GRENADE;
+			return EInfclassWeapon::POISON_GRENADE;
 		case EPlayerClass::Medic:
-			return EInfclassWeapon::MEDIC_GRENADE;
+			return EInfclassWeapon::HEALING_GRENADE;
 		case EPlayerClass::Soldier:
 			return EInfclassWeapon::SOLDIER_GRENADE;
 		case EPlayerClass::Ninja:
 			return EInfclassWeapon::NINJA_GRENADE;
 		case EPlayerClass::Scientist:
-			return EInfclassWeapon::SCIENTIST_GRENADE;
+			return EInfclassWeapon::TELEPORT_GUN;
 		case EPlayerClass::Hero:
 			return EInfclassWeapon::HERO_GRENADE;
 		case EPlayerClass::Looper:
@@ -1596,17 +1596,17 @@ EInfclassWeapon CInfClassCharacter::GetInfWeaponId(int WID) const
 		case EPlayerClass::Looper:
 			return EInfclassWeapon::LOOPER_LASER;
 		case EPlayerClass::Scientist:
-			return EInfclassWeapon::SCIENTIST_LASER;
+			return EInfclassWeapon::EXPLOSIVE_LASER;
 		case EPlayerClass::Sniper:
-			return EInfclassWeapon::SNIPER_LASER;
+			return EInfclassWeapon::SNIPER_RIFLE;
 		case EPlayerClass::Hero:
 			return EInfclassWeapon::HERO_LASER;
 		case EPlayerClass::Biologist:
-			return EInfclassWeapon::BIOLOGIST_LASER;
+			return EInfclassWeapon::BIOLOGIST_MINE_LASER;
 		case EPlayerClass::Medic:
 			return EInfclassWeapon::MEDIC_LASER;
 		case EPlayerClass::Mercenary:
-			return EInfclassWeapon::MERCENARY_LASER;
+			return EInfclassWeapon::MERCENARY_UPGRADE_LASER;
 		default:
 			return EInfclassWeapon::LASER;
 		}
@@ -2410,7 +2410,7 @@ void CInfClassCharacter::SnapCharacter(int SnappingClient, int Id)
 	pCharacter->m_Armor = 0;
 
 	/* INFECTION MODIFICATION START ***************************************/
-	if(GetInfWeaponId(m_ActiveWeapon) == EInfclassWeapon::NINJA_HAMMER)
+	if(GetInfWeaponId(m_ActiveWeapon) == EInfclassWeapon::NINJA_KATANA)
 	{
 		Weapon = WEAPON_NINJA;
 	}
