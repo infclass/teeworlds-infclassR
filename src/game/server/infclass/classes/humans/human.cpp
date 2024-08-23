@@ -1682,12 +1682,12 @@ void CInfClassHuman::SnapScientist(int SnappingClient)
 
 	if(m_pCharacter->GetActiveWeapon() == WEAPON_GRENADE)
 	{
-		vec2 PortalPos;
+		const std::optional<vec2> PortalPos = FindPortalPosition();
 
-		if(FindPortalPosition(&PortalPos))
+		if(PortalPos.has_value())
 		{
 			const int CursorId = GameController()->GetPlayerOwnCursorId(GetCid());
-			GameController()->SendHammerDot(PortalPos, CursorId);
+			GameController()->SendHammerDot(PortalPos.value(), CursorId);
 		}
 	}
 }
@@ -1987,15 +1987,15 @@ void CInfClassHuman::OnMedicGrenadeFired(WeaponFireContext *pFireContext)
 
 void CInfClassHuman::OnPortalGunFired(WeaponFireContext *pFireContext)
 {
-	vec2 PortalPos;
-	if(!FindPortalPosition(&PortalPos))
+	const std::optional<vec2> PortalPos = FindPortalPosition();
+	if(!PortalPos.has_value())
 	{
 		pFireContext->FireAccepted = false;
 		return;
 	}
 
 	vec2 OldPos = GetPos();
-	m_pCharacter->SetPosition(PortalPos);
+	m_pCharacter->SetPosition(PortalPos.value());
 	m_pCharacter->ResetHook();
 
 	float SelfDamage = Config()->m_InfScientistTpSelfharm;
@@ -2004,9 +2004,9 @@ void CInfClassHuman::OnPortalGunFired(WeaponFireContext *pFireContext)
 		m_pCharacter->TakeDamage(vec2(0.0f, 0.0f), SelfDamage * 2, GetCid(), EDamageType::SCIENTIST_TELEPORT);
 	}
 	GameServer()->CreateDeath(OldPos, GetCid());
-	GameServer()->CreateDeath(PortalPos, GetCid());
-	GameServer()->CreateSound(PortalPos, SOUND_CTF_RETURN);
-	new CLaserTeleport(GameServer(), PortalPos, OldPos);
+	GameServer()->CreateDeath(PortalPos.value(), GetCid());
+	GameServer()->CreateSound(PortalPos.value(), SOUND_CTF_RETURN);
+	new CLaserTeleport(GameServer(), PortalPos.value(), OldPos);
 }
 
 void CInfClassHuman::OnBlindingLaserFired(WeaponFireContext *pFireContext)
@@ -2090,7 +2090,7 @@ bool CInfClassHuman::PositionLockAvailable() const
 	return true;
 }
 
-bool CInfClassHuman::FindPortalPosition(vec2 *pPosition)
+std::optional<vec2> CInfClassHuman::FindPortalPosition()
 {
 	vec2 PortalShift = vec2(m_pCharacter->m_Input.m_TargetX, m_pCharacter->m_Input.m_TargetY);
 	vec2 PortalDir = normalize(PortalShift);
@@ -2105,14 +2105,13 @@ bool CInfClassHuman::FindPortalPosition(vec2 *pPosition)
 
 		if(GameController()->IsSpawnable(PortalPos, EZoneTele::NoScientist))
 		{
-			*pPosition = PortalPos;
-			return true;
+			return PortalPos;
 		}
 
 		Iterator -= 4.0f;
 	}
 
-	return false;
+	return {};
 }
 
 void CInfClassHuman::OnSlimeEffect(int Owner, int Damage, float DamageInterval)

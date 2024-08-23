@@ -108,7 +108,7 @@ protected:
 
 	bool PositionLockAvailable() const;
 
-	bool FindPortalPosition(vec2 *pPosition);
+	std::optional<vec2> FindPortalPosition();
 
 private:
 	icArray<int, 2> m_BarrierHintIds;
