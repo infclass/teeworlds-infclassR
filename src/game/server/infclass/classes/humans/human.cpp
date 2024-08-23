@@ -1210,6 +1210,88 @@ void CInfClassHuman::BroadcastWeaponState() const
 {
 	const int CurrentTick = Server()->Tick();
 	int ClientVersion = Server()->GetClientInfclassVersion(GetCid());
+	const EInfclassWeapon Weapon = m_pCharacter->GetInfWeaponId();
+
+	switch(Weapon)
+	{
+	case EInfclassWeapon::MEDIC_LASER:
+	{
+		int MinimumHP = Config()->m_InfRevivalDamage + 1;
+		int MinimumInfected = GameController()->MinimumInfectedForRevival();
+
+		if(m_pCharacter->GetHealthArmorSum() < MinimumHP)
+		{
+			GameServer()->SendBroadcast_Localization(GetPlayer()->GetCid(),
+				BROADCAST_PRIORITY_WEAPONSTATE, BROADCAST_DURATION_REALTIME,
+				_("You need at least {int:MinHp} HP to revive a zombie"),
+				"MinHp", &MinimumHP,
+				NULL);
+		}
+		else if(GameController()->GetInfectedCount() < MinimumInfected)
+		{
+			GameServer()->SendBroadcast_Localization(GetPlayer()->GetCid(),
+				BROADCAST_PRIORITY_WEAPONSTATE, BROADCAST_DURATION_REALTIME,
+				_("Too few zombies to revive anyone (less than {int:MinZombies})"),
+				"MinZombies", &MinimumInfected,
+				NULL);
+		}
+		return;
+	}
+	case EInfclassWeapon::MERCENARY_UPGRADE_LASER:
+	{
+		CMercenaryBomb *pCurrentBomb = nullptr;
+		for(TEntityPtr<CMercenaryBomb> pBomb = GameWorld()->FindFirst<CMercenaryBomb>(); pBomb; ++pBomb)
+		{
+			if(pBomb->GetOwner() == m_pPlayer->GetCid())
+			{
+				pCurrentBomb = pBomb;
+				break;
+			}
+		}
+
+		if(pCurrentBomb)
+		{
+			float BombLevel = pCurrentBomb->GetLoad() / static_cast<float>(Config()->m_InfMercBombs);
+
+			if(BombLevel < 1.0)
+			{
+				dynamic_string Line1;
+				Server()->Localization()->Format_L(Line1, GetPlayer()->GetLanguage(),
+					_C("Mercenary", "Use the laser to upgrade the bomb"), NULL);
+
+				dynamic_string Line2;
+				Server()->Localization()->Format_L(Line2, GetPlayer()->GetLanguage(),
+					_C("Mercenary", "Explosive yield: {percent:BombLevel}"), "BombLevel", &BombLevel, NULL);
+
+				Line1.append("\n");
+				Line1.append(Line2);
+
+				GameServer()->AddBroadcast(GetPlayer()->GetCid(), Line1.buffer(),
+					BROADCAST_PRIORITY_WEAPONSTATE, BROADCAST_DURATION_REALTIME);
+			}
+			else
+			{
+				GameServer()->SendBroadcast_Localization(GetPlayer()->GetCid(),
+					BROADCAST_PRIORITY_WEAPONSTATE, BROADCAST_DURATION_REALTIME,
+					_C("Mercenary", "The bomb is fully upgraded.\n"
+									"There is nothing to do with the laser."),
+					NULL);
+			}
+		}
+		else
+		{
+			GameServer()->SendBroadcast_Localization(GetPlayer()->GetCid(),
+				BROADCAST_PRIORITY_WEAPONSTATE, BROADCAST_DURATION_REALTIME,
+				_C("Mercenary", "Use the hammer to place a bomb and\n"
+								"then use the laser to upgrade it"),
+				NULL);
+		}
+
+		return;
+	}
+	default:
+		break;
+	}
 
 	if(GetPlayerClass() == EPlayerClass::Engineer)
 	{
@@ -1236,33 +1318,6 @@ void CInfClassHuman::BroadcastWeaponState() const
 				"RemainingTime", &Seconds,
 				NULL
 			);
-		}
-	}
-	else if(GetPlayerClass() == EPlayerClass::Medic)
-	{
-		if(m_pCharacter->GetActiveWeapon() == WEAPON_LASER)
-		{
-			int MinimumHP = Config()->m_InfRevivalDamage + 1;
-			int MinimumInfected = GameController()->MinimumInfectedForRevival();
-
-			if(m_pCharacter->GetHealthArmorSum() < MinimumHP)
-			{
-				GameServer()->SendBroadcast_Localization(GetPlayer()->GetCid(),
-					BROADCAST_PRIORITY_WEAPONSTATE, BROADCAST_DURATION_REALTIME,
-					_("You need at least {int:MinHp} HP to revive a zombie"),
-					"MinHp", &MinimumHP,
-					NULL
-				);
-			}
-			else if(GameController()->GetInfectedCount() < MinimumInfected)
-			{
-				GameServer()->SendBroadcast_Localization(GetPlayer()->GetCid(),
-					BROADCAST_PRIORITY_WEAPONSTATE, BROADCAST_DURATION_REALTIME,
-					_("Too few zombies to revive anyone (less than {int:MinZombies})"),
-					"MinZombies", &MinimumInfected,
-					NULL
-				);
-			}
 		}
 	}
 	else if(GetPlayerClass() == EPlayerClass::Looper)
@@ -1451,55 +1506,11 @@ void CInfClassHuman::BroadcastWeaponState() const
 		if(pCurrentBomb)
 		{
 			float BombLevel = pCurrentBomb->GetLoad() / static_cast<float>(Config()->m_InfMercBombs);
-
-			if(m_pCharacter->GetActiveWeapon() == WEAPON_LASER)
-			{
-				if(BombLevel < 1.0)
-				{
-					dynamic_string Line1;
-					Server()->Localization()->Format_L(Line1, GetPlayer()->GetLanguage(),
-						_C("Mercenary", "Use the laser to upgrade the bomb"), NULL);
-
-					dynamic_string Line2;
-					Server()->Localization()->Format_L(Line2, GetPlayer()->GetLanguage(),
-						_C("Mercenary", "Explosive yield: {percent:BombLevel}"), "BombLevel", &BombLevel, NULL);
-
-					Line1.append("\n");
-					Line1.append(Line2);
-
-					GameServer()->AddBroadcast(GetPlayer()->GetCid(), Line1.buffer(),
-						BROADCAST_PRIORITY_WEAPONSTATE, BROADCAST_DURATION_REALTIME);
-				}
-				else
-				{
-					GameServer()->SendBroadcast_Localization(GetPlayer()->GetCid(),
-						BROADCAST_PRIORITY_WEAPONSTATE, BROADCAST_DURATION_REALTIME,
-						_C("Mercenary", "The bomb is fully upgraded.\n"
-						  "There is nothing to do with the laser."), NULL
-					);
-				}
-			}
-			else
-			{
-				GameServer()->SendBroadcast_Localization(GetPlayer()->GetCid(),
-					BROADCAST_PRIORITY_WEAPONSTATE, BROADCAST_DURATION_REALTIME,
-					_C("Mercenary", "Explosive yield: {percent:BombLevel}"),
-					"BombLevel", &BombLevel,
-					NULL
-				);
-			}
-		}
-		else
-		{
-			if(m_pCharacter->GetActiveWeapon() == WEAPON_LASER)
-			{
-				GameServer()->SendBroadcast_Localization(GetPlayer()->GetCid(),
-					BROADCAST_PRIORITY_WEAPONSTATE, BROADCAST_DURATION_REALTIME,
-					_C("Mercenary", "Use the hammer to place a bomb and\n"
-					  "then use the laser to upgrade it"),
-					NULL
-				);
-			}
+			GameServer()->SendBroadcast_Localization(GetPlayer()->GetCid(),
+				BROADCAST_PRIORITY_WEAPONSTATE, BROADCAST_DURATION_REALTIME,
+				_C("Mercenary", "Explosive yield: {percent:BombLevel}"),
+				"BombLevel", &BombLevel,
+				NULL);
 		}
 	}
 	else if(GetPlayerClass() == EPlayerClass::Hero)
