@@ -46,8 +46,8 @@ public:
 	virtual void Snap(int SnappingClient);
 	virtual void SnapClientInfo(int SnappingClient, int SnappingClientMappedId);
 
-	void OnDirectInput(CNetObj_PlayerInput *NewInput);
-	void OnPredictedInput(CNetObj_PlayerInput *NewInput);
+	void OnDirectInput(CNetObj_PlayerInput *pNewInput);
+	void OnPredictedInput(CNetObj_PlayerInput *pNewInput);
 	void OnPredictedEarlyInput(CNetObj_PlayerInput *pNewInput);
 	void OnDisconnect();
 
@@ -138,8 +138,6 @@ protected:
 	int m_OverrideEmote;
 	int m_OverrideEmoteReset;
 
-	int64_t m_LastEyeEmote;
-
 public:
 	enum
 	{
@@ -165,8 +163,12 @@ public:
 	vec2 m_ShowDistance;
 	bool m_SpecTeam;
 
+	void UpdatePlaytime();
 	void SetAfk(bool Afk);
 	bool IsAfk() const { return m_Afk; }
+
+	int64_t m_LastPlaytime;
+	int64_t m_LastEyeEmote;
 
 	virtual int GetDefaultEmote() const;
 	void OverrideDefaultEmote(int Emote, int Tick);

@@ -2910,8 +2910,8 @@ int CServer::Run()
 		return -1;
 	}
 
-	IEngine *pEngine = Kernel()->RequestInterface<IEngine>();
-	m_pRegister = CreateRegister(&g_Config, m_pConsole, pEngine, &m_Http, this->Port(), m_NetServer.GetGlobalToken());
+	m_pEngine = Kernel()->RequestInterface<IEngine>();
+	m_pRegister = CreateRegister(&g_Config, m_pConsole, m_pEngine, &m_Http, this->Port(), m_NetServer.GetGlobalToken());
 
 	m_NetServer.SetCallbacks(NewClientCallback, NewClientNoAuthCallback, ClientRejoinCallback, DelClientCallback, this);
 
@@ -2942,7 +2942,6 @@ int CServer::Run()
 		bool NonActive = false;
 		bool PacketWaiting = false;
 
-		m_Lastheartbeat = 0;
 		m_GameStartTime = time_get();
 
 		UpdateServerInfo();
@@ -3029,7 +3028,7 @@ int CServer::Run()
 				}
 			}
 
-			while(t > TickStartTime(m_CurrentGameTick+1))
+			while(t > TickStartTime(m_CurrentGameTick + 1))
 			{
 				for(int c = 0; c < MAX_CLIENTS; c++)
 				{
@@ -3132,27 +3131,27 @@ int CServer::Run()
 					DoSnapshot();
 
 				UpdateClientRconCommands();
-			}
 
-			// master server stuff
-			m_pRegister->Update();
+				// master server stuff
+				m_pRegister->Update();
 
-			if(m_ServerInfoNeedsUpdate)
-				UpdateServerInfo();
+				if(m_ServerInfoNeedsUpdate)
+					UpdateServerInfo();
 
-			if(!NonActive)
-				PumpNetwork(PacketWaiting);
-
-			for(int i = 0; i < MAX_CLIENTS; ++i)
-			{
-				if(m_aClients[i].m_State == CClient::STATE_REDIRECTED)
+				for(int i = 0; i < MAX_CLIENTS; ++i)
 				{
-					if(time_get() > m_aClients[i].m_RedirectDropTime)
+					if(m_aClients[i].m_State == CClient::STATE_REDIRECTED)
 					{
-						m_NetServer.Drop(i, EClientDropType::Redirected, "redirected");
+						if(time_get() > m_aClients[i].m_RedirectDropTime)
+						{
+							m_NetServer.Drop(i, EClientDropType::Redirected, "redirected");
+						}
 					}
 				}
 			}
+
+			if(!NonActive)
+				PumpNetwork(PacketWaiting);
 
 			NonActive = true;
 			for(const auto &Client : m_aClients)
@@ -3224,9 +3223,11 @@ int CServer::Run()
 
 	m_pRegister->OnShutdown();
 	m_Econ.Shutdown();
+	Engine()->ShutdownJobs();
 
 	GameServer()->OnShutdown();
 	m_pMap->Unload();
+	DbPool()->OnShutdown();
 
 /* DDNET MODIFICATION START *******************************************/
 #ifdef CONF_SQL

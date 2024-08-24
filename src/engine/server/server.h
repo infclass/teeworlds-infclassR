@@ -101,6 +101,7 @@ class CServer : public IServer
 	class IConsole *m_pConsole;
 	class IStorage *m_pStorage;
 	class IRegister *m_pRegister;
+	IEngine *m_pEngine;
 
 #if defined(CONF_UPNP)
 	CUPnP m_UPnP;
@@ -121,6 +122,7 @@ public:
 	class IConsole *Console() { return m_pConsole; }
 	class IStorage *Storage() { return m_pStorage; }
 	class CDbConnectionPool *DbPool() { return m_pConnectionPool; }
+	IEngine *Engine() { return m_pEngine; }
 
 	enum
 	{
@@ -256,7 +258,6 @@ public:
 	int m_RconAuthLevel;
 	char m_aShutdownReason[128];
 
-	int64_t m_Lastheartbeat;
 	//static NETADDR4 master_server;
 
 	enum
