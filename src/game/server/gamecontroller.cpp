@@ -216,6 +216,8 @@ void IGameController::DoActivityCheck()
 			continue;
 		if(Server()->GetAuthedState(i) != IServer::AUTHED_NO)
 			continue;
+		if(pPlayer->IsBot())
+			continue;
 
 		float PlayerMaxInactiveTimeSecs = pPlayer->IsHuman() ? HumanMaxInactiveTimeSecs : InfectedMaxInactiveTimeSecs;
 		if(PlayerMaxInactiveTimeSecs < 20)
