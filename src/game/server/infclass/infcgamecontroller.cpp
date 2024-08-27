@@ -5017,18 +5017,21 @@ bool CInfClassGameController::TryRespawn(CInfClassPlayer *pPlayer, SpawnContext 
 	}
 
 	// get spawn point
-	int RandomShift = random_int(0, m_SpawnPoints[Type].size()-1);
-	for(int i = 0; i < m_SpawnPoints[Type].size(); i++)
+	const array<vec2> &aSpawnPoints = m_SpawnPoints[Type];
+	const int Count = aSpawnPoints.size();
+	const int RandomShift = random_int(0, Count - 1);
+	for(int i = 0; i < Count; i++)
 	{
-		int I = (i + RandomShift)%m_SpawnPoints[Type].size();
-		if(IsSpawnable(m_SpawnPoints[Type][I], EZoneTele::Null))
-		{
-			pContext->SpawnPos = m_SpawnPoints[Type][I];
-			pContext->SpawnType = SpawnContext::MapSpawn;
-			return true;
-		}
+		int PosIndex = (i + RandomShift) % Count;
+		const vec2 &Pos = aSpawnPoints[PosIndex];
+		if(!IsSpawnable(Pos, EZoneTele::Null))
+			continue;
+
+		pContext->SpawnPos = Pos;
+		pContext->SpawnType = SpawnContext::MapSpawn;
+		return true;
 	}
-	
+
 	return false;
 }
 
