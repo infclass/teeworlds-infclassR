@@ -751,6 +751,12 @@ void CInfClassHuman::HandleNinja()
 
 void CInfClassHuman::OnWeaponFired(WeaponFireContext *pFireContext)
 {
+	if(m_pPlayer->IsInfectionStarted())
+	{
+		pFireContext->FireAccepted = false;
+		return;
+	}
+
 	const float ReloadIntervalModifier = m_WeaponReloadIntervalModifier[pFireContext->Weapon];
 	pFireContext->ReloadInterval *= ReloadIntervalModifier;
 
