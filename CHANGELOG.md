@@ -1,5 +1,9 @@
 # Changelog
 
+## InfclassR v1.5.3 - 2024-08-27
+Hotfix:
+- Fixed infected player could fire as human during the tick of infection
+
 ## InfclassR v1.5.2 - 2024-08-23
 
 Fixes:
