@@ -226,7 +226,6 @@ CMapConverter::CMapConverter(IStorage *pStorage, IEngineMap *pMap, IConsole* pCo
 	m_pConsole(pConsole),
 	m_pTiles(0)
 {
-	m_DataFile.Init();
 }
 
 CMapConverter::~CMapConverter()
@@ -855,12 +854,21 @@ void CMapConverter::CopyLayers()
 			{
 				const CMapItemLayerQuads *pQuadsItem = (const CMapItemLayerQuads *)pLayerItem;
 
-				void *pData = Map()->GetData(pQuadsItem->m_Data);
 				
 				CMapItemLayerQuads LayerItem;
 				LayerItem = *pQuadsItem;
-				LayerItem.m_Data = m_DataFile.AddData(LayerItem.m_NumQuads*sizeof(CQuad), pData);
-				
+				if(LayerItem.m_NumQuads != 0)
+				{
+					void *pData = Map()->GetData(pQuadsItem->m_Data);
+					LayerItem.m_Data = m_DataFile.AddData(LayerItem.m_NumQuads * sizeof(CQuad), pData);
+				}
+				else
+				{
+					// add dummy data for backwards compatibility
+					// this allows the layer to be loaded with an empty array since m_NumQuads is 0 while saving
+					CQuad Dummy{};
+					LayerItem.m_Data = m_DataFile.AddDataSwapped(sizeof(CQuad), &Dummy);
+				}
 				m_DataFile.AddItem(MAPITEMTYPE_LAYER, m_NumLayers++, sizeof(LayerItem), &LayerItem);
 
 				Map()->UnloadData(pQuadsItem->m_Data);

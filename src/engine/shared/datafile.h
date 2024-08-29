@@ -6,9 +6,12 @@
 #include <engine/storage.h>
 
 #include <base/hash.h>
-#include <base/system.h>
+#include <base/types.h>
 
-#include <zlib.h>
+#include "uuid_manager.h"
+
+#include <array>
+#include <vector>
 
 enum
 {
@@ -19,10 +22,10 @@ enum
 class CDataFileReader
 {
 	struct CDatafile *m_pDataFile;
-	void *GetDataImpl(int Index, int Swap);
+	void *GetDataImpl(int Index, bool Swap);
 	int GetFileDataSize(int Index) const;
 
-	int GetExternalItemType(int InternalType);
+	int GetExternalItemType(int InternalType, CUuid *pUuid);
 	int GetInternalItemType(int ExternalType);
 
 public:
@@ -30,19 +33,28 @@ public:
 		m_pDataFile(nullptr) {}
 	~CDataFileReader() { Close(); }
 
+	CDataFileReader &operator=(CDataFileReader &&Other)
+	{
+		m_pDataFile = Other.m_pDataFile;
+		Other.m_pDataFile = nullptr;
+		return *this;
+	}
+
 	bool Open(class IStorage *pStorage, const char *pFilename, int StorageType);
 	bool Close();
 	bool IsOpen() const { return m_pDataFile != nullptr; }
 	IOHANDLE File() const;
 
+	int GetDataSize(int Index) const;
 	void *GetData(int Index);
 	void *GetDataSwapped(int Index); // makes sure that the data is 32bit LE ints when saved
-	int GetDataSize(int Index) const;
+	const char *GetDataString(int Index);
+	void ReplaceData(int Index, char *pData, size_t Size); // memory for data must have been allocated with malloc
 	void UnloadData(int Index);
 	int NumData() const;
 
-	void *GetItem(int Index, int *pType = nullptr, int *pId = nullptr);
 	int GetItemSize(int Index) const;
+	void *GetItem(int Index, int *pType = nullptr, int *pId = nullptr, CUuid *pUuid = nullptr);
 	void GetType(int Type, int *pStart, int *pNum);
 	int FindItemIndex(int Type, int Id);
 	void *FindItem(int Type, int Id);
@@ -56,11 +68,21 @@ public:
 // write access
 class CDataFileWriter
 {
+public:
+	enum ECompressionLevel
+	{
+		COMPRESSION_DEFAULT,
+		COMPRESSION_BEST,
+	};
+
+private:
 	struct CDataInfo
 	{
+		void *m_pUncompressedData;
 		int m_UncompressedSize;
-		int m_CompressedSize;
 		void *m_pCompressedData;
+		int m_CompressedSize;
+		ECompressionLevel m_CompressionLevel;
 	};
 
 	struct CItemInfo
@@ -80,37 +102,45 @@ class CDataFileWriter
 		int m_Last;
 	};
 
+	struct CExtendedItemType
+	{
+		int m_Type;
+		CUuid m_Uuid;
+	};
+
 	enum
 	{
 		MAX_ITEM_TYPES = 0x10000,
-		MAX_ITEMS = 1024,
-		MAX_DATAS = 1024,
-		MAX_EXTENDED_ITEM_TYPES = 64,
 	};
 
 	IOHANDLE m_File;
-	int m_NumItems;
-	int m_NumDatas;
-	int m_NumItemTypes;
-	int m_NumExtendedItemTypes;
-	CItemTypeInfo *m_pItemTypes;
-	CItemInfo *m_pItems;
-	CDataInfo *m_pDatas;
-	int m_aExtendedItemTypes[MAX_EXTENDED_ITEM_TYPES];
+	std::array<CItemTypeInfo, MAX_ITEM_TYPES> m_aItemTypes;
+	std::vector<CItemInfo> m_vItems;
+	std::vector<CDataInfo> m_vDatas;
+	std::vector<CExtendedItemType> m_vExtendedItemTypes;
 
 	int GetTypeFromIndex(int Index) const;
-	int GetExtendedItemTypeIndex(int Type);
+	int GetExtendedItemTypeIndex(int Type, const CUuid *pUuid);
 
 public:
 	CDataFileWriter();
+	CDataFileWriter(CDataFileWriter &&Other)
+	{
+		m_File = Other.m_File;
+		Other.m_File = 0;
+		m_aItemTypes = std::move(Other.m_aItemTypes);
+		m_vItems = std::move(Other.m_vItems);
+		m_vDatas = std::move(Other.m_vDatas);
+		m_vExtendedItemTypes = std::move(Other.m_vExtendedItemTypes);
+	}
 	~CDataFileWriter();
-	void Init();
-	bool OpenFile(class IStorage *pStorage, const char *pFilename, int StorageType = IStorage::TYPE_SAVE);
+
 	bool Open(class IStorage *pStorage, const char *pFilename, int StorageType = IStorage::TYPE_SAVE);
-	int AddData(int Size, void *pData, int CompressionLevel = Z_DEFAULT_COMPRESSION);
-	int AddDataSwapped(int Size, void *pData);
-	int AddItem(int Type, int Id, int Size, void *pData);
-	int Finish();
+	int AddItem(int Type, int Id, size_t Size, const void *pData, const CUuid *pUuid = nullptr);
+	int AddData(size_t Size, const void *pData, ECompressionLevel CompressionLevel = COMPRESSION_DEFAULT);
+	int AddDataSwapped(size_t Size, const void *pData);
+	int AddDataString(const char *pStr);
+	void Finish();
 };
 
 #endif
