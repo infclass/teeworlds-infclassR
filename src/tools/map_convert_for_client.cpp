@@ -33,7 +33,7 @@ int main(int argc, const char **argv)
 	IKernel *pKernel = IKernel::Create();
 	pKernel->RegisterInterface(pStorage);
 	pKernel->RegisterInterface(static_cast<IEngineMap*>(pMap)); // register as both
-	pKernel->RegisterInterface(static_cast<IMap*>(pMap));
+	pKernel->RegisterInterface(static_cast<IMap*>(pMap), false);
 
 	const char *pSourceFileName = argv[1];
 
@@ -79,9 +79,6 @@ int main(int argc, const char **argv)
 		return -3;
 
 	delete pKernel;
-	delete pConsole;
-	delete pMap;
-	delete pStorage;
 
 	return 0;
 }
