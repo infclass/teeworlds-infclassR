@@ -259,7 +259,7 @@ void CPlayer::OnDisconnect()
 	KillCharacter();
 }
 
-void CPlayer::OnPredictedInput(CNetObj_PlayerInput *pNewInput)
+void CPlayer::OnPredictedInput(const CNetObj_PlayerInput *pNewInput)
 {
 	// skip the input if chat is active
 	if((m_PlayerFlags & PLAYERFLAG_CHATTING) && (pNewInput->m_PlayerFlags & PLAYERFLAG_CHATTING))
@@ -269,7 +269,7 @@ void CPlayer::OnPredictedInput(CNetObj_PlayerInput *pNewInput)
 		m_pCharacter->OnPredictedInput(pNewInput);
 }
 
-void CPlayer::OnDirectInput(CNetObj_PlayerInput *pNewInput)
+void CPlayer::OnDirectInput(const CNetObj_PlayerInput *pNewInput)
 {
 	Server()->SetClientFlags(m_ClientId, pNewInput->m_PlayerFlags);
 
@@ -292,7 +292,7 @@ void CPlayer::OnDirectInput(CNetObj_PlayerInput *pNewInput)
 	}
 }
 
-void CPlayer::OnPredictedEarlyInput(CNetObj_PlayerInput *pNewInput)
+void CPlayer::OnPredictedEarlyInput(const CNetObj_PlayerInput *pNewInput)
 {
 	m_PlayerFlags = pNewInput->m_PlayerFlags;
 

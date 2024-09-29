@@ -1598,7 +1598,7 @@ void CGameContext::OnClientPredictedInput(int ClientId, void *pInput)
 		return;
 
 	// set to last sent input when no new input has been sent
-	CNetObj_PlayerInput *pApplyInput = (CNetObj_PlayerInput *)pInput;
+	const CNetObj_PlayerInput *pApplyInput = (CNetObj_PlayerInput *)pInput;
 	if(pApplyInput == nullptr)
 	{
 		pApplyInput = &m_aLastPlayerInput[ClientId];

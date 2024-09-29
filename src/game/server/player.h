@@ -46,9 +46,9 @@ public:
 	virtual void Snap(int SnappingClient);
 	virtual void SnapClientInfo(int SnappingClient, int SnappingClientMappedId);
 
-	void OnDirectInput(CNetObj_PlayerInput *pNewInput);
-	void OnPredictedInput(CNetObj_PlayerInput *pNewInput);
-	void OnPredictedEarlyInput(CNetObj_PlayerInput *pNewInput);
+	void OnDirectInput(const CNetObj_PlayerInput *pNewInput);
+	void OnPredictedInput(const CNetObj_PlayerInput *pNewInput);
+	void OnPredictedEarlyInput(const CNetObj_PlayerInput *pNewInput);
 	void OnDisconnect();
 
 	virtual void KillCharacter(int Weapon = WEAPON_GAME);
