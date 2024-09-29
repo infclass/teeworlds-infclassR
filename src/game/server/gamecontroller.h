@@ -66,6 +66,8 @@ protected:
 	void ResetGame();
 	void RotateMapTo(const char *pMapName);
 
+	int GetNextClientUniqueId();
+
 	char m_aMapWish[MAX_MAP_LENGTH];
 	char m_aQueuedMap[MAX_MAP_LENGTH];
 	char m_aPreviousMap[MAX_MAP_LENGTH];
@@ -198,6 +200,10 @@ public:
 	double GetTime();
 
 	virtual void RegisterChatCommands(class IConsole *pConsole) = 0;
+
+private:
+	// starting 1 to make 0 the special value "no client id"
+	uint32_t m_NextUniqueClientId = 1;
 };
 
 #endif

@@ -26,7 +26,7 @@ class CPlayer
 	MACRO_ALLOC_POOL_ID()
 
 public:
-	CPlayer(CGameContext *pGameServer, int ClientId, int Team);
+	CPlayer(CGameContext *pGameServer, uint32_t UniqueClientId, int ClientId, int Team);
 	virtual ~CPlayer();
 
 	void Reset();
@@ -36,6 +36,7 @@ public:
 	void SetTeam(int Team, bool DoChatMsg=true);
 	int GetTeam() const { return m_Team; };
 	int GetCid() const { return m_ClientId; };
+	uint32_t GetUniqueCid() const { return m_UniqueClientId; }
 	int GetClientVersion() const;
 	virtual bool IsBot() const { return false; }
 
@@ -115,6 +116,7 @@ public:
 	} m_Latency;
 
 protected:
+	const uint32_t m_UniqueClientId;
 	CCharacter *m_pCharacter;
 	CGameContext *m_pGameServer;
 

@@ -41,7 +41,7 @@ class CInfClassPlayer : public CPlayer
 	MACRO_ALLOC_POOL_ID()
 
 public:
-	CInfClassPlayer(CInfClassGameController *pGameController, int ClientId, int Team);
+	CInfClassPlayer(CInfClassGameController *pGameController, int UniqueClientId, int ClientId, int Team);
 	~CInfClassPlayer() override;
 
 	static CInfClassPlayer *GetInstance(CPlayer *pPlayer);

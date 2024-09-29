@@ -13,7 +13,8 @@ MACRO_ALLOC_POOL_ID_IMPL(CPlayer, MAX_CLIENTS)
 
 IServer *CPlayer::Server() const { return m_pGameServer->Server(); }
 
-CPlayer::CPlayer(CGameContext *pGameServer, int ClientId, int Team)
+CPlayer::CPlayer(CGameContext *pGameServer, uint32_t UniqueClientId, int ClientId, int Team) :
+	m_UniqueClientId(UniqueClientId)
 {
 	m_pGameServer = pGameServer;
 	m_ClientId = ClientId;

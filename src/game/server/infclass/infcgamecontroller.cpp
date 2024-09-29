@@ -4267,12 +4267,12 @@ CPlayer *CInfClassGameController::CreatePlayer(int ClientId, bool IsSpectator, v
 	CInfClassPlayer *pPlayer = nullptr;
 	if(IsSpectator)
 	{
-		pPlayer = new(ClientId) CInfClassPlayer(this, ClientId, TEAM_SPECTATORS);
+		pPlayer = new(ClientId) CInfClassPlayer(this, GetNextClientUniqueId(), ClientId, TEAM_SPECTATORS);
 	}
 	else
 	{
 		const int StartTeam = Config()->m_SvTournamentMode ? TEAM_SPECTATORS : GetAutoTeam(ClientId);
-		pPlayer = new(ClientId) CInfClassPlayer(this, ClientId, StartTeam);
+		pPlayer = new(ClientId) CInfClassPlayer(this, GetNextClientUniqueId(), ClientId, StartTeam);
 	}
 
 	if(pData)

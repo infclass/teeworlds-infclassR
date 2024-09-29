@@ -14,8 +14,8 @@
 
 MACRO_ALLOC_POOL_ID_IMPL(CInfClassPlayer, MAX_CLIENTS)
 
-CInfClassPlayer::CInfClassPlayer(CInfClassGameController *pGameController, int ClientId, int Team)
-	: CPlayer(pGameController->GameServer(), ClientId, Team)
+CInfClassPlayer::CInfClassPlayer(CInfClassGameController *pGameController, int UniqueClientId, int ClientId, int Team)
+	: CPlayer(pGameController->GameServer(), UniqueClientId, ClientId, Team)
 	, m_pGameController(pGameController)
 {
 	m_class = EPlayerClass::Invalid;

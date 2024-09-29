@@ -380,6 +380,11 @@ void IGameController::RotateMapTo(const char *pMapName)
 	}
 }
 
+int IGameController::GetNextClientUniqueId()
+{
+	return m_NextUniqueClientId++;
+}
+
 void IGameController::DoTeamChange(CPlayer *pPlayer, int Team, bool DoChatMsg)
 {
 	Team = ClampTeam(Team);
