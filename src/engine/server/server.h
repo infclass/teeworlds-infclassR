@@ -257,6 +257,7 @@ public:
 	int m_RconClientId;
 	int m_RconAuthLevel;
 	char m_aShutdownReason[128];
+	void *m_pPersistentData;
 
 	//static NETADDR4 master_server;
 

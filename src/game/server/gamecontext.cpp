@@ -4737,8 +4737,10 @@ void CGameContext::OnConsoleInit()
 	InitGeolocation();
 }
 
-void CGameContext::OnInit()
+void CGameContext::OnInit(const void *pPersistentData)
 {
+	const CPersistentData *pPersistent = (const CPersistentData *)pPersistentData;
+
 	m_pServer = Kernel()->RequestInterface<IServer>();
 	m_pConfig = Kernel()->RequestInterface<IConfigManager>()->Values();
 	m_pConsole = Kernel()->RequestInterface<IConsole>();
@@ -4837,8 +4839,15 @@ void CGameContext::OnMapChange(char *pNewMapName, int MapNameSize)
 {
 }
 
-void CGameContext::OnShutdown()
+void CGameContext::OnShutdown(const void *pPersistentData)
 {
+	CPersistentData *pPersistent = (CPersistentData *)pPersistentData;
+
+	if(pPersistent)
+	{
+		pPersistent->m_PrevGameUuid = m_GameUuid;
+	}
+
 	//reset votes.
 	EndVote();
 

@@ -123,6 +123,11 @@ class CGameContext : public IGameServer
 	static int MapScan(const char *pName, int IsDir, int DirType, void *pUserData);
 
 public:
+	struct CPersistentData
+	{
+		CUuid m_PrevGameUuid;
+	};
+
 	struct CPersistentClientData
 	{
 		bool m_IsSpectator;
@@ -237,10 +242,10 @@ public:
 	void ProgressVoteOptions(int ClientId);
 
 	// engine events
-	void OnInit() override;
+	void OnInit(const void *pPersistentData) override;
 	void OnConsoleInit() override;
 	void OnMapChange(char *pNewMapName, int MapNameSize) override;
-	void OnShutdown() override;
+	void OnShutdown(const void *pPersistentData) override;
 
 	void OnTick() override;
 	void OnPreSnap() override;
@@ -275,6 +280,7 @@ public:
 
 	bool IsClientReady(int ClientId) const override;
 	bool IsClientPlayer(int ClientId) const override;
+	int PersistentDataSize() const override { return sizeof(CPersistentData); }
 	int PersistentClientDataSize() const override;
 
 	CUuid GameUuid() const override;

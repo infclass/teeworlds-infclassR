@@ -440,6 +440,7 @@ CServer::~CServer()
 			free(Client.m_pPersistentData);
 		}
 	}
+	free(m_pPersistentData);
 
 	delete m_pRegister;
 	delete m_pConnectionPool;
@@ -2804,6 +2805,8 @@ int CServer::Run()
 		}
 	}
 
+	m_pPersistentData = malloc(GameServer()->PersistentDataSize());
+
 	//Choose a random map from the rotation
 	if(!str_length(g_Config.m_SvMap) && str_length(g_Config.m_SvMaprotation))
 	{
@@ -2921,7 +2924,7 @@ int CServer::Run()
 	str_format(aBuf, sizeof(aBuf), "server name is '%s'", Config()->m_SvName);
 	Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "server", aBuf);
 
-	GameServer()->OnInit();
+	GameServer()->OnInit(nullptr);
 	if(ErrorShutdown())
 	{
 		m_RunServer = STOPPING;
@@ -2986,7 +2989,7 @@ int CServer::Run()
 						}
 					}
 
-					GameServer()->OnShutdown();
+					GameServer()->OnShutdown(m_pPersistentData);
 
 					for(int ClientId = 0; ClientId < MAX_CLIENTS; ClientId++)
 					{
@@ -3013,7 +3016,7 @@ int CServer::Run()
 					m_CurrentGameTick = 0;
 					m_ServerInfoFirstRequest = 0;
 					Kernel()->ReregisterInterface(GameServer());
-					GameServer()->OnInit();
+					GameServer()->OnInit(m_pPersistentData);
 					if(ErrorShutdown())
 					{
 						break;
@@ -3225,7 +3228,7 @@ int CServer::Run()
 	m_Econ.Shutdown();
 	Engine()->ShutdownJobs();
 
-	GameServer()->OnShutdown();
+	GameServer()->OnShutdown(nullptr);
 	m_pMap->Unload();
 	DbPool()->OnShutdown();
 

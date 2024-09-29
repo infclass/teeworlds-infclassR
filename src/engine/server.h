@@ -400,10 +400,10 @@ class IGameServer : public IInterface
 	MACRO_INTERFACE("gameserver")
 protected:
 public:
-	virtual void OnInit() = 0;
+	virtual void OnInit(const void *pPersistentData) = 0;
 	virtual void OnConsoleInit() = 0;
 	virtual void OnMapChange(char *pNewMapName, int MapNameSize) = 0;
-	virtual void OnShutdown() = 0;
+	virtual void OnShutdown(const void *pPersistentData) = 0;
 
 	virtual void OnTick() = 0;
 	virtual void OnPreSnap() = 0;
@@ -438,6 +438,7 @@ public:
 	virtual bool IsClientReady(int ClientId) const = 0;
 	virtual bool IsClientPlayer(int ClientId) const = 0;
 
+	virtual int PersistentDataSize() const = 0;
 	virtual int PersistentClientDataSize() const = 0;
 
 	virtual CUuid GameUuid() const = 0;
