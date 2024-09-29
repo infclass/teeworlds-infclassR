@@ -3310,6 +3310,7 @@ int CServer::Run()
 		}
 	}
 
+	m_pRegister->OnShutdown();
 	m_Econ.Shutdown();
 
 	GameServer()->OnShutdown();
