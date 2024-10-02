@@ -854,7 +854,7 @@ int CServer::GetClientVersion(int ClientId) const
 {
 	// Assume latest client version for server demos
 	if(ClientId == SERVER_DEMO_CLIENT)
-		return CLIENT_VERSIONNR;
+		return DDNET_VERSION_NUMBER;
 
 	CClientInfo Info;
 	if(GetClientInfo(ClientId, &Info))
