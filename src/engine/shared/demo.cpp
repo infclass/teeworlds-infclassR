@@ -623,7 +623,7 @@ void CDemoPlayer::DoTick()
 			// process delta snapshot
 			static char s_aNewsnap[CSnapshot::MAX_SIZE];
 			CSnapshot *pNewsnap = (CSnapshot *)s_aNewsnap;
-			DataSize = m_pSnapshotDelta->UnpackDelta((CSnapshot *)m_aLastSnapshotData, pNewsnap, s_aData, DataSize);
+			DataSize = m_pSnapshotDelta->UnpackDelta((CSnapshot *)m_aLastSnapshotData, pNewsnap, s_aData, DataSize, IsSixup());
 
 			if(DataSize < 0)
 			{
@@ -810,6 +810,7 @@ int CDemoPlayer::Load(class IStorage *pStorage, class IConsole *pConsole, const 
 	// check if we already have the map
 	// TODO: improve map checking (maps folder, check crc)
 	unsigned Crc = bytes_be_to_uint(m_Info.m_Header.m_aMapCrc);
+	m_Sixup = str_startswith(m_Info.m_Header.m_aNetversion, "0.7");
 
 	// save byte offset of map for later use
 	m_MapOffset = io_tell(m_File);

@@ -122,6 +122,7 @@ private:
 	void ScanFile();
 
 	int64_t Time();
+	bool m_Sixup;
 
 public:
 	CDemoPlayer(class CSnapshotDelta *pSnapshotDelta);
@@ -151,6 +152,7 @@ public:
 	int GetDemoType() const override;
 
 	int Update(bool RealTime = true);
+	bool IsSixup() const { return m_Sixup; }
 
 	const CPlaybackInfo *Info() const { return &m_Info; }
 	bool IsPlaying() const override { return m_File != nullptr; }

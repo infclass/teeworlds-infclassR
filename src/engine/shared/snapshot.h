@@ -6,6 +6,9 @@
 #include <cstddef>
 #include <cstdint>
 
+#include <game/generated/protocol.h>
+#include <game/generated/protocol7.h>
+
 // CSnapshot
 
 class CSnapshotItem
@@ -21,6 +24,7 @@ public:
 	int Type() const { return m_TypeAndId >> 16; }
 	int Id() const { return m_TypeAndId & 0xffff; }
 	int Key() const { return m_TypeAndId; }
+	void Invalidate() { m_TypeAndId = -1; }
 };
 
 class CSnapshot
@@ -52,12 +56,13 @@ public:
 	const CSnapshotItem *GetItem(int Index) const;
 	int GetItemSize(int Index) const;
 	int GetItemIndex(int Key) const;
+	void InvalidateItem(int Index);
 	int GetItemType(int Index) const;
 	int GetExternalItemType(int InternalType) const;
 	const void *FindItem(int Type, int Id) const;
 
-	unsigned Crc();
-	void DebugDump();
+	unsigned Crc() const;
+	void DebugDump() const;
 	bool IsValid(size_t ActualSize) const;
 
 	static const CSnapshot *EmptySnapshot() { return &ms_EmptySnapshot; }
@@ -83,6 +88,7 @@ private:
 		MAX_NETOBJSIZES = 64
 	};
 	short m_aItemSizes[MAX_NETOBJSIZES];
+	short m_aItemSizes7[MAX_NETOBJSIZES];
 	int m_aSnapshotDataRate[CSnapshot::MAX_TYPE + 1];
 	int m_aSnapshotDataUpdates[CSnapshot::MAX_TYPE + 1];
 	CData m_Empty;
@@ -95,10 +101,12 @@ public:
 	CSnapshotDelta(const CSnapshotDelta &Old);
 	int GetDataRate(int Index) const { return m_aSnapshotDataRate[Index]; }
 	int GetDataUpdates(int Index) const { return m_aSnapshotDataUpdates[Index]; }
-	void SetStaticsize(int ItemType, int Size);
+	void SetStaticsize(int ItemType, size_t Size);
+	void SetStaticsize7(int ItemType, size_t Size);
 	const CData *EmptyDelta() const;
-	int CreateDelta(const class CSnapshot *pFrom, class CSnapshot *pTo, void *pDstData);
-	int UnpackDelta(const class CSnapshot *pFrom, class CSnapshot *pTo, const void *pSrcData, int DataSize);
+	int CreateDelta(const CSnapshot *pFrom, const CSnapshot *pTo, void *pDstData);
+	int UnpackDelta(const CSnapshot *pFrom, CSnapshot *pTo, const void *pSrcData, int DataSize, bool Sixup);
+	int DebugDumpDelta(const void *pSrcData, int DataSize);
 };
 
 // CSnapshotStorage
@@ -130,8 +138,8 @@ public:
 	void Init();
 	void PurgeAll();
 	void PurgeUntil(int Tick);
-	void Add(int Tick, int64_t Tagtime, int DataSize, const void *pData, int AltDataSize, const void *pAltData);
-	int Get(int Tick, int64_t *pTagtime, const CSnapshot **ppData, const CSnapshot **ppAltData);
+	void Add(int Tick, int64_t Tagtime, size_t DataSize, const void *pData, size_t AltDataSize, const void *pAltData);
+	int Get(int Tick, int64_t *pTagtime, const CSnapshot **ppData, const CSnapshot **ppAltData) const;
 };
 
 class CSnapshotBuilder
@@ -150,16 +158,17 @@ class CSnapshotBuilder
 	int m_aExtendedItemTypes[MAX_EXTENDED_ITEM_TYPES];
 	int m_NumExtendedItemTypes;
 
-	void AddExtendedItemType(int Index);
+	bool AddExtendedItemType(int Index);
 	int GetExtendedItemTypeIndex(int TypeId);
-	int GetTypeFromIndex(int Index);
+	int GetTypeFromIndex(int Index) const;
 
-	bool m_Sixup;
+	bool m_Sixup = false;
 
 public:
 	CSnapshotBuilder();
 
 	void Init(bool Sixup = false);
+	void Init7(const CSnapshot *pSnapshot);
 
 	void *NewItem(int Type, int Id, int Size);
 
