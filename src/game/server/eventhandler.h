@@ -6,6 +6,7 @@
 #include <cstdint>
 
 #include <engine/shared/protocol.h>
+#include <game/server/snap_context.h>
 
 class CEventHandler
 {
