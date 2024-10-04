@@ -264,7 +264,7 @@ void IGameController::DoActivityCheck()
 			const char *pText = Config()->m_SvInactiveKick == 0 ? _C("Inactive kick broadcast message", "Warning: {sec:RemainingTime} until a move to spec for inactivity") : _C("Inactive kick broadcast message", "Warning: {sec:RemainingTime} until a kick for inactivity");
 			int Seconds = (KickingTick - Server()->Tick()) / Server()->TickSpeed() + 1;
 			GameServer()->SendBroadcast_Localization(pPlayer->GetCid(),
-				BROADCAST_PRIORITY_INTERFACE,
+				EBroadcastPriority::INTERFACE,
 				BROADCAST_DURATION_REALTIME,
 				pText,
 				"RemainingTime", &Seconds,
@@ -1208,7 +1208,7 @@ bool IGameController::CanJoinTeam(int Team, int NotThisId)
 	{
 		char aBuf[128];
 		str_format(aBuf, sizeof(aBuf), "Only %d active players are allowed", Server()->MaxClients() - g_Config.m_SvSpectatorSlots);
-		GameServer()->SendBroadcast(NotThisId, aBuf, BROADCAST_PRIORITY_GAMEANNOUNCE, BROADCAST_DURATION_GAMEANNOUNCE);
+		GameServer()->SendBroadcast(NotThisId, aBuf, EBroadcastPriority::GAMEANNOUNCE, BROADCAST_DURATION_GAMEANNOUNCE);
 	}
 
 	return NumbersAreOk;

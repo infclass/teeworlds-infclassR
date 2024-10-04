@@ -49,14 +49,14 @@
 #define BROADCAST_DURATION_REALTIME (0)
 #define BROADCAST_DURATION_GAMEANNOUNCE (Server()->TickSpeed()*2)
 
-enum
+enum class EBroadcastPriority
 {
-	BROADCAST_PRIORITY_LOWEST=0,
-	BROADCAST_PRIORITY_WEAPONSTATE,
-	BROADCAST_PRIORITY_EFFECTSTATE,
-	BROADCAST_PRIORITY_GAMEANNOUNCE,
-	BROADCAST_PRIORITY_SERVERANNOUNCE,
-	BROADCAST_PRIORITY_INTERFACE,
+	LOWEST,
+	WEAPONSTATE,
+	EFFECTSTATE,
+	GAMEANNOUNCE,
+	SERVERANNOUNCE,
+	INTERFACE,
 };
 
 class CConfig;
@@ -356,10 +356,10 @@ private:
 	void GetMapNameFromCommand(char* pMapName, const char *pCommand);
 
 public:
-	virtual void SendBroadcast(int To, const char *pText, int Priority, int LifeSpan);
-	virtual void SendBroadcast_Localization(int To, int Priority, int LifeSpan, const char* pText, ...);
-	virtual void SendBroadcast_Localization_P(int To, int Priority, int LifeSpan, int Number, const char* pText, ...);
-	virtual void ClearBroadcast(int To, int Priority);
+	virtual void SendBroadcast(int To, const char *pText, EBroadcastPriority Priority, int LifeSpan);
+	virtual void SendBroadcast_Localization(int To, EBroadcastPriority Priority, int LifeSpan, const char* pText, ...);
+	virtual void SendBroadcast_Localization_P(int To, EBroadcastPriority Priority, int LifeSpan, int Number, const char* pText, ...);
+	virtual void ClearBroadcast(int To, EBroadcastPriority Priority);
 	
 	static const char *GetChatCategoryPrefix(int Category);
 	virtual void SendChatTarget_Localization(int To, int Category, const char* pText, ...);
@@ -373,7 +373,7 @@ public:
 	void CreateLoveEvent(vec2 Pos);
 	void SendHitSound(int ClientId);
 	void SendScoreSound(int ClientId);
-	void AddBroadcast(int ClientId, const char* pText, int Priority, int LifeSpan);
+	void AddBroadcast(int ClientId, const char* pText, EBroadcastPriority Priority, int LifeSpan);
 	void SetClientLanguage(int ClientId, const char *pLanguage);
 	void InitChangelog();
 	void ReloadChangelog();
@@ -397,11 +397,11 @@ private:
 		int m_NoChangeTick;
 		char m_PrevMessage[1024];
 		
-		int m_Priority;
+		EBroadcastPriority m_Priority;
 		char m_NextMessage[1024];
 		
 		int m_LifeSpanTick;
-		int m_TimedPriority;
+		EBroadcastPriority m_TimedPriority;
 		char m_TimedMessage[1024];
 	};
 

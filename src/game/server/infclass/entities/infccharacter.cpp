@@ -223,7 +223,7 @@ void CInfClassCharacter::Tick()
 	{
 		--m_BlindnessTicks;
 		int EffectSec = 1 + (m_BlindnessTicks / Server()->TickSpeed());
-		GameServer()->SendBroadcast_Localization(m_pPlayer->GetCid(), BROADCAST_PRIORITY_EFFECTSTATE, BROADCAST_DURATION_REALTIME,
+		GameServer()->SendBroadcast_Localization(m_pPlayer->GetCid(), EBroadcastPriority::EFFECTSTATE, BROADCAST_DURATION_REALTIME,
 			_("You are blinded: {sec:EffectDuration}"),
 			"EffectDuration", &EffectSec,
 			nullptr);
@@ -1653,7 +1653,7 @@ void CInfClassCharacter::HandleMapMenu()
 	{
 		pPlayer->m_MapMenuItem = -1;
 		GameServer()->SendBroadcast_Localization(GetCid(),
-			BROADCAST_PRIORITY_INTERFACE, BROADCAST_DURATION_REALTIME,
+			EBroadcastPriority::INTERFACE, BROADCAST_DURATION_REALTIME,
 			_("Choose your class"), NULL);
 
 		return;
@@ -1665,7 +1665,7 @@ void CInfClassCharacter::HandleMapMenu()
 	if(HoveredMenuItem == CMapConverter::MENUCLASS_RANDOM)
 	{
 		GameServer()->SendBroadcast_Localization(GetCid(),
-			BROADCAST_PRIORITY_INTERFACE, BROADCAST_DURATION_REALTIME, _("Random choice"), nullptr);
+			EBroadcastPriority::INTERFACE, BROADCAST_DURATION_REALTIME, _("Random choice"), nullptr);
 		pPlayer->m_MapMenuItem = HoveredMenuItem;
 	}
 	else
@@ -1679,20 +1679,20 @@ void CInfClassCharacter::HandleMapMenu()
 		{
 			const char *pClassName = CInfClassGameController::GetClassDisplayName(NewClass);
 			GameServer()->SendBroadcast_Localization(GetCid(),
-				BROADCAST_PRIORITY_INTERFACE, BROADCAST_DURATION_REALTIME,
+				EBroadcastPriority::INTERFACE, BROADCAST_DURATION_REALTIME,
 				pClassName, nullptr);
 		}
 		break;
 		case CLASS_AVAILABILITY::DISABLED:
 			GameServer()->SendBroadcast_Localization(GetCid(),
-				BROADCAST_PRIORITY_INTERFACE, BROADCAST_DURATION_REALTIME,
+				EBroadcastPriority::INTERFACE, BROADCAST_DURATION_REALTIME,
 				_("The class is disabled"), nullptr);
 			break;
 		case CLASS_AVAILABILITY::NEED_MORE_PLAYERS:
 		{
 			int MinPlayers = GameController()->GetMinPlayersForClass(NewClass);
 			GameServer()->SendBroadcast_Localization_P(GetCid(),
-				BROADCAST_PRIORITY_INTERFACE, BROADCAST_DURATION_REALTIME,
+				EBroadcastPriority::INTERFACE, BROADCAST_DURATION_REALTIME,
 				MinPlayers,
 				_P("Need at least {int:MinPlayers} player",
 					"Need at least {int:MinPlayers} players"),
@@ -1702,7 +1702,7 @@ void CInfClassCharacter::HandleMapMenu()
 		break;
 		case CLASS_AVAILABILITY::LIMIT_EXCEEDED:
 			GameServer()->SendBroadcast_Localization(GetCid(),
-				BROADCAST_PRIORITY_INTERFACE, BROADCAST_DURATION_REALTIME,
+				EBroadcastPriority::INTERFACE, BROADCAST_DURATION_REALTIME,
 				_("The class limit exceeded"), nullptr);
 			break;
 		}
@@ -2163,7 +2163,7 @@ void CInfClassCharacter::Unfreeze()
 
 	if(m_pPlayer)
 	{
-		GameServer()->ClearBroadcast(m_pPlayer->GetCid(), BROADCAST_PRIORITY_EFFECTSTATE);
+		GameServer()->ClearBroadcast(m_pPlayer->GetCid(), EBroadcastPriority::EFFECTSTATE);
 	}
 	GameServer()->CreatePlayerSpawn(GetPos());
 
@@ -2274,7 +2274,7 @@ void CInfClassCharacter::PreCoreTick()
 		else
 		{
 			int FreezeSec = 1 + (m_FrozenTime / Server()->TickSpeed());
-			GameServer()->SendBroadcast_Localization(m_pPlayer->GetCid(), BROADCAST_PRIORITY_EFFECTSTATE, BROADCAST_DURATION_REALTIME, _("You are frozen: {sec:EffectDuration}"), "EffectDuration", &FreezeSec, NULL);
+			GameServer()->SendBroadcast_Localization(m_pPlayer->GetCid(), EBroadcastPriority::EFFECTSTATE, BROADCAST_DURATION_REALTIME, _("You are frozen: {sec:EffectDuration}"), "EffectDuration", &FreezeSec, NULL);
 		}
 	}
 
@@ -2285,7 +2285,7 @@ void CInfClassCharacter::PreCoreTick()
 		if(m_SlowMotionTick > 0)
 		{
 			int SloMoSec = 1 + (m_SlowMotionTick / Server()->TickSpeed());
-			GameServer()->SendBroadcast_Localization(m_pPlayer->GetCid(), BROADCAST_PRIORITY_EFFECTSTATE, BROADCAST_DURATION_REALTIME, _("You are slowed: {sec:EffectDuration}"), "EffectDuration", &SloMoSec, NULL);
+			GameServer()->SendBroadcast_Localization(m_pPlayer->GetCid(), EBroadcastPriority::EFFECTSTATE, BROADCAST_DURATION_REALTIME, _("You are slowed: {sec:EffectDuration}"), "EffectDuration", &SloMoSec, NULL);
 		}
 	}
 

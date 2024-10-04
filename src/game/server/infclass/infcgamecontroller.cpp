@@ -441,7 +441,7 @@ void CInfClassGameController::DoPlayerInfection(CInfClassPlayer *pPlayer, CInfCl
 
 void CInfClassGameController::OnHeroFlagCollected(int ClientId)
 {
-	GameServer()->SendBroadcast_Localization(-1, BROADCAST_PRIORITY_GAMEANNOUNCE, BROADCAST_DURATION_GAMEANNOUNCE, _("The Hero found the flag!"), NULL);
+	GameServer()->SendBroadcast_Localization(-1, EBroadcastPriority::GAMEANNOUNCE, BROADCAST_DURATION_GAMEANNOUNCE, _("The Hero found the flag!"), NULL);
 	GameServer()->CreateSoundGlobal(SOUND_CTF_CAPTURE);
 
 	int Tick = Server()->Tick();
@@ -3693,7 +3693,7 @@ void CInfClassGameController::BroadcastInfectionComing(int InfectionTick)
 		return;
 
 	int Seconds = (InfectionTick - Server()->Tick()) / Server()->TickSpeed() + 1;
-	int Priority = Seconds <= 3 ? BROADCAST_PRIORITY_GAMEANNOUNCE : BROADCAST_PRIORITY_LOWEST;
+	EBroadcastPriority Priority = Seconds <= 3 ? EBroadcastPriority::GAMEANNOUNCE : EBroadcastPriority::LOWEST;
 	GameServer()->SendBroadcast_Localization(-1,
 		Priority,
 		BROADCAST_DURATION_REALTIME,
@@ -3802,7 +3802,7 @@ void CInfClassGameController::OnTeamChangeRequested(int ClientId, int Team)
 			pPlayer->m_TeamChangeTick = Server()->Tick();
 		}
 		else
-			GameServer()->SendBroadcast(ClientId, "Teams must be balanced, please join other team", BROADCAST_PRIORITY_GAMEANNOUNCE, BROADCAST_DURATION_GAMEANNOUNCE);
+			GameServer()->SendBroadcast(ClientId, "Teams must be balanced, please join other team", EBroadcastPriority::GAMEANNOUNCE, BROADCAST_DURATION_GAMEANNOUNCE);
 	}
 }
 
@@ -3813,7 +3813,7 @@ bool CInfClassGameController::CanJoinTeam(int Team, int ClientId)
 		if(GetRoundType() == ERoundType::Survival && IsInfectionStarted())
 		{
 			GameServer()->SendBroadcast_Localization(ClientId,
-				BROADCAST_PRIORITY_GAMEANNOUNCE, BROADCAST_DURATION_GAMEANNOUNCE,
+				EBroadcastPriority::GAMEANNOUNCE, BROADCAST_DURATION_GAMEANNOUNCE,
 				_("You have to wait until the survival is over"));
 			return false;
 		}
@@ -4578,12 +4578,12 @@ void CInfClassGameController::OnCharacterDeath(CInfClassCharacter *pVictim, cons
 		switch(VictimClass)
 		{
 			case EPlayerClass::Witch:
-				GameServer()->SendBroadcast_Localization(-1, BROADCAST_PRIORITY_GAMEANNOUNCE, BROADCAST_DURATION_GAMEANNOUNCE, _("The witch is dead"), NULL);
+				GameServer()->SendBroadcast_Localization(-1, EBroadcastPriority::GAMEANNOUNCE, BROADCAST_DURATION_GAMEANNOUNCE, _("The witch is dead"), NULL);
 				GameServer()->CreateSoundGlobal(SOUND_CTF_RETURN);
 				InfectionType = INFECTION_TYPE::RESTORE_INF_CLASS;
 				break;
 			case EPlayerClass::Undead:
-				GameServer()->SendBroadcast_Localization(-1, BROADCAST_PRIORITY_GAMEANNOUNCE, BROADCAST_DURATION_GAMEANNOUNCE, _("The undead is finally dead"), NULL);
+				GameServer()->SendBroadcast_Localization(-1, EBroadcastPriority::GAMEANNOUNCE, BROADCAST_DURATION_GAMEANNOUNCE, _("The undead is finally dead"), NULL);
 				GameServer()->CreateSoundGlobal(SOUND_CTF_RETURN);
 				InfectionType = INFECTION_TYPE::RESTORE_INF_CLASS;
 				break;
@@ -4976,7 +4976,7 @@ bool CInfClassGameController::TryRespawn(CInfClassPlayer *pPlayer, SpawnContext 
 		if(!pPlayer->IsBot())
 		{
 			GameServer()->SendBroadcast(pPlayer->GetCid(), "You are dead and have to wait for others",
-				BROADCAST_PRIORITY_GAMEANNOUNCE, BROADCAST_DURATION_REALTIME);
+				EBroadcastPriority::GAMEANNOUNCE, BROADCAST_DURATION_REALTIME);
 			return false;
 		}
 	}

@@ -30,7 +30,7 @@ bool CMedicLaser::OnCharacterHit(CInfClassCharacter *pHit)
 
 	if(pMedic->GetHealthArmorSum() < MinimumHP)
 	{
-		GameServer()->SendBroadcast_Localization(m_Owner, BROADCAST_PRIORITY_GAMEANNOUNCE,
+		GameServer()->SendBroadcast_Localization(m_Owner, EBroadcastPriority::GAMEANNOUNCE,
 			BROADCAST_DURATION_GAMEANNOUNCE,
 			_("You need at least {int:MinimumHP} HP"),
 			"MinimumHP", &MinimumHP,
@@ -39,7 +39,7 @@ bool CMedicLaser::OnCharacterHit(CInfClassCharacter *pHit)
 	}
 	else if(GameController()->GetInfectedCount() < MinimumInfected)
 	{
-		GameServer()->SendBroadcast_Localization(m_Owner, BROADCAST_PRIORITY_GAMEANNOUNCE,
+		GameServer()->SendBroadcast_Localization(m_Owner, EBroadcastPriority::GAMEANNOUNCE,
 			BROADCAST_DURATION_GAMEANNOUNCE,
 			_("Too few infected (less than {int:MinimumInfected})"),
 			"MinimumInfected", &MinimumInfected,
@@ -48,7 +48,7 @@ bool CMedicLaser::OnCharacterHit(CInfClassCharacter *pHit)
 	}
 	else if(pHit->GetArmor() > 10)
 	{
-		GameServer()->SendBroadcast_Localization(m_Owner, BROADCAST_PRIORITY_GAMEANNOUNCE,
+		GameServer()->SendBroadcast_Localization(m_Owner, EBroadcastPriority::GAMEANNOUNCE,
 			BROADCAST_DURATION_GAMEANNOUNCE,
 			_("The target is too strong, the cure won't work"),
 			nullptr);

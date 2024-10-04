@@ -1222,7 +1222,7 @@ void CInfClassHuman::BroadcastWeaponState() const
 		if(m_pCharacter->GetHealthArmorSum() < MinimumHP)
 		{
 			GameServer()->SendBroadcast_Localization(GetPlayer()->GetCid(),
-				BROADCAST_PRIORITY_WEAPONSTATE, BROADCAST_DURATION_REALTIME,
+				EBroadcastPriority::WEAPONSTATE, BROADCAST_DURATION_REALTIME,
 				_("You need at least {int:MinHp} HP to revive a zombie"),
 				"MinHp", &MinimumHP,
 				NULL);
@@ -1230,7 +1230,7 @@ void CInfClassHuman::BroadcastWeaponState() const
 		else if(GameController()->GetInfectedCount() < MinimumInfected)
 		{
 			GameServer()->SendBroadcast_Localization(GetPlayer()->GetCid(),
-				BROADCAST_PRIORITY_WEAPONSTATE, BROADCAST_DURATION_REALTIME,
+				EBroadcastPriority::WEAPONSTATE, BROADCAST_DURATION_REALTIME,
 				_("Too few zombies to revive anyone (less than {int:MinZombies})"),
 				"MinZombies", &MinimumInfected,
 				NULL);
@@ -1267,12 +1267,12 @@ void CInfClassHuman::BroadcastWeaponState() const
 				Line1.append(Line2);
 
 				GameServer()->AddBroadcast(GetPlayer()->GetCid(), Line1.buffer(),
-					BROADCAST_PRIORITY_WEAPONSTATE, BROADCAST_DURATION_REALTIME);
+					EBroadcastPriority::WEAPONSTATE, BROADCAST_DURATION_REALTIME);
 			}
 			else
 			{
 				GameServer()->SendBroadcast_Localization(GetPlayer()->GetCid(),
-					BROADCAST_PRIORITY_WEAPONSTATE, BROADCAST_DURATION_REALTIME,
+					EBroadcastPriority::WEAPONSTATE, BROADCAST_DURATION_REALTIME,
 					_C("Mercenary", "The bomb is fully upgraded.\n"
 									"There is nothing to do with the laser."),
 					NULL);
@@ -1281,7 +1281,7 @@ void CInfClassHuman::BroadcastWeaponState() const
 		else
 		{
 			GameServer()->SendBroadcast_Localization(GetPlayer()->GetCid(),
-				BROADCAST_PRIORITY_WEAPONSTATE, BROADCAST_DURATION_REALTIME,
+				EBroadcastPriority::WEAPONSTATE, BROADCAST_DURATION_REALTIME,
 				_C("Mercenary", "Use the hammer to place a bomb and\n"
 								"then use the laser to upgrade it"),
 				NULL);
@@ -1295,7 +1295,7 @@ void CInfClassHuman::BroadcastWeaponState() const
 		if(!GameController()->AreTurretsEnabled())
 		{
 			GameServer()->SendBroadcast_Localization(GetCid(),
-				BROADCAST_PRIORITY_WEAPONSTATE, BROADCAST_DURATION_REALTIME,
+				EBroadcastPriority::WEAPONSTATE, BROADCAST_DURATION_REALTIME,
 				_("The turrets are not allowed by the game rules (at least right now)."),
 				nullptr);
 		}
@@ -1305,7 +1305,7 @@ void CInfClassHuman::BroadcastWeaponState() const
 			if(MaxTurrets == 1)
 			{
 				GameServer()->SendBroadcast_Localization(GetCid(),
-					BROADCAST_PRIORITY_WEAPONSTATE, BROADCAST_DURATION_REALTIME,
+					EBroadcastPriority::WEAPONSTATE, BROADCAST_DURATION_REALTIME,
 					_("You have a turret. Use the hammer to place it."),
 					nullptr
 					);
@@ -1313,7 +1313,7 @@ void CInfClassHuman::BroadcastWeaponState() const
 			else
 			{
 				GameServer()->SendBroadcast_Localization_P(GetCid(),
-					BROADCAST_PRIORITY_WEAPONSTATE, BROADCAST_DURATION_REALTIME, Turrets,
+					EBroadcastPriority::WEAPONSTATE, BROADCAST_DURATION_REALTIME, Turrets,
 					_("You have {int:NumTurrets} of {int:MaxTurrets} turrets. Use the hammer to place one."),
 					"NumTurrets", &Turrets,
 					"MaxTurrets", &MaxTurrets,
@@ -1324,7 +1324,7 @@ void CInfClassHuman::BroadcastWeaponState() const
 		else
 		{
 			GameServer()->SendBroadcast_Localization(GetPlayer()->GetCid(),
-				BROADCAST_PRIORITY_WEAPONSTATE, BROADCAST_DURATION_REALTIME,
+				EBroadcastPriority::WEAPONSTATE, BROADCAST_DURATION_REALTIME,
 				_("You don't have a turret to place"),
 				nullptr
 				);
@@ -1355,7 +1355,7 @@ void CInfClassHuman::BroadcastWeaponState() const
 			int RemainingTicks = pCurrentWall->GetEndTick() - CurrentTick;
 			int Seconds = 1 + RemainingTicks / Server()->TickSpeed();
 			GameServer()->SendBroadcast_Localization(GetPlayer()->GetCid(),
-				BROADCAST_PRIORITY_WEAPONSTATE, BROADCAST_DURATION_REALTIME,
+				EBroadcastPriority::WEAPONSTATE, BROADCAST_DURATION_REALTIME,
 				_("Laser wall: {sec:RemainingTime}"),
 				"RemainingTime", &Seconds,
 				NULL
@@ -1383,7 +1383,7 @@ void CInfClassHuman::BroadcastWeaponState() const
 			int RemainingTicks = pCurrentWall->GetEndTick() - CurrentTick;
 			int Seconds = 1 + RemainingTicks / Server()->TickSpeed();
 			GameServer()->SendBroadcast_Localization(GetPlayer()->GetCid(),
-				BROADCAST_PRIORITY_WEAPONSTATE, BROADCAST_DURATION_REALTIME,
+				EBroadcastPriority::WEAPONSTATE, BROADCAST_DURATION_REALTIME,
 				_("Looper laser wall: {sec:RemainingTime}"),
 				"RemainingTime", &Seconds,
 				NULL
@@ -1402,7 +1402,7 @@ void CInfClassHuman::BroadcastWeaponState() const
 		if(NumBombs)
 		{
 			GameServer()->SendBroadcast_Localization_P(GetPlayer()->GetCid(),
-				BROADCAST_PRIORITY_WEAPONSTATE, BROADCAST_DURATION_REALTIME,
+				EBroadcastPriority::WEAPONSTATE, BROADCAST_DURATION_REALTIME,
 				NumBombs,
 				_CP("Soldier", "One bomb left", "{int:NumBombs} bombs left"),
 				"NumBombs", &NumBombs,
@@ -1432,7 +1432,7 @@ void CInfClassHuman::BroadcastWeaponState() const
 		if(m_BroadcastWhiteHoleReady + (2 * Server()->TickSpeed()) > Server()->Tick())
 		{
 			GameServer()->SendBroadcast_Localization(GetPlayer()->GetCid(),
-				BROADCAST_PRIORITY_WEAPONSTATE, BROADCAST_DURATION_REALTIME,
+				EBroadcastPriority::WEAPONSTATE, BROADCAST_DURATION_REALTIME,
 				_("The white hole is available!"),
 				NULL
 			);
@@ -1440,7 +1440,7 @@ void CInfClassHuman::BroadcastWeaponState() const
 		else if(NumMines > 0 && !pCurrentWhiteHole)
 		{
 			GameServer()->SendBroadcast_Localization_P(GetPlayer()->GetCid(),
-				BROADCAST_PRIORITY_WEAPONSTATE, BROADCAST_DURATION_REALTIME, NumMines,
+				EBroadcastPriority::WEAPONSTATE, BROADCAST_DURATION_REALTIME, NumMines,
 				_P("One mine is active", "{int:NumMines} mines are active"),
 				"NumMines", &NumMines,
 				NULL
@@ -1451,7 +1451,7 @@ void CInfClassHuman::BroadcastWeaponState() const
 			int RemainingTicks = pCurrentWhiteHole->GetEndTick() - CurrentTick;
 			int Seconds = 1 + RemainingTicks / Server()->TickSpeed();
 			GameServer()->SendBroadcast_Localization(GetPlayer()->GetCid(),
-				BROADCAST_PRIORITY_WEAPONSTATE, BROADCAST_DURATION_REALTIME,
+				EBroadcastPriority::WEAPONSTATE, BROADCAST_DURATION_REALTIME,
 				_("White hole: {sec:RemainingTime}"),
 				"RemainingTime", &Seconds,
 				NULL
@@ -1472,7 +1472,7 @@ void CInfClassHuman::BroadcastWeaponState() const
 				"RemainingTime", &Seconds,
 				nullptr);
 			GameServer()->SendBroadcast(GetCid(), Buffer.buffer(),
-				BROADCAST_PRIORITY_WEAPONSTATE, BROADCAST_DURATION_REALTIME);
+				EBroadcastPriority::WEAPONSTATE, BROADCAST_DURATION_REALTIME);
 		}
 	}
 	else if(GetPlayerClass() == EPlayerClass::Biologist)
@@ -1487,7 +1487,7 @@ void CInfClassHuman::BroadcastWeaponState() const
 		if(NumMines > 0)
 		{
 			GameServer()->SendBroadcast_Localization(GetPlayer()->GetCid(),
-				BROADCAST_PRIORITY_WEAPONSTATE, BROADCAST_DURATION_REALTIME,
+				EBroadcastPriority::WEAPONSTATE, BROADCAST_DURATION_REALTIME,
 				_C("Biologist", "Mine activated"),
 				NULL
 			);
@@ -1504,7 +1504,7 @@ void CInfClassHuman::BroadcastWeaponState() const
 		{
 			int Seconds = 1 + CoolDown / Server()->TickSpeed();
 			GameServer()->SendBroadcast_Localization(GetCid(),
-				BROADCAST_PRIORITY_WEAPONSTATE, BROADCAST_DURATION_REALTIME,
+				EBroadcastPriority::WEAPONSTATE, BROADCAST_DURATION_REALTIME,
 				_C("Ninja", "Next target in {sec:RemainingTime}"),
 				"RemainingTime", &Seconds,
 				NULL
@@ -1513,7 +1513,7 @@ void CInfClassHuman::BroadcastWeaponState() const
 		else if(TargetId >= 0)
 		{
 			GameServer()->SendBroadcast_Localization(GetCid(),
-				BROADCAST_PRIORITY_WEAPONSTATE, BROADCAST_DURATION_REALTIME,
+				EBroadcastPriority::WEAPONSTATE, BROADCAST_DURATION_REALTIME,
 				_C("Ninja", "Target to eliminate: {str:PlayerName}"),
 				"PlayerName", Server()->ClientName(TargetId),
 				NULL
@@ -1526,7 +1526,7 @@ void CInfClassHuman::BroadcastWeaponState() const
 		{
 			int Seconds = 1+m_PositionLockTicksRemaining/Server()->TickSpeed();
 			GameServer()->SendBroadcast_Localization(GetPlayer()->GetCid(),
-				BROADCAST_PRIORITY_WEAPONSTATE, BROADCAST_DURATION_REALTIME,
+				EBroadcastPriority::WEAPONSTATE, BROADCAST_DURATION_REALTIME,
 				_C("Sniper", "Position lock: {sec:RemainingTime}"),
 				"RemainingTime", &Seconds,
 				NULL
@@ -1549,7 +1549,7 @@ void CInfClassHuman::BroadcastWeaponState() const
 		{
 			float BombLevel = pCurrentBomb->GetLoad() / static_cast<float>(Config()->m_InfMercBombs);
 			GameServer()->SendBroadcast_Localization(GetPlayer()->GetCid(),
-				BROADCAST_PRIORITY_WEAPONSTATE, BROADCAST_DURATION_REALTIME,
+				EBroadcastPriority::WEAPONSTATE, BROADCAST_DURATION_REALTIME,
 				_C("Mercenary", "Explosive yield: {percent:BombLevel}"),
 				"BombLevel", &BombLevel,
 				NULL);
@@ -1564,7 +1564,7 @@ void CInfClassHuman::BroadcastWeaponState() const
 		{
 			int Seconds = 1 + CoolDown / Server()->TickSpeed();
 			GameServer()->SendBroadcast_Localization(GetPlayer()->GetCid(),
-				BROADCAST_PRIORITY_WEAPONSTATE, BROADCAST_DURATION_REALTIME,
+				EBroadcastPriority::WEAPONSTATE, BROADCAST_DURATION_REALTIME,
 				_("Next flag in {sec:RemainingTime}"),
 				"RemainingTime", &Seconds,
 				nullptr

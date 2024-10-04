@@ -174,7 +174,8 @@ void CGameContext::Clear()
 	{
 		m_BroadcastStates[i].m_NoChangeTick = 0;
 		m_BroadcastStates[i].m_LifeSpanTick = 0;
-		m_BroadcastStates[i].m_Priority = BROADCAST_PRIORITY_LOWEST;
+		m_BroadcastStates[i].m_Priority = EBroadcastPriority::LOWEST;
+		m_BroadcastStates[i].m_TimedPriority = EBroadcastPriority::LOWEST;
 		m_BroadcastStates[i].m_PrevMessage[0] = 0;
 		m_BroadcastStates[i].m_NextMessage[0] = 0;
 	}
@@ -597,7 +598,7 @@ void CGameContext::SendMOTD_Localization(int To, const char* pText, ...)
 	}
 }
 
-void CGameContext::AddBroadcast(int ClientId, const char* pText, int Priority, int LifeSpan)
+void CGameContext::AddBroadcast(int ClientId, const char* pText, EBroadcastPriority Priority, int LifeSpan)
 {
 	if(LifeSpan > 0)
 	{
@@ -728,7 +729,7 @@ bool CGameContext::MapExists(const char *pMapName) const
 	return Storage()->FindFile(aMapFilename, "maps", IStorage::TYPE_ALL, aBuf, sizeof(aBuf));
 }
 
-void CGameContext::SendBroadcast(int To, const char *pText, int Priority, int LifeSpan)
+void CGameContext::SendBroadcast(int To, const char *pText, EBroadcastPriority Priority, int LifeSpan)
 {
 	int Start = (To < 0 ? 0 : To);
 	int End = (To < 0 ? MAX_CLIENTS : To+1);
@@ -748,7 +749,7 @@ void CGameContext::SendBroadcast(int To, const char *pText, int Priority, int Li
 	}
 }
 
-void CGameContext::ClearBroadcast(int To, int Priority)
+void CGameContext::ClearBroadcast(int To, EBroadcastPriority Priority)
 {
 	SendBroadcast(To, "", Priority, BROADCAST_DURATION_REALTIME);
 }
@@ -776,7 +777,7 @@ const char *CGameContext::GetChatCategoryPrefix(int Category)
 	return "";
 }
 
-void CGameContext::SendBroadcast_Localization(int To, int Priority, int LifeSpan, const char* pText, ...)
+void CGameContext::SendBroadcast_Localization(int To, EBroadcastPriority Priority, int LifeSpan, const char* pText, ...)
 {
 	int Start = (To < 0 ? 0 : To);
 	int End = (To < 0 ? MAX_CLIENTS : To+1);
@@ -808,7 +809,7 @@ void CGameContext::SendBroadcast_Localization(int To, int Priority, int LifeSpan
 	va_end(VarArgs);
 }
 
-void CGameContext::SendBroadcast_Localization_P(int To, int Priority, int LifeSpan, int Number, const char* pText, ...)
+void CGameContext::SendBroadcast_Localization_P(int To, EBroadcastPriority Priority, int LifeSpan, int Number, const char* pText, ...)
 {
 	int Start = (To < 0 ? 0 : To);
 	int End = (To < 0 ? MAX_CLIENTS : To+1);
@@ -1354,17 +1355,17 @@ void CGameContext::OnTick()
 			if(m_BroadcastStates[i].m_LifeSpanTick <= 0)
 			{
 				m_BroadcastStates[i].m_TimedMessage[0] = 0;
-				m_BroadcastStates[i].m_TimedPriority = BROADCAST_PRIORITY_LOWEST;
+				m_BroadcastStates[i].m_TimedPriority = EBroadcastPriority::LOWEST;
 			}
 			m_BroadcastStates[i].m_NextMessage[0] = 0;
-			m_BroadcastStates[i].m_Priority = BROADCAST_PRIORITY_LOWEST;
+			m_BroadcastStates[i].m_Priority = EBroadcastPriority::LOWEST;
 		}
 		else
 		{
 			m_BroadcastStates[i].m_NoChangeTick = 0;
 			m_BroadcastStates[i].m_LifeSpanTick = 0;
-			m_BroadcastStates[i].m_Priority = BROADCAST_PRIORITY_LOWEST;
-			m_BroadcastStates[i].m_TimedPriority = BROADCAST_PRIORITY_LOWEST;
+			m_BroadcastStates[i].m_Priority = EBroadcastPriority::LOWEST;
+			m_BroadcastStates[i].m_TimedPriority = EBroadcastPriority::LOWEST;
 			m_BroadcastStates[i].m_PrevMessage[0] = 0;
 			m_BroadcastStates[i].m_NextMessage[0] = 0;
 			m_BroadcastStates[i].m_TimedMessage[0] = 0;
@@ -1859,7 +1860,7 @@ void CGameContext::OnClientConnected(int ClientId, void *pData)
 
 	m_BroadcastStates[ClientId].m_NoChangeTick = 0;
 	m_BroadcastStates[ClientId].m_LifeSpanTick = 0;
-	m_BroadcastStates[ClientId].m_Priority = BROADCAST_PRIORITY_LOWEST;
+	m_BroadcastStates[ClientId].m_Priority = EBroadcastPriority::LOWEST;
 	m_BroadcastStates[ClientId].m_PrevMessage[0] = 0;
 	m_BroadcastStates[ClientId].m_NextMessage[0] = 0;
 
@@ -2425,14 +2426,14 @@ void CGameContext::OnSetTeamNetMessage(const CNetMsg_Cl_SetTeam *pMsg, int Clien
 		int TimeLeft = (pPlayer->m_TeamChangeTick - Server()->Tick()) / Server()->TickSpeed();
 		char aBuf[128];
 		str_format(aBuf, sizeof(aBuf), "Time to wait before changing team: %02d:%02d", TimeLeft / 60, TimeLeft % 60);
-		SendBroadcast(ClientId, aBuf, BROADCAST_PRIORITY_GAMEANNOUNCE, BROADCAST_DURATION_GAMEANNOUNCE);
+		SendBroadcast(ClientId, aBuf, EBroadcastPriority::GAMEANNOUNCE, BROADCAST_DURATION_GAMEANNOUNCE);
 		return;
 	}
 
 	/* INFECTION MODIFICATION START ***************************************/
 	if(pMsg->m_Team == TEAM_SPECTATORS && !m_pController->CanJoinTeam(TEAM_SPECTATORS, ClientId))
 	{
-		SendBroadcast_Localization(ClientId, BROADCAST_PRIORITY_GAMEANNOUNCE, BROADCAST_DURATION_GAMEANNOUNCE, _("You can't join the spectators right now"), NULL);
+		SendBroadcast_Localization(ClientId, EBroadcastPriority::GAMEANNOUNCE, BROADCAST_DURATION_GAMEANNOUNCE, _("You can't join the spectators right now"), NULL);
 		return;
 	}
 	/* INFECTION MODIFICATION END *****************************************/
@@ -3011,7 +3012,7 @@ void CGameContext::ConBroadcast(IConsole::IResult *pResult, void *pUserData)
 	}
 	aBuf[j] = '\0';
 
-	pSelf->SendBroadcast(-1, aBuf, BROADCAST_PRIORITY_SERVERANNOUNCE, pSelf->Server()->TickSpeed() * 3);
+	pSelf->SendBroadcast(-1, aBuf, EBroadcastPriority::SERVERANNOUNCE, pSelf->Server()->TickSpeed() * 3);
 }
 
 void CGameContext::ConSay(IConsole::IResult *pResult, void *pUserData)

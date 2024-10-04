@@ -787,10 +787,10 @@ void CInfClassPlayer::SendClassIntro()
 		const char *pTranslated = Server()->Localization()->Localize(GetLanguage(), pClassName);
 
 		if(IsHuman())
-			GameServer()->SendBroadcast_Localization(GetCid(), BROADCAST_PRIORITY_GAMEANNOUNCE, BROADCAST_DURATION_GAMEANNOUNCE,
+			GameServer()->SendBroadcast_Localization(GetCid(), EBroadcastPriority::GAMEANNOUNCE, BROADCAST_DURATION_GAMEANNOUNCE,
 				_("You are a human: {str:ClassName}"), "ClassName", pTranslated, NULL);
 		else
-			GameServer()->SendBroadcast_Localization(GetCid(), BROADCAST_PRIORITY_GAMEANNOUNCE, BROADCAST_DURATION_GAMEANNOUNCE,
+			GameServer()->SendBroadcast_Localization(GetCid(), EBroadcastPriority::GAMEANNOUNCE, BROADCAST_DURATION_GAMEANNOUNCE,
 				_("You are an infected: {str:ClassName}"), "ClassName", pTranslated, NULL);
 
 		int Index = static_cast<int>(Class);

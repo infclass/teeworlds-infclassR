@@ -257,7 +257,7 @@ void CInfClassInfected::OnCharacterTick()
 
 		// Display time left to live
 		int Time = m_VoodooTimeAlive/Server()->TickSpeed();
-		GameServer()->SendBroadcast_Localization(GetCid(), BROADCAST_PRIORITY_WEAPONSTATE, BROADCAST_DURATION_REALTIME,
+		GameServer()->SendBroadcast_Localization(GetCid(), EBroadcastPriority::WEAPONSTATE, BROADCAST_DURATION_REALTIME,
 			_C("Voodoo", "Staying alive for: {int:RemainingTime}"),
 			"RemainingTime", &Time,
 			NULL
@@ -642,7 +642,7 @@ void CInfClassInfected::BroadcastWeaponState() const
 	{
 		if(m_pCharacter->m_HookMode > 0)
 		{
-			GameServer()->SendBroadcast_Localization(GetCid(), BROADCAST_PRIORITY_WEAPONSTATE,
+			GameServer()->SendBroadcast_Localization(GetCid(), EBroadcastPriority::WEAPONSTATE,
 				BROADCAST_DURATION_REALTIME, _C("Spider", "Web mode enabled"), NULL);
 		}
 	}
@@ -651,7 +651,7 @@ void CInfClassInfected::BroadcastWeaponState() const
 		if(m_pPlayer->GetGhoulLevel())
 		{
 			float FodderInStomach = GetGhoulPercent();
-			GameServer()->SendBroadcast_Localization(GetCid(), BROADCAST_PRIORITY_WEAPONSTATE,
+			GameServer()->SendBroadcast_Localization(GetCid(), EBroadcastPriority::WEAPONSTATE,
 				BROADCAST_DURATION_REALTIME,
 				_C("Ghoul", "Stomach filled by {percent:FodderInStomach}"),
 				"FodderInStomach", &FodderInStomach,
