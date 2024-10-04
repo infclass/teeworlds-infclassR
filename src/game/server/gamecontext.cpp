@@ -604,8 +604,8 @@ void CGameContext::AddBroadcast(int ClientId, const char* pText, EBroadcastPrior
 	{
 		if(m_BroadcastStates[ClientId].m_TimedPriority > Priority)
 			return;
-			
-		str_copy(m_BroadcastStates[ClientId].m_TimedMessage, pText, sizeof(m_BroadcastStates[ClientId].m_TimedMessage));
+
+		str_copy(m_BroadcastStates[ClientId].m_TimedMessage, pText);
 		m_BroadcastStates[ClientId].m_LifeSpanTick = LifeSpan;
 		m_BroadcastStates[ClientId].m_TimedPriority = Priority;
 	}
@@ -613,8 +613,8 @@ void CGameContext::AddBroadcast(int ClientId, const char* pText, EBroadcastPrior
 	{
 		if(m_BroadcastStates[ClientId].m_Priority > Priority)
 			return;
-			
-		str_copy(m_BroadcastStates[ClientId].m_NextMessage, pText, sizeof(m_BroadcastStates[ClientId].m_NextMessage));
+
+		str_copy(m_BroadcastStates[ClientId].m_NextMessage, pText);
 		m_BroadcastStates[ClientId].m_Priority = Priority;
 	}
 }
@@ -840,13 +840,13 @@ void CGameContext::SendChat(int ChatterClientId, int Team, const char *pText, in
 			return;
 
 	char aBuf[256], aText[256];
-	str_copy(aText, pText, sizeof(aText));
+	str_copy(aText, pText);
 	if(ChatterClientId >= 0 && ChatterClientId < MAX_CLIENTS)
 		str_format(aBuf, sizeof(aBuf), "%d:%d:%s: %s", ChatterClientId, Team, Server()->ClientName(ChatterClientId), pText);
 	else if(ChatterClientId == -2)
 	{
 		str_format(aBuf, sizeof(aBuf), "### %s", aText);
-		str_copy(aText, aBuf, sizeof(aText));
+		str_copy(aText, aBuf);
 		ChatterClientId = -1;
 	}
 	else
@@ -972,9 +972,9 @@ void CGameContext::StartVote(const char *pDesc, const char *pCommand, const char
 
 	// start vote
 	m_VoteCloseTime = time_get() + time_freq() * g_Config.m_SvVoteTime;
-	str_copy(m_aVoteDescription, pDesc, sizeof(m_aVoteDescription));
-	str_copy(m_aVoteCommand, pCommand, sizeof(m_aVoteCommand));
-	str_copy(m_aVoteReason, pReason, sizeof(m_aVoteReason));
+	str_copy(m_aVoteDescription, pDesc);
+	str_copy(m_aVoteCommand, pCommand);
+	str_copy(m_aVoteReason, pReason);
 	SendVoteSet(-1);
 	m_VoteUpdate = true;
 }
@@ -1309,9 +1309,8 @@ void CGameContext::OnTick()
 					Msg.m_pDescription = "";
 					Msg.m_pReason = "";
 					Server()->SendPackMsg(&Msg, MSGFLAG_VITAL, i);
-					
-					str_copy(m_VoteLanguage[i], "en", sizeof(m_VoteLanguage[i]));				
-					
+
+					str_copy(m_VoteLanguage[i], "en");
 				}
 				else
 				{
@@ -1328,7 +1327,7 @@ void CGameContext::OnTick()
 		{
 			if(m_BroadcastStates[i].m_LifeSpanTick > 0 && m_BroadcastStates[i].m_TimedPriority > m_BroadcastStates[i].m_Priority)
 			{
-				str_copy(m_BroadcastStates[i].m_NextMessage, m_BroadcastStates[i].m_TimedMessage, sizeof(m_BroadcastStates[i].m_NextMessage));
+				str_copy(m_BroadcastStates[i].m_NextMessage, m_BroadcastStates[i].m_TimedMessage);
 			}
 			
 			//Send broadcast only if the message is different, or to fight auto-fading
@@ -1341,7 +1340,7 @@ void CGameContext::OnTick()
 				Msg.m_pMessage = m_BroadcastStates[i].m_NextMessage;
 				Server()->SendPackMsg(&Msg, MSGFLAG_VITAL|MSGFLAG_NORECORD, i);
 				
-				str_copy(m_BroadcastStates[i].m_PrevMessage, m_BroadcastStates[i].m_NextMessage, sizeof(m_BroadcastStates[i].m_PrevMessage));
+				str_copy(m_BroadcastStates[i].m_PrevMessage, m_BroadcastStates[i].m_NextMessage);
 				
 				m_BroadcastStates[i].m_NoChangeTick = 0;
 			}
@@ -2188,7 +2187,7 @@ void CGameContext::OnCallVoteNetMessage(const CNetMsg_Cl_CallVote *pMsg, int Cli
 	}
 	if(pMsg->m_pReason[0])
 	{
-		str_copy(aReason, pMsg->m_pReason, sizeof(aReason));
+		str_copy(aReason, pMsg->m_pReason);
 	}
 
 	if(str_comp_nocase(pMsg->m_pType, "kick") == 0)
@@ -2490,7 +2489,7 @@ void CGameContext::OnChangeInfoNetMessage(const CNetMsg_Cl_ChangeInfo *pMsg, int
 	if(!pPlayer->m_ClientNameLocked && Server()->WouldClientNameChange(ClientId, pMsg->m_pName))
 	{
 		char aOldName[MAX_NAME_LENGTH];
-		str_copy(aOldName, Server()->ClientName(ClientId), sizeof(aOldName));
+		str_copy(aOldName, Server()->ClientName(ClientId));
 
 		Server()->SetClientName(ClientId, pMsg->m_pName);
 
@@ -2617,7 +2616,7 @@ void CGameContext::OnStartInfoNetMessage(const CNetMsg_Cl_StartInfo *pMsg, int C
 			CNetMsg_Sv_VoteSet Msg;
 			Msg.m_Timeout = 10;
 			Msg.m_pReason = "";
-			str_copy(m_VoteLanguage[ClientId], pLangForVote, sizeof(m_VoteLanguage[ClientId]));
+			str_copy(m_VoteLanguage[ClientId], pLangForVote);
 			Msg.m_pDescription = Server()->Localization()->Localize(m_VoteLanguage[ClientId], _("Switch language to english?"));
 			Server()->SendPackMsg(&Msg, MSGFLAG_VITAL, ClientId);
 			m_VoteLanguageTick[ClientId] = 10 * Server()->TickSpeed();
@@ -2755,7 +2754,7 @@ void CGameContext::ConTimeout(IConsole::IResult *pResult, void *pUserData)
 	}
 
 	pSelf->Server()->SetTimeoutProtected(pResult->m_ClientId);
-	str_copy(pPlayer->m_aTimeoutCode, pResult->GetString(0), sizeof(pPlayer->m_aTimeoutCode));
+	str_copy(pPlayer->m_aTimeoutCode, pResult->GetString(0));
 }
 
 void CGameContext::ConMe(IConsole::IResult *pResult, void *pUserData)
@@ -2995,7 +2994,7 @@ void CGameContext::ConBroadcast(IConsole::IResult *pResult, void *pUserData)
 	CGameContext *pSelf = (CGameContext *)pUserData;
 
 	char aBuf[1024];
-	str_copy(aBuf, pResult->GetString(0), sizeof(aBuf));
+	str_copy(aBuf, pResult->GetString(0));
 
 	int i, j;
 	for(i = 0, j = 0; aBuf[i]; i++, j++)
@@ -3157,7 +3156,7 @@ bool CGameContext::InsertVote(int Position, const char *pDescription, const char
 	if(!m_pVoteOptionFirst)
 		m_pVoteOptionFirst = pOption;
 
-	str_copy(pOption->m_aDescription, pDescription, sizeof(pOption->m_aDescription));
+	str_copy(pOption->m_aDescription, pDescription);
 	mem_copy(pOption->m_aCommand, pCommand, Len + 1);
 	++m_NumVoteOptions;
 
@@ -3251,7 +3250,7 @@ void CGameContext::RemoveVote(const char *pVoteOption)
 		if(!pVoteOptionFirst)
 			pVoteOptionFirst = pDst;
 
-		str_copy(pDst->m_aDescription, pSrc->m_aDescription, sizeof(pDst->m_aDescription));
+		str_copy(pDst->m_aDescription, pSrc->m_aDescription);
 		mem_copy(pDst->m_aCommand, pSrc->m_aCommand, Len + 1);
 	}
 
@@ -3635,7 +3634,7 @@ void CGameContext::PrivateMessage(const char* pStr, int ClientId, bool TeamChat)
 				{
 					CheckDistance = true;
 					CheckDistancePos = m_apPlayers[ClientId]->GetCharacter()->m_Pos;
-					str_copy(aChatTitle, "near", sizeof(aChatTitle));
+					str_copy(aChatTitle, "near");
 				}
 			}
 #ifdef CONF_SQL
@@ -3645,109 +3644,109 @@ void CGameContext::PrivateMessage(const char* pStr, int ClientId, bool TeamChat)
 				{
 					CheckLevel = SQL_USERLEVEL_MOD;
 					CheckDistancePos = m_apPlayers[ClientId]->GetCharacter()->m_Pos;
-					str_copy(aChatTitle, "moderators", sizeof(aChatTitle));
+					str_copy(aChatTitle, "moderators");
 				}
 			}
 #endif
 			else if(str_comp(aNameFound, "!engineer") == 0 && m_apPlayers[ClientId] && m_apPlayers[ClientId]->GetCharacter())
 			{
 				CheckClass = EPlayerClass::Engineer;
-				str_copy(aChatTitle, "engineer", sizeof(aChatTitle));
+				str_copy(aChatTitle, "engineer");
 			}
 			else if(str_comp(aNameFound, "!soldier ") == 0 && m_apPlayers[ClientId] && m_apPlayers[ClientId]->GetCharacter())
 			{
 				CheckClass = EPlayerClass::Soldier;
-				str_copy(aChatTitle, "soldier", sizeof(aChatTitle));
+				str_copy(aChatTitle, "soldier");
 			}
 			else if(str_comp(aNameFound, "!scientist") == 0 && m_apPlayers[ClientId] && m_apPlayers[ClientId]->GetCharacter())
 			{
 				CheckClass = EPlayerClass::Scientist;
-				str_copy(aChatTitle, "scientist", sizeof(aChatTitle));
+				str_copy(aChatTitle, "scientist");
 			}
 			else if(str_comp(aNameFound, "!biologist") == 0 && m_apPlayers[ClientId] && m_apPlayers[ClientId]->GetCharacter())
 			{
 				CheckClass = EPlayerClass::Biologist;
-				str_copy(aChatTitle, "biologist", sizeof(aChatTitle));
+				str_copy(aChatTitle, "biologist");
 			}
 			else if(str_comp(aNameFound, "!looper") == 0 && m_apPlayers[ClientId] && m_apPlayers[ClientId]->GetCharacter())
 			{
 				CheckClass = EPlayerClass::Looper;
-				str_copy(aChatTitle, "looper", sizeof(aChatTitle));
+				str_copy(aChatTitle, "looper");
 			}
 			else if(str_comp(aNameFound, "!medic") == 0 && m_apPlayers[ClientId] && m_apPlayers[ClientId]->GetCharacter())
 			{
 				CheckClass = EPlayerClass::Medic;
-				str_copy(aChatTitle, "medic", sizeof(aChatTitle));
+				str_copy(aChatTitle, "medic");
 			}
 			else if(str_comp(aNameFound, "!hero") == 0 && m_apPlayers[ClientId] && m_apPlayers[ClientId]->GetCharacter())
 			{
 				CheckClass = EPlayerClass::Hero;
-				str_copy(aChatTitle, "hero", sizeof(aChatTitle));
+				str_copy(aChatTitle, "hero");
 			}
 			else if(str_comp(aNameFound, "!ninja") == 0 && m_apPlayers[ClientId] && m_apPlayers[ClientId]->GetCharacter())
 			{
 				CheckClass = EPlayerClass::Ninja;
-				str_copy(aChatTitle, "ninja", sizeof(aChatTitle));
+				str_copy(aChatTitle, "ninja");
 			}
 			else if(str_comp(aNameFound, "!mercenary") == 0 && m_apPlayers[ClientId] && m_apPlayers[ClientId]->GetCharacter())
 			{
 				CheckClass = EPlayerClass::Mercenary;
-				str_copy(aChatTitle, "mercenary", sizeof(aChatTitle));
+				str_copy(aChatTitle, "mercenary");
 			}
 			else if(str_comp(aNameFound, "!sniper") == 0 && m_apPlayers[ClientId] && m_apPlayers[ClientId]->GetCharacter())
 			{
 				CheckClass = EPlayerClass::Sniper;
-				str_copy(aChatTitle, "sniper", sizeof(aChatTitle));
+				str_copy(aChatTitle, "sniper");
 			}
 			else if(str_comp(aNameFound, "!smoker") == 0 && m_apPlayers[ClientId] && m_apPlayers[ClientId]->GetCharacter())
 			{
 				CheckClass = EPlayerClass::Smoker;
-				str_copy(aChatTitle, "smoker", sizeof(aChatTitle));
+				str_copy(aChatTitle, "smoker");
 			}
 			else if(str_comp(aNameFound, "!hunter") == 0 && m_apPlayers[ClientId] && m_apPlayers[ClientId]->GetCharacter())
 			{
 				CheckClass = EPlayerClass::Hunter;
-				str_copy(aChatTitle, "hunter", sizeof(aChatTitle));
+				str_copy(aChatTitle, "hunter");
 			}
 			else if(str_comp(aNameFound, "!bat") == 0 && m_apPlayers[ClientId] && m_apPlayers[ClientId]->GetCharacter())
 			{
 				CheckClass = EPlayerClass::Bat;
-				str_copy(aChatTitle, "bat", sizeof(aChatTitle));
+				str_copy(aChatTitle, "bat");
 			}
 			else if(str_comp(aNameFound, "!boomer") == 0 && m_apPlayers[ClientId] && m_apPlayers[ClientId]->GetCharacter())
 			{
 				CheckClass = EPlayerClass::Boomer;
-				str_copy(aChatTitle, "boomer", sizeof(aChatTitle));
+				str_copy(aChatTitle, "boomer");
 			}
 			else if(str_comp(aNameFound, "!spider") == 0 && m_apPlayers[ClientId] && m_apPlayers[ClientId]->GetCharacter())
 			{
 				CheckClass = EPlayerClass::Spider;
-				str_copy(aChatTitle, "spider", sizeof(aChatTitle));
+				str_copy(aChatTitle, "spider");
 			}
 			else if(str_comp(aNameFound, "!ghost") == 0 && m_apPlayers[ClientId] && m_apPlayers[ClientId]->GetCharacter())
 			{
 				CheckClass = EPlayerClass::Ghost;
-				str_copy(aChatTitle, "ghost", sizeof(aChatTitle));
+				str_copy(aChatTitle, "ghost");
 			}
 			else if(str_comp(aNameFound, "!ghoul") == 0 && m_apPlayers[ClientId] && m_apPlayers[ClientId]->GetCharacter())
 			{
 				CheckClass = EPlayerClass::Ghoul;
-				str_copy(aChatTitle, "ghoul", sizeof(aChatTitle));
+				str_copy(aChatTitle, "ghoul");
 			}
 			else if(str_comp(aNameFound, "!slug") == 0 && m_apPlayers[ClientId] && m_apPlayers[ClientId]->GetCharacter())
 			{
 				CheckClass = EPlayerClass::Slug;
-				str_copy(aChatTitle, "slug", sizeof(aChatTitle));
+				str_copy(aChatTitle, "slug");
 			}
 			else if(str_comp(aNameFound, "!undead") == 0 && m_apPlayers[ClientId] && m_apPlayers[ClientId]->GetCharacter())
 			{
 				CheckClass = EPlayerClass::Undead;
-				str_copy(aChatTitle, "undead", sizeof(aChatTitle));
+				str_copy(aChatTitle, "undead");
 			}
 			else if(str_comp(aNameFound, "!witch") == 0 && m_apPlayers[ClientId] && m_apPlayers[ClientId]->GetCharacter())
 			{
 				CheckClass = EPlayerClass::Witch;
-				str_copy(aChatTitle, "witch", sizeof(aChatTitle));
+				str_copy(aChatTitle, "witch");
 			}
 			else
 			{
@@ -4512,13 +4511,13 @@ void CGameContext::ConLanguage(IConsole::IResult *pResult, void *pUserData)
 	if(pLanguageCode)
 	{
 		if(str_comp_nocase(pLanguageCode, "ua") == 0)
-			str_copy(aFinalLanguageCode, "uk", sizeof(aFinalLanguageCode));
+			str_copy(aFinalLanguageCode, "uk");
 		else
 		{
 			for(int i=0; i<pSelf->Server()->Localization()->m_pLanguages.size(); i++)
 			{
 				if(str_comp_nocase(pLanguageCode, pSelf->Server()->Localization()->m_pLanguages[i]->GetFilename()) == 0)
-					str_copy(aFinalLanguageCode, pLanguageCode, sizeof(aFinalLanguageCode));
+					str_copy(aFinalLanguageCode, pLanguageCode);
 			}
 		}
 	}
@@ -4763,7 +4762,7 @@ void CGameContext::OnInit(const void *pPersistentData)
 	for(int i = 0; i < MAX_CLIENTS; i++)
 	{
 		m_VoteLanguageTick[i] = 0;
-		str_copy(m_VoteLanguage[i], "en", sizeof(m_VoteLanguage[i]));				
+		str_copy(m_VoteLanguage[i], "en");
 	}
 
 	m_Layers.Init(Kernel());
