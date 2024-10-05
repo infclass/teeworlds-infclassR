@@ -1741,7 +1741,6 @@ void CInfClassHuman::PlaceEngineerWall(WeaponFireContext *pFireContext)
 			if(!GameController()->HumanWallAllowedInPos(TestPos))
 			{
 				pFireContext->FireAccepted = false;
-				pFireContext->NoAmmo = true;
 				break;
 			}
 		}
@@ -1750,6 +1749,10 @@ void CInfClassHuman::PlaceEngineerWall(WeaponFireContext *pFireContext)
 		{
 			pExistingWall->SetEndPosition(GetPos());
 			GameServer()->CreateSound(GetPos(), SOUND_LASER_FIRE);
+		}
+		else
+		{
+			GameWorld()->DestroyEntity(pExistingWall);
 		}
 	}
 }
@@ -1786,7 +1789,6 @@ void CInfClassHuman::PlaceLooperWall(WeaponFireContext *pFireContext)
 			if(!GameController()->HumanWallAllowedInPos(TestPos))
 			{
 				pFireContext->FireAccepted = false;
-				pFireContext->NoAmmo = true;
 				break;
 			}
 		}
@@ -1795,6 +1797,10 @@ void CInfClassHuman::PlaceLooperWall(WeaponFireContext *pFireContext)
 		{
 			pExistingWall->SetEndPosition(GetPos());
 			GameServer()->CreateSound(GetPos(), SOUND_LASER_FIRE);
+		}
+		else
+		{
+			GameWorld()->DestroyEntity(pExistingWall);
 		}
 	}
 }
