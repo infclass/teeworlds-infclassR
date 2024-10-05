@@ -2783,9 +2783,9 @@ void CInfClassGameController::EndRound()
 
 void CInfClassGameController::EndRound(ROUND_END_REASON Reason)
 {
+	int NumHumans = 0;
+	int NumInfected = 0;
 	{
-		int NumHumans = 0;
-		int NumInfected = 0;
 		GetPlayerCounter(-1, NumHumans, NumInfected);
 
 		const char *pWinnerTeam = Reason == ROUND_END_REASON::FINISHED ? (NumHumans > 0 ? "humans" : "zombies") : "none";
@@ -2800,7 +2800,6 @@ void CInfClassGameController::EndRound(ROUND_END_REASON Reason)
 			NumHumans, Seconds, m_RoundCount + 1, Config()->m_SvRoundsPerMap, pRoundType);
 		Console()->Print(IConsole::OUTPUT_LEVEL_DEBUG, "game", aBuf);
 	}
-	m_InfectedStarted = false;
 	ResetFinalExplosion();
 	IGameController::EndRound();
 
@@ -2809,6 +2808,15 @@ void CInfClassGameController::EndRound(ROUND_END_REASON Reason)
 		MaybeSendStatistics();
 		Server()->OnRoundIsOver();
 	}
+	else if(Reason == ROUND_END_REASON::CANCELED)
+	{
+		if(!m_InfectedStarted || (NumHumans + NumInfected) < 2)
+		{
+			m_GameOverTick = 0;
+		}
+	}
+
+	m_InfectedStarted = false;
 
 	switch(GetRoundType())
 	{
