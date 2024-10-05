@@ -62,7 +62,7 @@ void CBouncingBullet::Tick()
 	int Collide = GameServer()->Collision()->IntersectLineWeapon(PrevPos, CurPos, nullptr, &NewPos);
 
 	const float ProjectileRadius = 6.0f;
-	CInfClassCharacter *pTargetChr = CInfClassCharacter::GetInstance(GameServer()->m_World.IntersectCharacter(PrevPos, NewPos, ProjectileRadius, NewPos));
+	CInfClassCharacter *pTargetChr = CInfClassCharacter::GetInstance(GameServer()->m_World.IntersectCharacter(PrevPos, NewPos, ProjectileRadius, NewPos, nullptr, m_Owner));
 
 	if(pTargetChr)
 	{

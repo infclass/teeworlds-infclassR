@@ -51,7 +51,7 @@ void CScatterGrenade::Tick()
 	if(m_ExplodeOnContact)
 	{
 		CCharacter *OwnerChar = GameServer()->GetPlayerChar(m_Owner);
-		CCharacter *TargetChr = GameServer()->m_World.IntersectCharacter(PrevPos, CurPos, 6.0f, CurPos, GetExceptEntitiesFilterFunction({OwnerChar}));
+		CCharacter *TargetChr = GameServer()->m_World.IntersectCharacter(PrevPos, CurPos, 6.0f, CurPos, GetExceptEntitiesFilterFunction({OwnerChar}), m_Owner);
 		
 		if(TargetChr)
 		{

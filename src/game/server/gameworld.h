@@ -131,7 +131,7 @@ public:
 	using EntityFilter = bool (*)(const CEntity *);
 	class CEntity *IntersectEntity(vec2 Pos0, vec2 Pos1, float Radius, vec2 *NewPos, int EntityType, EntityFilter FilterFunction);
 
-	class CCharacter *IntersectCharacter(vec2 Pos0, vec2 Pos1, float Radius, vec2 &NewPos, EntityFilter FilterFunction = nullptr, int CollideWith = -1, bool InfectedOnly = true);
+	class CCharacter *IntersectCharacter(vec2 Pos0, vec2 Pos1, float Radius, vec2 &NewPos, EntityFilter FilterFunction, int CollideWith, bool InfectedOnly = true);
 	CEntity *IntersectEntity(vec2 Pos0, vec2 Pos1, float Radius, vec2 *NewPos, int EntityType);
 	CEntity *GetClosestEntity(const vec2 From, CEntity *pEntity1, CEntity *pEntity2);
 	CEntity *GetClosestEntity(const vec2 From, CEntity *pEntity1, CEntity *pEntity2, CEntity *pEntity3);

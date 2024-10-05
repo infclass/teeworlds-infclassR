@@ -39,7 +39,7 @@ bool CInfClassLaser::HitCharacter(vec2 From, vec2 To)
 	CInfClassCharacter *pOwnerChar = GameController()->GetCharacter(GetOwner());
 	icArray<const CEntity*, 10> IgnoreHits;
 	IgnoreHits.Add(pOwnerChar);
-	CCharacter *pIntersect = GameWorld()->IntersectCharacter(m_Pos, To, 0.f, At, GetExceptEntitiesFilterFunction(IgnoreHits));
+	CCharacter *pIntersect = GameWorld()->IntersectCharacter(m_Pos, To, 0.f, At, GetExceptEntitiesFilterFunction(IgnoreHits), m_Owner);
 	CInfClassCharacter *pHit = CInfClassCharacter::GetInstance(pIntersect);
 
 	if(!pHit)
