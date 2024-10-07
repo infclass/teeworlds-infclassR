@@ -9,8 +9,6 @@
 
 #include <vector>
 
-static const char WinterSuffix[] = "_winter";
-
 enum class EventType
 {
 	None,
@@ -19,7 +17,6 @@ enum class EventType
 };
 
 static EventType PreloadedMapEventType = EventType::None;
-static char aEventId[32] = {0};
 
 const char *EventsDirector::GetMapConverterId(const char *pConverterId)
 {

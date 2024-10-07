@@ -213,7 +213,6 @@ void CInfClassCharacter::Tick()
 		return;
 	}
 
-	const vec2 PrevPos = m_Core.m_Pos;
 	const int CurrentTick = Server()->Tick();
 	GameController()->HandleCharacterTiles(this);
 

@@ -1,7 +1,5 @@
 /* (c) Magnus Auvinen. See licence.txt in the root of the distribution for more information. */
 /* If you are missing that file, acquire a complete release at teeworlds.com.				*/
-#include <new>
-
 #include <base/logger.h>
 #include <base/math.h>
 #include <engine/shared/config.h>
@@ -16,7 +14,6 @@
 #include <game/version.h>
 #include <game/collision.h>
 #include <game/gamecore.h>
-#include <iostream>
 #include <algorithm>
 
 #include <game/server/entities/character.h>
@@ -1792,7 +1789,6 @@ void CGameContext::OnClientEnter(int ClientId)
 
 	Server()->ExpireServerInfo();
 
-	CPlayer *pNewPlayer = m_apPlayers[ClientId];
 	mem_zero(&m_aLastPlayerInput[ClientId], sizeof(m_aLastPlayerInput[ClientId]));
 	m_aPlayerHasInput[ClientId] = false;
 }
@@ -3794,7 +3790,6 @@ void CGameContext::PrivateMessage(const char* pStr, int ClientId, bool TeamChat)
 	Msg.m_Team = (TeamChat ? 1 : 0);
 	Msg.m_ClientId = ClientId;
 	
-	int NumPlayerFound = 0;
 	for(int i=0; i<MAX_CLIENTS; i++)
 	{
 		if(m_apPlayers[i] && !CGameContext::m_ClientMuted[i][ClientId])
@@ -3853,8 +3848,6 @@ void CGameContext::PrivateMessage(const char* pStr, int ClientId, bool TeamChat)
 			Msg.m_pMessage = FinalMessage.buffer();
 	
 			Server()->SendPackMsg(&Msg, MSGFLAG_VITAL, i);
-				
-			NumPlayerFound++;
 		}
 	}
 }

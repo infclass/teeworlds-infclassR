@@ -75,11 +75,8 @@ protected:
 
 	struct CBanInfo
 	{
-		enum
-		{
-			EXPIRES_NEVER = -1,
-			REASON_LENGTH = 64,
-		};
+		static constexpr int EXPIRES_NEVER = -1;
+		static constexpr std::size_t REASON_LENGTH = 64;
 		int m_Expires;
 		char m_aReason[REASON_LENGTH];
 	};
