@@ -49,7 +49,7 @@ public:
 	void DoWeaponSwitch();
 
 	void HandleWeapons();
-	virtual void HandleNinja() = 0;
+	virtual void HandleNinja() {};
 	void HandleWaterJump();
 
 	void OnPredictedInput(const CNetObj_PlayerInput *pNewInput);
@@ -180,7 +180,7 @@ protected:
 
 	/* INFECTION MODIFICATION START ***************************************/
 protected:
-	virtual void OnTotalHealthChanged(int Difference) = 0;
+	virtual void OnTotalHealthChanged(int Difference) {};
 
 	int m_AntiFireTime;
 	int m_PainSoundTimer;
