@@ -7,17 +7,19 @@
 
 class CFlyingPoint : public CInfCEntity
 {
-private:
-	int m_TrackedPlayer;
-	vec2 m_InitialVel;
-	float m_InitialAmount;
-	int m_Points;
-	
 public:
+	static int EntityId;
+
 	CFlyingPoint(CGameContext *pGameContext, vec2 Pos, int TrackedPlayer, int Points, vec2 InitialVel);
 	
 	virtual void Tick();
 	virtual void Snap(int SnappingClient);
+
+private:
+	vec2 m_InitialVel;
+	float m_InitialAmount;
+	int m_Points;
+
 };
 
 #endif
