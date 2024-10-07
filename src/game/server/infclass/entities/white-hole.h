@@ -13,6 +13,8 @@ private:
 	void MoveCharacters();
 
 public:
+	static int EntityId;
+
 	CWhiteHole(CGameContext *pGameContext, vec2 CenterPos, int Owner);
 	virtual ~CWhiteHole();
 	

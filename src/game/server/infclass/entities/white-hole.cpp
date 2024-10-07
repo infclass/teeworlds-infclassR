@@ -13,8 +13,10 @@
 #include "growingexplosion.h"
 #include "infccharacter.h"
 
+int CWhiteHole::EntityId = CGameWorld::ENTTYPE_WHITE_HOLE;
+
 CWhiteHole::CWhiteHole(CGameContext *pGameContext, vec2 CenterPos, int Owner)
-	: CInfCEntity(pGameContext, CGameWorld::ENTTYPE_WHITE_HOLE, CenterPos, Owner)
+	: CInfCEntity(pGameContext, EntityId, CenterPos, Owner)
 {
 	GameWorld()->InsertEntity(this);
 	m_PlayerPullStrength = Config()->m_InfWhiteHolePullStrength/10.0f;
