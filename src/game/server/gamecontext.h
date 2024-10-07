@@ -237,6 +237,8 @@ public:
 	void OnSnap(int ClientId) override;
 	void OnPostSnap() override;
 
+	void UpdatePlayerMaps();
+
 	void *PreProcessMsg(int *pMsgId, CUnpacker *pUnpacker, int ClientId);
 	void CensorMessage(char *pCensoredMessage, const char *pMessage, int Size);
 	void OnMessage(int MsgId, CUnpacker *pUnpacker, int ClientId) override;

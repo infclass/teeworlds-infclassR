@@ -57,8 +57,6 @@ private:
 	class CConfig *m_pConfig;
 	class IServer *m_pServer;
 
-	void UpdatePlayerMaps();
-
 public:
 	class CGameContext *GameServer() { return m_pGameServer; }
 	class CConfig *Config() { return m_pConfig; }
