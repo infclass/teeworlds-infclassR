@@ -18,7 +18,7 @@ CBiologistLaser::CBiologistLaser(CGameContext *pGameContext, vec2 Pos, vec2 Dire
 
 bool CBiologistLaser::HitCharacter(vec2 From, vec2 To)
 {
-	for(CInfClassCharacter *p = (CInfClassCharacter*) GameWorld()->FindFirst(CGameWorld::ENTTYPE_CHARACTER); p; p = (CInfClassCharacter *)p->TypeNext())
+	for(TEntityPtr<CInfClassCharacter> p = GameWorld()->FindFirst<CInfClassCharacter>(); p; ++p)
 	{
 		if(p->IsHuman())
 			continue;

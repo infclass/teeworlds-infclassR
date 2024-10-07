@@ -162,7 +162,7 @@ void CWhiteHole::MoveCharacters()
 	vec2 Dir;
 	float Distance, Intensity;
 	// Find a player to pull
-	for(CInfClassCharacter *pCharacter = (CInfClassCharacter*) GameWorld()->FindFirst(CGameWorld::ENTTYPE_CHARACTER); pCharacter; pCharacter = (CInfClassCharacter *)pCharacter->TypeNext())
+	for(TEntityPtr<CInfClassCharacter> pCharacter = GameWorld()->FindFirst<CInfClassCharacter>(); pCharacter; ++pCharacter)
 	{
 		if(!Config()->m_InfWhiteHoleAffectsHumans && pCharacter->IsHuman())
 			continue; // stops humans from being sucked in, if config var is set

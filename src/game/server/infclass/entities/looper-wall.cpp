@@ -96,7 +96,7 @@ void CLooperWall::Tick()
 	else
 	{
 		// Find other players
-		for(CInfClassCharacter *p = (CInfClassCharacter*) GameWorld()->FindFirst(CGameWorld::ENTTYPE_CHARACTER); p; p = (CInfClassCharacter *)p->TypeNext())
+		for(TEntityPtr<CInfClassCharacter> p = GameWorld()->FindFirst<CInfClassCharacter>(); p; ++p)
 		{
 			if(p->IsHuman())
 				continue;

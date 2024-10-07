@@ -23,7 +23,7 @@ CMercenaryLaser::CMercenaryLaser(CGameContext *pGameContext, vec2 Pos, vec2 Dire
 bool CMercenaryLaser::HitCharacter(vec2 From, vec2 To)
 {
 	vec2 At;
-	CEntity *pHitMercBomb = GameWorld()->IntersectEntity(m_Pos, To, 80.0f, &At, CGameWorld::ENTTYPE_MERCENARY_BOMB, GetOwnerFilterFunction());
+	CEntity *pHitMercBomb = GameWorld()->IntersectEntity(m_Pos, To, 80.0f, &At, CMercenaryBomb::EntityId, GetOwnerFilterFunction());
 	if(pHitMercBomb)
 	{
 		CMercenaryBomb *pBomb = static_cast<CMercenaryBomb*>(pHitMercBomb);

@@ -116,7 +116,7 @@ void CScientistMine::Tick()
 	// Find other players
 	bool MustExplode = false;
 	int DetonatedBy;
-	for(CInfClassCharacter *p = (CInfClassCharacter*) GameWorld()->FindFirst(CGameWorld::ENTTYPE_CHARACTER); p; p = (CInfClassCharacter *)p->TypeNext())
+	for(TEntityPtr<CInfClassCharacter> p = GameWorld()->FindFirst<CInfClassCharacter>(); p; ++p)
 	{
 		if(p->IsHuman()) continue;
 		if(!p->CanDie()) continue;
