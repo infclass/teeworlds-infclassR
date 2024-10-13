@@ -94,6 +94,7 @@ void CEngineerWall::Tick()
 
 void CEngineerWall::TickPaused()
 {
+	++m_SnapStartTick;
 	++m_EndTick;
 }
 
