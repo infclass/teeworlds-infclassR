@@ -1,55 +1,73 @@
-#xgettext --keyword=_ --keyword="_P:1,2" --language=C --from-code=UTF-8 -o ../infclass-translation/infclasspot.po $(find ./src -name \*.cpp -or -name \*.h)
+# xgettext --keyword=_ --keyword="_P:1,2" --language=C --from-code=UTF-8 -o ../infclass-translation/infclasspot.po $(find ./src -name \*.cpp -or -name \*.h)
 
-import polib, json, os
+import json
+import os
+from dataclasses import dataclass
+from typing import List
 
-def ConvertPo2Json(languageCode, plurals):
-	poFileName = "other/po/"+languageCode+"/infclass.po"
-	if os.path.isfile(poFileName):
-		jsonFileName = "data/languages/"+languageCode+".json"
+import polib
 
-		po = polib.pofile(poFileName)
 
-		f = open(jsonFileName, "w")
+def convert_po_to_json(language: "Language"):
+    language_code = language.code
+    plurals = language.plurals
 
-		print('{"translation":[', end="\n", file=f)
+    po_file_name = f"other/po/{language_code}/infclass.po"
+    if os.path.isfile(po_file_name):
+        json_file_name = f"data/languages/{language_code}.json"
 
-		for entry in po:
-			if entry.msgstr:
-				print('\t{', end="\n", file=f)
-				print('\t\t"key": '+json.dumps(str(entry.msgid))+',', end="\n", file=f)
-				print('\t\t"value": '+json.dumps(str(entry.msgstr))+'', end="\n", file=f)
-				print('\t},', end="\n", file=f)
-			elif entry.msgstr_plural.keys():
-				print('\t{', end="\n", file=f)
-				print('\t\t"key": '+json.dumps(str(entry.msgid_plural))+',', end="\n", file=f)
-				for index in sorted(entry.msgstr_plural.keys()):
-					print('\t\t"'+plurals[index]+'": '+json.dumps(entry.msgstr_plural[index])+',', end="\n", file=f)
-				print('\t},', end="\n", file=f)
+        po = polib.pofile(po_file_name)
 
-		print(']}', end="\n", file=f)
+        with open(json_file_name, "w") as f:
+            target_dict = {"translation": []}
+            translations = target_dict["translation"]
+            for entry in po:
+                if entry.msgstr:
+                    target_entry = {"key": entry.msgid, "value": entry.msgstr}
+                elif entry.msgstr_plural.keys():
+                    target_entry = {"key": entry.msgid_plural}
+                    for i in sorted(entry.msgstr_plural.keys()):
+                        target_entry[plurals[i]] = entry.msgstr_plural[i]
+                else:
+                    continue
+                translations.append(target_entry)
 
-ConvertPo2Json("ar", ["zero", "one", "two", "few", "many", "other"])
-ConvertPo2Json("bg", ["one", "other"])
-ConvertPo2Json("cs", ["one", "few", "other"])
-ConvertPo2Json("de", ["one", "other"])
-ConvertPo2Json("el", ["one", "other"])
-ConvertPo2Json("es", ["one", "other"])
-ConvertPo2Json("fa", ["one", "other"])
-ConvertPo2Json("fi", ["one", "other"])
-ConvertPo2Json("fr", ["one", "other"])
-ConvertPo2Json("hr", ["one", "few", "other"])
-ConvertPo2Json("hu", ["one", "other"])
-ConvertPo2Json("it", ["one", "other"])
-ConvertPo2Json("ja", ["other"])
-ConvertPo2Json("la", ["one", "other"])
-ConvertPo2Json("nl", ["one", "other"])
-ConvertPo2Json("pl", ["one", "few", "many", "other"])
-ConvertPo2Json("pt", ["one", "other"])
-ConvertPo2Json("pt-BR", ["one", "other"])
-ConvertPo2Json("ru", ["one", "few", "many", "other"])
-ConvertPo2Json("sah", ["other"])
-ConvertPo2Json("sr-Latn", ["one", "few", "other"])
-ConvertPo2Json("tl", ["one", "other"])
-ConvertPo2Json("tr", ["one", "other"])
-ConvertPo2Json("uk", ["one", "few", "other"])
-ConvertPo2Json("zh-CN", ["other"])
+            json.dump(target_dict, f, ensure_ascii=False, indent=4)
+
+
+@dataclass
+class Language:
+    code: str
+    plurals: List[str]
+
+
+LANGUAGES: List[Language] = [
+    Language("ar", ["zero", "one", "two", "few", "many", "other"]),
+    Language("bg", ["one", "other"]),
+    Language("cs", ["one", "few", "other"]),
+    Language("de", ["one", "other"]),
+    Language("el", ["one", "other"]),
+    Language("es", ["one", "other"]),
+    Language("fa", ["one", "other"]),
+    Language("fi", ["one", "other"]),
+    Language("fr", ["one", "other"]),
+    Language("hr", ["one", "few", "other"]),
+    Language("hu", ["one", "other"]),
+    Language("it", ["one", "other"]),
+    Language("ja", ["other"]),
+    Language("la", ["one", "other"]),
+    Language("nl", ["one", "other"]),
+    Language("pl", ["one", "few", "many", "other"]),
+    Language("pt", ["one", "other"]),
+    Language("pt-BR", ["one", "other"]),
+    Language("ru", ["one", "few", "many", "other"]),
+    Language("sah", ["other"]),
+    Language("sr-Latn", ["one", "few", "other"]),
+    Language("tl", ["one", "other"]),
+    Language("tr", ["one", "other"]),
+    Language("uk", ["one", "few", "other"]),
+    Language("zh-CN", ["other"]),
+]
+
+for language in LANGUAGES:
+    convert_po_to_json(language)
