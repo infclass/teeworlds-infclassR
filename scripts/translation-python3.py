@@ -10,7 +10,8 @@ import polib
 
 def convert_po_to_json(language: "Language"):
     language_code = language.code
-    plurals = language.plurals
+    plurals = language.plurals.copy()
+    plurals.append("other")
 
     po_file_name = f"other/po/{language_code}/infclass.po"
     if os.path.isfile(po_file_name):
@@ -42,31 +43,31 @@ class Language:
 
 
 LANGUAGES: List[Language] = [
-    Language("ar", ["zero", "one", "two", "few", "many", "other"]),
-    Language("bg", ["one", "other"]),
-    Language("cs", ["one", "few", "other"]),
-    Language("de", ["one", "other"]),
-    Language("el", ["one", "other"]),
-    Language("es", ["one", "other"]),
-    Language("fa", ["one", "other"]),
-    Language("fi", ["one", "other"]),
-    Language("fr", ["one", "other"]),
-    Language("hr", ["one", "few", "other"]),
-    Language("hu", ["one", "other"]),
-    Language("it", ["one", "other"]),
-    Language("ja", ["other"]),
-    Language("la", ["one", "other"]),
-    Language("nl", ["one", "other"]),
-    Language("pl", ["one", "few", "many", "other"]),
-    Language("pt", ["one", "other"]),
-    Language("pt-BR", ["one", "other"]),
-    Language("ru", ["one", "few", "many", "other"]),
-    Language("sah", ["other"]),
-    Language("sr-Latn", ["one", "few", "other"]),
-    Language("tl", ["one", "other"]),
-    Language("tr", ["one", "other"]),
-    Language("uk", ["one", "few", "other"]),
-    Language("zh-CN", ["other"]),
+    Language("ar", ["zero", "one", "two", "few", "many"]),
+    Language("bg", ["one"]),
+    Language("cs", ["one", "few"]),
+    Language("de", ["one"]),
+    Language("el", ["one"]),
+    Language("es", ["one"]),
+    Language("fa", ["one"]),
+    Language("fi", ["one"]),
+    Language("fr", ["one"]),
+    Language("hr", ["one", "few"]),
+    Language("hu", ["one"]),
+    Language("it", ["one"]),
+    Language("ja", []),
+    Language("la", ["one"]),
+    Language("nl", ["one"]),
+    Language("pl", ["one", "few", "many"]),
+    Language("pt", ["one"]),
+    Language("pt-BR", ["one"]),
+    Language("ru", ["one", "few", "many"]),
+    Language("sah", []),
+    Language("sr-Latn", ["one", "few"]),
+    Language("tl", ["one"]),
+    Language("tr", ["one"]),
+    Language("uk", ["one", "few"]),
+    Language("zh-CN", []),
 ]
 
 for language in LANGUAGES:
