@@ -2826,7 +2826,12 @@ void CIcCharacter::UpdateTuningParam()
 	{
 		pTuningParams->m_PlayerHooking = 0;
 	}
-	
+
+	if(GetPlayerClass() == EPlayerClass::None)
+	{
+		pTuningParams->m_HammerFireDelay = 100000; // None shouldn't be able to hammer
+	}
+
 	if(GetPlayerClass() == EPlayerClass::Ghoul)
 	{
 		float Factor = GetClass()->GetGhoulPercent() * 0.7;
