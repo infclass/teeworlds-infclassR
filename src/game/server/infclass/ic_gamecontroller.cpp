@@ -1935,6 +1935,11 @@ void CIcGameController::ConStartFunRound(IConsole::IResult *pResult, void *pUser
 		}
 		return;
 	}
+	if (pSelf->m_FunRoundsPassed >= g_Config.m_FunRoundLimit)
+	{
+		pSelf->GameServer()->SendChat(-1, CGameContext::CHAT_ALL, "Unable to start fun round: limit per map reached");
+		return;
+	}
 
 	pSelf->QueueRoundType(ERoundType::Fun);
 	pSelf->StartRound();
